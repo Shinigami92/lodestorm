@@ -106,6 +106,9 @@ Ship hub ──► select mission ──► ship flies to location ──► ope
 ## 10. Combat & aliens
 
 - Aliens outside the ship try to kill the player; player fights back with weapons.
+- **Weapons:** several kinds, ranged (projectiles) and melee. The player can't carry all of them: before a mission they pick a **loadout** of a few weapons in the ship and play the mission with it.
+- **Attacking:** one attack button; the equipped weapon decides what it does (shoot, swing). Whether melee gets its own button instead is open.
+- Number of loadout slots and switching weapons during a mission: **TBD (playtest)**.
 - Aliens likely get stronger over time and may be attracted by miners (risk vs. reward). **TBD (playtest)**.
 
 ## 11. Death & persistence
@@ -135,5 +138,6 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 - Miner ownership (consumable vs. permanent).
 - Carry limit yes/no.
 - Alien behavior and scaling.
+- Weapons: switching during a mission, melee on the attack button or its own.
 - Additional mission objectives.
 - Diegetic UI: how to show off-screen information (a miner is full, aliens attacking a miner elsewhere), text size and readability, and whether main / pause / settings menus can be 3D too.

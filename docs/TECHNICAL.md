@@ -64,7 +64,7 @@ Development must work on Windows (Git Bash), Linux and macOS.
   |---|---|---|
   | `move_left/right/forward/back` | WASD | left stick |
   | `aim_left/right/forward/back` | cursor | right stick |
-  | `shoot` | left mouse button | RT / R2 |
+  | `attack` | left mouse button | RT / R2 |
   | `interact` | E | A / Cross |
   | `place_miner` | F | X / Square |
   | `pause` | Escape | Menu / Options |

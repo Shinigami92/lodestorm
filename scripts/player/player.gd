@@ -1,19 +1,31 @@
 class_name Player
 extends CharacterBody3D
 ## Twin-stick player: moves relative to the camera and faces the aim direction. Aims at the
-## mouse cursor on the ground, with the right stick, or else in the movement direction.
+## mouse cursor on the ground, with the right stick, or else in the movement direction, and
+## attacks there with the equipped weapon while `attack` is held.
 
 ## Ignore cursor positions this close to the player, the direction flips around too easily.
 const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 
 @export var settings: PlayerSettings
+## Weapons taken into the mission. Only the first slot is used until switching exists.
+@export var loadout: Loadout
 
-## Horizontal unit vector the player faces (and will shoot in).
+## Horizontal unit vector the player faces and attacks in.
 var aim_direction: Vector3 = Vector3.FORWARD
+## The equipped weapon, or null with an empty loadout.
+var weapon: Weapon
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Whether the mouse was used for aiming more recently than the right stick.
 var _aim_with_mouse: bool = false
+
+@onready var _weapon_mount: Marker3D = $WeaponMount
+
+
+func _ready() -> void:
+	if loadout and not loadout.weapons.is_empty():
+		_equip(loadout.weapons[0])
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -45,6 +57,10 @@ func _physics_process(delta: float) -> void:
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.
 	basis = Basis(Vector3.UP, yaw)
 
+	if weapon:
+		weapon.aim_direction = aim_direction
+		weapon.trigger_held = Input.is_action_pressed(&"attack")
+
 
 func _update_aim(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
 	var stick: Vector2 = Input.get_vector(&"aim_left", &"aim_right", &"aim_forward", &"aim_back")
@@ -69,3 +85,11 @@ func aim_at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
 	to_cursor.y = 0.0
 	if to_cursor.length() > MIN_MOUSE_AIM_DISTANCE:
 		aim_direction = to_cursor.normalized()
+
+
+func _equip(weapon_scene: PackedScene) -> void:
+	if weapon:
+		weapon.queue_free()
+	weapon = weapon_scene.instantiate() as Weapon
+	weapon.holder = self
+	_weapon_mount.add_child(weapon)

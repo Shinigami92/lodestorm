@@ -30,10 +30,11 @@ Machine-specific paths live in environment variables, never in the repo:
 ## Workflow
 
 1. **Open an issue first** for anything bigger than a small fix, so we can agree on the approach before you spend time on it. Design changes should fit [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) and the current milestone in [`docs/PLAN.md`](docs/PLAN.md).
-2. **Fork and branch** from `main`; keep one topic per branch.
+2. **Fork and branch** from `main`; keep one topic per branch. `main` is protected: every change goes through a pull request.
 3. **Keep pull requests small** and focused. Describe what changed and why, and how you tested it (desktop, gamepad, VR if relevant).
 4. **CI must pass** (formatting, linting, tests, import check).
 5. If your change affects a documented decision, **update the docs** in the same pull request.
+6. Pull requests are **squash-merged**, and the **pull request title becomes the commit message** on `main`, so the title must follow the [commit message](#commit-messages) format. Commits inside your branch can be anything.
 
 ## Code and assets
 
@@ -46,7 +47,7 @@ Machine-specific paths live in environment variables, never in the repo:
 
 ## Commit messages
 
-One [Conventional Commits](https://www.conventionalcommits.org/) title under 64 characters, no body, for example:
+One [Conventional Commits](https://www.conventionalcommits.org/) title under 64 characters, no body. This applies to pull request titles (they become the squash commit) and to direct commits. For example:
 
 ```text
 feat: add miner fill indicator
@@ -60,4 +61,4 @@ Lodestorm is source-available under [CC BY-NC-SA 4.0](LICENSE), but the game its
 
 ## Questions
 
-Open an issue on GitHub.
+Ask in [GitHub Discussions](https://github.com/Shinigami92/lodestorm/discussions); use [issues](https://github.com/Shinigami92/lodestorm/issues) for bugs and concrete proposals.

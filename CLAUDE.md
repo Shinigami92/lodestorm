@@ -14,7 +14,7 @@ Stylized 3D isometric mining/action game (Godot, version in `.godot-version`; GD
 - Must run on Windows (Git Bash), Linux and macOS: POSIX shell scripts, no machine-specific paths, LF line endings — see `docs/TECHNICAL.md` (Cross-platform development).
 - Versions have a single source of truth and are referenced, never repeated: Godot in `.godot-version`, godot-ai in `.mcp.json` (its `addons/godot_ai/plugin.cfg` must match).
 - No 2D HUD: game information lives in the world or on the player; menus are 3D panels in the world (see `docs/GAME_DESIGN.md`, UI). 2D only for developer tools.
-- Commit messages: one Conventional Commits title under 64 characters, no body, no trailers.
+- Commit messages: one Conventional Commits title under 64 characters, no body, no trailers. `main` is protected (PRs only, squash merge), so the PR title becomes the commit and follows the same format.
 - License is CC BY-NC-SA 4.0 (source-available, not OSI open source); contributions require the CLA.
 
 ## MCP servers
@@ -37,4 +37,3 @@ Setup in `docs/TECHNICAL.md` (MCP servers).
 ## Open before M0
 
 - gdtoolkit not installed yet (global pip vs. project `.venv`)
-- Create public GitHub repo `Shinigami92/lodestorm`; old `Shinigami92/ore-seeker` to be archived, not deleted

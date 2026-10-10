@@ -2,7 +2,7 @@
 
 A stylized 3D isometric mining/action game. You live on a spaceship that serves as your hub: pick a mission, land, place miners on resource nodes, fight off aliens, haul the ore back, and get back on board before the storm hits. Spend what you mined on upgrades, then go again.
 
-> **Status: pre-production.** Milestone 0 (project setup) in progress. Nothing playable yet.
+> **Status: pre-production.** Milestone 1 (greybox outside loop) in progress: a test map where you can walk around and aim.
 
 ## Tech
 

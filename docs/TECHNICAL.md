@@ -28,7 +28,7 @@ All checks are enforced by CI on every pull request (failing jobs block the merg
 - `tools/test.sh` — imports the project (`tools/import.sh`: fails if the import prints any `ERROR`, e.g. an LFS pointer instead of a file), then runs GUT headless with `$GODOT4_EDITOR`; extra arguments go to GUT (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
 - GUT silently skips test scripts that fail to parse, so `tests/test_scripts_parse.gd` loads every project script and fails on parse or typing errors.
 
-`scripts/` holds game GDScript; developer shell scripts live in `tools/` (ignored by Godot via `.gdignore`).
+`scripts/` holds game GDScript, `scenes/` the scenes; both are grouped by feature (`player/`, `camera/`, `maps/`, ...). A scene's tuning `.tres` sits next to it (e.g. `scenes/player/player_settings.tres`). Developer shell scripts live in `tools/` (ignored by Godot via `.gdignore`).
 
 ### Conventions
 

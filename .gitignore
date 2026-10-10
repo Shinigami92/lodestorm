@@ -19,6 +19,9 @@ desktop.ini
 *.blend2
 __pycache__/
 
+# Python virtual environment for dev tools (requirements-dev.txt)
+/.venv/
+
 # Local-only files (drafts, notes, comment/PR text) and scratch output
 /local/
 /tmp/

@@ -1,0 +1,7 @@
+# gdlint config: only overrides of the gdtoolkit defaults (`gdlint --dump-default-config`)
+excluded_directories: !!set
+  .git: null
+  .godot: null
+  addons: null
+  local: null
+  tmp: null

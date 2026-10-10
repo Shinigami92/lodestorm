@@ -1,0 +1,2 @@
+# Python dev tools, installed locally and in CI: pip install -r requirements-dev.txt
+gdtoolkit==4.5.0

@@ -1,0 +1,10 @@
+# gdformat config (`gdformat --dump-default-config`)
+excluded_directories: !!set
+  .git: null
+  .godot: null
+  addons: null
+  local: null
+  tmp: null
+line_length: 100
+safety_checks: null
+use_spaces: null

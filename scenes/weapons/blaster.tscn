@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/ranged_weapon.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/weapons/blaster_settings.tres" id="2_settings"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/projectile.tscn" id="3_projectile"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gun"]
+albedo_color = Color(0.2, 0.2, 0.25, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gun"]
+material = SubResource("StandardMaterial3D_gun")
+size = Vector3(0.15, 0.15, 0.7)
+
+[node name="Blaster" type="Node3D"]
+script = ExtResource("1_script")
+settings = ExtResource("2_settings")
+projectile_scene = ExtResource("3_projectile")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_gun")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4)

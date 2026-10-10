@@ -11,13 +11,13 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Unit test framework + one example test
 - GitHub Actions: `ci.yml` (format, lint, tests) and `build.yml` (Windows/Linux export artifacts)
 - Renovate for dependency updates
-- Input map: keyboard/mouse + gamepad actions (move, aim, shoot, interact, ...)
+- Input map: keyboard/mouse + gamepad actions (move, aim, attack, interact, ...)
 - Rendering settings with performance targets in mind (Forward+ desktop, check Mobile/compatible path for VR later)
 
 ## M1 — Outside loop (greybox) ⭐ core fun test
 
 - One small test map with resource nodes (2–3 ore types)
-- Player: movement, aiming (mouse + right stick), shooting
+- Player: movement, aiming (mouse + right stick), shooting (one ranged weapon; weapon base class ready for more, incl. melee)
 - Isometric camera
 - Place miners on nodes; miners fill over time and stop when full
 - Hose: auto-connect within radius, visible line, transfer while moving
@@ -39,6 +39,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Greybox ship interior with rooms
 - Spike: 3D menus (UI on a panel in the world, input via mouse, gamepad and later VR controllers, readability)
 - Mission terminal as a 3D menu (pick from a few missions: location, timer, difficulty)
+- Loadout selection before a mission (3D menu): pick a few of the owned weapons
 - Ship states (space / landed + weather) and ramp → starts mission
 - Medical bay respawn
 - Upgrade station(s) spending resources (a few weapon/armor/miner upgrades)

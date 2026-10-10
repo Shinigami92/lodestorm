@@ -6,7 +6,7 @@ const KEYBOARD_MOUSE_AND_GAMEPAD: Array[StringName] = [
 	&"move_right",
 	&"move_forward",
 	&"move_back",
-	&"shoot",
+	&"attack",
 	&"interact",
 	&"place_miner",
 	&"pause",
@@ -38,6 +38,13 @@ func test_keys_use_physical_keycodes() -> void:
 			if key:
 				assert_ne(key.physical_keycode, KEY_NONE, "%s binds a logical key" % action)
 				assert_eq(key.keycode, KEY_NONE, "%s binds a logical key" % action)
+
+
+## Device -1 means every keyboard/gamepad, so a second gamepad (co-op) works too.
+func test_bindings_apply_to_all_devices() -> void:
+	for action: StringName in KEYBOARD_MOUSE_AND_GAMEPAD + GAMEPAD_ONLY:
+		for event: InputEvent in _events(action):
+			assert_eq(event.device, -1, "%s binds a single device" % action)
 
 
 func _events(action: StringName) -> Array[InputEvent]:

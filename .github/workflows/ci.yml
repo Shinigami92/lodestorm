@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - run: pip install -r requirements-dev.txt
+
+      - run: tools/lint.sh
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # LFS objects are cached between runs to save the GitHub LFS bandwidth quota
+      - name: List LFS objects
+        run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
+
+      - uses: actions/cache@v6
+        with:
+          path: .git/lfs
+          key: lfs-${{ hashFiles('.lfs-assets-id') }}
+          restore-keys: lfs-
+
+      - run: git lfs pull
+
+      - name: Read Godot version
+        id: godot
+        run: echo "version=$(cat .godot-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v6
+        id: godot-cache
+        with:
+          path: ~/godot
+          key: godot-${{ steps.godot.outputs.version }}-linux
+
+      - name: Download Godot
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        env:
+          GODOT_VERSION: ${{ steps.godot.outputs.version }}
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/godot.zip" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d ~/godot
+
+      - name: Import and run tests
+        env:
+          GODOT_VERSION: ${{ steps.godot.outputs.version }}
+        run: |
+          export GODOT4_EDITOR="$HOME/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+          tools/test.sh

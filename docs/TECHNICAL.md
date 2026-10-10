@@ -25,7 +25,7 @@
 All checks are enforced by CI on every pull request (failing jobs block the merge), not by local git hooks. The same scripts run locally and in CI:
 
 - `tools/lint.sh` — `gdformat --check` + `gdlint` over the project (`addons/`, `local/`, `tmp/` excluded in the rc files). gdtoolkit is pinned in `requirements-dev.txt`: `pip install -r requirements-dev.txt`, ideally in a `.venv/` (gitignored).
-- `tools/test.sh` — imports the project, then runs GUT headless with `$GODOT4_EDITOR`; extra arguments go to GUT (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
+- `tools/test.sh` — imports the project (fails if the import prints any `ERROR`, e.g. an LFS pointer instead of a file), then runs GUT headless with `$GODOT4_EDITOR`; extra arguments go to GUT (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
 - GUT silently skips test scripts that fail to parse, so `tests/test_scripts_parse.gd` loads every project script and fails on parse or typing errors.
 
 `scripts/` holds game GDScript; developer shell scripts live in `tools/` (ignored by Godot via `.gdignore`).
@@ -67,6 +67,8 @@ Development must work on Windows (Git Bash), Linux and macOS.
 | `steam-deploy.yml` (later) | release / manual | Upload build to Steam via SteamCMD to a beta branch |
 
 Godot is run headless in CI with matching export templates (version read from `.godot-version`).
+
+`ci.yml` has two jobs, `Lint` (`tools/lint.sh`) and `Test` (`tools/test.sh`); both are required status checks in the `main` ruleset, so a failing job blocks the merge. The Godot binary and the Git LFS objects are cached between runs (LFS bandwidth quota).
 
 ## 4. Asset pipeline
 

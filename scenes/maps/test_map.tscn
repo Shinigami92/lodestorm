@@ -2,6 +2,10 @@
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/camera/iso_camera_rig.tscn" id="2_camera"]
+[ext_resource type="PackedScene" path="res://scenes/mining/ore_node.tscn" id="3_ore_node"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="4_ore_cyan"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="5_ore_green"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="6_ore_violet"]
 
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1
@@ -117,6 +121,28 @@ shape = SubResource("BoxShape3D_rock_small")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Rocks/RockD"]
 mesh = SubResource("BoxMesh_rock_small")
+
+[node name="OreNodes" type="Node3D" parent="."]
+
+[node name="CyanA" parent="OreNodes" instance=ExtResource("3_ore_node")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -3)
+ore_type = ExtResource("4_ore_cyan")
+
+[node name="CyanB" parent="OreNodes" instance=ExtResource("3_ore_node")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -11)
+ore_type = ExtResource("4_ore_cyan")
+
+[node name="GreenA" parent="OreNodes" instance=ExtResource("3_ore_node")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
+ore_type = ExtResource("5_ore_green")
+
+[node name="GreenB" parent="OreNodes" instance=ExtResource("3_ore_node")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, 10)
+ore_type = ExtResource("5_ore_green")
+
+[node name="Violet" parent="OreNodes" instance=ExtResource("3_ore_node")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -13)
+ore_type = ExtResource("6_ore_violet")
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
 

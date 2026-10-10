@@ -32,7 +32,7 @@ A stylized 3D isometric action/mining game. The player lives on a spaceship that
 
 - 3D, isometric camera.
 - **The core loop is played in the isometric view** (desktop) / **tabletop diorama** (VR). Camera transitions away from it are allowed for specific moments, e.g. moving closer to a terminal for a 3D menu, the ship taking off and landing, or the ramp opening at mission start. They always return to the main view. In VR, transitions must stay comfortable (e.g. fades or moving the diorama, never the player's head); details **TBD (playtest)**.
-- **Desktop camera:** fixed angle looking along the map's diagonal, following the player. Projection (orthographic vs. perspective), angle, distance and follow speed are **TBD (playtest)**; they live in `scenes/camera/iso_camera_settings.tres` (starting point: orthographic, true isometric angle).
+- **Desktop camera:** fixed angle looking along the map's diagonal, following the player. Projection (orthographic vs. perspective), angle, distance and follow speed are **TBD (playtest)**; they live in `scenes/camera/iso_camera_settings.tres` (current: perspective, chosen over orthographic after a first comparison).
 - **Controls (twin-stick):** movement is relative to the screen ("up" walks up the screen, whatever the camera angle). The player faces the aim direction: the point on the ground under the mouse cursor, or the right stick. Without aim input (gamepad, stick released) the player faces the movement direction. Whichever of mouse and right stick was used last wins.
 - Stylized art (low-poly / clean shapes, readable silhouettes, strong colors per resource type).
 - Readability over detail: ore types, aliens and miners must be recognizable at a glance from the isometric distance (and in the VR diorama).
@@ -74,6 +74,7 @@ Ship hub ──► select mission ──► ship flies to location ──► ope
 ## 6. Missions
 
 - A mission is defined by: **location**, **timer/duration**, **difficulty**.
+- Target duration: about 15–30 min per mission; exact timers **TBD (playtest)**.
 - Harder planets have rarer resources.
 - Other objectives (beyond mining) are a possible extension, to be explored by playtesting.
 
@@ -84,8 +85,11 @@ Ship hub ──► select mission ──► ship flies to location ──► ope
 ## 7. Miners
 
 - Placed by the player on ore / mineral / resource nodes.
-- Fill slowly over time; the player needs to place several for a good haul.
+- One miner per node. The player places it on the nearest free node in range (`place_miner`); a ring on the ground marks that node.
+- Fill slowly over time; the player needs to place several for a good haul. Target: an empty miner takes about 2–5 min to fill (so a few fills per mission); exact values **TBD (playtest)**.
 - **Stop when full.** Capacity and speed can be upgraded / better miner types.
+- Fill level is shown on the miner itself: a glass column fills up in the ore color, and a lamp on top lights up when it's full.
+- Art pass: the miner model gets a small display showing the fill counter (amount / capacity) and a timer (time until full).
 - Can probably be attacked by aliens → defense options like shields and sentry turrets.
 - Whether miners are lost (re-buy) or always available: **TBD (playtest)**.
 
@@ -100,6 +104,7 @@ Ship hub ──► select mission ──► ship flies to location ──► ope
 ## 9. Resources
 
 - Several resource types.
+- Greybox: three ore types named after their color (cyan, green, violet); real names come with the art pass.
 - Different ore types feed different upgrade trees.
 - Rarer ores appear on harder planets.
 

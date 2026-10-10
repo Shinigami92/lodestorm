@@ -3,7 +3,12 @@ extends CharacterBody3D
 ## Twin-stick player: moves relative to the camera and faces the aim direction. Aims at the
 ## mouse cursor on the ground, with the right stick, or else in the movement direction, and
 ## attacks there with the equipped weapon while `attack` is held. Places miners on the nearest
-## free ore node in range with `place_miner`.
+## free ore node in range with `place_miner`, and carries the ore that miners' hoses move to it.
+
+## Emitted when the carried amount of an ore type changes.
+signal cargo_changed(ore_type: OreType, amount: float)
+
+const GROUP: StringName = &"players"
 
 ## Ignore cursor positions this close to the player, the direction flips around too easily.
 const MIN_MOUSE_AIM_DISTANCE: float = 0.1
@@ -19,15 +24,19 @@ var aim_direction: Vector3 = Vector3.FORWARD
 var weapon: Weapon
 ## The ore node `place_miner` would use right now, or null.
 var miner_target: OreNode
+## Units carried per ore type; no carry limit.
+var cargo: Dictionary[OreType, float] = {}
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Whether the mouse was used for aiming more recently than the right stick.
 var _aim_with_mouse: bool = false
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
+@onready var _hose_port: Marker3D = $HosePort
 
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	if loadout and not loadout.weapons.is_empty():
 		_equip(loadout.weapons[0])
 
@@ -103,6 +112,34 @@ func place_miner() -> Miner:
 	var miner: Miner = miner_target.place_miner(miner_scene)
 	_update_miner_target()
 	return miner
+
+
+## Adds `amount` units of `ore_type` to the cargo.
+func add_cargo(ore_type: OreType, amount: float) -> void:
+	if amount <= 0.0:
+		return
+	var carried: float = cargo.get(ore_type, 0.0)
+	carried += amount
+	cargo[ore_type] = carried
+	cargo_changed.emit(ore_type, carried)
+
+
+## Where hoses attach, as rendered this frame (interpolated between physics steps).
+func get_hose_port_position() -> Vector3:
+	return _hose_port.get_global_transform_interpolated().origin
+
+
+## The player closest to `from` within `max_distance` (horizontally), or null.
+static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Player:
+	var nearest_player: Player = null
+	var nearest_distance: float = max_distance
+	for player: Player in tree.get_nodes_in_group(GROUP):
+		var offset: Vector3 = player.global_position - from
+		var distance: float = Vector2(offset.x, offset.z).length()
+		if distance <= nearest_distance:
+			nearest_player = player
+			nearest_distance = distance
+	return nearest_player
 
 
 func _update_miner_target() -> void:

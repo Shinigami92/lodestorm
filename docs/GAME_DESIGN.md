@@ -98,7 +98,9 @@ Ship hub ──► select mission ──► ship flies to location ──► ope
 - When the player is within a miner's radius, a hose automatically connects the miner to the player and transfers resources.
 - Player can move and shoot while connected.
 - Leaving the radius disconnects the hose and stops transfer; re-entering reconnects.
-- Transfer speed: **TBD (playtest)**.
+- Each miner has its own hose, so several miners in range transfer at once. In co-op a miner connects to the nearest player in range.
+- The hose sags between the miner and the player's back, rests on the ground when it's long, and has the ore color.
+- Radius and transfer speed are miner values (upgradable with the miner): greybox 5 m and 30 units/s, so a full miner (180 units) empties in 6 s. **TBD (playtest)**.
 - Player carry limit: leaning towards **no limit** (everything is carried until returning to the ship). **TBD (playtest)**.
 
 ## 9. Resources

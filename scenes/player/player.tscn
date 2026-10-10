@@ -33,3 +33,6 @@ mesh = SubResource("CapsuleMesh_body")
 
 [node name="WeaponMount" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 1.1, -0.45)
+
+[node name="HosePort" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0.4)

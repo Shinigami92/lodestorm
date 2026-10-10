@@ -70,6 +70,19 @@ Godot is run headless in CI with matching export templates (version read from `.
 
 `ci.yml` has two jobs, `Lint` (`tools/lint.sh`) and `Test` (`tools/test.sh`); both are required status checks in the `main` ruleset, so a failing job blocks the merge. The Godot binary and the Git LFS objects are cached between runs (LFS bandwidth quota).
 
+### Dependency updates (Renovate)
+
+[Renovate](https://docs.renovatebot.com/) (config `.github/renovate.json5`) opens PRs early on Mondays; non-major updates are grouped into one PR. It tracks:
+
+| Dependency | Source of truth | Note |
+|---|---|---|
+| GitHub Actions | `.github/workflows/*.yml` | pinned to commit digests (`config:best-practices`) |
+| gdtoolkit | `requirements-dev.txt` | |
+| Godot | `.godot-version` | own PR (only `-stable` releases); open the project in the new editor so it updates `project.godot`, check GUT compatibility |
+| godot-ai | `.mcp.json` | own PR; replace `addons/godot_ai/` with the matching plugin in the same PR, `tests/test_addon_versions.gd` fails until the versions match |
+
+Vendored addons without a server counterpart (GUT) are updated by hand: GUT releases are tied to Godot versions.
+
 ## 4. Asset pipeline
 
 - Blender (via Blender MCP) → export glTF (`.glb`) → `assets/` in Godot.

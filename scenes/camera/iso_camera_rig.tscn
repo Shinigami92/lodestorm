@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/camera/iso_camera_rig.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/camera/iso_camera_settings.tres" id="2_settings"]
+
+[node name="IsoCameraRig" type="Node3D"]
+script = ExtResource("1_script")
+settings = ExtResource("2_settings")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+current = true

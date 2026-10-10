@@ -32,6 +32,8 @@ A stylized 3D isometric action/mining game. The player lives on a spaceship that
 
 - 3D, isometric camera.
 - **The core loop is played in the isometric view** (desktop) / **tabletop diorama** (VR). Camera transitions away from it are allowed for specific moments, e.g. moving closer to a terminal for a 3D menu, the ship taking off and landing, or the ramp opening at mission start. They always return to the main view. In VR, transitions must stay comfortable (e.g. fades or moving the diorama, never the player's head); details **TBD (playtest)**.
+- **Desktop camera:** fixed angle looking along the map's diagonal, following the player. Projection (orthographic vs. perspective), angle, distance and follow speed are **TBD (playtest)**; they live in `scenes/camera/iso_camera_settings.tres` (starting point: orthographic, true isometric angle).
+- **Controls (twin-stick):** movement is relative to the screen ("up" walks up the screen, whatever the camera angle). The player faces the aim direction: the point on the ground under the mouse cursor, or the right stick. Without aim input (gamepad, stick released) the player faces the movement direction. Whichever of mouse and right stick was used last wins.
 - Stylized art (low-poly / clean shapes, readable silhouettes, strong colors per resource type).
 - Readability over detail: ore types, aliens and miners must be recognizable at a glance from the isometric distance (and in the VR diorama).
 

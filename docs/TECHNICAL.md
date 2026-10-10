@@ -28,7 +28,7 @@ All checks are enforced by CI on every pull request (failing jobs block the merg
 - `tools/test.sh` — imports the project (`tools/import.sh`: fails if the import prints any `ERROR`, e.g. an LFS pointer instead of a file), then runs GUT headless with `$GODOT4_EDITOR`; extra arguments go to GUT (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
 - GUT silently skips test scripts that fail to parse, so `tests/test_scripts_parse.gd` loads every project script and fails on parse or typing errors.
 
-`scripts/` holds game GDScript; developer shell scripts live in `tools/` (ignored by Godot via `.gdignore`).
+`scripts/` holds game GDScript, `scenes/` the scenes; both are grouped by feature (`player/`, `camera/`, `maps/`, ...). A scene's tuning `.tres` sits next to it (e.g. `scenes/player/player_settings.tres`). Developer shell scripts live in `tools/` (ignored by Godot via `.gdignore`).
 
 ### Conventions
 
@@ -52,6 +52,7 @@ Development must work on Windows (Git Bash), Linux and macOS.
 - **Versions:** each version is defined once and referenced everywhere else. Godot: `.godot-version` (read by CI and scripts; when upgrading, also let the editor update `config/features` in `project.godot`). godot-ai: `.mcp.json`, kept equal to `addons/godot_ai/plugin.cfg`.
 - Renderer Forward+, Jolt physics, **Vulkan on all platforms** (Godot's default, so `project.godot` has no driver line). D3D12 was rejected: in a sibling project on the same Godot 4.7.2 + SteamVR setup it logged texture errors every frame and the headset image stayed black, while Vulkan worked. Retry D3D12 only after a Godot update and with a reason.
 - **Performance targets** (see [`GAME_DESIGN.md`](GAME_DESIGN.md#2-platform--technical-constraints)): desktop 60 FPS minimum, 120–144 target; VR 90 minimum, with two views per frame. Settings follow from that:
+  - Display: base resolution 1920×1080 (the reference size for 2D and stretching; 3D renders at the window's native resolution), fullscreen (borderless) by default, also when run from the editor. Window mode and resolution become player settings later.
   - Anti-aliasing: MSAA 2x for 3D (sharp edges on low-poly shapes, works in VR), no TAA/FXAA (blur and smearing, worst in VR). The level is a starting value, **TBD (playtest)**, later a player setting.
   - Physics interpolation on: physics ticks at 60 Hz while the display runs at 90–144 Hz, interpolation keeps movement smooth without raising the tick rate. Nodes that are moved outside `_physics_process` or teleported need `reset_physics_interpolation()`.
   - Expensive per-`Environment` effects (SDFGI, SSR, volumetric fog) are off by default and only added when a profile shows the budget for them; the stylized look doesn't need them.

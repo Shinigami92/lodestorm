@@ -1,0 +1,63 @@
+# Contributing to Lodestorm
+
+Thanks for your interest! This guide covers how to set up the project and how changes get in. The technical rules themselves live in [`docs/TECHNICAL.md`](docs/TECHNICAL.md); this file links there instead of repeating them.
+
+## Requirements
+
+- [Godot](https://godotengine.org/download), the exact version from [`.godot-version`](.godot-version) (standard build, not .NET)
+- [Git](https://git-scm.com/) with [Git LFS](https://git-lfs.com/)
+- On Windows: Git Bash (all scripts are POSIX shell; Windows, Linux and macOS are all supported for development)
+- Optional, for AI-assisted development with [Claude Code](https://claude.com/claude-code):
+  - [uv](https://docs.astral.sh/uv/) (runs the MCP servers in [`.mcp.json`](.mcp.json))
+  - [Blender](https://www.blender.org/download/) with the [Blender Lab MCP add-on](https://www.blender.org/lab/mcp-server/)
+
+## Setup
+
+```sh
+git lfs install
+git clone https://github.com/Shinigami92/lodestorm.git
+```
+
+Then open the folder (`project.godot`) in the Godot editor. The first start imports all assets, which takes a moment.
+
+Machine-specific paths live in environment variables, never in the repo:
+
+| Variable | Used by | Example |
+|---|---|---|
+| `GODOT4_EDITOR` | command-line scripts, VS Code [godot-tools](https://marketplace.visualstudio.com/items?itemName=geequlim.godot-tools) (`.vscode/settings.json`) | `E:\Godot\Godot_v<version>-stable_win64.exe` |
+| `BLENDER_MCP_PATH` | Blender MCP server (`.mcp.json`) | path to the `mcp/` folder of a [blender_mcp](https://projects.blender.org/lab/blender_mcp) clone |
+
+## Workflow
+
+1. **Open an issue first** for anything bigger than a small fix, so we can agree on the approach before you spend time on it. Design changes should fit [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) and the current milestone in [`docs/PLAN.md`](docs/PLAN.md).
+2. **Fork and branch** from `main`; keep one topic per branch.
+3. **Keep pull requests small** and focused. Describe what changed and why, and how you tested it (desktop, gamepad, VR if relevant).
+4. **CI must pass** (formatting, linting, tests, import check).
+5. If your change affects a documented decision, **update the docs** in the same pull request.
+
+## Code and assets
+
+- **GDScript:** statically typed everywhere, following the official style guide; code must pass `gdformat --check` and `gdlint`. Details: [Code quality](docs/TECHNICAL.md#2-code-quality).
+- **Cross-platform:** no machine-specific paths, POSIX shell scripts, LF line endings, lowercase file names. Details: [Cross-platform development](docs/TECHNICAL.md#cross-platform-development).
+- **Versions** are defined once and referenced (Godot: `.godot-version`); don't hardcode them elsewhere.
+- **Tunable gameplay values** go into `Resource` files (`.tres`), not into code.
+- **Assets:** Blender source files (`.blend`) are committed next to the exported `.glb`; binary files are tracked with Git LFS automatically via [`.gitattributes`](.gitattributes). Details: [Asset pipeline](docs/TECHNICAL.md#4-asset-pipeline).
+- **Third-party material** (addons, models, textures, sounds, fonts) is only accepted with a license that allows redistribution in this repo and in the commercial release. Keep its license file next to it and mention the source in the pull request.
+
+## Commit messages
+
+One [Conventional Commits](https://www.conventionalcommits.org/) title under 64 characters, no body, for example:
+
+```text
+feat: add miner fill indicator
+fix: stop hose transfer when out of range
+docs: describe storm damage
+```
+
+## Contributor License Agreement (CLA)
+
+Lodestorm is source-available under [CC BY-NC-SA 4.0](LICENSE), but the game itself will be sold (Steam and other stores). To include your contribution in the commercial release, you must sign the CLA once before your first pull request can be merged. A bot ([CLA Assistant](https://github.com/cla-assistant/cla-assistant)) asks you to do so on your pull request.
+
+## Questions
+
+Open an issue on GitHub.

@@ -1,0 +1,24 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Export output
+/builds/
+/export/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code local settings (per-user, not shared)
+.claude/settings.local.json
+
+# Blender backups and script caches
+*.blend1
+*.blend2
+__pycache__/
+
+# Local-only files (drafts, notes, comment/PR text) and scratch output
+/local/
+/tmp/

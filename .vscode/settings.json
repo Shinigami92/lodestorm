@@ -1,0 +1,33 @@
+{
+  "godotTools.editorPath.godot4": "${env:GODOT4_EDITOR}",
+  "godotTools.lsp.serverPort": 6005,
+  "cSpell.words": [
+    "autoload",
+    "autoloads",
+    "bitwes",
+    "diorama",
+    "gdformat",
+    "gdlint",
+    "gdlintrc",
+    "gdshader",
+    "gdtoolkit",
+    "gltf",
+    "godotsteam",
+    "greybox",
+    "lodestorm",
+    "MSAA",
+    "multiview",
+    "openxr",
+    "playtest",
+    "playtesting",
+    "Quadflieg",
+    "Scony",
+    "Spacewar",
+    "SteamCMD",
+    "SteamPipe",
+    "Steamworks",
+    "tonemapper",
+    "tscn",
+    "venv"
+  ]
+}

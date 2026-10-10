@@ -61,7 +61,7 @@ Development must work on Windows (Git Bash), Linux and macOS.
 
 | Workflow | Trigger | Steps |
 |---|---|---|
-| `ci.yml` | every push / PR | gdformat check, gdlint, unit tests (headless Godot), import check |
+| `ci.yml` | PR, merge queue, push to `main` | gdformat check, gdlint, unit tests (headless Godot), import check |
 | `build.yml` | push to `main` | Export Windows + Linux (+ macOS later) builds, upload as workflow artifacts |
 | `release.yml` | git tag `v*` | Export builds, create GitHub Release with zipped builds attached |
 | `steam-deploy.yml` (later) | release / manual | Upload build to Steam via SteamCMD to a beta branch |

@@ -2,6 +2,7 @@ name: CI
 
 on:
   pull_request:
+  merge_group:
   push:
     branches: [main]
 
@@ -17,41 +18,49 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v7
+      - name: Setup Python
+        uses: actions/setup-python@v7
         with:
           python-version: "3.x"
           cache: pip
           cache-dependency-path: requirements-dev.txt
 
-      - run: pip install -r requirements-dev.txt
+      - name: Install dev tools
+        run: pip install -r requirements-dev.txt
 
-      - run: tools/lint.sh
+      - name: Check formatting and lint
+        run: tools/lint.sh
 
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
 
       # LFS objects are cached between runs to save the GitHub LFS bandwidth quota
       - name: List LFS objects
         run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
 
-      - uses: actions/cache@v6
+      - name: Cache LFS objects
+        uses: actions/cache@v6
         with:
           path: .git/lfs
           key: lfs-${{ hashFiles('.lfs-assets-id') }}
           restore-keys: lfs-
 
-      - run: git lfs pull
+      - name: Pull LFS objects
+        run: git lfs pull
 
       - name: Read Godot version
         id: godot
         run: echo "version=$(cat .godot-version)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/cache@v6
+      - name: Cache Godot
+        uses: actions/cache@v6
         id: godot-cache
         with:
           path: ~/godot

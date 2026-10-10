@@ -29,6 +29,6 @@ Copyright (c) 2026 Christopher Quadflieg (Shinigami92).
 
 This project's own code and assets are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) (see [`LICENSE`](LICENSE)): you may share and adapt them with attribution, for non-commercial purposes, under the same license. This makes the project *source-available*, not OSI open source; the commercial release of the game is reserved to the author.
 
-Third-party code and assets keep their own licenses, included next to them (e.g. [`addons/godot_ai/`](addons/godot_ai/LICENSE), MIT).
+Third-party code and assets keep their own licenses, included next to them (e.g. [`addons/godot_ai/`](addons/godot_ai/LICENSE) and [`addons/gut/`](addons/gut/LICENSE.md), MIT).
 
 Contributions require signing a Contributor License Agreement (CLA), see [`CONTRIBUTING.md`](CONTRIBUTING.md#contributor-license-agreement-cla).

@@ -6,7 +6,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 
 - Git repo + Godot `.gitignore`, `.gitattributes` (LFS), `.editorconfig`, LICENSE (CC BY-NC-SA 4.0), CONTRIBUTING + CLA, README
 - Godot project (version pinned in `.godot-version`), folder structure (`scenes/`, `scripts/`, `assets/`, `docs/`, `tests/`)
-- gdtoolkit (`gdlint`, `gdformat`) config + pre-commit hooks
+- gdtoolkit (`gdlint`, `gdformat`) config, enforced by CI (no local git hooks)
 - Static typing warnings enabled in project settings
 - Unit test framework + one example test
 - GitHub Actions: `ci.yml` (format, lint, tests) and `build.yml` (Windows/Linux export artifacts)

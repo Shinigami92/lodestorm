@@ -10,9 +10,9 @@ Stylized 3D isometric mining/action game (Godot, version in `.godot-version`; GD
 ## Working agreements
 
 - Keep the docs up to date when decisions change; values marked **TBD (playtest)** are tuned later, don't invent final numbers.
-- Static typing everywhere; code must pass `gdformat --check` and `gdlint`.
+- Static typing everywhere (typing warnings are errors); code must pass `tools/lint.sh` (`gdformat --check`, `gdlint`) and `tools/test.sh` (GUT, headless). CI enforces both; no git hooks.
 - Must run on Windows (Git Bash), Linux and macOS: POSIX shell scripts, no machine-specific paths, LF line endings — see `docs/TECHNICAL.md` (Cross-platform development).
-- Versions have a single source of truth and are referenced, never repeated: Godot in `.godot-version`, godot-ai in `.mcp.json` (its `addons/godot_ai/plugin.cfg` must match).
+- Versions have a single source of truth and are referenced, never repeated: Godot in `.godot-version`, godot-ai in `.mcp.json` (its `addons/godot_ai/plugin.cfg` must match), gdtoolkit in `requirements-dev.txt`, GUT in `addons/gut/plugin.cfg`.
 - No 2D HUD: game information lives in the world or on the player; menus are 3D panels in the world (see `docs/GAME_DESIGN.md`, UI). 2D only for developer tools.
 - Commit messages: one Conventional Commits title under 64 characters, no body, no trailers. `main` is protected (PRs only, squash merge), so the PR title becomes the commit and follows the same format.
 - License is CC BY-NC-SA 4.0 (source-available, not OSI open source); contributions require the CLA.
@@ -33,7 +33,3 @@ Setup in `docs/TECHNICAL.md` (MCP servers).
 - **Don't instance a `.glb` just to read its mesh** (`instantiate()` + `free()` can leave meshes rendering); read it from `PackedScene.get_state()`.
 - **Bash tool:** for anything longer than a few lines of Python, write a file in `tmp/` and run it; long heredocs with quotes break.
 - **Python on Windows writes CRLF:** use `write_text(..., newline="\n")` / `open(..., newline="\n")` so files stay LF.
-
-## Open before M0
-
-- gdtoolkit not installed yet (global pip vs. project `.venv`)

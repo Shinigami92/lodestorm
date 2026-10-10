@@ -6,7 +6,7 @@
 - License: **[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)** for everything original to this project (full text in `LICENSE`).
   - Others may fork, modify and share, with attribution, non-commercially, under the same license.
   - Only the owner sells the game (Steam/Epic/GOG). Strictly speaking this is *source-available*, not OSI "open source".
-  - Third-party code and assets keep their own licenses, shipped next to them (e.g. `addons/godot_ai/` is MIT, see its `LICENSE`). Only add third-party material whose license allows redistribution in this repo and in the commercial release.
+  - Third-party code and assets keep their own licenses, shipped next to them (e.g. `addons/godot_ai/` and `addons/gut/` are MIT, see their license files; GUT's bundled fonts are OFL). Only add third-party material whose license allows redistribution in this repo and in the commercial release.
 - **CLA required for contributions** (via [CLA Assistant](https://github.com/cla-assistant/cla-assistant) GitHub app), so the owner may use contributions in the commercial release.
 - Game name/logo: consider protecting as trademark before release.
 - Get a short legal review before the commercial release.
@@ -16,12 +16,19 @@
 
 | Tool | Purpose |
 |---|---|
-| [godot-gdscript-toolkit](https://github.com/Scony/godot-gdscript-toolkit) `gdlint` | Linting (naming, complexity, ordering) — config in `gdlintrc` |
-| `gdformat` (same toolkit) | Formatting, checked in CI with `gdformat --check` |
-| Godot GDScript warnings | Enforce static typing: untyped declarations / unsafe access as warnings or errors in project settings |
-| Unit tests | [GUT](https://github.com/bitwes/Gut), run headless in CI |
-| `pre-commit` hooks | Run `gdformat` + `gdlint` before every commit |
+| [godot-gdscript-toolkit](https://github.com/Scony/godot-gdscript-toolkit) `gdlint` | Linting (naming, complexity, ordering) — config in `gdlintrc` (only overrides of the defaults) |
+| `gdformat` (same toolkit) | Formatting, checked with `gdformat --check` — config in `gdformatrc` |
+| Godot GDScript warnings | Enforce static typing: `untyped_declaration`, `unsafe_property_access`, `unsafe_method_access`, `unsafe_call_argument` are **errors** in the project settings, so a violating script fails to load. `addons/` is exempt (Godot's default `directory_rules`) |
+| Unit tests | [GUT](https://github.com/bitwes/Gut) in `addons/gut/` (version in its `plugin.cfg`, must support the pinned Godot version), tests in `tests/` (`test_*.gd`, config `.gutconfig.json`), run headless |
 | `.editorconfig` | Consistent whitespace/line endings across editors |
+
+All checks are enforced by CI on every pull request (failing jobs block the merge), not by local git hooks. The same scripts run locally and in CI:
+
+- `tools/lint.sh` — `gdformat --check` + `gdlint` over the project (`addons/`, `local/`, `tmp/` excluded in the rc files). gdtoolkit is pinned in `requirements-dev.txt`: `pip install -r requirements-dev.txt`, ideally in a `.venv/` (gitignored).
+- `tools/test.sh` — imports the project, then runs GUT headless with `$GODOT4_EDITOR`; extra arguments go to GUT (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
+- GUT silently skips test scripts that fail to parse, so `tests/test_scripts_parse.gd` loads every project script and fails on parse or typing errors.
+
+`scripts/` holds game GDScript; developer shell scripts live in `tools/` (ignored by Godot via `.gdignore`).
 
 ### Conventions
 

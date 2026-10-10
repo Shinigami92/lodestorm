@@ -1,0 +1,61 @@
+name: Setup Godot
+description: >-
+  Install the Linux Godot editor pinned in .godot-version (cached) and set GODOT4_EDITOR;
+  optionally install the Windows and Linux release export templates
+inputs:
+  export-templates:
+    description: Also install the export templates used by export_presets.cfg
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Read Godot version
+      id: godot
+      shell: sh
+      run: echo "version=$(cat .godot-version)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Godot
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: godot-cache
+      with:
+        path: ~/godot
+        key: godot-${{ steps.godot.outputs.version }}-linux
+
+    - name: Download Godot
+      if: steps.godot-cache.outputs.cache-hit != 'true'
+      shell: sh
+      env:
+        GODOT_VERSION: ${{ steps.godot.outputs.version }}
+      run: |
+        curl -fsSL -o "$RUNNER_TEMP/godot.zip" \
+          "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+        unzip -q "$RUNNER_TEMP/godot.zip" -d ~/godot
+
+    - name: Set GODOT4_EDITOR
+      shell: sh
+      env:
+        GODOT_VERSION: ${{ steps.godot.outputs.version }}
+      run: echo "GODOT4_EDITOR=$HOME/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+    # The full template archive is >1 GB; only the release templates we export with are kept
+    - name: Cache export templates
+      if: inputs.export-templates == 'true'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: templates-cache
+      with:
+        path: ~/.local/share/godot/export_templates
+        key: godot-templates-${{ steps.godot.outputs.version }}-windows-linux
+
+    - name: Download export templates
+      if: inputs.export-templates == 'true' && steps.templates-cache.outputs.cache-hit != 'true'
+      shell: sh
+      env:
+        GODOT_VERSION: ${{ steps.godot.outputs.version }}
+      run: |
+        curl -fsSL -o "$RUNNER_TEMP/templates.tpz" \
+          "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+        dir="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+        mkdir -p "$dir"
+        unzip -j -q "$RUNNER_TEMP/templates.tpz" -d "$dir" \
+          templates/version.txt templates/windows_release_x86_64.exe templates/linux_release.x86_64
+        rm "$RUNNER_TEMP/templates.tpz"

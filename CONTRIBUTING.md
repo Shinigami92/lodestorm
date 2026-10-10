@@ -36,6 +36,8 @@ tools/lint.sh   # gdformat --check + gdlint
 tools/test.sh   # GUT unit tests, headless (needs GODOT4_EDITOR)
 ```
 
+`tools/export.sh` builds the Windows and Linux release exports into `builds/` (needs the export templates, see [CI/CD](docs/TECHNICAL.md#3-cicd-github-actions)).
+
 Machine-specific paths live in environment variables, never in the repo:
 
 | Variable | Used by | Example |

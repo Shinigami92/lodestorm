@@ -41,43 +41,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # LFS objects are cached between runs to save the GitHub LFS bandwidth quota
-      - name: List LFS objects
-        run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
-
-      - name: Cache LFS objects
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: .git/lfs
-          key: lfs-${{ hashFiles('.lfs-assets-id') }}
-          restore-keys: lfs-
-
       - name: Pull LFS objects
-        run: git lfs pull
+        uses: ./.github/actions/lfs-pull
 
-      - name: Read Godot version
-        id: godot
-        run: echo "version=$(cat .godot-version)" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Godot
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        id: godot-cache
-        with:
-          path: ~/godot
-          key: godot-${{ steps.godot.outputs.version }}-linux
-
-      - name: Download Godot
-        if: steps.godot-cache.outputs.cache-hit != 'true'
-        env:
-          GODOT_VERSION: ${{ steps.godot.outputs.version }}
-        run: |
-          curl -fsSL -o "$RUNNER_TEMP/godot.zip" \
-            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
-          unzip -q "$RUNNER_TEMP/godot.zip" -d ~/godot
+      - name: Setup Godot
+        uses: ./.github/actions/setup-godot
 
       - name: Import and run tests
-        env:
-          GODOT_VERSION: ${{ steps.godot.outputs.version }}
-        run: |
-          export GODOT4_EDITOR="$HOME/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
-          tools/test.sh
+        run: tools/test.sh

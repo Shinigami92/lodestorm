@@ -25,7 +25,7 @@
 All checks are enforced by CI on every pull request (failing jobs block the merge), not by local git hooks. The same scripts run locally and in CI:
 
 - `tools/lint.sh` — `gdformat --check` + `gdlint` over the project (`addons/`, `local/`, `tmp/` excluded in the rc files). gdtoolkit is pinned in `requirements-dev.txt`: `pip install -r requirements-dev.txt`, ideally in a `.venv/` (gitignored).
-- `tools/test.sh` — imports the project (fails if the import prints any `ERROR`, e.g. an LFS pointer instead of a file), then runs GUT headless with `$GODOT4_EDITOR`; extra arguments go to GUT (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
+- `tools/test.sh` — imports the project (`tools/import.sh`: fails if the import prints any `ERROR`, e.g. an LFS pointer instead of a file), then runs GUT headless with `$GODOT4_EDITOR`; extra arguments go to GUT (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
 - GUT silently skips test scripts that fail to parse, so `tests/test_scripts_parse.gd` loads every project script and fails on parse or typing errors.
 
 `scripts/` holds game GDScript; developer shell scripts live in `tools/` (ignored by Godot via `.gdignore`).
@@ -84,7 +84,11 @@ Development must work on Windows (Git Bash), Linux and macOS.
 
 Godot is run headless in CI with matching export templates (version read from `.godot-version`).
 
-`ci.yml` has two jobs, `Lint` (`tools/lint.sh`) and `Test` (`tools/test.sh`); both are required status checks in the `main` ruleset, so a failing job blocks the merge. The Godot binary and the Git LFS objects are cached between runs (LFS bandwidth quota).
+`ci.yml` has two jobs, `Lint` (`tools/lint.sh`) and `Test` (`tools/test.sh`); both are required status checks in the `main` ruleset, so a failing job blocks the merge. The Godot binary and the Git LFS objects are cached between runs (LFS bandwidth quota). The shared setup steps are composite actions in `.github/actions/` (`lfs-pull`, `setup-godot`), so workflows don't repeat them.
+
+`build.yml` runs `tools/export.sh` (also usable locally): it imports the project, then exports a release build of every preset in `export_presets.cfg` to its export path under `builds/` (gitignored); CI uploads them as the `lodestorm-windows` / `lodestorm-linux` workflow artifacts. Presets: Windows Desktop and Linux, x86_64, PCK next to the binary, `tests/` and `addons/gut/` excluded; the godot-ai plugin strips its own autoload from exports. `application/modify_resources` (exe icon and metadata) is off because it needs rcedit, and Wine on Linux CI; turn it on with the release work (M7). `export_presets.cfg` is committed: Godot keeps signing credentials in `.godot/export_credentials.cfg`, never put them in the presets.
+
+Export templates: the full archive is >1 GB, so `setup-godot` (with `export-templates: "true"`) downloads it once per Godot version and caches only the two release templates used. Locally, install them via the editor (Editor → Manage Export Templates), or extract `windows_release_x86_64.exe`, `linux_release.x86_64` and `version.txt` from the archive into Godot's `export_templates/<version>.stable/` folder in its user data directory (Windows `%APPDATA%\Godot`, Linux `~/.local/share/godot`, macOS `~/Library/Application Support/Godot`).
 
 ### Dependency updates (Renovate)
 
@@ -92,7 +96,7 @@ Godot is run headless in CI with matching export templates (version read from `.
 
 | Dependency | Source of truth | Note |
 |---|---|---|
-| GitHub Actions | `.github/workflows/*.yml` | pinned to commit digests (`config:best-practices`) |
+| GitHub Actions | `.github/workflows/*.yml`, `.github/actions/*/action.yml` | pinned to commit digests (`config:best-practices`) |
 | gdtoolkit | `requirements-dev.txt` | |
 | Godot | `.godot-version` | own PR (only `-stable` releases); open the project in the new editor so it updates `project.godot`, check GUT compatibility |
 | godot-ai | `.mcp.json` | own PR; replace `addons/godot_ai/` with the matching plugin in the same PR, `tests/test_addon_versions.gd` fails until the versions match |

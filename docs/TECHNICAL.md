@@ -51,6 +51,22 @@ Development must work on Windows (Git Bash), Linux and macOS.
 
 - **Versions:** each version is defined once and referenced everywhere else. Godot: `.godot-version` (read by CI and scripts; when upgrading, also let the editor update `config/features` in `project.godot`). godot-ai: `.mcp.json`, kept equal to `addons/godot_ai/plugin.cfg`.
 - Renderer Forward+, Jolt physics, **Vulkan on all platforms** (Godot's default, so `project.godot` has no driver line). D3D12 was rejected: in a sibling project on the same Godot 4.7.2 + SteamVR setup it logged texture errors every frame and the headset image stayed black, while Vulkan worked. Retry D3D12 only after a Godot update and with a reason.
+- **Performance targets** (see [`GAME_DESIGN.md`](GAME_DESIGN.md#2-platform--technical-constraints)): desktop 60 FPS minimum, 120–144 target; VR 90 minimum, with two views per frame. Settings follow from that:
+  - Anti-aliasing: MSAA 2x for 3D (sharp edges on low-poly shapes, works in VR), no TAA/FXAA (blur and smearing, worst in VR). The level is a starting value, **TBD (playtest)**, later a player setting.
+  - Physics interpolation on: physics ticks at 60 Hz while the display runs at 90–144 Hz, interpolation keeps movement smooth without raising the tick rate. Nodes that are moved outside `_physics_process` or teleported need `reset_physics_interpolation()`.
+  - Expensive per-`Environment` effects (SDFGI, SSR, volumetric fog) are off by default and only added when a profile shows the budget for them; the stylized look doesn't need them.
+  - Occlusion culling stays off until there are occluders to bake (ship interior, M3); remember to enable it on SubViewports too.
+  - Renderer for VR: Forward+ is used for PC VR. Whether Steam Frame standalone needs the Mobile renderer is checked in M5, through a feature override (see above), not by switching the default.
+- **Input map** (`[input]` in `project.godot`, checked by `tests/test_input_map.gd`): every action has a keyboard/mouse and a gamepad binding on all devices; keys use physical keycodes so WASD stays in place on non-QWERTY layouts. Mouse aiming uses the cursor position, so `aim_*` only has right-stick bindings. godot-ai can only bind logical keycodes: add keys with the editor closed or via the editor's Input Map tab ("Physical Keycode"). Stick deadzone 0.2 is a starting value, **TBD (playtest)**.
+
+  | Action | Keyboard / mouse | Gamepad (Xbox / PlayStation) |
+  |---|---|---|
+  | `move_left/right/forward/back` | WASD | left stick |
+  | `aim_left/right/forward/back` | cursor | right stick |
+  | `shoot` | left mouse button | RT / R2 |
+  | `interact` | E | A / Cross |
+  | `place_miner` | F | X / Square |
+  | `pause` | Escape | Menu / Options |
 
 ### MCP servers (`.mcp.json`)
 

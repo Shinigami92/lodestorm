@@ -10,7 +10,10 @@ func test_all_scripts_load() -> void:
 	var paths: Array[String] = _find_scripts("res://")
 	assert_gt(paths.size(), 0, "no scripts found")
 	for path: String in paths:
-		assert_not_null(load(path), path)
+		# A script that failed to parse can still load (cached after GUT tried it as a test), but
+		# it can't be instantiated.
+		var script: Script = load(path)
+		assert_true(script != null and script.can_instantiate(), path)
 
 
 func _find_scripts(dir_path: String) -> Array[String]:

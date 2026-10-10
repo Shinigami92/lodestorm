@@ -106,9 +106,11 @@ func _move_player_next_to(node: OreNode) -> void:
 
 
 ## Places a miner on `_node` with its own settings, so tests don't depend on tuning values.
+## Its hose never connects, so only mining changes the amount.
 func _place_miner(fill_rate: float, capacity: float) -> Miner:
 	var miner: Miner = _node.place_miner(_player.miner_scene)
 	miner.settings = MinerSettings.new()
 	miner.settings.fill_rate = fill_rate
 	miner.settings.capacity = capacity
+	miner.settings.hose_range = 0.0
 	return miner

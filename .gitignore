@@ -22,6 +22,9 @@ __pycache__/
 # Python virtual environment for dev tools (requirements-dev.txt)
 /.venv/
 
+# Git LFS writes its hooks here when a tool runs git with core.hooksPath=/dev/null on Windows
+/dev/
+
 # Local-only files (drafts, notes, comment/PR text) and scratch output
 /local/
 /tmp/

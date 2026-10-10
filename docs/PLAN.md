@@ -10,6 +10,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Static typing warnings enabled in project settings
 - Unit test framework + one example test
 - GitHub Actions: `ci.yml` (format, lint, tests) and `build.yml` (Windows/Linux export artifacts)
+- Renovate for dependency updates
 - Input map: keyboard/mouse + gamepad actions (move, aim, shoot, interact, ...)
 - Rendering settings with performance targets in mind (Forward+ desktop, check Mobile/compatible path for VR later)
 

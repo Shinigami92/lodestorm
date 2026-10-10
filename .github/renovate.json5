@@ -1,0 +1,43 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "schedule:earlyMondays",
+    "group:allNonMajor",
+    ":prHourlyLimitNone"
+  ],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      // An engine update needs its own review: editor re-saves project.godot, GUT must support it
+      "groupName": "Godot",
+      "matchDepNames": ["godotengine/godot"]
+    },
+    {
+      // The editor plugin in addons/godot_ai/ must be updated by hand in the same PR
+      // (tests/test_addon_versions.gd fails until it matches)
+      "groupName": "godot-ai",
+      "matchDepNames": ["godot-ai"]
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.godot-version$/"],
+      "matchStrings": ["^(?<currentValue>\\S+)\\s*$"],
+      "depNameTemplate": "godotengine/godot",
+      "datasourceTemplate": "github-releases",
+      // Only stable releases; Godot names x.y.0 releases "x.y"
+      "extractVersionTemplate": "^(?<version>.+)-stable$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.mcp\\.json$/"],
+      "matchStrings": ["\"(?<depName>godot-ai)==(?<currentValue>[^\"]+)\""],
+      "datasourceTemplate": "pypi"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["security"]
+  }
+}

@@ -2,7 +2,8 @@ class_name Player
 extends CharacterBody3D
 ## Twin-stick player: moves relative to the camera and faces the aim direction. Aims at the
 ## mouse cursor on the ground, with the right stick, or else in the movement direction, and
-## attacks there with the equipped weapon while `attack` is held.
+## attacks there with the equipped weapon while `attack` is held. Places miners on the nearest
+## free ore node in range with `place_miner`.
 
 ## Ignore cursor positions this close to the player, the direction flips around too easily.
 const MIN_MOUSE_AIM_DISTANCE: float = 0.1
@@ -10,11 +11,14 @@ const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 @export var settings: PlayerSettings
 ## Weapons taken into the mission. Only the first slot is used until switching exists.
 @export var loadout: Loadout
+@export var miner_scene: PackedScene
 
 ## Horizontal unit vector the player faces and attacks in.
 var aim_direction: Vector3 = Vector3.FORWARD
 ## The equipped weapon, or null with an empty loadout.
 var weapon: Weapon
+## The ore node `place_miner` would use right now, or null.
+var miner_target: OreNode
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Whether the mouse was used for aiming more recently than the right stick.
@@ -61,6 +65,10 @@ func _physics_process(delta: float) -> void:
 		weapon.aim_direction = aim_direction
 		weapon.trigger_held = Input.is_action_pressed(&"attack")
 
+	_update_miner_target()
+	if Input.is_action_just_pressed(&"place_miner"):
+		place_miner()
+
 
 func _update_aim(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
 	var stick: Vector2 = Input.get_vector(&"aim_left", &"aim_right", &"aim_forward", &"aim_back")
@@ -85,6 +93,29 @@ func aim_at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
 	to_cursor.y = 0.0
 	if to_cursor.length() > MIN_MOUSE_AIM_DISTANCE:
 		aim_direction = to_cursor.normalized()
+
+
+## Places a miner on `miner_target` and returns it, or null without a target.
+func place_miner() -> Miner:
+	_update_miner_target()
+	if not miner_target:
+		return null
+	var miner: Miner = miner_target.place_miner(miner_scene)
+	_update_miner_target()
+	return miner
+
+
+func _update_miner_target() -> void:
+	var target: OreNode = OreNode.nearest_free(
+		get_tree(), global_position, settings.miner_place_range
+	)
+	if target == miner_target:
+		return
+	if is_instance_valid(miner_target):
+		miner_target.highlighted = false
+	miner_target = target
+	if miner_target:
+		miner_target.highlighted = true
 
 
 func _equip(weapon_scene: PackedScene) -> void:

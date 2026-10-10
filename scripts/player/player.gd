@@ -3,7 +3,8 @@ extends CharacterBody3D
 ## Twin-stick player: moves relative to the camera and faces the aim direction. Aims at the
 ## mouse cursor on the ground, with the right stick, or else in the movement direction, and
 ## attacks there with the equipped weapon while `attack` is held. Places miners on the nearest
-## free ore node in range with `place_miner`, and carries the ore that miners' hoses move to it.
+## free ore node in range with `place_miner`, and carries the ore that miners' hoses move to it,
+## shown in canisters on its back.
 
 ## Emitted when the carried amount of an ore type changes.
 signal cargo_changed(ore_type: OreType, amount: float)
@@ -33,10 +34,12 @@ var _aim_with_mouse: bool = false
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
+@onready var _cargo_rack: CargoRack = $CargoRack
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	cargo_changed.connect(_cargo_rack.show_cargo)
 	if loadout and not loadout.weapons.is_empty():
 		_equip(loadout.weapons[0])
 

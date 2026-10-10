@@ -102,6 +102,7 @@ Ship hub ──► select mission ──► ship flies to location ──► ope
 - The hose sags between the miner and the player's back, rests on the ground when it's long, and has the ore color.
 - Radius and transfer speed are miner values (upgradable with the miner): greybox 5 m and 30 units/s, so a full miner (180 units) empties in 6 s. **TBD (playtest)**.
 - Player carry limit: leaning towards **no limit** (everything is carried until returning to the ship). **TBD (playtest)**.
+- Carried resources show on the player's back: one column of canisters per ore type, in the ore color. A canister holds a fixed amount (greybox: one full miner, 180 units, **TBD (playtest)**); full canisters stack up and the top one fills. Without a carry limit the columns keep growing, which also shows how much is at stake.
 
 ## 9. Resources
 

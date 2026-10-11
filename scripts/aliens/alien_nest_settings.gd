@@ -14,6 +14,14 @@ extends Resource
 @export var max_hunters_start: int = 1
 ## ... and when the storm hits.
 @export var max_hunters_end: int = 4
+## Seconds between raiders when the mission starts ...
+@export var raider_interval_start: float = 60.0
+## ... and when the storm hits.
+@export var raider_interval_end: float = 25.0
+## Raiders from one nest out at once when the mission starts ...
+@export var max_raiders_start: int = 1
+## ... and when the storm hits.
+@export var max_raiders_end: int = 2
 ## Aliens hatch this far from the nest's center (horizontally, in m). Far enough out that waiting
 ## guards don't block the paths that hug the nest.
 @export var hatch_radius: float = 3.5

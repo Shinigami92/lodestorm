@@ -31,7 +31,7 @@ func test_guards_hatch_around_the_nest() -> void:
 	var aliens: Array[Alien] = _aliens()
 	assert_eq(aliens.size(), _nest.settings.guards)
 	for alien: Alien in aliens:
-		assert_false(alien.hunter)
+		assert_eq(alien.role, Alien.Role.GUARD)
 		var offset: Vector3 = alien.global_position - _nest.global_position
 		assert_almost_eq(Vector2(offset.x, offset.z).length(), _nest.settings.hatch_radius, 0.3)
 
@@ -53,13 +53,13 @@ func test_hunters_hatch_while_the_mission_runs() -> void:
 
 func test_hunters_go_for_players_far_away() -> void:
 	await _start_mission()
-	var hunter: Alien = _nest.hatch(true)
+	var hunter: Alien = _nest.hatch(Alien.Role.HUNTER)
 	await wait_physics_frames(2)
 	var offset: Vector3 = _player.global_position - hunter.global_position
 	assert_gt(Vector2(offset.x, offset.z).length(), hunter.settings.chase_range)
 	assert_eq(hunter.target, _player)
 	for alien: Alien in _aliens():
-		if not alien.hunter:
+		if alien.role == Alien.Role.GUARD:
 			assert_null(alien.target, "guards wait")
 
 
@@ -68,7 +68,7 @@ func test_hunters_find_their_way_around_the_nest() -> void:
 	_mission.reset_location()
 	var nest: AlienNest = _mission.location.get_node("AlienNests/South") as AlienNest
 	await _start_mission()
-	var hunter: Alien = nest.hatch(true)
+	var hunter: Alien = nest.hatch(Alien.Role.HUNTER)
 	# Right behind the nest, seen from the player.
 	var away: Vector3 = nest.global_position - _player.global_position
 	away.y = 0.0
@@ -92,6 +92,40 @@ func test_hunters_are_capped_and_replaced_an_interval_after_a_kill() -> void:
 	assert_eq(_nest.get_hunters().size(), 1, "not right away")
 	await wait_seconds(0.2)
 	assert_eq(_nest.get_hunters().size(), 2)
+
+
+func test_raiders_only_hatch_while_a_miner_works() -> void:
+	_set_raider_interval(0.1)
+	await _start_mission()
+	await wait_seconds(0.4)
+	assert_eq(_nest.get_raiders().size(), 0, "no miner yet")
+	var miner: Miner = _place_miner()
+	await wait_seconds(0.05)
+	assert_eq(_nest.get_raiders().size(), 0, "a full interval after the miner")
+	await wait_seconds(0.2)
+	assert_eq(_nest.get_raiders().size(), 1)
+	miner.take_damage(miner.health)
+	_nest.get_raiders()[0].take_damage(1000.0)
+	await wait_seconds(0.4)
+	assert_eq(_nest.get_raiders().size(), 0, "not while every miner is broken")
+
+
+func test_raiders_go_for_miners() -> void:
+	var miner: Miner = _place_miner()
+	await _start_mission()
+	var raider: Alien = _nest.hatch(Alien.Role.RAIDER)
+	await wait_physics_frames(2)
+	assert_eq(raider.target, miner)
+	assert_eq(_nest.get_raiders(), [raider])
+	assert_eq(_nest.get_hunters().size(), 0)
+
+
+func test_raider_escalation() -> void:
+	var settings: AlienNestSettings = _nest.settings
+	assert_eq(_nest.raider_interval(0.0), settings.raider_interval_start)
+	assert_eq(_nest.raider_interval(1.0), settings.raider_interval_end)
+	assert_eq(_nest.max_raiders(0.0), settings.max_raiders_start)
+	assert_eq(_nest.max_raiders(1.0), settings.max_raiders_end)
 
 
 func test_escalation_follows_mission_progress() -> void:
@@ -134,6 +168,17 @@ func _start_mission() -> void:
 func _set_interval(seconds: float) -> void:
 	_nest.settings.hunter_interval_start = seconds
 	_nest.hunter_cooldown = seconds
+
+
+func _set_raider_interval(seconds: float) -> void:
+	_nest.settings.raider_interval_start = seconds
+	_nest.raider_cooldown = seconds
+
+
+## A miner on an ore node of the location (far from the nest, nobody repairs it).
+func _place_miner() -> Miner:
+	var node: OreNode = _mission.location.get_node("OreNodes/CyanA") as OreNode
+	return node.place_miner(_player.miner_scene)
 
 
 func _aliens() -> Array[Alien]:

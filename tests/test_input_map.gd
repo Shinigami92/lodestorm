@@ -11,6 +11,8 @@ const KEYBOARD_MOUSE_AND_GAMEPAD: Array[StringName] = [
 	&"place_miner",
 	&"pause",
 ]
+## Developer tools, only on the keyboard.
+const KEYBOARD_ONLY: Array[StringName] = [&"debug_overlay"]
 ## Mouse aiming uses the cursor position, so these only have gamepad bindings.
 const GAMEPAD_ONLY: Array[StringName] = [
 	&"aim_left",
@@ -21,7 +23,7 @@ const GAMEPAD_ONLY: Array[StringName] = [
 
 
 func test_actions_have_keyboard_or_mouse_binding() -> void:
-	for action: StringName in KEYBOARD_MOUSE_AND_GAMEPAD:
+	for action: StringName in KEYBOARD_MOUSE_AND_GAMEPAD + KEYBOARD_ONLY:
 		assert_true(_has_event(action, false), "%s has no keyboard/mouse binding" % action)
 
 
@@ -32,7 +34,7 @@ func test_actions_have_gamepad_binding() -> void:
 
 ## Physical keycodes keep WASD in place on non-QWERTY layouts.
 func test_keys_use_physical_keycodes() -> void:
-	for action: StringName in KEYBOARD_MOUSE_AND_GAMEPAD:
+	for action: StringName in KEYBOARD_MOUSE_AND_GAMEPAD + KEYBOARD_ONLY:
 		for event: InputEvent in _events(action):
 			var key := event as InputEventKey
 			if key:

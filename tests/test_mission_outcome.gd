@@ -94,6 +94,31 @@ func test_respawn_aboard_after_lost_mission() -> void:
 	assert_eq(_mission.state, Mission.State.OPEN, "the button starts the next run")
 
 
+func test_dying_aboard_without_mission_respawns() -> void:
+	assert_eq(_mission.state, Mission.State.CLOSED)
+	_player.take_damage(_player.settings.max_health)
+	await wait_physics_frames(2)
+	assert_false(_ship.ramp_button.enabled, "nobody can start a run while someone is dead")
+	var delay_frames: int = ceili(_mission.settings.respawn_delay * Engine.physics_ticks_per_second)
+	await wait_physics_frames(delay_frames + 2)
+	assert_false(_player.dead)
+	assert_eq(_player.global_position, _ship.get_respawn_position())
+	assert_true(_ship.ramp_button.enabled)
+	assert_eq(_mission.state, Mission.State.CLOSED)
+
+
+func test_tuning_duration_updates_timer() -> void:
+	_mission.settings.duration = 120.0
+	await wait_physics_frames(2)
+	assert_eq(_mission.time_left, 120.0, "before the start: the new duration")
+	await _open()
+	await _move(_player, _outside())
+	var time_left: float = _mission.time_left
+	_mission.settings.duration = 100.0
+	await wait_physics_frames(1)
+	assert_almost_eq(_mission.time_left, time_left - 20.0, 0.1, "while running: by the difference")
+
+
 func test_returning_stores_cargo_in_hold() -> void:
 	await _open()
 	await _move(_player, _outside())

@@ -7,6 +7,7 @@ extends CharacterBody3D
 ## shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
 ## nearest interactable in range (buttons, ...) with `interact`. Health shows on the suit light;
 ## at zero health the player dies, drops everything carried and lies still until `respawn`.
+## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
 
 ## Emitted when the carried amount of an ore type changes.
 signal cargo_changed(ore_type: OreType, amount: float)
@@ -101,7 +102,9 @@ func _physics_process(delta: float) -> void:
 
 	if weapon:
 		weapon.aim_direction = aim_direction
-		weapon.trigger_held = weapon_allowed and Input.is_action_pressed(&"attack")
+		weapon.trigger_held = (
+			weapon_allowed and Input.is_action_pressed(&"attack") and not _mouse_over_ui()
+		)
 
 	_update_miner_target()
 	if Input.is_action_just_pressed(&"place_miner"):
@@ -118,7 +121,8 @@ func _update_aim(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
 		_aim_with_mouse = false
 		aim_direction = IsoInput.camera_relative(stick, camera_basis).normalized()
 	elif _aim_with_mouse and camera:
-		aim_at_screen_position(camera, get_viewport().get_mouse_position())
+		if not _mouse_over_ui():
+			aim_at_screen_position(camera, get_viewport().get_mouse_position())
 	elif move != Vector3.ZERO:
 		aim_direction = move.normalized()
 
@@ -221,6 +225,10 @@ static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Play
 			nearest_player = player
 			nearest_distance = distance
 	return nearest_player
+
+
+func _mouse_over_ui() -> bool:
+	return _aim_with_mouse and get_viewport().gui_get_hovered_control() != null
 
 
 func _set_health(value: float) -> void:

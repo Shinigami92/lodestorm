@@ -58,7 +58,7 @@ Development must work on Windows (Git Bash), Linux and macOS.
   - Expensive per-`Environment` effects (SDFGI, SSR, volumetric fog) are off by default and only added when a profile shows the budget for them; the stylized look doesn't need them.
   - Occlusion culling stays off until there are occluders to bake (ship interior, M3); remember to enable it on SubViewports too.
   - Renderer for VR: Forward+ is used for PC VR. Whether Steam Frame standalone needs the Mobile renderer is checked in M5, through a feature override (see above), not by switching the default.
-- **Input map** (`[input]` in `project.godot`, checked by `tests/test_input_map.gd`): every action has a keyboard/mouse and a gamepad binding on all devices; keys use physical keycodes so WASD stays in place on non-QWERTY layouts. Mouse aiming uses the cursor position, so `aim_*` only has right-stick bindings. godot-ai can only bind logical keycodes: add keys with the editor closed or via the editor's Input Map tab ("Physical Keycode"). Stick deadzone 0.2 is a starting value, **TBD (playtest)**.
+- **Input map** (`[input]` in `project.godot`, checked by `tests/test_input_map.gd`): every gameplay action has a keyboard/mouse and a gamepad binding on all devices (developer tools only get a key); keys use physical keycodes so WASD stays in place on non-QWERTY layouts. Mouse aiming uses the cursor position, so `aim_*` only has right-stick bindings. godot-ai can only bind logical keycodes: add keys with the editor closed or via the editor's Input Map tab ("Physical Keycode"). Stick deadzone 0.2 is a starting value, **TBD (playtest)**.
 
   | Action | Keyboard / mouse | Gamepad (Xbox / PlayStation) |
   |---|---|---|
@@ -68,6 +68,9 @@ Development must work on Windows (Git Bash), Linux and macOS.
   | `interact` | E | A / Cross |
   | `place_miner` | F | X / Square |
   | `pause` | Escape | Menu / Options |
+  | `debug_overlay` | F3 | — |
+
+- **Debug overlay** (autoload `DebugOverlay`, `scripts/debug/debug_overlay.gd`): a 2D developer panel, toggled with F3. It only exists when the game runs from the editor (`OS.has_feature("editor")`, also true for the headless tests); exported builds, debug ones included, remove it at start. It shows the mission state, time and player health, has shortcuts (skip to the warning time, storm now, kill / heal players) and sliders for the settings resources (`TUNING` in the script; add new tuning values there). Sliders change the loaded resources live, so every scene using them sees the new value; changes last until the game stops and aren't saved, so copy good values into the `.tres` files by hand. A tuned mission duration also moves the running timer. While the mouse is over the panel, the player neither aims nor attacks with it.
 
 ### MCP servers (`.mcp.json`)
 

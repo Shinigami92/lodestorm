@@ -19,9 +19,9 @@ enum Role { GUARD, HUNTER, RAIDER }
 
 const GROUP: StringName = &"aliens"
 
-const COLOR_BODY := Color(0.55, 0.08, 0.2)
+const COLOR_BODY := Color(0.4, 0.05, 0.11)
 ## Raiders are a different strain: a darker body (orange would look like the player).
-const COLOR_BODY_RAIDER := Color(0.28, 0.04, 0.1)
+const COLOR_BODY_RAIDER := Color(0.2, 0.025, 0.06)
 const COLOR_FLASH := Color(1.0, 1.0, 1.0)
 ## Seconds a hit flash lasts.
 const FLASH_DURATION: float = 0.1
@@ -64,6 +64,8 @@ var _hatch_tween: Tween
 func _ready() -> void:
 	add_to_group(GROUP)
 	health = settings.max_health
+	# Wet chitin: glossy, so the rim and key lights catch it.
+	_material.roughness = 0.35
 	_body.material_override = _material
 	_update_look()
 	_body.scale = Vector3.ONE * 0.01
@@ -83,7 +85,10 @@ func _physics_process(delta: float) -> void:
 		var offset: Vector3 = target.global_position - global_position
 		offset.y = 0.0
 		var distance: float = offset.length()
-		if distance > settings.attack_range:
+		var reach: float = settings.attack_range
+		if target is Miner:
+			reach += (target as Miner).body_radius
+		if distance > reach:
 			move = _direction_to(target.global_position)
 		elif _cooldown == 0.0:
 			attack(target)

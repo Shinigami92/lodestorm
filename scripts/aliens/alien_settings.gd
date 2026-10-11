@@ -14,7 +14,8 @@ extends Resource
 @export var detection_range: float = 18.0
 ## A chased player farther away than this (horizontally, in m) gets away.
 @export var chase_range: float = 20.0
-## The alien attacks when its target is this close (horizontally, center to center, in m).
+## The alien attacks when its target is this close (horizontally, center to center, in m). For a
+## miner, its body radius is added: a miner is wider than a player and the alien can't get closer.
 @export var attack_range: float = 1.4
 ## Damage per attack.
 @export var attack_damage: float = 10.0

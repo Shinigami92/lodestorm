@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/player/ship_pointer.gd" id="6_ship_pointer"]
 [ext_resource type="Script" path="res://scripts/player/suit_light.gd" id="7_suit_light"]
 [ext_resource type="Shader" path="res://assets/shaders/occluded_silhouette.gdshader" id="8_silhouette"]
+[ext_resource type="Material" path="res://assets/shaders/rim_light.tres" id="9_rim"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -59,6 +60,7 @@ shape = SubResource("CapsuleShape3D_body")
 
 [node name="Body" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+material_overlay = ExtResource("9_rim")
 mesh = SubResource("CapsuleMesh_body")
 
 [node name="SuitLight" type="MeshInstance3D" parent="Body"]

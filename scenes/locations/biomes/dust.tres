@@ -8,7 +8,7 @@
 [ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="6_ore_violet"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_boulder"]
-albedo_color = Color(0.42, 0.36, 0.32, 1)
+albedo_color = Color(0.2, 0.18, 0.17, 1)
 roughness = 1.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_boulder"]
@@ -34,7 +34,7 @@ blocking_radius = 0.9
 blocking_height = 0.8
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spire"]
-albedo_color = Color(0.5, 0.52, 0.36, 1)
+albedo_color = Color(0.27, 0.28, 0.22, 1)
 roughness = 1.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_spire"]
@@ -61,7 +61,7 @@ blocking_radius = 0.5
 blocking_height = 3.5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shrub"]
-albedo_color = Color(0.62, 0.45, 0.25, 1)
+albedo_color = Color(0.33, 0.26, 0.18, 1)
 roughness = 1.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_shrub"]
@@ -93,9 +93,9 @@ hill_size = 150.0
 plateau_step = 5.0
 cliff_share = 0.45
 bump_height = 0.5
-ground_color = Color(0.66, 0.52, 0.36, 1)
-high_ground_color = Color(0.74, 0.6, 0.42, 1)
-cliff_color = Color(0.5, 0.33, 0.25, 1)
+ground_color = Color(0.33, 0.28, 0.23, 1)
+high_ground_color = Color(0.39, 0.33, 0.27, 1)
+cliff_color = Color(0.22, 0.18, 0.16, 1)
 scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder"), SubResource("Resource_spire"), SubResource("Resource_shrub")])
 nests = 10
 ores = Array[ExtResource("3_ore_type")]([ExtResource("4_ore_cyan"), ExtResource("5_ore_green"), ExtResource("6_ore_violet")])

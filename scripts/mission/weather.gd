@@ -4,7 +4,8 @@ extends Node
 ## light build up during the mission's warning time and the storm rages once the timer ran out.
 ## The next run starts in clear weather. While the `viewer` is aboard the ship, the haze and the
 ## tinted ambient light fade out, so the inside stays clear; the dim sun still shows the storm
-## outside.
+## outside. Aboard, the ambient light also turns up to `indoor_ambient_energy`: the cut-away roof
+## still shades the rooms, and the dark outside lighting would leave them murky.
 
 ## How much of the storm shows when the timer runs out (0–1); the rest comes with the storm.
 const BUILD_UP: float = 0.4
@@ -23,6 +24,8 @@ const INDOOR_FADE_TIME: float = 0.5
 @export var max_fog: float = 0.9
 ## Sun energy in a full storm, relative to the calm one.
 @export var storm_sun_energy: float = 0.35
+## Ambient light energy while the viewer is aboard.
+@export var indoor_ambient_energy: float = 1.7
 
 ## How stormy it is, from 0 (calm) to 1 (full storm).
 var intensity: float = 0.0
@@ -31,6 +34,7 @@ var indoors: float = 0.0
 
 var _calm_background: Color
 var _calm_ambient: Color
+var _calm_ambient_energy: float
 var _calm_sun_energy: float
 
 
@@ -40,6 +44,7 @@ func _ready() -> void:
 	environment.environment = env
 	_calm_background = env.background_color
 	_calm_ambient = env.ambient_light_color
+	_calm_ambient_energy = env.ambient_light_energy
 	_calm_sun_energy = sun.light_energy
 	env.fog_mode = Environment.FOG_MODE_DEPTH
 	env.fog_light_color = storm_color
@@ -73,6 +78,7 @@ func _apply() -> void:
 	env.fog_density = max_fog * haze
 	env.background_color = _calm_background.lerp(storm_color, intensity)
 	env.ambient_light_color = _calm_ambient.lerp(storm_color * 1.6, haze)
+	env.ambient_light_energy = lerpf(_calm_ambient_energy, indoor_ambient_energy, indoors)
 	sun.light_energy = lerpf(_calm_sun_energy, _calm_sun_energy * storm_sun_energy, intensity)
 
 

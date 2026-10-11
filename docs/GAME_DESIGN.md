@@ -47,7 +47,7 @@ Found by rating four rounds of concept images (generated locally, not part of th
 - **Muted world, glowing accents:** ground, rocks, plants and hulls stay desaturated (greys, browns, olive). Saturated color is kept for what the player has to read: glowing ore in its type color, alien eyes and glands, lamps, the hose, the suit's collar band and other status lights. These emissive accents also carry most of the diegetic UI.
 - **Human tech vs. the hive:** human gear (ship, miners, suits, weapons) is industrial and weathered; the aliens and their nests are biopunk and organic (chitin, sinew, wet surfaces, glowing glands), see [Alien look](#alien-look-and-behavior-direction-for-the-art-pass).
 - **Per asset** (from the concept rounds):
-  - **Miner:** a big machine, about twice the player's height (footprint **TBD (playtest)**), with the glowing glass column and the lamp on top.
+  - **Miner:** a big machine, about twice the player's height, with the glowing glass column and the lamp on top. First model in the game (`assets/miners/miner_glow.glb`): a column on four mechanical legs with two equipment boxes, 3.6 m tall, legs standing around the ore crystals; its body (collision) has a 1.5 m radius, **TBD (playtest)**.
   - **Player:** a bulky, dark armored suit; the collar band and the ore canisters on the back glow.
   - **Ore nodes:** crystal clusters in many shapes and sizes, also growing sideways out of rock walls; each ore type has its own crystal shape besides its color.
   - **Rocks:** jagged and cracked, never smooth.
@@ -153,7 +153,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - One miner per node. The player places it on the nearest free node in range (`place_miner`); a ring on the ground marks that node.
 - Fill slowly over time; the player needs to place several for a good haul. Target: an empty miner takes about 2–5 min to fill (so a few fills per mission); exact values **TBD (playtest)**.
 - **Stop when full.** Capacity and speed can be upgraded / better miner types.
-- Fill level is shown on the miner itself: a glass column fills up in the ore color, and a lamp on top lights up when it's full.
+- Fill level is shown on the miner itself: a glass column fills up in the ore color, and a lamp on top lights up when it's full. Aliens attack it from its surface: their reach counts from the edge of its body, not its center.
 - Art pass: the miner model gets a small display showing the fill counter (amount / capacity) and a timer (time until full).
 - **Attacked by aliens** (raiders, see [Combat & aliens](#10-combat--aliens)): a miner has health (greybox 100); the frame flashes white when hit and turns rusty with damage. At zero it **breaks down**: it stops mining and the hose disconnects, so its ore can't be taken out until it's repaired, but it keeps the ore. The frame blinks red while broken.
 - **Repair:** a player standing next to a miner (greybox 2.5 m) repairs it automatically, 25 health/s; a broken miner works again only once it's repaired completely (4 s from broken). Damaged miners that still work get repaired too. Values **TBD (playtest)**.

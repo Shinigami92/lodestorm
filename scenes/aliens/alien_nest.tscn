@@ -9,7 +9,7 @@ height = 2.4
 radius = 1.6
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_slime"]
-albedo_color = Color(0.24, 0.04, 0.08, 1)
+albedo_color = Color(0.15, 0.025, 0.05, 1)
 roughness = 0.15
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_slime"]
@@ -21,8 +21,8 @@ radial_segments = 32
 rings = 1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mound"]
-albedo_color = Color(0.36, 0.06, 0.12, 1)
-roughness = 0.5
+albedo_color = Color(0.24, 0.04, 0.08, 1)
+roughness = 0.4
 
 [sub_resource type="SphereMesh" id="SphereMesh_mound"]
 material = SubResource("StandardMaterial3D_mound")

@@ -10,12 +10,14 @@ extends Resource
 var _material: StandardMaterial3D
 
 
-## Shared material in the ore color, slightly glowing so it reads from the camera distance.
+## Shared material in the ore color. It glows (and blooms) strongly: in the muted, dark world
+## the ore is one of the few saturated, bright things, so it reads from the camera distance.
 func get_material() -> StandardMaterial3D:
 	if not _material:
 		_material = StandardMaterial3D.new()
 		_material.albedo_color = color
+		_material.roughness = 0.2
 		_material.emission_enabled = true
 		_material.emission = color
-		_material.emission_energy_multiplier = 0.4
+		_material.emission_energy_multiplier = 2.5
 	return _material

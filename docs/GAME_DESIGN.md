@@ -81,6 +81,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - A mission is defined by: **location**, **timer/duration**, **difficulty**.
 - Target duration: about 15–30 min per mission; exact timers **TBD (playtest)**.
 - Harder planets have rarer resources.
+- **Procedural outside world (later):** the world outside the ship is generated for every run from the values picked in the mission selection (location, difficulty, ...): terrain, rocks, ore nodes, alien nests and so on. The hand-built test location is a stand-in until then; every run already gets a fresh instance of it. How the generator works and which values drive it: **TBD**.
 - Other objectives (beyond mining) are a possible extension, to be explored by playtesting.
 
 ### Timer and return
@@ -131,6 +132,17 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Attacking:** one attack button; the equipped weapon decides what it does (shoot, swing). Whether melee gets its own button instead is open.
 - Number of loadout slots and switching weapons during a mission: **TBD (playtest)**.
 - Aliens likely get stronger over time and may be attracted by miners (risk vs. reward). **TBD (playtest)**.
+- **Greybox alien** (`scenes/aliens/alien_settings.tres`, all values **TBD (playtest)**): a crimson blob with glowing yellow eyes that show where it faces. It waits until a living player outside the ship comes within 18 m, then chases the nearest one at 4.5 m/s (slower than the player, so running away works) and lunges at it once per second for 10 damage when in reach. A player gets away beyond 20 m or by going aboard: aliens don't hunt inside the ship. 30 HP; it flashes white when hit and shrinks away when it dies. The blaster deals 10 damage per shot, so three hits kill one. Shots don't hurt other players (no friendly fire).
+- Until the spawner exists, the test location has a few aliens placed by the ore nodes; they come back with the fresh outside world of every run.
+
+### Alien look and behavior (direction for the art pass)
+
+- **A hive of bio-organic beasts**, not soldiers or machines: insect- and reptile-like creatures with chitin plates over sinewy flesh, claws, mandibles and teeth, several legs, no tech, no clothes. They are one species in many strains, all sharing the same body language and colors, so any alien reads as "one of them" at a glance.
+- **Swarms:** most aliens are small and come in numbers; they scuttle low over the ground, fast and erratic. Danger comes from many at once more than from a single one.
+- **Strains (ideas):** small fast swarmers (claws, bites), bigger armored brutes that soak up shots, spitters that attack from range with acid or spines, and rare huge monsters. Strains unlock as the hive escalates.
+- **Nests:** they live in organic nests / hives grown into the ground, from which they spawn. The ground around a nest can be covered by a living, slimy layer, which also marks their territory.
+- **Escalation and attraction:** the longer a mission runs and the more the players mine, the more aliens come and the stronger the strains get; miners draw them in (see Combat above).
+- **Readability:** silhouettes with clear head, legs and claws, glowing eyes or glands that show where they face, colors that don't clash with the ore colors (cyan, green, violet) and stand out on the ground. Death should read clearly too (collapse, splatter).
 
 ## 11. Death & persistence
 
@@ -165,6 +177,7 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 - Miner ownership (consumable vs. permanent).
 - Carry limit yes/no.
 - Alien behavior and scaling.
+- Procedural outside world: how it's generated and which mission values drive it.
 - Weapons: switching during a mission, melee on the attack button or its own.
 - Additional mission objectives.
 - Diegetic UI: how to show off-screen information (a miner is full, aliens attacking a miner elsewhere), text size and readability, and whether main / pause / settings menus can be 3D too.

@@ -1,0 +1,47 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/aliens/alien.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/aliens/alien_settings.tres" id="2_settings"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.5
+height = 1.4
+
+[sub_resource type="SphereMesh" id="SphereMesh_body"]
+radius = 0.6
+height = 1.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye"]
+albedo_color = Color(0.9, 1, 0.2, 1)
+emission_enabled = true
+emission = Color(0.9, 1, 0.2, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_eye"]
+material = SubResource("StandardMaterial3D_eye")
+radius = 0.13
+height = 0.26
+radial_segments = 12
+rings = 6
+
+[node name="Alien" type="CharacterBody3D"]
+script = ExtResource("1_script")
+settings = ExtResource("2_settings")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+mesh = SubResource("SphereMesh_body")
+
+[node name="EyeLeft" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0.22, -0.48)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_eye")
+
+[node name="EyeRight" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0.22, -0.48)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_eye")

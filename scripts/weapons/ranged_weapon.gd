@@ -16,6 +16,7 @@ func _attack() -> void:
 	var projectile := projectile_scene.instantiate() as Projectile
 	projectile.velocity = aim_direction * settings.projectile_speed
 	projectile.max_distance = settings.projectile_range
+	projectile.damage = settings.damage
 	projectile.exclude = [holder.get_rid()]
 	holder.get_parent().add_child(projectile)
 	projectile.global_position = Vector3(

@@ -1,7 +1,8 @@
 class_name Projectile
 extends Node3D
 ## Flies straight and disappears on its first hit or after its range. Casts a ray along each
-## physics step, so fast projectiles can't tunnel through thin colliders.
+## physics step, so fast projectiles can't tunnel through thin colliders. Damages the aliens it
+## hits; players are only blocked, there's no friendly fire.
 
 ## Emitted when the projectile hits a collider, right before it disappears.
 signal hit(collider: Object, hit_position: Vector3)
@@ -12,6 +13,8 @@ var velocity: Vector3 = Vector3.ZERO
 var max_distance: float = 0.0
 ## Colliders the projectile flies through (e.g. the one who fired it).
 var exclude: Array[RID] = []
+## Damage dealt to an alien it hits.
+var damage: float = 0.0
 
 var _travelled: float = 0.0
 
@@ -29,7 +32,10 @@ func move_to(target: Vector3) -> bool:
 	var result: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
 	if not result.is_empty():
 		global_position = result["position"] as Vector3
-		hit.emit(result["collider"] as Object, global_position)
+		var collider: Object = result["collider"]
+		if collider is Alien:
+			(collider as Alien).take_damage(damage)
+		hit.emit(collider, global_position)
 		queue_free()
 		return false
 	_travelled += global_position.distance_to(target)

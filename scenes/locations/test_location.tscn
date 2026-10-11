@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="2_ore_cyan"]
 [ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="3_ore_green"]
 [ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="4_ore_violet"]
+[ext_resource type="PackedScene" path="res://scenes/aliens/alien.tscn" id="5_alien"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(90, 1, 50)
@@ -127,3 +128,23 @@ ore_type = ExtResource("3_ore_green")
 [node name="Violet" parent="OreNodes" instance=ExtResource("1_ore_node")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.456, 0, -28.284)
 ore_type = ExtResource("4_ore_violet")
+
+[node name="Aliens" type="Node3D" parent="."]
+
+[node name="GreenA" parent="Aliens" instance=ExtResource("5_alien")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -6)
+
+[node name="CyanB" parent="Aliens" instance=ExtResource("5_alien")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -12)
+
+[node name="CyanBRear" parent="Aliens" instance=ExtResource("5_alien")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.5, 0, -6.5)
+
+[node name="GreenB" parent="Aliens" instance=ExtResource("5_alien")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19.5)
+
+[node name="Violet" parent="Aliens" instance=ExtResource("5_alien")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -25)
+
+[node name="VioletRear" parent="Aliens" instance=ExtResource("5_alien")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, -30.5)

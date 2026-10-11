@@ -50,7 +50,8 @@ func test_player_cannot_leave_map() -> void:
 	var half_size: Vector3 = (
 		(ground.get_node("CollisionShape3D").get(&"shape") as BoxShape3D).size * 0.5
 	)
-	_player.global_position = _screen_right() * (half_size.x - 2.0)
+	var center := Vector3(ground.global_position.x, 0.0, ground.global_position.z)
+	_player.global_position = center + _screen_right() * (half_size.x - 2.0)
 	_player.reset_physics_interpolation()
 	Input.action_press(&"move_right")
 	await wait_physics_frames(90)

@@ -69,6 +69,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **No weapons inside the ship:** weapons are holstered aboard. A shooting range in the ship to try weapons without a mission is an idea for later.
 - **Camera inside:** while a player is aboard, the roof and the walls facing the camera are cut away (they still cast shadows), so the camera can see inside.
 - **Rooms (initial idea):** bridge / mission terminal, medical bay (respawn point), upgrade rooms (weapons, armor, player skills, miners), ramp / cargo bay.
+- **Greybox layout:** four rooms side by side, from the nose on the left to the ramp on the right: bridge, medical bay, workshop (upgrades), cargo bay (ramp button and hold). Doorways in the middle of the walls between them line up, so players walk straight from the cargo bay to the bridge. The walls between rooms run towards the camera, so they don't hide anything; each room has its own floor tint, light and a sign on the back wall. Room sizes and order **TBD (playtest)**.
 - **NPCs:** shopkeepers / upgrade vendors, quest givers, and story characters.
 - **Mission selection:** at a terminal somewhere in the ship. Target can be another location on the current planet or a new planet. The ship then flies there.
 - **Ship states:**
@@ -152,7 +153,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 ## 11. Death & persistence
 
 - Health shows on the suit: a light band around the collar is green, amber below half, red and blinking below a quarter, and flashes white on damage. Greybox: 100 HP, **TBD (playtest)**.
-- On death: the body drops where it stands, **everything carried this run is lost**, and the player respawns in the medical bay (greybox, until it exists: on the ship's floor) with full health.
+- On death: the body drops where it stands, **everything carried this run is lost**, and the player respawns in the medical bay with full health.
 - When every player is dead, the mission is lost: the beacon turns grey, the countdown says LOST, and after a few seconds (greybox: 3 s, **TBD (playtest)**) everyone respawns aboard and the ramp goes up. The ramp button then starts the next run.
 - Co-op: the mission ends when every player is either back aboard or dead, as long as at least one made it back. The dead lose what they carried and respawn aboard when it ends.
 - **Later:** players can try to revive each other. Solo needs a balancing mechanic so playing alone isn't unfair without anyone to revive you (**TBD**).

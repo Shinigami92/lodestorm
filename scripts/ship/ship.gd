@@ -1,16 +1,17 @@
 class_name Ship
 extends Node3D
-## The landed ship. Its interior becomes the hub (M3); ship and planet are one world, without
-## loading screens. The ramp always leads out to the right (screen right), so players walk from
-## the inside to the right into the mission. It's closed by default; the button on the inner wall
-## next to the door lowers it (see `Mission` for the flow). The ship tracks who is aboard and
+## The landed ship. Its interior is the hub: rooms side by side under `Rooms` (bridge, medical bay,
+## workshop, cargo bay); ship and planet are one world, without loading screens. The ramp always
+## leads out to the right (screen right), so players walk from the inside to the right into the
+## mission. It's closed by default; the button on the inner wall next to the door lowers it (see
+## `Mission` for the flow). The ship tracks who is aboard and
 ## holsters their weapons inside. While a player is aboard, the roof and the walls facing the
 ## camera only cast shadows, so the camera can see inside.
 ## The beacon on the roof shows the mission time from far away: green, amber after half the time,
 ## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
 ## grey when the mission is lost. A countdown above the door shows the exact time.
 ## Returned cargo goes into the hold, shown as big canisters by the back wall. Dead players
-## respawn at `Respawn` (until the medical bay exists).
+## respawn at `Respawn` in the medical bay.
 
 ## Emitted when a player steps out of the ship.
 signal player_left(player: Player)

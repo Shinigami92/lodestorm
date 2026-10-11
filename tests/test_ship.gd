@@ -33,6 +33,27 @@ func test_camera_sees_inside_while_aboard() -> void:
 	assert_eq(roof.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 
 
+func test_every_room_is_aboard() -> void:
+	for room: Node3D in _ship.get_node("Rooms").get_children():
+		await _move(_player, _outside())
+		await _move(_player, room.global_position)
+		assert_true(_ship.is_aboard(_player), room.name)
+
+
+## The doorways line up, so players walk from the cargo bay straight through to the bridge.
+func test_rooms_are_connected() -> void:
+	var cargo_bay: Vector3 = _room("CargoBay").global_position + Vector3.UP
+	var bridge: Vector3 = _room("Bridge").global_position + Vector3.UP
+	assert_eq(_ray(cargo_bay, bridge), {}, "doorways")
+	var beside: Vector3 = _ship.global_basis.z * -4.0
+	assert_ne(_ray(cargo_bay + beside, bridge + beside), {}, "walls between the rooms")
+
+
+func test_dead_respawn_in_medical_bay() -> void:
+	var medical_bay: Vector3 = _room("MedicalBay").global_position
+	assert_almost_eq(_ship.get_respawn_position().distance_to(medical_bay), 0.0, 3.0)
+
+
 func test_ship_shows_time_left() -> void:
 	var countdown: Label3D = _ship.get_node("Countdown")
 	_mission.time_left = 200.4
@@ -108,6 +129,17 @@ func _inside() -> Vector3:
 ## On the ground right of the ramp.
 func _outside() -> Vector3:
 	return _ship.to_global(Vector3(22.0, 0.0, 0.0))
+
+
+func _room(room_name: String) -> Node3D:
+	return _ship.get_node("Rooms/" + room_name) as Node3D
+
+
+## What a ray from `from` to `to` hits, ignoring the player.
+func _ray(from: Vector3, to: Vector3) -> Dictionary:
+	var query := PhysicsRayQueryParameters3D.create(from, to)
+	query.exclude = [_player.get_rid()]
+	return _ship.get_world_3d().direct_space_state.intersect_ray(query)
 
 
 func _move(player: Player, target: Vector3) -> void:

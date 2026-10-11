@@ -1,0 +1,101 @@
+[gd_resource type="Resource" script_class="LocationBiome" format=3]
+
+[ext_resource type="Script" path="res://scripts/locations/location_biome.gd" id="1_biome"]
+[ext_resource type="Script" path="res://scripts/locations/scatter_type.gd" id="2_scatter"]
+[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="3_ore_type"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="4_ore_cyan"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="5_ore_green"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="6_ore_violet"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_boulder"]
+albedo_color = Color(0.42, 0.36, 0.32, 1)
+roughness = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_boulder"]
+material = SubResource("StandardMaterial3D_boulder")
+radius = 1.0
+height = 1.4
+radial_segments = 7
+rings = 3
+
+[sub_resource type="Resource" id="Resource_boulder"]
+script = ExtResource("2_scatter")
+display_name = "Boulder"
+mesh = SubResource("SphereMesh_boulder")
+density = 0.5
+clustering = 0.6
+patch_size = 30.0
+min_scale = 0.6
+max_scale = 2.4
+max_slope = 0.8
+sink = 0.15
+max_tilt = 20.0
+blocking_radius = 0.9
+blocking_height = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spire"]
+albedo_color = Color(0.5, 0.52, 0.36, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_spire"]
+material = SubResource("StandardMaterial3D_spire")
+top_radius = 0.2
+bottom_radius = 0.5
+height = 3.5
+radial_segments = 6
+rings = 1
+
+[sub_resource type="Resource" id="Resource_spire"]
+script = ExtResource("2_scatter")
+display_name = "Spire plant"
+mesh = SubResource("CylinderMesh_spire")
+density = 0.25
+clustering = 0.7
+patch_size = 50.0
+min_scale = 0.6
+max_scale = 1.3
+max_slope = 0.4
+sink = -1.75
+max_tilt = 8.0
+blocking_radius = 0.5
+blocking_height = 3.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shrub"]
+albedo_color = Color(0.62, 0.45, 0.25, 1)
+roughness = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_shrub"]
+material = SubResource("StandardMaterial3D_shrub")
+radius = 0.6
+height = 1.0
+radial_segments = 6
+rings = 2
+
+[sub_resource type="Resource" id="Resource_shrub"]
+script = ExtResource("2_scatter")
+display_name = "Dry shrub"
+mesh = SubResource("SphereMesh_shrub")
+density = 3.0
+clustering = 0.5
+patch_size = 25.0
+min_scale = 0.6
+max_scale = 1.4
+max_slope = 0.6
+sink = 0.1
+visibility_range = 160.0
+cast_shadow = false
+
+[resource]
+script = ExtResource("1_biome")
+display_name = "Dust flats"
+hill_height = 22.0
+hill_size = 150.0
+plateau_step = 5.0
+cliff_share = 0.45
+bump_height = 0.5
+ground_color = Color(0.66, 0.52, 0.36, 1)
+high_ground_color = Color(0.74, 0.6, 0.42, 1)
+cliff_color = Color(0.5, 0.33, 0.25, 1)
+scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder"), SubResource("Resource_spire"), SubResource("Resource_shrub")])
+nests = 10
+ores = Array[ExtResource("3_ore_type")]([ExtResource("4_ore_cyan"), ExtResource("5_ore_green"), ExtResource("6_ore_violet")])

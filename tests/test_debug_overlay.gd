@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP: PackedScene = preload("res://scenes/maps/test_map.tscn")
+const TEST_MAP := preload("res://tests/support/test_map.gd")
 const MINER_SETTINGS: String = "res://scenes/mining/miner_settings.tres"
 
 var _overlay: CanvasLayer

@@ -4,7 +4,7 @@ const ALIEN_SCENE: PackedScene = preload("res://scenes/aliens/alien.tscn")
 const MINER_SCENE: PackedScene = preload("res://scenes/mining/miner.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const PROJECTILE: PackedScene = preload("res://scenes/weapons/projectile.tscn")
-const TEST_MAP: PackedScene = preload("res://scenes/maps/test_map.tscn")
+const TEST_MAP := preload("res://tests/support/test_map.gd")
 
 var _arena: Node3D
 var _player: Player

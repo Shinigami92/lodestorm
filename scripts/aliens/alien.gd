@@ -131,6 +131,11 @@ func attack(victim: Node3D) -> void:
 	_lunge_left = LUNGE_DURATION
 
 
+## Where shots aim at: the middle of its body.
+func get_aim_point() -> Vector3:
+	return _collision.global_position
+
+
 ## Loses `amount` health; dies at zero.
 func take_damage(amount: float) -> void:
 	if dead or amount <= 0.0:

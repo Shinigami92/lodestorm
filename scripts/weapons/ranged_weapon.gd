@@ -1,6 +1,7 @@
 class_name RangedWeapon
 extends Weapon
-## Fires a projectile from the muzzle per attack.
+## Fires a projectile from the muzzle per attack: along the aim direction, or straight at the locked
+## target.
 
 @export var settings: RangedWeaponSettings
 @export var projectile_scene: PackedScene
@@ -14,7 +15,10 @@ extends Weapon
 func _attack() -> void:
 	var muzzle: Vector3 = _muzzle.global_position
 	var projectile := projectile_scene.instantiate() as Projectile
-	projectile.velocity = aim_direction * settings.projectile_speed
+	var direction: Vector3 = aim_direction
+	if is_instance_valid(aim_target) and not aim_target.dead:
+		direction = muzzle.direction_to(aim_target.get_aim_point())
+	projectile.velocity = direction * settings.projectile_speed
 	projectile.max_distance = settings.projectile_range
 	projectile.damage = settings.damage
 	projectile.exclude = [holder.get_rid()]

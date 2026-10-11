@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/locations/generated_location.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/locations/location_biome.gd" id="2_biome"]
+[ext_resource type="Resource" path="res://scenes/locations/biomes/dust.tres" id="3_dust"]
+[ext_resource type="Resource" path="res://scenes/locations/biomes/overgrowth.tres" id="4_overgrowth"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_location"]
+geometry_parsed_geometry_type = 1
+cell_size = 0.5
+agent_radius = 1.0
+
+[node name="GeneratedLocation" type="Node3D"]
+script = ExtResource("1_script")
+biomes = Array[ExtResource("2_biome")]([ExtResource("3_dust"), ExtResource("4_overgrowth")])
+navigation_mesh = SubResource("NavigationMesh_location")

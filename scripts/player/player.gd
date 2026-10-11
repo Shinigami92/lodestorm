@@ -2,7 +2,9 @@ class_name Player
 extends CharacterBody3D
 ## Twin-stick player: moves relative to the camera and faces the aim direction. Aims at the
 ## mouse cursor on the ground, with the right stick, or else in the movement direction, and
-## attacks there with the equipped weapon while `attack` is held. Places miners on the nearest
+## attacks there with the equipped weapon while `attack` is held. An alien under the cursor, or
+## close to where the stick points, gets locked on (a ring under it): the player turns to it and
+## shots fly straight at it, also up or down a slope. Places miners on the nearest
 ## free ore node in range with `place_miner`, and carries the ore that miners' hoses move to it,
 ## shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
 ## nearest interactable in range (buttons, ...) with `interact`. Health shows on the suit light;
@@ -20,6 +22,9 @@ const GROUP: StringName = &"players"
 
 ## Ignore cursor positions this close to the player, the direction flips around too easily.
 const MIN_MOUSE_AIM_DISTANCE: float = 0.1
+## The cursor ray looks for the ground from this high above the player's feet (m), so ceilings and
+## the deck above (inside the ship) don't catch it.
+const CURSOR_CEILING: float = 3.0
 
 @export var settings: PlayerSettings
 ## Weapons taken into the mission. Only the first slot is used until switching exists.
@@ -28,6 +33,8 @@ const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 
 ## Horizontal unit vector the player faces and attacks in.
 var aim_direction: Vector3 = Vector3.FORWARD
+## The alien locked on, or null.
+var aim_target: Alien
 ## The equipped weapon, or null with an empty loadout.
 var weapon: Weapon
 ## The ore node `place_miner` would use right now, or null.
@@ -59,6 +66,7 @@ var _aim_with_mouse: bool = false
 @onready var _body: Node3D = $Body
 @onready var _body_transform: Transform3D = _body.transform
 @onready var _ship_pointer: Node3D = $ShipPointer
+@onready var _target_marker: Node3D = $TargetMarker
 
 
 func _ready() -> void:
@@ -76,6 +84,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if dead:
+		aim_target = null
 		return
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	var camera_basis: Basis = camera.global_basis if camera else Basis.IDENTITY
@@ -102,6 +111,7 @@ func _physics_process(delta: float) -> void:
 
 	if weapon:
 		weapon.aim_direction = aim_direction
+		weapon.aim_target = aim_target
 		weapon.trigger_held = (
 			weapon_allowed and Input.is_action_pressed(&"attack") and not _mouse_over_ui()
 		)
@@ -115,30 +125,110 @@ func _physics_process(delta: float) -> void:
 		interact()
 
 
+func _process(_delta: float) -> void:
+	var locked: bool = _is_lockable(aim_target)
+	_target_marker.visible = locked
+	if locked:
+		_target_marker.global_position = aim_target.global_position + Vector3.UP * 0.05
+
+
 func _update_aim(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
 	var stick: Vector2 = Input.get_vector(&"aim_left", &"aim_right", &"aim_forward", &"aim_back")
 	if stick != Vector2.ZERO:
 		_aim_with_mouse = false
-		aim_direction = IsoInput.camera_relative(stick, camera_basis).normalized()
+		aim_with_stick(IsoInput.camera_relative(stick, camera_basis))
 	elif _aim_with_mouse and camera:
 		if not _mouse_over_ui():
 			aim_at_screen_position(camera, get_viewport().get_mouse_position())
-	elif move != Vector3.ZERO:
-		aim_direction = move.normalized()
+	else:
+		aim_target = null
+		if move != Vector3.ZERO:
+			aim_direction = move.normalized()
+	if not _is_lockable(aim_target):
+		aim_target = null
+	elif aim_target:
+		_aim_towards(aim_target.global_position)
 
 
-## Aims at the point on the ground (at the player's height) under the given screen position.
+## Aims at what's under the given screen position: an alien close to it (locked on), or else
+## the point on the ground.
 func aim_at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
-	var ground := Plane(Vector3.UP, global_position.y)
-	var hit: Variant = ground.intersects_ray(
-		camera.project_ray_origin(screen_position), camera.project_ray_normal(screen_position)
-	)
-	if hit == null:
+	aim_target = _alien_near_screen_position(camera, screen_position)
+	if aim_target:
+		_aim_towards(aim_target.global_position)
 		return
-	var to_cursor: Vector3 = (hit as Vector3) - global_position
-	to_cursor.y = 0.0
-	if to_cursor.length() > MIN_MOUSE_AIM_DISTANCE:
-		aim_direction = to_cursor.normalized()
+	var origin: Vector3 = camera.project_ray_origin(screen_position)
+	var normal: Vector3 = camera.project_ray_normal(screen_position)
+	var hit: Variant = Plane(Vector3.UP, global_position.y).intersects_ray(origin, normal)
+	# The ground under the cursor, also on a slope or hill (below the ceiling height).
+	var ceiling: Variant = Plane(Vector3.UP, global_position.y + CURSOR_CEILING).intersects_ray(
+		origin, normal
+	)
+	if ceiling != null:
+		var from: Vector3 = ceiling
+		var query := PhysicsRayQueryParameters3D.create(from, origin + normal * 1000.0)
+		query.exclude = [get_rid()]
+		var ground: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
+		if not ground.is_empty():
+			hit = ground[&"position"]
+	if hit != null:
+		_aim_towards(hit as Vector3)
+
+
+## Aims along `direction` (horizontal) and locks on the nearest alien close to it.
+func aim_with_stick(direction: Vector3) -> void:
+	aim_direction = direction.normalized()
+	var best: Alien
+	var best_distance: float = settings.stick_lock_range
+	var max_angle: float = deg_to_rad(settings.stick_lock_angle)
+	for alien: Alien in _aliens():
+		var offset: Vector3 = alien.global_position - global_position
+		offset.y = 0.0
+		var distance: float = offset.length()
+		if distance < best_distance and offset.angle_to(aim_direction) <= max_angle:
+			best = alien
+			best_distance = distance
+	aim_target = best
+
+
+func _aim_towards(point: Vector3) -> void:
+	var to_point: Vector3 = point - global_position
+	to_point.y = 0.0
+	if to_point.length() > MIN_MOUSE_AIM_DISTANCE:
+		aim_direction = to_point.normalized()
+
+
+## The alien closest to `screen_position` on screen, within the lock radius (the one already
+## locked on keeps it up to the larger release radius), or null.
+func _alien_near_screen_position(camera: Camera3D, screen_position: Vector2) -> Alien:
+	var screen_height: float = get_viewport().get_visible_rect().size.y
+	var best: Alien
+	var best_distance: float = INF
+	for alien: Alien in _aliens():
+		var point: Vector3 = alien.get_aim_point()
+		if camera.is_position_behind(point):
+			continue
+		var radius: float = (
+			settings.target_release_radius if alien == aim_target else settings.target_lock_radius
+		)
+		var distance: float = camera.unproject_position(point).distance_to(screen_position)
+		if distance <= radius * screen_height and distance < best_distance:
+			best = alien
+			best_distance = distance
+	return best
+
+
+func _aliens() -> Array[Alien]:
+	var aliens: Array[Alien] = []
+	for node: Node in get_tree().get_nodes_in_group(Alien.GROUP):
+		var alien := node as Alien
+		if _is_lockable(alien):
+			aliens.append(alien)
+	return aliens
+
+
+func _is_lockable(alien: Alien) -> bool:
+	return is_instance_valid(alien) and not alien.dead and alien.is_inside_tree()
 
 
 ## Places a miner on `miner_target` and returns it, or null without a target.

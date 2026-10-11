@@ -8,6 +8,8 @@ var holder: CollisionObject3D
 var trigger_held: bool = false
 ## Horizontal unit vector the weapon attacks along.
 var aim_direction: Vector3 = Vector3.FORWARD
+## The alien the holder locked on, or null: attacks go straight at it, up or down slopes too.
+var aim_target: Alien
 
 ## Seconds until the next attack. Keeps the remainder after an attack, so the average attack
 ## rate doesn't depend on the physics tick rate.

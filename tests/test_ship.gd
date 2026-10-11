@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP: PackedScene = preload("res://scenes/maps/test_map.tscn")
+const TEST_MAP := preload("res://tests/support/test_map.gd")
 
 var _map: Node3D
 var _player: Player
@@ -97,9 +97,10 @@ func test_dead_respawn_in_medical_bay() -> void:
 
 func test_ship_shows_time_left() -> void:
 	var countdown: Label3D = _ship.get_node("Countdown")
-	_mission.time_left = 200.4
+	# More than half the time is left, so the beacon is still calm.
+	_mission.time_left = 600.4
 	await wait_process_frames(1)
-	assert_eq(countdown.text, "3:21")
+	assert_eq(countdown.text, "10:01")
 	assert_eq(_ship.beacon_color, Ship.COLOR_CALM)
 
 

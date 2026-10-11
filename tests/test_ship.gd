@@ -60,6 +60,13 @@ func test_pointer_hides_near_ship() -> void:
 	assert_false(_pointer().visible)
 
 
+func test_pointer_hides_inside_ship() -> void:
+	await _move(_player, _ship.to_global(Vector3(-12.0, 1.0, 0.0)))
+	var to_door: Vector3 = _ship.get_boarding_position() - _player.global_position
+	assert_gt(to_door.length(), _pointer().min_distance, "far from the door")
+	assert_false(_pointer().visible)
+
+
 func test_pointer_shows_way_back_from_far_away() -> void:
 	await _move(_player, _ship.to_global(Vector3(45.0, 0.0, 0.0)))
 	_mission.time_left = _mission.settings.warning_time * 0.5
@@ -73,6 +80,10 @@ func test_pointer_shows_way_back_from_far_away() -> void:
 	var arrow: MeshInstance3D = pointer.get_node("Arrow")
 	var material: StandardMaterial3D = arrow.material_override
 	assert_eq(Color(material.albedo_color, 1.0), Ship.COLOR_WARNING)
+	var countdown: Label3D = pointer.get_node("Countdown")
+	assert_eq(countdown.text, (_ship.get_node("Countdown") as Label3D).text)
+	assert_eq(countdown.text, "0:30")
+	assert_eq(Color(countdown.modulate, 1.0), Ship.COLOR_WARNING)
 
 
 func _pointer() -> ShipPointer:

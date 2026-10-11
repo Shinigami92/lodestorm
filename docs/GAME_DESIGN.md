@@ -88,12 +88,12 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - Greybox: the test map has a 5 min timer (`scenes/mission/mission_settings.tres`), **TBD (playtest)**.
 - The mission is **over when every player is back aboard**, in time or after the timer ran out. Dead players don't count: once everyone alive is aboard and at least one player made it, the mission ends (see [Death & persistence](#11-death--persistence)).
 - The time shows in the world: the ship's beacon (a light column above the roof, seen from far away) is green, turns amber after half the time, red and blinking in the last minute (**TBD (playtest)**) and steady red once the storm hits. A countdown hangs above the door.
-- When the door is farther away (greybox: 12 m, **TBD (playtest)**), an arrow on the ground around the player points to it in the beacon's color, so the way back and the urgency are visible while the ship is off-screen.
+- Outside, when the door is farther away (greybox: 12 m, **TBD (playtest)**), an arrow on the ground around the player points to it in the beacon's color, with the countdown next to its tip, so the way back, the urgency and the exact time are visible while the ship is off-screen.
 
 ### Timer expiry
 
 - When the timer runs out, the storm becomes lethal: everyone outside the ship takes damage that grows every second. Greybox: 2 HP/s, +2 HP/s per second, so an unhurt player (100 HP) lasts about 9 s (`scenes/mission/mission_settings.tres`, **TBD (playtest)**). Aboard is safe. A grace period is open.
-- The storm shows in the world: in the last minute the light dims and a reddish-brown haze builds up in the distance; when the timer runs out it gets thick within a few seconds. It stays while the players are aboard and clears for the next run.
+- The storm shows in the world: in the last minute the light dims and a reddish-brown haze builds up in the distance; when the timer runs out it gets thick within a few seconds. Inside the ship the haze fades out (it's an inner room), only the dim light outside still shows the storm. It stays while the players are aboard and clears for the next run.
 
 ## 7. Miners
 

@@ -2,16 +2,22 @@ class_name Weather
 extends Node
 ## Shows the storm in the world, so the mission time is visible without a HUD: haze and darker
 ## light build up during the mission's warning time and the storm rages once the timer ran out.
-## The next run starts in clear weather.
+## The next run starts in clear weather. While the `viewer` is aboard the ship, the haze and the
+## tinted ambient light fade out, so the inside stays clear; the dim sun still shows the storm
+## outside.
 
 ## How much of the storm shows when the timer runs out (0–1); the rest comes with the storm.
 const BUILD_UP: float = 0.4
 ## Seconds the weather takes to go from calm to full storm once the storm hits.
 const RISE_TIME: float = 3.0
+## Seconds the haze takes to fade out when the viewer goes aboard, and back in when they leave.
+const INDOOR_FADE_TIME: float = 0.5
 
 @export var mission: Mission
 @export var environment: WorldEnvironment
 @export var sun: DirectionalLight3D
+## The local player the camera follows.
+@export var viewer: Player
 @export var storm_color := Color(0.42, 0.27, 0.2)
 ## How much the fog covers the far distance in a full storm (0–1).
 @export var max_fog: float = 0.9
@@ -20,6 +26,8 @@ const RISE_TIME: float = 3.0
 
 ## How stormy it is, from 0 (calm) to 1 (full storm).
 var intensity: float = 0.0
+## How far the view is inside the ship, from 0 (outside) to 1 (aboard).
+var indoors: float = 0.0
 
 var _calm_background: Color
 var _calm_ambient: Color
@@ -53,15 +61,18 @@ func _process(delta: float) -> void:
 			target = 1.0
 	# RETURNED keeps the weather the players escaped from.
 	intensity = move_toward(intensity, target, delta / RISE_TIME)
+	var aboard: bool = viewer != null and mission.ship.is_aboard(viewer)
+	indoors = move_toward(indoors, 1.0 if aboard else 0.0, delta / INDOOR_FADE_TIME)
 	_apply()
 
 
 func _apply() -> void:
 	var env: Environment = environment.environment
-	env.fog_enabled = intensity > 0.0
-	env.fog_density = max_fog * intensity
+	var haze: float = intensity * (1.0 - indoors)
+	env.fog_enabled = haze > 0.0
+	env.fog_density = max_fog * haze
 	env.background_color = _calm_background.lerp(storm_color, intensity)
-	env.ambient_light_color = _calm_ambient.lerp(storm_color * 1.6, intensity)
+	env.ambient_light_color = _calm_ambient.lerp(storm_color * 1.6, haze)
 	sun.light_energy = lerpf(_calm_sun_energy, _calm_sun_energy * storm_sun_energy, intensity)
 
 

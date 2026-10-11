@@ -47,6 +47,20 @@ func test_storm_rages_when_time_is_up() -> void:
 	assert_lt(sun.light_energy, calm_sun)
 
 
+func test_no_haze_inside_ship() -> void:
+	var player: Player = _map.get_node("Player")
+	var ship: Ship = _map.get_node("Ship")
+	_mission.state = Mission.State.STORM
+	await wait_seconds(Weather.RISE_TIME + 0.2)
+	assert_true(_environment.fog_enabled)
+	player.global_position = ship.to_global(Vector3(0.0, 1.0, 0.0))
+	player.reset_physics_interpolation()
+	await wait_seconds(Weather.INDOOR_FADE_TIME + 0.2)
+	assert_eq(_weather.indoors, 1.0)
+	assert_false(_environment.fog_enabled)
+	assert_eq(_weather.intensity, 1.0, "the storm still rages outside")
+
+
 func test_next_run_starts_calm() -> void:
 	_weather.intensity = 1.0
 	_mission.state = Mission.State.RETURNED

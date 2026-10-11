@@ -44,6 +44,8 @@ var mission: Mission
 var beacon_color: Color = COLOR_CALM
 ## The beacon's current brightness (0 to 1), dims while blinking.
 var beacon_brightness: float = 1.0
+## What the countdown above the door shows: the time left, or the mission's state.
+var countdown_text: String = ""
 ## Whether the ramp is going down (or is down); it moves there over `ramp_duration`.
 var ramp_open: bool = false
 ## Ore brought back over all runs, in units per ore type.
@@ -150,20 +152,20 @@ func _update_display() -> void:
 	beacon_brightness = 1.0
 	if not mission:
 		beacon_color = COLOR_CALM
-		_countdown.text = ""
+		countdown_text = ""
 	elif mission.state == Mission.State.RETURNED:
 		beacon_color = COLOR_RETURNED
-		_countdown.text = "ALL ABOARD"
+		countdown_text = "ALL ABOARD"
 	elif mission.state == Mission.State.LOST:
 		beacon_color = COLOR_LOST
-		_countdown.text = "LOST"
+		countdown_text = "LOST"
 	elif mission.state == Mission.State.STORM:
 		beacon_color = COLOR_WARNING
-		_countdown.text = "STORM"
+		countdown_text = "STORM"
 	else:
 		var time_left: float = mission.time_left
 		var seconds: int = ceili(time_left)
-		_countdown.text = "%d:%02d" % [floori(seconds / 60.0), seconds % 60]
+		countdown_text = "%d:%02d" % [floori(seconds / 60.0), seconds % 60]
 		if time_left <= mission.settings.warning_time:
 			beacon_color = COLOR_WARNING
 			# Tied to the timer, so the blinking stays in step with the countdown.
@@ -178,6 +180,7 @@ func _update_display() -> void:
 	_column_material.albedo_color = Color(beacon_color, 0.35 * beacon_brightness)
 	_light.light_color = beacon_color
 	_light.light_energy = 2.0 * beacon_brightness
+	_countdown.text = countdown_text
 	_countdown.modulate = beacon_color
 
 	var button_color: Color = COLOR_BUTTON_DISABLED

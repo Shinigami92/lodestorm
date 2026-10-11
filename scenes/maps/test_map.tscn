@@ -42,8 +42,9 @@ settings = ExtResource("6_mission_settings")
 ship = NodePath("../Ship")
 location = NodePath("../Location")
 
-[node name="Weather" type="Node" parent="." unique_id=1730492815 node_paths=PackedStringArray("mission", "environment", "sun")]
+[node name="Weather" type="Node" parent="." unique_id=1730492815 node_paths=PackedStringArray("mission", "environment", "sun", "viewer")]
 script = ExtResource("7_weather")
 mission = NodePath("../Mission")
 environment = NodePath("../WorldEnvironment")
 sun = NodePath("../Sun")
+viewer = NodePath("../Player")

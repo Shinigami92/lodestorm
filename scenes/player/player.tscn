@@ -66,3 +66,11 @@ script = ExtResource("6_ship_pointer")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -2.8)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
+
+[node name="Countdown" type="Label3D" parent="ShipPointer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -4)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.009
+font_size = 96
+outline_size = 24

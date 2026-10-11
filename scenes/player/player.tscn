@@ -35,6 +35,18 @@ ring_segments = 8
 [sub_resource type="PrismMesh" id="PrismMesh_arrow"]
 size = Vector3(0.8, 0.9, 0.04)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_target_marker"]
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(1, 0.7, 0.3, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_target_marker"]
+material = SubResource("StandardMaterial3D_target_marker")
+inner_radius = 0.8
+outer_radius = 0.95
+rings = 24
+ring_segments = 4
+
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_script")
 settings = ExtResource("2_settings")
@@ -80,3 +92,9 @@ no_depth_test = true
 pixel_size = 0.009
 font_size = 96
 outline_size = 24
+
+[node name="TargetMarker" type="MeshInstance3D" parent="."]
+top_level = true
+visible = false
+cast_shadow = 0
+mesh = SubResource("TorusMesh_target_marker")

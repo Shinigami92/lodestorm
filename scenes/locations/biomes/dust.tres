@@ -82,7 +82,7 @@ min_scale = 0.6
 max_scale = 1.4
 max_slope = 0.6
 sink = 0.1
-visibility_range = 90.0
+visibility_range = 160.0
 cast_shadow = false
 
 [resource]
@@ -97,4 +97,5 @@ ground_color = Color(0.66, 0.52, 0.36, 1)
 high_ground_color = Color(0.74, 0.6, 0.42, 1)
 cliff_color = Color(0.5, 0.33, 0.25, 1)
 scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder"), SubResource("Resource_spire"), SubResource("Resource_shrub")])
+nests = 10
 ores = Array[ExtResource("3_ore_type")]([ExtResource("4_ore_cyan"), ExtResource("5_ore_green"), ExtResource("6_ore_violet")])

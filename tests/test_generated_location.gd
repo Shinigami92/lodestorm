@@ -97,14 +97,17 @@ func test_has_ore_fields_and_nests() -> void:
 	assert_gt(location.get_node("AlienNests").get_child_count(), 0)
 
 
-## The first ore fields are close to the ship and of the most common ore; nests keep away.
+## The first ore fields are close to the ramp and of the most common ore; nests keep away.
 func test_common_ore_close_to_ship_and_nests_far() -> void:
 	for world_seed: int in [1, 2, 3]:
 		var location: GeneratedLocation = _generate(world_seed)
 		var close: int = 0
 		for node: OreNode in location.get_node("OreNodes").get_children():
 			if node.ore_type == location.biome.ores[0]:
-				if _to_landing_site(location, node.position) < 61.0:
+				var to_ramp: float = Vector2(node.position.x, node.position.z).distance_to(
+					location.ramp_exit
+				)
+				if to_ramp < location.near_ore_distance.y + 12.0:
 					close += 1
 		assert_gt(close, 1, "seed %d" % world_seed)
 		for nest: Node3D in location.get_node("AlienNests").get_children():

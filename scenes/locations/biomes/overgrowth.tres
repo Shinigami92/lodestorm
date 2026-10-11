@@ -56,7 +56,7 @@ min_scale = 0.6
 max_scale = 1.4
 max_slope = 0.6
 sink = 0.2
-visibility_range = 90.0
+visibility_range = 160.0
 cast_shadow = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tuft"]
@@ -83,7 +83,7 @@ max_scale = 1.5
 max_slope = 0.7
 sink = -0.3
 max_tilt = 15.0
-visibility_range = 60.0
+visibility_range = 120.0
 cast_shadow = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_boulder"]
@@ -124,4 +124,5 @@ ground_color = Color(0.36, 0.33, 0.24, 1)
 high_ground_color = Color(0.42, 0.42, 0.28, 1)
 cliff_color = Color(0.3, 0.29, 0.28, 1)
 scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_funnel"), SubResource("Resource_boulder"), SubResource("Resource_puffball"), SubResource("Resource_tuft")])
+nests = 10
 ores = Array[ExtResource("3_ore_type")]([ExtResource("5_ore_green"), ExtResource("4_ore_cyan"), ExtResource("6_ore_violet")])

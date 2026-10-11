@@ -37,6 +37,10 @@ const PLACEMENT_TRIES: int = 300
 @export var landing_offset: float = 100.0
 ## Location-local area kept flat at height 0 for the ship, its ramp and the space in front of it.
 @export var landing_site: Rect2 = Rect2(-96.0, -26.0, 146.0, 52.0)
+## Where players step off the ramp, location-local x, z.
+@export var ramp_exit: Vector2 = Vector2(20.0, 0.0)
+## How far from the ramp exit the first two ore fields lie (min, max), in m: found right away.
+@export var near_ore_distance: Vector2 = Vector2(25.0, 55.0)
 ## Distance over which the ground around the landing site blends back to the hills, in m.
 @export var landing_falloff: float = 30.0
 ## Width of the mountain rim at the edges, in m.
@@ -45,7 +49,7 @@ const PLACEMENT_TRIES: int = 300
 ## Closest an ore field is to another one, in m.
 @export var ore_field_spacing: float = 40.0
 ## Closest two nests are to each other, in m.
-@export var nest_spacing: float = 70.0
+@export var nest_spacing: float = 60.0
 ## Baked for the aliens once the world is generated (none without it).
 @export var navigation_mesh: NavigationMesh
 
@@ -70,7 +74,7 @@ func _ready() -> void:
 	if not biome:
 		biome = biomes[_rng.randi() % biomes.size()]
 	_generate_ground()
-	_reachable = terrain.reachable_from(Vector2(landing_site.end.x, 0.0), MAX_WALK_SLOPE)
+	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE)
 	_pick_ore_sites()
 	_pick_nest_sites()
 	_add_ground()
@@ -148,7 +152,7 @@ func _distance_to_landing_site(at: Vector2) -> float:
 	return offset.max(Vector2.ZERO).length()
 
 
-## Ore fields: a few nodes of one type close together. The first two are close to the ship.
+## Ore fields: a few nodes of one type close together. The first two are close to the ramp.
 func _pick_ore_sites() -> void:
 	if biome.ores.is_empty():
 		return
@@ -159,10 +163,14 @@ func _pick_ore_sites() -> void:
 		var center: Vector3 = _find_site(
 			ORE_SITE_RADIUS,
 			func(at: Vector2) -> bool:
-				var distance: float = _distance_to_landing_site(at)
-				if near and (distance < 15.0 or distance > 60.0):
-					return false
-				return distance >= 15.0 and _far_from(at, fields, ore_field_spacing)
+				if near:
+					var to_ramp: float = at.distance_to(ramp_exit)
+					if to_ramp < near_ore_distance.x or to_ramp > near_ore_distance.y:
+						return false
+				return (
+					_distance_to_landing_site(at) >= 10.0
+					and _far_from(at, fields, ore_field_spacing)
+				)
 		)
 		if center == Vector3.INF:
 			continue
@@ -180,7 +188,11 @@ func _pick_ore_sites() -> void:
 					ORE_SITE_RADIUS,
 					func(at: Vector2) -> bool:
 						var to_center: float = at.distance_to(Vector2(center.x, center.z))
-						return to_center < 12.0 and _far_from(at, _ore_sites, 7.0),
+						return (
+							to_center < 12.0
+							and _distance_to_landing_site(at) >= 10.0
+							and _far_from(at, _ore_sites, 7.0)
+						),
 					Vector2(center.x, center.z),
 					12.0
 				)
@@ -398,6 +410,9 @@ func _add_scatter_chunk(
 	instance.name = "%s%d_%d" % [type.display_name.to_pascal_case(), chunk.x, chunk.y]
 	instance.multimesh = multimesh
 	instance.visibility_range_end = type.visibility_range
+	# Fade in and out instead of popping, a whole chunk at a time.
+	instance.visibility_range_end_margin = type.visibility_range * 0.25
+	instance.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	if not type.cast_shadow:
 		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(instance)

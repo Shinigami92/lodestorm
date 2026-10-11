@@ -4,7 +4,7 @@
 
 ## 1. Pitch
 
-A stylized 3D isometric action/mining game. The player lives on a spaceship that acts as the hub. From the ship they pick a mission, the ship flies there, and the player heads out to place miners on resource nodes, fight off aliens, collect the mined resources via a hose, and get back to the ship before the storm hits. Resources are spent on upgrades in the ship.
+A 3D isometric action/mining game with a dark, realistic sci-fi look. The player lives on a spaceship that acts as the hub. From the ship they pick a mission, the ship flies there, and the player heads out to place miners on resource nodes, fight off aliens, collect the mined resources via a hose, and get back to the ship before the storm hits. Resources are spent on upgrades in the ship.
 
 ## 2. Platform & technical constraints
 
@@ -35,9 +35,26 @@ A stylized 3D isometric action/mining game. The player lives on a spaceship that
 - **Desktop camera:** fixed angle looking along the map's diagonal, following the player. Projection (orthographic vs. perspective), angle, distance and follow speed are **TBD (playtest)**; they live in `scenes/camera/iso_camera_settings.tres` (current: perspective, chosen over orthographic after a first comparison).
 - **Controls (twin-stick):** movement is relative to the screen ("up" walks up the screen, whatever the camera angle). The player faces the aim direction: the point on the ground under the mouse cursor, or the right stick. Without aim input (gamepad, stick released) the player faces the movement direction. Whichever of mouse and right stick was used last wins.
 - **Target lock:** an alien under the mouse cursor (within 4% of the screen height, let go beyond 7%), or the nearest one within 12° of the right stick and 25 m, gets locked on: a ring in the player's color lies under it, the player turns to it and shots fly straight at it, so aliens up or down a slope can be hit too (`scenes/player/player_settings.tres`, **TBD (playtest)**). Without a lock, shots fly level. The mouse aims at the ground under the cursor, also on hills.
-- Stylized art (low-poly / clean shapes, readable silhouettes, strong colors per resource type).
 - Readability over detail: ore types, aliens and miners must be recognizable at a glance from the isometric distance (and in the VR diorama).
 - Players stay visible behind cliffs, trees and walls: the hidden part of their body shows as a see-through silhouette in their color (`assets/shaders/occluded_silhouette.gdshader`).
+
+### Art direction
+
+Found by rating four rounds of concept images (generated locally, not part of the repo); the art pass (M4) refines it per asset.
+
+- **Realistic, dark sci-fi:** PBR materials (painted metal, rubber, glass) with wear: scratches, rust, grime and dust. Real proportions; toy-like, chunky, pastel and cartoon looks are out.
+- **Rim light for readability:** players, aliens and machines get a strong rim light (fresnel on their materials), so their silhouettes stay readable on dark ground and from the isometric distance. It's the main tool that keeps the realistic look from turning into mush.
+- **Muted world, glowing accents:** ground, rocks, plants and hulls stay desaturated (greys, browns, olive). Saturated color is kept for what the player has to read: glowing ore in its type color, alien eyes and glands, lamps, the hose, the suit's collar band and other status lights. These emissive accents also carry most of the diegetic UI.
+- **Human tech vs. the hive:** human gear (ship, miners, suits, weapons) is industrial and weathered; the aliens and their nests are biopunk and organic (chitin, sinew, wet surfaces, glowing glands), see [Alien look](#alien-look-and-behavior-direction-for-the-art-pass).
+- **Per asset** (from the concept rounds):
+  - **Miner:** a big machine, about twice the player's height (footprint **TBD (playtest)**), with the glowing glass column and the lamp on top.
+  - **Player:** a bulky, dark armored suit; the collar band and the ore canisters on the back glow.
+  - **Ore nodes:** crystal clusters in many shapes and sizes, also growing sideways out of rock walls; each ore type has its own crystal shape besides its color.
+  - **Rocks:** jagged and cracked, never smooth.
+  - **Ship:** stands on landing skids (no wheels); the ramp is at the rear between the thrusters.
+  - **Weapons:** glowing parts show their state (the rifle's ammo counter, the power core in the hammer's head).
+- **Cost and performance:** realistic PBR is the most expensive look to build and to render. Texture sizes and LODs are planned per asset type in the art pass, with the VR budget (90 FPS, two views) in mind; **TBD (profiling in M4/M5)**.
+- Open: how dark the lighting gets (per biome, as the storm builds up), player colors on the suit, and whether the VR diorama gets a scale-model look (a terrain block with cut edges).
 
 ### UI: in the world, not on the screen
 
@@ -177,8 +194,11 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 
 - **A hive of bio-organic beasts**, not soldiers or machines: insect- and reptile-like creatures with chitin plates over sinewy flesh, claws, mandibles and teeth, several legs, no tech, no clothes. They are one species in many strains, all sharing the same body language and colors, so any alien reads as "one of them" at a glance.
 - **Swarms:** most aliens are small and come in numbers; they scuttle low over the ground, fast and erratic. Danger comes from many at once more than from a single one.
-- **Strains (ideas):** small fast swarmers (claws, bites), bigger armored brutes that soak up shots, spitters that attack from range with acid or spines, and rare huge monsters. Strains unlock as the hive escalates.
-- **Nests:** they live in organic nests / hives grown into the ground, from which they spawn. The ground around a nest can be covered by a living, slimy layer, which also marks their territory.
+- **Strains (ideas):** small fast swarmers (claws, bites), bigger armored brutes that soak up shots, spitters that attack from range with acid or spines, and rare huge monsters. Strains unlock as the hive escalates. Looks from the concept rounds:
+  - **Swarmer:** a lean, dog-sized runner on four clawed legs with a long toothed jaw and scythe-like bone blades on its back. It still needs its own twist so it doesn't read as a copy of well-known designs.
+  - **Brute:** a four-legged rhino-beetle with heavy layered armor plates and horns. The plates are chitin and must not read as riveted metal.
+  - **Spitter:** a beetle body with a swollen, glowing acid sac on its back; the acid glows in flight.
+- **Nests:** they live in organic nests / hives grown into the ground, from which they spawn. The ground around a nest can be covered by a living, slimy layer, which also marks their territory. Look: a low, wide mound of chitin and sinew with a glowing opening on top and tendrils spreading over the slime.
 - **Escalation and attraction:** the longer a mission runs and the more the players mine, the more aliens come and the stronger the strains get; miners draw them in (see Combat above).
 - **Readability:** silhouettes with clear head, legs and claws, glowing eyes or glands that show where they face, colors that don't clash with the ore colors (cyan, green, violet) and stand out on the ground. Death should read clearly too (collapse, splatter).
 

@@ -32,7 +32,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Basic alien(s): chase + attack player
 - Spawner with escalation over time
 - Aliens optionally targeting miners
-- Player health, damage, death
+- Aliens damage the player (health, death and respawn exist since M1 for the storm)
 
 ## M3 — Ship hub
 

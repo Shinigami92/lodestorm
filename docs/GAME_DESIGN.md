@@ -66,29 +66,31 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **No loading screens:** the ship and the planet outside are one world. Players walk from the hub down the ramp straight into the mission. That's also why the weather outside matters: while the ship flies and lands, a storm around it hides the next location being loaded, so it acts as the loading screen.
 - **The ramp always leads out to the right** (screen right): players walk from the inside to the right into the mission, and come back from the right.
 - **Ramp button:** the ramp is closed by default. A button on the inner wall next to the door lowers it; this also locks the selected mission (once mission selection exists). Pressing it again before anyone stepped out raises the ramp again. Once everyone is back aboard, the ramp goes up; the next press starts a new run with a reset timer and a fresh outside world.
-- **No weapons inside the ship:** weapons are holstered aboard, except later in the shooting range, where players try weapons without a mission (greybox: the room and its targets exist, weapons stay holstered there for now).
-- **Camera inside:** while a player is aboard, the roof and the walls facing the camera are cut away (they still cast shadows), so the camera can see inside. Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined. On the lower deck, the whole upper deck is cut away too; on the upper deck, the lower deck is hidden under its floor.
-- **Two decks**, nose on the left, tail with the ramp on the right (like a cargo plane's rear ramp). A corridor runs along the middle of each deck; stairs join the decks at both ends, in the double-height atrium next to the bridge and in the double-height cargo bay, so a run is a loop: ramp → cargo bay → lower deck (upgrades, armory) → atrium stairs → bridge (pick a mission) → upper deck → cargo bay stairs → ramp.
+- **No weapons inside the ship:** weapons are holstered aboard, except in the shooting range, where players try them without a mission. They only work inside the range (not in its doorway), and a force field in the doorway stops every shot, so nothing leaves the range. Targets stand at its far end.
+- **Camera inside:** while a player is aboard, the roof and the walls facing the camera are cut away (they still cast shadows), so the camera can see inside. Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined. On the lower deck, the whole upper deck is cut away too; on the upper deck, the lower deck is hidden under its floor. Some rooms frame themselves: in the shooting range the camera looks at the whole room instead of the player, so the targets stay on screen from the firing line.
+- **Two decks**, nose on the left, tail with the ramp on the right (like a cargo plane's rear ramp). A corridor runs along the middle of each deck; lifts join the decks at both ends, one by the bridge and one in the double-height cargo bay, so a run is a loop: ramp → cargo bay → lower deck (upgrades, armory) → lift → bridge (pick a mission) → upper deck → cargo bay lift → ramp.
   - **Upper deck (command and living):** cockpit at the nose, the bridge next to it, then the player cabins, the crew cabins and the mess hall.
   - **Lower deck (work):** medical bay (respawn point) and engine room at the nose, the shooting range, the armory (loadout) and one upgrade room per vendor (weapons, armor, skills, miners).
+- **Lifts:** a platform for up to four players in a shaft beside the corridor. Stepping on it sends it to the other deck (greybox: after 0.6 s, 2 s ride, **TBD (playtest)**); riders who came along have to step off before it leaves again. Waiting at the gate on the other deck calls it. Gates close the shaft on every deck the platform isn't at.
 - **Walking the ship:** the bridge sits at the nose, far from the ramp. Picking a mission starts the flight, and players walk aft and gear up while the ship flies and lands, so the walk isn't dead time (flight time **TBD (playtest)**).
 - **Bridge:** missions are selected here. A holo table in the middle projects a hologram of the mission location (a small copy of the location, spinning slowly, the ship's spot highlighted), so players gather around it to see where they're going.
 - **Cabins:** one per player (up to 4, cabin 1 closest to the bridge for solo play) with a bed and a locker; eight crew cabins for the NPCs with a bed each. Whether the locker becomes a private inventory is open.
-- **Greybox layout** (top view, camera at the bottom; about 96 × 24 m, sizes **TBD (playtest)**):
+- **Finding the way:** every room's name is painted on its floor by the door. Amber floor markings with arrows at the corridors, lobbies and lifts point to the rooms further on (and which lift leads where).
+- **Greybox layout** (top view, camera at the bottom; about 96 × 30 m plus a nose cone and two thrusters on the roof at the tail, sizes **TBD (playtest)**; the real hull shape comes with the art pass):
 
   ```text
-  UPPER  +-------+--------+--------+----+----+----+----+----+----+-------+--------+
-         |       |        |        | C1 | C3 | N1 | N2 | N3 | N4 |       |        |
-         |COCK-  = BRIDGE = ATRIUM =  corridor                   = MESS  =stairs  |
-         | PIT   | [holo] |walkway | C2 | C4 | N5 | N6 | N7 | N8 | HALL  |  down  |
-         +-------+--------+--------+----+----+----+----+----+----+-------+ CARGO  |
-  LOWER  |  Medical bay   |        | Shooting range   |  Armory          |  BAY   |
-         |     = corridor = stairs =        corridor                     =        = ramp
-         |  Engine room   |   up   | Weapons | Armor  | Skills | Miners  |        |
-         +----------------+--------+---------+--------+--------+---------+--------+
+  UPPER  +-------+--------+------+----+----+----+----+----+----+-------+---------+
+         |       |        | LIFT | C1 | C3 | N1 | N2 | N3 | N4 |    LIFT ↕       |
+        <|COCK-  = BRIDGE =lobby =  corridor                   = MESS  |         |
+         | PIT   | [holo] |      | C2 | C4 | N5 | N6 | N7 | N8 | HALL  |         |
+         +-------+--------+------+----+----+----+----+----+----+-------+  CARGO  |
+  LOWER  |  Medical bay   | LIFT | Shooting range   |  Armory          |   BAY   |
+        <|     = corridor =lobby =        corridor                     =         = ramp
+         |  Engine room   |      | Weapons | Armor  | Skills | Miners  |         |
+         +----------------+------+---------+--------+--------+---------+---------+
   ```
 
-  C = player cabins, N = crew cabins. Each room has its own floor tint and light; rooms along the back wall have a sign on it, rooms in front of the corridor have theirs painted on the floor.
+  C = player cabins, N = crew cabins. Each room has its own floor tint and light.
 - **NPCs:** shopkeepers / upgrade vendors, quest givers, and story characters (about eight to start: e.g. pilot, medic, quartermaster, one vendor per upgrade room, cook), each with a crew cabin.
 - **Mission selection:** on the bridge, at the holo table. Target can be another location on the current planet or a new planet. The ship then flies there.
 - **Ship states:**

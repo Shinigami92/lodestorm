@@ -1,6 +1,7 @@
 class_name IsoCameraRig
 extends Node3D
-## Desktop camera: looks down at the target from a fixed isometric angle and follows it.
+## Desktop camera: looks down at the target from a fixed isometric angle and follows it; inside a
+## `CameraZone`, it looks at the zone's focus instead.
 ## The VR diorama will be a separate rig; gameplay only uses the viewport's active camera.
 
 @export var settings: IsoCameraSettings
@@ -21,6 +22,10 @@ func _process(delta: float) -> void:
 	if not target:
 		return
 	var goal: Vector3 = target.get_global_transform_interpolated().origin
+	var body := target as PhysicsBody3D
+	var zone: CameraZone = CameraZone.containing(get_tree(), body) if body else null
+	if zone:
+		goal = zone.focus_position()
 	global_position = global_position.lerp(goal, 1.0 - exp(-settings.follow_speed * delta))
 
 

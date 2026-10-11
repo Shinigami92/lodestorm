@@ -36,7 +36,7 @@ func test_camera_sees_inside_while_aboard() -> void:
 ## On the lower deck, the upper deck only casts shadows; on the upper deck, the lower deck's front
 ## shows again and the upper deck's walls facing the camera are cut away.
 func test_camera_sees_the_viewers_deck() -> void:
-	var upper_floor: GeometryInstance3D = _ship.get_node("Hull/Upper/DeckMiddle")
+	var upper_floor: GeometryInstance3D = _ship.get_node("Hull/Upper/SlabMiddle")
 	var lower_front: GeometryInstance3D = _ship.get_node("Hull/LowerCut/FrontWallLower")
 	var upper_front: GeometryInstance3D = _ship.get_node("Hull/Upper/Cut/FrontWallUpper")
 	var holo_table: Node3D = _room("Bridge").get_node("HoloTable")
@@ -67,14 +67,6 @@ func test_corridors_run_through_the_ship() -> void:
 		var to: Vector3 = _room(ends[1] as String).global_position + up
 		assert_eq(_ray(from, to), {}, "doorways from " + deck)
 		assert_ne(_ray(from + beside, to + beside), {}, "walls beside the corridor from " + deck)
-
-
-## Stairs in the cargo bay and the atrium climb evenly from the lower to the upper deck.
-func test_stairs_join_the_decks() -> void:
-	for f: float in [0.2, 0.5, 0.8]:
-		var y: float = 1.0 + 4.5 * f
-		assert_almost_eq(_floor_height(Vector3(5.5 - 9.0 * f, 0.0, -10.25)), y, 0.25, "cargo bay")
-		assert_almost_eq(_floor_height(Vector3(-53.0, 0.0, -11.0 + 9.0 * f)), y, 0.25, "atrium")
 
 
 ## Walls between the camera and a room only cast shadows while players are aboard; a low stub of
@@ -179,20 +171,17 @@ func _rooms() -> Array[Node3D]:
 	for child: Node3D in _ship.get_node("Rooms").get_children():
 		if child.name in [&"Lower", &"Upper"]:
 			for room: Node3D in child.get_children():
-				rooms.append(room)
+				if room.name != &"Guides":
+					rooms.append(room)
 		else:
 			rooms.append(child)
 	return rooms
 
 
-## Ship-local height of the floor below the ship-local `point` (straight down from below the roof).
-func _floor_height(point: Vector3) -> float:
-	var top: Vector3 = _ship.to_global(Vector3(point.x, 9.0, point.z))
-	var bottom: Vector3 = _ship.to_global(Vector3(point.x, 0.5, point.z))
-	var hit: Dictionary = _ray(top, bottom)
-	if hit.is_empty():
-		return -1.0
-	return _ship.to_local(hit[&"position"] as Vector3).y
+func _move(player: Player, target: Vector3) -> void:
+	player.global_position = target
+	player.reset_physics_interpolation()
+	await wait_physics_frames(5)
 
 
 ## What a ray from `from` to `to` hits, ignoring the player.
@@ -200,9 +189,3 @@ func _ray(from: Vector3, to: Vector3) -> Dictionary:
 	var query := PhysicsRayQueryParameters3D.create(from, to)
 	query.exclude = [_player.get_rid()]
 	return _ship.get_world_3d().direct_space_state.intersect_ray(query)
-
-
-func _move(player: Player, target: Vector3) -> void:
-	player.global_position = target
-	player.reset_physics_interpolation()
-	await wait_physics_frames(5)

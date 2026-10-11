@@ -8,20 +8,20 @@
 [ext_resource type="Script" path="res://scripts/locations/location_navigation.gd" id="6_navigation"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
-size = Vector3(156, 1, 50)
+size = Vector3(166, 1, 50)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
 albedo_color = Color(0.45, 0.4, 0.35, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ground"]
 material = SubResource("StandardMaterial3D_ground")
-size = Vector3(156, 1, 50)
+size = Vector3(166, 1, 50)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bounds_x"]
 size = Vector3(1, 4, 52)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bounds_z"]
-size = Vector3(158, 4, 1)
+size = Vector3(168, 4, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
 albedo_color = Color(0.3, 0.28, 0.27, 1)
@@ -47,7 +47,7 @@ agent_radius = 0.75
 [node name="TestLocation" type="Node3D"]
 
 [node name="Ground" type="StaticBody3D" parent="."]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -23.335, -0.5, 23.335)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -26.87, -0.5, 26.87)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
 shape = SubResource("BoxShape3D_ground")
@@ -63,15 +63,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.5, 2, 0)
 shape = SubResource("BoxShape3D_bounds_x")
 
 [node name="West" type="CollisionShape3D" parent="Bounds"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -111.5, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -121.5, 2, 0)
 shape = SubResource("BoxShape3D_bounds_x")
 
 [node name="South" type="CollisionShape3D" parent="Bounds"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 2, 25.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38, 2, 25.5)
 shape = SubResource("BoxShape3D_bounds_z")
 
 [node name="North" type="CollisionShape3D" parent="Bounds"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 2, -25.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38, 2, -25.5)
 shape = SubResource("BoxShape3D_bounds_z")
 
 [node name="Rocks" type="Node3D" parent="."]

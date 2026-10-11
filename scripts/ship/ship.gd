@@ -4,13 +4,15 @@ extends Node3D
 ## ramp is at the tail on the right (screen right), so players walk from the inside to the right
 ## into the mission. Upper deck: cockpit, bridge (the holo table shows the mission location), player
 ## and crew cabins, mess hall. Lower deck: medical bay, engine room, shooting range, armory, upgrade
-## rooms. Stairs in the double-height atrium (by the bridge) and cargo bay (by the ramp) join them.
+## rooms. Lifts (`Lifts`) by the bridge and in the double-height cargo bay (by the ramp) join them.
 ## Ship and planet are one world, without loading screens. The ramp is closed by default; the
 ## button on the inner wall next to the door lowers it (see `Mission` for the flow). The ship tracks
-## who is aboard and holsters their weapons inside.
+## who is aboard and holsters their weapons inside, except in the shooting range's weapon zone (a
+## barrier in its doorway keeps the shots inside).
 ## While the `viewer` is aboard, the camera sees inside: on the lower deck, the walls facing the
-## camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`, `Rooms/Upper`) only cast
-## shadows; on the upper deck, its walls facing the camera and the roof (`Hull/Upper/Cut`) do.
+## camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`, `Rooms/Upper`, the lifts'
+## upper gates) only cast shadows; on the upper deck, its walls facing the camera and the roof
+## (`Hull/Upper/Cut`) do.
 ## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
 ## The beacon on the roof shows the mission time from far away: green, amber after half the time,
 ## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
@@ -65,6 +67,8 @@ var ramp_open: bool = false
 var hold: Dictionary[OreType, float] = {}
 
 var _aboard: Array[Player] = []
+## Players in the shooting range's weapon zone.
+var _armed: Array[Player] = []
 ## What the cutaway shows right now.
 var _view: View = View.OUTSIDE
 var _ramp_angle: float = RAMP_CLOSED_ANGLE
@@ -75,6 +79,7 @@ var _button_material := StandardMaterial3D.new()
 @onready var ramp_button: Interactable = $RampButton
 @onready var _ramp: AnimatableBody3D = $Ramp
 @onready var _interior: Area3D = $Interior
+@onready var _weapon_zone: Area3D = $Rooms/Lower/ShootingRange/WeaponZone
 @onready var _boarding: Marker3D = $Boarding
 @onready var _respawn: Marker3D = $Respawn
 @onready var _hold_rack: CargoRack = $HoldRack
@@ -84,6 +89,7 @@ var _button_material := StandardMaterial3D.new()
 @onready var _upper_hull: Node3D = $Hull/Upper
 @onready var _upper_cut: Node3D = $Hull/Upper/Cut
 @onready var _upper_rooms: Node3D = $Rooms/Upper
+@onready var _lifts: Node3D = $Lifts
 @onready var _lamp: MeshInstance3D = $Beacon/Lamp
 @onready var _column: MeshInstance3D = $Beacon/Column
 @onready var _light: OmniLight3D = $Beacon/Light
@@ -95,6 +101,8 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	_interior.body_entered.connect(_on_body_entered)
 	_interior.body_exited.connect(_on_body_exited)
+	_weapon_zone.body_entered.connect(_on_weapon_zone_entered)
+	_weapon_zone.body_exited.connect(_on_weapon_zone_exited)
 	_ramp_angle = RAMP_OPEN_ANGLE if ramp_open else RAMP_CLOSED_ANGLE
 	_ramp.rotation.z = _ramp_angle
 	_lamp_material.emission_enabled = true
@@ -224,6 +232,25 @@ func _update_view() -> void:
 		_apply_view()
 
 
+## Weapons work outside the ship and in the shooting range.
+func _update_weapon(player: Player) -> void:
+	player.weapon_allowed = player not in _aboard or player in _armed
+
+
+func _on_weapon_zone_entered(body: Node3D) -> void:
+	var player := body as Player
+	if player and player not in _armed:
+		_armed.append(player)
+		_update_weapon(player)
+
+
+func _on_weapon_zone_exited(body: Node3D) -> void:
+	var player := body as Player
+	if player:
+		_armed.erase(player)
+		_update_weapon(player)
+
+
 ## Where the viewer is: outside, or on which deck.
 func _current_view() -> View:
 	var who: Node3D = viewer
@@ -240,6 +267,8 @@ func _apply_view() -> void:
 	_show(_lower_cut, _view != View.LOWER)
 	_show(_upper_hull, _view != View.LOWER)
 	_show(_upper_rooms, _view != View.LOWER)
+	for lift: Node in _lifts.get_children():
+		_show(lift.get_node(^"UpperGate"), _view != View.LOWER)
 	_show(_upper_cut, _view == View.OUTSIDE)
 
 
@@ -262,7 +291,7 @@ func _on_body_entered(body: Node3D) -> void:
 	var player := body as Player
 	if player and player not in _aboard:
 		_aboard.append(player)
-		player.weapon_allowed = false
+		_update_weapon(player)
 		_update_view()
 		player_boarded.emit(player)
 
@@ -271,6 +300,6 @@ func _on_body_exited(body: Node3D) -> void:
 	var player := body as Player
 	if player and player in _aboard:
 		_aboard.erase(player)
-		player.weapon_allowed = true
+		_update_weapon(player)
 		_update_view()
 		player_left.emit(player)

@@ -21,7 +21,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Isometric camera
 - Place miners on nodes; miners fill over time and stop when full
 - Hose: auto-connect within radius, visible line, transfer while moving
-- Mission timer + "return zone" at the ship ramp
+- Big greybox ship with the ramp on the right, lowered by a button inside: the mission (and its timer) starts when the first player steps out and ends when everyone is back aboard; the ramp goes up, and the button starts the next run in a fresh outside world
 - Timer expiry → storm damage
 - Win (return in time → resources kept) / lose (death → resources lost)
 - Player feedback in the world, no 2D HUD (see [UI](GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)): miner fill level, carried resources, timer / storm

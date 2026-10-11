@@ -5,6 +5,7 @@
 [ext_resource type="Resource" path="res://scenes/player/default_loadout.tres" id="3_loadout"]
 [ext_resource type="PackedScene" path="res://scenes/mining/miner.tscn" id="4_miner"]
 [ext_resource type="Script" path="res://scripts/player/cargo_rack.gd" id="5_cargo_rack"]
+[ext_resource type="Script" path="res://scripts/player/ship_pointer.gd" id="6_ship_pointer"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -17,6 +18,9 @@ albedo_color = Color(0.95, 0.55, 0.15, 1)
 material = SubResource("StandardMaterial3D_body")
 radius = 0.4
 height = 1.8
+
+[sub_resource type="PrismMesh" id="PrismMesh_arrow"]
+size = Vector3(0.8, 0.9, 0.04)
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_script")
@@ -41,3 +45,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0.42)
 [node name="CargoRack" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.52)
 script = ExtResource("5_cargo_rack")
+
+[node name="ShipPointer" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+script = ExtResource("6_ship_pointer")
+
+[node name="Arrow" type="MeshInstance3D" parent="ShipPointer"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -2.8)
+cast_shadow = 0
+mesh = SubResource("PrismMesh_arrow")

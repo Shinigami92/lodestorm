@@ -4,7 +4,8 @@ extends CharacterBody3D
 ## mouse cursor on the ground, with the right stick, or else in the movement direction, and
 ## attacks there with the equipped weapon while `attack` is held. Places miners on the nearest
 ## free ore node in range with `place_miner`, and carries the ore that miners' hoses move to it,
-## shown in canisters on its back.
+## shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
+## nearest interactable in range (buttons, ...) with `interact`.
 
 ## Emitted when the carried amount of an ore type changes.
 signal cargo_changed(ore_type: OreType, amount: float)
@@ -25,6 +26,15 @@ var aim_direction: Vector3 = Vector3.FORWARD
 var weapon: Weapon
 ## The ore node `place_miner` would use right now, or null.
 var miner_target: OreNode
+## The interactable `interact` would use right now, or null.
+var interact_target: Interactable
+## Whether the weapon can be used here; it's holstered (hidden) otherwise, e.g. inside the ship.
+var weapon_allowed: bool = true:
+	set(value):
+		weapon_allowed = value
+		if weapon:
+			weapon.visible = value
+			weapon.trigger_held = false
 ## Units carried per ore type; no carry limit.
 var cargo: Dictionary[OreType, float] = {}
 
@@ -75,11 +85,15 @@ func _physics_process(delta: float) -> void:
 
 	if weapon:
 		weapon.aim_direction = aim_direction
-		weapon.trigger_held = Input.is_action_pressed(&"attack")
+		weapon.trigger_held = weapon_allowed and Input.is_action_pressed(&"attack")
 
 	_update_miner_target()
 	if Input.is_action_just_pressed(&"place_miner"):
 		place_miner()
+
+	_update_interact_target()
+	if Input.is_action_just_pressed(&"interact"):
+		interact()
 
 
 func _update_aim(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
@@ -115,6 +129,14 @@ func place_miner() -> Miner:
 	var miner: Miner = miner_target.place_miner(miner_scene)
 	_update_miner_target()
 	return miner
+
+
+## Uses `interact_target` and returns it, or null without a target.
+func interact() -> Interactable:
+	_update_interact_target()
+	if interact_target:
+		interact_target.use(self)
+	return interact_target
 
 
 ## Adds `amount` units of `ore_type` to the cargo.
@@ -158,9 +180,21 @@ func _update_miner_target() -> void:
 		miner_target.highlighted = true
 
 
+func _update_interact_target() -> void:
+	var target: Interactable = Interactable.nearest(get_tree(), global_position)
+	if target == interact_target:
+		return
+	if is_instance_valid(interact_target):
+		interact_target.highlighted = false
+	interact_target = target
+	if interact_target:
+		interact_target.highlighted = true
+
+
 func _equip(weapon_scene: PackedScene) -> void:
 	if weapon:
 		weapon.queue_free()
 	weapon = weapon_scene.instantiate() as Weapon
 	weapon.holder = self
+	weapon.visible = weapon_allowed
 	_weapon_mount.add_child(weapon)

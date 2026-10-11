@@ -11,10 +11,28 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
+	# Weapons are holstered inside the ship, where the player starts.
+	var ship: Ship = _map.get_node("Ship")
+	_player.global_position = ship.to_global(Vector3(22.0, 0.0, 0.0))
+	_player.reset_physics_interpolation()
+	await wait_physics_frames(2)
 
 
 func after_each() -> void:
 	Input.action_release(&"attack")
+
+
+func test_no_attack_inside_ship() -> void:
+	var ship: Ship = _map.get_node("Ship")
+	_player.global_position = ship.to_global(Vector3(10.0, 1.0, 0.0))
+	_player.reset_physics_interpolation()
+	await wait_physics_frames(2)
+	assert_false(_player.weapon_allowed)
+	assert_false(_player.weapon.visible, "weapon is holstered")
+	var fired: Array[Projectile] = _record_projectiles()
+	Input.action_press(&"attack")
+	await wait_physics_frames(10)
+	assert_eq(fired.size(), 0)
 
 
 func test_player_equips_first_loadout_weapon() -> void:
@@ -52,7 +70,8 @@ func test_projectile_flies_along_aim_direction() -> void:
 
 ## Standing right at a rock puts the muzzle inside it; the shot must still stop there.
 func test_projectile_from_muzzle_inside_collider_is_blocked() -> void:
-	_player.global_position = Vector3(5.0, 0.0, -2.3)
+	var rock: Node3D = _map.get_node("Location/Rocks/RockA")
+	_player.global_position = rock.global_position + Vector3(0.0, -1.0, 1.7)
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(2)
 	var fired: Array[Projectile] = _record_projectiles()
@@ -66,7 +85,7 @@ func test_projectile_from_muzzle_inside_collider_is_blocked() -> void:
 
 
 func test_projectile_stops_at_first_collider() -> void:
-	var rock: Node3D = _map.get_node("Rocks/RockA")
+	var rock: Node3D = _map.get_node("Location/Rocks/RockA")
 	var projectile: Projectile = _spawn(
 		rock.global_position + Vector3(0.0, 0.0, 5.0), Vector3.FORWARD
 	)

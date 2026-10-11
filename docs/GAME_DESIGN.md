@@ -48,28 +48,33 @@ A stylized 3D isometric action/mining game. The player lives on a spaceship that
 ## 4. Core loop
 
 ```
-Ship hub ──► select mission ──► ship flies to location ──► open ramp = mission starts (timer)
+Ship hub ──► select mission ──► ship flies to location ──► first player steps out = mission starts (timer)
    ▲                                                                    │
    │                                                                    ▼
    │                                                  place miners on resource nodes
    │                                                  fight aliens
    │                                                  collect from miners via hose
    │                                                                    │
-   ├── return to ship in time ──► resources saved ──► spend on upgrades ┘
+   ├── everyone back aboard ──► resources saved ──► spend on upgrades ┘
    │
    └── die ──► lose everything carried this run ──► respawn in medical bay
 ```
 
 ## 5. Spaceship (hub)
 
-- Multiple rooms with NPCs.
+- Multiple rooms with NPCs. The ship is big: the whole hub is its interior.
+- **No loading screens:** the ship and the planet outside are one world. Players walk from the hub down the ramp straight into the mission. That's also why the weather outside matters: while the ship flies and lands, a storm around it hides the next location being loaded, so it acts as the loading screen.
+- **The ramp always leads out to the right** (screen right): players walk from the inside to the right into the mission, and come back from the right.
+- **Ramp button:** the ramp is closed by default. A button on the inner wall next to the door lowers it; this also locks the selected mission (once mission selection exists). Pressing it again before anyone stepped out raises the ramp again. Once everyone is back aboard, the ramp goes up; the next press starts a new run with a reset timer and a fresh outside world.
+- **No weapons inside the ship:** weapons are holstered aboard. A shooting range in the ship to try weapons without a mission is an idea for later.
+- **Camera inside:** while a player is aboard, the roof and the walls facing the camera are cut away (they still cast shadows), so the camera can see inside.
 - **Rooms (initial idea):** bridge / mission terminal, medical bay (respawn point), upgrade rooms (weapons, armor, player skills, miners), ramp / cargo bay.
 - **NPCs:** shopkeepers / upgrade vendors, quest givers, and story characters.
 - **Mission selection:** at a terminal somewhere in the ship. Target can be another location on the current planet or a new planet. The ship then flies there.
 - **Ship states:**
   - *In space:* windows show space; ramp cannot be opened.
   - *Landed, no mission started:* windows/ramp area show the local environment (e.g. storm).
-  - The player **cannot go outside without a selected mission**. Opening the ramp starts the mission and its timer.
+  - The player **cannot go outside without a selected mission**; the ramp button only works with one. The **first player stepping out of the ship starts the mission** and its timer.
 
 ## 6. Missions
 
@@ -77,6 +82,13 @@ Ship hub ──► select mission ──► ship flies to location ──► ope
 - Target duration: about 15–30 min per mission; exact timers **TBD (playtest)**.
 - Harder planets have rarer resources.
 - Other objectives (beyond mining) are a possible extension, to be explored by playtesting.
+
+### Timer and return
+
+- Greybox: the test map has a 5 min timer (`scenes/mission/mission_settings.tres`), **TBD (playtest)**.
+- The mission is **over when every player is back aboard**, in time or after the timer ran out. Dead players don't count: once everyone alive is aboard and at least one player made it, the mission ends (see [Death & persistence](#11-death--persistence)).
+- The time shows in the world: the ship's beacon (a light column above the roof, seen from far away) is green, turns amber after half the time, red and blinking in the last minute (**TBD (playtest)**) and steady red once the storm hits. A countdown hangs above the door.
+- When the door is farther away (greybox: 12 m, **TBD (playtest)**), an arrow on the ground around the player points to it in the beacon's color, so the way back and the urgency are visible while the ship is off-screen.
 
 ### Timer expiry
 
@@ -122,7 +134,9 @@ Ship hub ──► select mission ──► ship flies to location ──► ope
 ## 11. Death & persistence
 
 - On death: the round is lost, **everything carried this run is lost**, player respawns in the medical bay.
-- Returning to the ship in time: carried resources are saved and can be spent.
+- Co-op: the mission ends when every player is either back aboard or dead, as long as at least one made it back. The dead lose what they carried.
+- **Later:** players can try to revive each other. Solo needs a balancing mechanic so playing alone isn't unfair without anyone to revive you (**TBD**).
+- Back aboard (before the storm gets you): carried resources are saved and can be spent.
 
 ## 12. Progression / upgrades
 
@@ -143,6 +157,7 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 ## 14. Open questions
 
 - Timer expiry behavior details.
+- Reviving other players, and balancing solo play without it.
 - Miner ownership (consumable vs. permanent).
 - Carry limit yes/no.
 - Alien behavior and scaling.

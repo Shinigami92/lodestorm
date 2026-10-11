@@ -1,0 +1,188 @@
+class_name Ship
+extends Node3D
+## The landed ship. Its interior becomes the hub (M3); ship and planet are one world, without
+## loading screens. The ramp always leads out to the right (screen right), so players walk from
+## the inside to the right into the mission. It's closed by default; the button on the inner wall
+## next to the door lowers it (see `Mission` for the flow). The ship tracks who is aboard and
+## holsters their weapons inside. While a player is aboard, the roof and the walls facing the
+## camera only cast shadows, so the camera can see inside.
+## The beacon on the roof shows the mission time from far away: green, amber after half the time,
+## red and blinking in the warning time, steady red in the storm and blue once everyone is back.
+## A countdown above the door shows the exact time.
+
+## Emitted when a player steps out of the ship.
+signal player_left(player: Player)
+## Emitted when a player comes back aboard.
+signal player_boarded(player: Player)
+
+const GROUP: StringName = &"ships"
+
+const COLOR_CALM := Color(0.3, 1.0, 0.45)
+const COLOR_HALF := Color(1.0, 0.7, 0.15)
+const COLOR_WARNING := Color(1.0, 0.2, 0.15)
+const COLOR_RETURNED := Color(0.35, 0.6, 1.0)
+## Ramp button: lowers the ramp / raises it again / can't be used right now.
+const COLOR_BUTTON_LOWER := Color(0.3, 1.0, 0.45)
+const COLOR_BUTTON_RAISE := Color(1.0, 0.7, 0.15)
+const COLOR_BUTTON_DISABLED := Color(0.25, 0.25, 0.25)
+## Blinks per second in the warning time.
+const WARNING_BLINK_RATE: float = 2.0
+## Ramp angle around its hinge at the door: standing up (closing the door) and lying on the ground.
+const RAMP_CLOSED_ANGLE: float = PI * 0.5
+## atan(1 / 4): 1 m down to the ground over 4 m.
+const RAMP_OPEN_ANGLE: float = -0.244979
+
+## Seconds the ramp takes to go down or up. TBD (playtest).
+@export var ramp_duration: float = 2.0
+
+## The mission whose time the beacon and countdown show; set by the mission.
+var mission: Mission
+## The beacon's current color.
+var beacon_color: Color = COLOR_CALM
+## The beacon's current brightness (0 to 1), dims while blinking.
+var beacon_brightness: float = 1.0
+## Whether the ramp is going down (or is down); it moves there over `ramp_duration`.
+var ramp_open: bool = false
+
+var _aboard: Array[Player] = []
+var _ramp_angle: float = RAMP_CLOSED_ANGLE
+var _lamp_material := StandardMaterial3D.new()
+var _column_material := StandardMaterial3D.new()
+var _button_material := StandardMaterial3D.new()
+
+@onready var ramp_button: Interactable = $RampButton
+@onready var _ramp: AnimatableBody3D = $Ramp
+@onready var _interior: Area3D = $Interior
+@onready var _boarding: Marker3D = $Boarding
+@onready var _cutaway: Node3D = $Hull/Cutaway
+@onready var _lamp: MeshInstance3D = $Beacon/Lamp
+@onready var _column: MeshInstance3D = $Beacon/Column
+@onready var _light: OmniLight3D = $Beacon/Light
+@onready var _countdown: Label3D = $Countdown
+@onready var _button_face: MeshInstance3D = $RampButton/Face
+
+
+func _ready() -> void:
+	add_to_group(GROUP)
+	_interior.body_entered.connect(_on_body_entered)
+	_interior.body_exited.connect(_on_body_exited)
+	_ramp_angle = RAMP_OPEN_ANGLE if ramp_open else RAMP_CLOSED_ANGLE
+	_ramp.rotation.z = _ramp_angle
+	_lamp_material.emission_enabled = true
+	_lamp_material.emission_energy_multiplier = 3.0
+	_lamp.material_override = _lamp_material
+	_column_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_column_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_column_material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	_column.material_override = _column_material
+	_button_material.emission_enabled = true
+	_button_face.material_override = _button_material
+	_update_display()
+
+
+func _physics_process(delta: float) -> void:
+	var target: float = RAMP_OPEN_ANGLE if ramp_open else RAMP_CLOSED_ANGLE
+	var speed: float = (RAMP_CLOSED_ANGLE - RAMP_OPEN_ANGLE) / ramp_duration
+	if _ramp_angle != target:
+		_ramp_angle = move_toward(_ramp_angle, target, speed * delta)
+		_ramp.rotation.z = _ramp_angle
+
+
+func _process(_delta: float) -> void:
+	_update_display()
+
+
+func is_aboard(player: Player) -> bool:
+	return player in _aboard
+
+
+## Whether the ramp is all the way down.
+func is_ramp_down() -> bool:
+	return _ramp_angle == RAMP_OPEN_ANGLE
+
+
+## Whether the ramp is all the way up, closing the door.
+func is_ramp_up() -> bool:
+	return _ramp_angle == RAMP_CLOSED_ANGLE
+
+
+## Where players board: the door at the top of the ramp.
+func get_boarding_position() -> Vector3:
+	return _boarding.global_position
+
+
+## The ship closest to `from` (horizontally), or null.
+static func nearest(tree: SceneTree, from: Vector3) -> Ship:
+	var nearest_ship: Ship = null
+	var nearest_distance: float = INF
+	for ship: Ship in tree.get_nodes_in_group(GROUP):
+		var offset: Vector3 = ship.global_position - from
+		var distance: float = Vector2(offset.x, offset.z).length()
+		if distance < nearest_distance:
+			nearest_ship = ship
+			nearest_distance = distance
+	return nearest_ship
+
+
+func _update_display() -> void:
+	beacon_brightness = 1.0
+	if not mission:
+		beacon_color = COLOR_CALM
+		_countdown.text = ""
+	elif mission.state == Mission.State.RETURNED:
+		beacon_color = COLOR_RETURNED
+		_countdown.text = "ALL ABOARD"
+	elif mission.state == Mission.State.STORM:
+		beacon_color = COLOR_WARNING
+		_countdown.text = "STORM"
+	else:
+		var time_left: float = mission.time_left
+		var seconds: int = ceili(time_left)
+		_countdown.text = "%d:%02d" % [floori(seconds / 60.0), seconds % 60]
+		if time_left <= mission.settings.warning_time:
+			beacon_color = COLOR_WARNING
+			# Tied to the timer, so the blinking stays in step with the countdown.
+			beacon_brightness = 0.25 + 0.75 * absf(cos(time_left * PI * WARNING_BLINK_RATE))
+		elif time_left <= mission.settings.duration * 0.5:
+			beacon_color = COLOR_HALF
+		else:
+			beacon_color = COLOR_CALM
+
+	_lamp_material.albedo_color = beacon_color
+	_lamp_material.emission = beacon_color * beacon_brightness
+	_column_material.albedo_color = Color(beacon_color, 0.35 * beacon_brightness)
+	_light.light_color = beacon_color
+	_light.light_energy = 2.0 * beacon_brightness
+	_countdown.modulate = beacon_color
+
+	var button_color: Color = COLOR_BUTTON_DISABLED
+	if ramp_button.enabled:
+		button_color = COLOR_BUTTON_RAISE if ramp_open else COLOR_BUTTON_LOWER
+	_button_material.albedo_color = button_color
+	_button_material.emission = button_color
+
+
+func _update_cutaway() -> void:
+	var cast_shadow := GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	if not _aboard.is_empty():
+		cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	for part: GeometryInstance3D in _cutaway.get_children():
+		part.cast_shadow = cast_shadow
+
+
+func _on_body_entered(body: Node3D) -> void:
+	var player := body as Player
+	if player and player not in _aboard:
+		_aboard.append(player)
+		player.weapon_allowed = false
+		_update_cutaway()
+		player_boarded.emit(player)
+
+
+func _on_body_exited(body: Node3D) -> void:
+	var player := body as Player
+	if player and player in _aboard:
+		_aboard.erase(player)
+		player.weapon_allowed = true
+		_update_cutaway()
+		player_left.emit(player)

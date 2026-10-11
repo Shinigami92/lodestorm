@@ -36,21 +36,34 @@ func test_player_moves_relative_to_camera() -> void:
 	assert_almost_eq(moved.normalized().dot(_screen_right()), 1.0, 0.01)
 
 
-func test_player_stands_on_ground() -> void:
+## The player starts on the ship's floor.
+func test_player_stands_on_floor() -> void:
+	var start: Vector3 = _player.global_position
 	await wait_physics_frames(20)
 	assert_true(_player.is_on_floor())
-	assert_almost_eq(_player.global_position.y, 0.0, 0.05)
+	assert_almost_eq(_player.global_position.y, start.y, 0.05)
 
 
 ## Invisible walls at the ground's edge keep the player from falling off.
 func test_player_cannot_leave_map() -> void:
-	_player.global_position = _screen_right() * 26.0
+	var ground: Node3D = _map.get_node("Location/Ground")
+	var half_size: Vector3 = (
+		(ground.get_node("CollisionShape3D").get(&"shape") as BoxShape3D).size * 0.5
+	)
+	_player.global_position = _screen_right() * (half_size.x - 2.0)
 	_player.reset_physics_interpolation()
 	Input.action_press(&"move_right")
 	await wait_physics_frames(90)
-	assert_lt(absf(_player.global_position.x), 20.0)
-	assert_lt(absf(_player.global_position.z), 20.0)
+	var on_ground: Vector3 = ground.to_local(_player.global_position)
+	assert_lt(absf(on_ground.x), half_size.x)
+	assert_lt(absf(on_ground.z), half_size.z)
 	assert_true(_player.is_on_floor())
+
+
+## The map lines up with the screen: its edges run along screen right and screen up.
+func test_map_lines_up_with_screen() -> void:
+	var ground: Node3D = _map.get_node("Location/Ground")
+	assert_almost_eq(ground.global_basis.x.dot(_screen_right()), 1.0, 0.001)
 
 
 func test_right_stick_aims_and_turns_player() -> void:

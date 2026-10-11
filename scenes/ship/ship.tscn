@@ -1,0 +1,269 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ship/ship.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="2_interactable"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]
+albedo_color = Color(0.42, 0.46, 0.52, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dark"]
+albedo_color = Color(0.3, 0.32, 0.35, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_5x3_5x4"]
+size = Vector3(0.5, 3.5, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x3_5x4"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 3.5, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_5x7x6_5"]
+size = Vector3(0.5, 7, 6.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x7x6_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 7, 6.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_5x7x17"]
+size = Vector3(0.5, 7, 17)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x7x17"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 7, 17)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30x0_5x18"]
+size = Vector3(30, 0.5, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_30x0_5x18"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(30, 0.5, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30x1x18"]
+size = Vector3(30, 1, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_30x1x18"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(30, 1, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30x7x0_5"]
+size = Vector3(30, 7, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_30x7x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(30, 7, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ramp"]
+size = Vector3(4.123, 0.2, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ramp"]
+material = SubResource("StandardMaterial3D_dark")
+size = Vector3(4.123, 0.2, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_threshold"]
+albedo_color = Color(1, 0.95, 0.8, 1)
+emission_enabled = true
+emission = Color(1, 0.95, 0.8, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_threshold"]
+material = SubResource("StandardMaterial3D_threshold")
+size = Vector3(0.5, 0.02, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_console"]
+size = Vector3(0.5, 1.2, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_console"]
+material = SubResource("StandardMaterial3D_dark")
+size = Vector3(0.5, 1.2, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_button_face"]
+size = Vector3(0.3, 0.06, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_button_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+size = Vector3(0.42, 0.02, 0.64)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_interior"]
+size = Vector3(29, 7, 17)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mast"]
+material = SubResource("StandardMaterial3D_dark")
+top_radius = 0.1
+bottom_radius = 0.1
+height = 1.5
+radial_segments = 8
+rings = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_lamp"]
+radius = 0.4
+height = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_column"]
+top_radius = 0.3
+bottom_radius = 0.3
+height = 30.0
+radial_segments = 12
+rings = 1
+
+[node name="Ship" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Hull" type="StaticBody3D" parent="."]
+
+[node name="Cutaway" type="Node3D" parent="Hull"]
+
+[node name="FloorShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_30x1x18")
+
+[node name="Floor" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_30x1x18")
+
+[node name="BackWallShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -8.75)
+shape = SubResource("BoxShape3D_30x7x0_5")
+
+[node name="BackWall" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -8.75)
+mesh = SubResource("BoxMesh_30x7x0_5")
+
+[node name="LeftWallShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.75, 4.5, 0)
+shape = SubResource("BoxShape3D_0_5x7x17")
+
+[node name="LeftWall" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.75, 4.5, 0)
+mesh = SubResource("BoxMesh_0_5x7x17")
+
+[node name="RightWallBackShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 4.5, -5.25)
+shape = SubResource("BoxShape3D_0_5x7x6_5")
+
+[node name="RightWallBack" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 4.5, -5.25)
+mesh = SubResource("BoxMesh_0_5x7x6_5")
+
+[node name="RightWallFrontShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 4.5, 5.25)
+shape = SubResource("BoxShape3D_0_5x7x6_5")
+
+[node name="RightWallFront" type="MeshInstance3D" parent="Hull/Cutaway"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 4.5, 5.25)
+mesh = SubResource("BoxMesh_0_5x7x6_5")
+
+[node name="DoorLintelShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 6.25, 0)
+shape = SubResource("BoxShape3D_0_5x3_5x4")
+
+[node name="DoorLintel" type="MeshInstance3D" parent="Hull/Cutaway"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 6.25, 0)
+mesh = SubResource("BoxMesh_0_5x3_5x4")
+
+[node name="FrontWallShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 8.75)
+shape = SubResource("BoxShape3D_30x7x0_5")
+
+[node name="FrontWall" type="MeshInstance3D" parent="Hull/Cutaway"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 8.75)
+mesh = SubResource("BoxMesh_30x7x0_5")
+
+[node name="RoofShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.25, 0)
+shape = SubResource("BoxShape3D_30x0_5x18")
+
+[node name="Roof" type="MeshInstance3D" parent="Hull/Cutaway"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.25, 0)
+mesh = SubResource("BoxMesh_30x0_5x18")
+
+[node name="InteriorLightLeft" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 6.5, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 1.5
+omni_range = 14.0
+
+[node name="InteriorLightRight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 6.5, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 1.5
+omni_range = 14.0
+
+[node name="Threshold" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 1.01, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_threshold")
+
+[node name="Ramp" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0615, -0.1, 0)
+shape = SubResource("BoxShape3D_ramp")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ramp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0615, -0.1, 0)
+mesh = SubResource("BoxMesh_ramp")
+
+[node name="RampButton" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.25, 1.6, -3)
+script = ExtResource("2_interactable")
+
+[node name="Console" type="StaticBody3D" parent="RampButton"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RampButton/Console"]
+shape = SubResource("BoxShape3D_console")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RampButton/Console"]
+mesh = SubResource("BoxMesh_console")
+
+[node name="Highlight" type="MeshInstance3D" parent="RampButton"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.61, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_button_highlight")
+
+[node name="Face" type="MeshInstance3D" parent="RampButton"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.63, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_button_face")
+
+[node name="Interior" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interior"]
+shape = SubResource("BoxShape3D_interior")
+
+[node name="Boarding" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1, 0)
+
+[node name="Beacon" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, -8.75)
+
+[node name="Mast" type="MeshInstance3D" parent="Beacon"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("CylinderMesh_mast")
+
+[node name="Lamp" type="MeshInstance3D" parent="Beacon"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_lamp")
+
+[node name="Column" type="MeshInstance3D" parent="Beacon"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_column")
+
+[node name="Light" type="OmniLight3D" parent="Beacon"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+omni_range = 10.0
+
+[node name="Countdown" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 6.5, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.015
+font_size = 128
+outline_size = 32

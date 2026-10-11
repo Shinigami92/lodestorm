@@ -43,7 +43,7 @@ All checks are enforced by CI on every pull request (failing jobs block the merg
 Development must work on Windows (Git Bash), Linux and macOS.
 
 - Scripts are POSIX `sh`/`bash` (no PowerShell/`.bat`-only tooling); avoid GNU-only flags (e.g. `sed -i` differs on macOS) or use Python instead.
-- No hardcoded absolute or machine-specific paths; use env vars (`GODOT4_EDITOR`, `BLENDER_MCP_PATH`) and paths relative to the repo root.
+- No hardcoded absolute or machine-specific paths; use env vars (`GODOT4_EDITOR`, `BLENDER`, `BLENDER_MCP_PATH`) and paths relative to the repo root.
 - Line endings are LF (`.gitattributes`); mark scripts executable in git with `git update-index --chmod=+x` (Windows doesn't keep the bit).
 - File names: lowercase, no spaces, never rely on case to distinguish files (Windows/macOS file systems are case-insensitive).
 - Platform-specific project settings use Godot feature overrides (e.g. `rendering_device/driver.windows`), never replace the shared default.
@@ -119,6 +119,7 @@ Vendored addons without a server counterpart (GUT) are updated by hand: GUT rele
 - Binary assets (`.blend`, textures, audio) via **Git LFS** (watch GitHub LFS storage/bandwidth quotas).
 - **Swappable models:** a gameplay scene keeps its look under a `Model` child, and its script finds the parts it animates by name among all descendants, so a modeled `.glb` can replace the greybox without code changes. The miner's model provides `Fill` (scaled along Y from 0 to 1 with the fill level, origin at its bottom), `FullLamp`, `HoseOutlet` and meshes named `Frame*`; damage (rust, hit flash, alarm blink) is drawn as an overlay on the `Frame*` meshes, so it works on top of the model's own materials. Blender models are Z-up meters; the glTF export converts to Godot's Y-up.
 - **Model files:** the game imports the `.glb` (e.g. `assets/miners/miner_glow.glb`; Godot extracts its embedded textures next to it). The `.blend` sources live in a `source/` folder with a `.gdignore` next to it, because Godot would import `.blend` files too (through Blender) and duplicate the model. Procedural Blender materials are baked into one texture set per model (base color, ORM, normal) before export. Godot doesn't import glTF transmission, so glass gets a Godot material override in the scene (see `scenes/mining/miner.tscn`).
+- **Asset scripts:** a modeled asset is built by Python scripts next to its `.blend` (e.g. `assets/miners/source/miner_glow_build.py` models it with procedural materials, `miner_glow_bake.py` bakes the textures and writes the `.blend` and `.glb`), with shared helpers (materials, preview scene, renders, export) in `tools/blender/common.py`. Run them headless with `tools/blender.sh <script> [args]`, which needs the env var `BLENDER` (path to the Blender executable). Preview renders and intermediate files go to `tmp/`; only the scripts, the baked `.blend` and the `.glb` are committed.
 
 ## 5. Platform services & distribution
 

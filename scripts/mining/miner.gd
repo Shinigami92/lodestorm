@@ -13,7 +13,8 @@ extends StaticBody3D
 ## meshes get the ore material), `FullLamp`, `HoseOutlet`, and meshes named `Frame*` (the
 ## structure that shows damage). Damage is drawn as an overlay on the frame, so it works on top of
 ## any material the model brings. Parts are looked up among all descendants (also inside an
-## instanced model scene).
+## instanced model scene). The model's front is +Z: when the miner is placed, the model turns its
+## front toward the camera's view (plus `FACING_OFFSET`), so the fill column stays in view.
 
 ## Emitted once each time the miner becomes full.
 signal filled
@@ -31,6 +32,9 @@ const COLOR_ALARM := Color(1.0, 0.15, 0.1)
 const RUST_MAX: float = 0.75
 ## How much a hit flash or the alarm blink covers the frame (0–1).
 const SIGNAL_COVER: float = 0.7
+## How far the model turns past facing the camera (degrees): straight on looks flat and puts a leg
+## in front of the drill, 45° lets a side box cover the column.
+const FACING_OFFSET: float = 25.0
 ## Seconds a hit flash lasts.
 const FLASH_DURATION: float = 0.1
 ## Blinks per second while broken.
@@ -66,6 +70,7 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	health = settings.max_health
 	body_radius = (($CollisionShape3D as CollisionShape3D).shape as CylinderShape3D).radius
+	_face_camera()
 	if ore_type:
 		for mesh: MeshInstance3D in _meshes(_fill):
 			mesh.material_override = ore_type.get_material()
@@ -164,6 +169,19 @@ func _update_frame() -> void:
 	else:
 		var damage: float = 1.0 - health / settings.max_health
 		_frame_overlay.albedo_color = Color(COLOR_RUST, damage * RUST_MAX)
+
+
+func _face_camera() -> void:
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	if not camera:
+		return
+	# Against the view direction rather than toward the camera's position: the same for every miner
+	# on screen, wherever the camera is.
+	var to_camera: Vector3 = camera.global_basis.z
+	if Vector2(to_camera.x, to_camera.z).is_zero_approx():
+		return
+	var yaw: float = atan2(to_camera.x, to_camera.z) + deg_to_rad(FACING_OFFSET)
+	_model.global_basis = Basis(Vector3.UP, yaw)
 
 
 ## `node` itself if it's a mesh, and all meshes below it.

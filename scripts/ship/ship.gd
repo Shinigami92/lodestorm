@@ -14,6 +14,7 @@ extends Node3D
 ## upper gates) only cast shadows; on the upper deck, its walls facing the camera and the roof
 ## (`Hull/Upper/Cut`) do.
 ## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
+## Windows in the outer walls look out from every room along them (and in from outside).
 ## The beacon on the roof shows the mission time from far away: green, amber after half the time,
 ## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
 ## grey when the mission is lost. A countdown above the door shows the exact time.
@@ -31,6 +32,8 @@ enum View { OUTSIDE, LOWER, UPPER }
 const GROUP: StringName = &"ships"
 ## Ship-local height from which the viewer counts as being on the upper deck (its floor is at 5.5).
 const UPPER_DECK_HEIGHT: float = 5.0
+## Window panes: they never cast shadows (light comes in), so they're hidden with their wall.
+const GLASS_GROUP: StringName = &"ship_glass"
 
 const COLOR_CALM := Color(0.3, 1.0, 0.45)
 const COLOR_HALF := Color(1.0, 0.7, 0.15)
@@ -272,10 +275,11 @@ func _apply_view() -> void:
 	_show(_upper_cut, _view == View.OUTSIDE)
 
 
-## Shows `root`'s geometry, or only lets it cast shadows; its lights and holograms turn off.
+## Shows `root`'s geometry, or only lets it cast shadows; its lights, holograms and windows turn
+## off.
 static func _show(root: Node, shown: bool) -> void:
 	for child: Node in root.get_children():
-		if child is Light3D or child is HoloTable:
+		if child is Light3D or child is HoloTable or child.is_in_group(GLASS_GROUP):
 			(child as Node3D).visible = shown
 			continue
 		if child is GeometryInstance3D:

@@ -17,289 +17,375 @@ albedo_color = Color(0.3, 0.32, 0.35, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x1x3"]
 size = Vector3(0.5, 1, 3)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x1x3"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.5, 1, 3)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x1_5x3"]
-size = Vector3(0.5, 1.5, 3)
-
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x1_5x3"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(0.5, 1.5, 3)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x4x1"]
 size = Vector3(0.5, 4, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x1"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.5, 4, 1)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x4x11_5"]
-size = Vector3(0.5, 4, 11.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x11_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(0.5, 4, 11.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x4x13"]
 size = Vector3(0.5, 4, 13)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x13"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.5, 4, 13)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x4x13_5"]
 size = Vector3(0.5, 4, 13.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x13_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.5, 4, 13.5)
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_5x4x29"]
+size = Vector3(0.5, 4, 29)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x4_5x0_5"]
-size = Vector3(0.5, 4.5, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x4_5x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(0.5, 4.5, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x4_5x13"]
 size = Vector3(0.5, 4.5, 13)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x4_5x13"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.5, 4.5, 13)
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_5x4_5x29"]
+size = Vector3(0.5, 4.5, 29)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x5x4"]
-size = Vector3(0.5, 5, 4)
-
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x5x4"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(0.5, 5, 4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x8_5x5"]
 size = Vector3(0.5, 8.5, 5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x8_5x5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.5, 8.5, 5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x8_5x12_5"]
 size = Vector3(0.5, 8.5, 12.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x8_5x12_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.5, 8.5, 12.5)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_0_5x8_5x29"]
-size = Vector3(0.5, 8.5, 29)
-
-[sub_resource type="BoxMesh" id="BoxMesh_0_5x8_5x29"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.5, 8.5, 29)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_75x4x0_5"]
-size = Vector3(0.75, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_0_75x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(0.75, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_75x4_5x0_5"]
 size = Vector3(0.75, 4.5, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0_75x4_5x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(0.75, 4.5, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_1x4x0_5"]
-size = Vector3(1, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_1x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(1, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1x4_5x0_5"]
 size = Vector3(1, 4.5, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_1x4_5x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(1, 4.5, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_1_5x1x0_5"]
-size = Vector3(1.5, 1, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_1_5x1x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(1.5, 1, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2x1x0_5"]
 size = Vector3(2, 1, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_2x1x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(2, 1, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_2x4x0_5"]
-size = Vector3(2, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_2x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(2, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3x1x0_5"]
 size = Vector3(3, 1, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_3x1x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(3, 1, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_3_5x4x0_5"]
-size = Vector3(3.5, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_3_5x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(3.5, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4x1x0_5"]
 size = Vector3(4, 1, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_4x1x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(4, 1, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_4x1_5x0_5"]
-size = Vector3(4, 1.5, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_4x1_5x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(4, 1.5, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4x4x0_5"]
 size = Vector3(4, 4, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_4x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(4, 4, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_4_3125x4x0_5"]
-size = Vector3(4.3125, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_4_3125x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(4.3125, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4_5x4x0_5"]
 size = Vector3(4.5, 4, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_4_5x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(4.5, 4, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_5_5x0_5x6_5"]
-size = Vector3(5.5, 0.5, 6.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_5_5x0_5x6_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(5.5, 0.5, 6.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5_5x0_5x17_5"]
 size = Vector3(5.5, 0.5, 17.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_5_5x0_5x17_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(5.5, 0.5, 17.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_5_5x4x0_5"]
-size = Vector3(5.5, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_5_5x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(5.5, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5_5x8_5x0_5"]
 size = Vector3(5.5, 8.5, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_5_5x8_5x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(5.5, 8.5, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_7_5x4x0_5"]
-size = Vector3(7.5, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_7_5x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(7.5, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_9_125x4x0_5"]
 size = Vector3(9.125, 4, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_9_125x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(9.125, 4, 0.5)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_9_75x4x0_5"]
-size = Vector3(9.75, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_9_75x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(9.75, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_23x0_5x29"]
 size = Vector3(23, 0.5, 29)
 
-[sub_resource type="BoxMesh" id="BoxMesh_23x0_5x29"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(23, 0.5, 29)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_34_5x4x0_5"]
-size = Vector3(34.5, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_34_5x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(34.5, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_49x0_5x29"]
 size = Vector3(49, 0.5, 29)
 
-[sub_resource type="BoxMesh" id="BoxMesh_49x0_5x29"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(49, 0.5, 29)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_96x0_5x30"]
-size = Vector3(96, 0.5, 30)
-
-[sub_resource type="BoxMesh" id="BoxMesh_96x0_5x30"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(96, 0.5, 30)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_96x1x30"]
 size = Vector3(96, 1, 30)
 
-[sub_resource type="BoxMesh" id="BoxMesh_96x1x30"]
-material = SubResource("StandardMaterial3D_hull")
-size = Vector3(96, 1, 30)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_96x4x0_5"]
-size = Vector3(96, 4, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_96x4x0_5"]
-material = SubResource("StandardMaterial3D_hull")
 size = Vector3(96, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_96x4_5x0_5"]
 size = Vector3(96, 4.5, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_96x4_5x0_5"]
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x1x3"]
 material = SubResource("StandardMaterial3D_hull")
-size = Vector3(96, 4.5, 0.5)
+size = Vector3(0.5, 1, 3)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_96x8_5x0_5"]
-size = Vector3(96, 8.5, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_96x8_5x0_5"]
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x1x7"]
 material = SubResource("StandardMaterial3D_hull")
-size = Vector3(96, 8.5, 0.5)
+size = Vector3(0.5, 1, 7)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x1_5x3"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 1.5, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x1"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x2"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x6_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4, 6.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x11_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4, 11.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x13"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4, 13)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4x13_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4, 13.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4_5x13"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4.5, 13)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x4_5x29"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 4.5, 29)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x5x4"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 5, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x8_5x5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 8.5, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_5x8_5x12_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.5, 8.5, 12.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_75x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.75, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_75x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(0.75, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(1, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(1, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1_5x1x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(1.5, 1, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2x1x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(2, 1, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(2, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2_5x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(2.5, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3x1x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(3, 1, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3_5x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(3.5, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4x1x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(4, 1, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4x1_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(4, 1.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(4, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4_125x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(4.125, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4_3125x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(4.3125, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4_5x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(4.5, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4_875x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(4.875, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5_0625x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5.0625, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5_5x0_5x6_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5.5, 0.5, 6.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5_5x0_5x17_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5.5, 0.5, 17.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5_5x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5.5, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5_5x8_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5.5, 8.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5_8333x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5.8333, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5_8333x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5.8333, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5_9167x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(5.9167, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6_25x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(6.25, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7_25x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(7.25, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7_25x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(7.25, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7_5x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(7.5, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8_125x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(8.125, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_9_125x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(9.125, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_9_75x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(9.75, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_9_75x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(9.75, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_11_0625x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(11.0625, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_12_25x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(12.25, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_13_0417x4_5x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(13.0417, 4.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_13_25x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(13.25, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_23x0_5x29"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(23, 0.5, 29)
+
+[sub_resource type="BoxMesh" id="BoxMesh_34_5x4x0_5"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(34.5, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_49x0_5x29"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(49, 0.5, 29)
+
+[sub_resource type="BoxMesh" id="BoxMesh_96x0_5x30"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(96, 0.5, 30)
+
+[sub_resource type="BoxMesh" id="BoxMesh_96x1x30"]
+material = SubResource("StandardMaterial3D_hull")
+size = Vector3(96, 1, 30)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glass"]
+transparency = 1
+albedo_color = Color(0.6, 0.8, 0.95, 0.2)
+metallic = 0.4
+roughness = 0.05
+
+[sub_resource type="BoxMesh" id="BoxMesh_glass_0_06x2x7"]
+material = SubResource("StandardMaterial3D_glass")
+size = Vector3(0.06, 2, 7)
+
+[sub_resource type="BoxMesh" id="BoxMesh_glass_3x2x0_06"]
+material = SubResource("StandardMaterial3D_glass")
+size = Vector3(3, 2, 0.06)
+
+[sub_resource type="BoxMesh" id="BoxMesh_glass_4x2x0_06"]
+material = SubResource("StandardMaterial3D_glass")
+size = Vector3(4, 2, 0.06)
 
 [sub_resource type="BoxMesh" id="BoxMesh_stub_0_5x1x0_48"]
 material = SubResource("StandardMaterial3D_hull")
@@ -691,10 +777,10 @@ size = Vector3(0.3, 0.6, 0.02)
 
 [sub_resource type="PrismMesh" id="PrismMesh_nose"]
 material = SubResource("StandardMaterial3D_hull")
-size = Vector3(30, 10, 10)
+size = Vector3(30, 10, 5.5)
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_nose"]
-points = PackedVector3Array(-81, 0, -15, -81, 0, 15, -81, 10, -15, -81, 10, 15, -91, 0, 0, -91, 10, 0)
+points = PackedVector3Array(-81, 0, -15, -81, 0, 15, -81, 5.5, -15, -81, 5.5, 15, -91, 0, 0, -91, 5.5, 0)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_thruster"]
 material = SubResource("StandardMaterial3D_thruster")
@@ -858,22 +944,6 @@ shape = SubResource("BoxShape3D_96x1x30")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 0.5, 0)
 mesh = SubResource("BoxMesh_96x1x30")
 
-[node name="BackWallShape" type="CollisionShape3D" parent="Hull"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 5.25, -14.75)
-shape = SubResource("BoxShape3D_96x8_5x0_5")
-
-[node name="BackWall" type="MeshInstance3D" parent="Hull"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 5.25, -14.75)
-mesh = SubResource("BoxMesh_96x8_5x0_5")
-
-[node name="NoseWallShape" type="CollisionShape3D" parent="Hull"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 5.25, 0)
-shape = SubResource("BoxShape3D_0_5x8_5x29")
-
-[node name="NoseWall" type="MeshInstance3D" parent="Hull"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 5.25, 0)
-mesh = SubResource("BoxMesh_0_5x8_5x29")
-
 [node name="RightWallBackShape" type="CollisionShape3D" parent="Hull"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 5.25, -8.25)
 shape = SubResource("BoxShape3D_0_5x8_5x12_5")
@@ -897,30 +967,6 @@ shape = SubResource("BoxShape3D_0_5x5x4")
 [node name="DoorLintel" type="MeshInstance3D" parent="Hull/LowerCut"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 7, 0)
 mesh = SubResource("BoxMesh_0_5x5x4")
-
-[node name="FrontWallLowerShape" type="CollisionShape3D" parent="Hull"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 3.25, 14.75)
-shape = SubResource("BoxShape3D_96x4_5x0_5")
-
-[node name="FrontWallLower" type="MeshInstance3D" parent="Hull/LowerCut"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 3.25, 14.75)
-mesh = SubResource("BoxMesh_96x4_5x0_5")
-
-[node name="FrontWallLowerStub" type="MeshInstance3D" parent="Hull"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 1.5, 14.75)
-mesh = SubResource("BoxMesh_stub_96x1x0_48")
-
-[node name="FrontWallUpperShape" type="CollisionShape3D" parent="Hull"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 7.5, 14.75)
-shape = SubResource("BoxShape3D_96x4x0_5")
-
-[node name="FrontWallUpper" type="MeshInstance3D" parent="Hull/Upper/Cut"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 7.5, 14.75)
-mesh = SubResource("BoxMesh_96x4x0_5")
-
-[node name="FrontWallUpperStub" type="MeshInstance3D" parent="Hull/Upper"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 6, 14.75)
-mesh = SubResource("BoxMesh_stub_96x1x0_48")
 
 [node name="RoofShape" type="CollisionShape3D" parent="Hull"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 9.75, 0)
@@ -1926,11 +1972,730 @@ shape = SubResource("BoxShape3D_1_5x1x0_5")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 9, 2.75)
 mesh = SubResource("BoxMesh_1_5x1x0_5")
 
+[node name="BackWallLowerShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 3.25, -14.75)
+shape = SubResource("BoxShape3D_96x4_5x0_5")
+
+[node name="BackWallLowerPart1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -78.9375, 3.25, -14.75)
+mesh = SubResource("BoxMesh_4_125x4_5x0_5")
+
+[node name="BackWallLowerPart2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 3.25, -14.75)
+mesh = SubResource("BoxMesh_7_25x4_5x0_5")
+
+[node name="BackWallLowerPart3" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.1042, 3.25, -14.75)
+mesh = SubResource("BoxMesh_13_0417x4_5x0_5")
+
+[node name="BackWallLowerPart4" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41.6667, 3.25, -14.75)
+mesh = SubResource("BoxMesh_5_8333x4_5x0_5")
+
+[node name="BackWallLowerPart5" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.8333, 3.25, -14.75)
+mesh = SubResource("BoxMesh_5_8333x4_5x0_5")
+
+[node name="BackWallLowerPart6" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.9583, 3.25, -14.75)
+mesh = SubResource("BoxMesh_5_9167x4_5x0_5")
+
+[node name="BackWallLowerPart7" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 3.25, -14.75)
+mesh = SubResource("BoxMesh_5x4_5x0_5")
+
+[node name="BackWallLowerPart8" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.125, 3.25, -14.75)
+mesh = SubResource("BoxMesh_9_75x4_5x0_5")
+
+[node name="BackWallLowerPart9" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.375, 3.25, -14.75)
+mesh = SubResource("BoxMesh_7_25x4_5x0_5")
+
+[node name="BackWallLowerSill1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.875, 1.5, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallLowerHeader1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.875, 4.75, -14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="BackWallLowerSill2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.625, 1.5, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallLowerHeader2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.625, 4.75, -14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="BackWallLowerSill3" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.5833, 1.5, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallLowerHeader3" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.5833, 4.75, -14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="BackWallLowerSill4" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.75, 1.5, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallLowerHeader4" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.75, 4.75, -14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="BackWallLowerSill5" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.9167, 1.5, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallLowerHeader5" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.9167, 4.75, -14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="BackWallLowerSill6" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 1.5, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallLowerHeader6" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 4.75, -14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="BackWallLowerSill7" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1.5, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallLowerHeader7" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 4.75, -14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="BackWallLowerSill8" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 1.5, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallLowerHeader8" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 4.75, -14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="BackWallUpperShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 7.5, -14.75)
+shape = SubResource("BoxShape3D_96x4x0_5")
+
+[node name="BackWallUpperPart1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79.75, 7.5, -14.75)
+mesh = SubResource("BoxMesh_2_5x4x0_5")
+
+[node name="BackWallUpperPart2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70.75, 7.5, -14.75)
+mesh = SubResource("BoxMesh_7_5x4x0_5")
+
+[node name="BackWallUpperPart3" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56.875, 7.5, -14.75)
+mesh = SubResource("BoxMesh_12_25x4x0_5")
+
+[node name="BackWallUpperPart4" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.75, 7.5, -14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="BackWallUpperPart5" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.75, 7.5, -14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="BackWallUpperPart6" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.75, 7.5, -14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="BackWallUpperPart7" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.75, 7.5, -14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="BackWallUpperPart8" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.75, 7.5, -14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="BackWallUpperPart9" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.125, 7.5, -14.75)
+mesh = SubResource("BoxMesh_7_25x4x0_5")
+
+[node name="BackWallUpperPart10" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.875, 7.5, -14.75)
+mesh = SubResource("BoxMesh_13_25x4x0_5")
+
+[node name="BackWallUpperPart11" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.375, 7.5, -14.75)
+mesh = SubResource("BoxMesh_7_25x4x0_5")
+
+[node name="BackWallUpperSill1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 6, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperHeader1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 9, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperSill2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 6, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperHeader2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 9, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperSill3" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 6, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperHeader3" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 9, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperSill4" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 6, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperHeader4" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 9, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperSill5" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 6, -14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="BackWallUpperHeader5" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 9, -14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="BackWallUpperSill6" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 6, -14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="BackWallUpperHeader6" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 9, -14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="BackWallUpperSill7" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 6, -14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="BackWallUpperHeader7" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 9, -14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="BackWallUpperSill8" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 6, -14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="BackWallUpperHeader8" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 9, -14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="BackWallUpperSill9" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 6, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperHeader9" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 9, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperSill10" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 6, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="BackWallUpperHeader10" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 9, -14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 3.25, 14.75)
+shape = SubResource("BoxShape3D_96x4_5x0_5")
+
+[node name="FrontWallLowerStub" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 1.5, 14.75)
+mesh = SubResource("BoxMesh_stub_96x1x0_48")
+
+[node name="FrontWallLowerPart1" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -78.9375, 3.25, 14.75)
+mesh = SubResource("BoxMesh_4_125x4_5x0_5")
+
+[node name="FrontWallLowerPart2" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 3.25, 14.75)
+mesh = SubResource("BoxMesh_7_25x4_5x0_5")
+
+[node name="FrontWallLowerPart3" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -59.1875, 3.25, 14.75)
+mesh = SubResource("BoxMesh_4_875x4_5x0_5")
+
+[node name="FrontWallLowerPart4" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50.2188, 3.25, 14.75)
+mesh = SubResource("BoxMesh_5_0625x4_5x0_5")
+
+[node name="FrontWallLowerPart5" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.625, 3.25, 14.75)
+mesh = SubResource("BoxMesh_8_125x4_5x0_5")
+
+[node name="FrontWallLowerPart6" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.5, 3.25, 14.75)
+mesh = SubResource("BoxMesh_8_125x4_5x0_5")
+
+[node name="FrontWallLowerPart7" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.375, 3.25, 14.75)
+mesh = SubResource("BoxMesh_8_125x4_5x0_5")
+
+[node name="FrontWallLowerPart8" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7812, 3.25, 14.75)
+mesh = SubResource("BoxMesh_11_0625x4_5x0_5")
+
+[node name="FrontWallLowerPart9" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.375, 3.25, 14.75)
+mesh = SubResource("BoxMesh_7_25x4_5x0_5")
+
+[node name="FrontWallLowerSill1" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.875, 1.5, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerHeader1" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.875, 4.75, 14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="FrontWallLowerSill2" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.625, 1.5, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerHeader2" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.625, 4.75, 14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="FrontWallLowerSill3" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 1.5, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerHeader3" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 4.75, 14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="FrontWallLowerSill4" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.6875, 1.5, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerHeader4" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.6875, 4.75, 14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="FrontWallLowerSill5" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 1.5, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerHeader5" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 4.75, 14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="FrontWallLowerSill6" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 1.5, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerHeader6" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 4.75, 14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="FrontWallLowerSill7" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 1.5, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerHeader7" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 4.75, 14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="FrontWallLowerSill8" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 1.5, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallLowerHeader8" type="MeshInstance3D" parent="Hull/LowerCut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 4.75, 14.75)
+mesh = SubResource("BoxMesh_4x1_5x0_5")
+
+[node name="FrontWallUpperShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 7.5, 14.75)
+shape = SubResource("BoxShape3D_96x4x0_5")
+
+[node name="FrontWallUpperStub" type="MeshInstance3D" parent="Hull/Upper"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 6, 14.75)
+mesh = SubResource("BoxMesh_stub_96x1x0_48")
+
+[node name="FrontWallUpperPart1" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79.75, 7.5, 14.75)
+mesh = SubResource("BoxMesh_2_5x4x0_5")
+
+[node name="FrontWallUpperPart2" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70.75, 7.5, 14.75)
+mesh = SubResource("BoxMesh_7_5x4x0_5")
+
+[node name="FrontWallUpperPart3" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -59.875, 7.5, 14.75)
+mesh = SubResource("BoxMesh_6_25x4x0_5")
+
+[node name="FrontWallUpperPart4" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -51.75, 7.5, 14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="FrontWallUpperPart5" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.75, 7.5, 14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="FrontWallUpperPart6" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.75, 7.5, 14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="FrontWallUpperPart7" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.75, 7.5, 14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="FrontWallUpperPart8" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.75, 7.5, 14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="FrontWallUpperPart9" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.75, 7.5, 14.75)
+mesh = SubResource("BoxMesh_2x4x0_5")
+
+[node name="FrontWallUpperPart10" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.125, 7.5, 14.75)
+mesh = SubResource("BoxMesh_7_25x4x0_5")
+
+[node name="FrontWallUpperPart11" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.875, 7.5, 14.75)
+mesh = SubResource("BoxMesh_13_25x4x0_5")
+
+[node name="FrontWallUpperPart12" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.375, 7.5, 14.75)
+mesh = SubResource("BoxMesh_7_25x4x0_5")
+
+[node name="FrontWallUpperSill1" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 6, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperHeader1" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 9, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperSill2" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 6, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperHeader2" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 9, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperSill3" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 6, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperHeader3" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 9, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperSill4" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 6, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperHeader4" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 9, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperSill5" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 6, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperHeader5" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 9, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperSill6" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 6, 14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="FrontWallUpperHeader6" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 9, 14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="FrontWallUpperSill7" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 6, 14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="FrontWallUpperHeader7" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 9, 14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="FrontWallUpperSill8" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 6, 14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="FrontWallUpperHeader8" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 9, 14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="FrontWallUpperSill9" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 6, 14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="FrontWallUpperHeader9" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 9, 14.75)
+mesh = SubResource("BoxMesh_3x1x0_5")
+
+[node name="FrontWallUpperSill10" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 6, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperHeader10" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 9, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperSill11" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 6, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="FrontWallUpperHeader11" type="MeshInstance3D" parent="Hull/Upper/Cut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 9, 14.75)
+mesh = SubResource("BoxMesh_4x1x0_5")
+
+[node name="NoseWallLowerShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 3.25, 0)
+shape = SubResource("BoxShape3D_0_5x4_5x29")
+
+[node name="NoseWallLowerPart1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 3.25, 0)
+mesh = SubResource("BoxMesh_0_5x4_5x29")
+
+[node name="NoseWallUpperShape" type="CollisionShape3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 7.5, 0)
+shape = SubResource("BoxShape3D_0_5x4x29")
+
+[node name="NoseWallUpperPart1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 7.5, -11.25)
+mesh = SubResource("BoxMesh_0_5x4x6_5")
+
+[node name="NoseWallUpperPart2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 7.5, 0)
+mesh = SubResource("BoxMesh_0_5x4x2")
+
+[node name="NoseWallUpperPart3" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 7.5, 11.25)
+mesh = SubResource("BoxMesh_0_5x4x6_5")
+
+[node name="NoseWallUpperSill1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 6, -4.5)
+mesh = SubResource("BoxMesh_0_5x1x7")
+
+[node name="NoseWallUpperHeader1" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 9, -4.5)
+mesh = SubResource("BoxMesh_0_5x1x7")
+
+[node name="NoseWallUpperSill2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 6, 4.5)
+mesh = SubResource("BoxMesh_0_5x1x7")
+
+[node name="NoseWallUpperHeader2" type="MeshInstance3D" parent="Hull"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 9, 4.5)
+mesh = SubResource("BoxMesh_0_5x1x7")
+
+[node name="BackWallLowerGlass1" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.875, 3, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallLowerGlass2" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.625, 3, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallLowerGlass3" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.5833, 3, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallLowerGlass4" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.75, 3, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallLowerGlass5" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.9167, 3, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallLowerGlass6" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 3, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallLowerGlass7" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 3, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallLowerGlass8" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 3, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallUpperGlass1" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallUpperGlass2" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallUpperGlass3" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallUpperGlass4" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallUpperGlass5" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_3x2x0_06")
+
+[node name="BackWallUpperGlass6" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_3x2x0_06")
+
+[node name="BackWallUpperGlass7" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_3x2x0_06")
+
+[node name="BackWallUpperGlass8" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_3x2x0_06")
+
+[node name="BackWallUpperGlass9" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="BackWallUpperGlass10" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 7.5, -14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallLowerGlass1" type="MeshInstance3D" parent="Hull/LowerCut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.875, 3, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallLowerGlass2" type="MeshInstance3D" parent="Hull/LowerCut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.625, 3, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallLowerGlass3" type="MeshInstance3D" parent="Hull/LowerCut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 3, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallLowerGlass4" type="MeshInstance3D" parent="Hull/LowerCut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.6875, 3, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallLowerGlass5" type="MeshInstance3D" parent="Hull/LowerCut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 3, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallLowerGlass6" type="MeshInstance3D" parent="Hull/LowerCut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 3, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallLowerGlass7" type="MeshInstance3D" parent="Hull/LowerCut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 3, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallLowerGlass8" type="MeshInstance3D" parent="Hull/LowerCut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 3, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallUpperGlass1" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallUpperGlass2" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallUpperGlass3" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallUpperGlass4" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallUpperGlass5" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallUpperGlass6" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_3x2x0_06")
+
+[node name="FrontWallUpperGlass7" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_3x2x0_06")
+
+[node name="FrontWallUpperGlass8" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_3x2x0_06")
+
+[node name="FrontWallUpperGlass9" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_3x2x0_06")
+
+[node name="FrontWallUpperGlass10" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="FrontWallUpperGlass11" type="MeshInstance3D" parent="Hull/Upper/Cut" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 7.5, 14.75)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_4x2x0_06")
+
+[node name="NoseWallUpperGlass1" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 7.5, -4.5)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_0_06x2x7")
+
+[node name="NoseWallUpperGlass2" type="MeshInstance3D" parent="Hull" groups=["ship_glass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 7.5, 4.5)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_glass_0_06x2x7")
+
 [node name="NoseShape" type="CollisionShape3D" parent="Hull"]
 shape = SubResource("ConvexPolygonShape3D_nose")
 
 [node name="Nose" type="MeshInstance3D" parent="Hull"]
-transform = Transform3D(0, -1, 0, 0, 0, 1, -1, 0, 0, -86, 5, 0)
+transform = Transform3D(0, -1, 0, 0, 0, 1, -1, 0, 0, -86, 2.75, 0)
 mesh = SubResource("PrismMesh_nose")
 
 [node name="Thruster1" type="MeshInstance3D" parent="Hull/Upper/Cut"]
@@ -3334,7 +4099,7 @@ outline_size = 14
 [node name="Lifts" type="Node3D" parent="."]
 
 [node name="NoseLift" type="Node3D" parent="Lifts"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 1, -5.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 1.03, -5.5)
 script = ExtResource("7_lift")
 
 [node name="Platform" type="AnimatableBody3D" parent="Lifts/NoseLift"]
@@ -3389,7 +4154,7 @@ monitorable = false
 shape = SubResource("BoxShape3D_n_4x2x3")
 
 [node name="CargoLift" type="Node3D" parent="Lifts"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1.03, -12)
 script = ExtResource("7_lift")
 
 [node name="Platform" type="AnimatableBody3D" parent="Lifts/CargoLift"]

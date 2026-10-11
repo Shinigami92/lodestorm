@@ -75,8 +75,9 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Walking the ship:** the bridge sits at the nose, far from the ramp. Picking a mission starts the flight, and players walk aft and gear up while the ship flies and lands, so the walk isn't dead time (flight time **TBD (playtest)**).
 - **Bridge:** missions are selected here. A holo table in the middle projects a hologram of the mission location (a small copy of the location, spinning slowly, the ship's spot highlighted), so players gather around it to see where they're going.
 - **Cabins:** one per player (up to 4, cabin 1 closest to the bridge for solo play) with a bed and a locker; eight crew cabins for the NPCs with a bed each. Whether the locker becomes a private inventory is open.
+- **Windows:** every room along the outer walls has windows on its deck (one per ~9 m of wall), and the cockpit looks out over the nose. From inside, they show the outside (light falls in through them); from outside, they show into the ship. Windows in walls cut away for the camera go with their wall.
 - **Finding the way:** every room's name is painted on its floor by the door. Amber floor markings with arrows at the corridors, lobbies and lifts point to the rooms further on (and which lift leads where).
-- **Greybox layout** (top view, camera at the bottom; about 96 × 30 m plus a nose cone and two thrusters on the roof at the tail, sizes **TBD (playtest)**; the real hull shape comes with the art pass):
+- **Greybox layout** (top view, camera at the bottom; about 96 × 30 m plus a nose cone below the cockpit and two thrusters on the roof at the tail, sizes **TBD (playtest)**; the real hull shape comes with the art pass):
 
   ```text
   UPPER  +-------+--------+------+----+----+----+----+----+----+-------+---------+

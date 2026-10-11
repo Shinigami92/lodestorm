@@ -37,8 +37,8 @@ func test_camera_sees_inside_while_aboard() -> void:
 ## shows again and the upper deck's walls facing the camera are cut away.
 func test_camera_sees_the_viewers_deck() -> void:
 	var upper_floor: GeometryInstance3D = _ship.get_node("Hull/Upper/SlabMiddle")
-	var lower_front: GeometryInstance3D = _ship.get_node("Hull/LowerCut/FrontWallLower")
-	var upper_front: GeometryInstance3D = _ship.get_node("Hull/Upper/Cut/FrontWallUpper")
+	var lower_front: GeometryInstance3D = _ship.get_node("Hull/LowerCut/FrontWallLowerPart1")
+	var upper_front: GeometryInstance3D = _ship.get_node("Hull/Upper/Cut/FrontWallUpperPart1")
 	var holo_table: Node3D = _room("Bridge").get_node("HoloTable")
 	assert_eq(upper_floor.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
 	assert_eq(lower_front.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
@@ -48,6 +48,17 @@ func test_camera_sees_the_viewers_deck() -> void:
 	assert_eq(lower_front.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 	assert_eq(upper_front.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
 	assert_true(holo_table.visible)
+
+
+## Windows look out of the ship; the ones in walls cut away for the camera go with their wall.
+func test_windows_go_with_their_wall() -> void:
+	var back: Node3D = _ship.get_node("Hull/BackWallLowerGlass1")
+	var front: Node3D = _ship.get_node("Hull/LowerCut/FrontWallLowerGlass1")
+	assert_gt(get_tree().get_nodes_in_group(Ship.GLASS_GROUP).size(), 20)
+	assert_true(back.visible)
+	assert_false(front.visible, "cut away while aboard")
+	await _move(_player, _outside())
+	assert_true(front.visible)
 
 
 func test_every_room_is_aboard() -> void:

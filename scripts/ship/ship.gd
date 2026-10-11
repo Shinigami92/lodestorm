@@ -1,12 +1,15 @@
 class_name Ship
 extends Node3D
-## The landed ship. Its interior is the hub: rooms side by side under `Rooms` (bridge, medical bay,
-## workshop, cargo bay); ship and planet are one world, without loading screens. The ramp always
+## The landed ship. Its interior is the hub (`Rooms`): the bridge in the middle, where the holo
+## table shows the mission location; a corridor along the ship's middle leads from it to the cabins
+## and the medical bay on the left and to the shooting range, the workshop and the cargo bay on the
+## right. Ship and planet are one world, without loading screens. The ramp always
 ## leads out to the right (screen right), so players walk from the inside to the right into the
 ## mission. It's closed by default; the button on the inner wall next to the door lowers it (see
 ## `Mission` for the flow). The ship tracks who is aboard and
 ## holsters their weapons inside. While a player is aboard, the roof and the walls facing the
-## camera only cast shadows, so the camera can see inside.
+## camera only cast shadows (`Hull/Cutaway`), so the camera can see inside; inner walls keep a low
+## stub, so the rooms stay outlined.
 ## The beacon on the roof shows the mission time from far away: green, amber after half the time,
 ## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
 ## grey when the mission is lost. A countdown above the door shows the exact time.
@@ -64,6 +67,8 @@ var _button_material := StandardMaterial3D.new()
 @onready var _boarding: Marker3D = $Boarding
 @onready var _respawn: Marker3D = $Respawn
 @onready var _hold_rack: CargoRack = $HoldRack
+@onready var _floor: Node3D = $Hull/Floor
+@onready var _holo_table: HoloTable = $Rooms/Bridge/HoloTable
 @onready var _cutaway: Node3D = $Hull/Cutaway
 @onready var _lamp: MeshInstance3D = $Beacon/Lamp
 @onready var _column: MeshInstance3D = $Beacon/Column
@@ -134,6 +139,11 @@ func store_cargo(player: Player) -> void:
 		stored += cargo[ore_type]
 		hold[ore_type] = stored
 		_hold_rack.show_cargo(ore_type, stored)
+
+
+## Shows `location` and where the ship stands in it (its floor) on the holo table.
+func show_preview(location: Node3D) -> void:
+	_holo_table.show_location(location, [_floor])
 
 
 ## The ship closest to `from` (horizontally), or null.

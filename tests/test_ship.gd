@@ -40,13 +40,25 @@ func test_every_room_is_aboard() -> void:
 		assert_true(_ship.is_aboard(_player), room.name)
 
 
-## The doorways line up, so players walk from the cargo bay straight through to the bridge.
-func test_rooms_are_connected() -> void:
-	var cargo_bay: Vector3 = _room("CargoBay").global_position + Vector3.UP
-	var bridge: Vector3 = _room("Bridge").global_position + Vector3.UP
-	assert_eq(_ray(cargo_bay, bridge), {}, "doorways")
+## The doorways line up along the corridor, so players walk from the cargo bay through the bridge
+## to the far end of the ship.
+func test_corridor_runs_through_the_ship() -> void:
+	var up := Vector3.UP * 2.5
+	var cargo_bay: Vector3 = _room("CargoBay").global_position + up
+	var far_end: Vector3 = _room("WestCorridor").global_position + up
+	assert_eq(_ray(cargo_bay, far_end), {}, "doorways")
 	var beside: Vector3 = _ship.global_basis.z * -4.0
-	assert_ne(_ray(cargo_bay + beside, bridge + beside), {}, "walls between the rooms")
+	assert_ne(_ray(cargo_bay + beside, far_end + beside), {}, "walls between the rooms")
+
+
+## Walls between the camera and a room only cast shadows while players are aboard; a low stub of
+## them stays visible.
+func test_inner_walls_facing_camera_are_cut_down() -> void:
+	var cut: GeometryInstance3D = _ship.get_node("Hull/Cutaway/WestCorridorBack1")
+	assert_eq(cut.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+	var stub: MeshInstance3D = _ship.get_node("Hull/WestCorridorBack1Stub")
+	assert_eq(stub.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	assert_lt(stub.get_aabb().size.y, 1.5)
 
 
 func test_dead_respawn_in_medical_bay() -> void:

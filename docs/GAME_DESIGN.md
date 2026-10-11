@@ -66,12 +66,26 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **No loading screens:** the ship and the planet outside are one world. Players walk from the hub down the ramp straight into the mission. That's also why the weather outside matters: while the ship flies and lands, a storm around it hides the next location being loaded, so it acts as the loading screen.
 - **The ramp always leads out to the right** (screen right): players walk from the inside to the right into the mission, and come back from the right.
 - **Ramp button:** the ramp is closed by default. A button on the inner wall next to the door lowers it; this also locks the selected mission (once mission selection exists). Pressing it again before anyone stepped out raises the ramp again. Once everyone is back aboard, the ramp goes up; the next press starts a new run with a reset timer and a fresh outside world.
-- **No weapons inside the ship:** weapons are holstered aboard. A shooting range in the ship to try weapons without a mission is an idea for later.
-- **Camera inside:** while a player is aboard, the roof and the walls facing the camera are cut away (they still cast shadows), so the camera can see inside.
-- **Rooms (initial idea):** bridge / mission terminal, medical bay (respawn point), upgrade rooms (weapons, armor, player skills, miners), ramp / cargo bay.
-- **Greybox layout:** four rooms side by side, from the nose on the left to the ramp on the right: bridge, medical bay, workshop (upgrades), cargo bay (ramp button and hold). Doorways in the middle of the walls between them line up, so players walk straight from the cargo bay to the bridge. The walls between rooms run towards the camera, so they don't hide anything; each room has its own floor tint, light and a sign on the back wall. Room sizes and order **TBD (playtest)**.
+- **No weapons inside the ship:** weapons are holstered aboard, except later in the shooting range, where players try weapons without a mission (greybox: the room and its targets exist, weapons stay holstered there for now).
+- **Camera inside:** while a player is aboard, the roof and the walls facing the camera are cut away (they still cast shadows), so the camera can see inside. Inner walls facing the camera keep a low stub, so the rooms stay outlined.
+- **Rooms:** the bridge (main room) in the center; a corridor along the ship's middle connects it to the medical bay (respawn point), sleeping cabins (one per player), the shooting range, the workshop (upgrades; maybe several upgrade rooms later: weapons, armor, player skills, miners) and the cargo bay with the ramp.
+- **Bridge:** missions are selected here. A holo table in the middle projects a hologram of the mission location (a small copy of the location, spinning slowly, the ship's spot highlighted), so players gather around it to see where they're going.
+- **Greybox layout** (top view, camera at the bottom, ramp on the right; sizes **TBD (playtest)**):
+
+  ```text
+  +----+----+----+----+---------+------------+---------+
+  | C1 | C2 | C3 | C4 |         | Shooting   |         |
+  |    |    |    |    |         | range      |         |
+  +-d--+-d--+-d--+-d--+         +-d----------+         |
+  |   corridor        = BRIDGE  =  corridor  =  CARGO  = ramp
+  +------door---------+ [holo]  +-----door---+   BAY   |
+  |   Medical bay     |  table  |  Workshop  |         |
+  +-------------------+---------+------------+---------+
+  ```
+
+  C1–C4 are the cabins, `d` their doors. Each room has its own floor tint and light; rooms along the back wall have a sign on it, the medical bay and workshop have theirs painted on the floor.
 - **NPCs:** shopkeepers / upgrade vendors, quest givers, and story characters.
-- **Mission selection:** at a terminal somewhere in the ship. Target can be another location on the current planet or a new planet. The ship then flies there.
+- **Mission selection:** on the bridge, at the holo table. Target can be another location on the current planet or a new planet. The ship then flies there.
 - **Ship states:**
   - *In space:* windows show space; ramp cannot be opened.
   - *Landed, no mission started:* windows/ramp area show the local environment (e.g. storm).

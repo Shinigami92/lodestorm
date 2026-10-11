@@ -1,8 +1,9 @@
 class_name ShipPointer
 extends Node3D
-## An arrow on the ground around the player that points to the nearest ship's door once it's
-## farther away than `min_distance`, in the color of the ship's beacon (blinking with it). Shows
-## the way back and how urgent it is while the ship is off-screen.
+## An arrow on the ground around the player that points to the nearest ship's door once the
+## player is outside and farther away than `min_distance`, in the color of the ship's beacon
+## (blinking with it). Next to its tip, the ship's countdown shows the exact time left. Shows the
+## way back and how urgent it is while the ship is off-screen.
 
 ## Distance to the door (horizontally, in m) below which the arrow hides. TBD (playtest).
 @export var min_distance: float = 12.0
@@ -13,6 +14,7 @@ var target: Ship
 var _material := StandardMaterial3D.new()
 
 @onready var _arrow: MeshInstance3D = $Arrow
+@onready var _countdown: Label3D = $Countdown
 
 
 func _ready() -> void:
@@ -27,7 +29,8 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	target = Ship.nearest(get_tree(), global_position)
 	var to_ship := Vector3.ZERO
-	if target:
+	var player := get_parent() as Player
+	if target and not (player and target.is_aboard(player)):
 		to_ship = target.get_boarding_position() - global_position
 		to_ship.y = 0.0
 	visible = to_ship.length() > min_distance
@@ -39,3 +42,6 @@ func _physics_process(_delta: float) -> void:
 func _process(_delta: float) -> void:
 	if visible and target:
 		_material.albedo_color = Color(target.beacon_color, 0.3 + 0.6 * target.beacon_brightness)
+		_countdown.text = target.countdown_text
+		# Blinks less than the arrow, so the time stays readable.
+		_countdown.modulate = Color(target.beacon_color, 0.6 + 0.4 * target.beacon_brightness)

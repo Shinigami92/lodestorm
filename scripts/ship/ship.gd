@@ -7,8 +7,10 @@ extends Node3D
 ## holsters their weapons inside. While a player is aboard, the roof and the walls facing the
 ## camera only cast shadows, so the camera can see inside.
 ## The beacon on the roof shows the mission time from far away: green, amber after half the time,
-## red and blinking in the warning time, steady red in the storm and blue once everyone is back.
-## A countdown above the door shows the exact time.
+## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
+## grey when the mission is lost. A countdown above the door shows the exact time.
+## Returned cargo goes into the hold, shown as big canisters by the back wall. Dead players
+## respawn at `Respawn` (until the medical bay exists).
 
 ## Emitted when a player steps out of the ship.
 signal player_left(player: Player)
@@ -21,6 +23,7 @@ const COLOR_CALM := Color(0.3, 1.0, 0.45)
 const COLOR_HALF := Color(1.0, 0.7, 0.15)
 const COLOR_WARNING := Color(1.0, 0.2, 0.15)
 const COLOR_RETURNED := Color(0.35, 0.6, 1.0)
+const COLOR_LOST := Color(0.45, 0.45, 0.5)
 ## Ramp button: lowers the ramp / raises it again / can't be used right now.
 const COLOR_BUTTON_LOWER := Color(0.3, 1.0, 0.45)
 const COLOR_BUTTON_RAISE := Color(1.0, 0.7, 0.15)
@@ -41,8 +44,12 @@ var mission: Mission
 var beacon_color: Color = COLOR_CALM
 ## The beacon's current brightness (0 to 1), dims while blinking.
 var beacon_brightness: float = 1.0
+## What the countdown above the door shows: the time left, or the mission's state.
+var countdown_text: String = ""
 ## Whether the ramp is going down (or is down); it moves there over `ramp_duration`.
 var ramp_open: bool = false
+## Ore brought back over all runs, in units per ore type.
+var hold: Dictionary[OreType, float] = {}
 
 var _aboard: Array[Player] = []
 var _ramp_angle: float = RAMP_CLOSED_ANGLE
@@ -54,6 +61,8 @@ var _button_material := StandardMaterial3D.new()
 @onready var _ramp: AnimatableBody3D = $Ramp
 @onready var _interior: Area3D = $Interior
 @onready var _boarding: Marker3D = $Boarding
+@onready var _respawn: Marker3D = $Respawn
+@onready var _hold_rack: CargoRack = $HoldRack
 @onready var _cutaway: Node3D = $Hull/Cutaway
 @onready var _lamp: MeshInstance3D = $Beacon/Lamp
 @onready var _column: MeshInstance3D = $Beacon/Column
@@ -111,6 +120,21 @@ func get_boarding_position() -> Vector3:
 	return _boarding.global_position
 
 
+## Where dead players come back to life.
+func get_respawn_position() -> Vector3:
+	return _respawn.global_position
+
+
+## Moves everything `player` carries into the hold.
+func store_cargo(player: Player) -> void:
+	var cargo: Dictionary[OreType, float] = player.take_cargo()
+	for ore_type: OreType in cargo:
+		var stored: float = hold.get(ore_type, 0.0)
+		stored += cargo[ore_type]
+		hold[ore_type] = stored
+		_hold_rack.show_cargo(ore_type, stored)
+
+
 ## The ship closest to `from` (horizontally), or null.
 static func nearest(tree: SceneTree, from: Vector3) -> Ship:
 	var nearest_ship: Ship = null
@@ -128,17 +152,20 @@ func _update_display() -> void:
 	beacon_brightness = 1.0
 	if not mission:
 		beacon_color = COLOR_CALM
-		_countdown.text = ""
+		countdown_text = ""
 	elif mission.state == Mission.State.RETURNED:
 		beacon_color = COLOR_RETURNED
-		_countdown.text = "ALL ABOARD"
+		countdown_text = "ALL ABOARD"
+	elif mission.state == Mission.State.LOST:
+		beacon_color = COLOR_LOST
+		countdown_text = "LOST"
 	elif mission.state == Mission.State.STORM:
 		beacon_color = COLOR_WARNING
-		_countdown.text = "STORM"
+		countdown_text = "STORM"
 	else:
 		var time_left: float = mission.time_left
 		var seconds: int = ceili(time_left)
-		_countdown.text = "%d:%02d" % [floori(seconds / 60.0), seconds % 60]
+		countdown_text = "%d:%02d" % [floori(seconds / 60.0), seconds % 60]
 		if time_left <= mission.settings.warning_time:
 			beacon_color = COLOR_WARNING
 			# Tied to the timer, so the blinking stays in step with the countdown.
@@ -153,6 +180,7 @@ func _update_display() -> void:
 	_column_material.albedo_color = Color(beacon_color, 0.35 * beacon_brightness)
 	_light.light_color = beacon_color
 	_light.light_energy = 2.0 * beacon_brightness
+	_countdown.text = countdown_text
 	_countdown.modulate = beacon_color
 
 	var button_color: Color = COLOR_BUTTON_DISABLED

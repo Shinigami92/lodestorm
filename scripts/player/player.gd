@@ -5,10 +5,15 @@ extends CharacterBody3D
 ## attacks there with the equipped weapon while `attack` is held. Places miners on the nearest
 ## free ore node in range with `place_miner`, and carries the ore that miners' hoses move to it,
 ## shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
-## nearest interactable in range (buttons, ...) with `interact`.
+## nearest interactable in range (buttons, ...) with `interact`. Health shows on the suit light;
+## at zero health the player dies, drops everything carried and lies still until `respawn`.
 
 ## Emitted when the carried amount of an ore type changes.
 signal cargo_changed(ore_type: OreType, amount: float)
+## Emitted when health changes (damage, healing).
+signal health_changed(health: float)
+## Emitted when health reaches zero.
+signal died
 
 const GROUP: StringName = &"players"
 
@@ -37,6 +42,10 @@ var weapon_allowed: bool = true:
 			weapon.trigger_held = false
 ## Units carried per ore type; no carry limit.
 var cargo: Dictionary[OreType, float] = {}
+## Current health, from 0 to `settings.max_health`.
+var health: float
+## Dead players can't move or act until they respawn.
+var dead: bool = false
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Whether the mouse was used for aiming more recently than the right stick.
@@ -45,11 +54,16 @@ var _aim_with_mouse: bool = false
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
 @onready var _cargo_rack: CargoRack = $CargoRack
+@onready var _suit_light: SuitLight = $Body/SuitLight
+@onready var _body: Node3D = $Body
+@onready var _body_transform: Transform3D = _body.transform
+@onready var _ship_pointer: Node3D = $ShipPointer
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
 	cargo_changed.connect(_cargo_rack.show_cargo)
+	health = settings.max_health
 	if loadout and not loadout.weapons.is_empty():
 		_equip(loadout.weapons[0])
 
@@ -60,6 +74,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if dead:
+		return
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	var camera_basis: Basis = camera.global_basis if camera else Basis.IDENTITY
 
@@ -149,22 +165,88 @@ func add_cargo(ore_type: OreType, amount: float) -> void:
 	cargo_changed.emit(ore_type, carried)
 
 
+## Removes all cargo and returns it.
+func take_cargo() -> Dictionary[OreType, float]:
+	var taken: Dictionary[OreType, float] = cargo
+	cargo = {}
+	for ore_type: OreType in taken:
+		cargo_changed.emit(ore_type, 0.0)
+	return taken
+
+
+## Loses `amount` health; dies at zero.
+func take_damage(amount: float) -> void:
+	if dead or amount <= 0.0:
+		return
+	_set_health(health - amount)
+	if health == 0.0:
+		_die()
+	else:
+		_suit_light.flash()
+
+
+## Restores full health.
+func heal() -> void:
+	if not dead:
+		_set_health(settings.max_health)
+
+
+## Brings a dead player back at `at` with full health.
+func respawn(at: Vector3) -> void:
+	dead = false
+	_body.transform = _body_transform
+	weapon_allowed = weapon_allowed
+	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
+	global_position = at
+	velocity = Vector3.ZERO
+	reset_physics_interpolation()
+	_set_health(settings.max_health)
+
+
 ## Where hoses attach, as rendered this frame (interpolated between physics steps).
 func get_hose_port_position() -> Vector3:
 	return _hose_port.get_global_transform_interpolated().origin
 
 
-## The player closest to `from` within `max_distance` (horizontally), or null.
+## The living player closest to `from` within `max_distance` (horizontally), or null.
 static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Player:
 	var nearest_player: Player = null
 	var nearest_distance: float = max_distance
 	for player: Player in tree.get_nodes_in_group(GROUP):
+		if player.dead:
+			continue
 		var offset: Vector3 = player.global_position - from
 		var distance: float = Vector2(offset.x, offset.z).length()
 		if distance <= nearest_distance:
 			nearest_player = player
 			nearest_distance = distance
 	return nearest_player
+
+
+func _set_health(value: float) -> void:
+	health = clampf(value, 0.0, settings.max_health)
+	_suit_light.show_health(health / settings.max_health)
+	health_changed.emit(health)
+
+
+func _die() -> void:
+	dead = true
+	velocity = Vector3.ZERO
+	if weapon:
+		weapon.trigger_held = false
+		weapon.visible = false
+	if is_instance_valid(miner_target):
+		miner_target.highlighted = false
+	if is_instance_valid(interact_target):
+		interact_target.highlighted = false
+	miner_target = null
+	interact_target = null
+	take_cargo()
+	# Lies on its side; the collision shape stays, so the ship still knows where the body is.
+	_body.transform = Transform3D(Basis(Vector3.RIGHT, PI * 0.5), Vector3(0.0, 0.4, 0.0))
+	_ship_pointer.visible = false
+	_ship_pointer.process_mode = Node.PROCESS_MODE_DISABLED
+	died.emit()
 
 
 func _update_miner_target() -> void:

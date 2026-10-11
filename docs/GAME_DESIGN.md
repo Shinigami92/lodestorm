@@ -88,11 +88,12 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - Greybox: the test map has a 5 min timer (`scenes/mission/mission_settings.tres`), **TBD (playtest)**.
 - The mission is **over when every player is back aboard**, in time or after the timer ran out. Dead players don't count: once everyone alive is aboard and at least one player made it, the mission ends (see [Death & persistence](#11-death--persistence)).
 - The time shows in the world: the ship's beacon (a light column above the roof, seen from far away) is green, turns amber after half the time, red and blinking in the last minute (**TBD (playtest)**) and steady red once the storm hits. A countdown hangs above the door.
-- When the door is farther away (greybox: 12 m, **TBD (playtest)**), an arrow on the ground around the player points to it in the beacon's color, so the way back and the urgency are visible while the ship is off-screen.
+- Outside, when the door is farther away (greybox: 12 m, **TBD (playtest)**), an arrow on the ground around the player points to it in the beacon's color, with the countdown next to its tip, so the way back, the urgency and the exact time are visible while the ship is off-screen.
 
 ### Timer expiry
 
-- When the timer runs out, the storm / weather conditions become lethal and start killing the player. Details (instant vs. escalating damage, grace period) **TBD (playtest)**.
+- When the timer runs out, the storm becomes lethal: everyone outside the ship takes damage that grows every second. Greybox: 2 HP/s, +2 HP/s per second, so an unhurt player (100 HP) lasts about 9 s (`scenes/mission/mission_settings.tres`, **TBD (playtest)**). Aboard is safe. A grace period is open.
+- The storm shows in the world: in the last minute the light dims and a reddish-brown haze builds up in the distance; when the timer runs out it gets thick within a few seconds. Inside the ship the haze fades out (it's an inner room), only the dim light outside still shows the storm. It stays while the players are aboard and clears for the next run.
 
 ## 7. Miners
 
@@ -133,10 +134,13 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 
 ## 11. Death & persistence
 
-- On death: the round is lost, **everything carried this run is lost**, player respawns in the medical bay.
-- Co-op: the mission ends when every player is either back aboard or dead, as long as at least one made it back. The dead lose what they carried.
+- Health shows on the suit: a light band around the collar is green, amber below half, red and blinking below a quarter, and flashes white on damage. Greybox: 100 HP, **TBD (playtest)**.
+- On death: the body drops where it stands, **everything carried this run is lost**, and the player respawns in the medical bay (greybox, until it exists: on the ship's floor) with full health.
+- When every player is dead, the mission is lost: the beacon turns grey, the countdown says LOST, and after a few seconds (greybox: 3 s, **TBD (playtest)**) everyone respawns aboard and the ramp goes up. The ramp button then starts the next run.
+- Co-op: the mission ends when every player is either back aboard or dead, as long as at least one made it back. The dead lose what they carried and respawn aboard when it ends.
 - **Later:** players can try to revive each other. Solo needs a balancing mechanic so playing alone isn't unfair without anyone to revive you (**TBD**).
-- Back aboard (before the storm gets you): carried resources are saved and can be spent.
+- Back aboard (before the storm gets you): carried resources go into the ship's hold and can be spent. The hold shows as big canisters by the back wall of the cargo bay (greybox: 900 units each, **TBD (playtest)**) and keeps growing over runs (not saved yet, see M3).
+- Players are healed for each new run (until the medical bay and armor exist).
 
 ## 12. Progression / upgrades
 
@@ -156,7 +160,7 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 
 ## 14. Open questions
 
-- Timer expiry behavior details.
+- Storm: grace period after the timer runs out, damage curve.
 - Reviving other players, and balancing solo play without it.
 - Miner ownership (consumable vs. permanent).
 - Carry limit yes/no.

@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/camera/iso_camera_rig.tscn" id="4_camera"]
 [ext_resource type="Script" uid="uid://ee6jykh51n8m" path="res://scripts/mission/mission.gd" id="5_mission"]
 [ext_resource type="Resource" path="res://scenes/mission/mission_settings.tres" id="6_mission_settings"]
+[ext_resource type="Script" uid="uid://bk77ctab6xxa0" path="res://scripts/mission/weather.gd" id="7_weather"]
 
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1
@@ -40,3 +41,10 @@ script = ExtResource("5_mission")
 settings = ExtResource("6_mission_settings")
 ship = NodePath("../Ship")
 location = NodePath("../Location")
+
+[node name="Weather" type="Node" parent="." unique_id=1730492815 node_paths=PackedStringArray("mission", "environment", "sun", "viewer")]
+script = ExtResource("7_weather")
+mission = NodePath("../Mission")
+environment = NodePath("../WorldEnvironment")
+sun = NodePath("../Sun")
+viewer = NodePath("../Player")

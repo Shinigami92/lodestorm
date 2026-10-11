@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/ship/ship.gd" id="1_script"]
 [ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="2_interactable"]
+[ext_resource type="Script" path="res://scripts/player/cargo_rack.gd" id="3_cargo_rack"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]
 albedo_color = Color(0.42, 0.46, 0.52, 1)
@@ -238,6 +239,14 @@ shape = SubResource("BoxShape3D_interior")
 
 [node name="Boarding" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1, 0)
+
+[node name="Respawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 0)
+
+[node name="HoldRack" type="Node3D" parent="."]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 3, 1, -7.6)
+script = ExtResource("3_cargo_rack")
+units_per_canister = 900.0
 
 [node name="Beacon" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, -8.75)

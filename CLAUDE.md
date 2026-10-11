@@ -32,4 +32,4 @@ Setup in `docs/TECHNICAL.md` (MCP servers).
 - **A SubViewport doesn't inherit `use_occlusion_culling`** from the project setting; set it on the viewport.
 - **Don't instance a `.glb` just to read its mesh** (`instantiate()` + `free()` can leave meshes rendering); read it from `PackedScene.get_state()`.
 - **Bash tool:** for anything longer than a few lines of Python, write a file in `tmp/` and run it; long heredocs with quotes break.
-- **Python on Windows writes CRLF:** use `write_text(..., newline="\n")` / `open(..., newline="\n")` so files stay LF. `gdformat <file>` (in place) does it too: convert back to LF afterwards.
+- **Python on Windows writes CRLF and reads cp1252:** use `read_text(encoding="utf-8")` and `write_text(..., encoding="utf-8", newline="\n")` (same for `open`) so files stay UTF-8 and LF. `gdformat <file>` (in place) does it too: convert back to LF afterwards.

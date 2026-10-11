@@ -1,7 +1,7 @@
 extends GutTest
 
 const NEST_SCENE: PackedScene = preload("res://scenes/aliens/alien_nest.tscn")
-const TEST_MAP: PackedScene = preload("res://scenes/maps/test_map.tscn")
+const TEST_MAP := preload("res://tests/support/test_map.gd")
 
 var _map: Node3D
 var _mission: Mission

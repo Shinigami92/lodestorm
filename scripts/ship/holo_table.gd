@@ -10,7 +10,7 @@ const LANDMARK_COLOR := Color(1.0, 0.85, 0.35)
 ## How far the hologram reaches from the table's center, in m.
 @export var radius: float = 2.4
 ## Stretches heights, so flat locations still show their rocks and nests. TBD (playtest).
-@export var height_scale: float = 2.5
+@export var height_scale: float = 1.5
 ## Turns per second.
 @export var spin_speed: float = 0.03
 

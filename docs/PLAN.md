@@ -37,6 +37,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 ## M3 — Ship hub
 
 - Greybox ship interior with rooms
+- Bigger outside world, generated per run from a seed and a biome (hills, plateaus and cliffs, plants and rocks, ore fields, nests); still greybox
 - Spike: 3D menus (UI on a panel in the world, input via mouse, gamepad and later VR controllers, readability)
 - Mission selection as a 3D menu at the bridge's holo table (pick from a few missions: location, timer, difficulty; the hologram previews the location)
 - Loadout selection before a mission (3D menu in the armory): pick a few of the owned weapons

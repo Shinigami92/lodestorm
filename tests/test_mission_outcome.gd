@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP: PackedScene = preload("res://scenes/maps/test_map.tscn")
+const TEST_MAP := preload("res://tests/support/test_map.gd")
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
 

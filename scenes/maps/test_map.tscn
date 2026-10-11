@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d3vsnxi2l5yo2"]
 
-[ext_resource type="PackedScene" path="res://scenes/locations/test_location.tscn" id="1_location"]
+[ext_resource type="PackedScene" path="res://scenes/locations/generated_location.tscn" id="1_location"]
 [ext_resource type="PackedScene" path="res://scenes/ship/ship.tscn" id="2_ship"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/camera/iso_camera_rig.tscn" id="4_camera"]
@@ -26,6 +26,7 @@ transform = Transform3D(0.866025, -0.383022, 0.321394, 0, 0.642788, 0.766044, -0
 shadow_enabled = true
 
 [node name="Location" parent="." unique_id=166054313 instance=ExtResource("1_location")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -20.506, 0, 20.506)
 
 [node name="Ship" parent="." unique_id=674942379 node_paths=PackedStringArray("viewer") instance=ExtResource("2_ship")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -20.506, 0, 20.506)

@@ -42,7 +42,8 @@ size = Vector3(1.5, 1, 1.5)
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_location"]
 geometry_parsed_geometry_type = 1
-agent_radius = 0.75
+cell_size = 0.5
+agent_radius = 1.0
 
 [node name="TestLocation" type="Node3D"]
 

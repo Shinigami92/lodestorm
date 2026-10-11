@@ -7,13 +7,19 @@
 [ext_resource type="Script" path="res://scripts/player/cargo_rack.gd" id="5_cargo_rack"]
 [ext_resource type="Script" path="res://scripts/player/ship_pointer.gd" id="6_ship_pointer"]
 [ext_resource type="Script" path="res://scripts/player/suit_light.gd" id="7_suit_light"]
+[ext_resource type="Shader" path="res://assets/shaders/occluded_silhouette.gdshader" id="8_silhouette"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
 height = 1.8
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_silhouette"]
+render_priority = 1
+shader = ExtResource("8_silhouette")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.95, 0.55, 0.15, 1)
+next_pass = SubResource("ShaderMaterial_silhouette")
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
 material = SubResource("StandardMaterial3D_body")

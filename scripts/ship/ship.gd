@@ -1,15 +1,17 @@
 class_name Ship
 extends Node3D
-## The landed ship. Its interior is the hub (`Rooms`): the bridge in the middle, where the holo
-## table shows the mission location; a corridor along the ship's middle leads from it to the cabins
-## and the medical bay on the left and to the shooting range, the workshop and the cargo bay on the
-## right. Ship and planet are one world, without loading screens. The ramp always
-## leads out to the right (screen right), so players walk from the inside to the right into the
-## mission. It's closed by default; the button on the inner wall next to the door lowers it (see
-## `Mission` for the flow). The ship tracks who is aboard and
-## holsters their weapons inside. While a player is aboard, the roof and the walls facing the
-## camera only cast shadows (`Hull/Cutaway`), so the camera can see inside; inner walls keep a low
-## stub, so the rooms stay outlined.
+## The landed ship. Its interior is the hub (`Rooms`), on two decks: the nose points left, the
+## ramp is at the tail on the right (screen right), so players walk from the inside to the right
+## into the mission. Upper deck: cockpit, bridge (the holo table shows the mission location), player
+## and crew cabins, mess hall. Lower deck: medical bay, engine room, shooting range, armory, upgrade
+## rooms. Stairs in the double-height atrium (by the bridge) and cargo bay (by the ramp) join them.
+## Ship and planet are one world, without loading screens. The ramp is closed by default; the
+## button on the inner wall next to the door lowers it (see `Mission` for the flow). The ship tracks
+## who is aboard and holsters their weapons inside.
+## While the `viewer` is aboard, the camera sees inside: on the lower deck, the walls facing the
+## camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`, `Rooms/Upper`) only cast
+## shadows; on the upper deck, its walls facing the camera and the roof (`Hull/Upper/Cut`) do.
+## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
 ## The beacon on the roof shows the mission time from far away: green, amber after half the time,
 ## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
 ## grey when the mission is lost. A countdown above the door shows the exact time.
@@ -21,7 +23,12 @@ signal player_left(player: Player)
 ## Emitted when a player comes back aboard.
 signal player_boarded(player: Player)
 
+## What the camera sees of the ship: its outside, or into one of its decks.
+enum View { OUTSIDE, LOWER, UPPER }
+
 const GROUP: StringName = &"ships"
+## Ship-local height from which the viewer counts as being on the upper deck (its floor is at 5.5).
+const UPPER_DECK_HEIGHT: float = 5.0
 
 const COLOR_CALM := Color(0.3, 1.0, 0.45)
 const COLOR_HALF := Color(1.0, 0.7, 0.15)
@@ -41,6 +48,8 @@ const RAMP_OPEN_ANGLE: float = -0.244979
 
 ## Seconds the ramp takes to go down or up. TBD (playtest).
 @export var ramp_duration: float = 2.0
+## Whose view the cutaway follows (the camera's player); without one, the first player aboard.
+@export var viewer: Node3D
 
 ## The mission whose time the beacon and countdown show; set by the mission.
 var mission: Mission
@@ -56,6 +65,8 @@ var ramp_open: bool = false
 var hold: Dictionary[OreType, float] = {}
 
 var _aboard: Array[Player] = []
+## What the cutaway shows right now.
+var _view: View = View.OUTSIDE
 var _ramp_angle: float = RAMP_CLOSED_ANGLE
 var _lamp_material := StandardMaterial3D.new()
 var _column_material := StandardMaterial3D.new()
@@ -68,8 +79,11 @@ var _button_material := StandardMaterial3D.new()
 @onready var _respawn: Marker3D = $Respawn
 @onready var _hold_rack: CargoRack = $HoldRack
 @onready var _floor: Node3D = $Hull/Floor
-@onready var _holo_table: HoloTable = $Rooms/Bridge/HoloTable
-@onready var _cutaway: Node3D = $Hull/Cutaway
+@onready var _holo_table: HoloTable = $Rooms/Upper/Bridge/HoloTable
+@onready var _lower_cut: Node3D = $Hull/LowerCut
+@onready var _upper_hull: Node3D = $Hull/Upper
+@onready var _upper_cut: Node3D = $Hull/Upper/Cut
+@onready var _upper_rooms: Node3D = $Rooms/Upper
 @onready var _lamp: MeshInstance3D = $Beacon/Lamp
 @onready var _column: MeshInstance3D = $Beacon/Column
 @onready var _light: OmniLight3D = $Beacon/Light
@@ -101,10 +115,12 @@ func _physics_process(delta: float) -> void:
 	if _ramp_angle != target:
 		_ramp_angle = move_toward(_ramp_angle, target, speed * delta)
 		_ramp.rotation.z = _ramp_angle
+	_update_view()
 
 
 func _process(_delta: float) -> void:
 	_update_display()
+	_update_view()
 
 
 func is_aboard(player: Player) -> bool:
@@ -201,12 +217,45 @@ func _update_display() -> void:
 	_button_material.emission = button_color
 
 
-func _update_cutaway() -> void:
-	var cast_shadow := GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-	if not _aboard.is_empty():
-		cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
-	for part: GeometryInstance3D in _cutaway.get_children():
-		part.cast_shadow = cast_shadow
+func _update_view() -> void:
+	var view: View = _current_view()
+	if view != _view:
+		_view = view
+		_apply_view()
+
+
+## Where the viewer is: outside, or on which deck.
+func _current_view() -> View:
+	var who: Node3D = viewer
+	if not who and not _aboard.is_empty():
+		who = _aboard[0]
+	if not who or who not in _aboard:
+		return View.OUTSIDE
+	if to_local(who.global_position).y >= UPPER_DECK_HEIGHT:
+		return View.UPPER
+	return View.LOWER
+
+
+func _apply_view() -> void:
+	_show(_lower_cut, _view != View.LOWER)
+	_show(_upper_hull, _view != View.LOWER)
+	_show(_upper_rooms, _view != View.LOWER)
+	_show(_upper_cut, _view == View.OUTSIDE)
+
+
+## Shows `root`'s geometry, or only lets it cast shadows; its lights and holograms turn off.
+static func _show(root: Node, shown: bool) -> void:
+	for child: Node in root.get_children():
+		if child is Light3D or child is HoloTable:
+			(child as Node3D).visible = shown
+			continue
+		if child is GeometryInstance3D:
+			(child as GeometryInstance3D).cast_shadow = (
+				GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+				if shown
+				else GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+			)
+		_show(child, shown)
 
 
 func _on_body_entered(body: Node3D) -> void:
@@ -214,7 +263,7 @@ func _on_body_entered(body: Node3D) -> void:
 	if player and player not in _aboard:
 		_aboard.append(player)
 		player.weapon_allowed = false
-		_update_cutaway()
+		_update_view()
 		player_boarded.emit(player)
 
 
@@ -223,5 +272,5 @@ func _on_body_exited(body: Node3D) -> void:
 	if player and player in _aboard:
 		_aboard.erase(player)
 		player.weapon_allowed = true
-		_update_cutaway()
+		_update_view()
 		player_left.emit(player)

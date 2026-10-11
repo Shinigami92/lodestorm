@@ -12,7 +12,7 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_mission = _map.get_node("Mission") as Mission
-	_table = _map.get_node("Ship/Rooms/Bridge/HoloTable") as HoloTable
+	_table = _map.get_node("Ship/Rooms/Upper/Bridge/HoloTable") as HoloTable
 	_content = _table.get_node("Hologram/Content")
 	await wait_physics_frames(2)
 

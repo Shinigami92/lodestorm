@@ -27,36 +27,62 @@ func test_ramp_faces_screen_right() -> void:
 
 
 func test_camera_sees_inside_while_aboard() -> void:
-	var roof: GeometryInstance3D = _ship.get_node("Hull/Cutaway/Roof")
+	var roof: GeometryInstance3D = _ship.get_node("Hull/Upper/Cut/Roof")
 	assert_eq(roof.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
 	await _move(_player, _outside())
 	assert_eq(roof.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 
 
+## On the lower deck, the upper deck only casts shadows; on the upper deck, the lower deck's front
+## shows again and the upper deck's walls facing the camera are cut away.
+func test_camera_sees_the_viewers_deck() -> void:
+	var upper_floor: GeometryInstance3D = _ship.get_node("Hull/Upper/DeckMiddle")
+	var lower_front: GeometryInstance3D = _ship.get_node("Hull/LowerCut/FrontWallLower")
+	var upper_front: GeometryInstance3D = _ship.get_node("Hull/Upper/Cut/FrontWallUpper")
+	var holo_table: Node3D = _room("Bridge").get_node("HoloTable")
+	assert_eq(upper_floor.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+	assert_eq(lower_front.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+	assert_false(holo_table.visible)
+	await _move(_player, _room("MessHall").global_position)
+	assert_eq(upper_floor.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	assert_eq(lower_front.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	assert_eq(upper_front.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+	assert_true(holo_table.visible)
+
+
 func test_every_room_is_aboard() -> void:
-	for room: Node3D in _ship.get_node("Rooms").get_children():
+	for room: Node3D in _rooms():
 		await _move(_player, _outside())
 		await _move(_player, room.global_position)
 		assert_true(_ship.is_aboard(_player), room.name)
 
 
-## The doorways line up along the corridor, so players walk from the cargo bay through the bridge
-## to the far end of the ship.
-func test_corridor_runs_through_the_ship() -> void:
+## The doorways line up along the corridors, so players walk straight through each deck.
+func test_corridors_run_through_the_ship() -> void:
 	var up := Vector3.UP * 2.5
-	var cargo_bay: Vector3 = _room("CargoBay").global_position + up
-	var far_end: Vector3 = _room("WestCorridor").global_position + up
-	assert_eq(_ray(cargo_bay, far_end), {}, "doorways")
 	var beside: Vector3 = _ship.global_basis.z * -4.0
-	assert_ne(_ray(cargo_bay + beside, far_end + beside), {}, "walls between the rooms")
+	for ends: Array in [["CargoBay", "NoseCorridor"], ["MessHall", "Cockpit"]]:
+		var deck: String = ends[0]
+		var from: Vector3 = _room(deck).global_position + up
+		var to: Vector3 = _room(ends[1] as String).global_position + up
+		assert_eq(_ray(from, to), {}, "doorways from " + deck)
+		assert_ne(_ray(from + beside, to + beside), {}, "walls beside the corridor from " + deck)
+
+
+## Stairs in the cargo bay and the atrium climb evenly from the lower to the upper deck.
+func test_stairs_join_the_decks() -> void:
+	for f: float in [0.2, 0.5, 0.8]:
+		var y: float = 1.0 + 4.5 * f
+		assert_almost_eq(_floor_height(Vector3(5.5 - 9.0 * f, 0.0, -10.25)), y, 0.25, "cargo bay")
+		assert_almost_eq(_floor_height(Vector3(-53.0, 0.0, -11.0 + 9.0 * f)), y, 0.25, "atrium")
 
 
 ## Walls between the camera and a room only cast shadows while players are aboard; a low stub of
 ## them stays visible.
 func test_inner_walls_facing_camera_are_cut_down() -> void:
-	var cut: GeometryInstance3D = _ship.get_node("Hull/Cutaway/WestCorridorBack1")
+	var cut: GeometryInstance3D = _ship.get_node("Hull/LowerCut/LowerCorridorBack1")
 	assert_eq(cut.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
-	var stub: MeshInstance3D = _ship.get_node("Hull/WestCorridorBack1Stub")
+	var stub: MeshInstance3D = _ship.get_node("Hull/LowerCorridorBack1Stub")
 	assert_eq(stub.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 	assert_lt(stub.get_aabb().size.y, 1.5)
 
@@ -144,7 +170,29 @@ func _outside() -> Vector3:
 
 
 func _room(room_name: String) -> Node3D:
-	return _ship.get_node("Rooms/" + room_name) as Node3D
+	return _ship.get_node("Rooms").find_child(room_name, true, false) as Node3D
+
+
+## Every room on both decks.
+func _rooms() -> Array[Node3D]:
+	var rooms: Array[Node3D] = []
+	for child: Node3D in _ship.get_node("Rooms").get_children():
+		if child.name in [&"Lower", &"Upper"]:
+			for room: Node3D in child.get_children():
+				rooms.append(room)
+		else:
+			rooms.append(child)
+	return rooms
+
+
+## Ship-local height of the floor below the ship-local `point` (straight down from below the roof).
+func _floor_height(point: Vector3) -> float:
+	var top: Vector3 = _ship.to_global(Vector3(point.x, 9.0, point.z))
+	var bottom: Vector3 = _ship.to_global(Vector3(point.x, 0.5, point.z))
+	var hit: Dictionary = _ray(top, bottom)
+	if hit.is_empty():
+		return -1.0
+	return _ship.to_local(hit[&"position"] as Vector3).y
 
 
 ## What a ray from `from` to `to` hits, ignoring the player.

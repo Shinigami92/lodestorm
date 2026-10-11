@@ -18,6 +18,10 @@ Conventions (Blender is Z-up, meters; glTF export converts to Y-up):
 - The game camera looks from the +X/-Y diagonal (front of the miner faces -Y, "front" = toward the camera).
 - Everything that belongs to the asset is parented (directly or indirectly) to the "Miner" empty; preview props
   live in the "Preview" collection and are never exported.
+
+Other assets name their own collection: C.reset("Rocks"), root = C.asset_root("Rocks"); link(), empty(),
+export_glb() and stats() then use that collection. preview_scene(crystals=False) leaves out the placeholder ore,
+render(..., target=..., zoom=...) frames smaller or bigger assets (zoom < 1 moves the camera closer).
 """
 
 import math
@@ -28,17 +32,20 @@ from mathutils import Vector
 
 PLAYER_HEIGHT = 1.8
 ORE_NODE_RADIUS = 1.35  # deposit disc of the game's ore node; crystals sit within ~1.1 m
+ASSET = "Miner"  # collection of the asset being built (set by reset())
 
 
 # --- scene ---------------------------------------------------------------------------------------
 
 
-def reset() -> None:
+def reset(asset: str = "Miner") -> None:
+    global ASSET
+    ASSET = asset
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
     scene.unit_settings.system = "METRIC"
     scene.unit_settings.scale_length = 1.0
-    for name in ("Miner", "Preview"):
+    for name in (asset, "Preview"):
         coll = bpy.data.collections.new(name)
         scene.collection.children.link(coll)
 
@@ -54,9 +61,17 @@ def miner_root() -> bpy.types.Object:
     return root
 
 
-def link(obj: bpy.types.Object, parent: bpy.types.Object | None = None, coll: str = "Miner") -> bpy.types.Object:
-    """Link a new object into a collection (default "Miner") and optionally parent it, keeping its transform."""
-    collection(coll).objects.link(obj)
+def asset_root(name: str) -> bpy.types.Object:
+    """Empty at the origin in the asset's collection; parent everything that gets exported to it."""
+    root = bpy.data.objects.new(name, None)
+    root.empty_display_type = "PLAIN_AXES"
+    collection(ASSET).objects.link(root)
+    return root
+
+
+def link(obj: bpy.types.Object, parent: bpy.types.Object | None = None, coll: str | None = None) -> bpy.types.Object:
+    """Link a new object into a collection (default: the asset's) and optionally parent it, keeping its transform."""
+    collection(coll or ASSET).objects.link(obj)
     if parent is not None:
         obj.parent = parent
     return obj
@@ -273,8 +288,11 @@ def _preview_obj(obj: bpy.types.Object) -> bpy.types.Object:
     return link(obj, None, "Preview")
 
 
-def preview_scene(seed: int = 3) -> None:
-    """Dark rocky ground, a cyan ore crystal cluster under the miner, a 1.8 m figure for scale, lights."""
+def preview_scene(
+    seed: int = 3, crystals: bool = True, figure_location: tuple[float, float, float] = (1.9, -1.6, 0.0)
+) -> None:
+    """Dark rocky ground, a cyan ore crystal cluster under the miner (crystals=False leaves it out), a 1.8 m
+    figure for scale, lights."""
     import random
 
     rnd = random.Random(seed)
@@ -298,7 +316,7 @@ def preview_scene(seed: int = 3) -> None:
     # Ore crystals (placeholder for the game's ore node).
     crystal = mat_emissive("PreviewCrystal", (0.12, 0.9, 0.85), 4.0)
     crystal.node_tree.nodes["Principled BSDF"].inputs["Transmission Weight"].default_value = 0.6
-    for i in range(9):
+    for i in range(9 if crystals else 0):
         ang = i / 9 * math.tau + rnd.uniform(-0.2, 0.2)
         r = rnd.uniform(0.75, 1.1)
         h = rnd.uniform(0.5, 1.1)
@@ -349,7 +367,7 @@ def preview_scene(seed: int = 3) -> None:
         obj.scale = scl
         obj.parent = figure
         assign(obj, suit)
-    figure.location = (1.9, -1.6, 0)
+    figure.location = figure_location
     figure.rotation_euler = (0, 0, math.radians(30))
     _lights()
 
@@ -388,21 +406,21 @@ def _lights() -> None:
 # --- render / export -------------------------------------------------------------------------------
 
 
-def _camera(view: str) -> bpy.types.Object:
+def _camera(view: str, target: tuple[float, float, float] = (0, 0, 1.6), zoom: float = 1.0) -> bpy.types.Object:
     data = bpy.data.cameras.new("Cam")
     cam = bpy.data.objects.new("Cam", data)
     _preview_obj(cam)
-    target = Vector((0, 0, 1.6))
+    target = Vector(target)
     if view == "iso":
         # Game-like: high, along the diagonal, about 45 degrees down.
         data.lens = 50
-        cam.location = target + Vector((7.0, -7.0, 9.5))
+        cam.location = target + Vector((7.0, -7.0, 9.5)) * zoom
     elif view == "hero":
         data.lens = 40
-        cam.location = target + Vector((4.2, -5.5, 1.6))
+        cam.location = target + Vector((4.2, -5.5, 1.6)) * zoom
     elif view == "back":
         data.lens = 40
-        cam.location = target + Vector((-4.5, 5.5, 2.5))
+        cam.location = target + Vector((-4.5, 5.5, 2.5)) * zoom
     else:
         raise ValueError(view)
     cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
@@ -410,7 +428,14 @@ def _camera(view: str) -> bpy.types.Object:
     return cam
 
 
-def render(path: pathlib.Path, view: str = "iso", samples: int = 96, size: int = 1024) -> None:
+def render(
+    path: pathlib.Path,
+    view: str = "iso",
+    samples: int = 96,
+    size: int = 1024,
+    target: tuple[float, float, float] = (0, 0, 1.6),
+    zoom: float = 1.0,
+) -> None:
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     prefs = bpy.context.preferences.addons["cycles"].preferences
@@ -426,7 +451,7 @@ def render(path: pathlib.Path, view: str = "iso", samples: int = 96, size: int =
     scene.render.image_settings.file_format = "PNG"
     for cam in [o for o in bpy.data.objects if o.name.startswith("Cam")]:
         bpy.data.objects.remove(cam)
-    _camera(view)
+    _camera(view, target, zoom)
     scene.render.filepath = str(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
@@ -437,23 +462,23 @@ def save_blend(path: pathlib.Path) -> None:
     bpy.ops.wm.save_as_mainfile(filepath=str(path))
 
 
-def export_glb(path: pathlib.Path) -> None:
-    """Export only the "Miner" collection (modifiers applied). Procedural materials export as their
+def export_glb(path: pathlib.Path, coll: str | None = None) -> None:
+    """Export only the asset's collection (modifiers applied). Procedural materials export as their
     Principled defaults until they are baked to textures."""
     bpy.ops.object.select_all(action="DESELECT")
-    for obj in collection("Miner").all_objects:
+    for obj in collection(coll or ASSET).all_objects:
         obj.select_set(True)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.export_scene.gltf(filepath=str(path), export_format="GLB", use_selection=True, export_apply=True)
 
 
-def stats() -> dict:
-    """Triangle count and bounds of the miner (after modifiers) for the report."""
+def stats(coll: str | None = None) -> dict:
+    """Triangle count and bounds of the asset (after modifiers) for the report."""
     depsgraph = bpy.context.evaluated_depsgraph_get()
     tris = 0
     lo = Vector((1e9, 1e9, 1e9))
     hi = Vector((-1e9, -1e9, -1e9))
-    for obj in collection("Miner").all_objects:
+    for obj in collection(coll or ASSET).all_objects:
         if obj.type != "MESH":
             continue
         ev = obj.evaluated_get(depsgraph)

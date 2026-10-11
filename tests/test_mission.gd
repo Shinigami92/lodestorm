@@ -35,7 +35,7 @@ func test_ramp_is_closed_by_default() -> void:
 
 
 func test_button_next_to_door_lowers_ramp() -> void:
-	await _move(_player, _ship.to_global(Vector3(13.5, 1.0, -3.0)))
+	await _move(_player, _ship.to_global(Vector3(13.5, 2.5, -3.0)))
 	assert_eq(_player.interact_target, _ship.ramp_button)
 	assert_true((_ship.ramp_button.get_node("Highlight") as Node3D).visible)
 	Input.action_press(&"interact")
@@ -48,7 +48,7 @@ func test_button_next_to_door_lowers_ramp() -> void:
 
 
 func test_button_is_out_of_reach_from_the_middle_of_the_door() -> void:
-	await _move(_player, _ship.to_global(Vector3(14.0, 1.0, 0.0)))
+	await _move(_player, _ship.to_global(Vector3(14.0, 2.5, 0.0)))
 	assert_null(_player.interact_target)
 
 
@@ -177,7 +177,7 @@ func _wait_for_ramp() -> void:
 
 ## Inside the ship, near the door.
 func _inside() -> Vector3:
-	return _ship.to_global(Vector3(10.0, 1.0, 0.0))
+	return _ship.to_global(Vector3(10.0, 2.5, 0.0))
 
 
 ## On the ground right of the ramp.

@@ -27,11 +27,12 @@ shadow_enabled = true
 
 [node name="Location" parent="." unique_id=166054313 instance=ExtResource("1_location")]
 
-[node name="Ship" parent="." unique_id=674942379 instance=ExtResource("2_ship")]
+[node name="Ship" parent="." unique_id=674942379 node_paths=PackedStringArray("viewer") instance=ExtResource("2_ship")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -20.506, 0, 20.506)
+viewer = NodePath("../Player")
 
 [node name="Player" parent="." unique_id=240598428 instance=ExtResource("3_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.435, 1, 13.435)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.435, 2.5, 13.435)
 
 [node name="IsoCameraRig" parent="." unique_id=1063743358 node_paths=PackedStringArray("target") instance=ExtResource("4_camera")]
 target = NodePath("../Player")

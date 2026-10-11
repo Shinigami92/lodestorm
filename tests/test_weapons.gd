@@ -24,7 +24,7 @@ func after_each() -> void:
 
 func test_no_attack_inside_ship() -> void:
 	var ship: Ship = _map.get_node("Ship")
-	_player.global_position = ship.to_global(Vector3(10.0, 1.0, 0.0))
+	_player.global_position = ship.to_global(Vector3(10.0, 2.5, 0.0))
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(2)
 	assert_false(_player.weapon_allowed)

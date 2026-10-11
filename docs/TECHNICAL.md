@@ -70,6 +70,7 @@ Development must work on Windows (Git Bash), Linux and macOS.
   | `pause` | Escape | Menu / Options |
   | `debug_overlay` | F3 | — |
 
+- **Physics layers:** everything collides on layer 1. Layer 2 only stops projectiles (they raycast against every layer; players and aliens only collide with layer 1), e.g. the force field in the ship's shooting range doorway.
 - **Debug overlay** (autoload `DebugOverlay`, `scripts/debug/debug_overlay.gd`): a 2D developer panel, toggled with F3. It only exists when the game runs from the editor (`OS.has_feature("editor")`, also true for the headless tests); exported builds, debug ones included, remove it at start. It shows the mission state, time, escalation, player health, how many aliens are left (chasing, hunters, raiders), how many nests there are and how many miners (broken), has shortcuts (skip to the warning time, storm now, kill / heal players, kill aliens, let every nest hatch a hunter or a raider, break every miner) and sliders for the settings resources (`TUNING` in the script; add new tuning values there; integer settings get whole-number sliders). Sliders change the loaded resources live, so every scene using them sees the new value; changes last until the game stops and aren't saved, so copy good values into the `.tres` files by hand. A tuned mission duration also moves the running timer. While the mouse is over the panel, the player neither aims nor attacks with it.
 
 ### MCP servers (`.mcp.json`)

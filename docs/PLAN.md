@@ -38,8 +38,8 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 
 - Greybox ship interior with rooms
 - Spike: 3D menus (UI on a panel in the world, input via mouse, gamepad and later VR controllers, readability)
-- Mission terminal as a 3D menu (pick from a few missions: location, timer, difficulty)
-- Loadout selection before a mission (3D menu): pick a few of the owned weapons
+- Mission selection as a 3D menu at the bridge's holo table (pick from a few missions: location, timer, difficulty; the hologram previews the location)
+- Loadout selection before a mission (3D menu in the armory): pick a few of the owned weapons
 - Ship states (space / landed + weather) and ramp → starts mission
 - Medical bay respawn
 - Upgrade station(s) spending resources (a few weapon/armor/miner upgrades)

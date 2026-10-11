@@ -183,7 +183,7 @@ func _wait_for_ramp() -> void:
 
 ## Inside the ship, near the door.
 func _inside() -> Vector3:
-	return _ship.to_global(Vector3(10.0, 1.0, 0.0))
+	return _ship.to_global(Vector3(10.0, 2.5, 0.0))
 
 
 ## On the ground right of the ramp.

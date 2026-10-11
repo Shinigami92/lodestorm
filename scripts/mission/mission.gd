@@ -52,6 +52,7 @@ func _ready() -> void:
 	_duration = settings.duration
 	_respawn_left = settings.respawn_delay
 	ship.mission = self
+	ship.show_preview(location)
 	ship.player_left.connect(_on_player_left)
 	ship.ramp_button.used.connect(_on_ramp_button_used)
 
@@ -74,7 +75,7 @@ func _physics_process(delta: float) -> void:
 	_check_outcome()
 
 
-## Replaces the outside world with a fresh instance of its scene.
+## Replaces the outside world with a fresh instance of its scene and shows it on the holo table.
 func reset_location() -> void:
 	var parent: Node = location.get_parent()
 	var index: int = location.get_index()
@@ -86,6 +87,7 @@ func reset_location() -> void:
 	parent.add_child(fresh)
 	parent.move_child(fresh, index)
 	location = fresh
+	ship.show_preview(location)
 
 
 ## Whether a run is underway: someone stepped out and not everyone is back yet.

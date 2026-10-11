@@ -97,6 +97,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
   C = player cabins, N = crew cabins. Each room has its own floor tint and light.
 - **NPCs:** shopkeepers / upgrade vendors, quest givers, and story characters (about eight to start: e.g. pilot, medic, quartermaster, one vendor per upgrade room, cook), each with a crew cabin.
 - **Mission selection:** on the bridge, at the holo table. Target can be another location on the current planet or a new planet. The ship then flies there.
+  - Idea: the hologram already shows where the ore fields are, each in its ore color, so players can plan their route and pick a mission by the ores they need.
 - **Ship states:**
   - *In space:* windows show space; ramp cannot be opened.
   - *Landed, no mission started:* windows/ramp area show the local environment (e.g. storm).
@@ -197,7 +198,7 @@ Bought in the ship with resources:
 
 - Weapons
 - Armor
-- Player skills
+- Player skills (idea: an ore scanner that points to ore nodes in range, like the arrow back to the ship)
 - Miners (capacity, speed, better types)
 - Miner defenses (shields, sentry turrets) — possible
 

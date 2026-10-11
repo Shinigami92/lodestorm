@@ -94,7 +94,7 @@ func test_take_empties_miner_and_it_mines_again() -> void:
 
 func test_full_lamp_lights_up_when_full() -> void:
 	var miner: Miner = _place_miner(60.0, 10.0)
-	var lamp: Node3D = miner.get_node("FullLamp")
+	var lamp: Node3D = miner.get_node("Model").find_child("FullLamp", true, false)
 	assert_false(lamp.visible)
 	await wait_physics_frames(Engine.physics_ticks_per_second)
 	assert_true(lamp.visible)

@@ -10,11 +10,14 @@
 
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1
-background_color = Color(0.32, 0.38, 0.45, 1)
+background_color = Color(0.1, 0.095, 0.1, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.7, 0.75, 0.85, 1)
-ambient_light_energy = 0.6
-tonemap_mode = 2
+ambient_light_color = Color(0.42, 0.46, 0.55, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.6
+glow_hdr_threshold = 1.2
 
 [node name="TestMap" type="Node3D" unique_id=1166237391]
 
@@ -23,7 +26,14 @@ environment = SubResource("Environment_map")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=832894179]
 transform = Transform3D(0.866025, -0.383022, 0.321394, 0, 0.642788, 0.766044, -0.5, -0.663414, 0.55667, 0, 10, 0)
+light_color = Color(1, 0.88, 0.74, 1)
+light_energy = 0.75
 shadow_enabled = true
+
+[node name="RimLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.707107, 0.264887, -0.655618, 0, 0.927184, 0.374607, 0.707107, 0.264887, -0.655618, 0, 10, 0)
+light_color = Color(0.55, 0.72, 1, 1)
+light_energy = 0.45
 
 [node name="Location" parent="." unique_id=166054313 instance=ExtResource("1_location")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -20.506, 0, 20.506)

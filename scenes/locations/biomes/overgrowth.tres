@@ -8,7 +8,7 @@
 [ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="6_ore_violet"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_funnel"]
-albedo_color = Color(0.8, 0.62, 0.26, 1)
+albedo_color = Color(0.4, 0.34, 0.2, 1)
 roughness = 1.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_funnel"]
@@ -35,7 +35,7 @@ blocking_radius = 0.45
 blocking_height = 4.5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puffball"]
-albedo_color = Color(0.4, 0.44, 0.26, 1)
+albedo_color = Color(0.23, 0.26, 0.17, 1)
 roughness = 1.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_puffball"]
@@ -60,7 +60,7 @@ visibility_range = 160.0
 cast_shadow = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tuft"]
-albedo_color = Color(0.46, 0.5, 0.3, 1)
+albedo_color = Color(0.27, 0.3, 0.19, 1)
 roughness = 1.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_tuft"]
@@ -87,7 +87,7 @@ visibility_range = 120.0
 cast_shadow = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_boulder"]
-albedo_color = Color(0.36, 0.38, 0.34, 1)
+albedo_color = Color(0.2, 0.21, 0.19, 1)
 roughness = 1.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_boulder"]
@@ -120,9 +120,9 @@ hill_size = 130.0
 plateau_step = 4.0
 cliff_share = 0.35
 bump_height = 0.7
-ground_color = Color(0.36, 0.33, 0.24, 1)
-high_ground_color = Color(0.42, 0.42, 0.28, 1)
-cliff_color = Color(0.3, 0.29, 0.28, 1)
+ground_color = Color(0.21, 0.21, 0.15, 1)
+high_ground_color = Color(0.26, 0.27, 0.18, 1)
+cliff_color = Color(0.17, 0.17, 0.16, 1)
 scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_funnel"), SubResource("Resource_boulder"), SubResource("Resource_puffball"), SubResource("Resource_tuft")])
 nests = 10
 ores = Array[ExtResource("3_ore_type")]([ExtResource("5_ore_green"), ExtResource("4_ore_cyan"), ExtResource("6_ore_violet")])

@@ -7,6 +7,14 @@ extends StaticBody3D
 ## health it breaks down: it stops mining and the hose disconnects, so its ore can't be taken out
 ## (it keeps it). The frame blinks red until a player standing within `settings.repair_range` has
 ## repaired it completely. Players repair damaged miners that still work too.
+##
+## The look lives in the `Model` child, so a modeled asset can replace the greybox. The model
+## provides these parts by name: `Fill` (scaled along Y from 0 to 1 with the fill level; it and its
+## meshes get the ore material), `FullLamp`, `HoseOutlet`, and meshes named `Frame*` (the
+## structure that shows damage). Damage is drawn as an overlay on the frame, so it works on top of
+## any material the model brings. Parts are looked up among all descendants (also inside an
+## instanced model scene). The model's front is +Z: when the miner is placed, the model turns its
+## front toward the camera's view (plus `FACING_OFFSET`), so the fill column stays in view.
 
 ## Emitted once each time the miner becomes full.
 signal filled
@@ -17,10 +25,16 @@ signal repaired
 
 const GROUP: StringName = &"miners"
 
-const COLOR_FRAME := Color(0.25, 0.27, 0.3)
-const COLOR_RUST := Color(0.5, 0.2, 0.08)
+const COLOR_RUST := Color(0.45, 0.17, 0.06)
 const COLOR_FLASH := Color(1.0, 1.0, 1.0)
 const COLOR_ALARM := Color(1.0, 0.15, 0.1)
+## How much the rust covers the frame at zero health (0–1).
+const RUST_MAX: float = 0.75
+## How much a hit flash or the alarm blink covers the frame (0–1).
+const SIGNAL_COVER: float = 0.7
+## How far the model turns past facing the camera (degrees): straight on looks flat and puts a leg
+## in front of the drill, 45° lets a side box cover the column.
+const FACING_OFFSET: float = 25.0
 ## Seconds a hit flash lasts.
 const FLASH_DURATION: float = 0.1
 ## Blinks per second while broken.
@@ -38,26 +52,33 @@ var hose_target: Player
 var health: float
 ## A broken miner doesn't mine and its hose doesn't connect until it's repaired completely.
 var broken: bool = false
+## Horizontal radius of the body (its collision shape): attackers reach it at its surface.
+var body_radius: float
 
 var _flash_left: float = 0.0
 var _time: float = 0.0
-var _frame_material := StandardMaterial3D.new()
+var _frame_overlay := StandardMaterial3D.new()
 
-@onready var _fill_pivot: Node3D = $FillPivot
-@onready var _fill: MeshInstance3D = $FillPivot/Fill
-@onready var _full_lamp: MeshInstance3D = $FullLamp
-@onready var _hose_outlet: Marker3D = $HoseOutlet
+@onready var _model: Node3D = $Model
+@onready var _fill: Node3D = _model.find_child("Fill", true, false)
+@onready var _full_lamp: Node3D = _model.find_child("FullLamp", true, false)
+@onready var _hose_outlet: Node3D = _model.find_child("HoseOutlet", true, false)
 @onready var _hose: Hose = $Hose
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
 	health = settings.max_health
+	body_radius = (($CollisionShape3D as CollisionShape3D).shape as CylinderShape3D).radius
+	_face_camera()
 	if ore_type:
-		_fill.material_override = ore_type.get_material()
+		for mesh: MeshInstance3D in _meshes(_fill):
+			mesh.material_override = ore_type.get_material()
 		_hose.material_override = ore_type.get_material()
-	for frame: MeshInstance3D in [$Base, $Cap]:
-		frame.material_override = _frame_material
+	_frame_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_frame_overlay.next_pass = preload("res://assets/shaders/rim_light.tres")
+	for frame: Node in _model.find_children("Frame*", "MeshInstance3D", true, false):
+		(frame as MeshInstance3D).material_overlay = _frame_overlay
 	_hose.visible = false
 	_update_gauge()
 	_update_frame()
@@ -132,19 +153,42 @@ func _update_gauge() -> void:
 	var ratio: float = amount / settings.capacity
 	# A zero scale makes the basis singular, so hide the fill instead.
 	_fill.visible = ratio > 0.0
-	_fill_pivot.scale = Vector3(1.0, maxf(ratio, 0.001), 1.0)
+	_fill.scale = Vector3(1.0, maxf(ratio, 0.001), 1.0)
 	_full_lamp.visible = is_full()
 
 
 func _update_frame() -> void:
 	var alarm: bool = broken and fmod(_time * BLINK_RATE, 1.0) < 0.5
-	_frame_material.emission_enabled = alarm
-	_frame_material.emission = COLOR_ALARM
-	_frame_material.emission_energy_multiplier = 2.0
-	if _flash_left > 0.0:
-		_frame_material.albedo_color = COLOR_FLASH
-	elif alarm:
-		_frame_material.albedo_color = COLOR_ALARM
+	var signal_color: Color = COLOR_FLASH if _flash_left > 0.0 else COLOR_ALARM
+	var signaling: bool = _flash_left > 0.0 or alarm
+	_frame_overlay.emission_enabled = signaling
+	_frame_overlay.emission = signal_color
+	_frame_overlay.emission_energy_multiplier = 2.0
+	if signaling:
+		_frame_overlay.albedo_color = Color(signal_color, SIGNAL_COVER)
 	else:
 		var damage: float = 1.0 - health / settings.max_health
-		_frame_material.albedo_color = COLOR_FRAME.lerp(COLOR_RUST, damage)
+		_frame_overlay.albedo_color = Color(COLOR_RUST, damage * RUST_MAX)
+
+
+func _face_camera() -> void:
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	if not camera:
+		return
+	# Against the view direction rather than toward the camera's position: the same for every miner
+	# on screen, wherever the camera is.
+	var to_camera: Vector3 = camera.global_basis.z
+	if Vector2(to_camera.x, to_camera.z).is_zero_approx():
+		return
+	var yaw: float = atan2(to_camera.x, to_camera.z) + deg_to_rad(FACING_OFFSET)
+	_model.global_basis = Basis(Vector3.UP, yaw)
+
+
+## `node` itself if it's a mesh, and all meshes below it.
+static func _meshes(node: Node) -> Array[MeshInstance3D]:
+	var meshes: Array[MeshInstance3D] = []
+	if node is MeshInstance3D:
+		meshes.append(node as MeshInstance3D)
+	for child: Node in node.find_children("*", "MeshInstance3D", true, false):
+		meshes.append(child as MeshInstance3D)
+	return meshes

@@ -22,7 +22,7 @@ Dark, realistic sci-fi 3D isometric mining/action game (Godot, version in `.godo
 Setup in `docs/TECHNICAL.md` (MCP servers).
 
 - **godot-ai** (editor must be open): scene/script editing, project settings, `editor_screenshot` (viewport, or `source="game"` while running), logs, `project_run`, `game_eval`. The running game's frame can only be captured while its loop runs. Prefer it over editing `project.godot` by hand while the editor is open (the editor may overwrite the file).
-- **blender** (Blender running with the MCP add-on): asset work. Without the GUI, run Blender's executable with `--background --python <script>` from Bash; that also lets several agents work in parallel on separate files.
+- **blender** (Blender running with the MCP add-on): asset work. Without the GUI, run scripts headless with `tools/blender.sh <script> [args]` (env var `BLENDER`); that also lets several agents work in parallel on separate files. Asset scripts: see `docs/TECHNICAL.md` (Asset pipeline).
 
 ## Pitfalls
 

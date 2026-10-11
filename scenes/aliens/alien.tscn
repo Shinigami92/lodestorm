@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/aliens/alien.gd" id="1_script"]
 [ext_resource type="Resource" path="res://scenes/aliens/alien_settings.tres" id="2_settings"]
+[ext_resource type="Material" path="res://assets/shaders/rim_light.tres" id="3_rim"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.5
@@ -34,6 +35,7 @@ shape = SubResource("CapsuleShape3D_body")
 
 [node name="Body" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+material_overlay = ExtResource("3_rim")
 mesh = SubResource("SphereMesh_body")
 
 [node name="EyeLeft" type="MeshInstance3D" parent="Body"]

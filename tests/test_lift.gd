@@ -24,7 +24,7 @@ func test_rider_goes_to_the_other_deck() -> void:
 	await _wait_for_ride()
 	assert_eq(_lift.deck, Lift.Deck.UPPER)
 	assert_false(_lift.moving)
-	assert_almost_eq(_ship.to_local(_player.global_position).y, 5.5, 0.2)
+	assert_almost_eq(_ship.to_local(_player.global_position).y, 7.0, 0.2)
 
 
 ## Riders who came along have to step off before the lift leaves again.

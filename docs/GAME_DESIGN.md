@@ -64,6 +64,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 
 - Multiple rooms with NPCs. The ship is big: the whole hub is its interior.
 - **No loading screens:** the ship and the planet outside are one world. Players walk from the hub down the ramp straight into the mission. That's also why the weather outside matters: while the ship flies and lands, a storm around it hides the next location being loaded, so it acts as the loading screen.
+- **Landing gear:** the landed ship stands on six legs along its sides (greybox: the hull 1.5 m above the ground, **TBD (playtest)**); nobody walks under it. The ramp is 5 m long and reaches the ground at 30°.
 - **The ramp always leads out to the right** (screen right): players walk from the inside to the right into the mission, and come back from the right.
 - **Ramp button:** the ramp is closed by default. A button on the inner wall next to the door lowers it; this also locks the selected mission (once mission selection exists). Pressing it again before anyone stepped out raises the ramp again. Once everyone is back aboard, the ramp goes up; the next press starts a new run with a reset timer and a fresh outside world.
 - **No weapons inside the ship:** weapons are holstered aboard, except in the shooting range, where players try them without a mission. They only work inside the range (not in its doorway), and a force field in the doorway stops every shot, so nothing leaves the range. Targets stand at its far end.

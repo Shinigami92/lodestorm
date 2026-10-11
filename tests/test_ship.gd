@@ -123,7 +123,7 @@ func test_pointer_hides_near_ship() -> void:
 
 
 func test_pointer_hides_inside_ship() -> void:
-	await _move(_player, _ship.to_global(Vector3(-12.0, 1.0, 0.0)))
+	await _move(_player, _ship.to_global(Vector3(-12.0, 2.5, 0.0)))
 	var to_door: Vector3 = _ship.get_boarding_position() - _player.global_position
 	assert_gt(to_door.length(), _pointer().min_distance, "far from the door")
 	assert_false(_pointer().visible)
@@ -164,7 +164,7 @@ func _wait_for_ramp() -> void:
 
 ## Inside the ship, near the door.
 func _inside() -> Vector3:
-	return _ship.to_global(Vector3(10.0, 1.0, 0.0))
+	return _ship.to_global(Vector3(10.0, 2.5, 0.0))
 
 
 ## On the ground right of the ramp.

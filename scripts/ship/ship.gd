@@ -1,10 +1,11 @@
 class_name Ship
 extends Node3D
-## The landed ship. Its interior is the hub (`Rooms`), on two decks: the nose points left, the
-## ramp is at the tail on the right (screen right), so players walk from the inside to the right
-## into the mission. Upper deck: cockpit, bridge (the holo table shows the mission location), player
-## and crew cabins, mess hall. Lower deck: medical bay, engine room, shooting range, armory, upgrade
-## rooms. Lifts (`Lifts`) by the bridge and in the double-height cargo bay (by the ramp) join them.
+## The landed ship, standing on its landing gear. Its interior is the hub (`Rooms`), on two decks:
+## the nose points left, the ramp is at the tail on the right (screen right), so players walk from
+## the inside to the right into the mission. Upper deck: cockpit, bridge (the holo table shows the
+## mission location), player and crew cabins, mess hall. Lower deck: medical bay, engine room,
+## shooting range, armory, upgrade rooms. Lifts (`Lifts`) by the bridge and in the double-height
+## cargo bay (by the ramp) join them.
 ## Ship and planet are one world, without loading screens. The ramp is closed by default; the
 ## button on the inner wall next to the door lowers it (see `Mission` for the flow). The ship tracks
 ## who is aboard and holsters their weapons inside, except in the shooting range's weapon zone (a
@@ -30,8 +31,9 @@ signal player_boarded(player: Player)
 enum View { OUTSIDE, LOWER, UPPER }
 
 const GROUP: StringName = &"ships"
-## Ship-local height from which the viewer counts as being on the upper deck (its floor is at 5.5).
-const UPPER_DECK_HEIGHT: float = 5.0
+## Ship-local height from which the viewer counts as being on the upper deck (its floor is at 7;
+## the lower deck's at 2.5, the hull stands on landing gear).
+const UPPER_DECK_HEIGHT: float = 6.5
 ## Window panes: they never cast shadows (light comes in), so they're hidden with their wall.
 const GLASS_GROUP: StringName = &"ship_glass"
 
@@ -48,8 +50,8 @@ const COLOR_BUTTON_DISABLED := Color(0.25, 0.25, 0.25)
 const WARNING_BLINK_RATE: float = 2.0
 ## Ramp angle around its hinge at the door: standing up (closing the door) and lying on the ground.
 const RAMP_CLOSED_ANGLE: float = PI * 0.5
-## atan(1 / 4): 1 m down to the ground over 4 m.
-const RAMP_OPEN_ANGLE: float = -0.244979
+## asin(2.5 / 5): the 5 m ramp reaches 2.5 m down from the door to the ground (30°).
+const RAMP_OPEN_ANGLE: float = -0.523599
 
 ## Seconds the ramp takes to go down or up. TBD (playtest).
 @export var ramp_duration: float = 2.0

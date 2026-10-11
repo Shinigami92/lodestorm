@@ -4,7 +4,7 @@ extends CanvasLayer
 ## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
 ## every scene using them sees the new values right away; they last until the game stops and
 ## aren't written to the files. Also shows the mission state and has shortcuts for testing the
-## storm, death and fights.
+## storm, death and fights. Integer settings get whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -45,6 +45,14 @@ const TUNING: Dictionary[String, Array] = {
 		["attack_damage", 0.0, 100.0, 1.0],
 		["attack_rate", 0.1, 5.0, 0.1],
 	],
+	"res://scenes/aliens/alien_nest_settings.tres":
+	[
+		["guards", 0.0, 10.0, 1.0],
+		["hunter_interval_start", 1.0, 300.0, 1.0],
+		["hunter_interval_end", 1.0, 300.0, 1.0],
+		["max_hunters_start", 0.0, 20.0, 1.0],
+		["max_hunters_end", 0.0, 20.0, 1.0],
+	],
 }
 const PANEL_WIDTH: float = 420.0
 
@@ -80,6 +88,7 @@ func _process(_delta: float) -> void:
 		lines.append("Time left: %.1f s" % mission.time_left)
 		if mission.state == Mission.State.STORM:
 			lines.append("Storm: %.1f HP/s" % mission.storm_damage_per_second())
+		lines.append("Escalation: %d%%" % roundi(mission.progress() * 100.0))
 	else:
 		lines.append("No mission in this scene")
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -90,7 +99,11 @@ func _process(_delta: float) -> void:
 		lines.append("%s: %s, carrying %.0f" % [player.name, status, carried])
 	var aliens: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP)
 	var chasing: int = aliens.filter(func(alien: Alien) -> bool: return alien.target != null).size()
-	lines.append("Aliens: %d (%d chasing)" % [aliens.size(), chasing])
+	var hunters: int = aliens.filter(func(alien: Alien) -> bool: return alien.hunter).size()
+	var nests: int = get_tree().get_nodes_in_group(AlienNest.GROUP).size()
+	lines.append(
+		"Aliens: %d (%d chasing, %d hunters), nests: %d" % [aliens.size(), chasing, hunters, nests]
+	)
 	_live.text = "\n".join(lines)
 	var running: bool = mission != null and mission.state == Mission.State.RUNNING
 	for button: Button in _time_buttons:
@@ -123,6 +136,12 @@ func kill_players() -> void:
 func kill_aliens() -> void:
 	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
 		alien.take_damage(alien.health)
+
+
+## Lets every nest hatch a hunter right away.
+func hatch_hunters() -> void:
+	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+		nest.hatch(true)
 
 
 func heal_players() -> void:
@@ -173,6 +192,7 @@ func _build() -> void:
 	_button(actions, "Kill players", kill_players)
 	_button(actions, "Heal players", heal_players)
 	_button(actions, "Kill aliens", kill_aliens)
+	_button(actions, "Hatch hunters", hatch_hunters)
 	_button(actions, "Reset tuning", reset_tuning)
 
 	for path: String in TUNING:
@@ -206,13 +226,14 @@ func _add_slider(box: VBoxContainer, resource: Resource, path: String, row: Arra
 	line.add_child(value_label)
 
 	var value: float = resource.get(property)
+	var whole: bool = typeof(resource.get(property)) == TYPE_INT
 	_defaults[key] = value
 	_sliders[key] = slider
 	slider.value = value
 	value_label.text = _format(value, slider.step)
 	slider.value_changed.connect(
 		func(new_value: float) -> void:
-			resource.set(property, new_value)
+			resource.set(property, roundi(new_value) if whole else new_value)
 			value_label.text = _format(new_value, slider.step)
 	)
 

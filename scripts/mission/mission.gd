@@ -88,6 +88,22 @@ func reset_location() -> void:
 	location = fresh
 
 
+## Whether a run is underway: someone stepped out and not everyone is back yet.
+func is_running() -> bool:
+	return state in [State.RUNNING, State.STORM]
+
+
+## How far the run is: 0 at the start, 1 when the storm hits (and during it). Escalation follows it,
+## so it adapts to the mission length.
+func progress() -> float:
+	match state:
+		State.RUNNING:
+			return clampf(1.0 - time_left / settings.duration, 0.0, 1.0)
+		State.STORM:
+			return 1.0
+	return 0.0
+
+
 ## Storm damage per second right now.
 func storm_damage_per_second() -> float:
 	return settings.storm_damage + settings.storm_damage_growth * storm_time
@@ -160,7 +176,7 @@ func _respawn_dead() -> void:
 
 
 func _can_start_run() -> bool:
-	return state not in [State.RUNNING, State.STORM] and not _anyone_dead()
+	return not is_running() and not _anyone_dead()
 
 
 func _anyone_dead() -> bool:

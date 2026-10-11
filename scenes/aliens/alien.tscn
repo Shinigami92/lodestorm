@@ -45,3 +45,9 @@ mesh = SubResource("SphereMesh_eye")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0.22, -0.48)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_eye")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 1.0
+radius = 0.6
+neighbor_distance = 6.0
+time_horizon_agents = 0.5

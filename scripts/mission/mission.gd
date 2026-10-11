@@ -8,7 +8,10 @@ extends Node
 ## The mission is won (`returned`) once every living player is back aboard, in time or during the
 ## storm: their cargo goes into the ship's hold, the dead respawn aboard and the ramp goes up.
 ## It's lost (`lost`) when nobody is left alive; after `settings.respawn_delay` everyone respawns
-## aboard. Either way the button then starts the next run.
+## aboard. Either way the button then starts the next run. Players who die while no mission runs
+## (e.g. killed through the debug overlay) also respawn aboard after `settings.respawn_delay`.
+## Changing `settings.duration` while playing (debug overlay) updates the timer: before the start
+## it's the new duration, while it runs it moves by the difference.
 
 ## Emitted when the ramp button starts a new run: outside world and timer are reset.
 signal opened
@@ -23,6 +26,8 @@ signal lost
 
 enum State { CLOSED, OPEN, RUNNING, STORM, RETURNED, LOST }
 
+const GROUP: StringName = &"missions"
+
 @export var settings: MissionSettings
 ## The ship players start from and return to; it shows the mission time.
 @export var ship: Ship
@@ -35,12 +40,17 @@ var time_left: float
 ## Seconds since the storm hit.
 var storm_time: float = 0.0
 
-## Seconds until the dead respawn after a lost mission.
+## Seconds until the dead respawn when no mission runs (after a lost one, too).
 var _respawn_left: float = 0.0
+## `settings.duration` as of the last tick, to notice when it's tuned.
+var _duration: float
 
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	time_left = settings.duration
+	_duration = settings.duration
+	_respawn_left = settings.respawn_delay
 	ship.mission = self
 	ship.player_left.connect(_on_player_left)
 	ship.ramp_button.used.connect(_on_ramp_button_used)
@@ -48,6 +58,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	ship.ramp_button.enabled = _can_start_run()
+	_follow_duration()
 	match state:
 		State.RUNNING:
 			time_left = maxf(time_left - delta, 0.0)
@@ -57,12 +68,8 @@ func _physics_process(delta: float) -> void:
 		State.STORM:
 			storm_time += delta
 			_storm_damage(delta)
-		State.LOST:
-			_respawn_left = maxf(_respawn_left - delta, 0.0)
-			if _respawn_left == 0.0 and _anyone_dead():
-				_respawn_dead()
-			return
 		_:
+			_respawn_after_delay(delta)
 			return
 	_check_outcome()
 
@@ -112,6 +119,30 @@ func _check_outcome() -> void:
 		lost.emit()
 
 
+func _follow_duration() -> void:
+	if settings.duration == _duration:
+		return
+	match state:
+		State.CLOSED, State.OPEN:
+			time_left = settings.duration
+		State.RUNNING:
+			time_left = maxf(time_left + settings.duration - _duration, 0.0)
+	_duration = settings.duration
+
+
+## Respawns the dead once they've lain `settings.respawn_delay`; the timer starts with the first
+## death. After a lost mission the ramp then goes up.
+func _respawn_after_delay(delta: float) -> void:
+	if not _anyone_dead():
+		_respawn_left = settings.respawn_delay
+		return
+	_respawn_left = maxf(_respawn_left - delta, 0.0)
+	if _respawn_left == 0.0:
+		_respawn_dead()
+		if state == State.LOST:
+			ship.ramp_open = false
+
+
 func _return(players: Array[Player]) -> void:
 	state = State.RETURNED
 	ship.ramp_open = false
@@ -126,16 +157,10 @@ func _respawn_dead() -> void:
 	for player: Player in _players():
 		if player.dead:
 			player.respawn(ship.get_respawn_position())
-	ship.ramp_open = false
 
 
 func _can_start_run() -> bool:
-	match state:
-		State.CLOSED, State.OPEN, State.RETURNED:
-			return true
-		State.LOST:
-			return not _anyone_dead()
-	return false
+	return state not in [State.RUNNING, State.STORM] and not _anyone_dead()
 
 
 func _anyone_dead() -> bool:

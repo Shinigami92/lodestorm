@@ -22,6 +22,9 @@ const TUNING: Dictionary[String, Array] = {
 		["capacity", 10.0, 1000.0, 10.0],
 		["hose_range", 1.0, 15.0, 0.5],
 		["transfer_rate", 1.0, 200.0, 1.0],
+		["max_health", 10.0, 1000.0, 10.0],
+		["repair_rate", 1.0, 200.0, 1.0],
+		["repair_range", 0.5, 10.0, 0.5],
 	],
 	"res://scenes/player/player_settings.tres":
 	[
@@ -52,6 +55,10 @@ const TUNING: Dictionary[String, Array] = {
 		["hunter_interval_end", 1.0, 300.0, 1.0],
 		["max_hunters_start", 0.0, 20.0, 1.0],
 		["max_hunters_end", 0.0, 20.0, 1.0],
+		["raider_interval_start", 1.0, 300.0, 1.0],
+		["raider_interval_end", 1.0, 300.0, 1.0],
+		["max_raiders_start", 0.0, 20.0, 1.0],
+		["max_raiders_end", 0.0, 20.0, 1.0],
 	],
 }
 const PANEL_WIDTH: float = 420.0
@@ -99,11 +106,18 @@ func _process(_delta: float) -> void:
 		lines.append("%s: %s, carrying %.0f" % [player.name, status, carried])
 	var aliens: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP)
 	var chasing: int = aliens.filter(func(alien: Alien) -> bool: return alien.target != null).size()
-	var hunters: int = aliens.filter(func(alien: Alien) -> bool: return alien.hunter).size()
+	var hunters: int = aliens.filter(_has_role.bind(Alien.Role.HUNTER)).size()
+	var raiders: int = aliens.filter(_has_role.bind(Alien.Role.RAIDER)).size()
 	var nests: int = get_tree().get_nodes_in_group(AlienNest.GROUP).size()
 	lines.append(
-		"Aliens: %d (%d chasing, %d hunters), nests: %d" % [aliens.size(), chasing, hunters, nests]
+		(
+			"Aliens: %d (%d chasing, %d hunters, %d raiders), nests: %d"
+			% [aliens.size(), chasing, hunters, raiders, nests]
+		)
 	)
+	var miners: Array[Node] = get_tree().get_nodes_in_group(Miner.GROUP)
+	var broken: int = miners.filter(func(miner: Miner) -> bool: return miner.broken).size()
+	lines.append("Miners: %d (%d broken)" % [miners.size(), broken])
 	_live.text = "\n".join(lines)
 	var running: bool = mission != null and mission.state == Mission.State.RUNNING
 	for button: Button in _time_buttons:
@@ -141,7 +155,18 @@ func kill_aliens() -> void:
 ## Lets every nest hatch a hunter right away.
 func hatch_hunters() -> void:
 	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
-		nest.hatch(true)
+		nest.hatch(Alien.Role.HUNTER)
+
+
+## Lets every nest hatch a raider right away.
+func hatch_raiders() -> void:
+	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+		nest.hatch(Alien.Role.RAIDER)
+
+
+func break_miners() -> void:
+	for miner: Miner in get_tree().get_nodes_in_group(Miner.GROUP):
+		miner.take_damage(miner.health)
 
 
 func heal_players() -> void:
@@ -193,6 +218,8 @@ func _build() -> void:
 	_button(actions, "Heal players", heal_players)
 	_button(actions, "Kill aliens", kill_aliens)
 	_button(actions, "Hatch hunters", hatch_hunters)
+	_button(actions, "Hatch raiders", hatch_raiders)
+	_button(actions, "Break miners", break_miners)
 	_button(actions, "Reset tuning", reset_tuning)
 
 	for path: String in TUNING:
@@ -252,6 +279,10 @@ func _button(parent: Control, text: String, action: Callable) -> Button:
 	button.pressed.connect(action)
 	parent.add_child(button)
 	return button
+
+
+static func _has_role(alien: Alien, role: Alien.Role) -> bool:
+	return alien.role == role
 
 
 static func _format(value: float, step: float) -> String:

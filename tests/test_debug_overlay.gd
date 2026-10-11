@@ -89,6 +89,22 @@ func test_hatch_hunters() -> void:
 	assert_gt(nests, 0, "the test map has nests")
 	_overlay.call(&"hatch_hunters")
 	var hunters: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP).filter(
-		func(alien: Alien) -> bool: return alien.hunter
+		func(alien: Alien) -> bool: return alien.role == Alien.Role.HUNTER
 	)
 	assert_eq(hunters.size(), nests)
+
+
+func test_hatch_raiders() -> void:
+	var nests: int = get_tree().get_nodes_in_group(AlienNest.GROUP).size()
+	_overlay.call(&"hatch_raiders")
+	var raiders: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP).filter(
+		func(alien: Alien) -> bool: return alien.role == Alien.Role.RAIDER
+	)
+	assert_eq(raiders.size(), nests)
+
+
+func test_break_miners() -> void:
+	var node: OreNode = _mission.location.get_node("OreNodes/CyanA") as OreNode
+	var miner: Miner = node.place_miner(_player.miner_scene)
+	_overlay.call(&"break_miners")
+	assert_true(miner.broken)

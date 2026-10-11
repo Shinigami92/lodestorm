@@ -11,3 +11,9 @@ extends Resource
 @export var hose_range: float = 5.0
 ## Units per second the hose moves from the miner to the player.
 @export var transfer_rate: float = 30.0
+## Health of an undamaged miner; it breaks down at zero.
+@export var max_health: float = 100.0
+## Health per second a player standing next to the miner repairs.
+@export var repair_rate: float = 25.0
+## How close (horizontally, in m) a player must be to repair the miner.
+@export var repair_range: float = 2.5

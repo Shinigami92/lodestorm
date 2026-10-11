@@ -5,16 +5,23 @@ extends CharacterBody3D
 ## lunges forward). A player gets away by running farther than `settings.chase_range` or by
 ## going aboard; aliens don't hunt players inside the ship. Where there is a navigation mesh it
 ## walks around obstacles along it and steers around other aliens; elsewhere it goes straight.
-## Hunters (sent out by nests) go for the nearest player outside however far away. It grows out of
-## the ground when it appears, loses health when hit (flashes white) and dies at zero: it stops,
-## shrinks and disappears.
+## Nests send out two more roles: hunters go for the nearest player outside however far away, and
+## raiders go for the nearest miner that still works, however far away, and ignore players until
+## no working miner is left; then they hunt players too. Raiders have a darker body. It grows
+## out of the ground when it appears, loses health when hit (flashes white) and dies at zero: it
+## stops, shrinks and disappears.
 
 ## Emitted when health reaches zero.
 signal died
 
+## Guards wait until a player comes close, hunters go for players and raiders for miners.
+enum Role { GUARD, HUNTER, RAIDER }
+
 const GROUP: StringName = &"aliens"
 
 const COLOR_BODY := Color(0.55, 0.08, 0.2)
+## Raiders are a different strain: a darker body (orange would look like the player).
+const COLOR_BODY_RAIDER := Color(0.28, 0.04, 0.1)
 const COLOR_FLASH := Color(1.0, 1.0, 1.0)
 ## Seconds a hit flash lasts.
 const FLASH_DURATION: float = 0.1
@@ -30,15 +37,15 @@ const REPATH_DISTANCE: float = 1.0
 const DEATH_DURATION: float = 0.3
 
 @export var settings: AlienSettings
-## Hunters go for the nearest prey however far away and never let it get away by distance.
-@export var hunter: bool = false
+## Hunters and raiders go for their target however far away and never let it get away by distance.
+@export var role := Role.GUARD
 
 ## Current health, from 0 to `settings.max_health`.
 var health: float
 ## Dead aliens don't move or attack; they disappear after `DEATH_DURATION`.
 var dead: bool = false
-## The player being chased, or null.
-var target: Player
+## The player or miner being chased, or null.
+var target: Node3D
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Seconds until the next attack is possible.
@@ -113,9 +120,13 @@ func _process(delta: float) -> void:
 	_update_look()
 
 
-## Hits `player` once and waits `1 / settings.attack_rate` until the next attack.
-func attack(player: Player) -> void:
-	player.take_damage(settings.attack_damage)
+## Hits `victim` (a player or a miner) once and waits `1 / settings.attack_rate` until the next
+## attack.
+func attack(victim: Node3D) -> void:
+	if victim is Player:
+		(victim as Player).take_damage(settings.attack_damage)
+	elif victim is Miner:
+		(victim as Miner).take_damage(settings.attack_damage)
 	_cooldown = 1.0 / settings.attack_rate
 	_lunge_left = LUNGE_DURATION
 
@@ -142,12 +153,16 @@ static func is_prey(tree: SceneTree, player: Player) -> bool:
 
 ## Keeps chasing the target while it's in `settings.chase_range`, otherwise picks the nearest
 ## prey in `settings.detection_range`. Hunters keep their prey and pick it from any distance.
+## Raiders keep their miner until it breaks and pick the nearest working one from any distance;
+## without one they act like hunters.
 func _update_target() -> void:
-	if target and is_instance_valid(target) and is_prey(get_tree(), target):
-		if hunter or _horizontal_distance(target) <= settings.chase_range:
+	if role == Role.RAIDER and _update_miner_target():
+		return
+	if target is Player and is_instance_valid(target) and is_prey(get_tree(), target as Player):
+		if role != Role.GUARD or _horizontal_distance(target) <= settings.chase_range:
 			return
 	target = null
-	var nearest_distance: float = INF if hunter else settings.detection_range
+	var nearest_distance: float = INF if role != Role.GUARD else settings.detection_range
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		if not is_prey(get_tree(), player):
 			continue
@@ -155,6 +170,21 @@ func _update_target() -> void:
 		if distance <= nearest_distance:
 			target = player
 			nearest_distance = distance
+
+
+## Keeps the target miner while it works, otherwise picks the nearest working one. Returns
+## whether there is one.
+func _update_miner_target() -> bool:
+	if target is Miner and is_instance_valid(target) and not (target as Miner).broken:
+		return true
+	target = null
+	var nearest_distance: float = INF
+	for miner: Miner in get_tree().get_nodes_in_group(Miner.GROUP):
+		var distance: float = _horizontal_distance(miner)
+		if not miner.broken and distance <= nearest_distance:
+			target = miner
+			nearest_distance = distance
+	return target != null
 
 
 ## Horizontal direction towards `point`: along the navigation mesh if there is one and it has a
@@ -183,7 +213,8 @@ func _horizontal_distance(node: Node3D) -> float:
 
 
 func _update_look() -> void:
-	_material.albedo_color = COLOR_FLASH if _flash_left > 0.0 else COLOR_BODY
+	var body: Color = COLOR_BODY_RAIDER if role == Role.RAIDER else COLOR_BODY
+	_material.albedo_color = COLOR_FLASH if _flash_left > 0.0 else body
 	var lunge: float = sin(PI * _lunge_left / LUNGE_DURATION) * LUNGE_DISTANCE
 	_body.position = _body_position + Vector3(0.0, 0.0, -lunge)
 

@@ -104,7 +104,9 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Stop when full.** Capacity and speed can be upgraded / better miner types.
 - Fill level is shown on the miner itself: a glass column fills up in the ore color, and a lamp on top lights up when it's full.
 - Art pass: the miner model gets a small display showing the fill counter (amount / capacity) and a timer (time until full).
-- Can probably be attacked by aliens → defense options like shields and sentry turrets.
+- **Attacked by aliens** (raiders, see [Combat & aliens](#10-combat--aliens)): a miner has health (greybox 100); the frame flashes white when hit and turns rusty with damage. At zero it **breaks down**: it stops mining and the hose disconnects, so its ore can't be taken out until it's repaired, but it keeps the ore. The frame blinks red while broken.
+- **Repair:** a player standing next to a miner (greybox 2.5 m) repairs it automatically, 25 health/s; a broken miner works again only once it's repaired completely (4 s from broken). Damaged miners that still work get repaired too. Values **TBD (playtest)**.
+- Defense options like shields and sentry turrets are possible later.
 - Whether miners are lost (re-buy) or always available: **TBD (playtest)**.
 
 ## 8. Hose transfer
@@ -134,8 +136,9 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - Aliens likely get stronger over time and may be attracted by miners (risk vs. reward). **TBD (playtest)**.
 - **Greybox alien** (`scenes/aliens/alien_settings.tres`, all values **TBD (playtest)**): a crimson blob with glowing yellow eyes that show where it faces. It waits until a living player outside the ship comes within 18 m, then chases the nearest one at 4.5 m/s (slower than the player, so running away works) and lunges at it once per second for 10 damage when in reach. A player gets away beyond 20 m or by going aboard: aliens don't hunt inside the ship. 30 HP; it flashes white when hit and shrinks away when it dies. The blaster deals 10 damage per shot, so three hits kill one. Shots don't hurt other players (no friendly fire).
 - **Greybox nests** (`scenes/aliens/alien_nest.tscn`, values in `alien_nest_settings.tres`, all **TBD (playtest)**): dark crimson mounds on a slimy patch with a glowing mouth. When the outside world appears, 2 guards hatch around each nest and wait there like any alien. Once the mission starts, each nest also sends out **hunters**: aliens that go for the nearest player outside however far away and don't give up because of distance (only by the player going aboard or dying). The hive escalates with the mission's progress, from the start until the storm hits: a nest hatches a hunter every 45 s at first and every 15 s at the end, with at most 1 and later 4 of its hunters out at once; after a hunter dies, the next one comes a full interval later. The glow in the mouth pulses faster as the hive escalates. Escalation by mining (miners drawing aliens in) and destroying nests are open.
+- **Raiders:** nests also send out raiders, a darker strain that goes for the nearest working miner however far away and ignores players on the way, attacking the miner until it breaks down and then moving on to the next one. Once no miner works, they hunt players like hunters. They only hatch while at least one miner works, the first one a full interval after that, and escalate like hunters with their own values: one every 60 s → 25 s, at most 1 → 2 per nest at once (**TBD (playtest)**). Defending miners means shooting raiders before they get there, or repairing behind them.
 - The test location has 3 nests away from the ship and the first ore nodes, so the start is quiet; they come back with the fresh outside world of every run.
-- **Pathfinding:** aliens walk around rocks and nests along a navigation mesh that the outside world bakes when it appears (miners placed later aren't part of it), and steer around each other, so swarms spread around their target instead of stacking.
+- **Pathfinding:** aliens walk around rocks and nests along a navigation mesh that the outside world bakes when it appears (miners placed later aren't part of it, aliens steer around them instead), and steer around each other, so swarms spread around their target instead of stacking.
 
 ### Alien look and behavior (direction for the art pass)
 

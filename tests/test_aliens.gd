@@ -1,6 +1,7 @@
 extends GutTest
 
 const ALIEN_SCENE: PackedScene = preload("res://scenes/aliens/alien.tscn")
+const MINER_SCENE: PackedScene = preload("res://scenes/mining/miner.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const PROJECTILE: PackedScene = preload("res://scenes/weapons/projectile.tscn")
 const TEST_MAP: PackedScene = preload("res://scenes/maps/test_map.tscn")
@@ -148,6 +149,47 @@ func test_location_has_aliens_and_resets_them() -> void:
 	mission.reset_location()
 	await wait_physics_frames(2)
 	assert_eq(_aliens_in(mission.location), location_aliens)
+
+
+func test_raider_goes_for_a_miner_far_away_and_ignores_players() -> void:
+	var miner: Miner = _add_miner(Vector3(-40.0, 0.0, 0.0))
+	_alien.role = Alien.Role.RAIDER
+	await _place_alien(3.0)
+	var health: float = _player.health
+	await wait_physics_frames(10)
+	assert_eq(_alien.target, miner)
+	await wait_seconds(1.0)
+	assert_eq(_player.health, health, "walks past the player")
+
+
+func test_raider_attacks_the_miner_until_it_breaks() -> void:
+	var miner: Miner = _add_miner(Vector3(-10.0, 0.0, 0.0))
+	miner.settings.max_health = _alien.settings.attack_damage * 2.0
+	miner.health = miner.settings.max_health
+	_alien.role = Alien.Role.RAIDER
+	await _place_alien(-13.0)
+	await wait_seconds(2.0)
+	assert_true(miner.broken)
+	assert_eq(_alien.target, _player, "hunts players once no miner works")
+
+
+func test_others_ignore_miners() -> void:
+	_add_miner(Vector3(-40.0, 0.0, 0.0))
+	_alien.role = Alien.Role.HUNTER
+	await _place_alien(30.0)
+	await wait_physics_frames(2)
+	assert_eq(_alien.target, _player)
+
+
+## A miner of its own (no ore, no hose) at `at`.
+func _add_miner(at: Vector3) -> Miner:
+	var miner := MINER_SCENE.instantiate() as Miner
+	miner.settings = miner.settings.duplicate() as MinerSettings
+	miner.settings.hose_range = 0.0
+	miner.settings.repair_range = 0.0
+	miner.position = at
+	_arena.add_child(miner)
+	return miner
 
 
 func _place_alien(distance: float) -> void:

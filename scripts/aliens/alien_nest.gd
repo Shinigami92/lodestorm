@@ -5,7 +5,9 @@ extends Node3D
 ## hunters, aliens that go for the nearest player outside the ship however far away. The hive
 ## escalates with the mission's progress (0 at the start, 1 when the storm hits): hunters hatch
 ## more often and more of them are out at once. After a hunter dies, the next one hatches a full
-## interval later. The glow in the nest's mouth pulses faster as the hive escalates.
+## interval later. Raiders go for miners and escalate the same way with their own values; they
+## only hatch while a miner works, the first one a full interval after that. The glow in the nest's
+## mouth pulses faster as the hive escalates.
 
 ## Emitted when an alien hatches.
 signal hatched(alien: Alien)
@@ -25,8 +27,12 @@ const GLOW_ENERGY_MAX: float = 4.0
 
 ## Seconds until the next hunter hatches; only counts down while fewer hunters than allowed are out.
 var hunter_cooldown: float
+## Seconds until the next raider hatches; only counts down while a miner works and fewer raiders
+## than allowed are out.
+var raider_cooldown: float
 
 var _hunters: Array[Alien] = []
+var _raiders: Array[Alien] = []
 var _mission: Mission
 ## Pulse phase in turns.
 var _pulse: float = 0.0
@@ -42,8 +48,9 @@ func _ready() -> void:
 	_glow.emission = COLOR_GLOW
 	_mouth.material_override = _glow
 	hunter_cooldown = settings.hunter_interval_start
+	raider_cooldown = settings.raider_interval_start
 	for i: int in settings.guards:
-		hatch(false)
+		hatch(Alien.Role.GUARD)
 
 
 func _physics_process(delta: float) -> void:
@@ -51,13 +58,13 @@ func _physics_process(delta: float) -> void:
 	_pulse = fmod(_pulse + delta * lerpf(PULSE_RATE_CALM, PULSE_RATE_FRENZY, level), 1.0)
 	if not (_find_mission() and _mission.is_running()):
 		return
-	if _hunters.size() >= max_hunters(level):
-		hunter_cooldown = hunter_interval(level)
-		return
-	hunter_cooldown = maxf(hunter_cooldown - delta, 0.0)
-	if hunter_cooldown == 0.0:
-		hatch(true)
-		hunter_cooldown = hunter_interval(level)
+	hunter_cooldown = _count_down(
+		Alien.Role.HUNTER, hunter_cooldown, hunter_interval(level), max_hunters(level), delta
+	)
+	var raider_limit: int = max_raiders(level) if Miner.any_working(get_tree()) else 0
+	raider_cooldown = _count_down(
+		Alien.Role.RAIDER, raider_cooldown, raider_interval(level), raider_limit, delta
+	)
 
 
 func _process(_delta: float) -> void:
@@ -65,18 +72,19 @@ func _process(_delta: float) -> void:
 	_glow.emission_energy_multiplier = lerpf(GLOW_ENERGY_MIN, GLOW_ENERGY_MAX, wave)
 
 
-## Hatches an alien at a random spot around the nest, facing away from it.
-func hatch(hunter: bool) -> Alien:
+## Hatches an alien with `role` at a random spot around the nest, facing away from it.
+func hatch(role: Alien.Role) -> Alien:
 	var alien := alien_scene.instantiate() as Alien
-	alien.hunter = hunter
+	alien.role = role
 	var angle: float = randf() * TAU
 	var direction := Vector3(sin(angle), 0.0, cos(angle))
 	alien.position = direction * settings.hatch_radius
 	alien.basis = Basis(Vector3.UP, atan2(-direction.x, -direction.z))
 	add_child(alien)
-	if hunter:
-		_hunters.append(alien)
-		alien.died.connect(func() -> void: _hunters.erase(alien))
+	if role != Alien.Role.GUARD:
+		var sent_out: Array[Alien] = _hunters if role == Alien.Role.HUNTER else _raiders
+		sent_out.append(alien)
+		alien.died.connect(func() -> void: sent_out.erase(alien))
 	hatched.emit(alien)
 	return alien
 
@@ -96,9 +104,39 @@ func max_hunters(level: float) -> int:
 	return roundi(lerpf(settings.max_hunters_start, settings.max_hunters_end, level))
 
 
+## Seconds between raiders at escalation `level`.
+func raider_interval(level: float) -> float:
+	return lerpf(settings.raider_interval_start, settings.raider_interval_end, level)
+
+
+## How many raiders from this nest may be out at once at escalation `level`.
+func max_raiders(level: float) -> int:
+	return roundi(lerpf(settings.max_raiders_start, settings.max_raiders_end, level))
+
+
 ## Hunters from this nest that are still alive.
 func get_hunters() -> Array[Alien]:
 	return _hunters.duplicate()
+
+
+## Raiders from this nest that are still alive.
+func get_raiders() -> Array[Alien]:
+	return _raiders.duplicate()
+
+
+## Counts `cooldown` down while fewer than `limit` aliens with `role` are out, hatches one at zero
+## and returns the new cooldown. At the limit it holds a full `interval`.
+func _count_down(
+	role: Alien.Role, cooldown: float, interval: float, limit: int, delta: float
+) -> float:
+	var out: int = (_hunters if role == Alien.Role.HUNTER else _raiders).size()
+	if out >= limit:
+		return interval
+	cooldown = maxf(cooldown - delta, 0.0)
+	if cooldown > 0.0:
+		return cooldown
+	hatch(role)
+	return interval
 
 
 ## Looks the mission up until it's found (it may be set up after the nest).

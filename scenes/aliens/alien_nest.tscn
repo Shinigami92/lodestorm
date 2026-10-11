@@ -1,0 +1,87 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/aliens/alien_nest.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/aliens/alien_nest_settings.tres" id="2_settings"]
+[ext_resource type="PackedScene" path="res://scenes/aliens/alien.tscn" id="3_alien"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_mound"]
+height = 2.4
+radius = 1.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_slime"]
+albedo_color = Color(0.24, 0.04, 0.08, 1)
+roughness = 0.15
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_slime"]
+material = SubResource("StandardMaterial3D_slime")
+top_radius = 4.5
+bottom_radius = 4.5
+height = 0.04
+radial_segments = 32
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mound"]
+albedo_color = Color(0.36, 0.06, 0.12, 1)
+roughness = 0.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_mound"]
+material = SubResource("StandardMaterial3D_mound")
+radius = 1.6
+height = 2.4
+
+[sub_resource type="SphereMesh" id="SphereMesh_bump"]
+material = SubResource("StandardMaterial3D_mound")
+radius = 0.6
+height = 1.0
+radial_segments = 16
+rings = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rim"]
+albedo_color = Color(0.1, 0.02, 0.04, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_rim"]
+material = SubResource("StandardMaterial3D_rim")
+inner_radius = 0.35
+outer_radius = 0.6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mouth"]
+top_radius = 0.4
+bottom_radius = 0.4
+height = 0.1
+radial_segments = 24
+rings = 1
+
+[node name="AlienNest" type="Node3D"]
+script = ExtResource("1_script")
+settings = ExtResource("2_settings")
+alien_scene = ExtResource("3_alien")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("CylinderShape3D_mound")
+
+[node name="Slime" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_slime")
+
+[node name="Mound" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_mound")
+
+[node name="BumpA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0, 0.5)
+mesh = SubResource("SphereMesh_bump")
+
+[node name="BumpB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, -1.15)
+mesh = SubResource("SphereMesh_bump")
+
+[node name="Rim" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.13, 0)
+mesh = SubResource("TorusMesh_rim")
+
+[node name="Mouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_mouth")

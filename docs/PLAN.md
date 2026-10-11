@@ -48,7 +48,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 
 ## M4 — Art pass (Blender MCP)
 
-- Stylized models: player, miner (with a display for fill counter and time until full), hose, ore nodes, aliens, ship exterior/interior, weapons
+- Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full), hose, ore nodes, aliens, ship exterior/interior, weapons
 - Basic VFX/SFX for mining, shooting, storm
 
 ## M5 — VR

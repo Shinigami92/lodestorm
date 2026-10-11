@@ -4,7 +4,7 @@ extends CanvasLayer
 ## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
 ## every scene using them sees the new values right away; they last until the game stops and
 ## aren't written to the files. Also shows the mission state and has shortcuts for testing the
-## storm and death.
+## storm, death and fights.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -30,9 +30,20 @@ const TUNING: Dictionary[String, Array] = {
 	],
 	"res://scenes/weapons/blaster_settings.tres":
 	[
+		["damage", 1.0, 100.0, 1.0],
 		["attack_rate", 0.5, 20.0, 0.5],
 		["projectile_speed", 5.0, 100.0, 1.0],
 		["projectile_range", 5.0, 60.0, 1.0],
+	],
+	"res://scenes/aliens/alien_settings.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.5],
+		["detection_range", 1.0, 40.0, 1.0],
+		["chase_range", 1.0, 60.0, 1.0],
+		["attack_range", 0.5, 5.0, 0.1],
+		["attack_damage", 0.0, 100.0, 1.0],
+		["attack_rate", 0.1, 5.0, 0.1],
 	],
 }
 const PANEL_WIDTH: float = 420.0
@@ -77,6 +88,9 @@ func _process(_delta: float) -> void:
 			carried += amount
 		var status: String = "dead" if player.dead else "%.0f HP" % player.health
 		lines.append("%s: %s, carrying %.0f" % [player.name, status, carried])
+	var aliens: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP)
+	var chasing: int = aliens.filter(func(alien: Alien) -> bool: return alien.target != null).size()
+	lines.append("Aliens: %d (%d chasing)" % [aliens.size(), chasing])
 	_live.text = "\n".join(lines)
 	var running: bool = mission != null and mission.state == Mission.State.RUNNING
 	for button: Button in _time_buttons:
@@ -104,6 +118,11 @@ func start_storm() -> void:
 func kill_players() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.take_damage(player.health)
+
+
+func kill_aliens() -> void:
+	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
+		alien.take_damage(alien.health)
 
 
 func heal_players() -> void:
@@ -153,6 +172,7 @@ func _build() -> void:
 	_time_buttons.append(_button(actions, "Storm now", start_storm))
 	_button(actions, "Kill players", kill_players)
 	_button(actions, "Heal players", heal_players)
+	_button(actions, "Kill aliens", kill_aliens)
 	_button(actions, "Reset tuning", reset_tuning)
 
 	for path: String in TUNING:

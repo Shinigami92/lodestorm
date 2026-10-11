@@ -2,6 +2,8 @@ class_name RangedWeaponSettings
 extends WeaponSettings
 ## Tuning values of projectile weapons. All values TBD (playtest).
 
+## Damage per projectile.
+@export var damage: float = 10.0
 ## Projectile speed in m/s.
 @export var projectile_speed: float = 30.0
 ## Distance in m after which a projectile disappears.

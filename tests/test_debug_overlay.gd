@@ -67,3 +67,9 @@ func test_kill_and_heal_players() -> void:
 	assert_eq(_player.health, _player.settings.max_health)
 	_overlay.call(&"kill_players")
 	assert_true(_player.dead)
+
+
+func test_kill_aliens() -> void:
+	assert_gt(get_tree().get_nodes_in_group(Alien.GROUP).size(), 0, "the test map has aliens")
+	_overlay.call(&"kill_aliens")
+	assert_eq(get_tree().get_nodes_in_group(Alien.GROUP).size(), 0)

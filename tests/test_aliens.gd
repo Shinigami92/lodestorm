@@ -170,7 +170,7 @@ func test_raider_goes_for_a_miner_far_away_and_ignores_players() -> void:
 	var health: float = _player.health
 	await wait_physics_frames(10)
 	assert_eq(_alien.target, miner)
-	await wait_seconds(1.0)
+	await _wait_physics(1.0)
 	assert_eq(_player.health, health, "walks past the player")
 
 
@@ -180,7 +180,7 @@ func test_raider_attacks_the_miner_until_it_breaks() -> void:
 	miner.health = miner.settings.max_health
 	_alien.role = Alien.Role.RAIDER
 	await _place_alien(-13.0)
-	await wait_seconds(2.0)
+	await _wait_physics(2.0)
 	assert_true(miner.broken)
 	assert_eq(_alien.target, _player, "hunts players once no miner works")
 
@@ -217,3 +217,9 @@ func _distance() -> float:
 
 func _aliens_in(node: Node) -> int:
 	return get_tree().get_nodes_in_group(Alien.GROUP).filter(node.is_ancestor_of).size()
+
+
+## Waits `seconds` of physics time: on a busy machine it falls behind the wall clock that
+## `wait_seconds` counts.
+func _wait_physics(seconds: float) -> void:
+	await wait_physics_frames(roundi(seconds * Engine.physics_ticks_per_second))

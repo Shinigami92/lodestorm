@@ -38,7 +38,7 @@ func test_guards_hatch_around_the_nest() -> void:
 
 func test_no_hunters_before_the_mission_starts() -> void:
 	_set_interval(0.1)
-	await wait_seconds(0.5)
+	await _wait_physics(0.5)
 	assert_eq(_nest.get_hunters().size(), 0)
 
 
@@ -46,7 +46,7 @@ func test_hunters_hatch_while_the_mission_runs() -> void:
 	_set_interval(0.2)
 	await _start_mission()
 	assert_eq(_nest.get_hunters().size(), 0, "not before the first interval")
-	await wait_seconds(0.4)
+	await _wait_physics(0.4)
 	assert_eq(_nest.get_hunters().size(), 1)
 	assert_signal_emitted(_nest, "hatched")
 
@@ -75,7 +75,7 @@ func test_hunters_find_their_way_around_the_nest() -> void:
 	hunter.global_position = nest.global_position + away.normalized() * 2.5
 	hunter.reset_physics_interpolation()
 	var start: float = _player.global_position.distance_to(hunter.global_position)
-	await wait_seconds(3.0)
+	await _wait_physics(3.0)
 	var distance: float = _player.global_position.distance_to(hunter.global_position)
 	assert_lt(distance, start - 8.0, "got past the nest")
 
@@ -84,29 +84,29 @@ func test_hunters_are_capped_and_replaced_an_interval_after_a_kill() -> void:
 	_set_interval(0.1)
 	_nest.settings.max_hunters_start = 2
 	await _start_mission()
-	await wait_seconds(0.6)
+	await _wait_physics(0.6)
 	assert_eq(_nest.get_hunters().size(), 2)
 	_nest.get_hunters()[0].take_damage(1000.0)
 	assert_eq(_nest.get_hunters().size(), 1)
 	await wait_physics_frames(2)
 	assert_eq(_nest.get_hunters().size(), 1, "not right away")
-	await wait_seconds(0.2)
+	await _wait_physics(0.2)
 	assert_eq(_nest.get_hunters().size(), 2)
 
 
 func test_raiders_only_hatch_while_a_miner_works() -> void:
 	_set_raider_interval(0.1)
 	await _start_mission()
-	await wait_seconds(0.4)
+	await _wait_physics(0.4)
 	assert_eq(_nest.get_raiders().size(), 0, "no miner yet")
 	var miner: Miner = _place_miner()
-	await wait_seconds(0.05)
+	await _wait_physics(0.05)
 	assert_eq(_nest.get_raiders().size(), 0, "a full interval after the miner")
-	await wait_seconds(0.2)
+	await _wait_physics(0.2)
 	assert_eq(_nest.get_raiders().size(), 1)
 	miner.take_damage(miner.health)
 	_nest.get_raiders()[0].take_damage(1000.0)
-	await wait_seconds(0.4)
+	await _wait_physics(0.4)
 	assert_eq(_nest.get_raiders().size(), 0, "not while every miner is broken")
 
 
@@ -185,3 +185,9 @@ func _aliens() -> Array[Alien]:
 	var aliens: Array[Alien] = []
 	aliens.assign(get_tree().get_nodes_in_group(Alien.GROUP).filter(_nest.is_ancestor_of))
 	return aliens
+
+
+## Waits `seconds` of physics time: on a busy machine it falls behind the wall clock that
+## `wait_seconds` counts.
+func _wait_physics(seconds: float) -> void:
+	await wait_physics_frames(roundi(seconds * Engine.physics_ticks_per_second))

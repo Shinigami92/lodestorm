@@ -41,7 +41,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Spike: 3D menus (UI on a panel in the world, input via mouse, gamepad and later VR controllers, readability)
 - Mission selection as a 3D menu at the bridge's holo table (pick from a few missions: location, timer, difficulty; the hologram previews the location, with the ore fields in their colors)
 - Loadout selection before a mission (3D menu in the armory): pick a few of the owned weapons
-- Ship states (space / landed + weather) and ramp → starts mission
+- Ship states (space / landed + weather): start in space, land at the location when a mission is picked (loading it during the flight), take off into space once everyone is back aboard after the mission
 - Medical bay respawn
 - Localization setup: English and German, all player-facing text through translations from the start (also the 3D menus and the text in the world)
 - Upgrade station(s) spending resources (a few weapon/armor/miner upgrades)

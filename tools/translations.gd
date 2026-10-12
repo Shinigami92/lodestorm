@@ -6,12 +6,15 @@ extends SceneTree
 ##
 ## Texts are the English originals (English needs no translation file). They come from
 ## - scripts: `tr("Text")` and `tr("Text", "context")` with string literals,
-## - scenes: the `text` of nodes (Label3D, ...), unless their auto translation is disabled.
+## - scenes: the `text` of nodes (Label3D, ...), unless their auto translation is disabled,
+## - resources: the player-facing names of the resource types in `RESOURCE_TEXTS` (e.g. biomes).
 
 const TEMPLATE_PATH := "res://locale/lodestorm.pot"
 const SOURCE_DIRS: Array[String] = ["res://scenes", "res://scripts"]
 ## Node properties that hold player-facing text.
 const TEXT_PROPERTIES: Array[StringName] = [&"text", &"placeholder_text", &"tooltip_text"]
+## Resource types (script class names) with player-facing texts, and their text properties.
+const RESOURCE_TEXTS: Dictionary[String, Array] = {"LocationBiome": [&"display_name"]}
 const TRANSLATIONS_SETTING := "internationalization/locale/translations"
 ## Separates the context from the text in entry keys (as in gettext's binary format).
 const CONTEXT_SEPARATOR := "\u0004"
@@ -45,6 +48,8 @@ static func extract() -> Array[Dictionary]:
 			found = _script_texts(path)
 		elif path.ends_with(".tscn"):
 			found = _scene_texts(path)
+		elif path.ends_with(".tres"):
+			found = _resource_texts(path)
 		for text: PackedStringArray in found:
 			var key: String = _key(text[0], text[1])
 			if not by_key.has(key):
@@ -161,7 +166,7 @@ static func _unquote(text: String) -> String:
 
 static func _collect_files(dir: String, files: Array[String]) -> void:
 	for file: String in DirAccess.get_files_at(dir):
-		if file.ends_with(".gd") or file.ends_with(".tscn"):
+		if file.ends_with(".gd") or file.ends_with(".tscn") or file.ends_with(".tres"):
 			files.append(dir.path_join(file))
 	for sub_dir: String in DirAccess.get_directories_at(dir):
 		_collect_files(dir.path_join(sub_dir), files)
@@ -207,6 +212,23 @@ static func _scene_texts(path: String) -> Array[PackedStringArray]:
 			var name: StringName = state.get_node_property_name(node, property)
 			var value: Variant = state.get_node_property_value(node, property)
 			if name in TEXT_PROPERTIES and value is String and not (value as String).is_empty():
+				texts.append(PackedStringArray(["", value]))
+	return texts
+
+
+## `[context, text]` of the player-facing texts of the resource at `path`, if its type has any
+## (`RESOURCE_TEXTS`).
+static func _resource_texts(path: String) -> Array[PackedStringArray]:
+	var texts: Array[PackedStringArray] = []
+	# The header names the script class: no need to load every resource.
+	var header: String = FileAccess.open(path, FileAccess.READ).get_line()
+	for type: String in RESOURCE_TEXTS:
+		if not header.contains('script_class="%s"' % type):
+			continue
+		var resource: Resource = load(path)
+		for property: StringName in RESOURCE_TEXTS[type]:
+			var value: Variant = resource.get(property)
+			if value is String and not (value as String).is_empty():
 				texts.append(PackedStringArray(["", value]))
 	return texts
 

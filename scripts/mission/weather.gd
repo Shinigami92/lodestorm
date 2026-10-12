@@ -2,10 +2,11 @@ class_name Weather
 extends Node
 ## Shows the storm in the world, so the mission time is visible without a HUD: haze and darker
 ## light build up during the mission's warning time and the storm rages once the timer ran out.
-## The next run starts in clear weather. While the `viewer` is aboard the ship, the haze and the
-## tinted ambient light fade out, so the inside stays clear; the dim sun still shows the storm
-## outside. Aboard, the ambient light also turns up to `indoor_ambient_energy`: the cut-away roof
-## still shades the rooms, and the dark outside lighting would leave them murky.
+## A new mission (picked, so the ship flew to its location) and the next run start in clear
+## weather. While the `viewer` is aboard the ship, the haze and the tinted ambient light fade out,
+## so the inside stays clear; the dim sun still shows the storm outside. Aboard, the ambient light
+## also turns up to `indoor_ambient_energy`: the cut-away roof still shades the rooms, and the
+## dark outside lighting would leave them murky.
 
 ## How much of the storm shows when the timer runs out (0–1); the rest comes with the storm.
 const BUILD_UP: float = 0.4
@@ -50,7 +51,8 @@ func _ready() -> void:
 	env.fog_light_color = storm_color
 	env.fog_depth_begin = 30.0
 	env.fog_depth_end = 80.0
-	mission.opened.connect(_on_opened)
+	mission.opened.connect(_clear)
+	mission.selected.connect(_clear.unbind(1))
 	_apply()
 
 
@@ -82,6 +84,6 @@ func _apply() -> void:
 	sun.light_energy = lerpf(_calm_sun_energy, _calm_sun_energy * storm_sun_energy, intensity)
 
 
-func _on_opened() -> void:
+func _clear() -> void:
 	intensity = 0.0
 	_apply()

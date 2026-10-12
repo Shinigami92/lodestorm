@@ -1,9 +1,10 @@
 class_name MissionSettings
 extends Resource
-## Mission tuning values; later one per mission (location, timer, difficulty). All values TBD
-## (playtest). Target for real missions: about 15–30 min.
+## Mission tuning values, and what the missions on offer at the holo table are made of. All values
+## TBD (playtest). Target for real missions: about 15–30 min.
 
-## Seconds from the start until the storm turns lethal. Greybox: short, for the small test map.
+## Seconds from the start until the storm turns lethal in a standard mission; each mission scales
+## it by its `MissionBrief.length`.
 @export var duration: float = 300.0
 ## In the last seconds before the storm the ship's beacon turns red and blinks.
 @export var warning_time: float = 60.0
@@ -14,3 +15,14 @@ extends Resource
 @export var storm_damage_growth: float = 2.0
 ## Seconds dead players lie outside after the mission is lost before they respawn aboard.
 @export var respawn_delay: float = 3.0
+
+@export_group("Offers")
+## How many missions the holo table offers at a time; they run through the difficulties (easy,
+## normal, hard, easy, ...).
+@export var offers: int = 3
+## The kinds of places missions go to.
+@export var biomes: Array[LocationBiome] = []
+## Timer lengths a mission can have, relative to `duration`.
+@export var lengths: PackedFloat32Array = [1.0, 1.5, 2.0]
+## How many of its biome's nests a location has, per difficulty (easy, normal, hard).
+@export var nest_factors: PackedFloat32Array = [0.6, 1.0, 1.4]

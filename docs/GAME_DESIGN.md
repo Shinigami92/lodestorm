@@ -111,7 +111,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **No loading screens:** the ship and the planet outside are one world. Players walk from the hub down the ramp straight into the mission. That's also why the weather outside matters: while the ship flies and lands, a storm around it hides the next location being loaded, so it acts as the loading screen.
 - **Landing gear:** the landed ship stands on six legs along its sides (greybox: the hull 1.5 m above the ground, **TBD (playtest)**); nobody walks under it. The ramp is 5 m long and reaches the ground at 30°.
 - **The ramp always leads out to the right** (screen right): players walk from the inside to the right into the mission, and come back from the right.
-- **Ramp button:** the ramp is closed by default. A button on the inner wall next to the door lowers it; this also locks the selected mission (once mission selection exists). Pressing it again before anyone stepped out raises the ramp again. Once everyone is back aboard, the ramp goes up; the next press starts a new run with a reset timer and a fresh outside world.
+- **Ramp button:** the ramp is closed by default. A button on the inner wall next to the door lowers it, once a mission is picked at the holo table; this also locks the mission and resets its timer. Pressing it again before anyone stepped out raises the ramp again. Once everyone is back aboard, the ramp goes up and the mission is done: the next run needs a newly picked mission.
 - **No weapons inside the ship:** weapons are holstered aboard, except in the shooting range, where players try them without a mission. They only work inside the range (not in its doorway), and a force field in the doorway stops every shot, so nothing leaves the range. Targets stand at its far end.
 - **Camera inside:** while a player is aboard, the roof and the walls facing the camera are cut away (they still cast shadows), so the camera can see inside. Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined. On the lower deck, the whole upper deck is cut away too; on the upper deck, the lower deck is hidden under its floor. Some rooms frame themselves: in the shooting range the camera looks at the whole room instead of the player, so the targets stay on screen from the firing line.
 - **Two decks**, nose on the left, tail with the ramp on the right (like a cargo plane's rear ramp). A corridor runs along the middle of each deck; lifts join the decks at both ends, one by the bridge and one in the double-height cargo bay, so a run is a loop: ramp → cargo bay → lower deck (upgrades, armory) → lift → bridge (pick a mission) → upper deck → cargo bay lift → ramp.
@@ -120,7 +120,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Lifts:** a platform for up to four players in a shaft beside the corridor. Stepping on it sends it to the other deck (greybox: after 0.6 s, 2 s ride, **TBD (playtest)**); riders who came along have to step off before it leaves again. Waiting at the gate on the other deck calls it. Gates close the shaft on every deck the platform isn't at.
 - **Walking the ship:** the bridge sits at the nose, far from the ramp. Picking a mission starts the flight, and players walk aft and gear up while the ship flies and lands, so the walk isn't dead time (flight time **TBD (playtest)**).
 - **Bridge:** missions are selected here. A holo table in the middle projects a hologram of the mission location (a small copy of the location, spinning slowly, the ship's spot highlighted), so players gather around it to see where they're going.
-- **Cabins:** one per player (up to 4, cabin 1 closest to the bridge for solo play) with a bed and a locker, and in cabin 1 the settings terminal; eight crew cabins for the NPCs with a bed each. Whether the locker becomes a private inventory is open.
+- **Cabins:** one per player (up to 4, cabin 1 closest to the bridge for solo play) with a bed and a locker, and in cabin 1 the settings terminal; the game starts with the player in cabin 1; eight crew cabins for the NPCs with a bed each. Whether the locker becomes a private inventory is open.
 - **Windows:** every room along the outer walls has windows on its deck (one per ~9 m of wall), and the cockpit looks out over the nose. From inside, they show the outside (light falls in through them); from outside, they show into the ship. Windows in walls cut away for the camera go with their wall.
 - **Finding the way:** every room's name is painted on its floor by the door. Amber floor markings with arrows at the corridors, lobbies and lifts point to the rooms further on (and which lift leads where).
 - **Greybox layout** (top view, camera at the bottom; about 96 × 30 m plus a nose cone below the cockpit and two thrusters on the roof at the tail, sizes **TBD (playtest)**; the real hull shape comes with the art pass):
@@ -141,24 +141,27 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **NPCs:** shopkeepers / upgrade vendors, quest givers, and story characters (about eight: e.g. pilot, medic, quartermaster, one vendor per upgrade room, cook), each with a crew cabin. They join the crew as the story goes on, and each one runs a station (armory, medical bay, engineering, ...): recruiting crew is how stations unlock. NPCs give quest chains and have a reputation; finishing their quests unlocks new items and upgrades from them.
 - **Stations and outposts:** besides the ship, the players can visit stations and outposts in the system: handcrafted places to walk around in, with NPCs, story, quests, a meeting point for co-op, and maybe exchanging one ore type for another at a bad rate (a safety valve when an ore is missing).
 - **Mission selection:** on the bridge, at the holo table. Target can be another location on the current planet or a new planet. The ship then flies there.
-  - Idea: the hologram already shows where the ore fields are, each in its ore color, so players can plan their route and pick a mission by the ores they need.
+  - Greybox: a console beside the holo table offers three missions, one per difficulty (easy, normal, hard), each with its location (biome and a sector code), timer and the biome's ores (from common to rare). While it's used, the camera frames the console and the hologram together. Picking one sets course: the outside world becomes that mission's location (the flight comes with the ship states), and the hologram shows it with every ore node as a beam in its ore's color, so players plan their route and pick a mission by the ores they need. Another one can be picked until the ramp goes down; after the run (won or lost) three new missions are offered.
+  - Mission values so far (all **TBD (playtest)**): the timer is 1, 1.5 or 2 times the standard 15 min; the difficulty sets how many of the biome's nests the location has (0.6, 1 and 1.4 times). Planets, rarer ores and quests per mission come later.
+  - Later: the bridge gets a full rework. Players first pick a planet or moon, then a location on it. The difficulty is either picked separately, or tied to the location, with far more locations to pick from (open, see [Open questions](#14-open-questions)).
 - **Ship states:**
   - *In space:* windows show space; ramp cannot be opened.
   - *Landed, no mission started:* windows/ramp area show the local environment (e.g. storm).
   - The player **cannot go outside without a selected mission**; the ramp button only works with one. The **first player stepping out of the ship starts the mission** and its timer.
+  - Planned flow: the game starts in space. Picking a mission flies the ship there and lands it at the location (the location loads meanwhile, hidden by the flight and the weather). Once everyone is back aboard and the mission is over, the ship takes off into space again. Greybox until then: the ship stands landed at a random location from the start, and picking a mission swaps the location right away.
 
 ## 6. Missions
 
 - A mission is defined by: **location**, **timer/duration**, **difficulty**, and the quests that can be done there.
 - Target duration: about 15–30 min per mission; exact timers **TBD (playtest)**.
 - Harder planets have rarer resources.
-- **Generated outside world:** the world outside the ship is generated for every run from a seed and a **biome** (`scenes/locations/generated_location.tscn`, biomes in `scenes/locations/biomes/`). Later the mission selection picks the biome (with the location and difficulty); until then every run picks one at random. Greybox, all values **TBD (playtest)**:
+- **Generated outside world:** the world outside the ship is generated for every run from a seed and a **biome** (`scenes/locations/generated_location.tscn`, biomes in `scenes/locations/biomes/`). The picked mission sets the biome, the seed and (by its difficulty) the number of nests; the world the ship stands in before the first mission is picked has a random biome. Greybox, all values **TBD (playtest)**:
   - 500 × 500 m (about 80 s to cross on foot). The ship lands near the middle on a flat landing site with room in front of the ramp.
   - Ground: rolling hills, terraced in places into plateaus with cliffs between them that nobody can climb; smooth slopes lead up and down elsewhere. A mountain rim closes off the edges (invisible walls behind it). Steep ground shows rock, scree collects at the foot of cliffs and in patches, the high ground is a bit lighter (see [Art direction](#art-direction), Ground).
   - Plants and rocks per biome, scattered in patches. Big ones (trees, boulders) block players, aliens and shots; small ones (bushes, grass) are only looks and fade out in the distance. Ground and plant colors stay muted so ores and aliens stand out.
   - Ore fields of 1–3 nodes of one type. The first two lie 25–55 m from the ramp, so they're found right away, and have the biome's most common ore; rarer ores lie farther away. 10 nests, at least 80 m from the landing site, so the start is quiet. Ore fields and nests only appear where players can walk to from the ship.
   - Biomes so far: *Dust flats* (sandy with a cracked crust, high plateaus with layered sandstone cliffs, boulders, rock outcrops, rubble, small stones, thorny spire plants, dry shrubs, pebbles and bones) and *Overgrowth* (dark soil under olive moss, gentler hills, fleshy tube plants, mushrooms, puffball fungi, fronds, a few boulders and stones).
-  - Generating takes about 2.5 s, a hitch when the ramp button starts a new run; later it happens while the ship flies, hidden by the storm (see [Spaceship](#5-spaceship-hub)).
+  - Generating takes about 2.5 s, a hitch when a mission is picked; later it happens while the ship flies, hidden by the storm (see [Spaceship](#5-spaceship-hub)).
   - The tests use the small hand-built test location (`scenes/locations/test_location.tscn`) instead: fixed spots, quick to set up.
 - Story missions use the same generated worlds with handcrafted pieces placed in them (e.g. the lost expedition's sites); only stations and outposts are fully handcrafted.
 
@@ -259,7 +262,7 @@ Standing at one spot until the timer runs low must not pay off. Directions to tr
 
 - Health shows on the suit: a light band around the collar is green, amber below half, red and blinking below a quarter, and flashes white on damage. Greybox: 100 HP, **TBD (playtest)**.
 - On death: the body drops where it stands, **everything carried this run is lost**, and the player respawns in the medical bay with full health.
-- When every player is dead, the mission is lost: the beacon turns grey, the countdown says LOST, and after a few seconds (greybox: 3 s, **TBD (playtest)**) everyone respawns aboard and the ramp goes up. The ramp button then starts the next run.
+- When every player is dead, the mission is lost: the beacon turns grey, the countdown says LOST, and after a few seconds (greybox: 3 s, **TBD (playtest)**) everyone respawns aboard and the ramp goes up. The next run starts with a newly picked mission.
 - Co-op: the mission ends when every player is either back aboard or dead, as long as at least one made it back. The dead lose what they carried and respawn aboard when it ends.
 - When every player dies, the miners on the planet are lost too (see [Miners](#7-miners)).
 - **Not too punishing:** losses should hurt, but not set players back for long.
@@ -299,6 +302,7 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 - Carry limit: none or soft (slower with a full load).
 - Alien behavior and scaling.
 - Generated outside world: which mission values drive it (difficulty, planet), and whether aliens behind cliffs need a silhouette too.
+- Mission selection: difficulty picked separately or tied to the location (then with far more locations to pick from); how picking a planet or moon and then a location on it works on the reworked bridge.
 - Weapons: switching during a mission, melee on the attack button or its own.
 - Refinery: how it works in co-op.
 - Voice-over: which local text-to-speech model; whether AI-driven NPCs are worth an experiment.

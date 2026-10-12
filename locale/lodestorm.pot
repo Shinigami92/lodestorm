@@ -2,6 +2,14 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+#: scenes/locations/biomes/dust.tres
+msgid "Dust flats"
+msgstr ""
+
+#: scenes/locations/biomes/overgrowth.tres
+msgid "Overgrowth"
+msgstr ""
+
 #: scenes/ship/ship.tscn
 msgid "Cockpit"
 msgstr ""
@@ -146,6 +154,15 @@ msgstr ""
 msgid "Cabins · Lift · Bridge"
 msgstr ""
 
+#: scenes/ui/mission_menu.tscn
+msgid "Missions"
+msgstr ""
+
+#: scenes/ui/mission_menu.tscn
+#: scenes/ui/settings_menu.tscn
+msgid "Close"
+msgstr ""
+
 #: scenes/ui/settings_menu.tscn
 msgid "Settings"
 msgstr ""
@@ -154,8 +171,16 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: scenes/ui/settings_menu.tscn
-msgid "Close"
+#: scripts/mission/mission_brief.gd
+msgid "Easy"
+msgstr ""
+
+#: scripts/mission/mission_brief.gd
+msgid "Hard"
+msgstr ""
+
+#: scripts/mission/mission_brief.gd
+msgid "Normal"
 msgstr ""
 
 #: scripts/ship/ship.gd
@@ -168,4 +193,24 @@ msgstr ""
 
 #: scripts/ship/ship.gd
 msgid "Storm"
+msgstr ""
+
+#: scripts/ship/ship.gd
+msgid "No mission"
+msgstr ""
+
+#: scripts/ui/mission_menu.gd
+msgid "%d min"
+msgstr ""
+
+#: scripts/ui/mission_menu.gd
+msgid "Locked until everyone is back aboard."
+msgstr ""
+
+#: scripts/ui/mission_menu.gd
+msgid "Course set: lower the ramp in the cargo bay."
+msgstr ""
+
+#: scripts/ui/mission_menu.gd
+msgid "Pick a mission: the ship flies there."
 msgstr ""

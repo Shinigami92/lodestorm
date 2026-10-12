@@ -52,6 +52,8 @@ const SCREE_REACH: int = 2
 @export var ore_field_spacing: float = 40.0
 ## Closest two nests are to each other, in m.
 @export var nest_spacing: float = 60.0
+## Scales the biome's number of nests (the mission's difficulty).
+@export var nest_factor: float = 1.0
 ## Baked for the aliens once the world is generated (none without it).
 @export var navigation_mesh: NavigationMesh
 
@@ -206,7 +208,7 @@ func _pick_ore_sites() -> void:
 
 
 func _pick_nest_sites() -> void:
-	for nest: int in biome.nests:
+	for nest: int in roundi(biome.nests * nest_factor):
 		var site: Vector3 = _find_site(
 			NEST_SITE_RADIUS,
 			func(at: Vector2) -> bool:

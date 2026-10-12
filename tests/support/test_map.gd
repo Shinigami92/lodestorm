@@ -19,3 +19,9 @@ static func instantiate() -> Node3D:
 	# Exported node references are resolved when the map is instantiated.
 	(map.get_node("Mission") as Mission).location = location
 	return map
+
+
+## Picks the first mission on offer in `map` (in the tree), as if picked at the holo table.
+static func pick_mission(map: Node3D) -> void:
+	var mission: Mission = map.get_node("Mission") as Mission
+	mission.select(mission.offers[0])

@@ -18,7 +18,8 @@ extends Node3D
 ## Windows in the outer walls look out from every room along them (and in from outside).
 ## The beacon on the roof shows the mission time from far away: green, amber after half the time,
 ## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
-## grey when the mission is lost. A countdown above the door shows the exact time.
+## grey when the mission is lost. A countdown above the door shows the exact time ("No mission"
+## until one is picked at the holo table).
 ## Returned cargo goes into the hold, shown as big canisters by the back wall. Dead players
 ## respawn at `Respawn` in the medical bay.
 
@@ -202,6 +203,9 @@ func _update_display() -> void:
 	elif mission.state == Mission.State.STORM:
 		beacon_color = COLOR_WARNING
 		countdown_text = tr("Storm")
+	elif not mission.brief:
+		beacon_color = COLOR_CALM
+		countdown_text = tr("No mission")
 	else:
 		var time_left: float = mission.time_left
 		var seconds: int = ceili(time_left)
@@ -210,7 +214,7 @@ func _update_display() -> void:
 			beacon_color = COLOR_WARNING
 			# Tied to the timer, so the blinking stays in step with the countdown.
 			beacon_brightness = 0.25 + 0.75 * absf(cos(time_left * PI * WARNING_BLINK_RATE))
-		elif time_left <= mission.settings.duration * 0.5:
+		elif time_left <= mission.duration() * 0.5:
 			beacon_color = COLOR_HALF
 		else:
 			beacon_color = COLOR_CALM

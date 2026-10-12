@@ -7,10 +7,13 @@ const OVERGROWTH: LocationBiome = preload("res://scenes/locations/biomes/overgro
 
 
 ## A smaller world than in the game, so the tests stay quick.
-func _generate(world_seed: int, biome: LocationBiome = DUST) -> GeneratedLocation:
+func _generate(
+	world_seed: int, biome: LocationBiome = DUST, nest_factor: float = 1.0
+) -> GeneratedLocation:
 	var location := LOCATION.instantiate() as GeneratedLocation
 	location.world_seed = world_seed
 	location.biome = biome
+	location.nest_factor = nest_factor
 	location.size = 320.0
 	location.landing_offset = 0.0
 	add_child_autofree(location)
@@ -98,6 +101,15 @@ func test_has_ore_fields_and_nests() -> void:
 
 
 ## The first ore fields are close to the ramp and of the most common ore; nests keep away.
+func test_nest_factor_scales_the_nests() -> void:
+	var few: GeneratedLocation = _generate(5, DUST, 0.3)
+	var normal: GeneratedLocation = _generate(5)
+	var nests: int = few.get_node("AlienNests").get_child_count()
+	assert_gt(nests, 0)
+	assert_lte(nests, roundi(DUST.nests * 0.3))
+	assert_gt(normal.get_node("AlienNests").get_child_count(), nests)
+
+
 func test_common_ore_close_to_ship_and_nests_far() -> void:
 	for world_seed: int in [1, 2, 3]:
 		var location: GeneratedLocation = _generate(world_seed)

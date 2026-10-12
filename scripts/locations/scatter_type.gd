@@ -36,6 +36,12 @@ extends Resource
 var _model_mesh: Mesh
 
 
+## Whether there's something to draw; unlike `get_mesh`, it loads nothing (safe on a worker
+## thread).
+func has_mesh() -> bool:
+	return model != null or mesh != null
+
+
 ## The mesh to draw: the model's part if a model is set, `mesh` otherwise.
 func get_mesh() -> Mesh:
 	if not model:

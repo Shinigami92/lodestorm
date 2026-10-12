@@ -3,8 +3,8 @@ extends CanvasLayer
 ## `debug_overlay` (F3). It only exists when the game runs from the editor; in exported builds
 ## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
 ## every scene using them sees the new values right away; they last until the game stops and
-## aren't written to the files. Also shows the mission state and has shortcuts for testing the
-## storm, death, fights and weapons. Integer settings get whole-number sliders.
+## aren't written to the files. Also shows the mission and flight state and has shortcuts for
+## testing the flight, storm, death, fights and weapons. Integer settings get whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -15,6 +15,14 @@ const TUNING: Dictionary[String, Array] = {
 		["storm_damage", 0.0, 50.0, 0.5],
 		["storm_damage_growth", 0.0, 20.0, 0.5],
 		["respawn_delay", 0.0, 10.0, 0.5],
+	],
+	"res://scenes/ship/flight_settings.tres":
+	[
+		["departure_time", 0.0, 60.0, 1.0],
+		["descent_time", 0.0, 120.0, 1.0],
+		["touchdown_time", 0.0, 30.0, 0.5],
+		["takeoff_delay", 0.0, 30.0, 0.5],
+		["takeoff_time", 0.0, 60.0, 1.0],
 	],
 	"res://scenes/mining/miner_settings.tres":
 	[
@@ -86,6 +94,7 @@ var _defaults: Dictionary[String, float] = {}
 var _sliders: Dictionary[String, HSlider] = {}
 var _live: Label
 var _time_buttons: Array[Button] = []
+var _skip_flight_button: Button
 
 
 func _ready() -> void:
@@ -110,6 +119,17 @@ func _process(_delta: float) -> void:
 	var lines: PackedStringArray = []
 	if mission:
 		lines.append("Mission: %s" % Mission.State.keys()[mission.state])
+		var flight: ShipFlight = mission.flight
+		lines.append(
+			(
+				"Flight: %s (%.1f / %.1f s)"
+				% [
+					ShipFlight.Phase.keys()[flight.phase],
+					flight.phase_time,
+					flight.phase_duration()
+				]
+			)
+		)
 		lines.append("Time left: %.1f s" % mission.time_left)
 		if mission.state == Mission.State.STORM:
 			lines.append("Storm: %.1f HP/s" % mission.storm_damage_per_second())
@@ -140,6 +160,7 @@ func _process(_delta: float) -> void:
 	var running: bool = mission != null and mission.state == Mission.State.RUNNING
 	for button: Button in _time_buttons:
 		button.disabled = not running
+	_skip_flight_button.disabled = mission == null or not mission.flight.is_flying()
 
 
 func toggle() -> void:
@@ -158,6 +179,13 @@ func start_storm() -> void:
 	var mission: Mission = _mission()
 	if mission and mission.state == Mission.State.RUNNING:
 		mission.time_left = 0.0
+
+
+## Ends the ship's flight right away (only while it flies).
+func skip_flight() -> void:
+	var mission: Mission = _mission()
+	if mission and mission.flight.is_flying():
+		mission.skip_flight()
 
 
 func kill_players() -> void:
@@ -239,6 +267,7 @@ func _build() -> void:
 	box.add_child(actions)
 	_time_buttons.append(_button(actions, "Skip to warning", skip_to_warning))
 	_time_buttons.append(_button(actions, "Storm now", start_storm))
+	_skip_flight_button = _button(actions, "Skip flight", skip_flight)
 	_button(actions, "Kill players", kill_players)
 	_button(actions, "Heal players", heal_players)
 	_button(actions, "Kill aliens", kill_aliens)

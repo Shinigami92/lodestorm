@@ -156,6 +156,13 @@ func flatten_rect(area: Rect2, falloff: float, height: float) -> void:
 ## Mesh of the grid squares from `from` (inclusive) to `to` (exclusive), its vertex colors from
 ## `paint` (called with a grid point's position and normal, returns its color).
 func build_mesh(from: Vector2i, to: Vector2i, paint: Callable) -> ArrayMesh:
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, build_arrays(from, to, paint))
+	return mesh
+
+
+## The surface arrays of `build_mesh`, without creating the mesh (safe on a worker thread).
+func build_arrays(from: Vector2i, to: Vector2i, paint: Callable) -> Array:
 	var width: int = to.x - from.x + 1
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
@@ -182,13 +189,18 @@ func build_mesh(from: Vector2i, to: Vector2i, paint: Callable) -> ArrayMesh:
 	arrays[Mesh.ARRAY_NORMAL] = normals
 	arrays[Mesh.ARRAY_COLOR] = colors
 	arrays[Mesh.ARRAY_INDEX] = indices
-	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	return mesh
+	return arrays
 
 
 ## Collision triangles of the same grid squares as `build_mesh`.
 func build_shape(from: Vector2i, to: Vector2i) -> ConcavePolygonShape3D:
+	var shape := ConcavePolygonShape3D.new()
+	shape.set_faces(build_faces(from, to))
+	return shape
+
+
+## The triangles of `build_shape`, without creating the shape (safe on a worker thread).
+func build_faces(from: Vector2i, to: Vector2i) -> PackedVector3Array:
 	var faces := PackedVector3Array()
 	for z: int in range(from.y, to.y):
 		for x: int in range(from.x, to.x):
@@ -197,9 +209,7 @@ func build_shape(from: Vector2i, to: Vector2i) -> ConcavePolygonShape3D:
 			var c: Vector3 = point(x, z + 1)
 			var d: Vector3 = point(x + 1, z + 1)
 			faces.append_array([a, b, c, b, d, c])
-	var shape := ConcavePolygonShape3D.new()
-	shape.set_faces(faces)
-	return shape
+	return faces
 
 
 func _flatten_area(

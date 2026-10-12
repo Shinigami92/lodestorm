@@ -2,8 +2,9 @@ class_name MissionMenu
 extends PanelContainer
 ## The missions on offer, shown on the console at the bridge's holo table: one row per mission
 ## with its location, timer, difficulty and the biome's ores (from common to rare). Picking one
-## sets course there: the outside world becomes its location and the hologram shows it, with the
-## ore fields in their colors. Once the ramp is down for a mission, it's locked until the run ends.
+## shows its location on the hologram, with the ore fields in their colors; "Set course" then flies
+## the ship there. No picking during the flight, and once the ramp is down for a mission, it's
+## locked until the run ends.
 
 ## Text colors of the difficulties (easy, normal, hard).
 const DIFFICULTY_COLORS: Array[Color] = [
@@ -20,10 +21,12 @@ var _buttons: Dictionary[MissionBrief, Button] = {}
 
 @onready var _offers: VBoxContainer = %Offers
 @onready var _status: Label = %Status
+@onready var _set_course: Button = %SetCourse
 @onready var _close: Button = %Close
 
 
 func _ready() -> void:
+	_set_course.pressed.connect(_on_set_course_pressed)
 	_close.pressed.connect(_on_close_pressed)
 
 
@@ -48,11 +51,16 @@ func get_button(offer: MissionBrief) -> Button:
 	return _buttons.get(offer) as Button
 
 
+## The button that sets course for the picked mission.
+func get_set_course_button() -> Button:
+	return _set_course
+
+
 func _refresh() -> void:
 	if mission.offers != _shown:
 		_build_rows()
 	for offer: MissionBrief in _buttons:
-		_buttons[offer].set_pressed_no_signal(offer == mission.brief)
+		_buttons[offer].set_pressed_no_signal(offer == mission.previewed)
 	_update_status()
 
 
@@ -114,17 +122,29 @@ func _update_status() -> void:
 	var can_select: bool = mission.can_select()
 	for offer: MissionBrief in _buttons:
 		_buttons[offer].disabled = not can_select
-	if not can_select:
+	_set_course.disabled = not mission.can_confirm()
+	if mission.flight.is_flying():
+		_status.text = tr("In flight: gear up and head for the ramp.")
+	elif not can_select:
 		_status.text = tr("Locked until everyone is back aboard.")
+	elif mission.is_preparing():
+		_status.text = tr("Scanning the location...")
+	elif mission.can_confirm():
+		_status.text = tr("Set course to fly there.")
 	elif mission.brief:
-		_status.text = tr("Course set: lower the ramp in the cargo bay.")
+		_status.text = tr("Landed: lower the ramp in the cargo bay.")
 	else:
-		_status.text = tr("Pick a mission: the ship flies there.")
+		_status.text = tr("Pick a mission to see it on the hologram.")
 
 
 func _on_offer_pressed(offer: MissionBrief) -> void:
-	if not mission.select(offer):
+	if not mission.preview(offer):
 		_refresh()
+
+
+func _on_set_course_pressed() -> void:
+	mission.confirm()
+	_refresh()
 
 
 func _on_close_pressed() -> void:

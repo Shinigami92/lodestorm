@@ -35,9 +35,6 @@ transform = Transform3D(-0.707107, 0.264887, -0.655618, 0, 0.927184, 0.374607, 0
 light_color = Color(0.55, 0.72, 1, 1)
 light_energy = 0.45
 
-[node name="Location" parent="." unique_id=166054313 instance=ExtResource("1_location")]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -20.506, 0, 20.506)
-
 [node name="Ship" parent="." unique_id=674942379 node_paths=PackedStringArray("viewer") instance=ExtResource("2_ship")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -20.506, 0, 20.506)
 viewer = NodePath("../Player")
@@ -48,11 +45,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61.165, 7.05, 48.79)
 [node name="IsoCameraRig" parent="." unique_id=1063743358 node_paths=PackedStringArray("target") instance=ExtResource("4_camera")]
 target = NodePath("../Player")
 
-[node name="Mission" type="Node" parent="." unique_id=206700272 node_paths=PackedStringArray("ship", "location")]
+[node name="Mission" type="Node" parent="." unique_id=206700272 node_paths=PackedStringArray("ship")]
 script = ExtResource("5_mission")
 settings = ExtResource("6_mission_settings")
 ship = NodePath("../Ship")
-location = NodePath("../Location")
+location_scene = ExtResource("1_location")
 
 [node name="Weather" type="Node" parent="." unique_id=1730492815 node_paths=PackedStringArray("mission", "environment", "sun", "viewer")]
 script = ExtResource("7_weather")

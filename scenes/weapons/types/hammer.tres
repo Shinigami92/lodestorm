@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/hammer.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Hammer"
+description = "Heavy swings that hit everything in front."
+kind = 1
+scene = ExtResource("2_scene")

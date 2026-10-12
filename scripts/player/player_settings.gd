@@ -20,3 +20,5 @@ extends Resource
 ## (degrees) and this distance (m).
 @export var stick_lock_angle: float = 12.0
 @export var stick_lock_range: float = 25.0
+## Weapons a player takes into a mission (see `Loadout`).
+@export var loadout_slots: int = 2

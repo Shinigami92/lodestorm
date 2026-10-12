@@ -36,7 +36,7 @@ func test_no_attack_inside_ship() -> void:
 
 
 func test_player_equips_first_loadout_weapon() -> void:
-	assert_eq(_player.loadout.weapons.size(), 1)
+	assert_eq(_player.get_weapon_type(), _player.loadout.get_weapon(0))
 	assert_is(_player.weapon, RangedWeapon)
 	assert_eq(_player.weapon.get_parent().name, &"WeaponMount")
 

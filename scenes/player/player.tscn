@@ -10,6 +10,7 @@
 [ext_resource type="Shader" path="res://assets/shaders/occluded_silhouette.gdshader" id="8_silhouette"]
 [ext_resource type="Material" path="res://assets/shaders/rim_light.tres" id="9_rim"]
 [ext_resource type="PackedScene" uid="uid://yj82i5sgqayt" path="res://assets/player/player.glb" id="10_model"]
+[ext_resource type="Resource" path="res://scenes/player/default_arsenal.tres" id="11_arsenal"]
 [ext_resource type="Script" path="res://scripts/player/player_animator.gd" id="11_animator"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
@@ -39,6 +40,7 @@ ring_segments = 4
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_script")
 settings = ExtResource("2_settings")
+arsenal = ExtResource("11_arsenal")
 loadout = ExtResource("3_loadout")
 miner_scene = ExtResource("4_miner")
 body_overlay = SubResource("ShaderMaterial_silhouette")

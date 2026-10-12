@@ -154,13 +154,22 @@ msgstr ""
 msgid "Cabins · Lift · Bridge"
 msgstr ""
 
-#: scenes/ui/mission_menu.tscn
-msgid "Missions"
+#: scenes/ui/armory_menu.tscn
+msgid "Loadout"
 msgstr ""
 
+#: scenes/ui/armory_menu.tscn
+msgid "Slot"
+msgstr ""
+
+#: scenes/ui/armory_menu.tscn
 #: scenes/ui/mission_menu.tscn
 #: scenes/ui/settings_menu.tscn
 msgid "Close"
+msgstr ""
+
+#: scenes/ui/mission_menu.tscn
+msgid "Missions"
 msgstr ""
 
 #: scenes/ui/settings_menu.tscn
@@ -169,6 +178,30 @@ msgstr ""
 
 #: scenes/ui/settings_menu.tscn
 msgid "Language"
+msgstr ""
+
+#: scenes/weapons/types/blaster.tres
+msgid "Blaster"
+msgstr ""
+
+#: scenes/weapons/types/blaster.tres
+msgid "Rapid shots that reach far."
+msgstr ""
+
+#: scenes/weapons/types/hammer.tres
+msgid "Hammer"
+msgstr ""
+
+#: scenes/weapons/types/hammer.tres
+msgid "Heavy swings that hit everything in front."
+msgstr ""
+
+#: scenes/weapons/types/shotgun.tres
+msgid "Shotgun"
+msgstr ""
+
+#: scenes/weapons/types/shotgun.tres
+msgid "A fan of pellets, strong up close."
 msgstr ""
 
 #: scripts/mission/mission_brief.gd
@@ -199,12 +232,29 @@ msgstr ""
 msgid "No mission"
 msgstr ""
 
+#: scripts/ui/armory_menu.gd
+msgid "Locked"
+msgstr ""
+
+#: scripts/ui/armory_menu.gd
+msgid "Melee"
+msgstr ""
+
+#: scripts/ui/armory_menu.gd
+msgid "Ranged"
+msgstr ""
+
+#: scripts/ui/armory_menu.gd
 #: scripts/ui/mission_menu.gd
-msgid "%d min"
+msgid "Locked until everyone is back aboard."
+msgstr ""
+
+#: scripts/ui/armory_menu.gd
+msgid "Pick the weapons for the next mission."
 msgstr ""
 
 #: scripts/ui/mission_menu.gd
-msgid "Locked until everyone is back aboard."
+msgid "%d min"
 msgstr ""
 
 #: scripts/ui/mission_menu.gd

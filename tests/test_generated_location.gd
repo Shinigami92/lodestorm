@@ -221,6 +221,9 @@ func test_navigation_reaches_nests() -> void:
 func test_test_map_lands_ship_on_generated_world() -> void:
 	var map := TEST_MAP.instantiate() as Node3D
 	add_child_autofree(map)
+	var mission := map.get_node("Mission") as Mission
+	assert_true(mission.select(mission.offers[0]))
+	mission.skip_flight()
 	var location := map.get_node("Location") as GeneratedLocation
 	var ship := map.get_node("Ship") as Ship
 	assert_not_null(location)
@@ -230,6 +233,33 @@ func test_test_map_lands_ship_on_generated_world() -> void:
 	)
 	assert_almost_eq(
 		location.global_basis.x.dot(ship.global_basis.x), 1.0, 0.001, "same axes as the ship"
+	)
+
+
+## Planning on a worker thread and building afterwards makes the same world as generating it when
+## it enters the tree.
+func test_planned_in_the_background_same_world() -> void:
+	var direct: GeneratedLocation = _generate(5)
+	var planned := LOCATION.instantiate() as GeneratedLocation
+	planned.world_seed = 5
+	planned.biome = DUST
+	planned.size = 320.0
+	planned.landing_offset = 0.0
+	var task: int = WorkerThreadPool.add_task(planned.plan)
+	WorkerThreadPool.wait_for_task_completion(task)
+	assert_false(planned.is_built())
+	assert_eq(planned.get_child_count(), 0, "no nodes while planning")
+	planned.build()
+	assert_true(planned.is_built())
+	add_child_autofree(planned)
+	assert_eq(planned.terrain.heights, direct.terrain.heights)
+	assert_eq(_positions(planned, "OreNodes"), _positions(direct, "OreNodes"))
+	assert_eq(_positions(planned, "AlienNests"), _positions(direct, "AlienNests"))
+	assert_eq(
+		planned.get_node("Scatter").get_child_count(), direct.get_node("Scatter").get_child_count()
+	)
+	assert_eq(
+		planned.get_node("Ground").get_child_count(), direct.get_node("Ground").get_child_count()
 	)
 
 

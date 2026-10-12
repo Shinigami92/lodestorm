@@ -172,6 +172,10 @@ msgstr ""
 msgid "Missions"
 msgstr ""
 
+#: scenes/ui/mission_menu.tscn
+msgid "Set course"
+msgstr ""
+
 #: scenes/ui/settings_menu.tscn
 msgid "Settings"
 msgstr ""
@@ -217,6 +221,10 @@ msgid "Normal"
 msgstr ""
 
 #: scripts/ship/ship.gd
+msgid "In flight"
+msgstr ""
+
+#: scripts/ship/ship.gd
 msgid "All aboard"
 msgstr ""
 
@@ -258,9 +266,21 @@ msgid "%d min"
 msgstr ""
 
 #: scripts/ui/mission_menu.gd
-msgid "Course set: lower the ramp in the cargo bay."
+msgid "In flight: gear up and head for the ramp."
 msgstr ""
 
 #: scripts/ui/mission_menu.gd
-msgid "Pick a mission: the ship flies there."
+msgid "Scanning the location..."
+msgstr ""
+
+#: scripts/ui/mission_menu.gd
+msgid "Set course to fly there."
+msgstr ""
+
+#: scripts/ui/mission_menu.gd
+msgid "Landed: lower the ramp in the cargo bay."
+msgstr ""
+
+#: scripts/ui/mission_menu.gd
+msgid "Pick a mission to see it on the hologram."
 msgstr ""

@@ -45,6 +45,7 @@ func test_ramp_needs_a_picked_mission() -> void:
 	assert_eq(_mission.state, Mission.State.CLOSED)
 	assert_eq(_ship.countdown_text, "No mission")
 	assert_true(_mission.select(_mission.offers[0]))
+	_mission.skip_flight()
 	await wait_physics_frames(2)
 	assert_true(_ship.ramp_button.enabled)
 	var seconds: int = ceili(_mission.duration())
@@ -61,6 +62,8 @@ func test_picking_flies_to_the_mission() -> void:
 	assert_signal_emitted_with_parameters(_mission, "selected", [offer])
 	assert_eq(_mission.duration(), _mission.settings.duration * offer.length)
 	assert_eq(_mission.time_left, _mission.duration())
+	assert_true(_ship.flight.is_flying())
+	_mission.skip_flight()
 	assert_true(old_location.is_queued_for_deletion(), "a fresh outside world")
 	assert_eq(_mission.location.name, &"Location")
 	assert_ne(_mission.location, old_location)
@@ -73,9 +76,10 @@ func test_only_offered_missions_can_be_picked() -> void:
 
 
 func test_mission_is_locked_once_the_ramp_is_down() -> void:
-	_mission.select(_mission.offers[0])
-	_mission.select(_mission.offers[1])
-	assert_eq(_mission.brief, _mission.offers[1], "another one can be picked before leaving")
+	TEST_MAP.pick_mission(_map)
+	assert_true(_mission.select(_mission.offers[1]), "another one can be picked before leaving")
+	_mission.skip_flight()
+	assert_eq(_mission.brief, _mission.offers[1])
 	_ship.ramp_button.use(_player)
 	assert_false(_mission.can_select())
 	assert_false(_mission.select(_mission.offers[2]))
@@ -86,7 +90,7 @@ func test_mission_is_locked_once_the_ramp_is_down() -> void:
 
 
 func test_finished_mission_brings_new_offers() -> void:
-	_mission.select(_mission.offers[0])
+	TEST_MAP.pick_mission(_map)
 	var old_offers: Array[MissionBrief] = _mission.offers.duplicate()
 	_ship.ramp_button.use(_player)
 	await wait_physics_frames(ceili(_ship.ramp_duration * Engine.physics_ticks_per_second) + 2)
@@ -101,24 +105,23 @@ func test_finished_mission_brings_new_offers() -> void:
 	assert_true(_mission.can_select())
 
 
-func test_generated_location_follows_the_mission() -> void:
-	var map: Node3D = (load("res://scenes/maps/test_map.tscn") as PackedScene).instantiate()
-	var mission: Mission = map.get_node("Mission") as Mission
-	var location := mission.location as GeneratedLocation
-	# A smaller world than in the game, so the test stays quick; the fresh one is the scene's.
-	location.size = 240.0
-	add_child_autofree(map)
-	var offer: MissionBrief = mission.offers[0]
-	mission.select(offer)
-	var fresh := mission.location as GeneratedLocation
-	assert_eq(fresh.biome, offer.biome)
-	assert_eq(fresh.world_seed, offer.world_seed)
-	assert_eq(fresh.nest_factor, mission.settings.nest_factors[offer.difficulty])
+func test_picking_only_previews_until_course_is_set() -> void:
+	var offer: MissionBrief = _mission.offers[1]
+	var old_location: Node3D = _mission.location
+	assert_true(_mission.preview(offer))
+	assert_eq(_mission.previewed, offer)
+	assert_null(_mission.brief)
+	assert_signal_not_emitted(_mission, "selected")
+	assert_false(_ship.flight.is_flying())
+	assert_eq(_mission.location, old_location)
+	assert_true(_mission.preview(_mission.offers[2]), "another one to compare")
+	assert_true(_mission.confirm())
+	assert_eq(_mission.brief, _mission.offers[2])
 
 
 func test_hologram_marks_the_ore_fields() -> void:
 	var table: HoloTable = _ship.get_node("Rooms/Upper/Bridge/HoloTable") as HoloTable
-	_mission.select(_mission.offers[0])
+	TEST_MAP.pick_mission(_map)
 	var ores: Array[OreNode] = []
 	for ore: OreNode in get_tree().get_nodes_in_group(OreNode.GROUP):
 		if _mission.location.is_ancestor_of(ore):
@@ -148,17 +151,27 @@ func test_console_on_the_bridge_picks_missions() -> void:
 	var button: Button = menu.get_button(_mission.offers[1])
 	assert_not_null(button)
 	assert_false(button.disabled)
+	var set_course: Button = menu.get_set_course_button()
+	assert_true(set_course.disabled, "nothing picked yet")
 	button.pressed.emit()
-	assert_eq(_mission.brief, _mission.offers[1])
+	assert_eq(_mission.previewed, _mission.offers[1])
+	assert_null(_mission.brief, "only shown on the hologram")
 	await wait_process_frames(1)
 	assert_true(button.button_pressed, "the picked mission shows")
 	assert_false(menu.get_button(_mission.offers[0]).button_pressed)
+	assert_false(set_course.disabled)
+	set_course.pressed.emit()
+	assert_eq(_mission.brief, _mission.offers[1])
+	assert_true(_ship.flight.is_flying())
+	await wait_process_frames(1)
+	assert_true(button.disabled, "no picking in flight")
+	assert_true(set_course.disabled)
 
 
 func test_console_locks_while_the_ramp_is_down() -> void:
 	var terminal: Terminal = _ship.get_node("Rooms/Upper/Bridge/MissionTerminal") as Terminal
 	var menu := terminal.panel.content as MissionMenu
-	_mission.select(_mission.offers[0])
+	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	await wait_process_frames(2)
 	assert_true(menu.get_button(_mission.offers[1]).disabled)

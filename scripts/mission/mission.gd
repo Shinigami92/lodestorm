@@ -1,24 +1,30 @@
 class_name Mission
 extends Node
-## The mission loop around the ship. The holo table offers a few missions (`offers`); picking one
-## (`select`) replaces the outside world (`location`) with a fresh one of the mission's biome and
-## seed and sets the timer (`duration`). The ramp starts closed; the ramp button inside the ship
-## only works with a mission picked: it resets the timer, heals the players, lowers the ramp and
-## locks the mission. The mission starts when the first player steps out; the timer then counts
-## down, and at zero the storm hits (`time_up`) and hurts everyone outside, more with every
-## second. Players who die drop what they carried.
+## The mission loop around the ship. The holo table offers a few missions (`offers`). Picking one
+## (`preview`) prepares its location (a fresh instance of `location_scene` with the mission's biome
+## and seed, generated on a worker thread) and shows it on the holo table; confirming it
+## (`confirm`) sets course and the timer (`duration`): the ship's `flight` takes it there (taking
+## off from the current location first), and the location goes under the ship during the descent.
+## `select` does both at once. The game starts in space, or landed at `location` if the map has
+## one (tests).
+## The ramp starts closed; the ramp button inside the ship only works with a mission picked and
+## the ship landed there: it resets the timer, heals the players, lowers the ramp and locks the
+## mission. The mission starts when the first player steps out; the timer then counts down, and at
+## zero the storm hits (`time_up`) and hurts everyone outside, more with every second. Players who
+## die drop what they carried.
 ## The mission is won (`returned`) once every living player is back aboard, in time or during the
 ## storm: their cargo goes into the ship's hold, the dead respawn aboard and the ramp goes up.
 ## It's lost (`lost`) when nobody is left alive; after `settings.respawn_delay` everyone respawns
-## aboard. Either way the mission is done: new ones are offered, and the button starts the next
-## run once one is picked. Players who die while no mission runs (e.g. killed through the debug
-## overlay) also respawn aboard after `settings.respawn_delay`.
+## aboard. Either way the mission is done: new ones are offered, and once the ramp is up the ship
+## takes off into space after the flight's `takeoff_delay`, unless a new course is set before.
+## Players who die while no mission runs (e.g. killed through the debug overlay) also respawn
+## aboard after `settings.respawn_delay`.
 ## Changing `settings.duration` while playing (debug overlay) updates the timer: before the start
 ## it's the new duration, while it runs it moves by the difference.
 
-## Emitted when the missions on offer or the picked one change.
+## Emitted when the missions on offer, the previewed one or the picked one change.
 signal offers_changed
-## Emitted when a mission is picked: the outside world is its location now.
+## Emitted when course is set for a mission: the ship flies to its location.
 signal selected(brief: MissionBrief)
 ## Emitted when the ramp button starts a new run: timer reset, the picked mission locked.
 signal opened
@@ -34,42 +40,89 @@ signal lost
 enum State { CLOSED, OPEN, RUNNING, STORM, RETURNED, LOST }
 
 const GROUP: StringName = &"missions"
+## Name of the outside world's node.
+const LOCATION_NAME: StringName = &"Location"
 
 @export var settings: MissionSettings
 ## The ship players start from and return to; it shows the mission time.
 @export var ship: Ship
-## The outside world; replaced by a fresh instance of its scene for every mission picked.
+## The outside world's scene: every location the ship lands at is a fresh instance of it.
+@export var location_scene: PackedScene
+## The outside world the ship stands in, null in space. A map that has one starts with the ship
+## landed there, and the locations after it stand where it stands; without one, the map starts in
+## space, and locations stand where the ship stands (their axes are the ship's).
 @export var location: Node3D
 
 var state: State = State.CLOSED
 ## The missions on offer at the holo table, from easy to hard.
 var offers: Array[MissionBrief] = []
-## The picked mission (one of `offers`), or null.
+## The mission shown on the holo table (one of `offers`), or null.
+var previewed: MissionBrief
+## The mission the ship flies to or stands at (one of `offers`), or null.
 var brief: MissionBrief
 ## Seconds until the storm hits, 0 afterwards.
 var time_left: float
 ## Seconds since the storm hit.
 var storm_time: float = 0.0
+## The ship's flight between space and the locations.
+var flight: ShipFlight
 
 ## Seconds until the dead respawn when no mission runs (after a lost one, too).
 var _respawn_left: float = 0.0
+## Seconds until the ship takes off after a run.
+var _takeoff_left: float = 0.0
 ## `duration()` as of the last tick, to notice when it's tuned.
 var _duration: float
 var _rng := RandomNumberGenerator.new()
+## Locations prepared for offers; outside the tree until the ship lands at one.
+var _prepared: Dictionary[MissionBrief, Node3D] = {}
+## Worker thread tasks still planning prepared locations.
+var _tasks: Dictionary[MissionBrief, int] = {}
+## Prepared locations nobody needs anymore whose planning still runs, by task; freed once done.
+var _discarded: Dictionary[int, Node3D] = {}
+## The location the flight goes to, until it's placed under the ship.
+var _destination: Node3D
+## Where locations stand, relative to the ship's parent.
+var _location_transform: Transform3D
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
 	_rng.randomize()
+	flight = ship.flight
 	roll_offers()
 	time_left = duration()
 	_duration = duration()
 	_respawn_left = settings.respawn_delay
+	_takeoff_left = flight.settings.takeoff_delay
 	ship.mission = self
+	flight.left_location.connect(_on_left_location)
+	flight.reached_location.connect(_on_reached_location)
+	flight.landed.connect(_on_landed)
+	_location_transform = ship.transform
+	if location:
+		_location_transform = location.transform
+		flight.land_now()
 	# Deferred: the location's nodes build their look in their own _ready (e.g. ore models).
-	ship.show_preview.call_deferred(location)
+	_show_hologram.call_deferred()
 	ship.player_left.connect(_on_player_left)
 	ship.ramp_button.used.connect(_on_ramp_button_used)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		_free_prepared()
+
+
+func _process(_delta: float) -> void:
+	for offer: MissionBrief in _tasks.keys():
+		if WorkerThreadPool.is_task_completed(_tasks[offer]):
+			_finish_preparing(offer)
+	for task: int in _discarded.keys():
+		if WorkerThreadPool.is_task_completed(task):
+			WorkerThreadPool.wait_for_task_completion(task)
+			_discarded[task].free()
+			_discarded.erase(task)
 
 
 func _physics_process(delta: float) -> void:
@@ -86,14 +139,17 @@ func _physics_process(delta: float) -> void:
 			_storm_damage(delta)
 		_:
 			_respawn_after_delay(delta)
+			_take_off_after_delay(delta)
 			return
 	_check_outcome()
 
 
 ## Offers new missions, one per `settings.offers`, running through the difficulties; drops the
-## picked one.
+## previewed and the picked one.
 func roll_offers() -> void:
+	_discard_prepared()
 	offers.clear()
+	previewed = null
 	brief = null
 	for i: int in settings.offers:
 		var offer := MissionBrief.new()
@@ -110,27 +166,67 @@ func roll_offers() -> void:
 	offers_changed.emit()
 
 
-## Whether a mission can be picked now: not once the ramp is down for one (it's locked then), and
-## not while someone is dead.
+## Whether a mission can be picked now: not once the ramp is down for one (it's locked then), not
+## during the flight, and not while someone is dead.
 func can_select() -> bool:
-	return state in [State.CLOSED, State.RETURNED, State.LOST] and not _anyone_dead()
+	return (
+		state in [State.CLOSED, State.RETURNED, State.LOST]
+		and not flight.is_flying()
+		and not _anyone_dead()
+	)
 
 
-## Picks `offer` (one of `offers`): the outside world becomes its location and the timer its
-## duration. Returns whether it was picked.
-func select(offer: MissionBrief) -> bool:
+## Shows `offer` (one of `offers`) on the holo table, preparing its location first if needed.
+## Returns whether it's shown.
+func preview(offer: MissionBrief) -> bool:
 	if offer not in offers or not can_select():
 		return false
-	brief = offer
+	previewed = offer
+	_prepare(offer)
+	_show_hologram()
+	offers_changed.emit()
+	return true
+
+
+## Whether the previewed mission's location is still being prepared (the hologram shows it then).
+func is_preparing() -> bool:
+	return previewed != null and _tasks.has(previewed)
+
+
+## Whether course can be set for the previewed mission now (not for the one the ship is at).
+func can_confirm() -> bool:
+	return can_select() and previewed != null and previewed != brief
+
+
+## Sets course for the previewed mission: its timer, and the ship flies to its location. Returns
+## whether it did.
+func confirm() -> bool:
+	if not can_confirm():
+		return false
+	brief = previewed
 	state = State.CLOSED
-	reset_location()
 	time_left = duration()
 	_duration = duration()
 	storm_time = 0.0
+	_destination = _prepared[brief]
+	flight.destination_ready = not _tasks.has(brief)
+	flight.fly()
 	ship.ramp_button.enabled = _can_start_run()
 	selected.emit(brief)
 	offers_changed.emit()
 	return true
+
+
+## Previews `offer` and sets course for it. Returns whether it did.
+func select(offer: MissionBrief) -> bool:
+	return preview(offer) and confirm()
+
+
+## Finishes the flight at once (debug overlay, tests), waiting for the location to be prepared.
+func skip_flight() -> void:
+	if brief and _tasks.has(brief):
+		_finish_preparing(brief)
+	flight.skip()
 
 
 ## Seconds from the start until the storm hits: the picked mission's length of the standard
@@ -139,25 +235,10 @@ func duration() -> float:
 	return settings.duration * (brief.length if brief else 1.0)
 
 
-## Replaces the outside world with a fresh instance of its scene (of the picked mission's biome,
-## seed and difficulty, if it's generated) and shows it on the holo table.
+## Replaces the outside world right away (no flight) with a fresh one of the picked mission's
+## biome, seed and difficulty (tests, debugging).
 func reset_location() -> void:
-	var parent: Node = location.get_parent()
-	var index: int = location.get_index()
-	var fresh: Node3D = (load(location.scene_file_path) as PackedScene).instantiate() as Node3D
-	var generated := fresh as GeneratedLocation
-	if generated and brief:
-		generated.biome = brief.biome
-		generated.world_seed = brief.world_seed
-		generated.nest_factor = settings.nest_factors[brief.difficulty]
-	fresh.name = location.name
-	fresh.transform = location.transform
-	parent.remove_child(location)
-	location.queue_free()
-	parent.add_child(fresh)
-	parent.move_child(fresh, index)
-	location = fresh
-	ship.show_preview(location)
+	_place(_instantiate(brief))
 
 
 ## Whether a run is underway: someone stepped out and not everyone is back yet.
@@ -187,6 +268,110 @@ func storm_damage_per_second() -> float:
 	return settings.storm_damage + settings.storm_damage_growth * storm_time
 
 
+## A fresh location for `offer` (its biome, seed and difficulty if it's generated), not built yet.
+func _instantiate(offer: MissionBrief) -> Node3D:
+	var fresh := location_scene.instantiate() as Node3D
+	fresh.name = LOCATION_NAME
+	var generated := fresh as GeneratedLocation
+	if generated and offer:
+		generated.biome = offer.biome
+		generated.world_seed = offer.world_seed
+		generated.nest_factor = settings.nest_factors[offer.difficulty]
+	return fresh
+
+
+## Starts preparing `offer`'s location, a generated one on a worker thread.
+func _prepare(offer: MissionBrief) -> void:
+	if _prepared.has(offer):
+		return
+	var fresh: Node3D = _instantiate(offer)
+	_prepared[offer] = fresh
+	var generated := fresh as GeneratedLocation
+	if generated:
+		_tasks[offer] = WorkerThreadPool.add_task(generated.plan, false, "Plan location")
+
+
+## Waits for `offer`'s location to be planned and builds it.
+func _finish_preparing(offer: MissionBrief) -> void:
+	if _tasks.has(offer):
+		WorkerThreadPool.wait_for_task_completion(_tasks[offer])
+		_tasks.erase(offer)
+	var prepared: Node3D = _prepared[offer]
+	var generated := prepared as GeneratedLocation
+	if generated:
+		generated.build()
+	if prepared == _destination:
+		flight.destination_ready = true
+	if offer == previewed:
+		_show_hologram()
+
+
+## Drops the prepared locations except the one the ship flies to.
+func _discard_prepared() -> void:
+	for offer: MissionBrief in _prepared.keys():
+		var prepared: Node3D = _prepared[offer]
+		if prepared == _destination:
+			continue
+		if _tasks.has(offer):
+			_discarded[_tasks[offer]] = prepared
+			_tasks.erase(offer)
+		else:
+			prepared.free()
+		_prepared.erase(offer)
+
+
+## Frees every location outside the tree once its planning is done.
+func _free_prepared() -> void:
+	for task: int in _tasks.values():
+		WorkerThreadPool.wait_for_task_completion(task)
+	for task: int in _discarded:
+		WorkerThreadPool.wait_for_task_completion(task)
+	var orphans: Array[Node3D] = []
+	orphans.assign(_prepared.values() + _discarded.values())
+	for orphan: Node3D in orphans:
+		if is_instance_valid(orphan) and not orphan.is_inside_tree():
+			orphan.free()
+	_prepared.clear()
+	_tasks.clear()
+	_discarded.clear()
+
+
+## The location shown on the holo table: the previewed mission's once it's prepared, otherwise the
+## one the ship stands in.
+func _show_hologram() -> void:
+	var shown: Node3D = location
+	if previewed:
+		shown = null
+		if _prepared.has(previewed):
+			if not _tasks.has(previewed):
+				shown = _prepared[previewed]
+		elif previewed == brief:
+			shown = location
+	ship.show_preview(shown)
+
+
+## Puts `fresh` under the ship as the outside world, replacing the old one.
+func _place(fresh: Node3D) -> void:
+	_remove_location()
+	for offer: MissionBrief in _prepared.keys():
+		if _prepared[offer] == fresh:
+			_prepared.erase(offer)
+	var parent: Node = ship.get_parent()
+	fresh.transform = _location_transform
+	parent.add_child(fresh)
+	parent.move_child(fresh, ship.get_index())
+	location = fresh
+	_show_hologram()
+
+
+func _remove_location() -> void:
+	if not location:
+		return
+	location.get_parent().remove_child(location)
+	location.queue_free()
+	location = null
+
+
 func _storm_damage(delta: float) -> void:
 	var damage: float = storm_damage_per_second() * delta
 	for player: Player in _players():
@@ -210,6 +395,7 @@ func _check_outcome() -> void:
 	else:
 		state = State.LOST
 		_respawn_left = settings.respawn_delay
+		_takeoff_left = flight.settings.takeoff_delay
 		roll_offers()
 		lost.emit()
 
@@ -239,6 +425,22 @@ func _respawn_after_delay(delta: float) -> void:
 			ship.ramp_open = false
 
 
+## After a run, once everyone is alive and aboard and the ramp is up, the ship takes off after the
+## flight's `takeoff_delay`.
+func _take_off_after_delay(delta: float) -> void:
+	if (
+		state not in [State.RETURNED, State.LOST]
+		or flight.phase != ShipFlight.Phase.LANDED
+		or not ship.is_ramp_up()
+		or _anyone_dead()
+	):
+		_takeoff_left = flight.settings.takeoff_delay
+		return
+	_takeoff_left = maxf(_takeoff_left - delta, 0.0)
+	if _takeoff_left == 0.0:
+		flight.take_off()
+
+
 func _return(players: Array[Player]) -> void:
 	state = State.RETURNED
 	ship.ramp_open = false
@@ -246,6 +448,7 @@ func _return(players: Array[Player]) -> void:
 		if not player.dead:
 			ship.store_cargo(player)
 	_respawn_dead()
+	_takeoff_left = flight.settings.takeoff_delay
 	roll_offers()
 	returned.emit()
 
@@ -257,7 +460,13 @@ func _respawn_dead() -> void:
 
 
 func _can_start_run() -> bool:
-	return brief != null and not is_running() and not _anyone_dead()
+	return (
+		brief != null
+		and not is_running()
+		and not _anyone_dead()
+		and flight.phase == ShipFlight.Phase.LANDED
+		and location != null
+	)
 
 
 func _anyone_dead() -> bool:
@@ -294,3 +503,26 @@ func _on_player_left(_player: Player) -> void:
 	if state == State.OPEN:
 		state = State.RUNNING
 		started.emit()
+
+
+## High above the old location: it's left behind, and the run that was there is over. Without a
+## new course, no mission is picked anymore.
+func _on_left_location() -> void:
+	_remove_location()
+	if state in [State.RETURNED, State.LOST]:
+		state = State.CLOSED
+	if not _destination:
+		brief = null
+		offers_changed.emit()
+	_show_hologram()
+
+
+func _on_landed() -> void:
+	ship.ramp_button.enabled = _can_start_run()
+
+
+## Under the clouds at the destination: it goes under the ship.
+func _on_reached_location() -> void:
+	if _destination:
+		_place(_destination)
+		_destination = null

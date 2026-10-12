@@ -6,6 +6,10 @@ extends Node3D
 ## origin, on a flat landing site; the location's axes are the ship's (nose to -x, ramp to +x).
 ## Ores and nests only lie where players can walk to from the ship; rarer ores lie farther away.
 ## Everything the generator places is greybox; the values are TBD (playtest).
+## Generating takes a while, so it runs in two steps: `plan` does the heavy work without touching
+## nodes or servers, so it can run on a worker thread while the location is outside the tree (the
+## ship prepares the next location before and during the flight); `build` then adds the nodes. A
+## location that enters the tree unbuilt does both right away.
 
 const ORE_NODE: PackedScene = preload("res://scenes/mining/ore_node.tscn")
 const ALIEN_NEST: PackedScene = preload("res://scenes/aliens/alien_nest.tscn")
@@ -69,9 +73,27 @@ var _clearings: Array[Vector3] = []
 var _ore_sites: Array[Vector3] = []
 var _ore_site_types: Array[OreType] = []
 var _nest_sites: Array[Vector3] = []
+## Planned ground chunks: name, mesh arrays and collision faces of each.
+var _chunk_names: PackedStringArray = []
+var _chunk_arrays: Array[Array] = []
+var _chunk_faces: Array[PackedVector3Array] = []
+## Planned scatter chunks: type, name and placements (`Transform3D`s) of each.
+var _scatter_types: Array[ScatterType] = []
+var _scatter_names: PackedStringArray = []
+var _scatter_placements: Array[Array] = []
+var _planned: bool = false
+var _built: bool = false
 
 
 func _ready() -> void:
+	build()
+
+
+## Generates the world without adding nodes: safe on a worker thread while the location is outside
+## the tree and nothing else touches it. Does nothing the second time.
+func plan() -> void:
+	if _planned:
+		return
 	while world_seed == 0:
 		world_seed = randi()
 	_rng.seed = world_seed
@@ -81,6 +103,18 @@ func _ready() -> void:
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE)
 	_pick_ore_sites()
 	_pick_nest_sites()
+	_plan_ground()
+	_plan_scatter()
+	_planned = true
+
+
+## Adds the planned world's nodes, planning it first if that hasn't happened yet. Does nothing the
+## second time.
+func build() -> void:
+	if _built:
+		return
+	plan()
+	_built = true
 	_add_ground()
 	_add_bounds()
 	_add_scatter()
@@ -90,7 +124,13 @@ func _ready() -> void:
 		var navigation := LocationNavigation.new()
 		navigation.name = "Navigation"
 		navigation.navigation_mesh = navigation_mesh
+		navigation.bake_in_background = true
 		add_child(navigation)
+
+
+## Whether `build` added the world's nodes.
+func is_built() -> bool:
+	return _built
 
 
 ## Whether players can walk from the ship to location-local `x`, `z`.
@@ -275,6 +315,23 @@ func _add_site(site: Vector3, radius: float) -> void:
 	_clearings.append(Vector3(site.x, site.z, radius + 1.5))
 
 
+## The ground's chunks: their mesh arrays (painted) and collision faces.
+func _plan_ground() -> void:
+	var shades: FastNoiseLite = _noise(1.0 / 40.0, 2)
+	var patches: FastNoiseLite = _noise(1.0 / 18.0, 2)
+	var highest: PackedFloat32Array = terrain.highest_around(SCREE_REACH)
+	var paint: Callable = func(point: Vector3, _up: Vector3) -> Color:
+		return _ground_paint(point, shades, patches, highest)
+	var chunks: int = ceili(float(terrain.cells) / CHUNK_CELLS)
+	for chunk_z: int in chunks:
+		for chunk_x: int in chunks:
+			var from := Vector2i(chunk_x, chunk_z) * CHUNK_CELLS
+			var to: Vector2i = (from + Vector2i.ONE * CHUNK_CELLS).min(Vector2i.ONE * terrain.cells)
+			_chunk_names.append("Chunk%d_%d" % [chunk_x, chunk_z])
+			_chunk_arrays.append(terrain.build_arrays(from, to, paint))
+			_chunk_faces.append(terrain.build_faces(from, to))
+
+
 func _add_ground() -> void:
 	var ground := Node3D.new()
 	ground.name = "Ground"
@@ -286,26 +343,23 @@ func _add_ground() -> void:
 		plain.vertex_color_use_as_albedo = true
 		plain.roughness = 1.0
 		material = plain
-	var shades: FastNoiseLite = _noise(1.0 / 40.0, 2)
-	var patches: FastNoiseLite = _noise(1.0 / 18.0, 2)
-	var highest: PackedFloat32Array = terrain.highest_around(SCREE_REACH)
-	var paint: Callable = func(point: Vector3, _up: Vector3) -> Color:
-		return _ground_paint(point, shades, patches, highest)
-	var chunks: int = ceili(float(terrain.cells) / CHUNK_CELLS)
-	for chunk_z: int in chunks:
-		for chunk_x: int in chunks:
-			var from := Vector2i(chunk_x, chunk_z) * CHUNK_CELLS
-			var to: Vector2i = (from + Vector2i.ONE * CHUNK_CELLS).min(Vector2i.ONE * terrain.cells)
-			var body := StaticBody3D.new()
-			body.name = "Chunk%d_%d" % [chunk_x, chunk_z]
-			var mesh := MeshInstance3D.new()
-			mesh.mesh = terrain.build_mesh(from, to, paint)
-			mesh.material_override = material
-			body.add_child(mesh)
-			var shape := CollisionShape3D.new()
-			shape.shape = terrain.build_shape(from, to)
-			body.add_child(shape)
-			ground.add_child(body)
+	for i: int in _chunk_names.size():
+		var body := StaticBody3D.new()
+		body.name = _chunk_names[i]
+		var array_mesh := ArrayMesh.new()
+		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, _chunk_arrays[i])
+		var mesh := MeshInstance3D.new()
+		mesh.mesh = array_mesh
+		mesh.material_override = material
+		body.add_child(mesh)
+		var faces := ConcavePolygonShape3D.new()
+		faces.set_faces(_chunk_faces[i])
+		var shape := CollisionShape3D.new()
+		shape.shape = faces
+		body.add_child(shape)
+		ground.add_child(body)
+	_chunk_arrays.clear()
+	_chunk_faces.clear()
 
 
 ## Vertex color of the ground at `point`: RGB a tint (lighter on the high ground, varying over
@@ -354,6 +408,13 @@ func _add_scatter() -> void:
 	var scatter := Node3D.new()
 	scatter.name = "Scatter"
 	add_child(scatter)
+	for i: int in _scatter_types.size():
+		_add_scatter_chunk(scatter, _scatter_types[i], _scatter_names[i], _scatter_placements[i])
+	_scatter_placements.clear()
+
+
+## Where the plants and rocks grow, by type and chunk.
+func _plan_scatter() -> void:
 	var chunk_size: float = CHUNK_CELLS * cell
 	var blockers: Array[Vector3] = []
 	for type: ScatterType in biome.scatter:
@@ -366,14 +427,18 @@ func _add_scatter() -> void:
 				by_chunk[chunk] = []
 			by_chunk[chunk].append(placed)
 		for chunk: Vector2i in by_chunk:
-			_add_scatter_chunk(scatter, type, chunk, by_chunk[chunk])
+			_scatter_types.append(type)
+			_scatter_names.append(
+				"%s%d_%d" % [type.display_name.to_pascal_case(), chunk.x, chunk.y]
+			)
+			_scatter_placements.append(by_chunk[chunk])
 
 
 ## Where `type` grows: on a jittered grid, thinned out by patches, steep ground and clearings.
 ## Blocking ones keep their distance from each other (`blockers`: x, z, radius).
 func _scatter_transforms(type: ScatterType, blockers: Array[Vector3]) -> Array[Transform3D]:
 	var placed: Array[Transform3D] = []
-	if type.density <= 0.0 or not type.get_mesh():
+	if type.density <= 0.0 or not type.has_mesh():
 		return placed
 	var spacing: float = sqrt(100.0 / type.density)
 	var patches: FastNoiseLite = _noise(1.0 / type.patch_size, 2)
@@ -421,8 +486,10 @@ func _can_scatter(at: Vector2, max_slope: float, radius: float, blockers: Array[
 
 
 func _add_scatter_chunk(
-	parent: Node3D, type: ScatterType, chunk: Vector2i, transforms: Array
+	parent: Node3D, type: ScatterType, chunk_name: String, transforms: Array
 ) -> void:
+	if not type.get_mesh():
+		return
 	var multimesh := MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	multimesh.mesh = type.get_mesh()
@@ -431,7 +498,7 @@ func _add_scatter_chunk(
 		var placed: Transform3D = transforms[i]
 		multimesh.set_instance_transform(i, placed)
 	var instance := MultiMeshInstance3D.new()
-	instance.name = "%s%d_%d" % [type.display_name.to_pascal_case(), chunk.x, chunk.y]
+	instance.name = chunk_name
 	instance.multimesh = multimesh
 	instance.visibility_range_end = type.visibility_range
 	# Fade in and out instead of popping, a whole chunk at a time.

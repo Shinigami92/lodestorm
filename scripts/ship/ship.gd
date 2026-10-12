@@ -1,6 +1,7 @@
 class_name Ship
 extends Node3D
-## The landed ship, standing on its landing gear. Its interior is the hub (`Rooms`), on two decks:
+## The ship, in space or landed on its landing gear (its `flight` flies it between the two). Its
+## interior is the hub (`Rooms`), on two decks:
 ## the nose points left, the ramp is at the tail on the right (screen right), so players walk from
 ## the inside to the right into the mission. Upper deck: cockpit, bridge (the holo table shows the
 ## mission location), player and crew cabins, mess hall. Lower deck: medical bay, engine room,
@@ -19,7 +20,7 @@ extends Node3D
 ## The beacon on the roof shows the mission time from far away: green, amber after half the time,
 ## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
 ## grey when the mission is lost. A countdown above the door shows the exact time ("No mission"
-## until one is picked at the holo table).
+## until one is picked at the holo table, "In flight" on the way).
 ## Returned cargo goes into the hold, shown as big canisters by the back wall. Dead players
 ## respawn at `Respawn` in the medical bay.
 
@@ -83,6 +84,7 @@ var _column_material := StandardMaterial3D.new()
 var _button_material := StandardMaterial3D.new()
 
 @onready var ramp_button: Interactable = $RampButton
+@onready var flight: ShipFlight = $Flight
 @onready var _ramp: AnimatableBody3D = $Ramp
 @onready var _interior: Area3D = $Interior
 @onready var _weapon_zone: Area3D = $Rooms/Lower/ShootingRange/WeaponZone
@@ -171,9 +173,10 @@ func store_cargo(player: Player) -> void:
 		_hold_rack.show_cargo(ore_type, stored)
 
 
-## Shows `location` and where the ship stands in it (its floor) on the holo table.
+## Shows `location` and where the ship stands in it (its floor) on the holo table; null clears it.
+## The location doesn't need to be in the tree: locations stand where the ship stands.
 func show_preview(location: Node3D) -> void:
-	_holo_table.show_location(location, [_floor])
+	_holo_table.show_location(location, [_floor], global_transform)
 
 
 ## The ship closest to `from` (horizontally), or null.
@@ -194,6 +197,9 @@ func _update_display() -> void:
 	if not mission:
 		beacon_color = COLOR_CALM
 		countdown_text = ""
+	elif flight.is_flying():
+		beacon_color = COLOR_CALM
+		countdown_text = tr("In flight")
 	elif mission.state == Mission.State.RETURNED:
 		beacon_color = COLOR_RETURNED
 		countdown_text = tr("All aboard")

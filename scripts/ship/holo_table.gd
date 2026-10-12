@@ -5,6 +5,7 @@ extends Node3D
 ## (where the ship stands) in a brighter color. Players stand around it to see where they're going.
 ## Every ore node shows as a beam in its ore's color (`Hologram/Markers`), so players see where
 ## the ores lie and plan their route; at the hologram's scale the deposits themselves are specks.
+## The location may still be outside the tree (a mission's location prepared before the flight).
 
 const LOCATION_COLOR := Color(0.3, 0.85, 1.0)
 const LANDMARK_COLOR := Color(1.0, 0.85, 0.35)
@@ -31,17 +32,25 @@ func _process(delta: float) -> void:
 	_hologram.rotate_y(TAU * spin_speed * delta)
 
 
-## Shows `location` (as it is right now) and the `landmarks` in it as a hologram.
-func show_location(location: Node3D, landmarks: Array[Node3D] = []) -> void:
+## Shows `location` (as it is right now) and the `landmarks` in it as a hologram; null clears it.
+## `origin`: where the location stands in the world (or will stand, if it's outside the tree).
+func show_location(
+	location: Node3D, landmarks: Array[Node3D] = [], origin: Transform3D = Transform3D.IDENTITY
+) -> void:
 	for parent: Node3D in [_content, _markers]:
+		# Freed right away: they're only copies, and the next location may follow in the same frame.
 		for child: Node in parent.get_children():
-			parent.remove_child(child)
-			child.queue_free()
-	var to_location: Transform3D = location.global_transform.affine_inverse()
-	var parts: Array[MeshInstance3D] = []
-	_copy_meshes(location, to_location, _location_material, parts)
+			child.free()
+	if not location:
+		return
+	if location.is_inside_tree():
+		origin = location.global_transform
+	var parts: Array[MeshInstance3D] = _copied(location, location, _location_material)
+	var to_location: Transform3D = origin.affine_inverse()
 	for landmark: Node3D in landmarks:
-		_copy_meshes(landmark, to_location, _landmark_material, parts)
+		for part: MeshInstance3D in _copied(landmark, landmark, _landmark_material):
+			part.transform = to_location * landmark.global_transform * part.transform
+			parts.append(part)
 	if parts.is_empty():
 		return
 
@@ -63,7 +72,7 @@ func show_location(location: Node3D, landmarks: Array[Node3D] = []) -> void:
 	)
 	for part: MeshInstance3D in parts:
 		_content.add_child(part)
-	_add_markers(location, to_location)
+	_add_markers(location)
 
 
 ## The ore beams in the hologram (one per ore node, in its ore's color).
@@ -73,21 +82,22 @@ func get_markers() -> Array[MeshInstance3D]:
 	return markers
 
 
-func _add_markers(location: Node3D, to_location: Transform3D) -> void:
+func _add_markers(location: Node3D) -> void:
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = marker_size.x
 	mesh.bottom_radius = marker_size.x
 	mesh.height = marker_size.y
 	mesh.radial_segments = 8
 	mesh.rings = 1
-	for ore: OreNode in get_tree().get_nodes_in_group(OreNode.GROUP):
-		if not location.is_ancestor_of(ore) or not ore.ore_type:
+	for node: Node in location.find_children("*", "Node3D", true, false):
+		var ore := node as OreNode
+		if not ore or not ore.ore_type:
 			continue
 		var marker := MeshInstance3D.new()
 		marker.mesh = mesh
 		marker.material_override = _marker_material(ore.ore_type)
 		marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		var at: Vector3 = _content.transform * (to_location * ore.global_position)
+		var at: Vector3 = _content.transform * _relative(ore, location).origin
 		marker.position = at + Vector3.UP * marker_size.y * 0.5
 		_markers.add_child(marker)
 
@@ -100,21 +110,47 @@ func _marker_material(ore_type: OreType) -> ShaderMaterial:
 	return _marker_materials[ore_type]
 
 
-func _copy_meshes(
-	root: Node3D, to_location: Transform3D, material: Material, parts: Array[MeshInstance3D]
-) -> void:
+## Copies of the visible meshes under `root` (and `root` itself), placed relative to `space`.
+func _copied(root: Node3D, space: Node3D, material: Material) -> Array[MeshInstance3D]:
+	var parts: Array[MeshInstance3D] = []
 	var sources: Array[Node] = root.find_children("*", "MeshInstance3D", true, false)
 	if root is MeshInstance3D:
 		sources.append(root)
 	for source: MeshInstance3D in sources:
-		if not source.mesh or not source.is_visible_in_tree():
+		if not source.mesh or not _is_shown(source, space):
 			continue
 		var part := MeshInstance3D.new()
 		part.mesh = source.mesh
-		part.transform = to_location * source.global_transform
+		part.transform = _relative(source, space)
 		part.material_override = material
 		part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parts.append(part)
+	return parts
+
+
+## `node`'s transform in `space` (one of its ancestors, or itself); works outside the tree too.
+static func _relative(node: Node3D, space: Node3D) -> Transform3D:
+	var result: Transform3D = Transform3D.IDENTITY
+	var at: Node = node
+	while at and at != space:
+		var spatial := at as Node3D
+		if spatial:
+			result = spatial.transform * result
+		at = at.get_parent()
+	return result
+
+
+## Whether `node` and its parents up to `space` are visible.
+static func _is_shown(node: Node3D, space: Node3D) -> bool:
+	var at: Node = node
+	while at:
+		var spatial := at as Node3D
+		if spatial and not spatial.visible:
+			return false
+		if at == space:
+			return true
+		at = at.get_parent()
+	return true
 
 
 static func _material(color: Color) -> ShaderMaterial:

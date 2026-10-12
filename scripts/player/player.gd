@@ -7,7 +7,8 @@ extends CharacterBody3D
 ## shots fly straight at it, also up or down a slope. Places miners on the nearest
 ## free ore node in range with `place_miner`, and carries the ore that miners' hoses move to it,
 ## shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
-## nearest interactable in range (buttons, ...) with `interact`. Health shows on the suit light;
+## nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
+## menu (`menu`), it stands still and only the menu gets its input. Health shows on the suit light;
 ## at zero health the player dies, drops everything carried and lies still until `respawn`.
 ## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
 ## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
@@ -22,6 +23,8 @@ signal died
 
 const GROUP: StringName = &"players"
 
+## Actions that make the player act; ones still held when a menu closes wait for their release.
+const ACTIONS: Array[StringName] = [&"attack", &"place_miner", &"interact"]
 ## Ignore cursor positions this close to the player, the direction flips around too easily.
 const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 ## The cursor ray looks for the ground from this high above the player's feet (m), so ceilings and
@@ -60,10 +63,21 @@ var cargo: Dictionary[OreType, float] = {}
 var health: float
 ## Dead players can't move or act until they respawn.
 var dead: bool = false
+## The 3D menu (a world panel) the player is using, or null. Meanwhile it doesn't move or act.
+var menu: WorldPanel:
+	set(value):
+		menu = value
+		# The press that closed the menu (e.g. a click) doesn't act again in the world.
+		_held_since_menu.clear()
+		for action: StringName in ACTIONS:
+			if Input.is_action_pressed(action):
+				_held_since_menu.append(action)
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Whether the mouse was used for aiming more recently than the right stick.
 var _aim_with_mouse: bool = false
+## Actions held since a menu opened or closed; they're ignored until released.
+var _held_since_menu: Array[StringName] = []
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
@@ -102,9 +116,11 @@ func _physics_process(delta: float) -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	var camera_basis: Basis = camera.global_basis if camera else Basis.IDENTITY
 
-	var move_input: Vector2 = Input.get_vector(
-		&"move_left", &"move_right", &"move_forward", &"move_back"
-	)
+	_held_since_menu.assign(_held_since_menu.filter(Input.is_action_pressed))
+	var acting: bool = menu == null
+	var move_input: Vector2 = Vector2.ZERO
+	if acting:
+		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
 	var move: Vector3 = IsoInput.camera_relative(move_input, camera_basis)
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(
 		move * settings.move_speed, settings.acceleration * delta
@@ -116,7 +132,11 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= _gravity * delta
 	move_and_slide()
 
-	_update_aim(camera, camera_basis, move)
+	if acting:
+		_update_aim(camera, camera_basis, move)
+	else:
+		aim_target = null
+		_aim_towards(menu.global_position)
 	var target_yaw: float = atan2(-aim_direction.x, -aim_direction.z)
 	var yaw: float = lerp_angle(rotation.y, target_yaw, 1.0 - exp(-settings.turn_speed * delta))
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.
@@ -127,16 +147,14 @@ func _physics_process(delta: float) -> void:
 	if weapon:
 		weapon.aim_direction = aim_direction
 		weapon.aim_target = aim_target
-		weapon.trigger_held = (
-			weapon_allowed and Input.is_action_pressed(&"attack") and not _mouse_over_ui()
-		)
+		weapon.trigger_held = weapon_allowed and _action_held(&"attack") and not _mouse_over_ui()
 
 	_update_miner_target()
-	if Input.is_action_just_pressed(&"place_miner"):
+	if _action_just_pressed(&"place_miner"):
 		place_miner()
 
 	_update_interact_target()
-	if Input.is_action_just_pressed(&"interact"):
+	if _action_just_pressed(&"interact"):
 		interact()
 
 
@@ -332,6 +350,15 @@ static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Play
 	return nearest_player
 
 
+## Whether `action` is held for the player to act (not while using a menu, nor a press from it).
+func _action_held(action: StringName) -> bool:
+	return not menu and action not in _held_since_menu and Input.is_action_pressed(action)
+
+
+func _action_just_pressed(action: StringName) -> bool:
+	return _action_held(action) and Input.is_action_just_pressed(action)
+
+
 func _mouse_over_ui() -> bool:
 	return _aim_with_mouse and get_viewport().gui_get_hovered_control() != null
 
@@ -344,6 +371,8 @@ func _set_health(value: float) -> void:
 
 func _die() -> void:
 	dead = true
+	if menu:
+		menu.close()
 	velocity = Vector3.ZERO
 	if weapon:
 		weapon.trigger_held = false

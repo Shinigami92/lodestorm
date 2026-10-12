@@ -146,6 +146,18 @@ msgstr ""
 msgid "Cabins · Lift · Bridge"
 msgstr ""
 
+#: scenes/ui/settings_menu.tscn
+msgid "Settings"
+msgstr ""
+
+#: scenes/ui/settings_menu.tscn
+msgid "Language"
+msgstr ""
+
+#: scenes/ui/settings_menu.tscn
+msgid "Close"
+msgstr ""
+
 #: scripts/ship/ship.gd
 msgid "All aboard"
 msgstr ""

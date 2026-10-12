@@ -148,6 +148,18 @@ msgstr "Lift\nFrachtraum · Rampe"
 msgid "Cabins · Lift · Bridge"
 msgstr "Kabinen · Lift · Brücke"
 
+#: scenes/ui/settings_menu.tscn
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: scenes/ui/settings_menu.tscn
+msgid "Language"
+msgstr "Sprache"
+
+#: scenes/ui/settings_menu.tscn
+msgid "Close"
+msgstr "Schließen"
+
 #: scripts/ship/ship.gd
 msgid "All aboard"
 msgstr "Alle an Bord"

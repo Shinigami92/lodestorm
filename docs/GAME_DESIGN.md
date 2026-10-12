@@ -40,7 +40,7 @@ A 3D isometric action/mining game with a dark, realistic sci-fi look. The player
 
 ### Localization and voice
 
-- **Languages:** English and German first, more later. All player-facing text goes through translations from the start, also the text in the world (3D menus, labels, the room names painted on the floors). German runs about a third longer than English, so panels and labels leave room for it. The game follows the system language until a settings menu lets players pick one. How it works: [`TECHNICAL.md`](TECHNICAL.md#localization).
+- **Languages:** English and German first, more later. All player-facing text goes through translations from the start, also the text in the world (3D menus, labels, the room names painted on the floors). German runs about a third longer than English, so panels and labels leave room for it. The game follows the system language; the settings terminal in cabin 1 picks another one (for now until the game quits; it's saved once save/load exists). How it works: [`TECHNICAL.md`](TECHNICAL.md#localization).
 - **Translations by contributors:** the project is on GitHub, so new languages and fixes come in as pull requests (one translation file per language, readable in a diff; the CLA applies).
 - **Subtitles for every spoken line**, in every language, shown in the world, not on the screen: a speech bubble above the speaking NPC, radio lines next to the player. They work the same in VR (in the diorama).
 - **Voice-over** (wanted, English only is fine): generated with a free AI text-to-speech model that runs locally, like the concept images. Lines are generated ahead of time (per scripted line, an audio file), not while playing. The model needs good English (German is a bonus), a license that allows selling the game, and distinct voices per NPC that aren't cloned from real people without their consent. Which model: a spike (see [`PLAN.md`](PLAN.md)). Steam asks to disclose AI-generated content on the store page.
@@ -82,8 +82,13 @@ Found by rating four rounds of concept images (generated locally, not part of th
 - **No 2D HUD** where it can be avoided. Game information is shown in the world or on the player (diegetic UI). This also keeps desktop and VR the same: a screen-space HUD doesn't work in VR anyway.
 - **Ideas (not final):** health and armor on the player's suit (lights, gauges), carried resources visible on the player (backpack / canisters filling up), ammo on the weapon, miner fill level on the miner itself, mission time via the environment (storm building up, ship beacon) or a display on the player's wrist.
 - **3D menus are fine** where a menu is needed: mission selection, upgrade vendors, etc. are panels in the world (e.g. a terminal screen in the ship), not screen overlays.
-- **Exceptions:** developer tools (debug overlay for tuning) are allowed in 2D. Whether system menus (main menu, pause, settings) can be 3D too is open.
-- How 3D menus work technically (rendering, input with mouse / gamepad / VR controllers, text readability at isometric distance) is to be found out in a spike.
+- **Using a 3D menu** (from the spike, values **TBD (playtest)**): a player walks up to a terminal and uses it (`interact`). They stand still, and their camera moves in to frame the screen (keeping the isometric angle), so its text reads like a normal menu (the screen fills about half the view's height); nobody standing in front of it hides it. Leaving the menu moves the camera back.
+  - **Mouse:** the cursor points at the screen and clicks its buttons, like a 2D menu.
+  - **Gamepad and keyboard:** movement (left stick, WASD, also the d-pad and arrow keys) moves the highlight between buttons, `interact` presses the highlighted one; `pause` (Escape, Menu) or B closes the menu.
+  - **VR (later):** a controller points at the screen like the mouse does.
+  - Screens lean back to face the camera, glow in the dark rooms (cyan text and frames, the highlight in amber like the floor markings) and leave room for longer German texts. One player uses a terminal at a time.
+- **System menus:** settings are a terminal in the ship too (so far the language, in cabin 1). Whether the main menu and pause can be 3D is open.
+- **Exceptions:** developer tools (debug overlay for tuning) are allowed in 2D.
 
 ## 4. Core loop
 
@@ -115,7 +120,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Lifts:** a platform for up to four players in a shaft beside the corridor. Stepping on it sends it to the other deck (greybox: after 0.6 s, 2 s ride, **TBD (playtest)**); riders who came along have to step off before it leaves again. Waiting at the gate on the other deck calls it. Gates close the shaft on every deck the platform isn't at.
 - **Walking the ship:** the bridge sits at the nose, far from the ramp. Picking a mission starts the flight, and players walk aft and gear up while the ship flies and lands, so the walk isn't dead time (flight time **TBD (playtest)**).
 - **Bridge:** missions are selected here. A holo table in the middle projects a hologram of the mission location (a small copy of the location, spinning slowly, the ship's spot highlighted), so players gather around it to see where they're going.
-- **Cabins:** one per player (up to 4, cabin 1 closest to the bridge for solo play) with a bed and a locker; eight crew cabins for the NPCs with a bed each. Whether the locker becomes a private inventory is open.
+- **Cabins:** one per player (up to 4, cabin 1 closest to the bridge for solo play) with a bed and a locker, and in cabin 1 the settings terminal; eight crew cabins for the NPCs with a bed each. Whether the locker becomes a private inventory is open.
 - **Windows:** every room along the outer walls has windows on its deck (one per ~9 m of wall), and the cockpit looks out over the nose. From inside, they show the outside (light falls in through them); from outside, they show into the ship. Windows in walls cut away for the camera go with their wall.
 - **Finding the way:** every room's name is painted on its floor by the door. Amber floor markings with arrows at the corridors, lobbies and lifts point to the rooms further on (and which lift leads where).
 - **Greybox layout** (top view, camera at the bottom; about 96 × 30 m plus a nose cone below the cockpit and two thrusters on the roof at the tail, sizes **TBD (playtest)**; the real hull shape comes with the art pass):
@@ -299,4 +304,4 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 - Voice-over: which local text-to-speech model; whether AI-driven NPCs are worth an experiment.
 - Co-op: what a guest's haul buys besides their own gear.
 - Private inventory (the locker in each player cabin): a mechanic or not.
-- Diegetic UI: how to show off-screen information (a miner is full, aliens attacking a miner elsewhere), text size and readability, and whether main / pause / settings menus can be 3D too.
+- Diegetic UI: how to show off-screen information (a miner is full, aliens attacking a miner elsewhere), and whether the main menu and pause can be 3D too.

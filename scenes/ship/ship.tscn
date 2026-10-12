@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scripts/camera/camera_zone.gd" id="6_camera_zone"]
 [ext_resource type="Script" path="res://scripts/ship/lift.gd" id="7_lift"]
 [ext_resource type="Script" path="res://scripts/ship/floor_guide.gd" id="8_floor_guide"]
+[ext_resource type="PackedScene" path="res://scenes/ui/terminal.tscn" id="9_terminal"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="10_settings_menu"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]
 albedo_color = Color(0.3, 0.31, 0.33, 1)
@@ -4519,3 +4521,7 @@ pixel_size = 0.015
 font_size = 128
 outline_size = 32
 uppercase = true
+
+[node name="Terminal" parent="Rooms/Upper/Cabin1" instance=ExtResource("9_terminal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0, -5.45)
+menu = ExtResource("10_settings_menu")

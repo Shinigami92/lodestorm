@@ -64,7 +64,7 @@ var mission: Mission
 var beacon_color: Color = COLOR_CALM
 ## The beacon's current brightness (0 to 1), dims while blinking.
 var beacon_brightness: float = 1.0
-## What the countdown above the door shows: the time left, or the mission's state.
+## What the countdown above the door shows: the time left, or the mission's state (translated).
 var countdown_text: String = ""
 ## Whether the ramp is going down (or is down); it moves there over `ramp_duration`.
 var ramp_open: bool = false
@@ -195,13 +195,13 @@ func _update_display() -> void:
 		countdown_text = ""
 	elif mission.state == Mission.State.RETURNED:
 		beacon_color = COLOR_RETURNED
-		countdown_text = "ALL ABOARD"
+		countdown_text = tr("All aboard")
 	elif mission.state == Mission.State.LOST:
 		beacon_color = COLOR_LOST
-		countdown_text = "LOST"
+		countdown_text = tr("Lost")
 	elif mission.state == Mission.State.STORM:
 		beacon_color = COLOR_WARNING
-		countdown_text = "STORM"
+		countdown_text = tr("Storm")
 	else:
 		var time_left: float = mission.time_left
 		var seconds: int = ceili(time_left)

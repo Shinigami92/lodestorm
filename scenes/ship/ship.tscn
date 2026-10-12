@@ -7,6 +7,7 @@
 [ext_resource type="Shader" path="res://assets/shaders/hologram.gdshader" id="5_hologram"]
 [ext_resource type="Script" path="res://scripts/camera/camera_zone.gd" id="6_camera_zone"]
 [ext_resource type="Script" path="res://scripts/ship/lift.gd" id="7_lift"]
+[ext_resource type="Script" path="res://scripts/ship/floor_guide.gd" id="8_floor_guide"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]
 albedo_color = Color(0.3, 0.31, 0.33, 1)
@@ -2917,9 +2918,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Cockpit"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 4.5)
 pixel_size = 0.01
-text = "COCKPIT"
+text = "Cockpit"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="Bridge" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 7, 0)
@@ -2940,9 +2942,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Bridge"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 4.5)
 pixel_size = 0.01
-text = "BRIDGE"
+text = "Bridge"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="UpperLobby" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 7, 6)
@@ -2995,9 +2998,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/MessHall"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 4.5)
 pixel_size = 0.01
-text = "MESS HALL"
+text = "Mess hall"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="Cabin1" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, -8.75)
@@ -3018,9 +3022,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Cabin1"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "CABIN 1"
+text = "Cabin 1"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Cabin2" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, 8.75)
@@ -3041,9 +3046,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Cabin2"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "CABIN 2"
+text = "Cabin 2"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Cabin3" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, -8.75)
@@ -3064,9 +3070,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Cabin3"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "CABIN 3"
+text = "Cabin 3"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Cabin4" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, 8.75)
@@ -3087,9 +3094,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Cabin4"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "CABIN 4"
+text = "Cabin 4"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Crew1" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, -8.75)
@@ -3110,9 +3118,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Crew1"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "CREW 1"
+text = "Crew 1"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Crew5" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, 8.75)
@@ -3133,9 +3142,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Crew5"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "CREW 5"
+text = "Crew 5"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Crew2" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, -8.75)
@@ -3156,9 +3166,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Crew2"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "CREW 2"
+text = "Crew 2"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Crew6" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, 8.75)
@@ -3179,9 +3190,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Crew6"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "CREW 6"
+text = "Crew 6"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Crew3" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, -8.75)
@@ -3202,9 +3214,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Crew3"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "CREW 3"
+text = "Crew 3"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Crew7" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, 8.75)
@@ -3225,9 +3238,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Crew7"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "CREW 7"
+text = "Crew 7"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Crew4" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, -8.75)
@@ -3248,9 +3262,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Crew4"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "CREW 4"
+text = "Crew 4"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="Crew8" type="Node3D" parent="Rooms/Upper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, 8.75)
@@ -3271,9 +3286,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Upper/Crew8"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "CREW 8"
+text = "Crew 8"
 font_size = 72
 outline_size = 24
+uppercase = true
 
 [node name="MedicalBay" type="Node3D" parent="Rooms/Lower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -8.75)
@@ -3294,9 +3310,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Lower/MedicalBay"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "MEDICAL BAY"
+text = "Medical bay"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="NoseCorridor" type="Node3D" parent="Rooms/Lower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, 0)
@@ -3333,9 +3350,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Lower/EngineRoom"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "ENGINE ROOM"
+text = "Engine room"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="LowerLobby" type="Node3D" parent="Rooms/Lower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 2.5, 6)
@@ -3372,9 +3390,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Lower/ShootingRange"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "SHOOTING RANGE"
+text = "Shooting range"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="Armory" type="Node3D" parent="Rooms/Lower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 2.5, -8.75)
@@ -3395,9 +3414,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Lower/Armory"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
-text = "ARMORY"
+text = "Armory"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="LowerCorridor" type="Node3D" parent="Rooms/Lower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.5, 2.5, 0)
@@ -3434,9 +3454,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Lower/Weapons"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "WEAPONS"
+text = "Weapons"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="Armor" type="Node3D" parent="Rooms/Lower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 2.5, 8.75)
@@ -3457,9 +3478,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Lower/Armor"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "ARMOR"
+text = "Armor"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="Skills" type="Node3D" parent="Rooms/Lower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 2.5, 8.75)
@@ -3480,9 +3502,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Lower/Skills"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "SKILLS"
+text = "Skills"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="Miners" type="Node3D" parent="Rooms/Lower"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 2.5, 8.75)
@@ -3503,9 +3526,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/Lower/Miners"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
-text = "MINERS"
+text = "Miners"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="CargoBay" type="Node3D" parent="Rooms"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
@@ -3526,9 +3550,10 @@ spot_angle_attenuation = 0.5
 [node name="Sign" type="Label3D" parent="Rooms/CargoBay"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 4.5)
 pixel_size = 0.01
-text = "CARGO BAY"
+text = "Cargo bay"
 font_size = 96
 outline_size = 24
+uppercase = true
 
 [node name="Bed" type="StaticBody3D" parent="Rooms/Upper/Cabin1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 0.25, -4.45)
@@ -3986,6 +4011,7 @@ mesh = SubResource("BoxMesh_barrier")
 
 [node name="ToLowerDeck" type="Node3D" parent="Rooms/CargoBay/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 0, 1.5)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/CargoBay/Guides/ToLowerDeck"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.59, 0.02, 0)
@@ -4004,12 +4030,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "ARMORY · UPGRADES\nRANGE · MEDICAL · ENGINE"
+text = "Armory · Upgrades\nRange · Medical · Engine"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToLift" type="Node3D" parent="Rooms/CargoBay/Guides"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.25, 0, -5.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0, -5.5)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/CargoBay/Guides/ToLift"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -1.14)
@@ -4028,12 +4056,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "LIFT\nMESS · CABINS · BRIDGE"
+text = "Lift\nMess · Cabins · Bridge"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToCargoBay" type="Node3D" parent="Rooms/Lower/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2.5, -1.2)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToCargoBay"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.31, 0.02, 0)
@@ -4052,12 +4082,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "CARGO BAY · RAMP"
+text = "Cargo bay · Ramp"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToNose" type="Node3D" parent="Rooms/Lower/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 2.5, -1.3)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToNose"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.43, 0.02, 0)
@@ -4076,12 +4108,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "LIFT · MEDICAL · ENGINE"
+text = "Lift · Medical · Engine"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToNoseLift" type="Node3D" parent="Rooms/Lower/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 2.5, 1.2)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToNoseLift"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -1.14)
@@ -4100,12 +4134,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "LIFT\nBRIDGE · CABINS"
+text = "Lift\nBridge · Cabins"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToTail" type="Node3D" parent="Rooms/Lower/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.25, 2.5, 6.5)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToTail"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.99, 0.02, 0)
@@ -4124,12 +4160,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "RANGE · ARMORY\nCARGO BAY"
+text = "Range · Armory\nCargo bay"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToLowerDeck" type="Node3D" parent="Rooms/Upper/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 7, 1.2)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToLowerDeck"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -1.14)
@@ -4148,12 +4186,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "LIFT\nLOWER DECK"
+text = "Lift\nLower deck"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToBridge" type="Node3D" parent="Rooms/Upper/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.25, 7, 5)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToBridge"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.87, 0.02, 0)
@@ -4172,12 +4212,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "BRIDGE\nCOCKPIT"
+text = "Bridge\nCockpit"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToCabins" type="Node3D" parent="Rooms/Upper/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.25, 7, 9)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToCabins"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.83, 0.02, 0)
@@ -4196,12 +4238,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "CABINS · MESS\nCARGO LIFT"
+text = "Cabins · Mess\nCargo lift"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="FromBridge" type="Node3D" parent="Rooms/Upper/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61, 7, 3.5)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/FromBridge"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.95, 0.02, 0)
@@ -4220,12 +4264,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "LIFT · CABINS · MESS"
+text = "Lift · Cabins · Mess"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="ToCargoLift" type="Node3D" parent="Rooms/Upper/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 7, -10.8)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToCargoLift"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.31, 0.02, 0)
@@ -4244,12 +4290,14 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "LIFT\nCARGO BAY · RAMP"
+text = "Lift\nCargo bay · Ramp"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="FromMess" type="Node3D" parent="Rooms/Upper/Guides"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 7, 1.3)
+script = ExtResource("8_floor_guide")
 
 [node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/FromMess"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.27, 0.02, 0)
@@ -4268,9 +4316,10 @@ mesh = SubResource("BoxMesh_arrow_shaft")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "CABINS · LIFT · BRIDGE"
+text = "Cabins · Lift · Bridge"
 font_size = 48
 outline_size = 14
+uppercase = true
 
 [node name="Lifts" type="Node3D" parent="."]
 
@@ -4462,9 +4511,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
 omni_range = 10.0
 
 [node name="Countdown" type="Label3D" parent="."]
+auto_translate_mode = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 8, 0)
 billboard = 1
 no_depth_test = true
 pixel_size = 0.015
 font_size = 128
 outline_size = 32
+uppercase = true

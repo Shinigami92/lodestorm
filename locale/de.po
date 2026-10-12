@@ -1,0 +1,161 @@
+msgid ""
+msgstr ""
+"Language: de\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: scenes/ship/ship.tscn
+msgid "Cockpit"
+msgstr "Cockpit"
+
+#: scenes/ship/ship.tscn
+msgid "Bridge"
+msgstr "Brücke"
+
+#: scenes/ship/ship.tscn
+msgid "Mess hall"
+msgstr "Messe"
+
+#: scenes/ship/ship.tscn
+msgid "Cabin 1"
+msgstr "Kabine 1"
+
+#: scenes/ship/ship.tscn
+msgid "Cabin 2"
+msgstr "Kabine 2"
+
+#: scenes/ship/ship.tscn
+msgid "Cabin 3"
+msgstr "Kabine 3"
+
+#: scenes/ship/ship.tscn
+msgid "Cabin 4"
+msgstr "Kabine 4"
+
+#: scenes/ship/ship.tscn
+msgid "Crew 1"
+msgstr "Crew 1"
+
+#: scenes/ship/ship.tscn
+msgid "Crew 5"
+msgstr "Crew 5"
+
+#: scenes/ship/ship.tscn
+msgid "Crew 2"
+msgstr "Crew 2"
+
+#: scenes/ship/ship.tscn
+msgid "Crew 6"
+msgstr "Crew 6"
+
+#: scenes/ship/ship.tscn
+msgid "Crew 3"
+msgstr "Crew 3"
+
+#: scenes/ship/ship.tscn
+msgid "Crew 7"
+msgstr "Crew 7"
+
+#: scenes/ship/ship.tscn
+msgid "Crew 4"
+msgstr "Crew 4"
+
+#: scenes/ship/ship.tscn
+msgid "Crew 8"
+msgstr "Crew 8"
+
+#: scenes/ship/ship.tscn
+msgid "Medical bay"
+msgstr "Krankenstation"
+
+#: scenes/ship/ship.tscn
+msgid "Engine room"
+msgstr "Maschinenraum"
+
+#: scenes/ship/ship.tscn
+msgid "Shooting range"
+msgstr "Schießstand"
+
+#: scenes/ship/ship.tscn
+msgid "Armory"
+msgstr "Waffenkammer"
+
+#: scenes/ship/ship.tscn
+msgid "Weapons"
+msgstr "Waffen"
+
+#: scenes/ship/ship.tscn
+msgid "Armor"
+msgstr "Panzerung"
+
+#: scenes/ship/ship.tscn
+msgid "Skills"
+msgstr "Fähigkeiten"
+
+#: scenes/ship/ship.tscn
+msgid "Miners"
+msgstr "Schürfer"
+
+#: scenes/ship/ship.tscn
+msgid "Cargo bay"
+msgstr "Frachtraum"
+
+#: scenes/ship/ship.tscn
+msgid "Armory · Upgrades\nRange · Medical · Engine"
+msgstr "Waffenkammer · Upgrades\nSchießstand · Krankenstation · Maschinenraum"
+
+#: scenes/ship/ship.tscn
+msgid "Lift\nMess · Cabins · Bridge"
+msgstr "Lift\nMesse · Kabinen · Brücke"
+
+#: scenes/ship/ship.tscn
+msgid "Cargo bay · Ramp"
+msgstr "Frachtraum · Rampe"
+
+#: scenes/ship/ship.tscn
+msgid "Lift · Medical · Engine"
+msgstr "Lift · Krankenstation · Maschinenraum"
+
+#: scenes/ship/ship.tscn
+msgid "Lift\nBridge · Cabins"
+msgstr "Lift\nBrücke · Kabinen"
+
+#: scenes/ship/ship.tscn
+msgid "Range · Armory\nCargo bay"
+msgstr "Schießstand · Waffenkammer\nFrachtraum"
+
+#: scenes/ship/ship.tscn
+msgid "Lift\nLower deck"
+msgstr "Lift\nUnterdeck"
+
+#: scenes/ship/ship.tscn
+msgid "Bridge\nCockpit"
+msgstr "Brücke\nCockpit"
+
+#: scenes/ship/ship.tscn
+msgid "Cabins · Mess\nCargo lift"
+msgstr "Kabinen · Messe\nFrachtlift"
+
+#: scenes/ship/ship.tscn
+msgid "Lift · Cabins · Mess"
+msgstr "Lift · Kabinen · Messe"
+
+#: scenes/ship/ship.tscn
+msgid "Lift\nCargo bay · Ramp"
+msgstr "Lift\nFrachtraum · Rampe"
+
+#: scenes/ship/ship.tscn
+msgid "Cabins · Lift · Bridge"
+msgstr "Kabinen · Lift · Brücke"
+
+#: scripts/ship/ship.gd
+msgid "All aboard"
+msgstr "Alle an Bord"
+
+#: scripts/ship/ship.gd
+msgid "Lost"
+msgstr "Verloren"
+
+#: scripts/ship/ship.gd
+msgid "Storm"
+msgstr "Sturm"

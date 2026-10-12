@@ -60,6 +60,7 @@ Machine-specific paths live in environment variables, never in the repo:
 - **Cross-platform:** no machine-specific paths, POSIX shell scripts, LF line endings, lowercase file names. Details: [Cross-platform development](docs/TECHNICAL.md#cross-platform-development).
 - **Versions** are defined once and referenced (Godot: `.godot-version`); don't hardcode them elsewhere.
 - **Tunable gameplay values** go into `Resource` files (`.tres`), not into code.
+- **Player-facing text** is written in English and goes through translations (`tr()` in scripts); after adding or changing texts, run `tools/translations.sh` and add the German translation in `locale/de.po`. New languages and translation fixes are welcome as pull requests. Details: [Localization](docs/TECHNICAL.md#localization).
 - **Assets:** Blender source files (`.blend`) are committed next to the exported `.glb`; binary files are tracked with Git LFS automatically via [`.gitattributes`](.gitattributes). Details: [Asset pipeline](docs/TECHNICAL.md#4-asset-pipeline).
 - **Third-party material** (addons, models, textures, sounds, fonts) is only accepted with a license that allows redistribution in this repo and in the commercial release. Keep its license file next to it and mention the source in the pull request.
 

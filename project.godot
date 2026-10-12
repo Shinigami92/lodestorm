@@ -115,6 +115,10 @@ debug_overlay={
 ]
 }
 
+[internationalization]
+
+locale/translations=["res://locale/de.po"]
+
 [navigation]
 
 3d/warnings/navmesh_edge_merge_errors=false

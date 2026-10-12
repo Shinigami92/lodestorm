@@ -43,31 +43,45 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Loadout selection before a mission (3D menu in the armory): pick a few of the owned weapons
 - Ship states (space / landed + weather) and ramp → starts mission
 - Medical bay respawn
+- Localization setup: English and German, all player-facing text through translations from the start (also the 3D menus and the text in the world)
 - Upgrade station(s) spending resources (a few weapon/armor/miner upgrades)
-- Save/load of persistent progress
+- Save/load of persistent progress (host: ship, story, crew, quests; per player: weapons, skills, loadout, see [Co-op progression](GAME_DESIGN.md#co-op-progression))
 
-## M4 — Art pass (Blender MCP)
+## M4 — Progression & quests
 
-- Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full), hose, ore nodes, aliens, ship exterior/interior, weapons
-- Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<type>_wall` in `assets/ores/ores.glb`), which needs placement along the cliff edges; drive the blaster's glowing ammo counter (the `AmmoCounter` mesh, six segments along UV.x), which needs an ammo or heat mechanic first (open)
+- Spike: local AI voice-over (text to speech, offline, English) and subtitles as speech bubbles in the world, see [Localization and voice](GAME_DESIGN.md#localization-and-voice)
+- More ore types (towards 10–15), each identifiable by color, crystal shape and glow pattern; spread over biomes and planets
+- Refinery: alloys from 2–3 ores, refining in real time
+- Crafted miners (upgraded one by one, picked up again, lost when left behind or when everyone dies), standard-issue miners, drill types
+- Risk vs. reward: nodes running dry, mining sites drawing aliens, rare ore far out and near nests, late deposits
+- Ammo for ranged weapons (made from carried ore during a run, magazine upgrades, refilling teammates' ammo), weapon MK upgrades, loadout slots for any weapon type
+- Skills (dash, more health, regeneration, rescue drone, miner radar, sentries) and keeping part of the carried ore on death
+- Quest framework: NPC quest givers, main and side quests tied to locations, quests that can't be missed, reputation
+- First story pieces: one crew NPC with a quest chain, one expedition log
+
+## M5 — Art pass (Blender MCP)
+
+- Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, placing and pickup animations, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
+- Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<type>_wall` in `assets/ores/ores.glb`), which needs placement along the cliff edges; drive the blaster's glowing ammo counter (the `AmmoCounter` mesh, six segments along UV.x), which needs the ammo mechanic (M4) first
 - Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips
-- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; raiders share its model (shaded darker) until they get their own strain; the brute and the spitter are still to model; the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so profiling (M5) may move it to a cheaper path or skip it for aliens off screen
+- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; raiders share its model (shaded darker) until they get their own strain; the brute and the spitter are still to model; the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so profiling (M6) may move it to a cheaper path or skip it for aliens off screen
 - Basic VFX/SFX for mining, shooting, storm
 
-## M5 — VR
+## M6 — VR
 
 - OpenXR setup for Steam Frame
 - Tabletop diorama camera rig
 - VR controller mapping onto existing input actions
 - 90 FPS profiling
 
-## M6 — Co-op
+## M7 — Co-op
 
 - Godot high-level multiplayer (host + up to 3 clients)
 - Sync players, miners, aliens, resources
 - Shared ship hub
+- Co-op progression: host save plus each player's own gear, tier sync (see [Co-op progression](GAME_DESIGN.md#co-op-progression))
 
-## M7 — Platform services & release
+## M8 — Platform services & release
 
 - `PlatformService` abstraction + GodotSteam backend
 - Achievements (in-game list + Steam)
@@ -77,3 +91,5 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 ## Afterwards
 
 Epic / GOG ports. Iterate based on playtesting: more planets, alien types, miner types/defenses, mission objectives, NPC/story content.
+
+Not placed in a milestone yet (see [`GAME_DESIGN.md`](GAME_DESIGN.md)): the full story campaign and crew, stations and outposts, voice-over for all lines, the radio comms log, more languages, AI-driven NPCs (experiment).

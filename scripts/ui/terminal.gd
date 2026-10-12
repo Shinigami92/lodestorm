@@ -6,6 +6,11 @@ extends Interactable
 
 ## The menu on the screen.
 @export var menu: PackedScene
+## How much the camera of the player using it sees (visible height in m); 0: the screen's
+## default (`WorldPanel.view_height`).
+@export var view_height: float = 0.0
+## What that camera centers on; the screen when not set.
+@export var view_focus: Node3D
 
 @onready var panel: WorldPanel = $Head/Panel
 
@@ -16,6 +21,9 @@ func _init() -> void:
 
 func _ready() -> void:
 	panel.menu = menu
+	if view_height > 0.0:
+		panel.view_height = view_height
+	panel.view_focus = view_focus
 	super()
 	panel.opened.connect(_on_panel_changed.unbind(1))
 	panel.closed.connect(_on_panel_changed.unbind(1))

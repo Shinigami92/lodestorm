@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/ship/floor_guide.gd" id="8_floor_guide"]
 [ext_resource type="PackedScene" path="res://scenes/ui/terminal.tscn" id="9_terminal"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="10_settings_menu"]
+[ext_resource type="PackedScene" path="res://scenes/ui/mission_menu.tscn" id="11_mission_menu"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]
 albedo_color = Color(0.3, 0.31, 0.33, 1)
@@ -4525,3 +4526,12 @@ uppercase = true
 [node name="Terminal" parent="Rooms/Upper/Cabin1" instance=ExtResource("9_terminal")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0, -5.45)
 menu = ExtResource("10_settings_menu")
+
+[node name="MissionView" type="Marker3D" parent="Rooms/Upper/Bridge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1.6, 1.4)
+
+[node name="MissionTerminal" parent="Rooms/Upper/Bridge" node_paths=PackedStringArray("view_focus") instance=ExtResource("9_terminal")]
+transform = Transform3D(1.35, 0, 0, 0, 1.35, 0, 0, 0, 1.35, 3.1, 0, 1.9)
+menu = ExtResource("11_mission_menu")
+view_height = 4.0
+view_focus = NodePath("../MissionView")

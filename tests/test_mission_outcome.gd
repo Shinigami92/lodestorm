@@ -19,8 +19,9 @@ func before_each() -> void:
 	_ship.ramp_duration = 0.25
 	_mission.settings = _mission.settings.duplicate()
 	_mission.settings.respawn_delay = 0.25
-	watch_signals(_mission)
 	await wait_physics_frames(2)
+	TEST_MAP.pick_mission(_map)
+	watch_signals(_mission)
 
 
 func after_each() -> void:
@@ -86,9 +87,12 @@ func test_respawn_aboard_after_lost_mission() -> void:
 	assert_false(_player.dead)
 	assert_true(_ship.is_aboard(_player))
 	assert_eq(_player.health, _player.settings.max_health)
-	assert_true(_ship.ramp_button.enabled)
+	assert_false(_ship.ramp_button.enabled, "the lost mission is done: pick the next one")
 	await _wait_for_ramp()
 	assert_true(_ship.is_ramp_up())
+	TEST_MAP.pick_mission(_map)
+	await wait_physics_frames(1)
+	assert_true(_ship.ramp_button.enabled)
 	_ship.ramp_button.use(_player)
 	await wait_physics_frames(2)
 	assert_eq(_mission.state, Mission.State.OPEN, "the button starts the next run")
@@ -108,15 +112,18 @@ func test_dying_aboard_without_mission_respawns() -> void:
 
 
 func test_tuning_duration_updates_timer() -> void:
+	var length: float = _mission.brief.length
 	_mission.settings.duration = 120.0
 	await wait_physics_frames(2)
-	assert_eq(_mission.time_left, 120.0, "before the start: the new duration")
+	assert_eq(_mission.time_left, 120.0 * length, "before the start: the new duration")
 	await _open()
 	await _move(_player, _outside())
 	var time_left: float = _mission.time_left
 	_mission.settings.duration = 100.0
 	await wait_physics_frames(1)
-	assert_almost_eq(_mission.time_left, time_left - 20.0, 0.1, "while running: by the difference")
+	assert_almost_eq(
+		_mission.time_left, time_left - 20.0 * length, 0.1, "while running: by the difference"
+	)
 
 
 func test_returning_stores_cargo_in_hold() -> void:
@@ -133,8 +140,8 @@ func test_returning_stores_cargo_in_hold() -> void:
 
 func test_hold_keeps_cargo_over_runs() -> void:
 	for run: int in 2:
-		_ship.ramp_button.use(_player)
-		await _wait_for_ramp()
+		TEST_MAP.pick_mission(_map)
+		await _open()
 		await _move(_player, _outside())
 		_player.add_cargo(CYAN, 100.0)
 		await _move(_player, _inside())
@@ -147,6 +154,7 @@ func test_next_run_heals_players() -> void:
 	_player.take_damage(40.0)
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
+	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	assert_eq(_player.health, _player.settings.max_health)
 

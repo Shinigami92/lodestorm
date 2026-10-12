@@ -66,9 +66,9 @@ func test_next_run_starts_calm() -> void:
 	_mission.state = Mission.State.RETURNED
 	await wait_process_frames(5)
 	assert_eq(_weather.intensity, 1.0, "the storm keeps raging outside")
-	(_map.get_node("Ship") as Ship).ramp_button.use(_map.get_node("Player") as Player)
+	TEST_MAP.pick_mission(_map)
 	await wait_process_frames(2)
-	assert_eq(_weather.intensity, 0.0)
+	assert_eq(_weather.intensity, 0.0, "the ship flew to the next mission's location")
 	assert_false(_environment.fog_enabled)
 
 

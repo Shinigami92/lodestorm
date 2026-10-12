@@ -1,19 +1,26 @@
 class_name Mission
 extends Node
-## The mission loop around the ship. The ramp starts closed; the ramp button inside the ship resets
-## the outside world (`location`), resets the timer, heals the players and lowers the ramp (later
-## it also locks the selected mission). The mission starts when the first player steps out; the
-## timer then counts down from `settings.duration`, and at zero the storm hits (`time_up`) and
-## hurts everyone outside, more with every second. Players who die drop what they carried.
+## The mission loop around the ship. The holo table offers a few missions (`offers`); picking one
+## (`select`) replaces the outside world (`location`) with a fresh one of the mission's biome and
+## seed and sets the timer (`duration`). The ramp starts closed; the ramp button inside the ship
+## only works with a mission picked: it resets the timer, heals the players, lowers the ramp and
+## locks the mission. The mission starts when the first player steps out; the timer then counts
+## down, and at zero the storm hits (`time_up`) and hurts everyone outside, more with every
+## second. Players who die drop what they carried.
 ## The mission is won (`returned`) once every living player is back aboard, in time or during the
 ## storm: their cargo goes into the ship's hold, the dead respawn aboard and the ramp goes up.
 ## It's lost (`lost`) when nobody is left alive; after `settings.respawn_delay` everyone respawns
-## aboard. Either way the button then starts the next run. Players who die while no mission runs
-## (e.g. killed through the debug overlay) also respawn aboard after `settings.respawn_delay`.
+## aboard. Either way the mission is done: new ones are offered, and the button starts the next
+## run once one is picked. Players who die while no mission runs (e.g. killed through the debug
+## overlay) also respawn aboard after `settings.respawn_delay`.
 ## Changing `settings.duration` while playing (debug overlay) updates the timer: before the start
 ## it's the new duration, while it runs it moves by the difference.
 
-## Emitted when the ramp button starts a new run: outside world and timer are reset.
+## Emitted when the missions on offer or the picked one change.
+signal offers_changed
+## Emitted when a mission is picked: the outside world is its location now.
+signal selected(brief: MissionBrief)
+## Emitted when the ramp button starts a new run: timer reset, the picked mission locked.
 signal opened
 ## Emitted once per run when the first player steps out of the ship.
 signal started
@@ -31,10 +38,14 @@ const GROUP: StringName = &"missions"
 @export var settings: MissionSettings
 ## The ship players start from and return to; it shows the mission time.
 @export var ship: Ship
-## The outside world; replaced by a fresh instance of its scene for every run.
+## The outside world; replaced by a fresh instance of its scene for every mission picked.
 @export var location: Node3D
 
 var state: State = State.CLOSED
+## The missions on offer at the holo table, from easy to hard.
+var offers: Array[MissionBrief] = []
+## The picked mission (one of `offers`), or null.
+var brief: MissionBrief
 ## Seconds until the storm hits, 0 afterwards.
 var time_left: float
 ## Seconds since the storm hit.
@@ -42,14 +53,17 @@ var storm_time: float = 0.0
 
 ## Seconds until the dead respawn when no mission runs (after a lost one, too).
 var _respawn_left: float = 0.0
-## `settings.duration` as of the last tick, to notice when it's tuned.
+## `duration()` as of the last tick, to notice when it's tuned.
 var _duration: float
+var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	time_left = settings.duration
-	_duration = settings.duration
+	_rng.randomize()
+	roll_offers()
+	time_left = duration()
+	_duration = duration()
 	_respawn_left = settings.respawn_delay
 	ship.mission = self
 	# Deferred: the location's nodes build their look in their own _ready (e.g. ore models).
@@ -76,11 +90,66 @@ func _physics_process(delta: float) -> void:
 	_check_outcome()
 
 
-## Replaces the outside world with a fresh instance of its scene and shows it on the holo table.
+## Offers new missions, one per `settings.offers`, running through the difficulties; drops the
+## picked one.
+func roll_offers() -> void:
+	offers.clear()
+	brief = null
+	for i: int in settings.offers:
+		var offer := MissionBrief.new()
+		if not settings.biomes.is_empty():
+			offer.biome = settings.biomes[_rng.randi() % settings.biomes.size()]
+		offer.world_seed = _rng.randi_range(1, 0x7fffffff)
+		if not settings.lengths.is_empty():
+			offer.length = settings.lengths[_rng.randi() % settings.lengths.size()]
+		offer.difficulty = (i % MissionBrief.Difficulty.size()) as MissionBrief.Difficulty
+		offers.append(offer)
+	offers.sort_custom(
+		func(a: MissionBrief, b: MissionBrief) -> bool: return a.difficulty < b.difficulty
+	)
+	offers_changed.emit()
+
+
+## Whether a mission can be picked now: not once the ramp is down for one (it's locked then), and
+## not while someone is dead.
+func can_select() -> bool:
+	return state in [State.CLOSED, State.RETURNED, State.LOST] and not _anyone_dead()
+
+
+## Picks `offer` (one of `offers`): the outside world becomes its location and the timer its
+## duration. Returns whether it was picked.
+func select(offer: MissionBrief) -> bool:
+	if offer not in offers or not can_select():
+		return false
+	brief = offer
+	state = State.CLOSED
+	reset_location()
+	time_left = duration()
+	_duration = duration()
+	storm_time = 0.0
+	ship.ramp_button.enabled = _can_start_run()
+	selected.emit(brief)
+	offers_changed.emit()
+	return true
+
+
+## Seconds from the start until the storm hits: the picked mission's length of the standard
+## duration.
+func duration() -> float:
+	return settings.duration * (brief.length if brief else 1.0)
+
+
+## Replaces the outside world with a fresh instance of its scene (of the picked mission's biome,
+## seed and difficulty, if it's generated) and shows it on the holo table.
 func reset_location() -> void:
 	var parent: Node = location.get_parent()
 	var index: int = location.get_index()
 	var fresh: Node3D = (load(location.scene_file_path) as PackedScene).instantiate() as Node3D
+	var generated := fresh as GeneratedLocation
+	if generated and brief:
+		generated.biome = brief.biome
+		generated.world_seed = brief.world_seed
+		generated.nest_factor = settings.nest_factors[brief.difficulty]
 	fresh.name = location.name
 	fresh.transform = location.transform
 	parent.remove_child(location)
@@ -101,7 +170,7 @@ func is_running() -> bool:
 func progress() -> float:
 	match state:
 		State.RUNNING:
-			return clampf(1.0 - time_left / settings.duration, 0.0, 1.0)
+			return clampf(1.0 - time_left / duration(), 0.0, 1.0)
 		State.STORM:
 			return 1.0
 	return 0.0
@@ -135,18 +204,20 @@ func _check_outcome() -> void:
 	else:
 		state = State.LOST
 		_respawn_left = settings.respawn_delay
+		roll_offers()
 		lost.emit()
 
 
 func _follow_duration() -> void:
-	if settings.duration == _duration:
+	var current: float = duration()
+	if current == _duration:
 		return
 	match state:
 		State.CLOSED, State.OPEN:
-			time_left = settings.duration
+			time_left = current
 		State.RUNNING:
-			time_left = maxf(time_left + settings.duration - _duration, 0.0)
-	_duration = settings.duration
+			time_left = maxf(time_left + current - _duration, 0.0)
+	_duration = current
 
 
 ## Respawns the dead once they've lain `settings.respawn_delay`; the timer starts with the first
@@ -169,6 +240,7 @@ func _return(players: Array[Player]) -> void:
 		if not player.dead:
 			ship.store_cargo(player)
 	_respawn_dead()
+	roll_offers()
 	returned.emit()
 
 
@@ -179,7 +251,7 @@ func _respawn_dead() -> void:
 
 
 func _can_start_run() -> bool:
-	return not is_running() and not _anyone_dead()
+	return brief != null and not is_running() and not _anyone_dead()
 
 
 func _anyone_dead() -> bool:
@@ -199,9 +271,8 @@ func _on_ramp_button_used(_player: Player) -> void:
 	if not _can_start_run():
 		return
 	match state:
-		State.CLOSED, State.RETURNED, State.LOST:
-			reset_location()
-			time_left = settings.duration
+		State.CLOSED:
+			time_left = duration()
 			storm_time = 0.0
 			for player: Player in _players():
 				player.heal()

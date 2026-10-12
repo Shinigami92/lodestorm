@@ -1,7 +1,11 @@
 [gd_resource type="Resource" script_class="MissionSettings" format=3]
 
 [ext_resource type="Script" path="res://scripts/mission/mission_settings.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/locations/location_biome.gd" id="2_biome"]
+[ext_resource type="Resource" path="res://scenes/locations/biomes/dust.tres" id="3_dust"]
+[ext_resource type="Resource" path="res://scenes/locations/biomes/overgrowth.tres" id="4_overgrowth"]
 
 [resource]
 script = ExtResource("1_script")
 duration = 900.0
+biomes = Array[ExtResource("2_biome")]([ExtResource("3_dust"), ExtResource("4_overgrowth")])

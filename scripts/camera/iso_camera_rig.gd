@@ -33,7 +33,7 @@ func _process(delta: float) -> void:
 		goal = zone.focus_position()
 	var panel: WorldPanel = WorldPanel.used_by(get_tree(), target)
 	if panel:
-		goal = panel.global_position
+		goal = panel.get_view_center()
 		goal_zoom = panel.view_height / view_height()
 	var weight: float = 1.0 - exp(-settings.follow_speed * delta)
 	global_position = global_position.lerp(goal, weight)

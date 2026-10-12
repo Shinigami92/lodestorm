@@ -16,6 +16,7 @@ func before_each() -> void:
 	_ship = _map.get_node("Ship") as Ship
 	_ship.ramp_duration = 0.25
 	await wait_physics_frames(2)
+	TEST_MAP.pick_mission(_map)
 
 
 func test_ramp_faces_screen_right() -> void:
@@ -97,17 +98,19 @@ func test_dead_respawn_in_medical_bay() -> void:
 
 func test_ship_shows_time_left() -> void:
 	var countdown: Label3D = _ship.get_node("Countdown")
-	# More than half the time is left, so the beacon is still calm.
 	_mission.time_left = 600.4
 	await wait_process_frames(1)
 	assert_eq(countdown.text, "10:01")
+	# More than half the time is left, so the beacon is still calm.
+	_mission.time_left = _mission.duration() * 0.75
+	await wait_process_frames(1)
 	assert_eq(_ship.beacon_color, Ship.COLOR_CALM)
 
 
 func test_beacon_shows_how_urgent_it_is() -> void:
 	await _open()
 	await _move(_player, _outside())
-	_mission.time_left = _mission.settings.duration * 0.4
+	_mission.time_left = _mission.duration() * 0.4
 	await wait_process_frames(1)
 	assert_eq(_ship.beacon_color, Ship.COLOR_HALF)
 	_mission.time_left = _mission.settings.warning_time * 0.5

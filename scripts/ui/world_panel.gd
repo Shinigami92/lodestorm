@@ -2,7 +2,8 @@ class_name WorldPanel
 extends Node3D
 ## A screen in the world showing a menu (`menu`, a Control scene rendered in a SubViewport): how
 ## menus work without a 2D HUD. One player uses it at a time (`open`). Meanwhile that player
-## doesn't move or act, their camera moves in to frame the screen (`view_height`), the screen draws
+## doesn't move or act, their camera moves in to frame the screen (`view_height`, centered on
+## `view_focus` if set, e.g. to show what the menu changes next to it), the screen draws
 ## over everything (nobody standing in front hides it), and the menu takes their input until it
 ## closes (`close`, also with `pause` or `ui_cancel`):
 ## - pointing: the mouse cursor, as a ray from the camera through the screen (`pixel_at`); a VR
@@ -39,6 +40,9 @@ const CLOSE_ACTIONS: Array[StringName] = [&"pause", &"ui_cancel"]
 const RESOLUTION_STEP: float = 0.5
 const MIN_RESOLUTION: float = 0.125
 const MAX_RESOLUTION: float = 2.0
+## Render priority of the screen while it's used: after the player's overlays (silhouette and rim
+## light, priority 1), so the player in front doesn't show through.
+const ON_TOP_PRIORITY: int = 10
 
 ## The menu shown on the screen.
 @export var menu: PackedScene:
@@ -53,6 +57,8 @@ const MAX_RESOLUTION: float = 2.0
 ## How much the camera of the player using it sees (visible height in m): it frames the screen
 ## with some room around it. TBD (playtest).
 @export var view_height: float = 1.6
+## What the camera of the player using it centers on; the screen when not set.
+@export var view_focus: Node3D
 
 ## The player using it, or null.
 var user: Player
@@ -154,6 +160,11 @@ func close() -> void:
 	closed.emit(player)
 
 
+## Where the camera of the player using it centers.
+func get_view_center() -> Vector3:
+	return view_focus.global_position if view_focus else global_position
+
+
 ## The menu pixel (in its layout size) where a ray hits the front of the screen, or `Vector2.INF`
 ## where it misses. Rays come from the camera through the mouse cursor (or later a VR controller).
 func pixel_at(origin: Vector3, direction: Vector3) -> Vector2:
@@ -225,7 +236,7 @@ func _set_on_top(on_top: bool) -> void:
 	_material.transparency = (
 		BaseMaterial3D.TRANSPARENCY_ALPHA if on_top else BaseMaterial3D.TRANSPARENCY_DISABLED
 	)
-	_material.render_priority = 1 if on_top else 0
+	_material.render_priority = ON_TOP_PRIORITY if on_top else 0
 
 
 ## Renders the menu at about as many pixels as the screen covers on the display.

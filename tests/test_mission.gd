@@ -16,8 +16,9 @@ func before_each() -> void:
 	_mission = _map.get_node("Mission") as Mission
 	_ship = _map.get_node("Ship") as Ship
 	_ship.ramp_duration = 0.25
-	watch_signals(_mission)
 	await wait_physics_frames(2)
+	TEST_MAP.pick_mission(_map)
+	watch_signals(_mission)
 
 
 func after_each() -> void:
@@ -56,7 +57,7 @@ func test_timer_waits_until_someone_steps_out() -> void:
 	await _open()
 	await wait_physics_frames(30)
 	assert_eq(_mission.state, Mission.State.OPEN)
-	assert_eq(_mission.time_left, _mission.settings.duration)
+	assert_eq(_mission.time_left, _mission.duration())
 
 
 func test_walking_out_starts_mission() -> void:
@@ -66,7 +67,7 @@ func test_walking_out_starts_mission() -> void:
 	assert_false(_ship.is_aboard(_player))
 	assert_eq(_mission.state, Mission.State.RUNNING)
 	assert_signal_emit_count(_mission, "started", 1)
-	assert_lt(_mission.time_left, _mission.settings.duration)
+	assert_lt(_mission.time_left, _mission.duration())
 
 
 func test_button_raises_ramp_again_before_leaving() -> void:
@@ -143,7 +144,7 @@ func test_waits_for_every_player() -> void:
 	assert_signal_emit_count(_mission, "returned", 1)
 
 
-func test_next_run_resets_timer_and_outside_world() -> void:
+func test_next_mission_resets_timer_and_outside_world() -> void:
 	await _open()
 	var node: OreNode = _map.get_node("Location/OreNodes/CyanA")
 	await _move(_player, node.global_position + Vector3(1.5, 0.0, 0.0))
@@ -151,12 +152,15 @@ func test_next_run_resets_timer_and_outside_world() -> void:
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	var old_location: Node3D = _mission.location
+	await wait_physics_frames(2)
+	assert_false(_ship.ramp_button.enabled, "the mission is done: pick the next one")
 
+	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	await wait_physics_frames(2)
-	assert_eq(_mission.state, Mission.State.OPEN)
-	assert_eq(_mission.time_left, _mission.settings.duration)
 	assert_false(is_instance_valid(old_location), "the old outside world is gone")
+	assert_eq(_mission.state, Mission.State.OPEN)
+	assert_eq(_mission.time_left, _mission.duration())
 	assert_eq(_mission.location, _map.get_node("Location"))
 	var fresh_node: OreNode = _map.get_node("Location/OreNodes/CyanA")
 	assert_true(fresh_node.is_free(), "no miner from the last run")

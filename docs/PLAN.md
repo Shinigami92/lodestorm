@@ -49,6 +49,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 ## M4 — Art pass (Blender MCP)
 
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full), hose, ore nodes, aliens, ship exterior/interior, weapons
+- Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<type>_wall` in `assets/ores/ores.glb`), which needs placement along the cliff edges; drive the blaster's glowing ammo counter (the `AmmoCounter` mesh, six segments along UV.x), which needs an ammo or heat mechanic first (open)
 - Basic VFX/SFX for mining, shooting, storm
 
 ## M5 — VR

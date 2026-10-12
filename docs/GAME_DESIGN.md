@@ -131,7 +131,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
   - Ground: rolling hills, terraced in places into plateaus with cliffs between them that nobody can climb; smooth slopes lead up and down elsewhere. A mountain rim closes off the edges (invisible walls behind it).
   - Plants and rocks per biome, scattered in patches. Big ones (trees, boulders) block players, aliens and shots; small ones (bushes, grass) are only looks and fade out in the distance. Ground and plant colors stay muted so ores and aliens stand out.
   - Ore fields of 1–3 nodes of one type. The first two lie 25–55 m from the ramp, so they're found right away, and have the biome's most common ore; rarer ores lie farther away. 10 nests, at least 80 m from the landing site, so the start is quiet. Ore fields and nests only appear where players can walk to from the ship.
-  - Biomes so far: *Dust flats* (sandy, high plateaus with cliffs, boulders, spire plants, dry shrubs) and *Overgrowth* (olive ground, gentler hills, funnel trees, puffball bushes, grass, mossy boulders).
+  - Biomes so far: *Dust flats* (sandy, high plateaus with cliffs, boulders, rock outcrops, rubble, thorny spire plants, dry shrubs, pebbles and bones) and *Overgrowth* (olive ground, gentler hills, fleshy tube plants, mushrooms, puffball fungi, fronds, a few boulders).
   - Generating takes about 1.5 s, a hitch when the ramp button starts a new run; later it happens while the ship flies, hidden by the storm (see [Spaceship](#5-spaceship-hub)).
   - The tests use the small hand-built test location (`scenes/locations/test_location.tscn`) instead: fixed spots, quick to set up.
 - Other objectives (beyond mining) are a possible extension, to be explored by playtesting.

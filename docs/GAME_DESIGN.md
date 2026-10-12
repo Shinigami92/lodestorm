@@ -120,7 +120,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Lifts:** a platform for up to four players in a shaft beside the corridor. Stepping on it sends it to the other deck (greybox: after 0.6 s, 2 s ride, **TBD (playtest)**); riders who came along have to step off before it leaves again. Waiting at the gate on the other deck calls it. Gates close the shaft on every deck the platform isn't at.
 - **Walking the ship:** the bridge sits at the nose, far from the ramp. Picking a mission starts the flight, and players walk aft and gear up while the ship flies and lands, so the walk isn't dead time (flight time **TBD (playtest)**).
 - **Bridge:** missions are selected here. A holo table in the middle projects a hologram of the mission location (a small copy of the location, spinning slowly, the ship's spot highlighted), so players gather around it to see where they're going.
-- **Cabins:** one per player (up to 4, cabin 1 closest to the bridge for solo play) with a bed and a locker, and in cabin 1 the settings terminal; eight crew cabins for the NPCs with a bed each. Whether the locker becomes a private inventory is open.
+- **Cabins:** one per player (up to 4, cabin 1 closest to the bridge for solo play) with a bed and a locker, and in cabin 1 the settings terminal; the game starts with the player in cabin 1; eight crew cabins for the NPCs with a bed each. Whether the locker becomes a private inventory is open.
 - **Windows:** every room along the outer walls has windows on its deck (one per ~9 m of wall), and the cockpit looks out over the nose. From inside, they show the outside (light falls in through them); from outside, they show into the ship. Windows in walls cut away for the camera go with their wall.
 - **Finding the way:** every room's name is painted on its floor by the door. Amber floor markings with arrows at the corridors, lobbies and lifts point to the rooms further on (and which lift leads where).
 - **Greybox layout** (top view, camera at the bottom; about 96 × 30 m plus a nose cone below the cockpit and two thrusters on the roof at the tail, sizes **TBD (playtest)**; the real hull shape comes with the art pass):
@@ -143,10 +143,12 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Mission selection:** on the bridge, at the holo table. Target can be another location on the current planet or a new planet. The ship then flies there.
   - Greybox: a console beside the holo table offers three missions, one per difficulty (easy, normal, hard), each with its location (biome and a sector code), timer and the biome's ores (from common to rare). While it's used, the camera frames the console and the hologram together. Picking one sets course: the outside world becomes that mission's location (the flight comes with the ship states), and the hologram shows it with every ore node as a beam in its ore's color, so players plan their route and pick a mission by the ores they need. Another one can be picked until the ramp goes down; after the run (won or lost) three new missions are offered.
   - Mission values so far (all **TBD (playtest)**): the timer is 1, 1.5 or 2 times the standard 15 min; the difficulty sets how many of the biome's nests the location has (0.6, 1 and 1.4 times). Planets, rarer ores and quests per mission come later.
+  - Later: the bridge gets a full rework. Players first pick a planet or moon, then a location on it. The difficulty is either picked separately, or tied to the location, with far more locations to pick from (open, see [Open questions](#14-open-questions)).
 - **Ship states:**
   - *In space:* windows show space; ramp cannot be opened.
   - *Landed, no mission started:* windows/ramp area show the local environment (e.g. storm).
   - The player **cannot go outside without a selected mission**; the ramp button only works with one. The **first player stepping out of the ship starts the mission** and its timer.
+  - Planned flow: the game starts in space. Picking a mission flies the ship there and lands it at the location (the location loads meanwhile, hidden by the flight and the weather). Once everyone is back aboard and the mission is over, the ship takes off into space again. Greybox until then: the ship stands landed at a random location from the start, and picking a mission swaps the location right away.
 
 ## 6. Missions
 
@@ -300,6 +302,7 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 - Carry limit: none or soft (slower with a full load).
 - Alien behavior and scaling.
 - Generated outside world: which mission values drive it (difficulty, planet), and whether aliens behind cliffs need a silhouette too.
+- Mission selection: difficulty picked separately or tied to the location (then with far more locations to pick from); how picking a planet or moon and then a location on it works on the reworked bridge.
 - Weapons: switching during a mission, melee on the attack button or its own.
 - Refinery: how it works in co-op.
 - Voice-over: which local text-to-speech model; whether AI-driven NPCs are worth an experiment.

@@ -27,6 +27,7 @@ func after_each() -> void:
 
 
 func test_ramp_is_closed_by_default() -> void:
+	await _move(_player, _inside())
 	assert_true(_ship.is_ramp_up())
 	assert_eq(_mission.state, Mission.State.CLOSED)
 	Input.action_press(&"move_right")
@@ -61,6 +62,7 @@ func test_timer_waits_until_someone_steps_out() -> void:
 
 
 func test_walking_out_starts_mission() -> void:
+	await _move(_player, _inside())
 	await _open()
 	Input.action_press(&"move_right")
 	await wait_physics_frames(Engine.physics_ticks_per_second * 2)

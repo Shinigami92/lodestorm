@@ -15,6 +15,9 @@ func before_each() -> void:
 	_mission = _map.get_node("Mission") as Mission
 	_ship = _map.get_node("Ship") as Ship
 	_ship.ramp_duration = 0.25
+	# In the cargo bay (the game starts in cabin 1, on the upper deck).
+	_player.global_position = _ship.to_global(Vector3(10.0, 2.5, 0.0))
+	_player.reset_physics_interpolation()
 	await wait_physics_frames(2)
 	TEST_MAP.pick_mission(_map)
 
@@ -89,6 +92,19 @@ func test_inner_walls_facing_camera_are_cut_down() -> void:
 	var stub: MeshInstance3D = _ship.get_node("Hull/LowerCorridorBack1Stub")
 	assert_eq(stub.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 	assert_lt(stub.get_aabb().size.y, 1.5)
+
+
+func test_player_starts_in_cabin_1() -> void:
+	var map: Node3D = TEST_MAP.instantiate() as Node3D
+	add_child_autofree(map)
+	await wait_physics_frames(2)
+	var player: Player = map.get_node("Player") as Player
+	var ship: Ship = map.get_node("Ship") as Ship
+	var cabin: Node3D = ship.get_node("Rooms/Upper/Cabin1") as Node3D
+	assert_true(ship.is_aboard(player))
+	var offset: Vector3 = player.global_position - cabin.global_position
+	assert_lt(Vector2(offset.x, offset.z).length(), 1.0)
+	assert_almost_eq(offset.y, 0.0, 0.2, "on the upper deck")
 
 
 func test_dead_respawn_in_medical_bay() -> void:

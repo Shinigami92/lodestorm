@@ -6,6 +6,11 @@ extends Resource
 @export var display_name: String = ""
 ## Strong, distinct color used on the deposit, the miner gauge and later the carried resources.
 @export var color: Color = Color.WHITE
+## Model kit (.glb) with the look of this type's ore nodes; the greybox stays without one.
+@export var model: PackedScene
+## Names of the variants in `model`: each is a node with a `Base*` mesh (the rock the crystals
+## grow out of) and `Crystal*` meshes (drawn in the ore's glowing material).
+@export var variants: Array[StringName] = []
 
 var _material: StandardMaterial3D
 

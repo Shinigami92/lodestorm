@@ -18,29 +18,48 @@ Conventions (Blender is Z-up, meters; glTF export converts to Y-up):
 - The game camera looks from the +X/-Y diagonal (front of the miner faces -Y, "front" = toward the camera).
 - Everything that belongs to the asset is parented (directly or indirectly) to the "Miner" empty; preview props
   live in the "Preview" collection and are never exported.
+
+Other assets name their own collection: C.reset("Rocks"), root = C.asset_root("Rocks"); link(), empty(),
+export_glb() and stats() then use that collection. preview_scene(crystals=False) leaves out the placeholder ore,
+render(..., target=..., zoom=...) frames smaller or bigger assets (zoom < 1 moves the camera closer),
+render_from(...) renders from an own camera (close-ups).
+
+Also here: transform helpers (T, rx/ry/rz, basis, polar), Part (hard-surface mesh builder), node helpers
+(_noise, _ramp, _mix_color, _mix_float, _math, _bw, _bump, _bevel_edge, _voronoi_lines, bevel_wear) and
+contact_sheet(). Baking procedural materials into textures and exporting the game .glb: tools/blender/bake.py.
 """
 
 import math
 import pathlib
+import sys
 
+import bmesh
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 PLAYER_HEIGHT = 1.8
 ORE_NODE_RADIUS = 1.35  # deposit disc of the game's ore node; crystals sit within ~1.1 m
+ASSET = "Miner"  # collection of the asset being built (set by reset())
 
 
 # --- scene ---------------------------------------------------------------------------------------
 
 
-def reset() -> None:
+def reset(asset: str = "Miner") -> None:
+    global ASSET
+    ASSET = asset
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
     scene.unit_settings.system = "METRIC"
     scene.unit_settings.scale_length = 1.0
-    for name in ("Miner", "Preview"):
+    for name in (asset, "Preview"):
         coll = bpy.data.collections.new(name)
         scene.collection.children.link(coll)
+
+
+def args() -> list[str]:
+    """The script's own arguments (after Blender's "--")."""
+    return sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
 
 
 def collection(name: str) -> bpy.types.Collection:
@@ -54,9 +73,17 @@ def miner_root() -> bpy.types.Object:
     return root
 
 
-def link(obj: bpy.types.Object, parent: bpy.types.Object | None = None, coll: str = "Miner") -> bpy.types.Object:
-    """Link a new object into a collection (default "Miner") and optionally parent it, keeping its transform."""
-    collection(coll).objects.link(obj)
+def asset_root(name: str) -> bpy.types.Object:
+    """Empty at the origin in the asset's collection; parent everything that gets exported to it."""
+    root = bpy.data.objects.new(name, None)
+    root.empty_display_type = "PLAIN_AXES"
+    collection(ASSET).objects.link(root)
+    return root
+
+
+def link(obj: bpy.types.Object, parent: bpy.types.Object | None = None, coll: str | None = None) -> bpy.types.Object:
+    """Link a new object into a collection (default: the asset's) and optionally parent it, keeping its transform."""
+    collection(coll or ASSET).objects.link(obj)
     if parent is not None:
         obj.parent = parent
     return obj
@@ -69,6 +96,133 @@ def empty(name: str, location: tuple[float, float, float], parent: bpy.types.Obj
     obj.empty_display_size = 0.2
     obj.location = location
     return link(obj, parent)
+
+
+# --- transforms ----------------------------------------------------------------------------------
+
+
+def T(loc=(0, 0, 0), rot: Matrix | None = None, scale=(1, 1, 1)) -> Matrix:
+    """4x4 matrix: translation, then rotation (3x3), then scale."""
+    m = Matrix.Translation(Vector(loc))
+    if rot is not None:
+        m = m @ rot.to_4x4()
+    return m @ Matrix.Diagonal((*scale, 1.0))
+
+
+def rx(deg: float) -> Matrix:
+    return Matrix.Rotation(math.radians(deg), 3, "X")
+
+
+def ry(deg: float) -> Matrix:
+    return Matrix.Rotation(math.radians(deg), 3, "Y")
+
+
+def rz(deg: float) -> Matrix:
+    return Matrix.Rotation(math.radians(deg), 3, "Z")
+
+
+def basis(z_dir: Vector, x_hint: Vector) -> Matrix:
+    """3x3 rotation whose Z axis points along z_dir and X axis as close as possible to x_hint (a hint along z_dir
+    falls back to Y or X)."""
+    z = Vector(z_dir).normalized()
+    x = Vector(x_hint)
+    if abs(x.normalized().dot(z)) > 0.99:
+        x = Vector((0, 1, 0)) if abs(z.y) < 0.9 else Vector((1, 0, 0))
+    x = (x - z * x.dot(z)).normalized()
+    y = z.cross(x)
+    return Matrix((x, y, z)).transposed()
+
+
+def polar(deg: float, r: float, z: float = 0.0) -> Vector:
+    a = math.radians(deg)
+    return Vector((math.cos(a) * r, math.sin(a) * r, z))
+
+
+# --- mesh builder --------------------------------------------------------------------------------
+
+
+class Part:
+    """Accumulates primitives into one bmesh, one object at the end (keeps the draw calls low). Faces get the
+    material index `mi` (into `mats`); bevel=(width, segments) adds common's bevel modifier, None leaves it off."""
+
+    def __init__(self, name: str, mats: list, bevel: tuple[float, int] | None = (0.012, 2)):
+        self.name, self.mats, self.bev = name, mats, bevel
+        self.bm = bmesh.new()
+
+    def _tag(self, verts, mi: int, smooth: bool = True):
+        for f in {f for v in verts for f in v.link_faces}:
+            f.material_index = mi
+            f.smooth = smooth
+        return verts
+
+    def box(self, loc, size, rot: Matrix | None = None, mi: int = 0):
+        return self._tag(bmesh.ops.create_cube(self.bm, size=1.0, matrix=T(loc, rot, size))["verts"], mi)
+
+    def cyl(self, loc, r, depth, seg=16, rot: Matrix | None = None, mi=0, r2=None, caps=True, scale=(1, 1, 1), spin=0.0):
+        m = T(loc, rot, scale) @ rz(spin).to_4x4()
+        verts = bmesh.ops.create_cone(
+            self.bm, cap_ends=caps, cap_tris=False, segments=seg, radius1=r, radius2=r if r2 is None else r2, depth=depth, matrix=m
+        )["verts"]
+        return self._tag(verts, mi)
+
+    def ring(self, z0, z1, r, seg=16, mi=0, r2=None, spin=0.0, xy=(0, 0)):
+        """Vertical cylinder/frustum from z0 to z1 (r at z0, r2 at z1)."""
+        return self.cyl((xy[0], xy[1], (z0 + z1) / 2), r, z1 - z0, seg, mi=mi, r2=r2, spin=spin)
+
+    def beam(self, p0, p1, w, h, side, mi=0, taper=1.0):
+        """Rectangular (optionally tapered) beam from p0 to p1; w measured along `side`."""
+        p0, p1 = Vector(p0), Vector(p1)
+        d = p1 - p0
+        m = T((p0 + p1) / 2, basis(d, Vector(side)), (w, h, 1.0)) @ rz(45).to_4x4()
+        r = math.sqrt(0.5)
+        verts = bmesh.ops.create_cone(
+            self.bm, cap_ends=True, cap_tris=False, segments=4, radius1=r, radius2=r * taper, depth=d.length, matrix=m
+        )["verts"]
+        return self._tag(verts, mi)
+
+    def rod(self, p0, p1, r, seg=12, mi=0, r2=None):
+        p0, p1 = Vector(p0), Vector(p1)
+        d = p1 - p0
+        m = T((p0 + p1) / 2, basis(d, Vector((0, 0, 1)) if abs(d.normalized().z) < 0.9 else Vector((1, 0, 0))))
+        verts = bmesh.ops.create_cone(
+            self.bm, cap_ends=True, cap_tris=False, segments=seg, radius1=r, radius2=r if r2 is None else r2, depth=d.length, matrix=m
+        )["verts"]
+        return self._tag(verts, mi)
+
+    def sphere(self, loc, r, seg=12, rings=6, scale=(1, 1, 1), rot=None, mi=0):
+        verts = bmesh.ops.create_uvsphere(self.bm, u_segments=seg, v_segments=rings, radius=r, matrix=T(loc, rot, scale))["verts"]
+        return self._tag(verts, mi)
+
+    def ico(self, loc, r, scale=(1, 1, 1), rot=None, mi=0, sub=1):
+        verts = bmesh.ops.create_icosphere(self.bm, subdivisions=sub, radius=r, matrix=T(loc, rot, scale))["verts"]
+        return self._tag(verts, mi, smooth=False)
+
+    def prism(self, pts, z0, z1, m: Matrix | None = None, mi=0):
+        """Extrude a CCW 2D polygon from z0 to z1 (local), transformed by m."""
+        m = m or Matrix.Identity(4)
+        bot = [self.bm.verts.new(m @ Vector((x, y, z0))) for x, y in pts]
+        top = [self.bm.verts.new(m @ Vector((x, y, z1))) for x, y in pts]
+        n = len(pts)
+        faces = [self.bm.faces.new((bot[i], bot[(i + 1) % n], top[(i + 1) % n], top[i])) for i in range(n)]
+        faces += [self.bm.faces.new(list(reversed(bot))), self.bm.faces.new(top)]
+        for f in faces:  # faces.new() leaves the normal at zero; insets and edge angles need it
+            f.normal_update()
+        return self._tag(bot + top, mi)
+
+    def _bevel(self, obj: bpy.types.Object) -> None:
+        bevel(obj, self.bev[0], self.bev[1])
+
+    def finish(self, parent) -> bpy.types.Object:
+        me = bpy.data.meshes.new(self.name)
+        self.bm.to_mesh(me)
+        self.bm.free()
+        obj = bpy.data.objects.new(self.name, me)
+        link(obj, parent)
+        for mat in self.mats:
+            me.materials.append(mat)
+        if self.bev:
+            self._bevel(obj)
+        return obj
 
 
 # --- modifiers -----------------------------------------------------------------------------------
@@ -111,13 +265,24 @@ def _new_material(name: str) -> tuple[bpy.types.Material, bpy.types.NodeTree, bp
     return mat, nt, bsdf
 
 
-def _noise(nt: bpy.types.NodeTree, scale: float, detail: float = 6.0, roughness: float = 0.6) -> bpy.types.Node:
+def _noise(
+    nt: bpy.types.NodeTree,
+    scale: float,
+    detail: float = 6.0,
+    roughness: float = 0.6,
+    vector: bpy.types.NodeSocket | None = None,
+    distortion: float | None = None,
+) -> bpy.types.Node:
+    """Noise texture on `vector` (default: its own object coordinates)."""
     tex = nt.nodes.new("ShaderNodeTexNoise")
     tex.inputs["Scale"].default_value = scale
     tex.inputs["Detail"].default_value = detail
     tex.inputs["Roughness"].default_value = roughness
-    coord = nt.nodes.new("ShaderNodeTexCoord")
-    nt.links.new(coord.outputs["Object"], tex.inputs["Vector"])
+    if distortion is not None:
+        tex.inputs["Distortion"].default_value = distortion
+    if vector is None:
+        vector = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    nt.links.new(vector, tex.inputs["Vector"])
     return tex
 
 
@@ -151,6 +316,65 @@ def _mix_float(nt, fac, a, b) -> bpy.types.NodeSocket:
         else:
             sock.default_value = val
     return mix.outputs[0]
+
+
+def _math(nt, op: str, a, b=None, c=None, clamp: bool = False) -> bpy.types.NodeSocket:
+    """Math node; a/b/c are sockets (linked) or numbers (set), None leaves an input alone."""
+    node = nt.nodes.new("ShaderNodeMath")
+    node.operation = op
+    node.use_clamp = clamp
+    for sock, val in ((node.inputs[0], a), (node.inputs[1], b), (node.inputs[2], c)):
+        if val is None:
+            continue
+        if isinstance(val, bpy.types.NodeSocket):
+            nt.links.new(val, sock)
+        else:
+            sock.default_value = val
+    return node.outputs[0]
+
+
+def _bw(nt, color: bpy.types.NodeSocket) -> bpy.types.NodeSocket:
+    rgb = nt.nodes.new("ShaderNodeRGBToBW")
+    nt.links.new(color, rgb.inputs["Color"])
+    return rgb.outputs["Val"]
+
+
+def _bump(nt, bsdf: bpy.types.Node, height: bpy.types.NodeSocket, strength: float, distance: float) -> None:
+    """Bump from `height` into the BSDF's normal."""
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = strength
+    bump.inputs["Distance"].default_value = distance
+    nt.links.new(height, bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+
+
+def _bevel_edge(nt, radius: float, geo: bpy.types.Node | None = None) -> bpy.types.NodeSocket:
+    """Convex edges: 1 - dot(Bevel node normal, true normal), > 0 near edges (feed it through a ramp). Unlike
+    Pointiness (per vertex) it doesn't depend on the mesh density."""
+    geo = geo or nt.nodes.new("ShaderNodeNewGeometry")
+    bev = nt.nodes.new("ShaderNodeBevel")
+    bev.samples = 8
+    bev.inputs["Radius"].default_value = radius
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(bev.outputs["Normal"], dot.inputs[0])
+    nt.links.new(geo.outputs["Normal"], dot.inputs[1])
+    return _math(nt, "SUBTRACT", 1.0, dot.outputs["Value"])
+
+
+def _voronoi_lines(nt, vector: bpy.types.NodeSocket, scale: float, width: float) -> bpy.types.NodeSocket:
+    """1 on thin lines along the Voronoi cell edges (cracks, veins), fading to 0 at `width`."""
+    vor = nt.nodes.new("ShaderNodeTexVoronoi")
+    vor.feature = "DISTANCE_TO_EDGE"
+    vor.inputs["Scale"].default_value = scale
+    nt.links.new(vector, vor.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.0
+    ramp.color_ramp.elements[0].color = (1, 1, 1, 1)
+    ramp.color_ramp.elements[1].position = width
+    ramp.color_ramp.elements[1].color = (0, 0, 0, 1)
+    nt.links.new(vor.outputs["Distance"], ramp.inputs["Fac"])
+    return ramp.outputs["Color"]
 
 
 def mat_painted_metal(
@@ -205,13 +429,23 @@ def mat_painted_metal(
     rough = _mix_float(nt, edge_mask.outputs[0], rough, 0.32)
     nt.links.new(rough, bsdf.inputs["Roughness"])
     # Scratches: stretched fine noise in the bump.
-    scratch = _noise(nt, 120.0, 2.0, 0.4)
-    bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.08
-    bump.inputs["Distance"].default_value = 0.002
-    nt.links.new(scratch.outputs["Fac"], bump.inputs["Height"])
-    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    _bump(nt, bsdf, _noise(nt, 120.0, 2.0, 0.4).outputs["Fac"], 0.08, 0.002)
     return mat
+
+
+def bevel_wear(mat: bpy.types.Material, lo: float = 0.015, hi: float = 0.07, radius: float = 0.012) -> None:
+    """Swap mat_painted_metal's Pointiness edge mask for a Bevel-node one: Pointiness is per vertex and smears wear
+    over whole faces on low-poly meshes (the camouflage look); the Bevel node finds edges independent of density.
+    Defaults are sized for the 3.6 m miner."""
+    nt = mat.node_tree
+    geo = next(n for n in nt.nodes if n.bl_idname == "ShaderNodeNewGeometry")
+    link = next(lk for lk in nt.links if lk.from_node == geo and lk.from_socket.name == "Pointiness")
+    ramp = link.to_node
+    nt.links.remove(link)
+    edge = _bevel_edge(nt, radius, geo)
+    ramp.color_ramp.elements[0].position = lo
+    ramp.color_ramp.elements[1].position = hi
+    nt.links.new(edge, ramp.inputs["Fac"])
 
 
 def mat_bare_metal(name: str = "BareMetal", color=(0.42, 0.42, 0.43), roughness: float = 0.38) -> bpy.types.Material:
@@ -273,8 +507,11 @@ def _preview_obj(obj: bpy.types.Object) -> bpy.types.Object:
     return link(obj, None, "Preview")
 
 
-def preview_scene(seed: int = 3) -> None:
-    """Dark rocky ground, a cyan ore crystal cluster under the miner, a 1.8 m figure for scale, lights."""
+def preview_scene(
+    seed: int = 3, crystals: bool = True, figure_location: tuple[float, float, float] = (1.9, -1.6, 0.0)
+) -> None:
+    """Dark rocky ground, a cyan ore crystal cluster under the miner (crystals=False leaves it out), a 1.8 m
+    figure for scale, lights."""
     import random
 
     rnd = random.Random(seed)
@@ -298,7 +535,7 @@ def preview_scene(seed: int = 3) -> None:
     # Ore crystals (placeholder for the game's ore node).
     crystal = mat_emissive("PreviewCrystal", (0.12, 0.9, 0.85), 4.0)
     crystal.node_tree.nodes["Principled BSDF"].inputs["Transmission Weight"].default_value = 0.6
-    for i in range(9):
+    for i in range(9 if crystals else 0):
         ang = i / 9 * math.tau + rnd.uniform(-0.2, 0.2)
         r = rnd.uniform(0.75, 1.1)
         h = rnd.uniform(0.5, 1.1)
@@ -349,7 +586,7 @@ def preview_scene(seed: int = 3) -> None:
         obj.scale = scl
         obj.parent = figure
         assign(obj, suit)
-    figure.location = (1.9, -1.6, 0)
+    figure.location = figure_location
     figure.rotation_euler = (0, 0, math.radians(30))
     _lights()
 
@@ -388,21 +625,25 @@ def _lights() -> None:
 # --- render / export -------------------------------------------------------------------------------
 
 
-def _camera(view: str) -> bpy.types.Object:
+def _camera(view: str, target: tuple[float, float, float] = (0, 0, 1.6), zoom: float = 1.0) -> bpy.types.Object:
+    for old in [o for o in bpy.data.objects if o.name.startswith("Cam")]:
+        bpy.data.objects.remove(old)
     data = bpy.data.cameras.new("Cam")
     cam = bpy.data.objects.new("Cam", data)
     _preview_obj(cam)
-    target = Vector((0, 0, 1.6))
+    target = Vector(target)
+    if view == "custom":  # render_from() places it
+        return cam
     if view == "iso":
         # Game-like: high, along the diagonal, about 45 degrees down.
         data.lens = 50
-        cam.location = target + Vector((7.0, -7.0, 9.5))
+        cam.location = target + Vector((7.0, -7.0, 9.5)) * zoom
     elif view == "hero":
         data.lens = 40
-        cam.location = target + Vector((4.2, -5.5, 1.6))
+        cam.location = target + Vector((4.2, -5.5, 1.6)) * zoom
     elif view == "back":
         data.lens = 40
-        cam.location = target + Vector((-4.5, 5.5, 2.5))
+        cam.location = target + Vector((-4.5, 5.5, 2.5)) * zoom
     else:
         raise ValueError(view)
     cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
@@ -410,7 +651,31 @@ def _camera(view: str) -> bpy.types.Object:
     return cam
 
 
-def render(path: pathlib.Path, view: str = "iso", samples: int = 96, size: int = 1024) -> None:
+def render(
+    path: pathlib.Path,
+    view: str = "iso",
+    samples: int = 96,
+    size: int = 1024,
+    target: tuple[float, float, float] = (0, 0, 1.6),
+    zoom: float = 1.0,
+) -> None:
+    _render_settings(samples, size)
+    _camera(view, target, zoom)
+    _write_render(path)
+
+
+def render_from(path: pathlib.Path, location, target, lens: float = 35.0, samples: int = 96, size: int = 1024) -> None:
+    """Render from an own camera (close-ups, debug views), with the same settings as render()."""
+    _render_settings(samples, size)
+    cam = _camera("custom")
+    cam.data.lens = lens
+    cam.location = location
+    cam.rotation_euler = (Vector(target) - Vector(location)).to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.camera = cam
+    _write_render(path)
+
+
+def _render_settings(samples: int, size: int) -> None:
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     prefs = bpy.context.preferences.addons["cycles"].preferences
@@ -424,12 +689,47 @@ def render(path: pathlib.Path, view: str = "iso", samples: int = 96, size: int =
     scene.render.resolution_x = size
     scene.render.resolution_y = size
     scene.render.image_settings.file_format = "PNG"
-    for cam in [o for o in bpy.data.objects if o.name.startswith("Cam")]:
-        bpy.data.objects.remove(cam)
-    _camera(view)
-    scene.render.filepath = str(path)
+
+
+def _write_render(path: pathlib.Path) -> None:
+    bpy.context.scene.render.filepath = str(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
+
+
+def contact_sheet(paths: list, out: pathlib.Path, cols: int = 4, tile: int | None = None, background: float = 0.0) -> None:
+    """Tile renders into one PNG (row-major, top-left first) with Blender's image API (no Pillow needed). tile=None
+    keeps the first image's size; missing files leave their cell empty."""
+    import numpy as np
+
+    paths = [pathlib.Path(p) for p in paths]
+    if tile is None:
+        first = bpy.data.images.load(str(next(p for p in paths if p.exists())))
+        tile = first.size[0]
+        bpy.data.images.remove(first)
+    rows = math.ceil(len(paths) / cols)
+    sheet = np.full((rows * tile, cols * tile, 4), background, dtype=np.float32)
+    sheet[..., 3] = 1.0
+    for i, p in enumerate(paths):
+        if not p.exists():
+            continue
+        img = bpy.data.images.load(str(p))
+        if tuple(img.size) != (tile, tile):
+            img.scale(tile, tile)
+        px = np.empty(tile * tile * 4, dtype=np.float32)
+        img.pixels.foreach_get(px)
+        r, c = divmod(i, cols)
+        y0 = (rows - 1 - r) * tile  # Blender images start at the bottom row
+        sheet[y0 : y0 + tile, c * tile : (c + 1) * tile] = px.reshape(tile, tile, 4)
+        bpy.data.images.remove(img)
+    img = bpy.data.images.new("sheet", cols * tile, rows * tile, alpha=False)
+    img.pixels.foreach_set(sheet.ravel())
+    img.filepath_raw = str(out)
+    img.file_format = "PNG"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    img.save()
+    bpy.data.images.remove(img)
+    print("SHEET", out)
 
 
 def save_blend(path: pathlib.Path) -> None:
@@ -437,23 +737,37 @@ def save_blend(path: pathlib.Path) -> None:
     bpy.ops.wm.save_as_mainfile(filepath=str(path))
 
 
-def export_glb(path: pathlib.Path) -> None:
-    """Export only the "Miner" collection (modifiers applied). Procedural materials export as their
+def export_glb(path: pathlib.Path, coll: str | None = None) -> None:
+    """Export only the asset's collection (modifiers applied). Procedural materials export as their
     Principled defaults until they are baked to textures."""
     bpy.ops.object.select_all(action="DESELECT")
-    for obj in collection("Miner").all_objects:
+    for obj in collection(coll or ASSET).all_objects:
         obj.select_set(True)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.export_scene.gltf(filepath=str(path), export_format="GLB", use_selection=True, export_apply=True)
 
 
-def stats() -> dict:
-    """Triangle count and bounds of the miner (after modifiers) for the report."""
+def tris_per_object(coll: str | None = None) -> dict:
+    """Triangles per mesh object of the asset (after modifiers), biggest first."""
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    rows = {}
+    for obj in collection(coll or ASSET).all_objects:
+        if obj.type == "MESH":
+            ev = obj.evaluated_get(depsgraph)
+            me = ev.to_mesh()
+            me.calc_loop_triangles()
+            rows[obj.name] = len(me.loop_triangles)
+            ev.to_mesh_clear()
+    return dict(sorted(rows.items(), key=lambda kv: -kv[1]))
+
+
+def stats(coll: str | None = None) -> dict:
+    """Triangle count and bounds of the asset (after modifiers) for the report."""
     depsgraph = bpy.context.evaluated_depsgraph_get()
     tris = 0
     lo = Vector((1e9, 1e9, 1e9))
     hi = Vector((-1e9, -1e9, -1e9))
-    for obj in collection("Miner").all_objects:
+    for obj in collection(coll or ASSET).all_objects:
         if obj.type != "MESH":
             continue
         ev = obj.evaluated_get(depsgraph)

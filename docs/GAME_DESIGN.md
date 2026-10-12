@@ -49,10 +49,11 @@ Found by rating four rounds of concept images (generated locally, not part of th
 - **Per asset** (from the concept rounds):
   - **Miner:** a big machine, about twice the player's height, with the glowing glass column and the lamp on top. First model in the game (`assets/miners/miner_glow.glb`): a column on four mechanical legs with two equipment boxes, 3.6 m tall, legs standing around the ore crystals; its body (collision) has a 1.5 m radius, **TBD (playtest)**. When placed, it turns its front toward the camera's view (25° past straight on), so the fill column is never hidden behind its equipment boxes.
   - **Player:** a bulky, dark armored suit; the collar band and the ore canisters on the back glow.
-  - **Ore nodes:** crystal clusters in many shapes and sizes, also growing sideways out of rock walls; each ore type has its own crystal shape besides its color.
-  - **Rocks:** jagged and cracked, never smooth.
+  - **Ore nodes:** crystal clusters in many shapes and sizes, also growing sideways out of rock walls; each ore type has its own crystal shape besides its color. Modeled in `assets/ores/ores.glb`: per type two ground variants (cyan: long prisms, green: chunky blocks, violet: thin shards, on a cracked rock pad of the deposit's size, crystals at most 1 m tall so they fit between the miner's legs) and one wall cluster for dressing cliffs later.
+  - **Rocks:** jagged and cracked, never smooth. Modeled in `assets/rocks/rocks.glb` (boulders, rubble, outcrops, and cliff chunks for dressing cliffs later), the plants and debris of both biomes in `assets/plants/plants.glb`.
   - **Ship:** stands on landing skids (no wheels); the ramp is at the rear between the thrusters.
-  - **Weapons:** glowing parts show their state (the rifle's ammo counter, the power core in the hammer's head).
+  - **Weapons:** glowing parts show their state (the rifle's ammo counter, the power core in the hammer's head). The blaster is modeled as that rifle (`assets/weapons/blaster.glb`); its ammo counter doesn't show the ammo yet.
+  - **Alien nest:** a mound of chitin plates and sinew with tendrils spreading over a slime layer and a glowing mouth on top (`assets/aliens/nest/nest.glb`); the mouth and the glands pulse with the hive's escalation.
 - **Cost and performance:** realistic PBR is the most expensive look to build and to render. Texture sizes and LODs are planned per asset type in the art pass, with the VR budget (90 FPS, two views) in mind; **TBD (profiling in M4/M5)**.
 - Open: how dark the lighting gets (per biome, as the storm builds up), player colors on the suit, and whether the VR diorama gets a scale-model look (a terrain block with cut edges).
 
@@ -130,7 +131,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
   - Ground: rolling hills, terraced in places into plateaus with cliffs between them that nobody can climb; smooth slopes lead up and down elsewhere. A mountain rim closes off the edges (invisible walls behind it).
   - Plants and rocks per biome, scattered in patches. Big ones (trees, boulders) block players, aliens and shots; small ones (bushes, grass) are only looks and fade out in the distance. Ground and plant colors stay muted so ores and aliens stand out.
   - Ore fields of 1–3 nodes of one type. The first two lie 25–55 m from the ramp, so they're found right away, and have the biome's most common ore; rarer ores lie farther away. 10 nests, at least 80 m from the landing site, so the start is quiet. Ore fields and nests only appear where players can walk to from the ship.
-  - Biomes so far: *Dust flats* (sandy, high plateaus with cliffs, boulders, spire plants, dry shrubs) and *Overgrowth* (olive ground, gentler hills, funnel trees, puffball bushes, grass, mossy boulders).
+  - Biomes so far: *Dust flats* (sandy, high plateaus with cliffs, boulders, rock outcrops, rubble, thorny spire plants, dry shrubs, pebbles and bones) and *Overgrowth* (olive ground, gentler hills, fleshy tube plants, mushrooms, puffball fungi, fronds, a few boulders).
   - Generating takes about 1.5 s, a hitch when the ramp button starts a new run; later it happens while the ship flies, hidden by the storm (see [Spaceship](#5-spaceship-hub)).
   - The tests use the small hand-built test location (`scenes/locations/test_location.tscn`) instead: fixed spots, quick to set up.
 - Other objectives (beyond mining) are a possible extension, to be explored by playtesting.

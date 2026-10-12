@@ -1,6 +1,6 @@
 class_name AlienNest
 extends Node3D
-## Greybox alien nest: an organic mound in the outside world that aliens hatch from. When it
+## Alien nest: an organic mound in the outside world that aliens hatch from. When it
 ## appears, `settings.guards` aliens hatch and wait around it. While a mission runs it sends out
 ## hunters, aliens that go for the nearest player outside the ship however far away. The hive
 ## escalates with the mission's progress (0 at the start, 1 when the storm hits): hunters hatch
@@ -38,7 +38,8 @@ var _mission: Mission
 var _pulse: float = 0.0
 var _glow := StandardMaterial3D.new()
 
-@onready var _mouth: MeshInstance3D = $Mouth
+## The look lives in the `Model` child; its `Mouth` and `Glands` meshes pulse with the glow.
+@onready var _model: Node3D = $Model
 
 
 func _ready() -> void:
@@ -46,7 +47,15 @@ func _ready() -> void:
 	_glow.albedo_color = COLOR_GLOW
 	_glow.emission_enabled = true
 	_glow.emission = COLOR_GLOW
-	_mouth.material_override = _glow
+	for part: String in ["Mouth", "Glands"]:
+		var glowing := _model.find_child(part, true, false) as GeometryInstance3D
+		if glowing:
+			glowing.material_override = _glow
+	# The slime lies flat on the ground and the mouth is a light: neither casts a shadow.
+	for part: String in ["Slime", "Mouth"]:
+		var flat := _model.find_child(part, true, false) as GeometryInstance3D
+		if flat:
+			flat.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	hunter_cooldown = settings.hunter_interval_start
 	raider_cooldown = settings.raider_interval_start
 	for i: int in settings.guards:

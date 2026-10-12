@@ -6,7 +6,11 @@ extends Resource
 ## looks. All values are greybox, TBD (playtest).
 
 @export var display_name: String = ""
+## The mesh drawn, unless `model` is set.
 @export var mesh: Mesh
+## A model kit (.glb) to take the mesh from instead: the part named `model_part`.
+@export var model: PackedScene
+@export var model_part: StringName
 ## Instances per 100 m² where they grow (before clustering and steep ground thin them out).
 @export var density: float = 1.0
 ## 0: spread evenly; 1: only in patches (a noise mask decides where).
@@ -28,3 +32,14 @@ extends Resource
 ## Hidden beyond this distance from the camera, in m; 0: always drawn.
 @export var visibility_range: float = 0.0
 @export var cast_shadow: bool = true
+
+var _model_mesh: Mesh
+
+
+## The mesh to draw: the model's part if a model is set, `mesh` otherwise.
+func get_mesh() -> Mesh:
+	if not model:
+		return mesh
+	if not _model_mesh:
+		_model_mesh = ModelParts.mesh(model, model_part)
+	return _model_mesh

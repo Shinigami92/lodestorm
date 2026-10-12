@@ -52,7 +52,8 @@ func _ready() -> void:
 	_duration = settings.duration
 	_respawn_left = settings.respawn_delay
 	ship.mission = self
-	ship.show_preview(location)
+	# Deferred: the location's nodes build their look in their own _ready (e.g. ore models).
+	ship.show_preview.call_deferred(location)
 	ship.player_left.connect(_on_player_left)
 	ship.ramp_button.used.connect(_on_ramp_button_used)
 

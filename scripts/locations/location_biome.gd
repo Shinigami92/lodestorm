@@ -1,6 +1,6 @@
 class_name LocationBiome
 extends Resource
-## What kind of place a generated location is: the shape and colors of its ground, what grows and
+## What kind of place a generated location is: the shape and look of its ground, what grows and
 ## lies on it, which ores it has and how many nests. The mission picks it (later: the mission
 ## selection). All values are greybox, TBD (playtest).
 
@@ -18,10 +18,15 @@ extends Resource
 @export_range(0.0, 1.0) var cliff_share: float = 0.5
 ## Height of the small bumps on top, in m.
 @export var bump_height: float = 0.6
-@export var ground_color: Color = Color(0.5, 0.45, 0.38)
-## Ground color on the high ground (blends in with the height).
-@export var high_ground_color: Color = Color(0.58, 0.52, 0.42)
-@export var cliff_color: Color = Color(0.36, 0.32, 0.3)
+## The ground's material: usually the terrain shader (`assets/shaders/terrain.gdshader`) with the
+## biome's texture sets. It gets the vertex colors: RGB a tint, A the share of scree.
+@export var ground_material: Material
+## Tint of the low ground, fading out towards the high ground (the hilltops are lighter).
+@export var low_ground_tint: Color = Color(0.9, 0.9, 0.9)
+## How much the ground's brightness varies over large areas (0: not at all, 0.1: by ±10%).
+@export_range(0.0, 0.5) var tint_variation: float = 0.08
+## How much loose scree lies at the foot of cliffs and slopes and in patches (0: none, 1: a lot).
+@export_range(0.0, 1.0) var scree: float = 0.5
 
 @export_group("Scatter")
 @export var scatter: Array[ScatterType] = []

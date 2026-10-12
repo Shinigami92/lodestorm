@@ -37,7 +37,7 @@ func test_breaks_down_at_zero_health_and_stops_mining() -> void:
 
 
 func test_broken_miner_keeps_its_ore_from_the_hose() -> void:
-	await wait_seconds(0.3)
+	await _wait_physics(0.3)
 	_miner.take_damage(_miner.settings.max_health)
 	var amount: float = _miner.amount
 	assert_gt(amount, 0.0)
@@ -54,10 +54,10 @@ func test_player_next_to_it_repairs_it_and_it_works_again() -> void:
 	_miner.take_damage(_miner.settings.max_health)
 	_miner.settings.repair_rate = _miner.settings.max_health * 2.0
 	_move_player(_miner.settings.repair_range - 0.5)
-	await wait_seconds(0.25)
+	await _wait_physics(0.25)
 	assert_true(_miner.broken, "only once repaired completely")
 	assert_gt(_miner.health, 0.0)
-	await wait_seconds(0.4)
+	await _wait_physics(0.4)
 	assert_false(_miner.broken)
 	assert_eq(_miner.health, _miner.settings.max_health)
 	assert_signal_emit_count(_miner, "repaired", 1)
@@ -74,7 +74,7 @@ func test_no_repair_out_of_range() -> void:
 func test_repairs_damage_on_a_working_miner() -> void:
 	_miner.take_damage(_miner.settings.max_health * 0.5)
 	_move_player(_miner.settings.repair_range - 0.5)
-	await wait_seconds(0.3)
+	await _wait_physics(0.3)
 	assert_gt(_miner.health, _miner.settings.max_health * 0.5)
 
 
@@ -87,3 +87,9 @@ func test_any_working() -> void:
 func _move_player(distance: float) -> void:
 	_player.global_position = _node.global_position + Vector3(distance, 0.0, 0.0)
 	_player.reset_physics_interpolation()
+
+
+## Waits `seconds` of physics time: on a busy machine it falls behind the wall clock that
+## `wait_seconds` counts.
+func _wait_physics(seconds: float) -> void:
+	await wait_physics_frames(roundi(seconds * Engine.physics_ticks_per_second))

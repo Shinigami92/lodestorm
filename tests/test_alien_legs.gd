@@ -68,7 +68,9 @@ func test_feet_step_after_the_moving_body_in_diagonal_pairs() -> void:
 		_alien.global_position += Vector3(0.0, 0.0, -0.05)
 		await wait_physics_frames(1)
 		both_pairs_up = both_pairs_up or _pairs_stepping() == 2
-	await wait_seconds(0.6)
+	# Once its speed has faded, the feet that landed ahead step back under it, a pair at a time.
+	await wait_seconds(0.3)
+	await wait_while(_legs.is_stepping, 2.0)
 	assert_false(both_pairs_up, "one pair stands while the other steps")
 	for leg: String in start:
 		var foot: Vector3 = _legs.feet[leg]

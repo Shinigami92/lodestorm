@@ -138,9 +138,7 @@ func _process_modification_with_delta(delta: float) -> void:
 	var reach: float = (step_distance + step_distance_per_speed * speed) * scale
 	var duration: float = clampf(step_duration - speed * 0.03, min_step_duration, step_duration)
 	for group: int in 2:
-		var others_up: bool = _group_stepping(1 - group)
-		for leg: Leg in _groups[group]:
-			_update_step(leg, xform, reach, duration, others_up, delta)
+		_update_pair(_groups[group], xform, reach, duration, _group_stepping(1 - group), delta)
 	var to_local: Transform3D = xform.affine_inverse()
 	# Read every animated pose first: reading one after a write would update the whole skeleton.
 	var poses: Array[Transform3D] = []
@@ -153,31 +151,42 @@ func _process_modification_with_delta(delta: float) -> void:
 		_solve(skeleton, leg, to_local * leg.planted, poses.slice(i * 4, i * 4 + 4))
 
 
-func _update_step(
-	leg: Leg, xform: Transform3D, reach: float, duration: float, others_up: bool, delta: float
+## Moves the feet of one pair: steps in progress go on; once a planted foot is too far from its
+## spot, the whole pair steps, so both feet lift and land together.
+func _update_pair(
+	legs: Array, xform: Transform3D, reach: float, duration: float, others_up: bool, delta: float
 ) -> void:
-	# Aim a bit ahead: half a step's travel, so the foot lands under the body, not behind it.
-	var home: Vector3 = xform * leg.home + _velocity * duration
-	if leg.stepping():
-		leg.step = minf(leg.step + delta / duration, 1.0)
-		var s: float = smoothstep(0.0, 1.0, leg.step)
-		var lift: float = sin(PI * leg.step) * step_height * xform.basis.get_scale().x
-		leg.planted = leg.from.lerp(leg.to, s) + Vector3.UP * lift
-		if leg.step >= 1.0:
-			leg.planted = leg.to
-			leg.step = -1.0
+	var homes: Array[Vector3] = []
+	var step: bool = false
+	for leg: Leg in legs:
+		# Aim a bit ahead: half a step's travel, so the foot lands under the body, not behind it.
+		var home: Vector3 = xform * leg.home + _velocity * duration
+		homes.append(home)
+		if leg.stepping():
+			leg.step = minf(leg.step + delta / duration, 1.0)
+			var s: float = smoothstep(0.0, 1.0, leg.step)
+			var lift: float = sin(PI * leg.step) * step_height * xform.basis.get_scale().x
+			leg.planted = leg.from.lerp(leg.to, s) + Vector3.UP * lift
+			if leg.step >= 1.0:
+				leg.planted = leg.to
+				leg.step = -1.0
+			continue
+		var off: Vector3 = home - leg.planted
+		var distance: float = Vector2(off.x, off.z).length()
+		# Far behind (a teleport or a fall): plant it right away.
+		if distance > reach * 6.0:
+			leg.planted = _ground(home)
+		# Too far: step, once the other pair stands (or at once when it lags far behind).
+		elif distance > reach and (not others_up or distance > reach * 2.0):
+			step = true
+	if not step:
 		return
-	var off: Vector3 = home - leg.planted
-	var distance: float = Vector2(off.x, off.z).length()
-	# Far behind (a teleport or a fall): plant it right away.
-	if distance > reach * 6.0:
-		leg.planted = _ground(home)
-		return
-	# Too far: step, once the other pair stands (or at once when it lags far behind).
-	if distance > reach and (not others_up or distance > reach * 2.0):
-		leg.from = leg.planted
-		leg.to = _ground(home)
-		leg.step = 0.0
+	for i: int in legs.size():
+		var leg: Leg = legs[i]
+		if not leg.stepping():
+			leg.from = leg.planted
+			leg.to = _ground(homes[i])
+			leg.step = 0.0
 
 
 func _group_stepping(group: int) -> bool:

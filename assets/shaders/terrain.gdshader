@@ -1,11 +1,14 @@
 // The ground of a generated location: three tileable texture sets (made by
 // assets/terrain/source/terrain_textures.py), projected in world space and blended per pixel.
-// - Ground: flat and gently sloped ground, projected from above; sampled twice (the second time
-//   turned and scaled) and mixed by a large noise, so its tiling doesn't show.
+// - Ground: flat and gently sloped ground, projected from above.
 // - Rock: steep slopes and cliffs, projected from the sides (image up = world up, so strata run
 //   horizontally); takes over by the slope.
 // - Scree: loose stones at the foot of cliffs and in patches, projected from above; its share
 //   comes from the vertex color's alpha (painted by GeneratedLocation).
+// Hex tiling hides the tiling: each pixel mixes three samples from randomly shifted copies of the
+// texture on a grid of hexagons (ground and scree also turned; rock only shifted sideways, so its
+// strata stay level), the higher parts of each sample winning at the seams. A large noise varies
+// the brightness on top.
 // Where layers meet, the higher parts of each texture (albedo alpha = height) win, so stones and
 // rock ledges poke through instead of fading. The vertex color's RGB tints everything (high ground,
 // large-scale variation).
@@ -35,8 +38,14 @@ uniform float height_blend : hint_range(0.0, 2.0) = 0.6;
 // Width of the transition after the height decided, smaller is crisper.
 uniform float blend_softness : hint_range(0.01, 1.0) = 0.12;
 uniform float normal_strength : hint_range(0.0, 2.0) = 1.0;
-// Size of the noise mixing the two ground samples, in m.
-uniform float variation_size = 11.0;
+// Hex cells per texture tile: more cells break the tiling up more, but also the texture's larger
+// features.
+uniform float hex_cells = 1.5;
+// How much the textures' heights decide between the three hex samples (0: smooth mix).
+uniform float hex_contrast : hint_range(0.0, 1.0) = 0.6;
+// Brightness variation over large areas (0.1: by +-10%) and the size of its noise, in m.
+uniform float macro_strength : hint_range(0.0, 0.3) = 0.08;
+uniform float macro_size = 24.0;
 
 varying vec3 world_position;
 varying vec3 world_normal;
@@ -61,6 +70,27 @@ float value_noise(vec2 p) {
 	return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
 }
 
+vec2 hash2(vec2 p) {
+	vec2 r = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+	return fract(sin(r) * 43758.5453);
+}
+
+// The triangle of a hex grid (corners = hexagon centers) that `st` lies in: its corners and the
+// barycentric weights (Mikkelsen, "Practical Real-Time Hex-Tiling", 2022).
+void triangle_grid(vec2 st, out vec3 weights, out vec2 v1, out vec2 v2, out vec2 v3) {
+	st *= 3.46410162; // 2 * sqrt(3)
+	vec2 skewed = vec2(st.x, -0.57735027 * st.x + 1.15470054 * st.y);
+	vec2 base = floor(skewed);
+	vec3 temp = vec3(fract(skewed), 0.0);
+	temp.z = 1.0 - temp.x - temp.y;
+	float s = step(0.0, -temp.z);
+	float s2 = 2.0 * s - 1.0;
+	weights = vec3(-temp.z * s2, s - temp.y * s2, s - temp.x * s2);
+	v1 = base + vec2(s);
+	v2 = base + vec2(s, 1.0 - s);
+	v3 = base + vec2(1.0 - s, s);
+}
+
 // Tangent-space normal (image X right, Y up) from an nra sample.
 vec3 tangent_normal(vec4 nra) {
 	vec2 xy = (nra.rg * 2.0 - 1.0) * normal_strength;
@@ -74,60 +104,72 @@ struct Layer {
 	float ao;
 };
 
-// Projected from above: image right = +X, image up = -Z.
-Layer top_layer(sampler2D albedo_map, sampler2D nra_map, vec2 uv) {
+// A texture set sampled with hex tiling at `uv`; its tilt is in uv space (along u, v and the
+// projection's normal). `turn`: the copies are turned too, otherwise only shifted along u.
+Layer hex_sample(sampler2D albedo_map, sampler2D nra_map, vec2 uv, bool turn) {
+	vec3 weights;
+	vec2 corners[3];
+	triangle_grid(uv * hex_cells, weights, corners[0], corners[1], corners[2]);
+	// Derivatives of the unbroken uv, so the mip level doesn't jump at the cell borders.
+	vec2 dx = dFdx(uv);
+	vec2 dy = dFdy(uv);
+	vec4 albedo[3];
+	vec4 nra[3];
+	vec3 tilt[3];
+	vec3 mix_weights;
+	for (int i = 0; i < 3; i++) {
+		vec2 random = hash2(corners[i]);
+		float angle = turn ? random.x * TAU : 0.0;
+		mat2 rotation = mat2(vec2(cos(angle), sin(angle)), vec2(-sin(angle), cos(angle)));
+		vec2 shift = turn ? random : vec2(random.y, 0.0);
+		vec2 at = rotation * uv + shift;
+		albedo[i] = textureGrad(albedo_map, at, rotation * dx, rotation * dy);
+		nra[i] = textureGrad(nra_map, at, rotation * dx, rotation * dy);
+		vec3 t = tangent_normal(nra[i]);
+		// Image up is -v: the tilt in the copy's uv space, turned back.
+		tilt[i] = vec3(transpose(rotation) * vec2(t.x, -t.y), t.z - 1.0);
+		mix_weights[i] = mix(1.0, albedo[i].a, hex_contrast) * pow(weights[i], 7.0);
+	}
+	mix_weights /= mix_weights.x + mix_weights.y + mix_weights.z;
 	Layer layer;
-	layer.albedo = texture(albedo_map, uv);
-	vec4 nra = texture(nra_map, uv);
-	vec3 t = tangent_normal(nra);
-	layer.tilt = vec3(t.x, t.z - 1.0, -t.y);
-	layer.roughness = nra.b;
-	layer.ao = nra.a;
+	layer.albedo = albedo[0] * mix_weights.x + albedo[1] * mix_weights.y + albedo[2] * mix_weights.z;
+	layer.tilt = tilt[0] * mix_weights.x + tilt[1] * mix_weights.y + tilt[2] * mix_weights.z;
+	vec4 mixed_nra = nra[0] * mix_weights.x + nra[1] * mix_weights.y + nra[2] * mix_weights.z;
+	layer.roughness = mixed_nra.b;
+	layer.ao = mixed_nra.a;
 	return layer;
 }
 
-// The ground, sampled twice (the second sample turned by `turn` and scaled) and mixed.
-Layer ground_layer(vec2 xz) {
-	Layer a = top_layer(ground_albedo, ground_nra, xz / ground_tile);
-	const float turn = 2.1;
-	mat2 rotation = mat2(vec2(cos(turn), sin(turn)), vec2(-sin(turn), cos(turn)));
-	Layer b = top_layer(ground_albedo, ground_nra, rotation * (xz / (ground_tile * 1.37)) + 0.31);
-	// Turn the second sample's tilt back into world space (uv space has v = +Z).
-	vec2 back = transpose(rotation) * vec2(b.tilt.x, b.tilt.z);
-	b.tilt = vec3(back.x, b.tilt.y, back.y);
-	float noise = value_noise(xz / variation_size) * 0.65 + value_noise(xz / (variation_size * 0.37)) * 0.35;
-	float t = smoothstep(0.4, 0.6, noise + (b.albedo.a - a.albedo.a) * 0.25);
-	Layer mixed;
-	mixed.albedo = mix(a.albedo, b.albedo, t);
-	mixed.tilt = mix(a.tilt, b.tilt, t);
-	mixed.roughness = mix(a.roughness, b.roughness, t);
-	mixed.ao = mix(a.ao, b.ao, t);
-	return mixed;
+// Projected from above: u = +X, v = +Z.
+Layer top_layer(sampler2D albedo_map, sampler2D nra_map, vec2 xz, float tile) {
+	Layer layer = hex_sample(albedo_map, nra_map, xz / tile, true);
+	layer.tilt = vec3(layer.tilt.x, layer.tilt.z, layer.tilt.y);
+	return layer;
 }
 
 // Projected from the sides (along X and Z), image up = world up.
 Layer rock_layer(vec3 position, vec3 normal) {
 	vec2 weights = pow(abs(normal.xz), vec2(4.0));
 	weights /= max(weights.x + weights.y, 1e-4);
-	// Along X: image right runs along -Z on the +X side (+Z on the -X side), so it isn't mirrored.
+	// Along X: u runs along -Z on the +X side (+Z on the -X side), so it isn't mirrored; v is down.
 	float side_x = normal.x >= 0.0 ? 1.0 : -1.0;
 	float side_z = normal.z >= 0.0 ? 1.0 : -1.0;
 	vec2 uv_x = vec2(-position.z * side_x, -position.y) / rock_tile;
 	vec2 uv_z = vec2(position.x * side_z, -position.y) / rock_tile + 0.5;
-	vec4 albedo_x = texture(rock_albedo, uv_x);
-	vec4 albedo_z = texture(rock_albedo, uv_z);
-	vec4 nra_x = texture(rock_nra, uv_x);
-	vec4 nra_z = texture(rock_nra, uv_z);
-	vec3 t_x = tangent_normal(nra_x);
-	vec3 t_z = tangent_normal(nra_z);
-	vec3 tilt_x = vec3((t_x.z - 1.0) * side_x, t_x.y, -t_x.x * side_x);
-	vec3 tilt_z = vec3(t_z.x * side_z, t_z.y, (t_z.z - 1.0) * side_z);
+	Layer x = hex_sample(rock_albedo, rock_nra, uv_x, false);
+	Layer z = hex_sample(rock_albedo, rock_nra, uv_z, false);
+	vec3 tilt_x = vec3(x.tilt.z * side_x, -x.tilt.y, -x.tilt.x * side_x);
+	vec3 tilt_z = vec3(z.tilt.x * side_z, -z.tilt.y, z.tilt.z * side_z);
 	Layer layer;
-	layer.albedo = albedo_x * weights.x + albedo_z * weights.y;
+	layer.albedo = x.albedo * weights.x + z.albedo * weights.y;
 	layer.tilt = tilt_x * weights.x + tilt_z * weights.y;
-	layer.roughness = nra_x.b * weights.x + nra_z.b * weights.y;
-	layer.ao = nra_x.a * weights.x + nra_z.a * weights.y;
+	layer.roughness = x.roughness * weights.x + z.roughness * weights.y;
+	layer.ao = x.ao * weights.x + z.ao * weights.y;
 	return layer;
+}
+
+Layer no_layer() {
+	return Layer(vec4(0.0), vec3(0.0), 1.0, 1.0);
 }
 
 void fragment() {
@@ -136,9 +178,20 @@ void fragment() {
 	float scree = COLOR.a * (1.0 - rock);
 	float ground = 1.0 - rock - scree;
 
-	Layer g = ground_layer(world_position.xz);
-	Layer s = top_layer(scree_albedo, scree_nra, world_position.xz / scree_tile);
-	Layer r = rock_layer(world_position, up);
+	// Layers without weight aren't sampled (most of the ground is only ground).
+	vec2 xz = world_position.xz;
+	Layer g = no_layer();
+	Layer s = no_layer();
+	Layer r = no_layer();
+	if (ground > 0.001) {
+		g = top_layer(ground_albedo, ground_nra, xz, ground_tile);
+	}
+	if (scree > 0.001) {
+		s = top_layer(scree_albedo, scree_nra, xz, scree_tile);
+	}
+	if (rock > 0.001) {
+		r = rock_layer(world_position, up);
+	}
 	g.albedo.rgb *= ground_tint;
 	s.albedo.rgb *= scree_tint;
 	r.albedo.rgb *= rock_tint;
@@ -155,7 +208,9 @@ void fragment() {
 	// The textures' normals tilt the surface's (UDN-style: add the tilt to the actual normal).
 	vec3 normal = normalize(up + g.tilt * blend.x + s.tilt * blend.y + r.tilt * blend.z);
 
-	ALBEDO = (g.albedo.rgb * blend.x + s.albedo.rgb * blend.y + r.albedo.rgb * blend.z) * COLOR.rgb;
+	float macro = value_noise(xz / macro_size) * 0.6 + value_noise(xz / (macro_size * 0.31) + 17.0) * 0.4;
+	vec3 albedo = g.albedo.rgb * blend.x + s.albedo.rgb * blend.y + r.albedo.rgb * blend.z;
+	ALBEDO = albedo * COLOR.rgb * (1.0 + (macro - 0.5) * 2.0 * macro_strength);
 	ROUGHNESS = g.roughness * blend.x + s.roughness * blend.y + r.roughness * blend.z;
 	AO = g.ao * blend.x + s.ao * blend.y + r.ao * blend.z;
 	AO_LIGHT_AFFECT = 0.4;

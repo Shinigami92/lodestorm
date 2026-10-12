@@ -90,6 +90,29 @@ func slope(x: int, z: int) -> float:
 	return steepest / cell
 
 
+## Highest ground within `reach` grid points of each grid point (a square around it), row by row
+## like `heights`.
+func highest_around(reach: int) -> PackedFloat32Array:
+	var side: int = cells + 1
+	var rows := PackedFloat32Array()
+	rows.resize(heights.size())
+	for z: int in side:
+		for x: int in side:
+			var highest: float = -INF
+			for nx: int in range(maxi(x - reach, 0), mini(x + reach, cells) + 1):
+				highest = maxf(highest, heights[z * side + nx])
+			rows[z * side + x] = highest
+	var result := PackedFloat32Array()
+	result.resize(heights.size())
+	for z: int in side:
+		for x: int in side:
+			var highest: float = -INF
+			for nz: int in range(maxi(z - reach, 0), mini(z + reach, cells) + 1):
+				highest = maxf(highest, rows[nz * side + x])
+			result[z * side + x] = highest
+	return result
+
+
 ## Grid squares that can be walked from `start` (location-local x, z) without climbing a slope
 ## steeper than `max_slope` (rise per m) between neighboring grid points. 1 = reachable.
 func reachable_from(start: Vector2, max_slope: float) -> PackedByteArray:
@@ -130,8 +153,8 @@ func flatten_rect(area: Rect2, falloff: float, height: float) -> void:
 	_flatten_area(area.get_center(), area.size * 0.5, falloff, height, false)
 
 
-## Mesh of the grid squares from `from` (inclusive) to `to` (exclusive), colored by `paint`
-## (called with a grid point's position and normal, returns its color).
+## Mesh of the grid squares from `from` (inclusive) to `to` (exclusive), its vertex colors from
+## `paint` (called with a grid point's position and normal, returns its color).
 func build_mesh(from: Vector2i, to: Vector2i, paint: Callable) -> ArrayMesh:
 	var width: int = to.x - from.x + 1
 	var vertices := PackedVector3Array()

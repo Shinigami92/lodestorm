@@ -32,6 +32,18 @@ func test_slope() -> void:
 	assert_almost_eq(terrain.slope(2, 2), 0.5, 0.001)
 
 
+func test_highest_around() -> void:
+	var terrain: LocationTerrain = _ramp()
+	terrain.set_height(0, 4, 9.0)
+	var highest: PackedFloat32Array = terrain.highest_around(1)
+	# One step towards +x is the highest, at the edge the grid ends.
+	assert_almost_eq(highest[terrain.index(1, 1)], 2.0, 0.001)
+	assert_almost_eq(highest[terrain.index(4, 0)], 4.0, 0.001)
+	# The raised corner reaches its neighbors (diagonal too), not farther.
+	assert_almost_eq(highest[terrain.index(1, 3)], 9.0, 0.001)
+	assert_almost_eq(highest[terrain.index(2, 2)], 3.0, 0.001)
+
+
 func test_flatten() -> void:
 	var terrain: LocationTerrain = _ramp()
 	terrain.flatten(Vector2.ZERO, 2.0, 2.0, 10.0)

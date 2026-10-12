@@ -23,6 +23,8 @@ const NEST_SITE_RADIUS: float = 6.0
 const BOUNDS_HEIGHT: float = 60.0
 ## How often a placement looks for a fitting spot before giving up.
 const PLACEMENT_TRIES: int = 300
+## How far (in grid points) the ground is checked for higher ground nearby when painting scree.
+const SCREE_REACH: int = 2
 
 ## The kind of place; when not set, one of `biomes` is picked by the seed.
 @export var biome: LocationBiome
@@ -275,11 +277,18 @@ func _add_ground() -> void:
 	var ground := Node3D.new()
 	ground.name = "Ground"
 	add_child(ground)
-	var material := StandardMaterial3D.new()
-	material.vertex_color_use_as_albedo = true
-	material.vertex_color_is_srgb = true
-	material.roughness = 1.0
-	var paint: Callable = _ground_color
+	var material: Material = biome.ground_material
+	if not material:
+		var plain := StandardMaterial3D.new()
+		plain.albedo_color = Color(0.3, 0.27, 0.23)
+		plain.vertex_color_use_as_albedo = true
+		plain.roughness = 1.0
+		material = plain
+	var shades: FastNoiseLite = _noise(1.0 / 40.0, 2)
+	var patches: FastNoiseLite = _noise(1.0 / 18.0, 2)
+	var highest: PackedFloat32Array = terrain.highest_around(SCREE_REACH)
+	var paint: Callable = func(point: Vector3, _up: Vector3) -> Color:
+		return _ground_paint(point, shades, patches, highest)
 	var chunks: int = ceili(float(terrain.cells) / CHUNK_CELLS)
 	for chunk_z: int in chunks:
 		for chunk_x: int in chunks:
@@ -297,11 +306,24 @@ func _add_ground() -> void:
 			ground.add_child(body)
 
 
-func _ground_color(point: Vector3, up: Vector3) -> Color:
+## Vertex color of the ground at `point`: RGB a tint (lighter on the high ground, varying over
+## large areas), A the share of scree (at the foot of steep ground and in patches).
+## `highest`: the highest ground around each grid point (`LocationTerrain.highest_around`).
+func _ground_paint(
+	point: Vector3, shades: FastNoiseLite, patches: FastNoiseLite, highest: PackedFloat32Array
+) -> Color:
 	var high: float = smoothstep(0.0, biome.hill_height * 0.5, point.y)
-	var color: Color = biome.ground_color.lerp(biome.high_ground_color, high)
-	# up.y is cos(slope): the cliff color takes over from about 30° to 45°.
-	return color.lerp(biome.cliff_color, smoothstep(0.87, 0.7, up.y))
+	var tint: Color = biome.low_ground_tint.lerp(Color.WHITE, high)
+	var at := Vector2(point.x, point.z)
+	tint *= 1.0 + shades.get_noise_2dv(at) * 2.0 * biome.tint_variation
+	# Scree collects where the ground rises steeply close by.
+	var grid := Vector2i(terrain.to_grid(at).round())
+	var rise: float = highest[terrain.index(grid.x, grid.y)] - point.y
+	var foot: float = smoothstep(1.5, 3.5, rise)
+	var patch: float = smoothstep(0.3, 0.5, patches.get_noise_2dv(at))
+	patch *= smoothstep(5.0, 20.0, _distance_to_landing_site(at))
+	tint.a = clampf((foot + patch) * biome.scree * 2.0, 0.0, 1.0)
+	return tint
 
 
 ## Invisible walls along the edges.

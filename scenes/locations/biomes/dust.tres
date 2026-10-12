@@ -8,6 +8,7 @@
 [ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="6_ore_violet"]
 [ext_resource type="PackedScene" uid="uid://cyl7o2webmhio" path="res://assets/rocks/rocks.glb" id="3_rocks"]
 [ext_resource type="PackedScene" uid="uid://vgi6vo04bk0s" path="res://assets/plants/plants.glb" id="4_plants"]
+[ext_resource type="Material" path="res://assets/terrain/dust_terrain.tres" id="9_terrain"]
 
 [sub_resource type="Resource" id="Resource_boulder_a"]
 script = ExtResource("2_scatter")
@@ -217,6 +218,38 @@ max_tilt = 5.0
 visibility_range = 100.0
 cast_shadow = false
 
+[sub_resource type="Resource" id="Resource_stones_a"]
+script = ExtResource("2_scatter")
+display_name = "Stones a"
+model = ExtResource("3_rocks")
+model_part = &"Rubble_a"
+density = 6.0
+clustering = 0.3
+patch_size = 15.0
+min_scale = 0.2
+max_scale = 0.4
+max_slope = 1.2
+sink = 0.02
+max_tilt = 20.0
+visibility_range = 50.0
+cast_shadow = false
+
+[sub_resource type="Resource" id="Resource_stones_b"]
+script = ExtResource("2_scatter")
+display_name = "Stones b"
+model = ExtResource("3_rocks")
+model_part = &"Rubble_b"
+density = 6.0
+clustering = 0.3
+patch_size = 15.0
+min_scale = 0.2
+max_scale = 0.4
+max_slope = 1.2
+sink = 0.02
+max_tilt = 20.0
+visibility_range = 50.0
+cast_shadow = false
+
 [resource]
 script = ExtResource("1_biome")
 display_name = "Dust flats"
@@ -225,9 +258,10 @@ hill_size = 150.0
 plateau_step = 5.0
 cliff_share = 0.45
 bump_height = 0.5
-ground_color = Color(0.33, 0.28, 0.23, 1)
-high_ground_color = Color(0.39, 0.33, 0.27, 1)
-cliff_color = Color(0.22, 0.18, 0.16, 1)
-scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_boulder_c"), SubResource("Resource_boulder_d"), SubResource("Resource_outcrop_a"), SubResource("Resource_outcrop_b"), SubResource("Resource_rubble_a"), SubResource("Resource_rubble_b"), SubResource("Resource_dust_spire_a"), SubResource("Resource_dust_shrub_a"), SubResource("Resource_dust_shrub_b"), SubResource("Resource_dust_debris_a"), SubResource("Resource_dust_debris_b")])
+ground_material = ExtResource("9_terrain")
+low_ground_tint = Color(0.85, 0.85, 0.85, 1)
+scree = 0.5
+tint_variation = 0.12
+scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_boulder_c"), SubResource("Resource_boulder_d"), SubResource("Resource_outcrop_a"), SubResource("Resource_outcrop_b"), SubResource("Resource_stones_a"), SubResource("Resource_stones_b"), SubResource("Resource_rubble_a"), SubResource("Resource_rubble_b"), SubResource("Resource_dust_spire_a"), SubResource("Resource_dust_shrub_a"), SubResource("Resource_dust_shrub_b"), SubResource("Resource_dust_debris_a"), SubResource("Resource_dust_debris_b")])
 nests = 10
 ores = Array[ExtResource("3_ore_type")]([ExtResource("4_ore_cyan"), ExtResource("5_ore_green"), ExtResource("6_ore_violet")])

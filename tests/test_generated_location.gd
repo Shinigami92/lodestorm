@@ -132,6 +132,34 @@ func test_scatter_keeps_landing_site_free() -> void:
 
 
 ## The ground's collision matches `height_at`, which places everything.
+## The ground is drawn with the biome's material; scree lies at the foot of cliffs, not on the
+## landing site.
+func test_ground_material_and_scree() -> void:
+	var location: GeneratedLocation = _generate(11)
+	var terrain: LocationTerrain = location.terrain
+	var highest: PackedFloat32Array = terrain.highest_around(GeneratedLocation.SCREE_REACH)
+	var at_foot: int = 0
+	var scree_at_foot: int = 0
+	for chunk: Node in location.get_node("Ground").get_children():
+		var mesh: MeshInstance3D = chunk.get_child(0) as MeshInstance3D
+		assert_eq(mesh.material_override, DUST.ground_material)
+		var arrays: Array = mesh.mesh.surface_get_arrays(0)
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var colors: PackedColorArray = arrays[Mesh.ARRAY_COLOR]
+		for i: int in vertices.size():
+			var at: Vector3 = vertices[i]
+			if location.landing_site.has_point(Vector2(at.x, at.z)):
+				assert_eq(colors[i].a, 0.0, "scree on the landing site")
+				continue
+			var grid := Vector2i(terrain.to_grid(Vector2(at.x, at.z)).round())
+			if highest[terrain.index(grid.x, grid.y)] - at.y > 4.0:
+				at_foot += 1
+				if colors[i].a > 0.5:
+					scree_at_foot += 1
+	assert_gt(at_foot, 0, "no cliffs")
+	assert_eq(scree_at_foot, at_foot, "foot of a cliff without scree")
+
+
 func test_collision_matches_heights() -> void:
 	var location: GeneratedLocation = _generate(6)
 	await wait_physics_frames(2)

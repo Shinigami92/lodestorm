@@ -10,7 +10,7 @@ var _light: SuitLight
 func before_each() -> void:
 	_player = PLAYER_SCENE.instantiate() as Player
 	add_child_autofree(_player)
-	_light = _player.get_node("Body/SuitLight") as SuitLight
+	_light = _player.get_node("SuitLight") as SuitLight
 	watch_signals(_player)
 
 

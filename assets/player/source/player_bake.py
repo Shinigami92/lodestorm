@@ -1,0 +1,76 @@
+"""Game-ready player: bake the procedural look of player_procedural.blend into one texture set.
+
+Run from the repo root, after player_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+    tools/blender.sh assets/player/source/player_bake.py          # bake, export, check renders
+    tools/blender.sh assets/player/source/player_bake.py verify   # only re-import and render the checks
+
+Writes the game asset assets/player/player.glb (textures, skeleton and animations embedded) and its source
+assets/player/source/player.blend; the separate PNGs and check renders go to tmp/assets/player/game/.
+
+The shared flow (tools/blender/bake.py) bakes "Suit" into one 2048 texture set with one "Suit" PBR material
+(the chest and backpack lights baked into its emission). "SuitLight" keeps its constant emissive material (the game
+drives its color by health). The armature modifiers are taken off for the bake (the rest pose is baked) and put
+back before the export. Texture size 2048 per the asset budget, TBD (playtest).
+"""
+
+import pathlib
+import sys
+
+ROOT = pathlib.Path(__file__).resolve().parents[3]
+OUT = ROOT / "tmp" / "assets" / "player"
+sys.path.insert(0, str(ROOT / "tools" / "blender"))
+
+import bpy  # noqa: E402
+from mathutils import Vector  # noqa: E402
+
+import bake as B  # noqa: E402
+import common as C  # noqa: E402
+
+ASSET = "Player"
+SKINNED = ("Suit", "SuitLight")
+
+
+def prepare(job: B.Job) -> list:
+    for name in SKINNED:
+        obj = bpy.data.objects[name]
+        for mod in [m for m in obj.modifiers if m.type == "ARMATURE"]:
+            obj.modifiers.remove(mod)
+    return [B.bake_plane("BakeGround", scale=(4, 4, 1))]
+
+
+def finish(job: B.Job, objs: list) -> None:
+    for name in SKINNED:
+        obj = bpy.data.objects[name]
+        obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects["Skeleton"]
+
+
+JOB = B.Job(
+    name="player",
+    asset=ASSET,
+    source=OUT / "player_procedural.blend",
+    glb=ROOT / "assets" / "player" / "player.glb",
+    blend=ROOT / "assets" / "player" / "source" / "player.blend",
+    game=OUT / "game",
+    atlas=["Suit"],
+    material="Suit",
+    size=2048,  # final texture size (budget: one 2048 set, TBD (playtest))
+    island_margin=0.003,
+    ao_distance=0.06,  # the suit is small: only close cavities darken
+    emission_strength=6.0,
+    prepare=prepare,
+    finish=finish,
+)
+
+
+def checks(job: B.Job, meshes: list) -> None:
+    print("CHECK actions", sorted(a.name for a in bpy.data.actions))
+    for obj in [o for o in bpy.data.objects if o.name.startswith("Icosphere")]:  # the importer's bone shape
+        bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, figure_location=(30, 30, 0))
+    target = (0, 0, 0.95)
+    for view, zoom in (("iso", 0.42), ("hero", 0.62), ("back", 0.6)):
+        C.render(job.game / f"check_{view}.png", view=view, samples=64, size=1024, target=target, zoom=zoom)
+    C.render_from(job.game / "check_close.png", Vector((0.5, -1.2, 1.55)), (0, 0, 1.45), 40, 64, 768)
+
+
+B.run(JOB, checks)

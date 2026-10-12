@@ -9,6 +9,8 @@ extends CharacterBody3D
 ## shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
 ## nearest interactable in range (buttons, ...) with `interact`. Health shows on the suit light;
 ## at zero health the player dies, drops everything carried and lies still until `respawn`.
+## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
+## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
 
 ## Emitted when the carried amount of an ore type changes.
@@ -25,11 +27,15 @@ const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 ## The cursor ray looks for the ground from this high above the player's feet (m), so ceilings and
 ## the deck above (inside the ship) don't catch it.
 const CURSOR_CEILING: float = 3.0
+## Stencil value the suit writes where it's visible (occluded_silhouette.gdshader skips those).
+const STENCIL_VISIBLE: int = 1
 
 @export var settings: PlayerSettings
 ## Weapons taken into the mission. Only the first slot is used until switching exists.
 @export var loadout: Loadout
 @export var miner_scene: PackedScene
+## Drawn over the suit: its silhouette behind walls and the rim light.
+@export var body_overlay: Material
 
 ## Horizontal unit vector the player faces and attacks in.
 var aim_direction: Vector3 = Vector3.FORWARD
@@ -62,15 +68,22 @@ var _aim_with_mouse: bool = false
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
 @onready var _cargo_rack: CargoRack = $CargoRack
-@onready var _suit_light: SuitLight = $Body/SuitLight
-@onready var _body: Node3D = $Body
-@onready var _body_transform: Transform3D = _body.transform
+@onready var _suit_light: SuitLight = $SuitLight
+@onready var _model: Node3D = $Body/Model
+@onready var _animator: PlayerAnimator = $Animator
 @onready var _ship_pointer: Node3D = $ShipPointer
 @onready var _target_marker: Node3D = $TargetMarker
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	_animator.setup(_model)
+	_suit_light.band = _model.find_child("SuitLight") as GeometryInstance3D
+	(_model.find_child("Suit") as GeometryInstance3D).material_overlay = body_overlay
+	_mark_visible(_model)
+	_attach(_weapon_mount, "WeaponGrip")
+	_attach(_cargo_rack, "CargoRack")
+	_attach(_hose_port, "HosePort")
 	cargo_changed.connect(_cargo_rack.show_cargo)
 	health = settings.max_health
 	if loadout and not loadout.weapons.is_empty():
@@ -108,6 +121,8 @@ func _physics_process(delta: float) -> void:
 	var yaw: float = lerp_angle(rotation.y, target_yaw, 1.0 - exp(-settings.turn_speed * delta))
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.
 	basis = Basis(Vector3.UP, yaw)
+	_animator.local_velocity = Vector2(velocity.dot(basis.x), -velocity.dot(basis.z))
+	_animator.aiming = weapon != null and weapon_allowed
 
 	if weapon:
 		weapon.aim_direction = aim_direction
@@ -288,7 +303,7 @@ func heal() -> void:
 ## Brings a dead player back at `at` with full health.
 func respawn(at: Vector3) -> void:
 	dead = false
-	_body.transform = _body_transform
+	_animator.dead = false
 	weapon_allowed = weapon_allowed
 	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
 	global_position = at
@@ -340,11 +355,41 @@ func _die() -> void:
 	miner_target = null
 	interact_target = null
 	take_cargo()
-	# Lies on its side; the collision shape stays, so the ship still knows where the body is.
-	_body.transform = Transform3D(Basis(Vector3.RIGHT, PI * 0.5), Vector3(0.0, 0.4, 0.0))
+	# Falls and lies still; the collision shape stays, so the ship still knows where the body is.
+	_animator.local_velocity = Vector2.ZERO
+	_animator.dead = true
 	_ship_pointer.visible = false
 	_ship_pointer.process_mode = Node.PROCESS_MODE_DISABLED
 	died.emit()
+
+
+## Lets the meshes under `root` (the suit, the weapon) mark where they're visible in the stencil
+## buffer, so the silhouette only shows where something else hides the player. Marks their
+## materials in place: the imported ones are only used by players (and weapons they hold).
+func _mark_visible(root: Node) -> void:
+	for node: Node in root.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		if mesh.material_override:  # e.g. the suit light's own material
+			_write_stencil(mesh.material_override as BaseMaterial3D)
+			continue
+		for surface: int in mesh.mesh.get_surface_count():
+			_write_stencil(mesh.mesh.surface_get_material(surface) as BaseMaterial3D)
+
+
+static func _write_stencil(material: BaseMaterial3D) -> void:
+	if not material:
+		return
+	material.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+	material.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
+	material.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
+	material.stencil_reference = STENCIL_VISIBLE
+
+
+## Makes `node` follow the model's marker `marker_name` (and so its animated bone).
+func _attach(node: Node3D, marker_name: String) -> void:
+	var follow := RemoteTransform3D.new()
+	(_model.find_child(marker_name) as Node3D).add_child(follow)
+	follow.remote_path = follow.get_path_to(node)
 
 
 func _update_miner_target() -> void:
@@ -377,4 +422,5 @@ func _equip(weapon_scene: PackedScene) -> void:
 	weapon = weapon_scene.instantiate() as Weapon
 	weapon.holder = self
 	weapon.visible = weapon_allowed
+	_mark_visible(weapon)
 	_weapon_mount.add_child(weapon)

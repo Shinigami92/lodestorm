@@ -7,6 +7,9 @@ extends StaticBody3D
 ## health it breaks down: it stops mining and the hose disconnects, so its ore can't be taken out
 ## (it keeps it). The frame blinks red until a player standing within `settings.repair_range` has
 ## repaired it completely. Players repair damaged miners that still work too.
+## The upgrades of the player who placed it (`upgrades`) raise its fill rate (`drill_upgrade`),
+## capacity (`tank_upgrade`), hose range and transfer rate (`hose_upgrade`); for now they apply to
+## every miner that player places.
 ##
 ## The look lives in the `Model` child, so a modeled asset can replace the greybox. The model
 ## provides these parts by name: `Fill` (scaled along Y from 0 to 1 with the fill level; it and its
@@ -41,10 +44,15 @@ const FLASH_DURATION: float = 0.1
 const BLINK_RATE: float = 2.0
 
 @export var settings: MinerSettings
+@export var drill_upgrade: Upgrade
+@export var tank_upgrade: Upgrade
+@export var hose_upgrade: Upgrade
 
 ## Set by the ore node before the miner enters the tree.
 var ore_type: OreType
-## Units currently held, between 0 and `settings.capacity`.
+## The upgrades of the player who placed it (set with `ore_type`), or null: MK1.
+var upgrades: Upgrades
+## Units currently held, between 0 and `capacity()`.
 var amount: float = 0.0
 ## The player the hose is connected to, or null.
 var hose_target: Player
@@ -86,7 +94,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if not broken and not is_full():
-		amount = minf(amount + settings.fill_rate * delta, settings.capacity)
+		amount = minf(amount + fill_rate() * delta, capacity())
 		_update_gauge()
 		if is_full():
 			filled.emit()
@@ -94,11 +102,9 @@ func _physics_process(delta: float) -> void:
 	if Player.nearest(get_tree(), global_position, settings.repair_range):
 		repair(settings.repair_rate * delta)
 
-	hose_target = (
-		null if broken else Player.nearest(get_tree(), global_position, settings.hose_range)
-	)
+	hose_target = (null if broken else Player.nearest(get_tree(), global_position, hose_range()))
 	if hose_target:
-		hose_target.add_cargo(ore_type, take(settings.transfer_rate * delta))
+		hose_target.add_cargo(ore_type, take(transfer_rate() * delta))
 
 
 func _process(delta: float) -> void:
@@ -113,7 +119,27 @@ func _process(delta: float) -> void:
 
 
 func is_full() -> bool:
-	return amount >= settings.capacity
+	return amount >= capacity()
+
+
+## Units mined per second, with the drill upgrade.
+func fill_rate() -> float:
+	return settings.fill_rate * _multiplier(drill_upgrade)
+
+
+## Units it holds when full, with the tank upgrade.
+func capacity() -> float:
+	return settings.capacity * _multiplier(tank_upgrade)
+
+
+## How close a player must be for the hose to connect, with the hose upgrade.
+func hose_range() -> float:
+	return settings.hose_range * _multiplier(hose_upgrade)
+
+
+## Units per second the hose moves, with the hose upgrade.
+func transfer_rate() -> float:
+	return settings.transfer_rate * _multiplier(hose_upgrade)
 
 
 ## Removes up to `max_amount` units (e.g. for the hose) and returns how many were taken.
@@ -150,7 +176,7 @@ static func any_working(tree: SceneTree) -> bool:
 
 
 func _update_gauge() -> void:
-	var ratio: float = amount / settings.capacity
+	var ratio: float = amount / capacity()
 	# A zero scale makes the basis singular, so hide the fill instead.
 	_fill.visible = ratio > 0.0
 	_fill.scale = Vector3(1.0, maxf(ratio, 0.001), 1.0)
@@ -169,6 +195,10 @@ func _update_frame() -> void:
 	else:
 		var damage: float = 1.0 - health / settings.max_health
 		_frame_overlay.albedo_color = Color(COLOR_RUST, damage * RUST_MAX)
+
+
+func _multiplier(upgrade: Upgrade) -> float:
+	return upgrades.multiplier(upgrade) if upgrades else 1.0
 
 
 func _face_camera() -> void:

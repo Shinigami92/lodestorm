@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="Upgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_level.gd" id="1_p5o0b"]
+[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="2_bwv0e"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="3_x0ppl"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="4_7vog6"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="5_0j1kg"]
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade.gd" id="6_774k4"]
+
+[sub_resource type="Resource" id="Resource_m6pep"]
+script = ExtResource("1_p5o0b")
+cost = Dictionary[ExtResource("2_bwv0e"), int]({
+ExtResource("3_x0ppl"): 270
+})
+multiplier = 1.25
+
+[sub_resource type="Resource" id="Resource_3fi23"]
+script = ExtResource("1_p5o0b")
+cost = Dictionary[ExtResource("2_bwv0e"), int]({
+ExtResource("4_7vog6"): 270,
+ExtResource("5_0j1kg"): 180
+})
+multiplier = 1.5
+
+[resource]
+script = ExtResource("6_774k4")
+display_name = "Drill"
+description = "Miners mine faster"
+levels = Array[ExtResource("1_p5o0b")]([SubResource("Resource_m6pep"), SubResource("Resource_3fi23")])

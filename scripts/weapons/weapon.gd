@@ -10,6 +10,8 @@ var trigger_held: bool = false
 var aim_direction: Vector3 = Vector3.FORWARD
 ## The alien the holder locked on, or null: attacks go straight at it, up or down slopes too.
 var aim_target: Alien
+## Scales the damage from the settings, set by the holder from the weapon's MK level.
+var damage_multiplier: float = 1.0
 
 ## Seconds until the next attack. Keeps the remainder after an attack, so the average attack
 ## rate doesn't depend on the physics tick rate.
@@ -25,6 +27,16 @@ func _physics_process(delta: float) -> void:
 		_cooldown += 1.0 / _get_settings().attack_rate
 	else:
 		_cooldown = 0.0
+
+
+## Applies the MK level of `upgrade` (the weapon's, null: MK1) in `upgrades`: the damage and the
+## pips on the weapon (an `MkPips` child named `MkPips`, if it has one). Works before the weapon
+## enters the tree.
+func apply_upgrade(upgrades: Upgrades, upgrade: Upgrade) -> void:
+	damage_multiplier = upgrades.multiplier(upgrade)
+	var pips := get_node_or_null(^"MkPips") as MkPips
+	if pips:
+		pips.show_level(upgrades.mk(upgrade), upgrade.max_mk() if upgrade else 1)
 
 
 ## Performs one attack (fire a projectile, swing, ...).

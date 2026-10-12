@@ -12,3 +12,5 @@ enum Kind { RANGED, MELEE }
 @export var kind: Kind = Kind.RANGED
 ## The weapon scene (root extends `Weapon`).
 @export var scene: PackedScene
+## Its MK levels at the weapons upgrade station: each one raises its damage.
+@export var upgrade: Upgrade

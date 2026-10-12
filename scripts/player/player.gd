@@ -11,7 +11,9 @@ extends CharacterBody3D
 ## menu (`menu`), it stands still and only the menu gets its input. Health shows on the suit light;
 ## at zero health the player dies, drops everything carried and lies still until `respawn`.
 ## Owns the weapons in its `arsenal` and carries the ones in its `loadout` (picked in the armory);
-## `switch_weapon` equips the next one.
+## `switch_weapon` equips the next one. Its `upgrades` (bought at the upgrade stations) raise its
+## weapons' damage, its armor (`armor_upgrade`: more health, shown by pips on the helmet)
+## and the miners it places.
 ## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
 ## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
@@ -34,6 +36,10 @@ const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 const CURSOR_CEILING: float = 3.0
 ## Stencil value the suit writes where it's visible (occluded_silhouette.gdshader skips those).
 const STENCIL_VISIBLE: int = 1
+## Where the armor's MK pips sit, in the model's rest pose: on top of the helmet, left of its fin
+## (the isometric camera always sees it), following this bone.
+const ARMOR_PIPS_POSITION := Vector3(0.075, 1.805, 0.0)
+const ARMOR_PIPS_BONE: StringName = &"Head"
 
 @export var settings: PlayerSettings
 ## The weapons the player owns; a new player starts with these. Each player gets its own copy.
@@ -41,6 +47,11 @@ const STENCIL_VISIBLE: int = 1
 ## The weapons taken into the mission; a new player starts with these. Each player gets its own
 ## copy.
 @export var loadout: Loadout
+## The MK levels bought at the upgrade stations; a new player starts with these. Each player gets
+## its own copy.
+@export var upgrades: Upgrades
+## The suit's armor: its MK level multiplies the health.
+@export var armor_upgrade: Upgrade
 @export var miner_scene: PackedScene
 ## Drawn over the suit: its silhouette behind walls and the rim light.
 @export var body_overlay: Material
@@ -66,7 +77,7 @@ var weapon_allowed: bool = true:
 			weapon.trigger_held = false
 ## Units carried per ore type; no carry limit.
 var cargo: Dictionary[OreType, float] = {}
-## Current health, from 0 to `settings.max_health`.
+## Current health, from 0 to `max_health()`.
 var health: float
 ## Dead players can't move or act until they respawn.
 var dead: bool = false
@@ -86,6 +97,10 @@ var _aim_with_mouse: bool = false
 ## Actions held since a menu opened or closed; they're ignored until released.
 var _held_since_menu: Array[StringName] = []
 var _weapon_type: WeaponType
+## `max_health()` when health was last set, so an armor upgrade adds the difference.
+var _max_health: float
+## Shows the armor's MK level.
+var _armor_pips := MkPips.new()
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
@@ -107,7 +122,12 @@ func _ready() -> void:
 	_attach(_cargo_rack, "CargoRack")
 	_attach(_hose_port, "HosePort")
 	cargo_changed.connect(_cargo_rack.show_cargo)
-	health = settings.max_health
+	upgrades = upgrades.duplicate() if upgrades else Upgrades.new()
+	upgrades.levels = upgrades.levels.duplicate()
+	upgrades.changed.connect(_on_upgrades_changed)
+	_add_armor_pips()
+	health = max_health()
+	_max_health = health
 	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()
 	arsenal.weapons = arsenal.weapons.duplicate()
 	loadout = loadout.duplicate() if loadout else Loadout.new()
@@ -284,7 +304,7 @@ func place_miner() -> Miner:
 	_update_miner_target()
 	if not miner_target:
 		return null
-	var miner: Miner = miner_target.place_miner(miner_scene)
+	var miner: Miner = miner_target.place_miner(miner_scene, upgrades)
 	_update_miner_target()
 	return miner
 
@@ -312,6 +332,16 @@ func switch_weapon() -> bool:
 ## The weapon type of the equipped weapon, or null.
 func get_weapon_type() -> WeaponType:
 	return _weapon_type
+
+
+## Health when unhurt, with the armor upgrade.
+func max_health() -> float:
+	return settings.max_health * upgrades.multiplier(armor_upgrade)
+
+
+## The pips showing the armor's MK level.
+func get_armor_pips() -> MkPips:
+	return _armor_pips
 
 
 ## Adds `amount` units of `ore_type` to the cargo.
@@ -347,7 +377,7 @@ func take_damage(amount: float) -> void:
 ## Restores full health.
 func heal() -> void:
 	if not dead:
-		_set_health(settings.max_health)
+		_set_health(max_health())
 
 
 ## Brings a dead player back at `at` with full health.
@@ -359,7 +389,7 @@ func respawn(at: Vector3) -> void:
 	global_position = at
 	velocity = Vector3.ZERO
 	reset_physics_interpolation()
-	_set_health(settings.max_health)
+	_set_health(max_health())
 
 
 ## Where hoses attach, as rendered this frame (interpolated between physics steps).
@@ -396,8 +426,9 @@ func _mouse_over_ui() -> bool:
 
 
 func _set_health(value: float) -> void:
-	health = clampf(value, 0.0, settings.max_health)
-	_suit_light.show_health(health / settings.max_health)
+	_max_health = max_health()
+	health = clampf(value, 0.0, _max_health)
+	_suit_light.show_health(health / _max_health)
 	health_changed.emit(health)
 
 
@@ -446,10 +477,47 @@ static func _write_stencil(material: BaseMaterial3D) -> void:
 	material.stencil_reference = STENCIL_VISIBLE
 
 
+## Puts the armor's pips on the helmet, following the head's bone. The marker is placed from the
+## bone's rest pose (the attachment doesn't follow the bone yet).
+func _add_armor_pips() -> void:
+	var skeleton: Skeleton3D = _model.find_child("Skeleton3D") as Skeleton3D
+	var attachment := BoneAttachment3D.new()
+	attachment.bone_name = ARMOR_PIPS_BONE
+	skeleton.add_child(attachment)
+	var bone_in_model: Transform3D = (
+		_model.global_transform.affine_inverse()
+		* skeleton.global_transform
+		* skeleton.get_bone_global_rest(skeleton.find_bone(ARMOR_PIPS_BONE))
+	)
+	var marker := Marker3D.new()
+	attachment.add_child(marker)
+	# The row runs from front to back.
+	marker.transform = (
+		bone_in_model.affine_inverse()
+		* Transform3D(Basis(Vector3.UP, PI * 0.5), ARMOR_PIPS_POSITION)
+	)
+	_armor_pips.name = "ArmorPips"
+	_armor_pips.pip_size = Vector3(0.045, 0.02, 0.045)
+	_armor_pips.spacing = 0.06
+	add_child(_armor_pips)
+	_follow(marker, _armor_pips)
+	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
+	_mark_visible(_armor_pips)
+
+
+func _armor_max_mk() -> int:
+	return armor_upgrade.max_mk() if armor_upgrade else 1
+
+
 ## Makes `node` follow the model's marker `marker_name` (and so its animated bone).
 func _attach(node: Node3D, marker_name: String) -> void:
+	_follow(_model.find_child(marker_name) as Node3D, node)
+
+
+## Makes `node` follow `marker`.
+func _follow(marker: Node3D, node: Node3D) -> void:
 	var follow := RemoteTransform3D.new()
-	(_model.find_child(marker_name) as Node3D).add_child(follow)
+	marker.add_child(follow)
 	follow.remote_path = follow.get_path_to(node)
 
 
@@ -490,9 +558,19 @@ func _equip(weapon_type: WeaponType) -> void:
 		return
 	weapon = weapon_type.scene.instantiate() as Weapon
 	weapon.holder = self
+	weapon.apply_upgrade(upgrades, weapon_type.upgrade)
 	weapon.visible = weapon_allowed and not dead
 	_mark_visible(weapon)
 	_weapon_mount.add_child(weapon)
+
+
+## Applies new MK levels: to the equipped weapon, and a stronger armor adds its extra health.
+func _on_upgrades_changed() -> void:
+	if weapon:
+		weapon.apply_upgrade(upgrades, _weapon_type.upgrade)
+	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
+	if not dead:
+		_set_health(health + max_health() - _max_health)
 
 
 ## Keeps the equipped weapon in the loadout: the one in its slot, or else the first one there.

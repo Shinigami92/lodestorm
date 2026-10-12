@@ -154,6 +154,10 @@ msgstr ""
 msgid "Cabins · Lift · Bridge"
 msgstr ""
 
+#: scenes/ui/armor_upgrades_menu.tscn
+msgid "Armor upgrades"
+msgstr ""
+
 #: scenes/ui/armory_menu.tscn
 msgid "Loadout"
 msgstr ""
@@ -165,7 +169,12 @@ msgstr ""
 #: scenes/ui/armory_menu.tscn
 #: scenes/ui/mission_menu.tscn
 #: scenes/ui/settings_menu.tscn
+#: scenes/ui/upgrade_menu.tscn
 msgid "Close"
+msgstr ""
+
+#: scenes/ui/miner_upgrades_menu.tscn
+msgid "Miner upgrades"
 msgstr ""
 
 #: scenes/ui/mission_menu.tscn
@@ -184,8 +193,71 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
+#: scenes/ui/upgrade_menu.tscn
+msgid "Upgrades"
+msgstr ""
+
+#: scenes/ui/weapon_upgrades_menu.tscn
+msgid "Weapon upgrades"
+msgstr ""
+
+#: scenes/upgrades/armor.tres
+msgid "Suit armor"
+msgstr ""
+
+#: scenes/upgrades/armor.tres
+msgid "More health"
+msgstr ""
+
+#: scenes/upgrades/blaster.tres
 #: scenes/weapons/types/blaster.tres
 msgid "Blaster"
+msgstr ""
+
+#: scenes/upgrades/blaster.tres
+msgid "More damage per shot"
+msgstr ""
+
+#: scenes/upgrades/hammer.tres
+#: scenes/weapons/types/hammer.tres
+msgid "Hammer"
+msgstr ""
+
+#: scenes/upgrades/hammer.tres
+msgid "More damage per swing"
+msgstr ""
+
+#: scenes/upgrades/miner_drill.tres
+msgid "Drill"
+msgstr ""
+
+#: scenes/upgrades/miner_drill.tres
+msgid "Miners mine faster"
+msgstr ""
+
+#: scenes/upgrades/miner_hose.tres
+msgid "Hose"
+msgstr ""
+
+#: scenes/upgrades/miner_hose.tres
+msgid "Longer hose reach, faster transfer"
+msgstr ""
+
+#: scenes/upgrades/miner_tank.tres
+msgid "Ore tank"
+msgstr ""
+
+#: scenes/upgrades/miner_tank.tres
+msgid "Miners hold more ore"
+msgstr ""
+
+#: scenes/upgrades/shotgun.tres
+#: scenes/weapons/types/shotgun.tres
+msgid "Shotgun"
+msgstr ""
+
+#: scenes/upgrades/shotgun.tres
+msgid "More damage per pellet"
 msgstr ""
 
 #: scenes/weapons/types/blaster.tres
@@ -193,15 +265,7 @@ msgid "Rapid shots that reach far."
 msgstr ""
 
 #: scenes/weapons/types/hammer.tres
-msgid "Hammer"
-msgstr ""
-
-#: scenes/weapons/types/hammer.tres
 msgid "Heavy swings that hit everything in front."
-msgstr ""
-
-#: scenes/weapons/types/shotgun.tres
-msgid "Shotgun"
 msgstr ""
 
 #: scenes/weapons/types/shotgun.tres
@@ -241,6 +305,7 @@ msgid "No mission"
 msgstr ""
 
 #: scripts/ui/armory_menu.gd
+#: scripts/ui/upgrade_menu.gd
 msgid "Locked"
 msgstr ""
 
@@ -254,6 +319,7 @@ msgstr ""
 
 #: scripts/ui/armory_menu.gd
 #: scripts/ui/mission_menu.gd
+#: scripts/ui/upgrade_menu.gd
 msgid "Locked until everyone is back aboard."
 msgstr ""
 
@@ -283,4 +349,24 @@ msgstr ""
 
 #: scripts/ui/mission_menu.gd
 msgid "Pick a mission to see it on the hologram."
+msgstr ""
+
+#: scripts/ui/upgrade_menu.gd
+msgid "Upgrade"
+msgstr ""
+
+#: scripts/ui/upgrade_menu.gd
+msgid "Max"
+msgstr ""
+
+#: scripts/ui/upgrade_menu.gd
+msgid "next: +%d %%"
+msgstr ""
+
+#: scripts/ui/upgrade_menu.gd
+msgid "Hold"
+msgstr ""
+
+#: scripts/ui/upgrade_menu.gd
+msgid "Upgrades are paid with ore from the hold."
 msgstr ""

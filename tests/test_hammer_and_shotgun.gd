@@ -43,6 +43,19 @@ func test_hammer_hits_every_alien_in_front_within_reach() -> void:
 	assert_eq(behind.health, behind.settings.max_health)
 
 
+func test_upgraded_hammer_hits_harder() -> void:
+	var hammer: MeleeWeapon = _equip(HAMMER) as MeleeWeapon
+	_player.upgrades.raise(HAMMER.upgrade)
+	var alien := ALIEN_SCENE.instantiate() as Alien
+	alien.settings = alien.settings.duplicate() as AlienSettings
+	alien.settings.max_health = 1000.0
+	alien.position = Vector3(0.0, 0.0, -1.5)
+	_arena.add_child(alien)
+	await _attack_once()
+	var damage: float = hammer.settings.damage * HAMMER.upgrade.levels[0].multiplier
+	assert_eq(alien.health, alien.settings.max_health - damage)
+
+
 func test_hammer_does_not_hit_through_walls() -> void:
 	var hammer: MeleeWeapon = _equip(HAMMER) as MeleeWeapon
 	_add_box(Vector3(0.0, 1.0, -1.0), Vector3(3.0, 2.0, 0.2))

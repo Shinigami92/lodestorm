@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/upgrade_menu.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade.gd" id="2_upgrade_script"]
+[ext_resource type="Resource" path="res://scenes/upgrades/miner_drill.tres" id="3_drill"]
+[ext_resource type="Resource" path="res://scenes/upgrades/miner_tank.tres" id="4_tank"]
+[ext_resource type="Resource" path="res://scenes/upgrades/miner_hose.tres" id="5_hose"]
+
+[node name="MinerUpgradesMenu" instance=ExtResource("1_base")]
+upgrades = Array[ExtResource("2_upgrade_script")]([ExtResource("3_drill"), ExtResource("4_tank"), ExtResource("5_hose")])
+
+[node name="Title" parent="Layout/Header" index="0"]
+text = "Miner upgrades"

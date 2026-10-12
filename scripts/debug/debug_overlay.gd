@@ -4,7 +4,8 @@ extends CanvasLayer
 ## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
 ## every scene using them sees the new values right away; they last until the game stops and
 ## aren't written to the files. Also shows the mission and flight state and has shortcuts for
-## testing the flight, storm, death, fights and weapons. Integer settings get whole-number sliders.
+## testing the flight, storm, death, fights, weapons and upgrades. Integer settings get whole-number
+## sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -88,6 +89,13 @@ const TUNING: Dictionary[String, Array] = {
 const PANEL_WIDTH: float = 420.0
 ## Every weapon of the game, for `unlock_weapons`.
 const ALL_WEAPONS: Arsenal = preload("res://scenes/weapons/all_weapons.tres")
+## Ore types `fill_hold` adds, and how much of each.
+const HOLD_ORES: Array[OreType] = [
+	preload("res://scenes/mining/ores/ore_cyan.tres"),
+	preload("res://scenes/mining/ores/ore_green.tres"),
+	preload("res://scenes/mining/ores/ore_violet.tres"),
+]
+const HOLD_FILL: float = 900.0
 
 ## Values from the files, for `reset_tuning`, keyed by "path:property".
 var _defaults: Dictionary[String, float] = {}
@@ -222,6 +230,13 @@ func unlock_weapons() -> void:
 			player.arsenal.unlock(weapon_type)
 
 
+## Adds `HOLD_FILL` units of every ore type to each ship's hold, to test the upgrade stations.
+func fill_hold() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		for ore_type: OreType in HOLD_ORES:
+			ship.add_to_hold(ore_type, HOLD_FILL)
+
+
 func heal_players() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.heal()
@@ -275,6 +290,7 @@ func _build() -> void:
 	_button(actions, "Hatch raiders", hatch_raiders)
 	_button(actions, "Break miners", break_miners)
 	_button(actions, "Unlock weapons", unlock_weapons)
+	_button(actions, "Fill hold", fill_hold)
 	_button(actions, "Reset tuning", reset_tuning)
 
 	for path: String in TUNING:

@@ -116,7 +116,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Camera inside:** while a player is aboard, the roof and the walls facing the camera are cut away (they still cast shadows), so the camera can see inside. Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined. On the lower deck, the whole upper deck is cut away too; on the upper deck, the lower deck is hidden under its floor. Some rooms frame themselves: in the shooting range the camera looks at the whole room instead of the player, so the targets stay on screen from the firing line.
 - **Two decks**, nose on the left, tail with the ramp on the right (like a cargo plane's rear ramp). A corridor runs along the middle of each deck; lifts join the decks at both ends, one by the bridge and one in the double-height cargo bay, so a run is a loop: ramp → cargo bay → lower deck (upgrades, armory) → lift → bridge (pick a mission) → upper deck → cargo bay lift → ramp.
   - **Upper deck (command and living):** cockpit at the nose, the bridge next to it, then the player cabins, the crew cabins and the mess hall.
-  - **Lower deck (work):** medical bay (respawn point) and engine room at the nose, the shooting range, the armory (loadout) and one upgrade room per vendor (weapons, armor, skills, miners).
+  - **Lower deck (work):** medical bay (respawn point) and engine room at the nose, the shooting range, the armory (loadout) and one upgrade room per vendor (weapons, armor, skills, miners), each with a console (see [Upgrade stations](#upgrade-stations)).
 - **Armory:** a console by the lockers picks the loadout: one row per weapon of the game with its name, a line on how it plays, ranged or melee, and a button per slot. Weapons the player doesn't own yet are greyed out ("Locked"), which hints at what's still to find. Pressing a slot puts the weapon there (if it's in the other slot, the two swap) or takes it out again; a slot may stay empty. The loadout is locked from the ramp going down until the run is won or lost.
 - **Lifts:** a platform for up to four players in a shaft beside the corridor. Stepping on it sends it to the other deck (greybox: after 0.6 s, 2 s ride, **TBD (playtest)**); riders who came along have to step off before it leaves again. Waiting at the gate on the other deck calls it. Gates close the shaft on every deck the platform isn't at.
 - **Walking the ship:** the bridge sits at the nose, far from the ramp. Picking a mission starts the flight, and players walk aft and gear up while the ship flies and lands, so the walk isn't dead time (flight time **TBD (playtest)**).
@@ -204,7 +204,7 @@ Standing at one spot until the timer runs low must not pay off. Directions to tr
 - Placed by the player on ore / mineral / resource nodes.
 - One miner per node. The player places it on the nearest free node in range (`place_miner`); a ring on the ground marks that node.
 - Fill slowly over time; the player needs to place several for a good haul. Target: an empty miner takes about 2–5 min to fill (so a few fills per mission); exact values **TBD (playtest)**.
-- **Stop when full.** Capacity and speed can be upgraded / better miner types.
+- **Stop when full.** Capacity and speed can be upgraded (see [Upgrade stations](#upgrade-stations)) / better miner types.
 - Fill level is shown on the miner itself: a glass column fills up in the ore color, and a lamp on top lights up when it's full. Aliens attack it from its surface: their reach counts from the edge of its body, not its center.
 - Art pass: the miner model gets a small display showing the fill counter (amount / capacity) and a timer (time until full).
 - **Attacked by aliens** (raiders, see [Combat & aliens](#10-combat--aliens)): a miner has health (greybox 100); the frame flashes white when hit and turns rusty with damage. At zero it **breaks down**: it stops mining and the hose disconnects, so its ore can't be taken out until it's repaired, but it keeps the ore. The frame blinks red while broken.
@@ -272,18 +272,26 @@ Standing at one spot until the timer runs low must not pay off. Directions to tr
 - **Not too punishing:** losses should hurt, but not set players back for long.
 - **Rescue drone** (a skill): once per run it revives a player where they fell, in solo and in co-op, so playing alone isn't unfair without anyone to revive you.
 - A skill or upgrade keeps part of the carried ore on death (e.g. a canister that survives).
-- Back aboard (before the storm gets you): carried resources go into the ship's hold and can be spent. The hold shows as big canisters by the back wall of the cargo bay (greybox: 900 units each, **TBD (playtest)**) and keeps growing over runs (not saved yet, see M3).
-- Players are healed for each new run (until the medical bay and armor exist).
+- Back aboard (before the storm gets you): carried resources go into the ship's hold and are spent at the upgrade stations. The hold shows as big canisters by the back wall of the cargo bay (greybox: 900 units each, **TBD (playtest)**) and keeps growing over runs (not saved yet, see M3).
+- Players are healed for each new run (until the medical bay exists).
 
 ## 12. Progression / upgrades
 
 Bought in the ship with ores and alloys (no experience levels, no player classes):
 
 - **Weapons:** each one upgraded on its own, also part by part, in MK levels (e.g. MK1–MK5).
-- **Armor**
+- **Armor:** the suit, in MK levels.
 - **Skills:** e.g. dash, more health, health regeneration, the rescue drone, unlocking the miner radar or an ore scanner (points to ore nodes in range, like the arrow back to the ship), unlocking sentries. Skill trees can be maxed out completely; the choice is what to get first. A run's role comes from the loadout (e.g. a healer loadout), not from a class.
 - **Miners:** capacity, speed, drill types, defenses (shields, sentry turrets).
 - **New planets:** better ores open the way to the next planet (see [Story](#story-and-setting-draft)).
+
+### Upgrade stations
+
+- One console per upgrade room on the lower deck: **weapons, armor and miners** (the skills room stays empty until the skills exist, M4). Each one lists its upgrades with the MK level, how much the next level improves (compared to MK1), the next level's cost in ore and an "Upgrade" button; the header shows what the hold has of the ores they cost. Costs the hold can't pay show in red and can't be bought; upgrades of weapons the player doesn't own yet are greyed out ("Locked"). Like the loadout, buying is locked while a mission is underway.
+- **Paid from the ship's hold.** Each level costs more and asks for rarer ores: MK2 costs cyan, a weapon's MK3 cyan and green, the armor's and the miners' MK3 green and violet.
+- **Greybox upgrades** (`scenes/upgrades/`, MK1–MK3, multipliers and costs **TBD (playtest)**): every weapon's damage (+25 % / +50 %), the suit armor's health (+25 % / +50 %: 100 → 125 → 150 HP), and for the miners the drill (fill rate +25 % / +50 %), the ore tank (capacity +50 % / +100 %) and the hose (range and transfer rate +25 % / +50 %). Buying armor adds the extra health right away.
+- **Each player has their own levels** (like their weapons). Until crafted miners exist (M4, each upgraded on its own), the miner upgrades apply to every miner the player places.
+- **Shown in the world:** a row of small pips, one per MK level, the reached ones glowing: on each weapon (behind the blaster's sight, on the shotgun's receiver, on the hammer's head) and on top of the helmet for the armor (the isometric camera always sees it).
 
 ### Co-op progression
 

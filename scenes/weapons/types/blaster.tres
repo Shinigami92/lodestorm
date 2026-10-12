@@ -2,9 +2,11 @@
 
 [ext_resource type="Script" path="res://scripts/weapons/weapon_type.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/blaster.tscn" id="2_scene"]
+[ext_resource type="Resource" path="res://scenes/upgrades/blaster.tres" id="3_upgrade"]
 
 [resource]
 script = ExtResource("1_script")
 display_name = "Blaster"
 description = "Rapid shots that reach far."
 scene = ExtResource("2_scene")
+upgrade = ExtResource("3_upgrade")

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/weapons/ranged_weapon.gd" id="1_script"]
 [ext_resource type="Resource" path="res://scenes/weapons/shotgun_settings.tres" id="2_settings"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/projectile.tscn" id="3_projectile"]
+[ext_resource type="Script" path="res://scripts/upgrades/mk_pips.gd" id="9_pips"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
 albedo_color = Color(0.13, 0.135, 0.145, 1)
@@ -77,3 +78,7 @@ mesh = SubResource("BoxMesh_shells")
 
 [node name="Muzzle" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, -0.72)
+
+[node name="MkPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.171, 0.02)
+script = ExtResource("9_pips")

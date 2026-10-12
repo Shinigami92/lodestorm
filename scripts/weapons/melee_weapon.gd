@@ -37,7 +37,7 @@ func _attack() -> void:
 		if _in_swing(alien, direction, exclude):
 			hits.append(alien)
 	for alien: Alien in hits:
-		alien.take_damage(settings.damage)
+		alien.take_damage(settings.damage * damage_multiplier)
 	_play_sweep()
 	swung.emit(hits)
 

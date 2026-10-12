@@ -156,6 +156,10 @@ msgstr "Lift\nFrachtraum · Rampe"
 msgid "Cabins · Lift · Bridge"
 msgstr "Kabinen · Lift · Brücke"
 
+#: scenes/ui/armor_upgrades_menu.tscn
+msgid "Armor upgrades"
+msgstr "Panzerungs-Upgrades"
+
 #: scenes/ui/armory_menu.tscn
 msgid "Loadout"
 msgstr "Ausrüstung"
@@ -167,8 +171,13 @@ msgstr "Platz"
 #: scenes/ui/armory_menu.tscn
 #: scenes/ui/mission_menu.tscn
 #: scenes/ui/settings_menu.tscn
+#: scenes/ui/upgrade_menu.tscn
 msgid "Close"
 msgstr "Schließen"
+
+#: scenes/ui/miner_upgrades_menu.tscn
+msgid "Miner upgrades"
+msgstr "Miner-Upgrades"
 
 #: scenes/ui/mission_menu.tscn
 msgid "Missions"
@@ -186,25 +195,80 @@ msgstr "Einstellungen"
 msgid "Language"
 msgstr "Sprache"
 
+#: scenes/ui/upgrade_menu.tscn
+msgid "Upgrades"
+msgstr "Upgrades"
+
+#: scenes/ui/weapon_upgrades_menu.tscn
+msgid "Weapon upgrades"
+msgstr "Waffen-Upgrades"
+
+#: scenes/upgrades/armor.tres
+msgid "Suit armor"
+msgstr "Anzugpanzerung"
+
+#: scenes/upgrades/armor.tres
+msgid "More health"
+msgstr "Mehr Gesundheit"
+
+#: scenes/upgrades/blaster.tres
 #: scenes/weapons/types/blaster.tres
 msgid "Blaster"
 msgstr "Blaster"
+
+#: scenes/upgrades/blaster.tres
+msgid "More damage per shot"
+msgstr "Mehr Schaden pro Schuss"
+
+#: scenes/upgrades/hammer.tres
+#: scenes/weapons/types/hammer.tres
+msgid "Hammer"
+msgstr "Hammer"
+
+#: scenes/upgrades/hammer.tres
+msgid "More damage per swing"
+msgstr "Mehr Schaden pro Schlag"
+
+#: scenes/upgrades/miner_drill.tres
+msgid "Drill"
+msgstr "Bohrer"
+
+#: scenes/upgrades/miner_drill.tres
+msgid "Miners mine faster"
+msgstr "Miner bauen schneller ab"
+
+#: scenes/upgrades/miner_hose.tres
+msgid "Hose"
+msgstr "Schlauch"
+
+#: scenes/upgrades/miner_hose.tres
+msgid "Longer hose reach, faster transfer"
+msgstr "Längerer Schlauch, schnellere Übertragung"
+
+#: scenes/upgrades/miner_tank.tres
+msgid "Ore tank"
+msgstr "Erztank"
+
+#: scenes/upgrades/miner_tank.tres
+msgid "Miners hold more ore"
+msgstr "Miner fassen mehr Erz"
+
+#: scenes/upgrades/shotgun.tres
+#: scenes/weapons/types/shotgun.tres
+msgid "Shotgun"
+msgstr "Schrotflinte"
+
+#: scenes/upgrades/shotgun.tres
+msgid "More damage per pellet"
+msgstr "Mehr Schaden pro Schrotkugel"
 
 #: scenes/weapons/types/blaster.tres
 msgid "Rapid shots that reach far."
 msgstr "Schnelle Schüsse mit großer Reichweite."
 
 #: scenes/weapons/types/hammer.tres
-msgid "Hammer"
-msgstr "Hammer"
-
-#: scenes/weapons/types/hammer.tres
 msgid "Heavy swings that hit everything in front."
 msgstr "Wuchtige Schläge, die alles davor treffen."
-
-#: scenes/weapons/types/shotgun.tres
-msgid "Shotgun"
-msgstr "Schrotflinte"
 
 #: scenes/weapons/types/shotgun.tres
 msgid "A fan of pellets, strong up close."
@@ -243,6 +307,7 @@ msgid "No mission"
 msgstr "Keine Mission"
 
 #: scripts/ui/armory_menu.gd
+#: scripts/ui/upgrade_menu.gd
 msgid "Locked"
 msgstr "Gesperrt"
 
@@ -256,6 +321,7 @@ msgstr "Fernkampf"
 
 #: scripts/ui/armory_menu.gd
 #: scripts/ui/mission_menu.gd
+#: scripts/ui/upgrade_menu.gd
 msgid "Locked until everyone is back aboard."
 msgstr "Gesperrt, bis alle wieder an Bord sind."
 
@@ -286,3 +352,23 @@ msgstr "Gelandet: Rampe im Frachtraum senken."
 #: scripts/ui/mission_menu.gd
 msgid "Pick a mission to see it on the hologram."
 msgstr "Mission wählen, um sie im Hologramm zu sehen."
+
+#: scripts/ui/upgrade_menu.gd
+msgid "Upgrade"
+msgstr "Aufrüsten"
+
+#: scripts/ui/upgrade_menu.gd
+msgid "Max"
+msgstr "Max"
+
+#: scripts/ui/upgrade_menu.gd
+msgid "next: +%d %%"
+msgstr "nächste: +%d %%"
+
+#: scripts/ui/upgrade_menu.gd
+msgid "Hold"
+msgstr "Lager"
+
+#: scripts/ui/upgrade_menu.gd
+msgid "Upgrades are paid with ore from the hold."
+msgstr "Upgrades werden mit Erz aus dem Lager bezahlt."

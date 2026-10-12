@@ -14,6 +14,9 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/armory_menu.tscn" id="12_armory_menu"]
 [ext_resource type="Script" path="res://scripts/ship/ship_flight.gd" id="13_flight"]
 [ext_resource type="Resource" path="res://scenes/ship/flight_settings.tres" id="14_flight_settings"]
+[ext_resource type="PackedScene" path="res://scenes/ui/weapon_upgrades_menu.tscn" id="15_weapon_upgrades"]
+[ext_resource type="PackedScene" path="res://scenes/ui/armor_upgrades_menu.tscn" id="16_armor_upgrades"]
+[ext_resource type="PackedScene" path="res://scenes/ui/miner_upgrades_menu.tscn" id="17_miner_upgrades"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]
 albedo_color = Color(0.3, 0.31, 0.33, 1)
@@ -4542,6 +4545,18 @@ view_focus = NodePath("../MissionView")
 [node name="ArmoryTerminal" parent="Rooms/Lower/Armory" instance=ExtResource("9_terminal")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -4.8)
 menu = ExtResource("12_armory_menu")
+
+[node name="UpgradeTerminal" parent="Rooms/Lower/Weapons" instance=ExtResource("9_terminal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -4.8)
+menu = ExtResource("15_weapon_upgrades")
+
+[node name="UpgradeTerminal" parent="Rooms/Lower/Armor" instance=ExtResource("9_terminal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -4.8)
+menu = ExtResource("16_armor_upgrades")
+
+[node name="UpgradeTerminal" parent="Rooms/Lower/Miners" instance=ExtResource("9_terminal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -4.8)
+menu = ExtResource("17_miner_upgrades")
 
 [node name="Flight" type="Node3D" parent="."]
 script = ExtResource("13_flight")

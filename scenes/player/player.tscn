@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://yj82i5sgqayt" path="res://assets/player/player.glb" id="10_model"]
 [ext_resource type="Resource" path="res://scenes/player/default_arsenal.tres" id="11_arsenal"]
 [ext_resource type="Script" path="res://scripts/player/player_animator.gd" id="11_animator"]
+[ext_resource type="Resource" path="res://scenes/upgrades/armor.tres" id="12_armor"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -42,6 +43,7 @@ script = ExtResource("1_script")
 settings = ExtResource("2_settings")
 arsenal = ExtResource("11_arsenal")
 loadout = ExtResource("3_loadout")
+armor_upgrade = ExtResource("12_armor")
 miner_scene = ExtResource("4_miner")
 body_overlay = SubResource("ShaderMaterial_silhouette")
 

@@ -34,7 +34,7 @@ func _fire(direction: Vector3) -> void:
 	var projectile := projectile_scene.instantiate() as Projectile
 	projectile.velocity = direction * settings.projectile_speed
 	projectile.max_distance = settings.projectile_range
-	projectile.damage = settings.damage
+	projectile.damage = settings.damage * damage_multiplier
 	projectile.exclude = [holder.get_rid()]
 	holder.get_parent().add_child(projectile)
 	projectile.global_position = Vector3(

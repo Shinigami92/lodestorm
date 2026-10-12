@@ -70,7 +70,8 @@ var beacon_brightness: float = 1.0
 var countdown_text: String = ""
 ## Whether the ramp is going down (or is down); it moves there over `ramp_duration`.
 var ramp_open: bool = false
-## Ore brought back over all runs, in units per ore type.
+## Ore brought back over all runs and not spent yet, in units per ore type. Upgrades are paid from
+## it (`pay`).
 var hold: Dictionary[OreType, float] = {}
 
 var _aboard: Array[Player] = []
@@ -163,14 +164,36 @@ func get_respawn_position() -> Vector3:
 	return _respawn.global_position
 
 
+## Whether the hold has at least `cost` (units per ore type).
+func can_pay(cost: Dictionary[OreType, int]) -> bool:
+	for ore_type: OreType in cost:
+		var stored: float = hold.get(ore_type, 0.0)
+		if stored < cost[ore_type]:
+			return false
+	return true
+
+
+## Takes `cost` (units per ore type) out of the hold if it's there. Returns whether it paid.
+func pay(cost: Dictionary[OreType, int]) -> bool:
+	if not can_pay(cost):
+		return false
+	for ore_type: OreType in cost:
+		var stored: float = hold[ore_type]
+		_set_hold(ore_type, stored - cost[ore_type])
+	return true
+
+
+## Adds `amount` units of `ore_type` to the hold.
+func add_to_hold(ore_type: OreType, amount: float) -> void:
+	var stored: float = hold.get(ore_type, 0.0)
+	_set_hold(ore_type, stored + amount)
+
+
 ## Moves everything `player` carries into the hold.
 func store_cargo(player: Player) -> void:
 	var cargo: Dictionary[OreType, float] = player.take_cargo()
 	for ore_type: OreType in cargo:
-		var stored: float = hold.get(ore_type, 0.0)
-		stored += cargo[ore_type]
-		hold[ore_type] = stored
-		_hold_rack.show_cargo(ore_type, stored)
+		add_to_hold(ore_type, cargo[ore_type])
 
 
 ## Shows `location` and where the ship stands in it (its floor) on the holo table; null clears it.
@@ -190,6 +213,11 @@ static func nearest(tree: SceneTree, from: Vector3) -> Ship:
 			nearest_ship = ship
 			nearest_distance = distance
 	return nearest_ship
+
+
+func _set_hold(ore_type: OreType, amount: float) -> void:
+	hold[ore_type] = amount
+	_hold_rack.show_cargo(ore_type, amount)
 
 
 func _update_display() -> void:

@@ -57,11 +57,13 @@ func is_free() -> bool:
 
 
 ## Places a new miner from `miner_scene` on this node and returns it, or null if occupied.
-func place_miner(miner_scene: PackedScene) -> Miner:
+## `upgrades` are those of the player placing it (null: MK1).
+func place_miner(miner_scene: PackedScene, upgrades: Upgrades = null) -> Miner:
 	if not is_free():
 		return null
 	miner = miner_scene.instantiate() as Miner
 	miner.ore_type = ore_type
+	miner.upgrades = upgrades
 	_mount.add_child(miner)
 	return miner
 

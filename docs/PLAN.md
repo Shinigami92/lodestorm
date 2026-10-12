@@ -44,7 +44,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Ship states (space / landed + weather): start in space, land at the location when a mission is picked (loading it during the flight), take off into space once everyone is back aboard after the mission; the mission is confirmed at the holo table after previewing it
 - Medical bay respawn
 - Localization setup: English and German, all player-facing text through translations from the start (also the 3D menus and the text in the world)
-- Upgrade station(s) spending resources (a few weapon/armor/miner upgrades)
+- Upgrade station(s) spending resources (a few weapon/armor/miner upgrades): a console per upgrade room, MK1–MK3 paid from the hold, MK pips on the weapons and the helmet
 - Save/load of persistent progress (host: ship, story, crew, quests; per player: weapons, skills, loadout, see [Co-op progression](GAME_DESIGN.md#co-op-progression))
 
 ## M4 — Progression & quests

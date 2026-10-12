@@ -38,8 +38,9 @@ import bpy  # noqa: E402
 from mathutils import Matrix, Vector  # noqa: E402
 
 import common as C  # noqa: E402
+from common import T, rx, ry, rz  # noqa: E402
 
-ARGV = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
+ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
 TAG = ARGV[1] if len(ARGV) > 1 else "r0"
 VIEWS = ARGV[2].split(",") if len(ARGV) > 2 else ["kit_iso", "kit_hero"]
@@ -62,26 +63,7 @@ VARIANTS = [
     "Cliff_b",
 ]
 
-# --- math helpers -----------------------------------------------------------------------------------
-
-
-def T(loc=(0, 0, 0), rot: Matrix | None = None, scale=(1, 1, 1)) -> Matrix:
-    m = Matrix.Translation(Vector(loc))
-    if rot is not None:
-        m = m @ rot.to_4x4()
-    return m @ Matrix.Diagonal((*scale, 1.0))
-
-
-def rz(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "Z")
-
-
-def rx(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "X")
-
-
-def ry(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "Y")
+# --- math helpers (T, rx/ry/rz: common) ---------------------------------------------------------------
 
 
 def rand_rot(rnd: random.Random, tilt: float, spin: float = 180.0) -> Matrix:
@@ -503,17 +485,7 @@ def mat_rock() -> bpy.types.Material:
     N, link = nt.nodes, nt.links.new
 
     def math_node(op, a, b=None, c=None, clamp=False):
-        n = N.new("ShaderNodeMath")
-        n.operation = op
-        n.use_clamp = clamp
-        for sock, val in ((n.inputs[0], a), (n.inputs[1], b), (n.inputs[2], c)):
-            if val is None:
-                continue
-            if isinstance(val, bpy.types.NodeSocket):
-                link(val, sock)
-            else:
-                sock.default_value = val
-        return n.outputs[0]
+        return C._math(nt, op, a, b, c, clamp)
 
     def scale_color(col, fac):
         n = N.new("ShaderNodeVectorMath")
@@ -530,10 +502,7 @@ def mat_rock() -> bpy.types.Material:
     obj_co = coord.outputs["Object"]
 
     # Noise-warped coordinates for the cracks (no straight Voronoi lines).
-    warp = N.new("ShaderNodeTexNoise")
-    warp.inputs["Scale"].default_value = 1.4
-    warp.inputs["Detail"].default_value = 3.0
-    link(obj_co, warp.inputs["Vector"])
+    warp = C._noise(nt, 1.4, 3.0, 0.5, vector=obj_co)
     warp_c = N.new("ShaderNodeVectorMath")
     warp_c.operation = "MULTIPLY_ADD"
     link(warp.outputs["Color"], warp_c.inputs[0])
@@ -541,22 +510,9 @@ def mat_rock() -> bpy.types.Material:
     link(obj_co, warp_c.inputs[2])
     warped = warp_c.outputs[0]
 
-    def cracks(scale, width):
-        v = N.new("ShaderNodeTexVoronoi")
-        v.feature = "DISTANCE_TO_EDGE"
-        v.inputs["Scale"].default_value = scale
-        link(warped, v.inputs["Vector"])
-        r = N.new("ShaderNodeValToRGB")
-        r.color_ramp.elements[0].position = 0.0
-        r.color_ramp.elements[0].color = (1, 1, 1, 1)
-        r.color_ramp.elements[1].position = width
-        r.color_ramp.elements[1].color = (0, 0, 0, 1)
-        link(v.outputs["Distance"], r.inputs["Fac"])
-        return r.outputs["Color"]
-
     breakup = C._noise(nt, 2.2, 4.0, 0.55)
-    crack_big = math_node("MULTIPLY", cracks(0.9, 0.028), C._ramp(nt, 0.45, 0.6, breakup.outputs["Fac"]))
-    crack_fine = math_node("MULTIPLY", cracks(3.0, 0.022), math_node("MULTIPLY", C._ramp(nt, 0.55, 0.7, breakup.outputs["Fac"]), 0.6))
+    crack_big = math_node("MULTIPLY", C._voronoi_lines(nt, warped, 0.9, 0.028), C._ramp(nt, 0.45, 0.6, breakup.outputs["Fac"]))
+    crack_fine = math_node("MULTIPLY", C._voronoi_lines(nt, warped, 3.0, 0.022), math_node("MULTIPLY", C._ramp(nt, 0.55, 0.7, breakup.outputs["Fac"]), 0.6))
     crack = math_node("MAXIMUM", crack_big, crack_fine)
 
     # Base tone: large noise between dark and lighter grey-brown, per-facet variation, strata bands along Z.
@@ -578,14 +534,7 @@ def mat_rock() -> bpy.types.Material:
     base = scale_color(base, math_node("MULTIPLY_ADD", grain.outputs["Fac"], 0.35, 0.83))
 
     # Ridges: convex edges found with the Bevel node, chipped lighter (fresh fracture).
-    bev = N.new("ShaderNodeBevel")
-    bev.samples = 8
-    bev.inputs["Radius"].default_value = 0.035
-    dot = N.new("ShaderNodeVectorMath")
-    dot.operation = "DOT_PRODUCT"
-    link(bev.outputs["Normal"], dot.inputs[0])
-    link(geo.outputs["Normal"], dot.inputs[1])
-    edge = C._ramp(nt, 0.015, 0.09, math_node("SUBTRACT", 1.0, dot.outputs["Value"]))
+    edge = C._ramp(nt, 0.015, 0.09, C._bevel_edge(nt, 0.035, geo))
     edge = math_node("MULTIPLY", edge, C._ramp(nt, 0.3, 0.6, C._noise(nt, 9.0, 3.0, 0.6).outputs["Fac"]))
     col = C._mix_color(nt, edge, base, scale_color(base, 1.75))
 
@@ -623,11 +572,7 @@ def mat_rock() -> bpy.types.Material:
     height = math_node("MULTIPLY", lumps.outputs["Distance"], 0.5)
     height = math_node("ADD", height, math_node("MULTIPLY", grain.outputs["Fac"], 0.25))
     height = math_node("SUBTRACT", height, math_node("MULTIPLY", crack, 0.9))
-    bump = N.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.55
-    bump.inputs["Distance"].default_value = 0.03
-    link(height, bump.inputs["Height"])
-    link(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    C._bump(nt, bsdf, height, 0.55, 0.03)
     return mat
 
 
@@ -765,30 +710,6 @@ def render_scatter(path: pathlib.Path, samples: int, size: int) -> pathlib.Path:
     return path
 
 
-def contact_sheet(paths: list, path: pathlib.Path, cols: int = 4, tile: int = 384) -> None:
-    """Grid of the given renders (row-major, top-left first), composed with numpy inside Blender."""
-    import numpy as np
-
-    rows = math.ceil(len(paths) / cols)
-    sheet = np.full((rows * tile, cols * tile, 4), 0.02, dtype=np.float32)
-    sheet[..., 3] = 1.0
-    for i, p in enumerate(paths):
-        img = bpy.data.images.load(str(p))
-        img.scale(tile, tile)
-        px = np.empty(tile * tile * 4, dtype=np.float32)
-        img.pixels.foreach_get(px)
-        r, c = divmod(i, cols)
-        y0 = (rows - 1 - r) * tile  # Blender images are stored bottom-up
-        sheet[y0 : y0 + tile, c * tile : (c + 1) * tile] = px.reshape(tile, tile, 4)
-        bpy.data.images.remove(img)
-    out = bpy.data.images.new("sheet", cols * tile, rows * tile, alpha=False)
-    out.pixels.foreach_set(sheet.ravel())
-    out.filepath_raw = str(path)
-    out.file_format = "PNG"
-    out.save()
-    print("SHEET", path)
-
-
 # --- main -------------------------------------------------------------------------------------------
 
 
@@ -848,7 +769,7 @@ def main() -> None:
             sheet += render_variant(name, "final_", ("iso", "hero"), 32, 640)
         for name in ("Cliff_a", "Cliff_b"):
             sheet += render_variant(name, "final_", ("back",), 32, 640)
-        contact_sheet(sheet, OUT / "sheet.png")
+        C.contact_sheet(sheet, OUT / "sheet.png", tile=384, background=0.02)
         apply_bake_layout()
         C.save_blend(OUT / "rocks_procedural.blend")
     else:
@@ -868,7 +789,7 @@ def main() -> None:
                 render_variant(view, f"wip/{TAG}_", ("iso", "hero"), 24, 640)
             elif view == "sheet":
                 names = sorted(wip.glob(f"{TAG}_*.png"))
-                contact_sheet(names, wip / f"{TAG}_sheet.png")
+                C.contact_sheet(names, wip / f"{TAG}_sheet.png", tile=384, background=0.02)
             elif view == "save":
                 apply_bake_layout()
                 C.save_blend(OUT / "rocks_procedural.blend")

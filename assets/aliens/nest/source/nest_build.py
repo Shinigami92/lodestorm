@@ -32,8 +32,9 @@ import bpy  # noqa: E402
 from mathutils import Matrix, Vector, noise  # noqa: E402
 
 import common as C  # noqa: E402
+from common import T, basis  # noqa: E402
 
-ARGV = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
+ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
 TAG = ARGV[1] if len(ARGV) > 1 else "r0"
 VIEWS = ARGV[2].split(",") if len(ARGV) > 2 else ["iso", "hero"]
@@ -163,21 +164,6 @@ def radial(th: float) -> Vector:
 
 
 # --- mesh builder -----------------------------------------------------------------------------------
-
-
-def T(loc=(0, 0, 0), rot: Matrix | None = None, scale=(1, 1, 1)) -> Matrix:
-    m = Matrix.Translation(Vector(loc))
-    if rot is not None:
-        m = m @ rot.to_4x4()
-    return m @ Matrix.Diagonal((*scale, 1.0))
-
-
-def basis(z_dir: Vector, x_hint: Vector) -> Matrix:
-    z = Vector(z_dir).normalized()
-    x = Vector(x_hint)
-    x = (x - z * x.dot(z)).normalized()
-    y = z.cross(x)
-    return Matrix((x, y, z)).transposed()
 
 
 class Part:
@@ -313,27 +299,7 @@ def _coord(nt, out: str = "Object") -> bpy.types.NodeSocket:
 
 
 def _noise(nt, vec, scale: float, detail: float = 4.0, rough: float = 0.55, dist: float = 0.0) -> bpy.types.Node:
-    tex = nt.nodes.new("ShaderNodeTexNoise")
-    tex.inputs["Scale"].default_value = scale
-    tex.inputs["Detail"].default_value = detail
-    tex.inputs["Roughness"].default_value = rough
-    tex.inputs["Distortion"].default_value = dist
-    nt.links.new(vec, tex.inputs["Vector"])
-    return tex
-
-
-def _math(nt, op: str, a, b=None, c=None, clamp: bool = False) -> bpy.types.NodeSocket:
-    m = nt.nodes.new("ShaderNodeMath")
-    m.operation = op
-    m.use_clamp = clamp
-    for sock, val in ((m.inputs[0], a), (m.inputs[1], b), (m.inputs[2], c)):
-        if val is None:
-            continue
-        if isinstance(val, bpy.types.NodeSocket):
-            nt.links.new(val, sock)
-        else:
-            sock.default_value = val
-    return m.outputs[0]
+    return C._noise(nt, scale, detail, rough, vector=vec, distortion=dist)
 
 
 def _veins(nt, vec, scale: float, width: float) -> bpy.types.NodeSocket:
@@ -344,17 +310,7 @@ def _veins(nt, vec, scale: float, width: float) -> bpy.types.NodeSocket:
     nt.links.new(warp.outputs["Color"], add.inputs[0])
     add.inputs[1].default_value = (0.35, 0.35, 0.35)
     nt.links.new(vec, add.inputs[2])
-    vor = nt.nodes.new("ShaderNodeTexVoronoi")
-    vor.feature = "DISTANCE_TO_EDGE"
-    vor.inputs["Scale"].default_value = scale
-    nt.links.new(add.outputs[0], vor.inputs["Vector"])
-    ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.0
-    ramp.color_ramp.elements[0].color = (1, 1, 1, 1)
-    ramp.color_ramp.elements[1].position = width
-    ramp.color_ramp.elements[1].color = (0, 0, 0, 1)
-    nt.links.new(vor.outputs["Distance"], ramp.inputs["Fac"])
-    return ramp.outputs["Color"]
+    return C._voronoi_lines(nt, add.outputs[0], scale, width)
 
 
 def _cavity(nt, distance: float = 0.25, lo: float = 0.35, hi: float = 0.95) -> bpy.types.NodeSocket:
@@ -362,26 +318,12 @@ def _cavity(nt, distance: float = 0.25, lo: float = 0.35, hi: float = 0.95) -> b
     ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
     ao.inputs["Distance"].default_value = distance
     ao.samples = 16
-    return _math(nt, "SUBTRACT", 1.0, _bw(nt, C._ramp(nt, lo, hi, ao.outputs["AO"])))
-
-
-def _bw(nt, color: bpy.types.NodeSocket) -> bpy.types.NodeSocket:
-    rgb = nt.nodes.new("ShaderNodeRGBToBW")
-    nt.links.new(color, rgb.inputs["Color"])
-    return rgb.outputs["Val"]
+    return C._math(nt, "SUBTRACT", 1.0, C._bw(nt, C._ramp(nt, lo, hi, ao.outputs["AO"])))
 
 
 def _edges(nt, radius: float = 0.02, lo: float = 0.02, hi: float = 0.12) -> bpy.types.NodeSocket:
     """1 on convex edges (Bevel node normal vs the true normal; independent of the mesh density)."""
-    geo = nt.nodes.new("ShaderNodeNewGeometry")
-    bev = nt.nodes.new("ShaderNodeBevel")
-    bev.samples = 8
-    bev.inputs["Radius"].default_value = radius
-    dot = nt.nodes.new("ShaderNodeVectorMath")
-    dot.operation = "DOT_PRODUCT"
-    nt.links.new(bev.outputs["Normal"], dot.inputs[0])
-    nt.links.new(geo.outputs["Normal"], dot.inputs[1])
-    return _bw(nt, C._ramp(nt, lo, hi, _math(nt, "SUBTRACT", 1.0, dot.outputs["Value"])))
+    return C._bw(nt, C._ramp(nt, lo, hi, C._bevel_edge(nt, radius)))
 
 
 def _flow(nt) -> tuple[bpy.types.NodeSocket, bpy.types.NodeSocket, bpy.types.NodeSocket]:
@@ -392,14 +334,6 @@ def _flow(nt) -> tuple[bpy.types.NodeSocket, bpy.types.NodeSocket, bpy.types.Nod
     return sep.outputs[0], sep.outputs[1], sep.outputs[2]
 
 
-def _bump(nt, bsdf, height: bpy.types.NodeSocket, strength: float, distance: float) -> None:
-    bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = strength
-    bump.inputs["Distance"].default_value = distance
-    nt.links.new(height, bump.inputs["Height"])
-    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
-
-
 def mat_flesh() -> bpy.types.Material:
     """Sinew: dark red to purple flesh with raised veins, ribbed along tubes, black glossy resin pooling in
     the cavities (wet: low roughness there)."""
@@ -407,20 +341,20 @@ def mat_flesh() -> bpy.types.Material:
     co = _coord(nt)
     big = _noise(nt, co, 1.3, 4.0, 0.5)
     col = C._mix_color(nt, big.outputs["Fac"], (0.095, 0.02, 0.013), (0.05, 0.013, 0.014))
-    veins = _bw(nt, _veins(nt, co, 2.6, 0.045))
+    veins = C._bw(nt, _veins(nt, co, 2.6, 0.045))
     col = C._mix_color(nt, veins, col, (0.03, 0.007, 0.018))
     s, u, kind = _flow(nt)
     jitter = _noise(nt, co, 3.0, 2.0, 0.5)
-    phase = _math(nt, "MULTIPLY_ADD", jitter.outputs["Fac"], 3.0, _math(nt, "MULTIPLY", s, math.tau / 0.15))
-    ribs = _math(nt, "SINE", phase)  # -1..1 along tubes, irregular spacing
-    ribs01 = _math(nt, "MULTIPLY", _math(nt, "ADD", ribs, 1.0), 0.5)
-    groove = _math(nt, "MULTIPLY", _bw(nt, C._ramp(nt, 0.6, 1.0, ribs01)), kind)  # 1 in the grooves between rings
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", groove, 0.35), col, (0.02, 0.005, 0.008))
+    phase = C._math(nt, "MULTIPLY_ADD", jitter.outputs["Fac"], 3.0, C._math(nt, "MULTIPLY", s, math.tau / 0.15))
+    ribs = C._math(nt, "SINE", phase)  # -1..1 along tubes, irregular spacing
+    ribs01 = C._math(nt, "MULTIPLY", C._math(nt, "ADD", ribs, 1.0), 0.5)
+    groove = C._math(nt, "MULTIPLY", C._bw(nt, C._ramp(nt, 0.6, 1.0, ribs01)), kind)  # 1 in the grooves between rings
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", groove, 0.35), col, (0.02, 0.005, 0.008))
     # Lighter, drier tone on the crowns of bulges: subtle so the flesh doesn't go flat.
     edge = _edges(nt, 0.015, 0.03, 0.2)
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", edge, 0.3), col, (0.2, 0.075, 0.06))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", edge, 0.3), col, (0.2, 0.075, 0.06))
     cav = _cavity(nt, 0.3)
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", cav, 0.9), col, (0.012, 0.004, 0.006))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", cav, 0.9), col, (0.012, 0.004, 0.006))
     nt.links.new(col, bsdf.inputs["Base Color"])
     wet = _noise(nt, co, 3.0, 3.0, 0.5)
     rough = C._mix_float(nt, wet.outputs["Fac"], 0.22, 0.5)
@@ -428,9 +362,9 @@ def mat_flesh() -> bpy.types.Material:
     rough = C._mix_float(nt, veins, rough, 0.18)
     nt.links.new(rough, bsdf.inputs["Roughness"])
     fine = _noise(nt, co, 28.0, 4.0, 0.6)
-    h = _math(nt, "ADD", _math(nt, "MULTIPLY", veins, 0.6), _math(nt, "MULTIPLY", groove, -0.4))
-    h = _math(nt, "ADD", h, _math(nt, "MULTIPLY", fine.outputs["Fac"], 0.15))
-    _bump(nt, bsdf, h, 0.45, 0.012)
+    h = C._math(nt, "ADD", C._math(nt, "MULTIPLY", veins, 0.6), C._math(nt, "MULTIPLY", groove, -0.4))
+    h = C._math(nt, "ADD", h, C._math(nt, "MULTIPLY", fine.outputs["Fac"], 0.15))
+    C._bump(nt, bsdf, h, 0.45, 0.012)
     return mat
 
 
@@ -449,24 +383,24 @@ def mat_chitin() -> bpy.types.Material:
     bands = C._ramp(nt, 0.25, 0.8, wave.outputs["Fac"])
     big = _noise(nt, co, 2.2, 4.0, 0.5)
     shell = C._mix_color(nt, big.outputs["Fac"], (0.025, 0.012, 0.012), (0.055, 0.024, 0.02))
-    shell = C._mix_color(nt, _math(nt, "MULTIPLY", _bw(nt, bands), 0.35), shell, (0.085, 0.045, 0.035))
+    shell = C._mix_color(nt, C._math(nt, "MULTIPLY", C._bw(nt, bands), 0.35), shell, (0.085, 0.045, 0.035))
     s, u, kind = _flow(nt)
-    tip = _math(nt, "MULTIPLY", C._ramp(nt, 0.7, 1.0, u), kind)
+    tip = C._math(nt, "MULTIPLY", C._ramp(nt, 0.7, 1.0, u), kind)
     edge = _edges(nt, 0.012, 0.03, 0.16)
     breakup = _noise(nt, co, 9.0, 6.0, 0.6)
-    bone_mask = _math(nt, "ADD", _bw(nt, tip), edge, clamp=True)
-    bone_mask = _math(nt, "MULTIPLY", bone_mask, _bw(nt, C._ramp(nt, 0.3, 0.55, breakup.outputs["Fac"])))
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", bone_mask, 0.8), shell, (0.3, 0.24, 0.17))
+    bone_mask = C._math(nt, "ADD", C._bw(nt, tip), edge, clamp=True)
+    bone_mask = C._math(nt, "MULTIPLY", bone_mask, C._bw(nt, C._ramp(nt, 0.3, 0.55, breakup.outputs["Fac"])))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", bone_mask, 0.8), shell, (0.3, 0.24, 0.17))
     cav = _cavity(nt, 0.2)
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", cav, 0.85), col, (0.01, 0.004, 0.004))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", cav, 0.85), col, (0.01, 0.004, 0.004))
     nt.links.new(col, bsdf.inputs["Base Color"])
     rough = C._mix_float(nt, big.outputs["Fac"], 0.22, 0.36)
     rough = C._mix_float(nt, bone_mask, rough, 0.55)
     rough = C._mix_float(nt, cav, rough, 0.08)
     nt.links.new(rough, bsdf.inputs["Roughness"])
     fine = _noise(nt, co, 40.0, 3.0, 0.6)
-    h = _math(nt, "ADD", _math(nt, "MULTIPLY", _bw(nt, bands), 0.5), _math(nt, "MULTIPLY", fine.outputs["Fac"], 0.2))
-    _bump(nt, bsdf, h, 0.3, 0.008)
+    h = C._math(nt, "ADD", C._math(nt, "MULTIPLY", C._bw(nt, bands), 0.5), C._math(nt, "MULTIPLY", fine.outputs["Fac"], 0.2))
+    C._bump(nt, bsdf, h, 0.3, 0.008)
     return mat
 
 
@@ -475,10 +409,10 @@ def mat_resin() -> bpy.types.Material:
     mat, nt, bsdf = C._new_material("Resin")
     co = _coord(nt)
     streak = _noise(nt, co, 4.0, 6.0, 0.6, dist=2.0)
-    col = C._mix_color(nt, _bw(nt, C._ramp(nt, 0.45, 0.75, streak.outputs["Fac"])), (0.016, 0.006, 0.005), (0.09, 0.035, 0.012))
+    col = C._mix_color(nt, C._bw(nt, C._ramp(nt, 0.45, 0.75, streak.outputs["Fac"])), (0.016, 0.006, 0.005), (0.09, 0.035, 0.012))
     nt.links.new(col, bsdf.inputs["Base Color"])
     nt.links.new(C._mix_float(nt, streak.outputs["Fac"], 0.06, 0.2), bsdf.inputs["Roughness"])
-    _bump(nt, bsdf, streak.outputs["Fac"], 0.25, 0.01)
+    C._bump(nt, bsdf, streak.outputs["Fac"], 0.25, 0.01)
     return mat
 
 
@@ -488,13 +422,13 @@ def mat_sac() -> bpy.types.Material:
     co = _coord(nt)
     big = _noise(nt, co, 3.0, 3.0, 0.5)
     col = C._mix_color(nt, big.outputs["Fac"], (0.11, 0.09, 0.04), (0.2, 0.16, 0.075))
-    veins = _bw(nt, _veins(nt, co, 5.0, 0.05))
+    veins = C._bw(nt, _veins(nt, co, 5.0, 0.05))
     col = C._mix_color(nt, veins, col, (0.09, 0.012, 0.015))
     cav = _cavity(nt, 0.15)
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", cav, 0.85), col, (0.02, 0.006, 0.004))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", cav, 0.85), col, (0.02, 0.006, 0.004))
     nt.links.new(col, bsdf.inputs["Base Color"])
     nt.links.new(C._mix_float(nt, veins, 0.1, 0.25), bsdf.inputs["Roughness"])
-    _bump(nt, bsdf, veins, 0.35, 0.006)
+    C._bump(nt, bsdf, veins, 0.35, 0.006)
     return mat
 
 
@@ -507,7 +441,7 @@ def mat_slime() -> bpy.types.Material:
     nt.links.new(C._mix_float(nt, big.outputs["Fac"], 0.04, 0.14), bsdf.inputs["Roughness"])
     bsdf.inputs["Specular IOR Level"].default_value = 0.6
     ripple = _noise(nt, co, 2.5, 2.0, 0.4)
-    _bump(nt, bsdf, ripple.outputs["Fac"], 0.12, 0.02)
+    C._bump(nt, bsdf, ripple.outputs["Fac"], 0.12, 0.02)
     return mat
 
 
@@ -524,7 +458,7 @@ def mat_glow() -> bpy.types.Material:
     nt.links.new(col, bsdf.inputs["Emission Color"])
     glow = nt.nodes.new("ShaderNodeAttribute")  # radial falloff in the mouth (1 = full), see build_mouth
     glow.attribute_name = "glow"
-    strength = _math(nt, "MULTIPLY", C._mix_float(nt, churn.outputs["Fac"], 2.5, 9.0), glow.outputs["Fac"])
+    strength = C._math(nt, "MULTIPLY", C._mix_float(nt, churn.outputs["Fac"], 2.5, 9.0), glow.outputs["Fac"])
     nt.links.new(strength, bsdf.inputs["Emission Strength"])
     col = C._mix_color(nt, glow.outputs["Fac"], (0.15, 0.3, 0.004), col)
     nt.links.new(col, bsdf.inputs["Base Color"])
@@ -827,20 +761,11 @@ def build() -> bpy.types.Object:
     return nest
 
 
-def per_object_tris() -> list:
-    dg = bpy.context.evaluated_depsgraph_get()
-    rows = []
-    for obj in C.collection(ASSET).all_objects:
-        if obj.type == "MESH":
-            me = obj.evaluated_get(dg).to_mesh()
-            me.calc_loop_triangles()
-            rows.append((len(me.loop_triangles), obj.name))
-            obj.evaluated_get(dg).to_mesh_clear()
-    print("STATS per object", sorted(rows, reverse=True))
+def per_object_tris() -> None:
+    print("STATS per object", C.tris_per_object())
     mound = bpy.data.objects["Mound"]
     reach = max((v.co.xy.length for v in mound.data.vertices if v.co.z > 0.1), default=0.0)
     print(f"STATS mound radius above 0.1 m: {reach:.2f} (collision 1.6)")
-    return rows
 
 
 def clear_preview_rubble(radius: float = 4.7) -> None:
@@ -859,16 +784,7 @@ CLOSE_VIEWS = {
 
 def render_close(path: pathlib.Path, view: str, samples: int = 32, size: int = 640) -> None:
     loc, target, lens = CLOSE_VIEWS[view]
-    C.render(path, view="hero", samples=1, size=16)  # applies common's render settings and creates "Cam"
-    cam = bpy.context.scene.camera
-    cam.data.lens = lens
-    cam.location = loc
-    cam.rotation_euler = (Vector(target) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
-    scene = bpy.context.scene
-    scene.cycles.samples = samples
-    scene.render.resolution_x = scene.render.resolution_y = size
-    scene.render.filepath = str(path)
-    bpy.ops.render.render(write_still=True)
+    C.render_from(path, loc, target, lens, samples, size)
 
 
 def render_view(path: pathlib.Path, view: str, samples: int, size: int) -> None:
@@ -880,25 +796,6 @@ def render_view(path: pathlib.Path, view: str, samples: int, size: int) -> None:
         C.render(path, view="iso", samples=samples, size=size, target=(0, 0, 0.5), zoom=0.95)
     else:
         C.render(path, view=view, samples=samples, size=size, target=(0, 0, 0.7), zoom=1.05)
-
-
-def contact_sheet(paths: list, out: pathlib.Path, cols: int = 2) -> None:
-    import numpy as np
-
-    imgs = [bpy.data.images.load(str(p)) for p in paths]
-    w, h = imgs[0].size
-    rows = (len(imgs) + cols - 1) // cols
-    sheet = np.zeros((rows * h, cols * w, 4), dtype=np.float32)
-    sheet[..., 3] = 1.0
-    for k, img in enumerate(imgs):
-        px = np.array(img.pixels[:], dtype=np.float32).reshape(h, w, 4)
-        r, c = rows - 1 - k // cols, k % cols  # Blender images start at the bottom row
-        sheet[r * h : (r + 1) * h, c * w : (c + 1) * w] = px
-    res = bpy.data.images.new("sheet", cols * w, rows * h, alpha=False)
-    res.pixels.foreach_set(sheet.ravel())
-    res.filepath_raw = str(out)
-    res.file_format = "PNG"
-    res.save()
 
 
 def main() -> None:
@@ -915,7 +812,7 @@ def main() -> None:
             p = OUT / f"render_{view}.png"
             render_view(p, view, 96, 1024)
             paths.append(p)
-        contact_sheet(paths, OUT / "sheet.png")
+        C.contact_sheet(paths, OUT / "sheet.png", cols=2)
         C.save_blend(OUT / "nest_procedural.blend")
     else:
         for view in VIEWS:

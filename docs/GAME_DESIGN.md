@@ -49,10 +49,11 @@ Found by rating four rounds of concept images (generated locally, not part of th
 - **Per asset** (from the concept rounds):
   - **Miner:** a big machine, about twice the player's height, with the glowing glass column and the lamp on top. First model in the game (`assets/miners/miner_glow.glb`): a column on four mechanical legs with two equipment boxes, 3.6 m tall, legs standing around the ore crystals; its body (collision) has a 1.5 m radius, **TBD (playtest)**. When placed, it turns its front toward the camera's view (25° past straight on), so the fill column is never hidden behind its equipment boxes.
   - **Player:** a bulky, dark armored suit; the collar band and the ore canisters on the back glow.
-  - **Ore nodes:** crystal clusters in many shapes and sizes, also growing sideways out of rock walls; each ore type has its own crystal shape besides its color.
-  - **Rocks:** jagged and cracked, never smooth.
+  - **Ore nodes:** crystal clusters in many shapes and sizes, also growing sideways out of rock walls; each ore type has its own crystal shape besides its color. Modeled in `assets/ores/ores.glb`: per type two ground variants (cyan: long prisms, green: chunky blocks, violet: thin shards, on a cracked rock pad of the deposit's size, crystals at most 1 m tall so they fit between the miner's legs) and one wall cluster for dressing cliffs later.
+  - **Rocks:** jagged and cracked, never smooth. Modeled in `assets/rocks/rocks.glb` (boulders, rubble, outcrops, and cliff chunks for dressing cliffs later), the plants and debris of both biomes in `assets/plants/plants.glb`.
   - **Ship:** stands on landing skids (no wheels); the ramp is at the rear between the thrusters.
-  - **Weapons:** glowing parts show their state (the rifle's ammo counter, the power core in the hammer's head).
+  - **Weapons:** glowing parts show their state (the rifle's ammo counter, the power core in the hammer's head). The blaster is modeled as that rifle (`assets/weapons/blaster.glb`); its ammo counter doesn't show the ammo yet.
+  - **Alien nest:** a mound of chitin plates and sinew with tendrils spreading over a slime layer and a glowing mouth on top (`assets/aliens/nest/nest.glb`); the mouth and the glands pulse with the hive's escalation.
 - **Cost and performance:** realistic PBR is the most expensive look to build and to render. Texture sizes and LODs are planned per asset type in the art pass, with the VR budget (90 FPS, two views) in mind; **TBD (profiling in M4/M5)**.
 - Open: how dark the lighting gets (per biome, as the storm builds up), player colors on the suit, and whether the VR diorama gets a scale-model look (a terrain block with cut edges).
 

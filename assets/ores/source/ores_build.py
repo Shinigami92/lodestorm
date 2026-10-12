@@ -44,8 +44,9 @@ from mathutils import Matrix, Vector  # noqa: E402
 from mathutils.bvhtree import BVHTree  # noqa: E402
 
 import common as C  # noqa: E402
+from common import T, basis, polar  # noqa: E402
 
-ARGV = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
+ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
 TAG = ARGV[1] if len(ARGV) > 1 else "r0"
 ONLY = ARGV[2].split(",") if len(ARGV) > 2 and ARGV[2] != "all" else None
@@ -104,30 +105,7 @@ def variant_names() -> list[str]:
     return [n for n in VARIANTS if ONLY is None or n in ONLY]
 
 
-# --- math helpers -----------------------------------------------------------------------------------
-
-
-def T(loc=(0, 0, 0), rot: Matrix | None = None, scale=(1, 1, 1)) -> Matrix:
-    m = Matrix.Translation(Vector(loc))
-    if rot is not None:
-        m = m @ rot.to_4x4()
-    return m @ Matrix.Diagonal((*scale, 1.0))
-
-
-def basis(z_dir: Vector, x_hint: Vector) -> Matrix:
-    """3x3 rotation whose Z axis points along z_dir and X axis as close as possible to x_hint."""
-    z = Vector(z_dir).normalized()
-    x = Vector(x_hint)
-    if abs(x.normalized().dot(z)) > 0.99:
-        x = Vector((0, 1, 0)) if abs(z.y) < 0.9 else Vector((1, 0, 0))
-    x = (x - z * x.dot(z)).normalized()
-    y = z.cross(x)
-    return Matrix((x, y, z)).transposed()
-
-
-def polar(deg: float, r: float, z: float = 0.0) -> Vector:
-    a = math.radians(deg)
-    return Vector((math.cos(a) * r, math.sin(a) * r, z))
+# --- math helpers (T, basis, polar: common) ---------------------------------------------------------
 
 
 def table(tab: list, r: float) -> float:
@@ -363,18 +341,6 @@ def geode(bm: bmesh.types.BMesh, rnd: random.Random, center: Vector, radius: flo
 # --- materials --------------------------------------------------------------------------------------
 
 
-def _math(nt, op: str, a, b, clamp: bool = False) -> bpy.types.NodeSocket:
-    node = nt.nodes.new("ShaderNodeMath")
-    node.operation = op
-    node.use_clamp = clamp
-    for sock, val in ((node.inputs[0], a), (node.inputs[1], b)):
-        if isinstance(val, bpy.types.NodeSocket):
-            nt.links.new(val, sock)
-        else:
-            sock.default_value = val
-    return node.outputs[0]
-
-
 def mat_rock() -> bpy.types.Material:
     """Dark, cracked rock: grey-brown blotches and grain, mineral crust near the crystals (color attribute
     "Crust": rgb = crust color, alpha = amount), dust on top faces, lighter chipped edges (Bevel node),
@@ -385,33 +351,26 @@ def mat_rock() -> bpy.types.Material:
     big = C._noise(nt, 1.4, 6.0, 0.55)
     grain = C._noise(nt, 16.0, 8.0, 0.7)
     col = C._mix_color(nt, big.outputs["Fac"], (0.017, 0.016, 0.015), (0.048, 0.043, 0.038))
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", C._ramp(nt, 0.35, 0.7, grain.outputs["Fac"]), 0.35), col, (0.068, 0.062, 0.055))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", C._ramp(nt, 0.35, 0.7, grain.outputs["Fac"]), 0.35), col, (0.068, 0.062, 0.055))
     # Mineral crust around the crystal roots.
     attr = nt.nodes.new("ShaderNodeAttribute")
     attr.attribute_type = "GEOMETRY"
     attr.attribute_name = "Crust"
     crust_noise = C._noise(nt, 7.0, 5.0, 0.6)
-    crust = _math(nt, "MULTIPLY", attr.outputs["Alpha"], C._ramp(nt, 0.3, 0.6, crust_noise.outputs["Fac"]))
+    crust = C._math(nt, "MULTIPLY", attr.outputs["Alpha"], C._ramp(nt, 0.3, 0.6, crust_noise.outputs["Fac"]))
     col = C._mix_color(nt, crust, col, attr.outputs["Color"])
     # Dust on up-facing surfaces, broken up.
     sep = nt.nodes.new("ShaderNodeSeparateXYZ")
     nt.links.new(geo.outputs["Normal"], sep.inputs["Vector"])
     dust_noise = C._noise(nt, 3.5, 6.0, 0.6)
-    dust = _math(nt, "MULTIPLY", C._ramp(nt, 0.55, 0.95, sep.outputs["Z"]), C._ramp(nt, 0.4, 0.7, dust_noise.outputs["Fac"]))
-    dust = _math(nt, "MULTIPLY", dust, _math(nt, "SUBTRACT", 1.0, crust, clamp=True))
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", dust, 0.75), col, (0.078, 0.07, 0.06))
+    dust = C._math(nt, "MULTIPLY", C._ramp(nt, 0.55, 0.95, sep.outputs["Z"]), C._ramp(nt, 0.4, 0.7, dust_noise.outputs["Fac"]))
+    dust = C._math(nt, "MULTIPLY", dust, C._math(nt, "SUBTRACT", 1.0, crust, clamp=True))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", dust, 0.75), col, (0.078, 0.07, 0.06))
     # Chipped edges: convex edges found with the Bevel node (works on low-poly facets, unlike Pointiness).
-    bev = nt.nodes.new("ShaderNodeBevel")
-    bev.samples = 8
-    bev.inputs["Radius"].default_value = 0.02
-    dot = nt.nodes.new("ShaderNodeVectorMath")
-    dot.operation = "DOT_PRODUCT"
-    nt.links.new(bev.outputs["Normal"], dot.inputs[0])
-    nt.links.new(geo.outputs["Normal"], dot.inputs[1])
-    edge = C._ramp(nt, 0.015, 0.1, _math(nt, "SUBTRACT", 1.0, dot.outputs["Value"]))
+    edge = C._ramp(nt, 0.015, 0.1, C._bevel_edge(nt, 0.02, geo))
     edge_noise = C._noise(nt, 12.0, 6.0, 0.6)
-    edge = _math(nt, "MULTIPLY", edge, C._ramp(nt, 0.4, 0.6, edge_noise.outputs["Fac"]))
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", edge, 0.7), col, (0.105, 0.1, 0.094))
+    edge = C._math(nt, "MULTIPLY", edge, C._ramp(nt, 0.4, 0.6, edge_noise.outputs["Fac"]))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", edge, 0.7), col, (0.105, 0.1, 0.094))
     # Cracks: two layers of Voronoi cell edges, slightly warped.
     warp = nt.nodes.new("ShaderNodeVectorMath")
     warp.operation = "MULTIPLY_ADD"
@@ -425,14 +384,14 @@ def mat_rock() -> bpy.types.Material:
         vor.feature = "DISTANCE_TO_EDGE"
         vor.inputs["Scale"].default_value = scale
         nt.links.new(warp.outputs["Vector"], vor.inputs["Vector"])
-        c = _math(nt, "SUBTRACT", 1.0, C._ramp(nt, 0.0, width, vor.outputs["Distance"]))
-        cracks = c if cracks is None else _math(nt, "MAXIMUM", cracks, _math(nt, "MULTIPLY", c, weight))
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", cracks, 0.85), col, (0.008, 0.007, 0.006))
+        c = C._math(nt, "SUBTRACT", 1.0, C._ramp(nt, 0.0, width, vor.outputs["Distance"]))
+        cracks = c if cracks is None else C._math(nt, "MAXIMUM", cracks, C._math(nt, "MULTIPLY", c, weight))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", cracks, 0.85), col, (0.008, 0.007, 0.006))
     # Cavities.
     ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
     ao.inputs["Distance"].default_value = 0.2
-    cavity = _math(nt, "SUBTRACT", 1.0, C._ramp(nt, 0.3, 0.95, ao.outputs["AO"]))
-    col = C._mix_color(nt, _math(nt, "MULTIPLY", cavity, 0.75), col, (0.01, 0.009, 0.008))
+    cavity = C._math(nt, "SUBTRACT", 1.0, C._ramp(nt, 0.3, 0.95, ao.outputs["AO"]))
+    col = C._mix_color(nt, C._math(nt, "MULTIPLY", cavity, 0.75), col, (0.01, 0.009, 0.008))
     nt.links.new(col, bsdf.inputs["Base Color"])
     rough = C._mix_float(nt, grain.outputs["Fac"], 0.74, 0.92)
     rough = C._mix_float(nt, crust, rough, 0.42)
@@ -442,7 +401,7 @@ def mat_rock() -> bpy.types.Material:
     bump1 = nt.nodes.new("ShaderNodeBump")
     bump1.inputs["Strength"].default_value = 0.7
     bump1.inputs["Distance"].default_value = 0.015
-    nt.links.new(_math(nt, "SUBTRACT", 1.0, cracks), bump1.inputs["Height"])
+    nt.links.new(C._math(nt, "SUBTRACT", 1.0, cracks), bump1.inputs["Height"])
     fine = C._noise(nt, 45.0, 6.0, 0.7)
     bump2 = nt.nodes.new("ShaderNodeBump")
     bump2.inputs["Strength"].default_value = 0.3
@@ -897,29 +856,6 @@ def grid_view(variants: list[Variant], path: pathlib.Path, samples: int, size: i
     C.render(path, "iso", samples, size, target=(0, 0, 0.3), zoom=1.45)
 
 
-def contact_sheet(paths: list[pathlib.Path], out: pathlib.Path, cols: int, cell: int) -> None:
-    import numpy as np
-
-    rows = (len(paths) + cols - 1) // cols
-    sheet = np.zeros((rows * cell, cols * cell, 4), dtype=np.float32)
-    sheet[..., 3] = 1.0
-    for i, p in enumerate(paths):
-        img = bpy.data.images.load(str(p))
-        if img.size[0] != cell:
-            img.scale(cell, cell)
-        px = np.empty(cell * cell * 4, dtype=np.float32)
-        img.pixels.foreach_get(px)
-        r, c = divmod(i, cols)
-        y0 = (rows - 1 - r) * cell  # Blender images start at the bottom row
-        sheet[y0 : y0 + cell, c * cell : (c + 1) * cell] = px.reshape(cell, cell, 4)
-        bpy.data.images.remove(img)
-    out_img = bpy.data.images.new("sheet", cols * cell, rows * cell, alpha=False)
-    out_img.pixels.foreach_set(sheet.ravel())
-    out_img.filepath_raw = str(out)
-    out_img.file_format = "PNG"
-    out_img.save()
-
-
 # --- main -------------------------------------------------------------------------------------------
 
 
@@ -957,7 +893,7 @@ def main() -> None:
         for t in TYPES:
             order += [OUT / f"render_{t}_{x}.png" for x in ("a_iso", "b_iso", "wall_iso", "a_hero", "b_hero", "wall_hero", "a_miner", "b_miner")]
         order += [OUT / f"render_lineup_{t}.png" for t in TYPES] + [OUT / "render_game_distance.png"]
-        contact_sheet(order, OUT / "sheet.png", 8, 384)
+        C.contact_sheet(order, OUT / "sheet.png", 8, 384)
     else:
         set_preview_materials(variants, True)
         for v in variants:

@@ -20,11 +20,12 @@ sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
 import bmesh  # noqa: E402
 import bpy  # noqa: E402
-from mathutils import Matrix, Vector  # noqa: E402
+from mathutils import Vector  # noqa: E402
 
 import common as C  # noqa: E402
+from common import Part, basis, polar, rx, ry, rz  # noqa: E402
 
-ARGV = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
+ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
 TAG = ARGV[1] if len(ARGV) > 1 else "r0"
 VIEWS = ARGV[2].split(",") if len(ARGV) > 2 else ["iso", "hero"]
@@ -49,123 +50,7 @@ BOX_SIZE = (0.46, 0.52, 0.50)
 BOX_X = 0.37 + BOX_SIZE[0] / 2
 BOX_Y = 0.06
 
-# --- math helpers -----------------------------------------------------------------------------------
-
-
-def T(loc=(0, 0, 0), rot: Matrix | None = None, scale=(1, 1, 1)) -> Matrix:
-    m = Matrix.Translation(Vector(loc))
-    if rot is not None:
-        m = m @ rot.to_4x4()
-    return m @ Matrix.Diagonal((*scale, 1.0))
-
-
-def rz(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "Z")
-
-
-def rx(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "X")
-
-
-def ry(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "Y")
-
-
-def basis(z_dir: Vector, x_hint: Vector) -> Matrix:
-    """3x3 rotation whose Z axis points along z_dir and X axis as close as possible to x_hint."""
-    z = Vector(z_dir).normalized()
-    x = Vector(x_hint)
-    x = (x - z * x.dot(z)).normalized()
-    y = z.cross(x)
-    return Matrix((x, y, z)).transposed()
-
-
-def polar(deg: float, r: float, z: float) -> Vector:
-    a = math.radians(deg)
-    return Vector((math.cos(a) * r, math.sin(a) * r, z))
-
-
-# --- mesh builder -----------------------------------------------------------------------------------
-
-
-class Part:
-    """Accumulates primitives into one bmesh, one object at the end (keeps the draw calls low)."""
-
-    def __init__(self, name: str, mats: list, bevel: tuple[float, int] | None = (0.012, 2)):
-        self.name, self.mats, self.bev = name, mats, bevel
-        self.bm = bmesh.new()
-
-    def _tag(self, verts, mi: int, smooth: bool = True):
-        for f in {f for v in verts for f in v.link_faces}:
-            f.material_index = mi
-            f.smooth = smooth
-        return verts
-
-    def box(self, loc, size, rot: Matrix | None = None, mi: int = 0):
-        return self._tag(bmesh.ops.create_cube(self.bm, size=1.0, matrix=T(loc, rot, size))["verts"], mi)
-
-    def cyl(self, loc, r, depth, seg=16, rot: Matrix | None = None, mi=0, r2=None, caps=True, scale=(1, 1, 1), spin=0.0):
-        m = T(loc, rot, scale) @ rz(spin).to_4x4()
-        verts = bmesh.ops.create_cone(
-            self.bm, cap_ends=caps, cap_tris=False, segments=seg, radius1=r, radius2=r if r2 is None else r2, depth=depth, matrix=m
-        )["verts"]
-        return self._tag(verts, mi)
-
-    def ring(self, z0, z1, r, seg=16, mi=0, r2=None, spin=0.0, xy=(0, 0)):
-        """Vertical cylinder/frustum from z0 to z1 (r at z0, r2 at z1)."""
-        return self.cyl((xy[0], xy[1], (z0 + z1) / 2), r, z1 - z0, seg, mi=mi, r2=r2, spin=spin)
-
-    def beam(self, p0, p1, w, h, side, mi=0, taper=1.0):
-        """Rectangular (optionally tapered) beam from p0 to p1; w measured along `side`."""
-        p0, p1 = Vector(p0), Vector(p1)
-        d = p1 - p0
-        m = T((p0 + p1) / 2, basis(d, Vector(side)), (w, h, 1.0)) @ rz(45).to_4x4()
-        r = math.sqrt(0.5)
-        verts = bmesh.ops.create_cone(
-            self.bm, cap_ends=True, cap_tris=False, segments=4, radius1=r, radius2=r * taper, depth=d.length, matrix=m
-        )["verts"]
-        return self._tag(verts, mi)
-
-    def rod(self, p0, p1, r, seg=12, mi=0, r2=None):
-        p0, p1 = Vector(p0), Vector(p1)
-        d = p1 - p0
-        m = T((p0 + p1) / 2, basis(d, Vector((0, 0, 1)) if abs(d.normalized().z) < 0.9 else Vector((1, 0, 0))))
-        verts = bmesh.ops.create_cone(
-            self.bm, cap_ends=True, cap_tris=False, segments=seg, radius1=r, radius2=r if r2 is None else r2, depth=d.length, matrix=m
-        )["verts"]
-        return self._tag(verts, mi)
-
-    def sphere(self, loc, r, seg=12, rings=6, scale=(1, 1, 1), rot=None, mi=0):
-        verts = bmesh.ops.create_uvsphere(self.bm, u_segments=seg, v_segments=rings, radius=r, matrix=T(loc, rot, scale))["verts"]
-        return self._tag(verts, mi)
-
-    def ico(self, loc, r, scale=(1, 1, 1), rot=None, mi=0, sub=1):
-        verts = bmesh.ops.create_icosphere(self.bm, subdivisions=sub, radius=r, matrix=T(loc, rot, scale))["verts"]
-        return self._tag(verts, mi, smooth=False)
-
-    def prism(self, pts, z0, z1, m: Matrix | None = None, mi=0):
-        """Extrude a CCW 2D polygon from z0 to z1 (local), transformed by m."""
-        m = m or Matrix.Identity(4)
-        bot = [self.bm.verts.new(m @ Vector((x, y, z0))) for x, y in pts]
-        top = [self.bm.verts.new(m @ Vector((x, y, z1))) for x, y in pts]
-        n = len(pts)
-        for i in range(n):
-            self.bm.faces.new((bot[i], bot[(i + 1) % n], top[(i + 1) % n], top[i]))
-        self.bm.faces.new(list(reversed(bot)))
-        self.bm.faces.new(top)
-        return self._tag(bot + top, mi)
-
-    def finish(self, parent) -> bpy.types.Object:
-        me = bpy.data.meshes.new(self.name)
-        self.bm.to_mesh(me)
-        self.bm.free()
-        obj = bpy.data.objects.new(self.name, me)
-        C.link(obj, parent)
-        for mat in self.mats:
-            me.materials.append(mat)
-        if self.bev:
-            C.bevel(obj, self.bev[0], self.bev[1])
-        return obj
+# --- mesh builder (common.Part) ---------------------------------------------------------------------
 
 
 def inset_side_faces(part: Part, verts, thickness=0.035, depth=-0.012, mi=None, skip_normal: Vector | None = None):
@@ -221,36 +106,8 @@ def mat_ore_fill() -> bpy.types.Material:
     nt.links.new(seam, strength.inputs[1])
     nt.links.new(strength.outputs[0], bsdf.inputs["Emission Strength"])
     bsdf.inputs["Roughness"].default_value = 0.25
-    bump = nt.nodes.new("ShaderNodeBump")  # seams recessed: chunks get some relief
-    bump.inputs["Strength"].default_value = 0.6
-    bump.inputs["Distance"].default_value = 0.02
-    nt.links.new(seam, bump.inputs["Height"])
-    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    C._bump(nt, bsdf, seam, 0.6, 0.02)  # seams recessed: chunks get some relief
     return mat
-
-
-def bevel_wear(mat: bpy.types.Material, lo: float = 0.015, hi: float = 0.07, radius: float = 0.012) -> None:
-    """Swap common's Pointiness edge mask for a Bevel-node one: Pointiness is per vertex and smears wear over
-    whole faces on low-poly meshes (the camouflage look); the Bevel node finds edges independent of density."""
-    nt = mat.node_tree
-    geo = next(n for n in nt.nodes if n.bl_idname == "ShaderNodeNewGeometry")
-    link = next(lk for lk in nt.links if lk.from_node == geo and lk.from_socket.name == "Pointiness")
-    ramp = link.to_node
-    nt.links.remove(link)
-    bev = nt.nodes.new("ShaderNodeBevel")
-    bev.samples = 8
-    bev.inputs["Radius"].default_value = radius
-    dot = nt.nodes.new("ShaderNodeVectorMath")
-    dot.operation = "DOT_PRODUCT"
-    nt.links.new(bev.outputs["Normal"], dot.inputs[0])
-    nt.links.new(geo.outputs["Normal"], dot.inputs[1])
-    inv = nt.nodes.new("ShaderNodeMath")
-    inv.operation = "SUBTRACT"
-    inv.inputs[0].default_value = 1.0
-    nt.links.new(dot.outputs["Value"], inv.inputs[1])
-    ramp.color_ramp.elements[0].position = lo
-    ramp.color_ramp.elements[1].position = hi
-    nt.links.new(inv.outputs[0], ramp.inputs["Fac"])
 
 
 def make_materials() -> None:
@@ -266,8 +123,8 @@ def make_materials() -> None:
     ORANGE = C.mat_emissive("Glow_Orange", (1.0, 0.38, 0.06), 14.0)
     LAMP = C.mat_emissive("FullLamp", (1.0, 0.86, 0.68), 40.0)
     FRAME_MATS = [PAINT, PAINT_DARK, STEEL]
-    bevel_wear(PAINT)
-    bevel_wear(PAINT_DARK)
+    C.bevel_wear(PAINT)
+    C.bevel_wear(PAINT_DARK)
 
 
 M_PAINT, M_DARK, M_STEEL = 0, 1, 2
@@ -586,18 +443,6 @@ def build() -> bpy.types.Object:
     return miner
 
 
-def per_object_tris() -> None:
-    dg = bpy.context.evaluated_depsgraph_get()
-    rows = []
-    for obj in C.collection("Miner").all_objects:
-        if obj.type == "MESH":
-            me = obj.evaluated_get(dg).to_mesh()
-            me.calc_loop_triangles()
-            rows.append((len(me.loop_triangles), obj.name))
-            obj.evaluated_get(dg).to_mesh_clear()
-    print("STATS per object", sorted(rows, reverse=True))
-
-
 CLOSE_VIEWS = {
     "close": ((2.3, -3.0, 2.6), (0, 0, 1.9), 35),
     "closeback": ((-2.4, 2.8, 2.4), (0, 0, 1.8), 35),
@@ -606,25 +451,16 @@ CLOSE_VIEWS = {
 
 
 def render_close(path: pathlib.Path, view: str, samples: int = 32, size: int = 640) -> None:
-    """Close-up debug views (not part of the shared set): renders with common's settings, own camera."""
+    """Close-up debug views (not part of the shared set)."""
     loc, target, lens = CLOSE_VIEWS[view]
-    C.render(path, view="hero", samples=1, size=16)  # applies common's render settings and creates "Cam"
-    cam = bpy.context.scene.camera
-    cam.data.lens = lens
-    cam.location = loc
-    cam.rotation_euler = (Vector(target) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
-    scene = bpy.context.scene
-    scene.cycles.samples = samples
-    scene.render.resolution_x = scene.render.resolution_y = size
-    scene.render.filepath = str(path)
-    bpy.ops.render.render(write_still=True)
+    C.render_from(path, loc, target, lens, samples, size)
 
 
 def main() -> None:
     C.reset()
     make_materials()
     build()
-    per_object_tris()
+    print("STATS per object", C.tris_per_object())
     print("STATS", C.stats())
     C.preview_scene()
     import os

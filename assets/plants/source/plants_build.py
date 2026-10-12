@@ -32,12 +32,11 @@ sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
 import bmesh  # noqa: E402
 import bpy  # noqa: E402
-import numpy as np  # noqa: E402
 from mathutils import Matrix, Vector, noise  # noqa: E402
 
 import common as C  # noqa: E402
 
-ARGV = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
+ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
 TAG = ARGV[1] if len(ARGV) > 1 else "r0"
 CLOSE = "close" in ARGV[2:]
@@ -1005,29 +1004,6 @@ def render_set(objs: dict, prefix: str, samples: int, size: int, close: bool) ->
     return paths
 
 
-def contact_sheet(paths: list, path: pathlib.Path, cols: int = 4, tile: int = 512) -> None:
-    """Tile the renders into one PNG (Blender images + numpy; no Pillow needed)."""
-    rows = math.ceil(len(paths) / cols)
-    sheet = np.zeros((rows * tile, cols * tile, 4), dtype=np.float32)
-    sheet[..., 3] = 1.0
-    for i, p in enumerate(paths):
-        img = bpy.data.images.load(str(p))
-        if img.size[0] != tile:
-            img.scale(tile, tile)
-        px = np.empty(tile * tile * 4, dtype=np.float32)
-        img.pixels.foreach_get(px)
-        r, c = divmod(i, cols)
-        y0 = (rows - 1 - r) * tile  # Blender pixel rows go bottom-up
-        sheet[y0 : y0 + tile, c * tile : (c + 1) * tile] = px.reshape(tile, tile, 4)
-        bpy.data.images.remove(img)
-    out = bpy.data.images.new("sheet", cols * tile, rows * tile, alpha=False)
-    out.pixels.foreach_set(sheet.ravel())
-    out.filepath_raw = str(path)
-    out.file_format = "PNG"
-    out.save()
-    print("SHEET", path, [p.name for p in paths])
-
-
 def main() -> None:
     C.reset(ASSET)
     objs = build()
@@ -1042,7 +1018,7 @@ def main() -> None:
             bpy.data.objects.remove(o)
     if MODE == "final":
         paths = render_set(objs, "final", samples=48, size=768, close=True)
-        contact_sheet(paths, OUT / "sheet.png")
+        C.contact_sheet(paths, OUT / "sheet.png", tile=512)
         for o in [o for o in C.collection("Preview").all_objects if o.name.startswith("Scatter")]:
             bpy.data.objects.remove(o)
         for o in C.collection(ASSET).all_objects:
@@ -1050,7 +1026,7 @@ def main() -> None:
         C.save_blend(OUT / "plants_procedural.blend")
     else:
         paths = render_set(objs, f"wip/{TAG}", samples=24, size=512, close=CLOSE)
-        contact_sheet(paths, OUT / "wip" / f"{TAG}_sheet.png", tile=384)
+        C.contact_sheet(paths, OUT / "wip" / f"{TAG}_sheet.png", tile=384)
 
 
 main()

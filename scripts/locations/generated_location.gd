@@ -349,7 +349,7 @@ func _add_scatter() -> void:
 ## Blocking ones keep their distance from each other (`blockers`: x, z, radius).
 func _scatter_transforms(type: ScatterType, blockers: Array[Vector3]) -> Array[Transform3D]:
 	var placed: Array[Transform3D] = []
-	if type.density <= 0.0 or not type.mesh:
+	if type.density <= 0.0 or not type.get_mesh():
 		return placed
 	var spacing: float = sqrt(100.0 / type.density)
 	var patches: FastNoiseLite = _noise(1.0 / type.patch_size, 2)
@@ -401,7 +401,7 @@ func _add_scatter_chunk(
 ) -> void:
 	var multimesh := MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	multimesh.mesh = type.mesh
+	multimesh.mesh = type.get_mesh()
 	multimesh.instance_count = transforms.size()
 	for i: int in transforms.size():
 		var placed: Transform3D = transforms[i]
@@ -442,6 +442,7 @@ func _add_ore_nodes() -> void:
 		var node := ORE_NODE.instantiate() as OreNode
 		node.name = "Ore%d" % (i + 1)
 		node.ore_type = _ore_site_types[i]
+		node.variant = i
 		node.position = _ore_sites[i]
 		node.rotation.y = _rng.randf() * TAU
 		ore_nodes.add_child(node)

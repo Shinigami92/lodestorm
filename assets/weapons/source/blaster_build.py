@@ -30,8 +30,9 @@ import bpy  # noqa: E402
 from mathutils import Matrix, Vector  # noqa: E402
 
 import common as C  # noqa: E402
+from common import T, rx, ry  # noqa: E402
 
-ARGV = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
+ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
 TAG = ARGV[1] if len(ARGV) > 1 else "r0"
 VIEWS = ARGV[2].split(",") if len(ARGV) > 2 else ["iso", "hero"]
@@ -63,51 +64,22 @@ COUNTER_H = 0.046  # housing height in its tilted plane
 COUNTER_SEGMENTS = 6
 STOCK_Y = -0.31
 
-# --- math helpers -----------------------------------------------------------------------------------
-
-
-def T(loc=(0, 0, 0), rot: Matrix | None = None, scale=(1, 1, 1)) -> Matrix:
-    m = Matrix.Translation(Vector(loc))
-    if rot is not None:
-        m = m @ rot.to_4x4()
-    return m @ Matrix.Diagonal((*scale, 1.0))
-
-
-def rz(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "Z")
-
-
-def rx(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "X")
-
-
-def ry(deg: float) -> Matrix:
-    return Matrix.Rotation(math.radians(deg), 3, "Y")
-
+# --- transforms (T, rx/ry/rz, basis: common) --------------------------------------------------------
 
 ALONG_Y = rx(-90)  # primitives are built along Z; this turns them along +Y (the barrel axis)
 # Profiles drawn in the side view (y, z) and extruded across X.
 SIDE = Matrix(((0, 0, 1), (1, 0, 0), (0, 1, 0)))
 
 
-def basis(z_dir: Vector, x_hint: Vector) -> Matrix:
-    """3x3 rotation whose Z axis points along z_dir and X axis as close as possible to x_hint."""
-    z = Vector(z_dir).normalized()
-    x = Vector(x_hint)
-    x = (x - z * x.dot(z)).normalized()
-    y = z.cross(x)
-    return Matrix((x, y, z)).transposed()
+# --- mesh builder -----------------------------------------------------------------------------------
 
 
-# --- mesh builder (same as the miner's) -------------------------------------------------------------
-
-
-class Part:
-    """Accumulates primitives into one bmesh, one object at the end (keeps the draw calls low)."""
+class Part(C.Part):
+    """common.Part with weighted bevels: only the hard edges (> 35 degrees) of the big forms get a bevel, small parts
+    (detail = True) get sharp edges instead; plus primitives along the gun's axes."""
 
     def __init__(self, name: str, mats: list, bevel: tuple[float, int] | None = (0.003, 1)):
-        self.name, self.mats, self.bev = name, mats, bevel
-        self.bm = bmesh.new()
+        super().__init__(name, mats, bevel)
         self.weight = self.bm.edges.layers.float.new("bevel_weight_edge")
         self.detail = False  # small parts: hard edges instead of bevels (saves triangles)
 
@@ -122,16 +94,6 @@ class Part:
             e.smooth = not (hard and self.detail)
         return verts
 
-    def box(self, loc, size, rot: Matrix | None = None, mi: int = 0):
-        return self._tag(bmesh.ops.create_cube(self.bm, size=1.0, matrix=T(loc, rot, size))["verts"], mi)
-
-    def cyl(self, loc, r, depth, seg=16, rot: Matrix | None = None, mi=0, r2=None, caps=True, scale=(1, 1, 1), spin=0.0):
-        m = T(loc, rot, scale) @ rz(spin).to_4x4()
-        verts = bmesh.ops.create_cone(
-            self.bm, cap_ends=caps, cap_tris=False, segments=seg, radius1=r, radius2=r if r2 is None else r2, depth=depth, matrix=m
-        )["verts"]
-        return self._tag(verts, mi)
-
     def ycyl(self, y0, y1, r, z, seg=16, mi=0, r2=None, x=0.0, spin=0.0, scale=(1, 1, 1), caps=True):
         """Cylinder/frustum along +Y from y0 to y1 (r at y0, r2 at y1) on the axis (x, z)."""
         return self.cyl((x, (y0 + y1) / 2, z), r, y1 - y0, seg, rot=ALONG_Y, mi=mi, r2=r2, spin=spin, scale=scale, caps=caps)
@@ -140,56 +102,23 @@ class Part:
         """Short cylinder across X (bolt heads, knobs)."""
         return self.cyl(loc, r, depth, seg, rot=ry(90), mi=mi)
 
-    def beam(self, p0, p1, w, h, side, mi=0, taper=1.0):
-        """Rectangular (optionally tapered) beam from p0 to p1; w measured along `side`."""
-        p0, p1 = Vector(p0), Vector(p1)
-        d = p1 - p0
-        m = T((p0 + p1) / 2, basis(d, Vector(side)), (w, h, 1.0)) @ rz(45).to_4x4()
-        r = math.sqrt(0.5)
-        verts = bmesh.ops.create_cone(
-            self.bm, cap_ends=True, cap_tris=False, segments=4, radius1=r, radius2=r * taper, depth=d.length, matrix=m
-        )["verts"]
-        return self._tag(verts, mi)
-
-    def prism(self, pts, z0, z1, m: Matrix | None = None, mi=0):
-        """Extrude a 2D polygon from z0 to z1 (local), transformed by m."""
-        m = m or Matrix.Identity(4)
-        bot = [self.bm.verts.new(m @ Vector((x, y, z0))) for x, y in pts]
-        top = [self.bm.verts.new(m @ Vector((x, y, z1))) for x, y in pts]
-        n = len(pts)
-        faces = [self.bm.faces.new((bot[i], bot[(i + 1) % n], top[(i + 1) % n], top[i])) for i in range(n)]
-        faces += [self.bm.faces.new(list(reversed(bot))), self.bm.faces.new(top)]
-        for f in faces:  # faces.new() leaves the normal at zero: _tag()'s edge angles and inset_faces() need it
-            f.normal_update()
-        return self._tag(bot + top, mi)
-
     def side_prism(self, pts, width, loc=(0, 0, 0), rot: Matrix | None = None, mi=0, x=0.0):
         """Profile drawn in the side view as (y, z) points, extruded across X (width centered on x)."""
         m = T((loc[0] + x, loc[1], loc[2]), rot) @ SIDE.to_4x4()
         return self.prism(pts, -width / 2, width / 2, m, mi)
 
+    def _bevel(self, obj: bpy.types.Object) -> None:
+        """Like common.bevel(), but only on edges with a bevel weight (the big forms, see Part.detail)."""
+        mod = obj.modifiers.new("Bevel", "BEVEL")
+        mod.width = self.bev[0]
+        mod.segments = self.bev[1]
+        mod.limit_method = "WEIGHT"
+        mod.harden_normals = True
+        obj.modifiers.new("WeightedNormal", "WEIGHTED_NORMAL").keep_sharp = True
+
     def finish(self, parent) -> bpy.types.Object:
         bmesh.ops.recalc_face_normals(self.bm, faces=self.bm.faces)
-        me = bpy.data.meshes.new(self.name)
-        self.bm.to_mesh(me)
-        self.bm.free()
-        obj = bpy.data.objects.new(self.name, me)
-        C.link(obj, parent)
-        for mat in self.mats:
-            me.materials.append(mat)
-        if self.bev:
-            bevel_weighted(obj, self.bev[0], self.bev[1])
-        return obj
-
-
-def bevel_weighted(obj: bpy.types.Object, width: float, segments: int) -> None:
-    """Like common.bevel(), but only on edges with a bevel weight (the big forms, see Part.detail)."""
-    mod = obj.modifiers.new("Bevel", "BEVEL")
-    mod.width = width
-    mod.segments = segments
-    mod.limit_method = "WEIGHT"
-    mod.harden_normals = True
-    obj.modifiers.new("WeightedNormal", "WEIGHTED_NORMAL").keep_sharp = True
+        return super().finish(parent)
 
 
 def inset_faces(part: Part, verts, axis: Vector, thickness=0.005, depth=-0.0015, mi=None, min_area=0.0):
@@ -211,29 +140,6 @@ def ring_faces(part: Part, verts, axis: Vector, thickness=0.004, depth=-0.0015):
 
 
 # --- materials --------------------------------------------------------------------------------------
-
-
-def bevel_wear(mat: bpy.types.Material, lo: float = 0.012, hi: float = 0.05, radius: float = 0.005) -> None:
-    """Swap common's Pointiness edge mask for a Bevel-node one (as on the miner), sized for a hand-held object."""
-    nt = mat.node_tree
-    geo = next(n for n in nt.nodes if n.bl_idname == "ShaderNodeNewGeometry")
-    link = next(lk for lk in nt.links if lk.from_node == geo and lk.from_socket.name == "Pointiness")
-    ramp = link.to_node
-    nt.links.remove(link)
-    bev = nt.nodes.new("ShaderNodeBevel")
-    bev.samples = 8
-    bev.inputs["Radius"].default_value = radius
-    dot = nt.nodes.new("ShaderNodeVectorMath")
-    dot.operation = "DOT_PRODUCT"
-    nt.links.new(bev.outputs["Normal"], dot.inputs[0])
-    nt.links.new(geo.outputs["Normal"], dot.inputs[1])
-    inv = nt.nodes.new("ShaderNodeMath")
-    inv.operation = "SUBTRACT"
-    inv.inputs[0].default_value = 1.0
-    nt.links.new(dot.outputs["Value"], inv.inputs[1])
-    ramp.color_ramp.elements[0].position = lo
-    ramp.color_ramp.elements[1].position = hi
-    nt.links.new(inv.outputs[0], ramp.inputs["Fac"])
 
 
 def rescale(mat: bpy.types.Material, noise_factor: float, ao_distance: float) -> None:
@@ -278,11 +184,7 @@ def mat_grip_rubber(name: str = "Rubber_Grip", color=(0.022, 0.021, 0.02)) -> bp
     nt.links.new(C._mix_color(nt, blotch.outputs["Fac"], tuple(c * 0.8 for c in color), tuple(c * 1.5 for c in color)), bsdf.inputs["Base Color"])
     nt.links.new(C._mix_float(nt, blotch.outputs["Fac"], 0.62, 0.9), bsdf.inputs["Roughness"])
     stipple = C._noise(nt, 900.0, 2.0, 0.5)
-    bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.25
-    bump.inputs["Distance"].default_value = 0.0005
-    nt.links.new(stipple.outputs["Fac"], bump.inputs["Height"])
-    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    C._bump(nt, bsdf, stipple.outputs["Fac"], 0.25, 0.0005)
     return mat
 
 
@@ -294,7 +196,7 @@ def make_materials() -> None:
     RUBBER = mat_grip_rubber()
     for m in (PAINT, GUNMETAL):
         rescale(m, 3.0, 0.035)
-        bevel_wear(m)
+        C.bevel_wear(m, lo=0.012, hi=0.05, radius=0.005)  # sized for a hand-held object
     add_chips(PAINT, 0.9)
     add_chips(GUNMETAL, 0.4)
     rescale(STEEL, 3.0, 0.035)
@@ -520,19 +422,6 @@ def build() -> bpy.types.Object:
     return gun
 
 
-def per_object_tris() -> dict:
-    dg = bpy.context.evaluated_depsgraph_get()
-    rows = {}
-    for obj in C.collection(ASSET).all_objects:
-        if obj.type == "MESH":
-            me = obj.evaluated_get(dg).to_mesh()
-            me.calc_loop_triangles()
-            rows[obj.name] = len(me.loop_triangles)
-            obj.evaluated_get(dg).to_mesh_clear()
-    print("STATS per object", rows)
-    return rows
-
-
 CENTER = (0.0, 0.14, HOLD_Z + 0.07)  # middle of the gun while it is lifted for previews
 # Own cameras (location relative to CENTER, lens): side profile, top-down, and a close look at the right side.
 CUSTOM_VIEWS = {
@@ -561,54 +450,21 @@ def render_view(path: pathlib.Path, view: str, samples: int, size: int) -> None:
         C.render(path, view="iso", samples=samples, size=size, target=(-0.2, -0.2, 1.0), zoom=1.0)
     else:
         offset, lens = CUSTOM_VIEWS[view]
-        C.render(path, view="hero", samples=1, size=16)  # applies common's render settings and creates "Cam"
-        cam = bpy.context.scene.camera
-        cam.data.lens = lens
-        cam.location = Vector(CENTER) + Vector(offset)
-        cam.rotation_euler = (Vector(CENTER) - cam.location).to_track_quat("-Z", "Y").to_euler()
-        scene = bpy.context.scene
-        scene.cycles.samples = samples
-        scene.render.resolution_x = scene.render.resolution_y = size
-        scene.render.filepath = str(path)
-        bpy.ops.render.render(write_still=True)
+        C.render_from(path, Vector(CENTER) + Vector(offset), CENTER, lens, samples, size)
     gun.location = (0, 0, 0)
 
 
 FINAL_VIEWS = ["iso", "hero", "back", "side", "top", "scale"]
 
 
-def contact_sheet() -> None:
-    """Tile the final renders (2 rows of 3) into sheet.png with Blender's image API (no Pillow needed)."""
-    import numpy as np
-
-    tile = 512
-    cols, rows = 3, 2
-    sheet = np.zeros((rows * tile, cols * tile, 4), dtype=np.float32)
-    sheet[..., 3] = 1.0
-    for i, view in enumerate(FINAL_VIEWS):
-        img = bpy.data.images.load(str(OUT / f"render_{view}.png"))
-        img.scale(tile, tile)
-        px = np.empty(tile * tile * 4, dtype=np.float32)
-        img.pixels.foreach_get(px)
-        r, c = divmod(i, cols)
-        y0 = (rows - 1 - r) * tile  # Blender images start at the bottom row
-        sheet[y0 : y0 + tile, c * tile : (c + 1) * tile] = px.reshape(tile, tile, 4)
-    out = bpy.data.images.new("sheet", cols * tile, rows * tile, alpha=False)
-    out.pixels.foreach_set(sheet.ravel())
-    out.filepath_raw = str(OUT / "sheet.png")
-    out.file_format = "PNG"
-    out.save()
-    print("SHEET", OUT / "sheet.png")
-
-
 def main() -> None:
     if MODE == "sheet":
-        contact_sheet()
+        C.contact_sheet([OUT / f"render_{view}.png" for view in FINAL_VIEWS], OUT / "sheet.png", cols=3, tile=512)
         return
     C.reset(ASSET)
     make_materials()
     build()
-    per_object_tris()
+    print("STATS per object", C.tris_per_object())
     print("STATS", C.stats())
     C.preview_scene(crystals=False, figure_location=(-0.35, -0.45, 0.0))
     if MODE == "final":

@@ -1,0 +1,159 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: scenes/ship/ship.tscn
+msgid "Cockpit"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Bridge"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Mess hall"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Cabin 1"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Cabin 2"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Cabin 3"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Cabin 4"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Crew 1"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Crew 5"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Crew 2"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Crew 6"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Crew 3"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Crew 7"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Crew 4"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Crew 8"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Medical bay"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Engine room"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Shooting range"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Armory"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Weapons"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Armor"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Skills"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Miners"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Cargo bay"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Armory · Upgrades\nRange · Medical · Engine"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Lift\nMess · Cabins · Bridge"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Cargo bay · Ramp"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Lift · Medical · Engine"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Lift\nBridge · Cabins"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Range · Armory\nCargo bay"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Lift\nLower deck"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Bridge\nCockpit"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Cabins · Mess\nCargo lift"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Lift · Cabins · Mess"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Lift\nCargo bay · Ramp"
+msgstr ""
+
+#: scenes/ship/ship.tscn
+msgid "Cabins · Lift · Bridge"
+msgstr ""
+
+#: scripts/ship/ship.gd
+msgid "All aboard"
+msgstr ""
+
+#: scripts/ship/ship.gd
+msgid "Lost"
+msgstr ""
+
+#: scripts/ship/ship.gd
+msgid "Storm"
+msgstr ""

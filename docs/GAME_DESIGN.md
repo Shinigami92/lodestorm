@@ -4,7 +4,16 @@
 
 ## 1. Pitch
 
-A 3D isometric action/mining game with a dark, realistic sci-fi look. The player lives on a spaceship that acts as the hub. From the ship they pick a mission, the ship flies there, and the player heads out to place miners on resource nodes, fight off aliens, collect the mined resources via a hose, and get back to the ship before the storm hits. Resources are spent on upgrades in the ship.
+A 3D isometric action/mining game with a dark, realistic sci-fi look. The player lives on a spaceship that acts as the hub. From the ship they pick a mission, the ship flies there, and the player heads out to place miners on resource nodes, fight off aliens, collect the mined resources via a hose, and get back to the ship before the storm hits. Resources are spent on upgrades in the ship. A story campaign leads from planet to planet: better ores open the way to the next planet, where rarer ores wait.
+
+### Story and setting (draft)
+
+- **Setup:** a colony in a newly opened star system runs short of supplies. The players are a prospecting crew supplying it, next to other crews, stations and outposts.
+- **The mystery:** a first expedition went missing. Following its trail reveals bit by bit what the players don't know at the start: the storms come from the system's star, which is becoming unstable, and they keep growing stronger. The rare ores only form where its radiation is strongest.
+- **The ending:** the colony has to leave the system before a big flare, which needs something built from the rarest ores near the star (a jump drive or shielding, open). So the campaign moves inward, planet by planet.
+- **How it's told:** NPCs and their quests drive the main story, in conversations aboard that the players start themselves. During runs, NPCs speak over the radio (quest updates, warnings, short story bits). Players in co-op may talk over it (e.g. on voice chat), so nothing important is only said over the radio: radio lines stay short and can be listened to again aboard (a comms log). The expedition's logs, found as handcrafted pieces on the planets, are optional lore for players who want to dig deeper; the main story never depends on reading them. Cutscenes are unlikely (costly); key moments can use the camera transitions that exist anyway (e.g. the ship taking off and landing).
+- **One star system** for the campaign: planets (number open), moons, stations and outposts; built so more systems can follow later.
+- **Length:** about 40 h to beat the game; play can go on afterwards (post-game, e.g. higher difficulties with rarer ores, open).
 
 ## 2. Platform & technical constraints
 
@@ -17,6 +26,7 @@ A 3D isometric action/mining game with a dark, realistic sci-fi look. The player
 | Input | Keyboard + mouse, gamepad (PS5 controller), VR controllers (Steam Frame, gamepad-like layout) |
 | Performance | Desktop: 60 FPS minimum, 120–144 FPS target. VR: 90 FPS minimum |
 | Players | Solo first; optional co-op up to 4 players |
+| Languages | English and German first, more later (see [Localization and voice](#localization-and-voice)) |
 | Asset pipeline | Blender (via Blender MCP) → glTF → Godot |
 | License | CC BY-NC-SA 4.0 (own code + assets; third-party addons keep their licenses), CLA for contributors |
 | Distribution | Source-available on GitHub (Releases via CI); later Steam, possibly Epic and GOG |
@@ -27,6 +37,14 @@ A 3D isometric action/mining game with a dark, realistic sci-fi look. The player
 - **Multiplayer-ready from day one:** game state changes go through host-authoritative code paths, solo = local host. Co-op is enabled later without rewriting gameplay.
 - **Camera abstraction:** desktop uses an isometric camera; VR uses a "tabletop diorama" view (world in front of the player, looking down onto the character). Same gameplay, swappable camera rig. The rig also supports camera transitions (see below).
 - **Input abstraction:** all gameplay reads Godot input actions only, so keyboard/mouse, gamepad and VR controllers map onto the same actions.
+
+### Localization and voice
+
+- **Languages:** English and German first, more later. All player-facing text goes through translations from the start, also the text in the world (3D menus, labels, the room names painted on the floors). German runs about a third longer than English, so panels and labels leave room for it.
+- **Translations by contributors:** the project is on GitHub, so new languages and fixes come in as pull requests (one translation file per language, readable in a diff; the CLA applies).
+- **Subtitles for every spoken line**, in every language, shown in the world, not on the screen: a speech bubble above the speaking NPC, radio lines next to the player. They work the same in VR (in the diorama).
+- **Voice-over** (wanted, English only is fine): generated with a free AI text-to-speech model that runs locally, like the concept images. Lines are generated ahead of time (per scripted line, an audio file), not while playing. The model needs good English (German is a bonus), a license that allows selling the game, and distinct voices per NPC that aren't cloned from real people without their consent. Which model: a spike (see [`PLAN.md`](PLAN.md)). Steam asks to disclose AI-generated content on the store page.
+- **AI-driven NPCs** (idea for later, an optional experiment): a local language model writing NPC dialogue on the fly. Open: it shares the GPU with rendering (VR needs 90 FPS), it must stay consistent with the quests, it needs content guardrails (Steam asks for them with live-generated content), and its lines would need live voice. Scripted quest dialogue stays the backbone.
 
 ## 3. Perspective & art direction
 
@@ -40,7 +58,7 @@ A 3D isometric action/mining game with a dark, realistic sci-fi look. The player
 
 ### Art direction
 
-Found by rating four rounds of concept images (generated locally, not part of the repo); the art pass (M4) refines it per asset.
+Found by rating four rounds of concept images (generated locally, not part of the repo); the art pass (M5) refines it per asset.
 
 - **Realistic, dark sci-fi:** PBR materials (painted metal, rubber, glass) with wear: scratches, rust, grime and dust. Real proportions; toy-like, chunky, pastel and cartoon looks are out.
 - **Rim light for readability:** players, aliens and machines get a strong rim light (fresnel on their materials), so their silhouettes stay readable on dark ground and from the isometric distance. It's the main tool that keeps the realistic look from turning into mush.
@@ -56,7 +74,7 @@ Found by rating four rounds of concept images (generated locally, not part of th
   - **Weapons:** glowing parts show their state (the rifle's ammo counter, the power core in the hammer's head). The blaster is modeled as that rifle (`assets/weapons/blaster.glb`); its ammo counter doesn't show the ammo yet.
   - **Swarmer:** the first alien model (`assets/aliens/swarmer/swarmer.glb`), close to the concept: a lean runner on four clawed legs, back 0.72 m high (about the player's hip), nose to rump 1.5 m plus a long whip tail; a long head with a toothed jaw and glowing yellow-green eye slits, dark crimson chitin plates over sinew, and two bone scythes rising from its shoulders that arch forward over the head (1.5 m up). Its legs step on their own over the ground, in a trot (the diagonal pairs together); the body breathes while it waits, runs with the head low and the tail streaming, rears back and snaps forward with the jaw open and the blades striking when it attacks, and collapses onto its side when it dies. Guards, hunters and raiders all use it for now; raiders are shaded darker.
   - **Alien nest:** a mound of chitin plates and sinew with tendrils spreading over a slime layer and a glowing mouth on top (`assets/aliens/nest/nest.glb`); the mouth and the glands pulse with the hive's escalation.
-- **Cost and performance:** realistic PBR is the most expensive look to build and to render. Texture sizes and LODs are planned per asset type in the art pass, with the VR budget (90 FPS, two views) in mind; **TBD (profiling in M4/M5)**.
+- **Cost and performance:** realistic PBR is the most expensive look to build and to render. Texture sizes and LODs are planned per asset type in the art pass, with the VR budget (90 FPS, two views) in mind; **TBD (profiling in M5/M6)**.
 - Open: how dark the lighting gets (per biome, as the storm builds up), player colors on the suit, and whether the VR diorama gets a scale-model look (a terrain block with cut edges).
 
 ### UI: in the world, not on the screen
@@ -115,7 +133,8 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
   ```
 
   C = player cabins, N = crew cabins. Each room has its own floor tint and light.
-- **NPCs:** shopkeepers / upgrade vendors, quest givers, and story characters (about eight to start: e.g. pilot, medic, quartermaster, one vendor per upgrade room, cook), each with a crew cabin.
+- **NPCs:** shopkeepers / upgrade vendors, quest givers, and story characters (about eight: e.g. pilot, medic, quartermaster, one vendor per upgrade room, cook), each with a crew cabin. They join the crew as the story goes on, and each one runs a station (armory, medical bay, engineering, ...): recruiting crew is how stations unlock. NPCs give quest chains and have a reputation; finishing their quests unlocks new items and upgrades from them.
+- **Stations and outposts:** besides the ship, the players can visit stations and outposts in the system: handcrafted places to walk around in, with NPCs, story, quests, a meeting point for co-op, and maybe exchanging one ore type for another at a bad rate (a safety valve when an ore is missing).
 - **Mission selection:** on the bridge, at the holo table. Target can be another location on the current planet or a new planet. The ship then flies there.
   - Idea: the hologram already shows where the ore fields are, each in its ore color, so players can plan their route and pick a mission by the ores they need.
 - **Ship states:**
@@ -125,7 +144,7 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 
 ## 6. Missions
 
-- A mission is defined by: **location**, **timer/duration**, **difficulty**.
+- A mission is defined by: **location**, **timer/duration**, **difficulty**, and the quests that can be done there.
 - Target duration: about 15–30 min per mission; exact timers **TBD (playtest)**.
 - Harder planets have rarer resources.
 - **Generated outside world:** the world outside the ship is generated for every run from a seed and a **biome** (`scenes/locations/generated_location.tscn`, biomes in `scenes/locations/biomes/`). Later the mission selection picks the biome (with the location and difficulty); until then every run picks one at random. Greybox, all values **TBD (playtest)**:
@@ -136,7 +155,27 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
   - Biomes so far: *Dust flats* (sandy with a cracked crust, high plateaus with layered sandstone cliffs, boulders, rock outcrops, rubble, small stones, thorny spire plants, dry shrubs, pebbles and bones) and *Overgrowth* (dark soil under olive moss, gentler hills, fleshy tube plants, mushrooms, puffball fungi, fronds, a few boulders and stones).
   - Generating takes about 2.5 s, a hitch when the ramp button starts a new run; later it happens while the ship flies, hidden by the storm (see [Spaceship](#5-spaceship-hub)).
   - The tests use the small hand-built test location (`scenes/locations/test_location.tscn`) instead: fixed spots, quick to set up.
-- Other objectives (beyond mining) are a possible extension, to be explored by playtesting.
+- Story missions use the same generated worlds with handcrafted pieces placed in them (e.g. the lost expedition's sites); only stations and outposts are fully handcrafted.
+
+### Quests
+
+- NPCs hand out quests: the main (story) quest and several side quests can be active at once, e.g. destroy a nest, recover something, extract an amount of one ore, find an expedition log.
+- A quest is tied to a planet, location or kind of mission, so it can't be done in just any run.
+- **Quests can't be missed:** a run that fails one or skips it leaves it open, and it's available again in a later run.
+- Optional bonus goals pay off for staying longer (see below).
+- Rewards: ores, weapon blueprints, and reputation with the NPC.
+
+### Reasons to move and to stay (risk vs. reward)
+
+Standing at one spot until the timer runs low must not pay off. Directions to try in playtests:
+
+- **Nodes run dry:** each holds a limited amount (e.g. one or two miner fills), so the players have to move on.
+- **A mining site draws aliens** the longer it runs (raiders and hunters prefer it).
+- **Richer and rarer ore** lies farther from the ship or right next to nests.
+- **A late deposit:** a rare one that only appears late in the run, announced in the world (e.g. a meteor strike).
+- **Quest goals** elsewhere on the map, and optional bonus goals.
+- Maybe a soft carry limit (see [Hose transfer](#8-hose-transfer)).
+- Not planned: the storm closing in from the edges before the timer runs out.
 
 ### Timer and return
 
@@ -161,7 +200,10 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - **Attacked by aliens** (raiders, see [Combat & aliens](#10-combat--aliens)): a miner has health (greybox 100); the frame flashes white when hit and turns rusty with damage. At zero it **breaks down**: it stops mining and the hose disconnects, so its ore can't be taken out until it's repaired, but it keeps the ore. The frame blinks red while broken.
 - **Repair:** a player standing next to a miner (greybox 2.5 m) repairs it automatically, 25 health/s; a broken miner works again only once it's repaired completely (4 s from broken). Damaged miners that still work get repaired too. Values **TBD (playtest)**.
 - Defense options like shields and sentry turrets are possible later.
-- Whether miners are lost (re-buy) or always available: **TBD (playtest)**.
+- **Ownership:** miners are built in the ship and kept. Each crafted miner is upgraded on its own (capacity, speed, drill type), so it's worth protecting. Aliens only break it down (repairable, see above); it's **lost only when it's left on the planet** when the ship lifts off, or when every player dies.
+- **Placing and picking up** takes a few seconds (3–10 s, **TBD (playtest)**), with animations for both, so collecting the miners at the end of a run is a decision against the clock. The model also needs damage states for the art pass.
+- **Never stuck:** the ship always has a few standard-issue miners, refilled for free between runs: weaker and not upgradable.
+- **Drill types:** harder and rarer ores need better drills, so miners have their own progression.
 
 ## 8. Hose transfer
 
@@ -171,21 +213,24 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - Each miner has its own hose, so several miners in range transfer at once. In co-op a miner connects to the nearest player in range.
 - The hose sags between the miner and the player's back, rests on the ground when it's long, and has the ore color.
 - Radius and transfer speed are miner values (upgradable with the miner): greybox 5 m and 30 units/s, so a full miner (180 units) empties in 6 s. **TBD (playtest)**.
-- Player carry limit: leaning towards **no limit** (everything is carried until returning to the ship). **TBD (playtest)**.
+- Player carry limit: leaning towards **no limit** (everything is carried until returning to the ship); a soft limit (a full load slows the player down) is an option. **TBD (playtest)**.
 - Carried resources show on the player's back: one column of canisters per ore type, in the ore color. A canister holds a fixed amount (greybox: one full miner, 180 units, **TBD (playtest)**); full canisters stack up and the top one fills. Without a carry limit the columns keep growing, which also shows how much is at stake.
 
 ## 9. Resources
 
-- Several resource types.
-- Greybox: three ore types named after their color (cyan, green, violet); real names come with the art pass.
-- Different ore types feed different upgrade trees.
-- Rarer ores appear on harder planets.
+- **Many ore types:** about 10–15, with invented, mineral-like names. Greybox: three named after their color (cyan, green, violet); real names come with the art pass.
+- **Each ore is identifiable at a glance** by its color, its crystal shape and its glow pattern (steady, pulsing, flickering, ...), so telling them apart never depends on color alone.
+- **Spread over the planets:** common ores everywhere, 2–3 new ones per planet, the rarest near the star. A single run has about 3–5 types.
+- **Refinery** (a station in the ship): combines 2–3 ores into alloys. Higher upgrades cost alloys, so early ores stay useful. Refining takes real time, passing while playing and while away ("come back tomorrow"), and never blocks the story.
+- **Ores are the only currency:** everything is bought with ores and alloys; there are no experience levels.
 
 ## 10. Combat & aliens
 
 - Aliens outside the ship try to kill the player; player fights back with weapons.
-- **Weapons:** several kinds, ranged (projectiles) and melee. The player can't carry all of them: before a mission they pick a **loadout** of a few weapons in the ship and play the mission with it.
+- **Weapons:** a fixed set of unique weapons, ranged (projectiles) and melee, each with its own in-game name: e.g. assault rifle, shotgun, minigun, hammer, sword, power fist. New ones unlock as blueprints from quests and the story. Ranged weapons use **ammo** (shown on the weapon); a bigger magazine is an upgrade, and a player can refill teammates' ammo, a support role in co-op. During a run the suit makes ammo from carried ore; any ore type works, so it never depends on what a location has (rates per ore type **TBD (playtest)**). The player can't carry all of them: before a mission they pick a **loadout** of a few weapons in the ship and play the mission with it.
+- **Enemies:** only aliens for now, one species in several roles (strains, see below).
 - **Attacking:** one attack button; the equipped weapon decides what it does (shoot, swing). Whether melee gets its own button instead is open.
+- **Loadout slots take any weapon type**, so a melee-only loadout is a real choice. Melee is never required to get on in a run (nothing that only a melee weapon can do).
 - Number of loadout slots and switching weapons during a mission: **TBD (playtest)**.
 - Aliens likely get stronger over time and may be attracted by miners (risk vs. reward). **TBD (playtest)**.
 - **Alien** (`scenes/aliens/alien_settings.tres`, all values **TBD (playtest)**): the swarmer (see [Art direction](#art-direction)); its glowing eyes show where it faces. It waits until a living player outside the ship comes within 18 m, then chases the nearest one at 4.5 m/s (slower than the player, so running away works) and strikes at it once per second for 10 damage when in reach. A player gets away beyond 20 m or by going aboard: aliens don't hunt inside the ship. 30 HP; it flashes white when hit; when it dies it collapses, lies still for a moment and sinks into the ground. The blaster deals 10 damage per shot, so three hits kill one. Shots don't hurt other players (no friendly fire).
@@ -211,19 +256,29 @@ Ship hub ──► select mission ──► ship flies to location ──► fir
 - On death: the body drops where it stands, **everything carried this run is lost**, and the player respawns in the medical bay with full health.
 - When every player is dead, the mission is lost: the beacon turns grey, the countdown says LOST, and after a few seconds (greybox: 3 s, **TBD (playtest)**) everyone respawns aboard and the ramp goes up. The ramp button then starts the next run.
 - Co-op: the mission ends when every player is either back aboard or dead, as long as at least one made it back. The dead lose what they carried and respawn aboard when it ends.
-- **Later:** players can try to revive each other. Solo needs a balancing mechanic so playing alone isn't unfair without anyone to revive you (**TBD**).
+- When every player dies, the miners on the planet are lost too (see [Miners](#7-miners)).
+- **Not too punishing:** losses should hurt, but not set players back for long.
+- **Rescue drone** (a skill): once per run it revives a player where they fell, in solo and in co-op, so playing alone isn't unfair without anyone to revive you.
+- A skill or upgrade keeps part of the carried ore on death (e.g. a canister that survives).
 - Back aboard (before the storm gets you): carried resources go into the ship's hold and can be spent. The hold shows as big canisters by the back wall of the cargo bay (greybox: 900 units each, **TBD (playtest)**) and keeps growing over runs (not saved yet, see M3).
 - Players are healed for each new run (until the medical bay and armor exist).
 
 ## 12. Progression / upgrades
 
-Bought in the ship with resources:
+Bought in the ship with ores and alloys (no experience levels, no player classes):
 
-- Weapons
-- Armor
-- Player skills (idea: an ore scanner that points to ore nodes in range, like the arrow back to the ship)
-- Miners (capacity, speed, better types)
-- Miner defenses (shields, sentry turrets) — possible
+- **Weapons:** each one upgraded on its own, also part by part, in MK levels (e.g. MK1–MK5).
+- **Armor**
+- **Skills:** e.g. dash, more health, health regeneration, the rescue drone, unlocking the miner radar or an ore scanner (points to ore nodes in range, like the arrow back to the ship), unlocking sentries. Skill trees can be maxed out completely; the choice is what to get first. A run's role comes from the loadout (e.g. a healer loadout), not from a class.
+- **Miners:** capacity, speed, drill types, defenses (shields, sentry turrets).
+- **New planets:** better ores open the way to the next planet (see [Story](#story-and-setting-draft)).
+
+### Co-op progression
+
+- The **host's save** holds the ship, story, crew and quests. Each player keeps their **own weapons, skills and loadout** and brings them along; players can inspect each other's gear. No trading for now.
+- Everyone gets the full haul in their own save; nothing is split.
+- Each player places **their own miners**; a lost miner is lost for its owner.
+- **Tier sync:** each planet and difficulty has a maximum MK level, and stronger gear counts as that level, so guests with better gear don't carry the host through. Weapon types and unlocked skills stay. Alien numbers and health scale with the player count.
 
 ## 13. Development approach
 
@@ -234,12 +289,14 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 ## 14. Open questions
 
 - Storm: grace period after the timer runs out, damage curve.
-- Reviving other players, and balancing solo play without it.
-- Miner ownership (consumable vs. permanent).
-- Carry limit yes/no.
+- Story: the crew and characters in detail, what the colony builds to escape (jump drive or shielding), number of planets, the post-game.
+- Reviving each other in co-op beyond the rescue drone.
+- Carry limit: none or soft (slower with a full load).
 - Alien behavior and scaling.
 - Generated outside world: which mission values drive it (difficulty, planet), and whether aliens behind cliffs need a silhouette too.
 - Weapons: switching during a mission, melee on the attack button or its own.
-- Additional mission objectives.
+- Refinery: how it works in co-op.
+- Voice-over: which local text-to-speech model; whether AI-driven NPCs are worth an experiment.
+- Co-op: what a guest's haul buys besides their own gear.
 - Private inventory (the locker in each player cabin): a mechanic or not.
 - Diegetic UI: how to show off-screen information (a miner is full, aliens attacking a miner elsewhere), text size and readability, and whether main / pause / settings menus can be 3D too.

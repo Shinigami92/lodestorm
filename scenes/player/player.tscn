@@ -9,6 +9,8 @@
 [ext_resource type="Script" path="res://scripts/player/suit_light.gd" id="7_suit_light"]
 [ext_resource type="Shader" path="res://assets/shaders/occluded_silhouette.gdshader" id="8_silhouette"]
 [ext_resource type="Material" path="res://assets/shaders/rim_light.tres" id="9_rim"]
+[ext_resource type="PackedScene" uid="uid://yj82i5sgqayt" path="res://assets/player/player.glb" id="10_model"]
+[ext_resource type="Script" path="res://scripts/player/player_animator.gd" id="11_animator"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -16,22 +18,8 @@ height = 1.8
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_silhouette"]
 render_priority = 1
+next_pass = ExtResource("9_rim")
 shader = ExtResource("8_silhouette")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
-albedo_color = Color(0.95, 0.55, 0.15, 1)
-next_pass = SubResource("ShaderMaterial_silhouette")
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
-material = SubResource("StandardMaterial3D_body")
-radius = 0.4
-height = 1.8
-
-[sub_resource type="TorusMesh" id="TorusMesh_suit_light"]
-inner_radius = 0.36
-outer_radius = 0.45
-rings = 24
-ring_segments = 8
 
 [sub_resource type="PrismMesh" id="PrismMesh_arrow"]
 size = Vector3(0.8, 0.9, 0.04)
@@ -53,19 +41,21 @@ script = ExtResource("1_script")
 settings = ExtResource("2_settings")
 loadout = ExtResource("3_loadout")
 miner_scene = ExtResource("4_miner")
+body_overlay = SubResource("ShaderMaterial_silhouette")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
 
-[node name="Body" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-material_overlay = ExtResource("9_rim")
-mesh = SubResource("CapsuleMesh_body")
+[node name="Body" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="SuitLight" type="MeshInstance3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
-mesh = SubResource("TorusMesh_suit_light")
+[node name="Model" parent="Body" instance=ExtResource("10_model")]
+
+[node name="Animator" type="AnimationTree" parent="."]
+script = ExtResource("11_animator")
+
+[node name="SuitLight" type="Node" parent="."]
 script = ExtResource("7_suit_light")
 
 [node name="WeaponMount" type="Marker3D" parent="."]

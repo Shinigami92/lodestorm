@@ -1,8 +1,8 @@
 class_name SuitLight
-extends MeshInstance3D
-## A light band around the suit's collar that shows the player's health: green, amber below
-## half, red and blinking below a quarter, dark once dead. Flashes white on damage, pulsing
-## under steady damage (e.g. the storm).
+extends Node
+## Lights the band around the suit's collar (`band`, the model's "SuitLight" mesh) to show the
+## player's health: green, amber below half, red and blinking below a quarter, dark once dead.
+## Flashes white on damage, pulsing under steady damage (e.g. the storm).
 
 const COLOR_HEALTHY := Color(0.3, 1.0, 0.45)
 const COLOR_HURT := Color(1.0, 0.7, 0.15)
@@ -18,6 +18,13 @@ const FLASH_INTERVAL: float = 0.5
 
 ## The color for the health shown, without blinking and flashes.
 var color: Color = COLOR_HEALTHY
+## The glowing mesh; it gets this light's material.
+var band: GeometryInstance3D:
+	set(value):
+		band = value
+		if band:
+			band.material_override = _material
+			band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 var _ratio: float = 1.0
 var _flash_left: float = 0.0
@@ -29,8 +36,6 @@ var _material := StandardMaterial3D.new()
 func _ready() -> void:
 	_material.emission_enabled = true
 	_material.emission_energy_multiplier = 2.0
-	material_override = _material
-	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	show_health(_ratio)
 
 

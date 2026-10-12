@@ -50,7 +50,8 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full), hose, ore nodes, aliens, ship exterior/interior, weapons
 - Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<type>_wall` in `assets/ores/ores.glb`), which needs placement along the cliff edges; drive the blaster's glowing ammo counter (the `AmmoCounter` mesh, six segments along UV.x), which needs an ammo or heat mechanic first (open)
-- Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips; the four-legged aliens come next (procedural IK legs, decided before modeling them)
+- Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips
+- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; raiders share its model (shaded darker) until they get their own strain; the brute and the spitter are still to model; the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so profiling (M5) may move it to a cheaper path or skip it for aliens off screen
 - Basic VFX/SFX for mining, shooting, storm
 
 ## M5 — VR

@@ -1,15 +1,17 @@
 class_name Alien
 extends CharacterBody3D
-## Greybox alien: waits until a living player outside the ship comes within
-## `settings.detection_range`, then chases the nearest one and attacks it when in reach (the body
-## lunges forward). A player gets away by running farther than `settings.chase_range` or by
-## going aboard; aliens don't hunt players inside the ship. Where there is a navigation mesh it
+## Alien (the swarmer model, assets/aliens/swarmer/swarmer.glb): waits until a living player
+## outside the ship comes within `settings.detection_range`, then chases the nearest one and
+## attacks it when in reach (it snaps forward, jaw open, blades striking). A player gets away by
+## running farther than `settings.chase_range` or by going aboard; aliens don't hunt players
+## inside the ship. Where there is a navigation mesh it
 ## walks around obstacles along it and steers around other aliens; elsewhere it goes straight.
 ## Nests send out two more roles: hunters go for the nearest player outside however far away, and
 ## raiders go for the nearest miner that still works, however far away, and ignore players until
 ## no working miner is left; then they hunt players too. Raiders have a darker body. It grows
 ## out of the ground when it appears, loses health when hit (flashes white) and dies at zero: it
-## stops, shrinks and disappears.
+## stops, collapses, sinks into the ground and disappears. Its legs step on their own
+## (`AlienLegs`), the body plays the model's clips (`AlienAnimator`).
 
 ## Emitted when health reaches zero.
 signal died
@@ -19,22 +21,33 @@ enum Role { GUARD, HUNTER, RAIDER }
 
 const GROUP: StringName = &"aliens"
 
-const COLOR_BODY := Color(0.4, 0.05, 0.11)
-## Raiders are a different strain: a darker body (orange would look like the player).
-const COLOR_BODY_RAIDER := Color(0.2, 0.025, 0.06)
-const COLOR_FLASH := Color(1.0, 1.0, 1.0)
+## Raiders are a different strain: a darker body (orange would look like the player). The
+## alpha is how much the shade covers the model.
+const COLOR_RAIDER := Color(0.0, 0.0, 0.0, 0.5)
+## The rim light is weaker than on players and machines: the alien's many thin, curved parts
+## would glow all over.
+const RIM_STRENGTH: float = 0.45
+## A hit flash covers the model in white.
+const COLOR_FLASH := Color(1.0, 1.0, 1.0, 0.85)
 ## Seconds a hit flash lasts.
 const FLASH_DURATION: float = 0.1
-## Seconds the lunge of an attack takes, there and back.
-const LUNGE_DURATION: float = 0.25
-## How far the body lunges forward when attacking, in m.
-const LUNGE_DISTANCE: float = 0.4
 ## Seconds the body takes to grow out of the ground when the alien appears.
 const HATCH_DURATION: float = 0.4
-## Seconds the body takes to shrink away after dying.
+## Faster than this (m/s), it faces where it goes; slower, where it wants to go.
+const FACE_VELOCITY_MIN: float = 1.0
 ## The path is only looked up again once the target moved this far (m).
 const REPATH_DISTANCE: float = 1.0
-const DEATH_DURATION: float = 0.3
+## Seconds the body lies on the ground after dying (the "Die" clip takes 1 s).
+const COLLAPSE_DURATION: float = 1.2
+## Seconds it then takes to sink into the ground.
+const SINK_DURATION: float = 0.5
+## How far it sinks, in m.
+const SINK_DEPTH: float = 0.6
+## Seconds from death until the alien is gone.
+const DEATH_DURATION: float = COLLAPSE_DURATION + SINK_DURATION
+
+## Shared by all aliens (see `RIM_STRENGTH`).
+static var _rim: ShaderMaterial
 
 @export var settings: AlienSettings
 ## Hunters and raiders go for their target however far away and never let it get away by distance.
@@ -51,12 +64,14 @@ var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Seconds until the next attack is possible.
 var _cooldown: float = 0.0
 var _flash_left: float = 0.0
-var _lunge_left: float = 0.0
-var _material := StandardMaterial3D.new()
+## Laid over the model: the raiders' shade, the hit flash, and the rim light as its next pass.
+var _overlay := StandardMaterial3D.new()
 var _hatch_tween: Tween
+var _legs := AlienLegs.new()
 
-@onready var _body: MeshInstance3D = $Body
-@onready var _body_position: Vector3 = _body.position
+@onready var _body: Node3D = $Body
+@onready var _model: Node3D = $Body/Model
+@onready var _animator: AlienAnimator = $Animator
 @onready var _collision: CollisionShape3D = $CollisionShape3D
 @onready var _agent: NavigationAgent3D = $NavigationAgent3D
 
@@ -64,13 +79,22 @@ var _hatch_tween: Tween
 func _ready() -> void:
 	add_to_group(GROUP)
 	health = settings.max_health
-	# Wet chitin: glossy, so the rim and key lights catch it.
-	_material.roughness = 0.35
-	_body.material_override = _material
+	_animator.run_speed = settings.move_speed
+	_animator.setup(_model)
+	(_model.find_child("Skeleton3D", true, false) as Skeleton3D).add_child(_legs)
+	_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_overlay.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	if not _rim:
+		_rim = preload("res://assets/shaders/rim_light.tres").duplicate() as ShaderMaterial
+		_rim.set_shader_parameter(&"strength", RIM_STRENGTH)
+	_overlay.next_pass = _rim
+	(_model.find_child("Creature", true, false) as GeometryInstance3D).material_overlay = _overlay
 	_update_look()
 	_body.scale = Vector3.ONE * 0.01
 	_hatch_tween = create_tween()
 	_hatch_tween.tween_property(_body, ^"scale", Vector3.ONE, HATCH_DURATION)
+	# The feet spread out while it grows: put them where they belong at full size.
+	_hatch_tween.tween_callback(_legs.plant_all)
 	_agent.velocity_computed.connect(_on_velocity_computed)
 
 
@@ -92,14 +116,18 @@ func _physics_process(delta: float) -> void:
 			move = _direction_to(target.global_position)
 		elif _cooldown == 0.0:
 			attack(target)
-		# Face where it walks, or the target when it stands.
-		var facing: Vector3 = move if move != Vector3.ZERO else offset
+		# Face where it actually goes (avoidance and acceleration bend the path), or the target
+		# when it stands.
+		var facing: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
+		if facing.length() < FACE_VELOCITY_MIN:
+			facing = move if move != Vector3.ZERO else offset
 		if facing != Vector3.ZERO:
 			var target_yaw: float = atan2(-facing.x, -facing.z)
+			# In world space: aliens live under turned nodes (the location, nests).
 			var yaw: float = lerp_angle(
-				rotation.y, target_yaw, 1.0 - exp(-settings.turn_speed * delta)
+				global_rotation.y, target_yaw, 1.0 - exp(-settings.turn_speed * delta)
 			)
-			basis = Basis(Vector3.UP, yaw)
+			global_basis = Basis(Vector3.UP, yaw)
 
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(
 		move * settings.move_speed, settings.acceleration * delta
@@ -121,7 +149,7 @@ func _physics_process(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	_flash_left = maxf(_flash_left - delta, 0.0)
-	_lunge_left = maxf(_lunge_left - delta, 0.0)
+	_animator.speed = 0.0 if dead else Vector2(velocity.x, velocity.z).length()
 	_update_look()
 
 
@@ -133,7 +161,7 @@ func attack(victim: Node3D) -> void:
 	elif victim is Miner:
 		(victim as Miner).take_damage(settings.attack_damage)
 	_cooldown = 1.0 / settings.attack_rate
-	_lunge_left = LUNGE_DURATION
+	_animator.attack()
 
 
 ## Where shots aim at: the middle of its body.
@@ -223,10 +251,12 @@ func _horizontal_distance(node: Node3D) -> float:
 
 
 func _update_look() -> void:
-	var body: Color = COLOR_BODY_RAIDER if role == Role.RAIDER else COLOR_BODY
-	_material.albedo_color = COLOR_FLASH if _flash_left > 0.0 else body
-	var lunge: float = sin(PI * _lunge_left / LUNGE_DURATION) * LUNGE_DISTANCE
-	_body.position = _body_position + Vector3(0.0, 0.0, -lunge)
+	var shade := Color(0.0, 0.0, 0.0, 0.0)
+	if _flash_left > 0.0:
+		shade = COLOR_FLASH
+	elif role == Role.RAIDER:
+		shade = COLOR_RAIDER
+	_overlay.albedo_color = shade
 
 
 func _on_velocity_computed(safe_velocity: Vector3) -> void:
@@ -245,6 +275,10 @@ func _die() -> void:
 	_collision.set_deferred(&"disabled", true)
 	died.emit()
 	_hatch_tween.kill()
+	_body.scale = Vector3.ONE
+	_animator.dead = true
+	_legs.active = false
 	var tween: Tween = create_tween()
-	tween.tween_property(_body, ^"scale", Vector3.ONE * 0.01, DEATH_DURATION)
+	tween.tween_interval(COLLAPSE_DURATION)
+	tween.tween_property(_body, ^"position:y", -SINK_DEPTH, SINK_DURATION)
 	tween.tween_callback(queue_free)

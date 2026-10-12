@@ -45,6 +45,18 @@ func test_chases_player_in_range() -> void:
 	assert_lt(_distance(), start - 1.0, "comes closer")
 
 
+func test_faces_where_it_runs() -> void:
+	# Under a turned parent, like the aliens of a location turned on the map.
+	_arena.rotation.y = PI * 0.25
+	await _place_alien(_alien.settings.detection_range - 2.0)
+	# Start the chase facing away, so it has to turn while it speeds up.
+	_alien.global_basis = Basis(Vector3.UP, PI * 0.5)
+	await wait_physics_frames(20)
+	var ground_velocity := Vector3(_alien.velocity.x, 0.0, _alien.velocity.z)
+	assert_gt(ground_velocity.length(), 1.0, "running")
+	assert_gt(-_alien.global_basis.z.dot(ground_velocity.normalized()), 0.9, "head first")
+
+
 func test_stops_in_reach_and_attacks_at_attack_rate() -> void:
 	await _place_alien(3.0)
 	var max_health: float = _player.settings.max_health

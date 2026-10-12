@@ -4,7 +4,7 @@ extends CanvasLayer
 ## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
 ## every scene using them sees the new values right away; they last until the game stops and
 ## aren't written to the files. Also shows the mission state and has shortcuts for testing the
-## storm, death and fights. Integer settings get whole-number sliders.
+## storm, death, fights and weapons. Integer settings get whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -38,6 +38,22 @@ const TUNING: Dictionary[String, Array] = {
 		["projectile_speed", 5.0, 100.0, 1.0],
 		["projectile_range", 5.0, 60.0, 1.0],
 	],
+	"res://scenes/weapons/shotgun_settings.tres":
+	[
+		["damage", 1.0, 100.0, 1.0],
+		["attack_rate", 0.5, 20.0, 0.5],
+		["pellets", 1.0, 20.0, 1.0],
+		["spread", 0.0, 90.0, 1.0],
+		["projectile_speed", 5.0, 100.0, 1.0],
+		["projectile_range", 5.0, 60.0, 1.0],
+	],
+	"res://scenes/weapons/hammer_settings.tres":
+	[
+		["damage", 1.0, 200.0, 1.0],
+		["attack_rate", 0.2, 5.0, 0.1],
+		["reach", 0.5, 6.0, 0.1],
+		["arc", 10.0, 360.0, 5.0],
+	],
 	"res://scenes/aliens/alien_settings.tres":
 	[
 		["max_health", 1.0, 300.0, 1.0],
@@ -62,6 +78,8 @@ const TUNING: Dictionary[String, Array] = {
 	],
 }
 const PANEL_WIDTH: float = 420.0
+## Every weapon of the game, for `unlock_weapons`.
+const ALL_WEAPONS: Arsenal = preload("res://scenes/weapons/all_weapons.tres")
 
 ## Values from the files, for `reset_tuning`, keyed by "path:property".
 var _defaults: Dictionary[String, float] = {}
@@ -169,6 +187,13 @@ func break_miners() -> void:
 		miner.take_damage(miner.health)
 
 
+## Gives every player every weapon of the game (until blueprints unlock them).
+func unlock_weapons() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		for weapon_type: WeaponType in ALL_WEAPONS.weapons:
+			player.arsenal.unlock(weapon_type)
+
+
 func heal_players() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.heal()
@@ -220,6 +245,7 @@ func _build() -> void:
 	_button(actions, "Hatch hunters", hatch_hunters)
 	_button(actions, "Hatch raiders", hatch_raiders)
 	_button(actions, "Break miners", break_miners)
+	_button(actions, "Unlock weapons", unlock_weapons)
 	_button(actions, "Reset tuning", reset_tuning)
 
 	for path: String in TUNING:

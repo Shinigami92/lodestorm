@@ -40,7 +40,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Bigger outside world, generated per run from a seed and a biome (hills, plateaus and cliffs, plants and rocks, ore fields, nests); still greybox
 - Spike: 3D menus (UI on a panel in the world, input via mouse, gamepad and later VR controllers, readability)
 - Mission selection as a 3D menu at the bridge's holo table (pick from a few missions: location, timer, difficulty; the hologram previews the location, with the ore fields in their colors)
-- Loadout selection before a mission (3D menu in the armory): pick a few of the owned weapons
+- Loadout selection before a mission (3D menu in the armory): pick a few of the owned weapons; first weapons besides the blaster: shotgun and hammer, switching between the loadout's weapons
 - Ship states (space / landed + weather): start in space, land at the location when a mission is picked (loading it during the flight), take off into space once everyone is back aboard after the mission
 - Medical bay respawn
 - Localization setup: English and German, all player-facing text through translations from the start (also the 3D menus and the text in the world)
@@ -65,6 +65,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<type>_wall` in `assets/ores/ores.glb`), which needs placement along the cliff edges; drive the blaster's glowing ammo counter (the `AmmoCounter` mesh, six segments along UV.x), which needs the ammo mechanic (M4) first
 - Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips
 - Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; raiders share its model (shaded darker) until they get their own strain; the brute and the spitter are still to model; the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so profiling (M6) may move it to a cheaper path or skip it for aliens off screen
+- Leftovers of the loadout: model the shotgun and the hammer (greybox meshes so far) and give the hammer a swing animation (its head only sweeps sideways through the arc now; the player holds it in the rifle pose); a weapon rack in the armory that shows the owned weapons
 - Basic VFX/SFX for mining, shooting, storm
 
 ## M6 — VR

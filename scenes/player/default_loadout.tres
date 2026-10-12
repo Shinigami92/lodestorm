@@ -1,8 +1,10 @@
 [gd_resource type="Resource" script_class="Loadout" format=3]
 
 [ext_resource type="Script" path="res://scripts/weapons/loadout.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/weapons/blaster.tscn" id="2_blaster"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_type.gd" id="2_weapon_type"]
+[ext_resource type="Resource" path="res://scenes/weapons/types/blaster.tres" id="3_blaster"]
+[ext_resource type="Resource" path="res://scenes/weapons/types/hammer.tres" id="4_hammer"]
 
 [resource]
 script = ExtResource("1_script")
-weapons = Array[PackedScene]([ExtResource("2_blaster")])
+weapons = Array[ExtResource("2_weapon_type")]([ExtResource("3_blaster"), ExtResource("4_hammer")])

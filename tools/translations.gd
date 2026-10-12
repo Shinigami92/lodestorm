@@ -7,14 +7,18 @@ extends SceneTree
 ## Texts are the English originals (English needs no translation file). They come from
 ## - scripts: `tr("Text")` and `tr("Text", "context")` with string literals,
 ## - scenes: the `text` of nodes (Label3D, ...), unless their auto translation is disabled,
-## - resources: the player-facing names of the resource types in `RESOURCE_TEXTS` (e.g. biomes).
+## - resources: the player-facing texts of the resource types in `RESOURCE_TEXTS` (e.g. biomes,
+##   weapons).
 
 const TEMPLATE_PATH := "res://locale/lodestorm.pot"
 const SOURCE_DIRS: Array[String] = ["res://scenes", "res://scripts"]
 ## Node properties that hold player-facing text.
 const TEXT_PROPERTIES: Array[StringName] = [&"text", &"placeholder_text", &"tooltip_text"]
 ## Resource types (script class names) with player-facing texts, and their text properties.
-const RESOURCE_TEXTS: Dictionary[String, Array] = {"LocationBiome": [&"display_name"]}
+const RESOURCE_TEXTS: Dictionary[String, Array] = {
+	"LocationBiome": [&"display_name"],
+	"WeaponType": [&"display_name", &"description"],
+}
 const TRANSLATIONS_SETTING := "internationalization/locale/translations"
 ## Separates the context from the text in entry keys (as in gettext's binary format).
 const CONTEXT_SEPARATOR := "\u0004"

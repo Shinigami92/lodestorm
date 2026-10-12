@@ -156,14 +156,23 @@ msgstr "Lift\nFrachtraum · Rampe"
 msgid "Cabins · Lift · Bridge"
 msgstr "Kabinen · Lift · Brücke"
 
-#: scenes/ui/mission_menu.tscn
-msgid "Missions"
-msgstr "Missionen"
+#: scenes/ui/armory_menu.tscn
+msgid "Loadout"
+msgstr "Ausrüstung"
 
+#: scenes/ui/armory_menu.tscn
+msgid "Slot"
+msgstr "Platz"
+
+#: scenes/ui/armory_menu.tscn
 #: scenes/ui/mission_menu.tscn
 #: scenes/ui/settings_menu.tscn
 msgid "Close"
 msgstr "Schließen"
+
+#: scenes/ui/mission_menu.tscn
+msgid "Missions"
+msgstr "Missionen"
 
 #: scenes/ui/settings_menu.tscn
 msgid "Settings"
@@ -172,6 +181,30 @@ msgstr "Einstellungen"
 #: scenes/ui/settings_menu.tscn
 msgid "Language"
 msgstr "Sprache"
+
+#: scenes/weapons/types/blaster.tres
+msgid "Blaster"
+msgstr "Blaster"
+
+#: scenes/weapons/types/blaster.tres
+msgid "Rapid shots that reach far."
+msgstr "Schnelle Schüsse mit großer Reichweite."
+
+#: scenes/weapons/types/hammer.tres
+msgid "Hammer"
+msgstr "Hammer"
+
+#: scenes/weapons/types/hammer.tres
+msgid "Heavy swings that hit everything in front."
+msgstr "Wuchtige Schläge, die alles davor treffen."
+
+#: scenes/weapons/types/shotgun.tres
+msgid "Shotgun"
+msgstr "Schrotflinte"
+
+#: scenes/weapons/types/shotgun.tres
+msgid "A fan of pellets, strong up close."
+msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
 
 #: scripts/mission/mission_brief.gd
 msgid "Easy"
@@ -201,13 +234,30 @@ msgstr "Sturm"
 msgid "No mission"
 msgstr "Keine Mission"
 
-#: scripts/ui/mission_menu.gd
-msgid "%d min"
-msgstr "%d Min."
+#: scripts/ui/armory_menu.gd
+msgid "Locked"
+msgstr "Gesperrt"
 
+#: scripts/ui/armory_menu.gd
+msgid "Melee"
+msgstr "Nahkampf"
+
+#: scripts/ui/armory_menu.gd
+msgid "Ranged"
+msgstr "Fernkampf"
+
+#: scripts/ui/armory_menu.gd
 #: scripts/ui/mission_menu.gd
 msgid "Locked until everyone is back aboard."
 msgstr "Gesperrt, bis alle wieder an Bord sind."
+
+#: scripts/ui/armory_menu.gd
+msgid "Pick the weapons for the next mission."
+msgstr "Waffen für die nächste Mission wählen."
+
+#: scripts/ui/mission_menu.gd
+msgid "%d min"
+msgstr "%d Min."
 
 #: scripts/ui/mission_menu.gd
 msgid "Course set: lower the ramp in the cargo bay."

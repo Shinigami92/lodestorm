@@ -10,6 +10,8 @@ extends CharacterBody3D
 ## nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Health shows on the suit light;
 ## at zero health the player dies, drops everything carried and lies still until `respawn`.
+## Owns the weapons in its `arsenal` and carries the ones in its `loadout` (picked in the armory);
+## `switch_weapon` equips the next one.
 ## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
 ## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
@@ -24,7 +26,7 @@ signal died
 const GROUP: StringName = &"players"
 
 ## Actions that make the player act; ones still held when a menu closes wait for their release.
-const ACTIONS: Array[StringName] = [&"attack", &"place_miner", &"interact"]
+const ACTIONS: Array[StringName] = [&"attack", &"place_miner", &"interact", &"switch_weapon"]
 ## Ignore cursor positions this close to the player, the direction flips around too easily.
 const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 ## The cursor ray looks for the ground from this high above the player's feet (m), so ceilings and
@@ -34,7 +36,10 @@ const CURSOR_CEILING: float = 3.0
 const STENCIL_VISIBLE: int = 1
 
 @export var settings: PlayerSettings
-## Weapons taken into the mission. Only the first slot is used until switching exists.
+## The weapons the player owns; a new player starts with these. Each player gets its own copy.
+@export var arsenal: Arsenal
+## The weapons taken into the mission; a new player starts with these. Each player gets its own
+## copy.
 @export var loadout: Loadout
 @export var miner_scene: PackedScene
 ## Drawn over the suit: its silhouette behind walls and the rim light.
@@ -46,6 +51,8 @@ var aim_direction: Vector3 = Vector3.FORWARD
 var aim_target: Alien
 ## The equipped weapon, or null with an empty loadout.
 var weapon: Weapon
+## The loadout slot of the equipped weapon (or the one to fill first when it's empty).
+var weapon_slot: int = 0
 ## The ore node `place_miner` would use right now, or null.
 var miner_target: OreNode
 ## The interactable `interact` would use right now, or null.
@@ -78,6 +85,7 @@ var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _aim_with_mouse: bool = false
 ## Actions held since a menu opened or closed; they're ignored until released.
 var _held_since_menu: Array[StringName] = []
+var _weapon_type: WeaponType
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
@@ -100,8 +108,12 @@ func _ready() -> void:
 	_attach(_hose_port, "HosePort")
 	cargo_changed.connect(_cargo_rack.show_cargo)
 	health = settings.max_health
-	if loadout and not loadout.weapons.is_empty():
-		_equip(loadout.weapons[0])
+	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()
+	arsenal.weapons = arsenal.weapons.duplicate()
+	loadout = loadout.duplicate() if loadout else Loadout.new()
+	loadout.weapons = loadout.weapons.duplicate()
+	loadout.changed.connect(_on_loadout_changed)
+	_on_loadout_changed()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -156,6 +168,9 @@ func _physics_process(delta: float) -> void:
 	_update_interact_target()
 	if _action_just_pressed(&"interact"):
 		interact()
+
+	if _action_just_pressed(&"switch_weapon"):
+		switch_weapon()
 
 
 func _process(_delta: float) -> void:
@@ -280,6 +295,23 @@ func interact() -> Interactable:
 	if interact_target:
 		interact_target.use(self)
 	return interact_target
+
+
+## Equips the weapon in the next filled loadout slot (wrapping around). Returns whether it switched.
+func switch_weapon() -> bool:
+	var slots: int = settings.loadout_slots
+	for step: int in range(1, slots):
+		var slot: int = (weapon_slot + step) % slots
+		if loadout.get_weapon(slot):
+			weapon_slot = slot
+			_equip(loadout.get_weapon(slot))
+			return true
+	return false
+
+
+## The weapon type of the equipped weapon, or null.
+func get_weapon_type() -> WeaponType:
+	return _weapon_type
 
 
 ## Adds `amount` units of `ore_type` to the cargo.
@@ -445,11 +477,29 @@ func _update_interact_target() -> void:
 		interact_target.highlighted = true
 
 
-func _equip(weapon_scene: PackedScene) -> void:
+## Equips `weapon_type` (null: none) unless it's equipped already.
+func _equip(weapon_type: WeaponType) -> void:
+	if weapon_type == _weapon_type:
+		return
+	_weapon_type = weapon_type
 	if weapon:
+		_weapon_mount.remove_child(weapon)
 		weapon.queue_free()
-	weapon = weapon_scene.instantiate() as Weapon
+		weapon = null
+	if not weapon_type:
+		return
+	weapon = weapon_type.scene.instantiate() as Weapon
 	weapon.holder = self
-	weapon.visible = weapon_allowed
+	weapon.visible = weapon_allowed and not dead
 	_mark_visible(weapon)
 	_weapon_mount.add_child(weapon)
+
+
+## Keeps the equipped weapon in the loadout: the one in its slot, or else the first one there.
+func _on_loadout_changed() -> void:
+	if not loadout.get_weapon(weapon_slot):
+		for slot: int in settings.loadout_slots:
+			if loadout.get_weapon(slot):
+				weapon_slot = slot
+				break
+	_equip(loadout.get_weapon(weapon_slot))

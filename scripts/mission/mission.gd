@@ -165,6 +165,12 @@ func is_running() -> bool:
 	return state in [State.RUNNING, State.STORM]
 
 
+## Whether the ramp is down for a run, from the button until the run is won or lost. Meanwhile
+## loadouts are locked.
+func is_underway() -> bool:
+	return state in [State.OPEN, State.RUNNING, State.STORM]
+
+
 ## How far the run is: 0 at the start, 1 when the storm hits (and during it). Escalation follows it,
 ## so it adapts to the mission length.
 func progress() -> float:

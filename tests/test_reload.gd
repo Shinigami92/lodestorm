@@ -171,6 +171,47 @@ func test_switching_keeps_the_rounds_and_cancels_a_reload() -> void:
 	assert_eq(blaster.rounds, 0, "the magazine was thrown away")
 
 
+func test_reloads_use_the_spare_magazines_before_ore() -> void:
+	_give_spares(2)
+	var blaster := _blaster()
+	assert_eq(blaster.spare_rounds, 2 * blaster.capacity())
+	_player.add_cargo(CYAN, 100.0)
+	for spare: int in 2:
+		blaster.rounds = 5
+		await _finish_reload(blaster)
+		assert_eq(blaster.rounds, blaster.capacity(), "the rest is thrown away, a full one goes in")
+		assert_eq(blaster.spare_rounds, (1 - spare) * blaster.capacity())
+		assert_eq(_player.cargo[CYAN], 100.0, "spares cost no ore")
+	blaster.rounds = 0
+	await _finish_reload(blaster)
+	assert_eq(blaster.rounds, blaster.capacity())
+	assert_lt(_player.cargo[CYAN], 100.0, "then ore pays")
+
+
+func test_empty_weapon_with_spares_reloads_without_ore() -> void:
+	_give_spares(1)
+	var blaster := _blaster()
+	blaster.rounds = 1
+	await _attack_once()
+	assert_true(blaster.reloading)
+	await _finish_round(blaster)
+	assert_eq(blaster.rounds, blaster.capacity())
+	assert_eq(blaster.spare_rounds, 0)
+
+
+func test_shotgun_takes_spare_shells_one_by_one() -> void:
+	_give_spares(1)
+	var shotgun := _equip(SHOTGUN) as RangedWeapon
+	assert_eq(shotgun.spare_rounds, shotgun.capacity())
+	shotgun.rounds = shotgun.capacity() - 2
+	await _finish_reload(shotgun)
+	assert_eq(shotgun.spare_rounds, shotgun.capacity() - 1)
+	await _finish_round(shotgun)
+	assert_eq(shotgun.rounds, shotgun.capacity())
+	assert_eq(shotgun.spare_rounds, shotgun.capacity() - 2)
+	assert_false(shotgun.reloading)
+
+
 func test_reloads_are_free_aboard() -> void:
 	var blaster := _blaster()
 	blaster.rounds = 0
@@ -212,11 +253,19 @@ func _attack_once() -> void:
 	await wait_physics_frames(1)
 
 
+## A player without spare magazines, so reloads pay ore (`_give_spares` adds them).
 func _add_player(at: Vector3) -> Player:
 	var player := PLAYER_SCENE.instantiate() as Player
+	player.settings = player.settings.duplicate() as PlayerSettings
+	player.settings.spare_magazines = 0
 	player.position = at
 	_arena.add_child(player)
 	return player
+
+
+func _give_spares(magazines: int) -> void:
+	_player.settings.spare_magazines = magazines
+	_player.refill_ammo()
 
 
 func _add_floor() -> void:

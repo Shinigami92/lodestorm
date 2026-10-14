@@ -40,6 +40,7 @@ const TUNING: Dictionary[String, Array] = {
 		["move_speed", 1.0, 20.0, 0.5],
 		["max_health", 10.0, 500.0, 10.0],
 		["reload_move_speed", 0.1, 1.0, 0.05],
+		["spare_magazines", 0.0, 10.0, 1.0],
 	],
 	"res://scenes/weapons/blaster_settings.tres":
 	[

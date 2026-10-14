@@ -4,8 +4,9 @@ extends Weapon
 ## target. With several pellets per shot (`settings.pellets`) they fly in an even fan
 ## (`settings.spread`) around that direction.
 ## Each shot uses one of its `rounds`; a full magazine holds `capacity()` (more with the magazine's
-## MK level). `reload` refills it with ammo the holder's suit makes from carried ore (`OreAmmo`,
-## paid per round loaded), also automatically once it runs empty. A magazine
+## MK level). `reload` refills it, also automatically once it runs empty: from its spare magazines
+## (`spare_rounds`, from the ship's stock) while it has any, then with ammo the holder's suit makes
+## from carried ore (`OreAmmo`, paid per round loaded); aboard it's free. A magazine
 ## reload throws away the rounds left in it and fills the whole magazine (the reload can't fire);
 ## a single-round reload loads one round after another until it's full and stops when it fires.
 ## Pressing `reload` again during a reload (the round being loaded) is the timing press: within the
@@ -22,6 +23,9 @@ signal reload_timed(hit: bool)
 @export var settings: RangedWeaponSettings
 @export var projectile_scene: PackedScene
 
+## Rounds in the spare magazines (with `ReloadMode.SINGLE`, spare rounds); reloads use them
+## before ore.
+var spare_rounds: int = 0
 ## Rounds loaded.
 var rounds: int = 0:
 	set(value):
@@ -74,10 +78,12 @@ func capacity() -> int:
 	return maxi(1, roundi(settings.magazine * magazine_multiplier))
 
 
-## Fills the magazine for free (from the ship's stock), cancelling a reload.
-func fill() -> void:
+## Fills the magazine and gives it `spare_magazines` full spare magazines, for free (from the
+## ship's stock), cancelling a reload.
+func fill(spare_magazines: int) -> void:
 	cancel_reload()
 	rounds = capacity()
+	spare_rounds = spare_magazines * capacity()
 
 
 ## The `reload` action: starts a reload, or during one, is its timing press. Returns whether it
@@ -93,13 +99,13 @@ func cancel_reload() -> void:
 	reloading = false
 
 
-## Whether a reload could start now (not full, and something pays more rounds than it holds).
+## Whether a reload could start now (not full, and spares or ore give more rounds than it holds).
 func can_reload() -> bool:
 	if rounds >= capacity():
 		return false
 	if settings.reload_mode == RangedWeaponSettings.ReloadMode.SINGLE:
-		return _affordable(1, supplier) >= 1
-	return _affordable(capacity(), supplier) > rounds
+		return _available(1) >= 1
+	return _available(capacity()) > rounds
 
 
 ## How far the current reload (round) is, as a share of its time without fumbles: compare with
@@ -214,24 +220,45 @@ func _time_press() -> bool:
 	return true
 
 
-## Loads the reload's rounds (the whole magazine, or one round) and pays them. A single-round
-## reload goes on with the next round until it's full or nothing pays it.
+## Loads the reload's rounds (the whole magazine, or one round) and takes them from the spares or
+## pays them. A single-round reload goes on with the next round until it's full or nothing gives
+## more.
 func _finish_round() -> void:
 	if not _single():
-		var loaded: int = _affordable(capacity(), supplier)
-		_pay(loaded, supplier)
+		var loaded: int = _available(capacity())
+		_take(loaded)
 		rounds = loaded
 		reloading = false
 		return
-	if _affordable(1, supplier) < 1:
+	if _available(1) < 1:
 		reloading = false
 		return
-	_pay(1, supplier)
+	_take(1)
 	rounds += 1
-	if rounds < capacity() and _affordable(1, supplier) >= 1:
+	if rounds < capacity() and _available(1) >= 1:
 		_start_round()
 	else:
 		reloading = false
+
+
+## How many of `count` rounds a reload gets right now: all of them aboard, else from the spares
+## while there are any, else what the holder's ore pays.
+func _available(count: int) -> int:
+	if supplier and supplier.ammo_free:
+		return count
+	if spare_rounds > 0:
+		return mini(count, spare_rounds)
+	return _affordable(count, supplier)
+
+
+## Takes `count` rounds for a reload, the way `_available` counted them.
+func _take(count: int) -> void:
+	if supplier and supplier.ammo_free:
+		return
+	if spare_rounds > 0:
+		spare_rounds = maxi(spare_rounds - count, 0)
+		return
+	_pay(count, supplier)
 
 
 ## How many of `count` rounds `payer` can pay right now.

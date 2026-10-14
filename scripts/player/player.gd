@@ -45,6 +45,10 @@ const STENCIL_VISIBLE: int = 1
 ## (the isometric camera always sees it), following this bone.
 const ARMOR_PIPS_POSITION := Vector3(0.075, 1.805, 0.0)
 const ARMOR_PIPS_BONE: StringName = &"Head"
+## Where the spare magazine cells sit, in the model's rest pose: on top of the backpack (the
+## isometric camera sees it from every side), following this bone.
+const POUCHES_POSITION := Vector3(0.0, 1.57, -0.25)
+const POUCHES_BONE: StringName = &"UpperChest"
 
 @export var settings: PlayerSettings
 ## The weapons the player owns; a new player starts with these. Each player gets its own copy.
@@ -109,10 +113,14 @@ var _held_since_menu: Array[StringName] = []
 var _weapon_type: WeaponType
 ## Rounds loaded per ranged weapon of the loadout that isn't equipped; missing ones are full.
 var _rounds: Dictionary[WeaponType, int] = {}
+## Spare rounds per ranged weapon of the loadout that isn't equipped; missing ones have all spares.
+var _spares: Dictionary[WeaponType, int] = {}
 ## `max_health()` when health was last set, so an armor upgrade adds the difference.
 var _max_health: float
 ## Shows the armor's MK level.
 var _armor_pips := MkPips.new()
+## Shows the equipped weapon's spare magazines.
+var _pouches := SparePouches.new()
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
@@ -139,6 +147,7 @@ func _ready() -> void:
 	upgrades.levels = upgrades.levels.duplicate()
 	upgrades.changed.connect(_on_upgrades_changed)
 	_add_armor_pips()
+	_add_pouches()
 	health = max_health()
 	_max_health = health
 	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()
@@ -218,6 +227,7 @@ func _process(_delta: float) -> void:
 	_target_marker.visible = locked
 	if locked:
 		_target_marker.global_position = aim_target.global_position + Vector3.UP * 0.05
+	_update_pouches()
 
 
 func _update_aim(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
@@ -344,12 +354,14 @@ func reload() -> bool:
 	return ranged != null and weapon_allowed and not dead and ranged.reload()
 
 
-## Fills every ranged weapon's magazine for free (the ship's stock, for a new run).
+## Fills every ranged weapon's magazine and spare magazines for free (the ship's stock, for a new
+## run).
 func refill_ammo() -> void:
 	_rounds.clear()
+	_spares.clear()
 	var ranged := weapon as RangedWeapon
 	if ranged:
-		ranged.fill()
+		ranged.fill(settings.spare_magazines)
 
 
 ## Hands `teammate` a magazine for their equipped ranged weapon, paid from the carried ore (see
@@ -545,24 +557,11 @@ static func write_stencil(material: BaseMaterial3D) -> void:
 	material.stencil_reference = STENCIL_VISIBLE
 
 
-## Puts the armor's pips on the helmet, following the head's bone. The marker is placed from the
-## bone's rest pose (the attachment doesn't follow the bone yet).
+## Puts the armor's pips on the helmet, following the head's bone.
 func _add_armor_pips() -> void:
-	var skeleton: Skeleton3D = _model.find_child("Skeleton3D") as Skeleton3D
-	var attachment := BoneAttachment3D.new()
-	attachment.bone_name = ARMOR_PIPS_BONE
-	skeleton.add_child(attachment)
-	var bone_in_model: Transform3D = (
-		_model.global_transform.affine_inverse()
-		* skeleton.global_transform
-		* skeleton.get_bone_global_rest(skeleton.find_bone(ARMOR_PIPS_BONE))
-	)
-	var marker := Marker3D.new()
-	attachment.add_child(marker)
 	# The row runs from front to back.
-	marker.transform = (
-		bone_in_model.affine_inverse()
-		* Transform3D(Basis(Vector3.UP, PI * 0.5), ARMOR_PIPS_POSITION)
+	var marker: Marker3D = _bone_marker(
+		ARMOR_PIPS_BONE, Transform3D(Basis(Vector3.UP, PI * 0.5), ARMOR_PIPS_POSITION)
 	)
 	_armor_pips.name = "ArmorPips"
 	_armor_pips.pip_size = Vector3(0.045, 0.02, 0.045)
@@ -571,6 +570,47 @@ func _add_armor_pips() -> void:
 	_follow(marker, _armor_pips)
 	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
 	_mark_visible(_armor_pips)
+
+
+## Puts the spare magazine cells on the backpack, following the upper chest (like the armor's
+## pips).
+func _add_pouches() -> void:
+	_pouches.name = "SparePouches"
+	add_child(_pouches)
+	_follow(_bone_marker(POUCHES_BONE, Transform3D(Basis.IDENTITY, POUCHES_POSITION)), _pouches)
+	_pouches.visible = false
+
+
+## Shows the equipped ranged weapon's spare magazines while it's drawn.
+func _update_pouches() -> void:
+	var ranged := weapon as RangedWeapon
+	_pouches.visible = ranged != null and ranged.visible
+	if not _pouches.visible:
+		return
+	var gauge := ranged.get_node_or_null(^"AmmoGauge") as AmmoGauge
+	_pouches.show_spares(
+		float(ranged.spare_rounds) / ranged.capacity(),
+		settings.spare_magazines,
+		gauge.color if gauge else Color.WHITE
+	)
+
+
+## A marker following `bone`, at `in_model` (in the model's rest pose). The marker is placed from
+## the bone's rest pose (the attachment doesn't follow the bone yet).
+func _bone_marker(bone: StringName, in_model: Transform3D) -> Marker3D:
+	var skeleton: Skeleton3D = _model.find_child("Skeleton3D") as Skeleton3D
+	var attachment := BoneAttachment3D.new()
+	attachment.bone_name = bone
+	skeleton.add_child(attachment)
+	var bone_in_model: Transform3D = (
+		_model.global_transform.affine_inverse()
+		* skeleton.global_transform
+		* skeleton.get_bone_global_rest(skeleton.find_bone(bone))
+	)
+	var marker := Marker3D.new()
+	attachment.add_child(marker)
+	marker.transform = bone_in_model.affine_inverse() * in_model
+	return marker
 
 
 func _armor_max_mk() -> int:
@@ -657,6 +697,7 @@ func _equip(weapon_type: WeaponType) -> void:
 	if weapon is RangedWeapon:
 		# A magazine reload cut short leaves it empty; loaded single rounds stay.
 		_rounds[_weapon_type] = (weapon as RangedWeapon).rounds
+		_spares[_weapon_type] = (weapon as RangedWeapon).spare_rounds
 	_weapon_type = weapon_type
 	if weapon:
 		_weapon_mount.remove_child(weapon)
@@ -672,6 +713,7 @@ func _equip(weapon_type: WeaponType) -> void:
 		ranged.supplier = self
 		var loaded: int = _rounds.get(weapon_type, ranged.capacity())
 		ranged.rounds = mini(loaded, ranged.capacity())
+		ranged.spare_rounds = _spares.get(weapon_type, settings.spare_magazines * ranged.capacity())
 		ranged.reload_denied.connect(_on_reload_denied)
 		ranged.reload_timed.connect(_on_reload_timed.bind(ranged))
 	weapon.visible = weapon_allowed and not dead

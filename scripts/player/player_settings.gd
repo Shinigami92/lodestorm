@@ -22,6 +22,8 @@ extends Resource
 @export var stick_lock_range: float = 25.0
 ## Weapons a player takes into a mission (see `Loadout`).
 @export var loadout_slots: int = 2
+## Spare magazines per ranged weapon a run starts with (besides the loaded one).
+@export var spare_magazines: int = 2
 ## Share of the top speed while reloading.
 @export var reload_move_speed: float = 0.75
 ## Handing a teammate ammo: holding `interact` this long (s) within this distance (m) of them.

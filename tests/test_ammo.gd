@@ -50,6 +50,24 @@ func test_empty_weapon_without_ore_neither_fires_nor_reloads() -> void:
 	assert_false(_player.reload(), "nothing pays a reload")
 
 
+func test_spare_magazines_show_on_the_belt_and_refill_for_new_runs() -> void:
+	_give_spares(2)
+	var pouches := _player.get_node("SparePouches") as SparePouches
+	await wait_process_frames(1)
+	assert_true(pouches.visible)
+	assert_eq(pouches.lit_count(), 2)
+	_blaster().spare_rounds = 0
+	await wait_process_frames(1)
+	assert_eq(pouches.lit_count(), 0)
+	_player.switch_weapon()
+	await wait_process_frames(1)
+	assert_false(pouches.visible, "nothing to show with the hammer")
+	_player.switch_weapon()
+	assert_eq(_blaster().spare_rounds, 0, "kept while holstered")
+	_player.refill_ammo()
+	assert_eq(_blaster().spare_rounds, 2 * _blaster().capacity())
+
+
 func test_new_runs_and_respawns_fill_the_magazines() -> void:
 	_blaster().rounds = 3
 	_player.switch_weapon()
@@ -181,11 +199,19 @@ func _attack_once() -> void:
 	await wait_physics_frames(1)
 
 
+## A player without spare magazines, so reloads pay ore (`_give_spares` adds them).
 func _add_player(at: Vector3) -> Player:
 	var player := PLAYER_SCENE.instantiate() as Player
+	player.settings = player.settings.duplicate() as PlayerSettings
+	player.settings.spare_magazines = 0
 	player.position = at
 	_arena.add_child(player)
 	return player
+
+
+func _give_spares(magazines: int) -> void:
+	_player.settings.spare_magazines = magazines
+	_player.refill_ammo()
 
 
 func _add_floor() -> void:

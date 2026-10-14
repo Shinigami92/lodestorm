@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="Upgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_level.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="2_ore"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="3_cyan"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="4_green"]
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade.gd" id="5_upgrade"]
+
+[sub_resource type="Resource" id="Resource_mk2"]
+script = ExtResource("1_level")
+cost = Dictionary[ExtResource("2_ore"), int]({
+ExtResource("3_cyan"): 180
+})
+multiplier = 1.5
+
+[sub_resource type="Resource" id="Resource_mk3"]
+script = ExtResource("1_level")
+cost = Dictionary[ExtResource("2_ore"), int]({
+ExtResource("3_cyan"): 270,
+ExtResource("4_green"): 180
+})
+multiplier = 2.0
+
+[resource]
+script = ExtResource("5_upgrade")
+display_name = "Blaster magazine"
+description = "More rounds per magazine"
+levels = Array[ExtResource("1_level")]([SubResource("Resource_mk2"), SubResource("Resource_mk3")])

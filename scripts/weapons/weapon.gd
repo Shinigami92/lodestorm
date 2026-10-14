@@ -22,21 +22,32 @@ func _physics_process(delta: float) -> void:
 	_cooldown -= delta
 	if _cooldown > 0.0:
 		return
-	if trigger_held:
+	if trigger_held and _can_attack():
 		_attack()
 		_cooldown += 1.0 / _get_settings().attack_rate
 	else:
 		_cooldown = 0.0
 
 
-## Applies the MK level of `upgrade` (the weapon's, null: MK1) in `upgrades`: the damage and the
-## pips on the weapon (an `MkPips` child named `MkPips`, if it has one). Works before the weapon
-## enters the tree.
-func apply_upgrade(upgrades: Upgrades, upgrade: Upgrade) -> void:
+## Applies the MK levels in `upgrades` of the parts of `weapon_type` (this weapon's, null: all
+## MK1): the damage and the pips on the weapon (an `MkPips` child named `MkPips`, if it has one).
+## Works before the weapon enters the tree.
+func apply_upgrades(upgrades: Upgrades, weapon_type: WeaponType) -> void:
+	var upgrade: Upgrade = weapon_type.upgrade if weapon_type else null
 	damage_multiplier = upgrades.multiplier(upgrade)
-	var pips := get_node_or_null(^"MkPips") as MkPips
+	_show_pips(^"MkPips", upgrades, upgrade)
+
+
+## Shows the MK level of `upgrade` on the `MkPips` child at `path`, if there is one.
+func _show_pips(path: NodePath, upgrades: Upgrades, upgrade: Upgrade) -> void:
+	var pips := get_node_or_null(path) as MkPips
 	if pips:
 		pips.show_level(upgrades.mk(upgrade), upgrade.max_mk() if upgrade else 1)
+
+
+## Whether it can attack right now (e.g. a ranged weapon needs ammo).
+func _can_attack() -> bool:
+	return true
 
 
 ## Performs one attack (fire a projectile, swing, ...).

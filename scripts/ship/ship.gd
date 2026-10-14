@@ -278,9 +278,11 @@ func _update_view() -> void:
 		_apply_view()
 
 
-## Weapons work outside the ship and in the shooting range.
+## Weapons work outside the ship and in the shooting range; aboard, reloads come from the ship's
+## stock for free.
 func _update_weapon(player: Player) -> void:
 	player.weapon_allowed = player not in _aboard or player in _armed
+	player.ammo_free = player in _aboard
 
 
 func _on_weapon_zone_entered(body: Node3D) -> void:

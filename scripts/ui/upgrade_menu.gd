@@ -12,8 +12,8 @@ const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.35)
 const MISSING_COLOR := Color(1.0, 0.4, 0.35)
 const ORE_CHIP_SIZE := Vector2(22.0, 22.0)
 
-## Rows for the upgrades of these weapons (in this order), locked unless the player owns the
-## weapon.
+## Rows for the upgrades of these weapons (in this order, each with its parts: damage, magazine),
+## locked unless the player owns the weapon.
 @export var weapons: Arsenal
 ## Rows for these upgrades, after the weapons'.
 @export var upgrades: Array[Upgrade] = []
@@ -69,8 +69,7 @@ func listed() -> Array[Upgrade]:
 	var all: Array[Upgrade] = []
 	if weapons:
 		for weapon_type: WeaponType in weapons.weapons:
-			if weapon_type.upgrade:
-				all.append(weapon_type.upgrade)
+			all.append_array(weapon_type.get_upgrades())
 	all.append_array(upgrades)
 	return all
 
@@ -147,8 +146,8 @@ func _build_rows() -> void:
 		return
 	if weapons:
 		for weapon_type: WeaponType in weapons.weapons:
-			if weapon_type.upgrade:
-				_weapon_of[weapon_type.upgrade] = weapon_type
+			for part: Upgrade in weapon_type.get_upgrades():
+				_weapon_of[part] = weapon_type
 	for upgrade: Upgrade in listed():
 		_rows.add_child(_row(upgrade))
 	if had_focus:

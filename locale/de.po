@@ -236,6 +236,14 @@ msgstr "Blaster"
 msgid "More damage per shot"
 msgstr "Mehr Schaden pro Schuss"
 
+#: scenes/upgrades/blaster_magazine.tres
+msgid "Blaster magazine"
+msgstr "Blaster-Magazin"
+
+#: scenes/upgrades/blaster_magazine.tres
+msgid "More rounds per magazine"
+msgstr "Mehr Schuss pro Magazin"
+
 #: scenes/upgrades/hammer.tres
 #: scenes/weapons/types/hammer.tres
 msgid "Hammer"
@@ -277,6 +285,14 @@ msgstr "Schrotflinte"
 #: scenes/upgrades/shotgun.tres
 msgid "More damage per pellet"
 msgstr "Mehr Schaden pro Schrotkugel"
+
+#: scenes/upgrades/shotgun_magazine.tres
+msgid "Shotgun magazine"
+msgstr "Schrotflinten-Magazin"
+
+#: scenes/upgrades/shotgun_magazine.tres
+msgid "More shells per load"
+msgstr "Mehr Patronen pro Ladung"
 
 #: scenes/weapons/types/blaster.tres
 msgid "Rapid shots that reach far."

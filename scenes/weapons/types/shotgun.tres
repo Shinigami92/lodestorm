@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/weapons/weapon_type.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/shotgun.tscn" id="2_scene"]
 [ext_resource type="Resource" path="res://scenes/upgrades/shotgun.tres" id="3_upgrade"]
+[ext_resource type="Resource" path="res://scenes/upgrades/shotgun_magazine.tres" id="4_magazine"]
 
 [resource]
 script = ExtResource("1_script")
@@ -10,3 +11,4 @@ display_name = "Shotgun"
 description = "A fan of pellets, strong up close."
 scene = ExtResource("2_scene")
 upgrade = ExtResource("3_upgrade")
+magazine_upgrade = ExtResource("4_magazine")

@@ -54,19 +54,19 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Refinery: alloys from 2–3 ores, refining in real time
 - Crafted miners (upgraded one by one, picked up again, lost when left behind or when everyone dies), standard-issue miners, drill types
 - Risk vs. reward: nodes running dry, mining sites drawing aliens, rare ore far out and near nests, late deposits
-- Ammo for ranged weapons (made from carried ore during a run, magazine upgrades, refilling teammates' ammo), weapon MK upgrades, loadout slots for any weapon type
+- Ammo for ranged weapons (made from carried ore during a run, reloading with a timing press, magazine upgrades, refilling teammates' ammo), weapon MK upgrades, loadout slots for any weapon type
 - Skills (dash, more health, regeneration, rescue drone, miner radar, sentries) and keeping part of the carried ore on death
-- Quest framework: NPC quest givers, main and side quests tied to locations, quests that can't be missed, reputation
-- First story pieces: one crew NPC with a quest chain, one expedition log
+- Quest framework: NPC quest givers, main and side quests tied to locations, quests that can't be missed, reputation, weapon blueprints as rewards (the shotgun first; until then only the debug overlay unlocks it)
+- First story pieces: one crew NPC with a quest chain, one expedition log; crew NPCs explain the mechanics so far (e.g. ammo and spare magazines at the armory)
 
 ## M5 — Art pass (Blender MCP)
 
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, placing and pickup animations, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
-- Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<type>_wall` in `assets/ores/ores.glb`), which needs placement along the cliff edges; drive the blaster's glowing ammo counter (the `AmmoCounter` mesh, six segments along UV.x), which needs the ammo mechanic (M4) first
+- Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<type>_wall` in `assets/ores/ores.glb`), which needs placement along the cliff edges
 - Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips
 - Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; raiders share its model (shaded darker) until they get their own strain; the brute and the spitter are still to model; the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so profiling (M6) may move it to a cheaper path or skip it for aliens off screen
-- Leftovers of the loadout: model the shotgun and the hammer (greybox meshes so far) and give the hammer a swing animation (its head only sweeps sideways through the arc now; the player holds it in the rifle pose); a weapon rack in the armory that shows the owned weapons
-- Basic VFX/SFX for mining, shooting, storm
+- Leftovers of the loadout: model the shotgun (with a shell per round in its strip, up to 12 with the magazine upgrade) and the hammer (greybox meshes so far) and give the hammer a swing animation (its head only sweeps sideways through the arc now; the player holds it in the rifle pose); a weapon rack in the armory that shows the owned weapons
+- Basic VFX/SFX for mining, shooting, reloading (a cue for the timing window, also for VR and accessibility), storm
 
 ## M6 — VR
 

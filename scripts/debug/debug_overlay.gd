@@ -4,8 +4,8 @@ extends CanvasLayer
 ## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
 ## every scene using them sees the new values right away; they last until the game stops and
 ## aren't written to the files. Also shows the mission and flight state and has shortcuts for
-## testing the flight, storm, death, fights, weapons and upgrades. Integer settings get whole-number
-## sliders.
+## testing the flight, storm, death, fights, weapons, ammo and upgrades. Integer settings get
+## whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -39,6 +39,8 @@ const TUNING: Dictionary[String, Array] = {
 	[
 		["move_speed", 1.0, 20.0, 0.5],
 		["max_health", 10.0, 500.0, 10.0],
+		["reload_move_speed", 0.1, 1.0, 0.05],
+		["spare_magazines", 0.0, 10.0, 1.0],
 	],
 	"res://scenes/weapons/blaster_settings.tres":
 	[
@@ -46,6 +48,12 @@ const TUNING: Dictionary[String, Array] = {
 		["attack_rate", 0.5, 20.0, 0.5],
 		["projectile_speed", 5.0, 100.0, 1.0],
 		["projectile_range", 5.0, 60.0, 1.0],
+		["magazine", 1.0, 200.0, 1.0],
+		["ore_per_round", 0.0, 5.0, 0.05],
+		["reload_time", 0.1, 5.0, 0.05],
+		["sweet_spot_start", 0.0, 1.0, 0.05],
+		["sweet_spot_width", 0.0, 1.0, 0.05],
+		["fumble_time", 0.0, 3.0, 0.05],
 	],
 	"res://scenes/weapons/shotgun_settings.tres":
 	[
@@ -55,6 +63,14 @@ const TUNING: Dictionary[String, Array] = {
 		["spread", 0.0, 90.0, 1.0],
 		["projectile_speed", 5.0, 100.0, 1.0],
 		["projectile_range", 5.0, 60.0, 1.0],
+		["magazine", 1.0, 200.0, 1.0],
+		["ore_per_round", 0.0, 5.0, 0.05],
+		["reload_time", 0.1, 5.0, 0.05],
+		["sweet_spot_start", 0.0, 1.0, 0.05],
+		["sweet_spot_width", 0.0, 1.0, 0.05],
+		["fumble_time", 0.0, 3.0, 0.05],
+		["chain_speedup", 0.0, 0.5, 0.05],
+		["max_chain_speedup", 0.0, 0.9, 0.05],
 	],
 	"res://scenes/weapons/hammer_settings.tres":
 	[
@@ -96,6 +112,7 @@ const HOLD_ORES: Array[OreType] = [
 	preload("res://scenes/mining/ores/ore_violet.tres"),
 ]
 const HOLD_FILL: float = 900.0
+const CARGO_FILL: float = 60.0
 
 ## Values from the files, for `reset_tuning`, keyed by "path:property".
 var _defaults: Dictionary[String, float] = {}
@@ -230,6 +247,13 @@ func unlock_weapons() -> void:
 			player.arsenal.unlock(weapon_type)
 
 
+## Adds `CARGO_FILL` units of every ore type to each player's cargo, to test reloading.
+func give_ore() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		for ore_type: OreType in HOLD_ORES:
+			player.add_cargo(ore_type, CARGO_FILL)
+
+
 ## Adds `HOLD_FILL` units of every ore type to each ship's hold, to test the upgrade stations.
 func fill_hold() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
@@ -301,6 +325,7 @@ func _build() -> void:
 	_button(actions, "Break miners", break_miners)
 	_button(actions, "Unlock weapons", unlock_weapons)
 	_button(actions, "Fill hold", fill_hold)
+	_button(actions, "Give ore", give_ore)
 	_button(actions, "Reset save", reset_save)
 	_button(actions, "Reset tuning", reset_tuning)
 

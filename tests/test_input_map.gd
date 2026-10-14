@@ -10,6 +10,7 @@ const KEYBOARD_MOUSE_AND_GAMEPAD: Array[StringName] = [
 	&"interact",
 	&"place_miner",
 	&"switch_weapon",
+	&"reload",
 	&"pause",
 ]
 ## Developer tools, only on the keyboard.

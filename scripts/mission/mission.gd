@@ -491,6 +491,7 @@ func _on_ramp_button_used(_player: Player) -> void:
 			storm_time = 0.0
 			for player: Player in _players():
 				player.heal()
+				player.refill_ammo()
 			state = State.OPEN
 			ship.ramp_open = true
 			opened.emit()

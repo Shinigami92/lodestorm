@@ -13,6 +13,7 @@
 [ext_resource type="Resource" path="res://scenes/player/default_arsenal.tres" id="11_arsenal"]
 [ext_resource type="Script" path="res://scripts/player/player_animator.gd" id="11_animator"]
 [ext_resource type="Resource" path="res://scenes/upgrades/armor.tres" id="12_armor"]
+[ext_resource type="Script" path="res://scripts/player/reload_ring.gd" id="13_reload_ring"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -96,3 +97,6 @@ top_level = true
 visible = false
 cast_shadow = 0
 mesh = SubResource("TorusMesh_target_marker")
+
+[node name="ReloadRing" type="MeshInstance3D" parent="."]
+script = ExtResource("13_reload_ring")

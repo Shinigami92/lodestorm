@@ -4,6 +4,11 @@ extends Resource
 ## placeholders until the art pass; each type only needs to be recognizable at a glance.
 
 @export var display_name: String = ""
+## How rare it is: 1 is the commonest. Ammo is made from the commonest carried ore first.
+@export var tier: int = 1
+## How much ammo one unit makes, compared to the commonest ore (`RangedWeaponSettings.ore_per_round`
+## is in units of that). TBD (playtest).
+@export var ammo_yield: float = 1.0
 ## Strong, distinct color used on the deposit, the miner gauge and later the carried resources.
 @export var color: Color = Color.WHITE
 ## Model kit (.glb) with the look of this type's ore nodes; the greybox stays without one.

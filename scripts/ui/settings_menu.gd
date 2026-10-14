@@ -5,8 +5,8 @@ extends PanelContainer
 ## progress (`SaveGame.reset_progress`). Wiping can't be undone, so it asks three times, each time
 ## saying so; each confirm button only works after `confirm_delay`, so quick repeated presses
 ## can't get through, and cancel has the focus. Leaving the terminal drops the question.
-## Resetting only works in solo play (`SaveGame.is_solo`): in co-op the button is disabled with a
-## hint, and everyone keeps their progress.
+## Resetting only works while the player is alone (`SaveGame.is_solo`): with others in the session
+## the button is disabled with a hint, and everyone keeps their progress.
 
 ## Each language's name, written in that language.
 const LANGUAGE_NAMES: Dictionary[String, String] = {"en": "English", "de": "Deutsch"}
@@ -55,7 +55,7 @@ func _process(delta: float) -> void:
 	var solo: bool = SaveGame.is_solo(get_tree())
 	_reset.disabled = not solo
 	_reset_hint.visible = not solo and wipe_step == 0
-	# Leaving the terminal (closing it any way) or a co-op session starting drops the question.
+	# Leaving the terminal (closing it any way) or someone joining drops the question.
 	if wipe_step > 0:
 		var panel: WorldPanel = WorldPanel.showing(self)
 		if not solo or (panel and not panel.user):

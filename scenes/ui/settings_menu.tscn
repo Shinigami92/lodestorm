@@ -50,7 +50,7 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.55)
-text = "Only in solo play. In co-op, host and guests keep their progress."
+text = "Only while you're alone. With others in your session, everyone keeps their progress."
 autowrap_mode = 3
 
 [node name="Wipe" type="VBoxContainer" parent="Layout"]

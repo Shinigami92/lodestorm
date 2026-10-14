@@ -77,7 +77,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 
 ## M7 — Co-op
 
-- Godot high-level multiplayer (host + up to 3 clients)
+- Godot high-level multiplayer (host + up to 3 clients), drop-in: friends join a player's session any time, no separate solo mode
 - Sync players, miners, aliens, resources
 - Shared ship hub
 - Co-op progression: host save plus each player's own gear, tier sync (see [Co-op progression](GAME_DESIGN.md#co-op-progression))

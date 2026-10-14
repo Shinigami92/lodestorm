@@ -11,6 +11,8 @@ const DRILL: Upgrade = preload("res://scenes/upgrades/miner_drill.tres")
 const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
 const GREEN: OreType = preload("res://scenes/mining/ores/ore_green.tres")
 const DIRECTORY: String = "user://test_save/"
+## A local port for hosting a session in the tests.
+const HOST_PORT: int = 47913
 
 var _map: Node3D
 var _player: Player
@@ -210,6 +212,18 @@ func test_reset_only_in_solo_play() -> void:
 	await wait_process_frames(1)
 	assert_false(reset.disabled, "solo again")
 	assert_false(hint.visible)
+
+
+func test_hosting_alone_counts_as_solo() -> void:
+	var peer := ENetMultiplayerPeer.new()
+	peer.set_bind_ip("127.0.0.1")
+	assert_eq(peer.create_server(HOST_PORT), OK)
+	var multiplayer_api: MultiplayerAPI = get_tree().get_multiplayer()
+	multiplayer_api.multiplayer_peer = peer
+	await wait_process_frames(1)
+	assert_true(SaveGame.is_solo(get_tree()), "open for friends to join, but alone")
+	multiplayer_api.multiplayer_peer = OfflineMultiplayerPeer.new()
+	peer.close()
 
 
 func test_co_op_drops_the_reset_question() -> void:

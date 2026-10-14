@@ -202,7 +202,7 @@ msgid "Reset progress"
 msgstr ""
 
 #: scenes/ui/settings_menu.tscn
-msgid "Only in solo play. In co-op, host and guests keep their progress."
+msgid "Only while you're alone. With others in your session, everyone keeps their progress."
 msgstr ""
 
 #: scenes/ui/settings_menu.tscn

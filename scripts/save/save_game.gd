@@ -97,17 +97,18 @@ func save_progress() -> void:
 		_write(PLAYER_FILE, player_data(player))
 
 
-## Whether this is solo play: one player and no co-op session. Only then can the progress be
-## reset; in co-op, host and guests keep theirs.
+## Whether the player is alone: nobody else in the session (no connected peers, one player).
+## Friends can join any time, so hosting a session alone counts too. Only then can the progress be
+## reset; with others in the session, everyone keeps theirs.
 static func is_solo(tree: SceneTree) -> bool:
 	return (
-		tree.get_multiplayer().multiplayer_peer is OfflineMultiplayerPeer
+		tree.get_multiplayer().get_peers().is_empty()
 		and tree.get_nodes_in_group(Player.GROUP).size() <= 1
 	)
 
 
 ## Wipes the progress and starts over from the defaults: deletes the save and reloads the map
-## (when it's the current scene). Irreversible; the settings stay. Only in solo play
+## (when it's the current scene). Irreversible; the settings stay. Only while the player is alone
 ## (`is_solo`); returns whether it reset.
 func reset_progress() -> bool:
 	if not is_solo(get_tree()):

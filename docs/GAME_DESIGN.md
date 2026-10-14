@@ -274,7 +274,7 @@ Standing at one spot until the timer runs low must not pay off. Directions to tr
 - A skill or upgrade keeps part of the carried ore on death (e.g. a canister that survives).
 - Back aboard (before the storm gets you): carried resources go into the ship's hold and are spent at the upgrade stations. The hold shows as big canisters by the back wall of the cargo bay (greybox: 900 units each, **TBD (playtest)**) and keeps growing over runs.
 - Players are healed for each new run (until the medical bay exists).
-- **Saving:** automatic, no save button. Progress (the hold, the owned weapons, the loadout, the upgrade levels) is saved whenever it changes aboard; what changes during a mission is saved once it's over, so quitting mid-mission loses that run like dying (the game starts aboard in space again). There is one save. **Reset progress** on the settings terminal wipes it: it asks three times, each time saying that all progress is lost for good, and each confirm button waits a moment (greybox: 1 s, **TBD (playtest)**) so quick repeated presses can't get through. The settings (language) stay. Only in solo play: in co-op the button is disabled with a hint, and host and guests keep their progress.
+- **Saving:** automatic, no save button. Progress (the hold, the owned weapons, the loadout, the upgrade levels) is saved whenever it changes aboard; what changes during a mission is saved once it's over, so quitting mid-mission loses that run like dying (the game starts aboard in space again). There is one save. **Reset progress** on the settings terminal wipes it: it asks three times, each time saying that all progress is lost for good, and each confirm button waits a moment (greybox: 1 s, **TBD (playtest)**) so quick repeated presses can't get through. The settings (language) stay. Only while the player is alone: with others in the session the button is disabled with a hint, and everyone keeps their progress.
 
 ## 12. Progression / upgrades
 
@@ -298,7 +298,7 @@ Bought in the ship with ores and alloys (no experience levels, no player classes
 
 - The **host's save** holds the ship, story, crew and quests. Each player keeps their **own weapons, skills and loadout** and brings them along; players can inspect each other's gear. No trading for now.
 - Everyone gets the full haul in their own save; nothing is split.
-- Progress can only be reset in solo play (see [Death & persistence](#11-death--persistence)).
+- **Drop-in:** friends can join a player's session at any time, also while they're alone on their ship; solo and co-op aren't separate modes, solo just means nobody else is in the session. Progress can only be reset then (see [Death & persistence](#11-death--persistence)).
 - Each player places **their own miners**; a lost miner is lost for its owner.
 - **Tier sync:** each planet and difficulty has a maximum MK level, and stronger gear counts as that level, so guests with better gear don't carry the host through. Weapon types and unlocked skills stay. Alien numbers and health scale with the player count.
 
@@ -320,7 +320,7 @@ See the milestone plan in [`PLAN.md`](PLAN.md).
 - Weapons: whether switching during a mission stays free or takes time (or is limited), melee on the attack button or its own.
 - Refinery: how it works in co-op.
 - Voice-over: which local text-to-speech model; whether AI-driven NPCs are worth an experiment.
-- Co-op: what a guest's haul buys besides their own gear.
+- Co-op: where a guest's haul goes and what it buys besides their own gear: the hold is the host's ship and only in the host's save, yet everyone gets the full haul in their own save, so what do guests pay their upgrades with (their own ship's hold back home, a personal stash, ...)?
 - Private inventory (the locker in each player cabin): a mechanic or not.
 - Cockpit: setting course at a flight console in the cockpit instead of at the holo table (the holo table picks and previews the mission, the cockpit confirms it and launches the flight), which gives the cockpit a purpose.
 - Armory rework once there are many more weapons: each player picks the loadout at their own locker, from the weapons inside it, instead of one console listing every weapon.

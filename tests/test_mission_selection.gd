@@ -1,8 +1,6 @@
 extends GutTest
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
-## In front of the mission console on the bridge (ship-local).
-const AT_CONSOLE := Vector3(-61.9, 7.5, 2.9)
 
 var _map: Node3D
 var _player: Player
@@ -21,21 +19,43 @@ func before_each() -> void:
 	await wait_physics_frames(2)
 
 
-func test_offers_missions_from_easy_to_hard() -> void:
-	var settings: MissionSettings = _mission.settings
-	assert_eq(_mission.offers.size(), settings.offers)
-	var difficulties: Array = []
-	for offer: MissionBrief in _mission.offers:
-		difficulties.append(offer.difficulty)
-		assert_has(settings.biomes, offer.biome)
-		assert_has(Array(settings.lengths), offer.length)
+func test_offers_a_mission_per_open_region() -> void:
+	var system: StarSystem = _mission.settings.system
+	var regions: Array[Region] = system.open_regions()
+	assert_gt(regions.size(), 1)
+	assert_eq(_mission.offers.size(), regions.size())
+	for i: int in regions.size():
+		var offer: MissionBrief = _mission.offers[i]
+		var region: Region = regions[i]
+		assert_eq(offer.region, region)
+		assert_eq(offer.biome, region.biome)
+		assert_eq(offer.difficulty, region.danger, "the region sets the danger")
+		assert_eq(offer.length, region.length, "and the timer")
 		assert_gt(offer.world_seed, 0)
-		assert_ne(offer.location_name(), "")
-	assert_eq(
-		difficulties,
-		[MissionBrief.Difficulty.EASY, MissionBrief.Difficulty.NORMAL, MissionBrief.Difficulty.HARD]
-	)
+		assert_string_starts_with(offer.location_name(), region.display_name)
+		assert_eq(_mission.offer_for(region), offer)
 	assert_null(_mission.brief, "none is picked at the start")
+
+
+func test_star_system_has_planets_moons_a_station_and_a_locked_planet() -> void:
+	var system: StarSystem = _mission.settings.system
+	var kinds: Array = []
+	var locked: Array[CelestialBody] = []
+	for body: CelestialBody in system.bodies:
+		kinds.append(body.kind)
+		for region: Region in body.regions:
+			assert_eq(system.body_of(region), body)
+			assert_not_null(region.biome)
+		if body.kind == CelestialBody.Kind.STATION:
+			assert_false(body.is_reachable(), "no docking yet")
+		elif not body.is_reachable():
+			locked.append(body)
+	assert_has(kinds, CelestialBody.Kind.PLANET)
+	assert_has(kinds, CelestialBody.Kind.MOON)
+	assert_has(kinds, CelestialBody.Kind.STATION)
+	assert_eq(locked.size(), 1, "one planet still locked")
+	for region: Region in locked[0].regions:
+		assert_false(region in system.open_regions(), "offers no missions")
 
 
 func test_ramp_needs_a_picked_mission() -> void:
@@ -47,6 +67,8 @@ func test_ramp_needs_a_picked_mission() -> void:
 	assert_true(_mission.select(_mission.offers[0]))
 	_mission.skip_flight()
 	await wait_physics_frames(2)
+	# The countdown updates in _process.
+	await wait_process_frames(2)
 	assert_true(_ship.ramp_button.enabled)
 	var seconds: int = ceili(_mission.duration())
 	assert_eq(_ship.countdown_text, "%d:%02d" % [floori(seconds / 60.0), seconds % 60])
@@ -100,8 +122,10 @@ func test_finished_mission_brings_new_offers() -> void:
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	assert_null(_mission.brief)
 	assert_eq(_mission.offers.size(), old_offers.size())
-	for offer: MissionBrief in _mission.offers:
-		assert_does_not_have(old_offers, offer)
+	for i: int in _mission.offers.size():
+		assert_does_not_have(old_offers, _mission.offers[i])
+		assert_eq(_mission.offers[i].region, old_offers[i].region, "the same regions")
+		assert_ne(_mission.offers[i].world_seed, old_offers[i].world_seed, "a new section")
 	assert_true(_mission.can_select())
 
 
@@ -110,11 +134,14 @@ func test_picking_only_previews_until_course_is_set() -> void:
 	var old_location: Node3D = _mission.location
 	assert_true(_mission.preview(offer))
 	assert_eq(_mission.previewed, offer)
+	assert_null(_mission.destination, "only shown")
 	assert_null(_mission.brief)
 	assert_signal_not_emitted(_mission, "selected")
 	assert_false(_ship.flight.is_flying())
 	assert_eq(_mission.location, old_location)
+	assert_false(_mission.confirm(), "nothing chosen yet")
 	assert_true(_mission.preview(_mission.offers[2]), "another one to compare")
+	assert_true(_mission.choose(_mission.offers[2]))
 	assert_true(_mission.confirm())
 	assert_eq(_mission.brief, _mission.offers[2])
 
@@ -140,50 +167,163 @@ func test_hologram_marks_the_ore_fields() -> void:
 		assert_lt(Vector2(at.x, at.z).length(), table.radius * 1.5, "above the table")
 
 
-func test_console_on_the_bridge_picks_missions() -> void:
-	var terminal: Terminal = _ship.get_node("Rooms/Upper/Bridge/MissionTerminal") as Terminal
-	await _move(_ship.to_global(AT_CONSOLE))
-	assert_eq(_player.interact(), terminal)
-	var menu := terminal.panel.content as MissionMenu
-	assert_not_null(menu)
-	await wait_process_frames(2)
-	assert_eq(menu.mission, _mission)
-	var button: Button = menu.get_button(_mission.offers[1])
-	assert_not_null(button)
-	assert_false(button.disabled)
-	var set_course: Button = menu.get_set_course_button()
-	assert_true(set_course.disabled, "nothing picked yet")
-	button.pressed.emit()
-	assert_eq(_mission.previewed, _mission.offers[1])
-	assert_null(_mission.brief, "only shown on the hologram")
-	await wait_process_frames(1)
-	assert_true(button.button_pressed, "the picked mission shows")
-	assert_false(menu.get_button(_mission.offers[0]).button_pressed)
-	assert_false(set_course.disabled)
-	set_course.pressed.emit()
-	assert_eq(_mission.brief, _mission.offers[1])
-	assert_true(_ship.flight.is_flying())
-	await wait_process_frames(1)
-	assert_true(button.disabled, "no picking in flight")
-	assert_true(set_course.disabled)
+func test_navigator_zooms_from_system_to_landing_site() -> void:
+	var navigator: NavigatorStation = await _use_navigator()
+	assert_eq(navigator.level, NavigatorStation.Level.SYSTEM)
+	var system: StarSystem = _mission.settings.system
+	assert_eq(navigator.get_parts().size(), system.bodies.size() + 1, "one per body, and the star")
+	var planet: CelestialBody = system.bodies[0]
+	navigator.select(navigator.get_part(planet))
+	assert_true(navigator.activate(), "zooms to the planet")
+	assert_eq(navigator.level, NavigatorStation.Level.BODY)
+	assert_eq(navigator.get_parts().size(), planet.regions.size(), "one per region")
+	var region: Region = planet.regions[1]
+	navigator.select(navigator.get_part(region))
+	assert_true(navigator.activate(), "zooms to its landing site")
+	assert_eq(navigator.level, NavigatorStation.Level.REGION)
+	assert_eq(_mission.previewed, _mission.offer_for(region), "shown on the table")
+	assert_null(_mission.destination, "zooming in doesn't choose it")
+	assert_true(navigator.activate(), "interact there chooses it")
+	assert_eq(_mission.destination, _mission.offer_for(region))
+	assert_null(_mission.brief, "course is set at the cockpit")
+	assert_false(_ship.flight.is_flying())
+	var table: HoloTable = _ship.get_node("Rooms/Upper/Bridge/HoloTable") as HoloTable
+	await wait_seconds(1.0)
+	assert_eq(navigator.zoom, 2.0, "zoomed smoothly all the way in")
+	assert_true((table.get_node("Hologram") as Node3D).visible, "the landing site")
+	_send(&"pause")
+	assert_eq(navigator.level, NavigatorStation.Level.BODY, "back steps out a level")
+	await wait_seconds(1.0)
+	assert_false((table.get_node("Hologram") as Node3D).visible, "the globe instead")
+	assert_eq(navigator.selected.item, region, "where it came from")
+	_send(&"pause")
+	assert_eq(navigator.level, NavigatorStation.Level.SYSTEM)
+	assert_eq(navigator.user, _player)
+	_send(&"pause")
+	assert_null(navigator.user, "closes at the star system")
+	await wait_seconds(1.0)
+	assert_false((table.get_node("Hologram") as Node3D).visible, "the table keeps the system")
 
 
-func test_console_locks_while_the_ramp_is_down() -> void:
-	var terminal: Terminal = _ship.get_node("Rooms/Upper/Bridge/MissionTerminal") as Terminal
-	var menu := terminal.panel.content as MissionMenu
+func test_navigator_stays_where_it_was_left() -> void:
+	var navigator: NavigatorStation = await _use_navigator()
+	var moon: CelestialBody = _mission.settings.system.bodies[1]
+	navigator.select(navigator.get_part(moon))
+	assert_true(navigator.activate())
+	navigator.close()
+	await wait_seconds(0.8)
+	assert_eq(navigator.level, NavigatorStation.Level.BODY, "the table keeps showing the moon")
+	assert_almost_eq(navigator.zoom, 1.0, 0.01, "and finishes zooming")
+	navigator.open(_player)
+	assert_eq(navigator.level, NavigatorStation.Level.BODY, "carries on there")
+	assert_eq(navigator.body, moon)
+
+
+func test_star_shows_its_name() -> void:
+	var navigator: NavigatorStation = await _use_navigator()
+	var system: StarSystem = _mission.settings.system
+	var star: StationPart = navigator.get_part(system)
+	assert_not_null(star)
+	navigator.select(star)
+	assert_false(navigator.activate(), "nothing to zoom into")
+	assert_eq(navigator.level, NavigatorStation.Level.SYSTEM)
+	# Zooming towards it (the wheel) stops short, without errors (once broke the globe).
+	for i: int in 5:
+		navigator.set_zoom_target(navigator.zoom_target + NavigatorStation.WHEEL_STEP)
+	await wait_seconds(0.5)
+	assert_lt(navigator.zoom_target, 1.0)
+
+
+func test_stations_and_locked_planets_cannot_be_visited() -> void:
+	var navigator: NavigatorStation = await _use_navigator()
+	for body: CelestialBody in _mission.settings.system.bodies:
+		if not body.is_reachable():
+			navigator.select(navigator.get_part(body))
+			assert_false(navigator.activate(), body.display_name)
+			assert_eq(navigator.level, NavigatorStation.Level.SYSTEM)
+			assert_lt(navigator.zoom_target, 1.0, "zooming stops short of it")
+			navigator.show_system()
+
+
+func test_mouse_wheel_zooms_gradually() -> void:
+	var navigator: NavigatorStation = await _use_navigator()
+	var planet: CelestialBody = _mission.settings.system.bodies[0]
+	navigator.select(navigator.get_part(planet))
+	for i: int in 3:
+		var wheel := InputEventMouseButton.new()
+		wheel.button_index = MOUSE_BUTTON_WHEEL_UP
+		wheel.pressed = true
+		get_viewport().push_input(wheel, true)
+	assert_almost_eq(navigator.zoom_target, 3 * NavigatorStation.WHEEL_STEP, 0.001)
+	assert_eq(navigator.level, NavigatorStation.Level.SYSTEM, "not there yet")
+	await wait_seconds(1.0)
+	assert_almost_eq(navigator.zoom, navigator.zoom_target, 0.01, "eases to it")
+	assert_eq(navigator.body, planet, "towards the selected planet")
+	for i: int in 10:
+		var wheel := InputEventMouseButton.new()
+		wheel.button_index = MOUSE_BUTTON_WHEEL_UP
+		wheel.pressed = true
+		get_viewport().push_input(wheel, true)
+	assert_eq(navigator.level, NavigatorStation.Level.BODY, "on to the globe")
+
+
+func test_navigator_cannot_choose_while_the_ramp_is_down() -> void:
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
-	await wait_process_frames(2)
-	assert_true(menu.get_button(_mission.offers[1]).disabled)
+	var navigator: NavigatorStation = await _use_navigator()
+	var system: StarSystem = _mission.settings.system
+	navigator.show_body(system.bodies[0])
+	var other: Region = system.bodies[0].regions[2]
+	navigator.select(navigator.get_part(other))
+	assert_true(navigator.activate(), "looking is fine")
+	assert_false(navigator.choose_destination())
+	assert_ne(_mission.destination, _mission.offer_for(other))
 
 
-func test_camera_frames_console_and_hologram() -> void:
-	var terminal: Terminal = _ship.get_node("Rooms/Upper/Bridge/MissionTerminal") as Terminal
-	var focus: Node3D = _ship.get_node("Rooms/Upper/Bridge/MissionView") as Node3D
-	assert_eq(terminal.panel.view_focus, focus)
-	assert_eq(terminal.panel.get_view_center(), focus.global_position)
+func test_flight_console_sets_course_for_the_destination() -> void:
+	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
+	await _move(console.use_point.global_position)
+	assert_eq(_player.interact(), console.use_point)
+	await wait_process_frames(1)
+	var card := console.card_menu as FlightCard
+	assert_false(console.can_launch(), "no destination yet")
+	assert_false(card.press_primary())
+	var offer: MissionBrief = _mission.offers[1]
+	_mission.preview(offer)
+	await wait_process_frames(1)
+	assert_false(console.can_launch(), "only shown at the navigator")
+	_mission.choose(offer)
+	await wait_process_frames(1)
+	assert_true(console.can_launch())
+	_send(&"interact")
+	assert_eq(_mission.brief, offer)
+	assert_true(_ship.flight.is_flying())
+	assert_false(console.can_launch(), "not again in flight")
+
+
+func test_camera_frames_the_navigator() -> void:
+	var navigator: NavigatorStation = await _use_navigator()
 	var settings: Terminal = _ship.get_node("Rooms/Upper/Cabin1/Terminal") as Terminal
-	assert_gt(terminal.panel.view_height, settings.panel.view_height, "room for the hologram")
+	assert_gt(navigator.view_height, settings.panel.view_height, "room for the hologram")
+	assert_eq(WorldMenu.used_by(get_tree(), _player), navigator)
+
+
+func _use_navigator() -> NavigatorStation:
+	var navigator := _ship.get_node("Rooms/Upper/Bridge/Navigator") as NavigatorStation
+	# Anywhere around the table.
+	await _move(navigator.global_position + navigator.global_basis.z * 2.8)
+	assert_eq(_player.interact(), navigator.use_point)
+	await wait_process_frames(1)
+	return navigator
+
+
+## Presses and releases `action` as an input event.
+func _send(action: StringName) -> void:
+	for pressed: bool in [true, false]:
+		var event := InputEventAction.new()
+		event.action = action
+		event.pressed = pressed
+		get_viewport().push_input(event)
 
 
 func _move(target: Vector3) -> void:

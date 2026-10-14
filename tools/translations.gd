@@ -16,7 +16,10 @@ const SOURCE_DIRS: Array[String] = ["res://scenes", "res://scripts"]
 const TEXT_PROPERTIES: Array[StringName] = [&"text", &"placeholder_text", &"tooltip_text"]
 ## Resource types (script class names) with player-facing texts, and their text properties.
 const RESOURCE_TEXTS: Dictionary[String, Array] = {
+	"CelestialBody": [&"display_name"],
 	"LocationBiome": [&"display_name"],
+	"Region": [&"display_name"],
+	"StarSystem": [&"display_name"],
 	"Upgrade": [&"display_name", &"description"],
 	"WeaponType": [&"display_name", &"description"],
 }
@@ -222,20 +225,45 @@ static func _scene_texts(path: String) -> Array[PackedStringArray]:
 
 
 ## `[context, text]` of the player-facing texts of the resource at `path`, if its type has any
-## (`RESOURCE_TEXTS`).
+## (`RESOURCE_TEXTS`), and of the resources built into it (e.g. a star system's bodies and regions).
 static func _resource_texts(path: String) -> Array[PackedStringArray]:
 	var texts: Array[PackedStringArray] = []
 	# The header names the script class: no need to load every resource.
 	var header: String = FileAccess.open(path, FileAccess.READ).get_line()
 	for type: String in RESOURCE_TEXTS:
-		if not header.contains('script_class="%s"' % type):
-			continue
-		var resource: Resource = load(path)
-		for property: StringName in RESOURCE_TEXTS[type]:
-			var value: Variant = resource.get(property)
-			if value is String and not (value as String).is_empty():
-				texts.append(PackedStringArray(["", value]))
+		if header.contains('script_class="%s"' % type):
+			_collect_resource_texts(load(path), texts, [])
+			break
 	return texts
+
+
+## Adds the texts of `resource` and of the resources built into it (sub-resources of the same file)
+## to `texts`.
+static func _collect_resource_texts(
+	resource: Resource, texts: Array[PackedStringArray], visited: Array[Resource]
+) -> void:
+	if not resource or resource in visited:
+		return
+	visited.append(resource)
+	var script := resource.get_script() as Script
+	var type: String = script.get_global_name() if script else ""
+	for property: StringName in RESOURCE_TEXTS.get(type, []):
+		var value: Variant = resource.get(property)
+		if value is String and not (value as String).is_empty():
+			texts.append(PackedStringArray(["", value]))
+	for info: Dictionary in resource.get_property_list():
+		var usage: int = info["usage"]
+		if not usage & PROPERTY_USAGE_STORAGE:
+			continue
+		var value: Variant = resource.get(info["name"] as StringName)
+		var children: Array = value if value is Array else [value]
+		for child: Variant in children:
+			if not child is Resource:
+				continue
+			var sub: Resource = child
+			# Only resources built into the file; others are collected from their own files.
+			if sub.resource_path.is_empty() or sub.resource_path.contains("::"):
+				_collect_resource_texts(sub, texts, visited)
 
 
 static func _write(path: String, content: String) -> void:

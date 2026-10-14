@@ -158,19 +158,35 @@ msgstr ""
 msgid "Loadout"
 msgstr ""
 
+#: scenes/ui/flight_card.tscn
+#: scenes/ui/navigator_card.tscn
+msgid "Danger"
+msgstr ""
+
+#: scenes/ui/flight_card.tscn
+#: scenes/ui/navigator_card.tscn
+msgid "Timer"
+msgstr ""
+
+#: scenes/ui/flight_card.tscn
+#: scenes/ui/navigator_card.tscn
+msgid "Ores"
+msgstr ""
+
+#: scenes/ui/flight_card.tscn
+msgid "Set course"
+msgstr ""
+
+#: scenes/ui/flight_card.tscn
 #: scenes/ui/loadout_card.tscn
-#: scenes/ui/mission_menu.tscn
+#: scenes/ui/navigator_card.tscn
 #: scenes/ui/settings_menu.tscn
 #: scenes/ui/upgrade_card.tscn
 msgid "Close"
 msgstr ""
 
-#: scenes/ui/mission_menu.tscn
-msgid "Missions"
-msgstr ""
-
-#: scenes/ui/mission_menu.tscn
-msgid "Set course"
+#: scenes/ui/navigator_card.tscn
+msgid "Back"
 msgstr ""
 
 #: scenes/ui/settings_menu.tscn
@@ -288,6 +304,50 @@ msgstr ""
 msgid "A fan of pellets, strong up close."
 msgstr ""
 
+#: scenes/world/star_system.tres
+msgid "Kesh"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Torvane"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Redscar Flats"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Hollow Mire"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Cinder Steps"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Lisk"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Pale Basin"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Vehra"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Glare Fields"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Ember Reach"
+msgstr ""
+
+#: scenes/world/star_system.tres
+msgid "Waypost Ostra"
+msgstr ""
+
 #: scripts/mission/mission_brief.gd
 msgid "Easy"
 msgstr ""
@@ -320,7 +380,47 @@ msgstr ""
 msgid "No mission"
 msgstr ""
 
+#: scripts/ui/flight_card.gd
+#: scripts/ui/navigator_card.gd
+msgid "%d min"
+msgstr ""
+
+#: scripts/ui/flight_card.gd
+msgid "No destination"
+msgstr ""
+
+#: scripts/ui/flight_card.gd
+#: scripts/ui/navigator_card.gd
+msgid "In flight: gear up and head for the ramp."
+msgstr ""
+
+#: scripts/ui/flight_card.gd
 #: scripts/ui/loadout_card.gd
+#: scripts/ui/navigator_card.gd
+#: scripts/ui/upgrade_card.gd
+msgid "Locked until everyone is back aboard."
+msgstr ""
+
+#: scripts/ui/flight_card.gd
+msgid "Pick a destination at the navigator on the bridge."
+msgstr ""
+
+#: scripts/ui/flight_card.gd
+#: scripts/ui/navigator_card.gd
+msgid "Scanning the location..."
+msgstr ""
+
+#: scripts/ui/flight_card.gd
+msgid "Set course to fly there."
+msgstr ""
+
+#: scripts/ui/flight_card.gd
+#: scripts/ui/navigator_card.gd
+msgid "Landed: lower the ramp in the cargo bay."
+msgstr ""
+
+#: scripts/ui/loadout_card.gd
+#: scripts/ui/navigator_card.gd
 #: scripts/ui/upgrade_card.gd
 msgid "Locked"
 msgstr ""
@@ -331,12 +431,6 @@ msgstr ""
 
 #: scripts/ui/loadout_card.gd
 msgid "Ranged"
-msgstr ""
-
-#: scripts/ui/loadout_card.gd
-#: scripts/ui/mission_menu.gd
-#: scripts/ui/upgrade_card.gd
-msgid "Locked until everyone is back aboard."
 msgstr ""
 
 #: scripts/ui/loadout_card.gd
@@ -355,28 +449,24 @@ msgstr ""
 msgid "Slot %d"
 msgstr ""
 
-#: scripts/ui/mission_menu.gd
-msgid "%d min"
+#: scripts/ui/navigator_card.gd
+msgid "Star"
 msgstr ""
 
-#: scripts/ui/mission_menu.gd
-msgid "In flight: gear up and head for the ramp."
+#: scripts/ui/navigator_card.gd
+msgid "Zoom in"
 msgstr ""
 
-#: scripts/ui/mission_menu.gd
-msgid "Scanning the location..."
+#: scripts/ui/navigator_card.gd
+msgid "No docking yet."
 msgstr ""
 
-#: scripts/ui/mission_menu.gd
-msgid "Set course to fly there."
+#: scripts/ui/navigator_card.gd
+msgid "Set as destination"
 msgstr ""
 
-#: scripts/ui/mission_menu.gd
-msgid "Landed: lower the ramp in the cargo bay."
-msgstr ""
-
-#: scripts/ui/mission_menu.gd
-msgid "Pick a mission to see it on the hologram."
+#: scripts/ui/navigator_card.gd
+msgid "Destination set: set course at the cockpit."
 msgstr ""
 
 #: scripts/ui/settings_menu.gd
@@ -413,4 +503,16 @@ msgstr ""
 
 #: scripts/ui/upgrade_card.gd
 msgid "Max"
+msgstr ""
+
+#: scripts/world/celestial_body.gd
+msgid "Moon"
+msgstr ""
+
+#: scripts/world/celestial_body.gd
+msgid "Station"
+msgstr ""
+
+#: scripts/world/celestial_body.gd
+msgid "Planet"
 msgstr ""

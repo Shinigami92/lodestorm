@@ -13,17 +13,16 @@ const UPGRADES: Array[Upgrade] = [
 ]
 const TERMINALS: PackedStringArray = [
 	"Rooms/Upper/Cabin1/Terminal",
-	"Rooms/Upper/Bridge/MissionTerminal",
 ]
 ## Body text is at least this part of the view's height (see GAME_DESIGN.md, UI).
 const MIN_TEXT_HEIGHT: float = 0.02
-## Menus not meeting it yet: the mission console is replaced by the navigator (PLAN.md, M4).
-const TEXT_SIZE_EXCEPTIONS: PackedStringArray = ["MissionTerminal"]
 const STATIONS: PackedStringArray = [
 	"Rooms/Lower/Weapons/UpgradeStation",
 	"Rooms/Lower/Armor/UpgradeStation",
 	"Rooms/Lower/Miners/UpgradeStation",
 	"Rooms/Lower/Armory/Locker1",
+	"Rooms/Upper/Bridge/Navigator",
+	"Rooms/Upper/Cockpit/FlightConsole",
 ]
 
 var _map: Node3D
@@ -104,6 +103,38 @@ func test_every_locker_card_fits_in_every_language() -> void:
 					_assert_fits(card, layout, label)
 
 
+func test_navigator_and_flight_cards_fit_in_every_language() -> void:
+	var navigator := _ship.get_node("Rooms/Upper/Bridge/Navigator") as NavigatorStation
+	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
+	var mission := _map.get_node("Mission") as Mission
+	for locale: String in SettingsMenu.languages():
+		TranslationServer.set_locale(locale)
+		navigator.open(_player)
+		await wait_process_frames(1)
+		for body: CelestialBody in mission.settings.system.bodies:
+			navigator.show_system()
+			navigator.select(navigator.get_part(body))
+			await wait_process_frames(1)
+			_assert_card_fits(navigator, "%s %s" % [locale, body.display_name])
+			navigator.show_body(body)
+			for region: Region in body.regions:
+				navigator.select(navigator.get_part(region))
+				await wait_process_frames(1)
+				_assert_card_fits(navigator, "%s %s" % [locale, region.display_name])
+				navigator.show_region(region)
+				await wait_process_frames(1)
+				_assert_card_fits(navigator, "%s %s landing site" % [locale, region.display_name])
+				navigator.show_body(body)
+		navigator.close()
+		console.open(_player)
+		await wait_process_frames(1)
+		_assert_card_fits(console, "%s no destination" % locale)
+		mission.choose(mission.offers[0])
+		await wait_process_frames(1)
+		_assert_card_fits(console, "%s destination" % locale)
+		console.close()
+
+
 func test_every_terminal_fits_in_every_language() -> void:
 	for locale: String in SettingsMenu.languages():
 		TranslationServer.set_locale(locale)
@@ -121,8 +152,6 @@ func test_text_reads_from_the_camera() -> void:
 	var font_size: float = theme.default_font_size
 	for path: String in TERMINALS:
 		var terminal := _ship.get_node(path) as Terminal
-		if terminal.name in TEXT_SIZE_EXCEPTIONS:
-			continue
 		var panel: WorldPanel = terminal.panel
 		var text_height: float = font_size / panel.pixels_per_meter * panel.global_basis.y.length()
 		assert_gte(text_height / panel.view_height, MIN_TEXT_HEIGHT, path)
@@ -131,6 +160,11 @@ func test_text_reads_from_the_camera() -> void:
 		var card: WorldPanel = station.card
 		var text_height: float = font_size / card.pixels_per_meter * card.global_basis.y.length()
 		assert_gte(text_height / station.view_height, MIN_TEXT_HEIGHT, path)
+
+
+func _assert_card_fits(station: Station, label: String) -> void:
+	var panel: WorldPanel = station.card
+	_assert_fits(station.card_menu, Vector2(panel.size * panel.pixels_per_meter), label)
 
 
 func _assert_fits(content: Control, layout: Vector2, label: String) -> void:

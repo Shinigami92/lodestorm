@@ -1,0 +1,104 @@
+class_name FlightCard
+extends StationCard
+## The holo card of the flight console (`FlightStation`): the destination picked at the navigator
+## (its location, body, danger and timer), where things stand, and "Set course".
+
+const STATUS_COLOR := Color(1.0, 0.75, 0.3)
+
+## The ores the chips show.
+var _shown_ores: Array[OreType] = []
+
+@onready var _title: Label = %Title
+@onready var _subtitle: Label = %Subtitle
+@onready var _info: GridContainer = %Info
+@onready var _danger: Label = %Danger
+@onready var _timer: Label = %Timer
+@onready var _ores: HBoxContainer = %Ores
+@onready var _status: Label = %Status
+@onready var _launch: Button = %Launch
+@onready var _close: Button = %Close
+
+
+func _ready() -> void:
+	_launch.pressed.connect(press_primary)
+	_close.pressed.connect(_on_close_pressed)
+
+
+func show_part(part: StationPart) -> void:
+	var console := station as FlightStation
+	visible = part != null and console != null
+	if not visible:
+		return
+	var mission: Mission = console.mission
+	var destination: MissionBrief = mission.destination if mission else null
+	if not destination and mission:
+		destination = mission.brief
+	if destination:
+		_title.text = destination.location_name()
+		var system: StarSystem = mission.settings.system
+		var body: CelestialBody = (
+			system.body_of(destination.region) if system and destination.region else null
+		)
+		_subtitle.text = tr(body.display_name) if body else ""
+		_info.visible = true
+		_danger.text = destination.difficulty_name()
+		_danger.add_theme_color_override(
+			&"font_color", NavigatorCard.DANGER_COLORS[destination.difficulty]
+		)
+		_timer.text = tr("%d min") % roundi(mission.settings.duration * destination.length / 60.0)
+		var ores: Array[OreType] = []
+		if destination.biome:
+			ores = destination.biome.ores
+		_show_ores(ores)
+	else:
+		_title.text = tr("No destination")
+		_subtitle.text = ""
+		_info.visible = false
+	_status.text = _status_text(mission)
+	_status.add_theme_color_override(&"font_color", STATUS_COLOR)
+	_launch.disabled = not console.can_launch()
+
+
+## The destination's ores as chips (from common to rare).
+func _show_ores(ores: Array[OreType]) -> void:
+	if ores == _shown_ores:
+		return
+	_shown_ores = ores.duplicate()
+	for node: Node in _ores.get_children():
+		_ores.remove_child(node)
+		node.queue_free()
+	for ore_type: OreType in ores:
+		var chip := ColorRect.new()
+		chip.color = ore_type.color
+		chip.custom_minimum_size = NavigatorCard.ORE_CHIP_SIZE
+		chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		_ores.add_child(chip)
+
+
+func press_primary() -> bool:
+	var console := station as FlightStation
+	return console != null and console.launch()
+
+
+func _status_text(mission: Mission) -> String:
+	var text: String = ""
+	if not mission:
+		text = ""
+	elif mission.flight.is_flying():
+		text = tr("In flight: gear up and head for the ramp.")
+	elif not mission.can_select():
+		text = tr("Locked until everyone is back aboard.")
+	elif not mission.destination:
+		text = tr("Pick a destination at the navigator on the bridge.")
+	elif mission.is_preparing(mission.destination):
+		text = tr("Scanning the location...")
+	elif mission.can_confirm():
+		text = tr("Set course to fly there.")
+	else:
+		text = tr("Landed: lower the ramp in the cargo bay.")
+	return text
+
+
+func _on_close_pressed() -> void:
+	if station:
+		station.close()

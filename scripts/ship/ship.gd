@@ -28,6 +28,8 @@ extends Node3D
 signal player_left(player: Player)
 ## Emitted when a player comes back aboard.
 signal player_boarded(player: Player)
+## Emitted when the hold's amount of `ore_type` changes (stored cargo, paid upgrades).
+signal hold_changed(ore_type: OreType, amount: float)
 
 ## What the camera sees of the ship: its outside, or into one of its decks.
 enum View { OUTSIDE, LOWER, UPPER }
@@ -218,6 +220,7 @@ static func nearest(tree: SceneTree, from: Vector3) -> Ship:
 func _set_hold(ore_type: OreType, amount: float) -> void:
 	hold[ore_type] = amount
 	_hold_rack.show_cargo(ore_type, amount)
+	hold_changed.emit(ore_type, amount)
 
 
 func _update_display() -> void:

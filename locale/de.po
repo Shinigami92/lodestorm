@@ -195,6 +195,22 @@ msgstr "Einstellungen"
 msgid "Language"
 msgstr "Sprache"
 
+#: scenes/ui/settings_menu.tscn
+msgid "Progress"
+msgstr "Fortschritt"
+
+#: scenes/ui/settings_menu.tscn
+msgid "Reset progress"
+msgstr "Fortschritt zurücksetzen"
+
+#: scenes/ui/settings_menu.tscn
+msgid "Only while you're alone. With others in your session, everyone keeps their progress."
+msgstr "Nur, solange du allein bist. Mit anderen in deiner Sitzung behalten alle ihren Fortschritt."
+
+#: scenes/ui/settings_menu.tscn
+msgid "Cancel"
+msgstr "Abbrechen"
+
 #: scenes/ui/upgrade_menu.tscn
 msgid "Upgrades"
 msgstr "Upgrades"
@@ -352,6 +368,30 @@ msgstr "Gelandet: Rampe im Frachtraum senken."
 #: scripts/ui/mission_menu.gd
 msgid "Pick a mission to see it on the hologram."
 msgstr "Mission wählen, um sie im Hologramm zu sehen."
+
+#: scripts/ui/settings_menu.gd
+msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
+msgstr "Das löscht deinen gesamten Fortschritt: Frachtraum, Waffen, Upgrades. Das lässt sich nicht rückgängig machen."
+
+#: scripts/ui/settings_menu.gd
+msgid "Reset progress (1/3)"
+msgstr "Fortschritt zurücksetzen (1/3)"
+
+#: scripts/ui/settings_menu.gd
+msgid "Are you sure? Your progress will be gone for good, there is no way back."
+msgstr "Bist du sicher? Dein Fortschritt ist dann für immer weg, es gibt keinen Weg zurück."
+
+#: scripts/ui/settings_menu.gd
+msgid "Yes, reset it (2/3)"
+msgstr "Ja, zurücksetzen (2/3)"
+
+#: scripts/ui/settings_menu.gd
+msgid "Last chance: this wipes everything, irreversibly."
+msgstr "Letzte Chance: Das löscht alles, unwiderruflich."
+
+#: scripts/ui/settings_menu.gd
+msgid "Reset everything (3/3)"
+msgstr "Alles zurücksetzen (3/3)"
 
 #: scripts/ui/upgrade_menu.gd
 msgid "Upgrade"

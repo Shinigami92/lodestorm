@@ -6,6 +6,8 @@
 [resource]
 script = ExtResource("1_script")
 display_name = "Violet ore"
+tier = 3
+ammo_yield = 1.5
 color = Color(0.7, 0.3, 0.95, 1)
 model = ExtResource("2_model")
 variants = Array[StringName]([&"Ore_violet_a", &"Ore_violet_b"])

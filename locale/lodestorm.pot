@@ -234,6 +234,14 @@ msgstr ""
 msgid "More damage per shot"
 msgstr ""
 
+#: scenes/upgrades/blaster_magazine.tres
+msgid "Blaster magazine"
+msgstr ""
+
+#: scenes/upgrades/blaster_magazine.tres
+msgid "More rounds per magazine"
+msgstr ""
+
 #: scenes/upgrades/hammer.tres
 #: scenes/weapons/types/hammer.tres
 msgid "Hammer"
@@ -274,6 +282,14 @@ msgstr ""
 
 #: scenes/upgrades/shotgun.tres
 msgid "More damage per pellet"
+msgstr ""
+
+#: scenes/upgrades/shotgun_magazine.tres
+msgid "Shotgun magazine"
+msgstr ""
+
+#: scenes/upgrades/shotgun_magazine.tres
+msgid "More shells per load"
 msgstr ""
 
 #: scenes/weapons/types/blaster.tres

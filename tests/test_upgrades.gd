@@ -123,7 +123,7 @@ func test_weapon_upgrade_raises_its_damage_and_lights_its_pips() -> void:
 func test_every_weapon_shows_pips() -> void:
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		var weapon := weapon_type.scene.instantiate() as Weapon
-		weapon.apply_upgrade(Upgrades.new(), weapon_type.upgrade)
+		weapon.apply_upgrades(Upgrades.new(), weapon_type)
 		var pips := weapon.get_node_or_null("MkPips") as MkPips
 		assert_not_null(pips, weapon_type.display_name)
 		if pips:
@@ -217,7 +217,14 @@ func test_each_player_has_their_own_upgrades() -> void:
 
 func test_every_upgrade_room_has_a_console() -> void:
 	var menus: Dictionary[String, Array] = {
-		"Weapons": [BLASTER.upgrade, SHOTGUN.upgrade, HAMMER.upgrade],
+		"Weapons":
+		[
+			BLASTER.upgrade,
+			BLASTER.magazine_upgrade,
+			SHOTGUN.upgrade,
+			SHOTGUN.magazine_upgrade,
+			HAMMER.upgrade,
+		],
 		"Armor": [ARMOR],
 		"Miners": [DRILL, TANK, HOSE],
 	}

@@ -3,14 +3,150 @@ extends Weapon
 ## Fires projectiles from the muzzle per attack: along the aim direction, or straight at the locked
 ## target. With several pellets per shot (`settings.pellets`) they fly in an even fan
 ## (`settings.spread`) around that direction.
+## Each shot uses one of its `rounds`; a full magazine holds `capacity()` (more with the magazine's
+## MK level). `reload` refills it with ammo the holder's suit makes from carried ore (`OreAmmo`,
+## paid per round loaded), also automatically once it runs empty. A magazine
+## reload throws away the rounds left in it and fills the whole magazine (the reload can't fire);
+## a single-round reload loads one round after another until it's full and stops when it fires.
+## Pressing `reload` again during a reload (the round being loaded) is the timing press: within the
+## window it finishes right away, outside it the reload takes longer. Single rounds loaded within
+## the window in a row get quicker. A display child named `AmmoGauge` shows all this on the weapon.
+
+## Emitted when the loaded rounds change.
+signal rounds_changed(rounds: int)
+## Emitted when a reload can't start: full already, or no ore to pay more rounds than it holds.
+signal reload_denied
+## Emitted after the timing press of a reload: whether it was within the window.
+signal reload_timed(hit: bool)
 
 @export var settings: RangedWeaponSettings
 @export var projectile_scene: PackedScene
 
+## Rounds loaded.
+var rounds: int = 0:
+	set(value):
+		if value == rounds:
+			return
+		rounds = value
+		rounds_changed.emit(rounds)
+## Scales the magazine from the settings, set from the magazine's MK level.
+var magazine_multiplier: float = 1.0
+## Pays the reloads with its carried ore (the holder); null: it can't reload.
+var supplier: Player
+var reloading: bool = false
+## Seconds into the current reload (with `ReloadMode.SINGLE`, of the round being loaded).
+var reload_elapsed: float = 0.0
+## How long the current reload (round) takes, longer after a press outside the window.
+var reload_duration: float = 0.0
+## Whether the current reload (round) had its timing press, and whether that missed the window.
+var timing_pressed: bool = false
+var fumbled: bool = false
+## Rounds in a row loaded within the window (`ReloadMode.SINGLE`).
+var chain: int = 0
+
+var _trigger_was_held: bool = false
+
 @onready var _muzzle: Marker3D = $Muzzle
 
 
+func _physics_process(delta: float) -> void:
+	if reloading:
+		reload_elapsed += delta
+		if reload_elapsed >= reload_duration:
+			if not timing_pressed or fumbled:
+				chain = 0
+			_finish_round()
+	# Pulling the trigger on an empty weapon reloads it.
+	if trigger_held and not _trigger_was_held and rounds == 0 and not reloading:
+		_start_reload()
+	_trigger_was_held = trigger_held
+	super(delta)
+
+
+func _process(_delta: float) -> void:
+	var gauge := get_node_or_null(^"AmmoGauge") as AmmoGauge
+	if gauge:
+		gauge.show_state(self)
+
+
+## Rounds a full magazine holds, with its MK level.
+func capacity() -> int:
+	return maxi(1, roundi(settings.magazine * magazine_multiplier))
+
+
+## Fills the magazine for free (from the ship's stock), cancelling a reload.
+func fill() -> void:
+	cancel_reload()
+	rounds = capacity()
+
+
+## The `reload` action: starts a reload, or during one, is its timing press. Returns whether it
+## started or timed one.
+func reload() -> bool:
+	if reloading:
+		return _time_press()
+	return _start_reload()
+
+
+## Stops a reload; with a magazine reload, the rounds thrown away are lost.
+func cancel_reload() -> void:
+	reloading = false
+
+
+## Whether a reload could start now (not full, and something pays more rounds than it holds).
+func can_reload() -> bool:
+	if rounds >= capacity():
+		return false
+	if settings.reload_mode == RangedWeaponSettings.ReloadMode.SINGLE:
+		return _affordable(1, supplier) >= 1
+	return _affordable(capacity(), supplier) > rounds
+
+
+## How far the current reload (round) is, as a share of its time without fumbles: compare with
+## the window (`settings.sweet_spot_start`, `settings.sweet_spot_width`).
+func reload_share() -> float:
+	return reload_elapsed / _round_time() if reloading else 0.0
+
+
+## Fills the magazine with ammo `giver` makes from their carried ore (a teammate handing over a
+## magazine), cancelling a reload. Like a reload: a magazine replaces the rounds left in it, single
+## rounds top it up. Returns whether it loaded more than it had.
+func receive_ammo(giver: Player) -> bool:
+	if settings.reload_mode == RangedWeaponSettings.ReloadMode.SINGLE:
+		var loaded: int = _affordable(capacity() - rounds, giver)
+		if loaded <= 0:
+			return false
+		cancel_reload()
+		_pay(loaded, giver)
+		rounds += loaded
+		return true
+	var full: int = _affordable(capacity(), giver)
+	if full <= rounds:
+		return false
+	cancel_reload()
+	_pay(full, giver)
+	rounds = full
+	return true
+
+
+func apply_upgrades(upgrades: Upgrades, weapon_type: WeaponType) -> void:
+	super(upgrades, weapon_type)
+	var magazine: Upgrade = weapon_type.magazine_upgrade if weapon_type else null
+	magazine_multiplier = upgrades.multiplier(magazine)
+	_show_pips(^"MagazinePips", upgrades, magazine)
+	rounds = mini(rounds, capacity())
+	var gauge := get_node_or_null(^"AmmoGauge") as AmmoGauge
+	if gauge:
+		gauge.build(capacity())
+
+
+func _can_attack() -> bool:
+	return rounds > 0 and (not reloading or _single())
+
+
 func _attack() -> void:
+	cancel_reload()
+	rounds -= 1
 	var direction: Vector3 = aim_direction
 	if is_instance_valid(aim_target) and not aim_target.dead:
 		direction = _muzzle.global_position.direction_to(aim_target.get_aim_point())
@@ -20,10 +156,96 @@ func _attack() -> void:
 		if settings.pellets > 1:
 			angle = lerpf(-spread * 0.5, spread * 0.5, float(pellet) / (settings.pellets - 1))
 		_fire(direction.rotated(Vector3.UP, angle))
+	if rounds == 0:
+		_start_reload()
 
 
 func _get_settings() -> WeaponSettings:
 	return settings
+
+
+func _single() -> bool:
+	return settings.reload_mode == RangedWeaponSettings.ReloadMode.SINGLE
+
+
+func _start_reload() -> bool:
+	if not can_reload():
+		reload_denied.emit()
+		return false
+	if not _single():
+		rounds = 0
+	reloading = true
+	chain = 0
+	_start_round()
+	return true
+
+
+func _start_round() -> void:
+	reload_elapsed = 0.0
+	reload_duration = _round_time()
+	timing_pressed = false
+	fumbled = false
+
+
+## The time of the next reload (round), quicker with a chain of timed rounds.
+func _round_time() -> float:
+	var speedup: float = minf(chain * settings.chain_speedup, settings.max_chain_speedup)
+	return settings.reload_time * (1.0 - speedup)
+
+
+func _time_press() -> bool:
+	if timing_pressed:
+		return false
+	timing_pressed = true
+	var share: float = reload_share()
+	var hit: bool = (
+		share >= settings.sweet_spot_start
+		and share <= settings.sweet_spot_start + settings.sweet_spot_width
+	)
+	if hit:
+		chain += 1
+		reload_timed.emit(true)
+		_finish_round()
+	else:
+		fumbled = true
+		chain = 0
+		reload_duration += settings.fumble_time
+		reload_timed.emit(false)
+	return true
+
+
+## Loads the reload's rounds (the whole magazine, or one round) and pays them. A single-round
+## reload goes on with the next round until it's full or nothing pays it.
+func _finish_round() -> void:
+	if not _single():
+		var loaded: int = _affordable(capacity(), supplier)
+		_pay(loaded, supplier)
+		rounds = loaded
+		reloading = false
+		return
+	if _affordable(1, supplier) < 1:
+		reloading = false
+		return
+	_pay(1, supplier)
+	rounds += 1
+	if rounds < capacity() and _affordable(1, supplier) >= 1:
+		_start_round()
+	else:
+		reloading = false
+
+
+## How many of `count` rounds `payer` can pay right now.
+func _affordable(count: int, payer: Player) -> int:
+	if not payer:
+		return 0
+	if payer.ammo_free:
+		return count
+	return mini(count, OreAmmo.affordable(payer.cargo, settings.ore_per_round))
+
+
+func _pay(count: int, payer: Player) -> void:
+	if payer and not payer.ammo_free:
+		OreAmmo.spend(payer, count * settings.ore_per_round)
 
 
 ## Projectiles don't hit the holder and are added to its parent, so they fly on independently.

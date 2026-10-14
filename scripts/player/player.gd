@@ -11,9 +11,12 @@ extends CharacterBody3D
 ## menu (`menu`), it stands still and only the menu gets its input. Health shows on the suit light;
 ## at zero health the player dies, drops everything carried and lies still until `respawn`.
 ## Owns the weapons in its `arsenal` and carries the ones in its `loadout` (picked in the armory);
-## `switch_weapon` equips the next one. Its `upgrades` (bought at the upgrade stations) raise its
-## weapons' damage, its armor (`armor_upgrade`: more health, shown by pips on the helmet)
-## and the miners it places.
+## `switch_weapon` equips the next one. Ranged weapons keep their loaded rounds while holstered
+## for the run and `reload` them with ammo the suit makes from the carried ore (`OreAmmo`; free
+## aboard), walking slower meanwhile. Holding `interact` next to a teammate, with nothing else to
+## use there, hands them a magazine for their equipped weapon, paid from its ore. Its `upgrades`
+## (bought at the upgrade stations) raise its weapons' damage and magazines, its armor
+## (`armor_upgrade`: more health, shown by pips on the helmet) and the miners it places.
 ## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
 ## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
@@ -28,7 +31,9 @@ signal died
 const GROUP: StringName = &"players"
 
 ## Actions that make the player act; ones still held when a menu closes wait for their release.
-const ACTIONS: Array[StringName] = [&"attack", &"place_miner", &"interact", &"switch_weapon"]
+const ACTIONS: Array[StringName] = [
+	&"attack", &"place_miner", &"interact", &"switch_weapon", &"reload"
+]
 ## Ignore cursor positions this close to the player, the direction flips around too easily.
 const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 ## The cursor ray looks for the ground from this high above the player's feet (m), so ceilings and
@@ -77,6 +82,11 @@ var weapon_allowed: bool = true:
 			weapon.trigger_held = false
 ## Units carried per ore type; no carry limit.
 var cargo: Dictionary[OreType, float] = {}
+## Whether reloads cost nothing (aboard: from the ship's stock).
+var ammo_free: bool = false
+## The teammate `interact` hands ammo to while it's held, or null; and for how long it's held (s).
+var give_ammo_target: Player
+var give_ammo_time: float = 0.0
 ## Current health, from 0 to `max_health()`.
 var health: float
 ## Dead players can't move or act until they respawn.
@@ -97,6 +107,8 @@ var _aim_with_mouse: bool = false
 ## Actions held since a menu opened or closed; they're ignored until released.
 var _held_since_menu: Array[StringName] = []
 var _weapon_type: WeaponType
+## Rounds loaded per ranged weapon of the loadout that isn't equipped; missing ones are full.
+var _rounds: Dictionary[WeaponType, int] = {}
 ## `max_health()` when health was last set, so an armor upgrade adds the difference.
 var _max_health: float
 ## Shows the armor's MK level.
@@ -110,6 +122,7 @@ var _armor_pips := MkPips.new()
 @onready var _animator: PlayerAnimator = $Animator
 @onready var _ship_pointer: Node3D = $ShipPointer
 @onready var _target_marker: Node3D = $TargetMarker
+@onready var _reload_ring: ReloadRing = $ReloadRing
 
 
 func _ready() -> void:
@@ -154,8 +167,11 @@ func _physics_process(delta: float) -> void:
 	if acting:
 		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
 	var move: Vector3 = IsoInput.camera_relative(move_input, camera_basis)
+	var speed: float = settings.move_speed
+	if _is_reloading():
+		speed *= settings.reload_move_speed
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(
-		move * settings.move_speed, settings.acceleration * delta
+		move * speed, settings.acceleration * delta
 	)
 	velocity = Vector3(horizontal.x, velocity.y, horizontal.z)
 	if is_on_floor():
@@ -188,9 +204,13 @@ func _physics_process(delta: float) -> void:
 	_update_interact_target()
 	if _action_just_pressed(&"interact"):
 		interact()
+	_update_give_ammo(delta)
 
 	if _action_just_pressed(&"switch_weapon"):
 		switch_weapon()
+
+	if _action_just_pressed(&"reload"):
+		reload()
 
 
 func _process(_delta: float) -> void:
@@ -317,6 +337,30 @@ func interact() -> Interactable:
 	return interact_target
 
 
+## The `reload` action on the equipped ranged weapon (see `RangedWeapon.reload`). Returns whether
+## it started or timed a reload.
+func reload() -> bool:
+	var ranged := weapon as RangedWeapon
+	return ranged != null and weapon_allowed and not dead and ranged.reload()
+
+
+## Fills every ranged weapon's magazine for free (the ship's stock, for a new run).
+func refill_ammo() -> void:
+	_rounds.clear()
+	var ranged := weapon as RangedWeapon
+	if ranged:
+		ranged.fill()
+
+
+## Hands `teammate` a magazine for their equipped ranged weapon, paid from the carried ore (see
+## `RangedWeapon.receive_ammo`). Returns whether it did.
+func give_ammo(teammate: Player) -> bool:
+	if teammate == self or teammate.dead or dead:
+		return false
+	var ranged := teammate.weapon as RangedWeapon
+	return ranged != null and ranged.receive_ammo(self)
+
+
 ## Equips the weapon in the next filled loadout slot (wrapping around). Returns whether it switched.
 func switch_weapon() -> bool:
 	var slots: int = settings.loadout_slots
@@ -354,6 +398,18 @@ func add_cargo(ore_type: OreType, amount: float) -> void:
 	cargo_changed.emit(ore_type, carried)
 
 
+## Removes up to `amount` units of `ore_type` from the cargo (e.g. made into ammo).
+func take_ore(ore_type: OreType, amount: float) -> void:
+	var carried: float = cargo.get(ore_type, 0.0)
+	if amount <= 0.0 or carried <= 0.0:
+		return
+	carried = maxf(carried - amount, 0.0)
+	if carried < 0.0001:
+		carried = 0.0
+	cargo[ore_type] = carried
+	cargo_changed.emit(ore_type, carried)
+
+
 ## Removes all cargo and returns it.
 func take_cargo() -> Dictionary[OreType, float]:
 	var taken: Dictionary[OreType, float] = cargo
@@ -386,6 +442,7 @@ func respawn(at: Vector3) -> void:
 	_animator.dead = false
 	weapon_allowed = weapon_allowed
 	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
+	refill_ammo()
 	global_position = at
 	velocity = Vector3.ZERO
 	reset_physics_interpolation()
@@ -410,6 +467,11 @@ static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Play
 			nearest_player = player
 			nearest_distance = distance
 	return nearest_player
+
+
+func _is_reloading() -> bool:
+	var ranged := weapon as RangedWeapon
+	return ranged != null and ranged.reloading
 
 
 ## Whether `action` is held for the player to act (not while using a menu, nor a press from it).
@@ -440,6 +502,10 @@ func _die() -> void:
 	if weapon:
 		weapon.trigger_held = false
 		weapon.visible = false
+	if weapon is RangedWeapon:
+		(weapon as RangedWeapon).cancel_reload()
+	give_ammo_target = null
+	give_ammo_time = 0.0
 	if is_instance_valid(miner_target):
 		miner_target.highlighted = false
 	if is_instance_valid(interact_target):
@@ -462,13 +528,15 @@ func _mark_visible(root: Node) -> void:
 	for node: Node in root.find_children("*", "MeshInstance3D", true, false):
 		var mesh: MeshInstance3D = node as MeshInstance3D
 		if mesh.material_override:  # e.g. the suit light's own material
-			_write_stencil(mesh.material_override as BaseMaterial3D)
+			write_stencil(mesh.material_override as BaseMaterial3D)
 			continue
 		for surface: int in mesh.mesh.get_surface_count():
-			_write_stencil(mesh.mesh.surface_get_material(surface) as BaseMaterial3D)
+			write_stencil(mesh.mesh.surface_get_material(surface) as BaseMaterial3D)
 
 
-static func _write_stencil(material: BaseMaterial3D) -> void:
+## Makes `material` mark where it's visible like the suit (see `_mark_visible`), e.g. for meshes a
+## weapon builds later.
+static func write_stencil(material: BaseMaterial3D) -> void:
 	if not material:
 		return
 	material.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
@@ -534,6 +602,43 @@ func _update_miner_target() -> void:
 		miner_target.highlighted = true
 
 
+## Holding `interact` with nothing to use in range hands the nearest teammate in range (whose
+## equipped ranged weapon isn't full) a magazine once it's held for `settings.give_ammo_time`.
+func _update_give_ammo(delta: float) -> void:
+	var target: Player = null
+	if not interact_target and _action_held(&"interact"):
+		target = _teammate_needing_ammo()
+	if target != give_ammo_target:
+		give_ammo_target = target
+		give_ammo_time = 0.0
+	if not give_ammo_target:
+		return
+	give_ammo_time += delta
+	if give_ammo_time >= settings.give_ammo_time:
+		give_ammo(give_ammo_target)
+		give_ammo_target = null
+		give_ammo_time = 0.0
+		# Once per hold.
+		_held_since_menu.append(&"interact")
+
+
+func _teammate_needing_ammo() -> Player:
+	var best: Player = null
+	var best_distance: float = settings.give_ammo_range
+	for node: Node in get_tree().get_nodes_in_group(GROUP):
+		var teammate := node as Player
+		if teammate == self or teammate.dead:
+			continue
+		var ranged := teammate.weapon as RangedWeapon
+		if not ranged or ranged.rounds >= ranged.capacity():
+			continue
+		var distance: float = global_position.distance_to(teammate.global_position)
+		if distance <= best_distance:
+			best = teammate
+			best_distance = distance
+	return best
+
+
 func _update_interact_target() -> void:
 	var target: Interactable = Interactable.nearest(get_tree(), global_position)
 	if target == interact_target:
@@ -549,6 +654,9 @@ func _update_interact_target() -> void:
 func _equip(weapon_type: WeaponType) -> void:
 	if weapon_type == _weapon_type:
 		return
+	if weapon is RangedWeapon:
+		# A magazine reload cut short leaves it empty; loaded single rounds stay.
+		_rounds[_weapon_type] = (weapon as RangedWeapon).rounds
 	_weapon_type = weapon_type
 	if weapon:
 		_weapon_mount.remove_child(weapon)
@@ -558,16 +666,35 @@ func _equip(weapon_type: WeaponType) -> void:
 		return
 	weapon = weapon_type.scene.instantiate() as Weapon
 	weapon.holder = self
-	weapon.apply_upgrade(upgrades, weapon_type.upgrade)
+	weapon.apply_upgrades(upgrades, weapon_type)
+	var ranged := weapon as RangedWeapon
+	if ranged:
+		ranged.supplier = self
+		var loaded: int = _rounds.get(weapon_type, ranged.capacity())
+		ranged.rounds = mini(loaded, ranged.capacity())
+		ranged.reload_denied.connect(_on_reload_denied)
+		ranged.reload_timed.connect(_on_reload_timed.bind(ranged))
 	weapon.visible = weapon_allowed and not dead
 	_mark_visible(weapon)
 	_weapon_mount.add_child(weapon)
 
 
 ## Applies new MK levels: to the equipped weapon, and a stronger armor adds its extra health.
+func _on_reload_denied() -> void:
+	_reload_ring.flash(ReloadRing.FUMBLE_COLOR)
+
+
+## A hit that finished the reload flashes the ring (single rounds go on loading meanwhile).
+func _on_reload_timed(hit: bool, ranged: RangedWeapon) -> void:
+	if hit and not ranged.reloading:
+		_reload_ring.flash(AmmoGauge.TIMING)
+
+
+## Upgrades are bought aboard, so the magazines are filled to their new size.
 func _on_upgrades_changed() -> void:
 	if weapon:
-		weapon.apply_upgrade(upgrades, _weapon_type.upgrade)
+		weapon.apply_upgrades(upgrades, _weapon_type)
+	refill_ammo()
 	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
 	if not dead:
 		_set_health(health + max_health() - _max_health)

@@ -3,7 +3,7 @@
 Dark, realistic sci-fi 3D isometric mining/action game (Godot, version in `.godot-version`; GDScript). Desktop first, VR (Steam Frame) support, solo with optional 4-player co-op.
 
 - Design: `docs/GAME_DESIGN.md`
-- Milestones: `docs/PLAN.md` — current: **M3 (ship hub)**, in progress
+- Milestones: `docs/PLAN.md` — current: **M4 (progression & quests)**, in progress
 - Tooling, CI, licensing, Steam: `docs/TECHNICAL.md`
 - Godot editor: not on PATH, use env var `GODOT4_EDITOR` (e.g. `"$GODOT4_EDITOR" --headless ...`)
 

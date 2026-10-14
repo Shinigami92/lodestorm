@@ -71,6 +71,7 @@ Development must work on Windows (Git Bash), Linux and macOS.
   | `interact` | E | A / Cross |
   | `place_miner` | F | X / Square |
   | `switch_weapon` | Q | Y / Triangle |
+  | `reload` | R | RB / R1 |
   | `pause` | Escape | Menu / Options |
   | `debug_overlay` | F3 | — |
 

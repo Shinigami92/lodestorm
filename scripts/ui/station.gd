@@ -91,6 +91,8 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		if card_menu:
 			card_menu.press_primary()
+	elif _shortcut(event):
+		get_viewport().set_input_as_handled()
 	else:
 		_steer(event)
 
@@ -160,6 +162,16 @@ func get_look_target() -> Vector3:
 	return global_position
 
 
+## Handles a station's own keys (e.g. the locker's `slot_1`/`slot_2`). Returns whether it did.
+func _shortcut(_event: InputEvent) -> bool:
+	return false
+
+
+## Whether `player` may use it (e.g. only their own locker).
+func can_use(_player: Player) -> bool:
+	return true
+
+
 ## Switches to the previous (-1) or next (1) group of parts; nothing by default.
 func _cycle(_step: int) -> void:
 	pass
@@ -211,7 +223,8 @@ func _closed() -> void:
 
 
 func _on_used(player: Player) -> void:
-	open(player)
+	if can_use(player):
+		open(player)
 
 
 func _point(event: InputEventMouse) -> void:

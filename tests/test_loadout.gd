@@ -6,8 +6,8 @@ const ALL_WEAPONS: Arsenal = preload("res://scenes/weapons/all_weapons.tres")
 const BLASTER: WeaponType = preload("res://scenes/weapons/types/blaster.tres")
 const SHOTGUN: WeaponType = preload("res://scenes/weapons/types/shotgun.tres")
 const HAMMER: WeaponType = preload("res://scenes/weapons/types/hammer.tres")
-## In front of the console in the armory (ship-local).
-const AT_CONSOLE := Vector3(-8.0, 2.5, -12.4)
+## In the armory (ship-local).
+const IN_ARMORY := Vector3(-8.0, 2.5, -12.4)
 
 var _map: Node3D
 var _player: Player
@@ -110,7 +110,7 @@ func test_changing_the_loadout_changes_the_weapon() -> void:
 
 
 func test_switched_weapon_stays_holstered_aboard() -> void:
-	_player.global_position = _ship.to_global(AT_CONSOLE)
+	_player.global_position = _ship.to_global(IN_ARMORY)
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(2)
 	assert_false(_player.weapon_allowed)
@@ -118,59 +118,8 @@ func test_switched_weapon_stays_holstered_aboard() -> void:
 	assert_false(_player.weapon.visible)
 
 
-func test_armory_console_assigns_slots() -> void:
-	var menu: ArmoryMenu = await _open_console()
-	var hammer: Array[Button] = menu.get_slot_buttons(HAMMER)
-	assert_eq(hammer.size(), 2)
-	assert_false(hammer[0].button_pressed)
-	assert_true(hammer[1].button_pressed, "the hammer is in slot 2")
-	hammer[0].pressed.emit()
-	assert_eq(_player.loadout.weapons, [HAMMER, BLASTER] as Array[WeaponType], "swapped")
-	await wait_process_frames(1)
-	assert_true(hammer[0].button_pressed)
-	assert_true(menu.get_slot_buttons(BLASTER)[1].button_pressed)
-	hammer[0].pressed.emit()
-	assert_null(_player.loadout.get_weapon(0), "pressing it again takes it out")
-
-
-func test_armory_console_shows_locked_weapons() -> void:
-	var menu: ArmoryMenu = await _open_console()
-	for button: Button in menu.get_slot_buttons(SHOTGUN):
-		assert_true(button.disabled, "not owned yet")
-	_player.arsenal.unlock(SHOTGUN)
-	await wait_process_frames(2)
-	var shotgun: Array[Button] = menu.get_slot_buttons(SHOTGUN)
-	assert_false(shotgun[0].disabled)
-	shotgun[0].pressed.emit()
-	assert_eq(_player.loadout.get_weapon(0), SHOTGUN)
-
-
-func test_armory_console_locks_while_a_mission_is_underway() -> void:
-	var menu: ArmoryMenu = await _open_console()
-	TEST_MAP.pick_mission(_map)
-	_ship.ramp_button.use(_player)
-	await wait_process_frames(2)
-	assert_true(menu.is_locked())
-	var hammer: Array[Button] = menu.get_slot_buttons(HAMMER)
-	assert_true(hammer[0].disabled)
-	hammer[0].pressed.emit()
-	assert_eq(_player.loadout.get_weapon(0), BLASTER, "unchanged")
-
-
 func test_debug_overlay_unlocks_every_weapon() -> void:
 	var overlay: CanvasLayer = get_tree().root.get_node("DebugOverlay") as CanvasLayer
 	overlay.call(&"unlock_weapons")
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		assert_true(_player.arsenal.owns(weapon_type))
-
-
-func _open_console() -> ArmoryMenu:
-	var terminal := _ship.get_node("Rooms/Lower/Armory/ArmoryTerminal") as Terminal
-	_player.global_position = _ship.to_global(AT_CONSOLE)
-	_player.reset_physics_interpolation()
-	await wait_physics_frames(5)
-	assert_eq(_player.interact(), terminal)
-	var menu := terminal.panel.content as ArmoryMenu
-	await wait_process_frames(2)
-	assert_eq(menu.player, _player)
-	return menu

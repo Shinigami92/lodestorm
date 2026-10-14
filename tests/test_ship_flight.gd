@@ -43,6 +43,8 @@ func _start() -> void:
 	_flight.settings = settings
 	watch_signals(_flight)
 	await wait_physics_frames(2)
+	# The ship's display (beacon, countdown) updates in _process.
+	await wait_process_frames(2)
 
 
 func test_game_starts_in_space() -> void:
@@ -67,7 +69,7 @@ func test_flies_from_space_to_the_location() -> void:
 	var offer: MissionBrief = _mission.offers[1]
 	assert_true(_mission.select(offer))
 	assert_eq(_flight.phase, ShipFlight.Phase.DEPARTURE)
-	await wait_physics_frames(2)
+	await wait_process_frames(2)
 	assert_eq(_ship.countdown_text, "In flight")
 	assert_false(_ship.ramp_button.enabled, "no ramp in flight")
 	await _wait_for_phase(ShipFlight.Phase.DESCENT)

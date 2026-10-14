@@ -8,7 +8,7 @@ content_margin_left = 24.0
 content_margin_top = 18.0
 content_margin_right = 24.0
 content_margin_bottom = 18.0
-bg_color = Color(0.025, 0.04, 0.055, 0.9)
+bg_color = Color(0.025, 0.04, 0.055, 1)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
@@ -88,9 +88,10 @@ theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
 theme_override_font_sizes/font_size = 26
 autowrap_mode = 3
 
-[node name="Buttons" type="HBoxContainer" parent="Layout"]
+[node name="Buttons" type="HFlowContainer" parent="Layout"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 8
 alignment = 2
 
 [node name="Close" type="Button" parent="Layout/Buttons"]

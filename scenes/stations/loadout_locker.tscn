@@ -1,0 +1,187 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/loadout_station.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/weapons/all_weapons.tres" id="2_weapons"]
+[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="3_panel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/loadout_card.tscn" id="4_card"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="5_use"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.17, 0.175, 0.185, 1)
+metallic = 0.2
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_inside"]
+albedo_color = Color(0.09, 0.1, 0.11, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_locker"]
+size = Vector3(1.3, 2.3, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_back"]
+material = SubResource("StandardMaterial3D_inside")
+size = Vector3(1.3, 2.3, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_side"]
+material = SubResource("StandardMaterial3D_body")
+size = Vector3(0.05, 2.3, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_top"]
+material = SubResource("StandardMaterial3D_body")
+size = Vector3(1.3, 0.05, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_shelf"]
+material = SubResource("StandardMaterial3D_body")
+size = Vector3(1.2, 0.03, 0.18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cradle"]
+size = Vector3(0.9, 0.02, 0.06)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_divider"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_divider"]
+material = SubResource("StandardMaterial3D_divider")
+size = Vector3(1.15, 0.012, 0.012)
+
+[sub_resource type="BoxMesh" id="BoxMesh_door"]
+material = SubResource("StandardMaterial3D_body")
+size = Vector3(1.3, 2.3, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_strip"]
+size = Vector3(0.03, 2.2, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+size = Vector3(1.4, 0.02, 0.06)
+
+[node name="LoadoutLocker" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+script = ExtResource("1_script")
+weapons = ExtResource("2_weapons")
+user_spot = NodePath("UserSpot")
+view_height = 2.8
+view_focus = NodePath("Focus")
+
+[node name="Body" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+shape = SubResource("BoxShape3D_locker")
+
+[node name="Back" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.28)
+mesh = SubResource("BoxMesh_back")
+
+[node name="SideLeft" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.625, 0, 0)
+mesh = SubResource("BoxMesh_side")
+
+[node name="SideRight" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.625, 0, 0)
+mesh = SubResource("BoxMesh_side")
+
+[node name="Top" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.125, 0)
+mesh = SubResource("BoxMesh_top")
+
+[node name="Shelf" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.32, -0.17)
+mesh = SubResource("BoxMesh_shelf")
+
+[node name="Strip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.64, 1.15, 0.31)
+mesh = SubResource("BoxMesh_strip")
+
+[node name="Number" type="Label3D" parent="."]
+auto_translate_mode = 2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.42, 0.31)
+pixel_size = 0.008
+text = "1"
+font_size = 48
+outline_size = 8
+
+[node name="Rack" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0.05)
+
+[node name="LoadoutSign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.95, 0.2)
+pixel_size = 0.0035
+modulate = Color(1, 0.75, 0.3, 1)
+text = "Loadout"
+font_size = 36
+outline_size = 6
+horizontal_alignment = 0
+uppercase = true
+
+[node name="Divider" type="MeshInstance3D" parent="LoadoutSign"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, -0.08, 0)
+mesh = SubResource("BoxMesh_divider")
+
+[node name="Cradle1" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0.05)
+
+[node name="Glow" type="MeshInstance3D" parent="Cradle1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.12)
+mesh = SubResource("BoxMesh_cradle")
+
+[node name="Label" type="Label3D" parent="Cradle1"]
+auto_translate_mode = 2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0.12)
+pixel_size = 0.006
+text = "1"
+font_size = 40
+outline_size = 6
+
+[node name="Cradle2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0.05)
+
+[node name="Glow" type="MeshInstance3D" parent="Cradle2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.12)
+mesh = SubResource("BoxMesh_cradle")
+
+[node name="Label" type="Label3D" parent="Cradle2"]
+auto_translate_mode = 2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0.12)
+pixel_size = 0.006
+text = "2"
+font_size = 40
+outline_size = 6
+
+[node name="Door" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0.29)
+visible = false
+mesh = SubResource("BoxMesh_door")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0.8)
+light_color = Color(0.3, 0.85, 1, 1)
+light_energy = 0.4
+omni_range = 2.5
+
+[node name="UserSpot" type="Marker3D" parent="."]
+rotation = Vector3(0, -1.5708, 0)
+position = Vector3(-0.95, 0, 0.7)
+
+[node name="Focus" type="Marker3D" parent="."]
+position = Vector3(0.4, 1.25, 0)
+
+[node name="Use" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.9)
+script = ExtResource("5_use")
+interact_range = 1.0
+
+[node name="Highlight" type="MeshInstance3D" parent="Use"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, -0.55)
+visible = false
+mesh = SubResource("BoxMesh_highlight")
+
+[node name="Card" parent="." instance=ExtResource("3_panel")]
+size = Vector2(1, 0.96)
+pixels_per_meter = 500.0
+transparent = true
+menu = ExtResource("4_card")

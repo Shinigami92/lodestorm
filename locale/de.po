@@ -156,15 +156,11 @@ msgstr "Lift\nFrachtraum · Rampe"
 msgid "Cabins · Lift · Bridge"
 msgstr "Kabinen · Lift · Brücke"
 
-#: scenes/ui/armory_menu.tscn
+#: scenes/stations/loadout_locker.tscn
 msgid "Loadout"
 msgstr "Ausrüstung"
 
-#: scenes/ui/armory_menu.tscn
-msgid "Slot"
-msgstr "Platz"
-
-#: scenes/ui/armory_menu.tscn
+#: scenes/ui/loadout_card.tscn
 #: scenes/ui/mission_menu.tscn
 #: scenes/ui/settings_menu.tscn
 #: scenes/ui/upgrade_card.tscn
@@ -326,28 +322,40 @@ msgstr "Sturm"
 msgid "No mission"
 msgstr "Keine Mission"
 
-#: scripts/ui/armory_menu.gd
+#: scripts/ui/loadout_card.gd
 #: scripts/ui/upgrade_card.gd
 msgid "Locked"
 msgstr "Gesperrt"
 
-#: scripts/ui/armory_menu.gd
+#: scripts/ui/loadout_card.gd
 msgid "Melee"
 msgstr "Nahkampf"
 
-#: scripts/ui/armory_menu.gd
+#: scripts/ui/loadout_card.gd
 msgid "Ranged"
 msgstr "Fernkampf"
 
-#: scripts/ui/armory_menu.gd
+#: scripts/ui/loadout_card.gd
 #: scripts/ui/mission_menu.gd
 #: scripts/ui/upgrade_card.gd
 msgid "Locked until everyone is back aboard."
 msgstr "Gesperrt, bis alle wieder an Bord sind."
 
-#: scripts/ui/armory_menu.gd
-msgid "Pick the weapons for the next mission."
-msgstr "Waffen für die nächste Mission wählen."
+#: scripts/ui/loadout_card.gd
+msgid "Slots 1 and 2 go along on the next mission; one weapon always does."
+msgstr "Platz 1 und 2 kommen mit auf die nächste Mission; eine Waffe immer."
+
+#: scripts/ui/loadout_card.gd
+msgid "Damage"
+msgstr "Schaden"
+
+#: scripts/ui/loadout_card.gd
+msgid "Magazine"
+msgstr "Magazin"
+
+#: scripts/ui/loadout_card.gd
+msgid "Slot %d"
+msgstr "Platz %d"
 
 #: scripts/ui/mission_menu.gd
 msgid "%d min"

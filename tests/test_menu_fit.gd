@@ -3,6 +3,7 @@ extends GutTest
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 const CARD_SCENE: PackedScene = preload("res://scenes/ui/upgrade_card.tscn")
+const LOADOUT_CARD_SCENE: PackedScene = preload("res://scenes/ui/loadout_card.tscn")
 const ALL_WEAPONS: Arsenal = preload("res://scenes/weapons/all_weapons.tres")
 const UPGRADES: Array[Upgrade] = [
 	preload("res://scenes/upgrades/armor.tres"),
@@ -13,7 +14,6 @@ const UPGRADES: Array[Upgrade] = [
 const TERMINALS: PackedStringArray = [
 	"Rooms/Upper/Cabin1/Terminal",
 	"Rooms/Upper/Bridge/MissionTerminal",
-	"Rooms/Lower/Armory/ArmoryTerminal",
 ]
 ## Body text is at least this part of the view's height (see GAME_DESIGN.md, UI).
 const MIN_TEXT_HEIGHT: float = 0.02
@@ -23,6 +23,7 @@ const STATIONS: PackedStringArray = [
 	"Rooms/Lower/Weapons/UpgradeStation",
 	"Rooms/Lower/Armor/UpgradeStation",
 	"Rooms/Lower/Miners/UpgradeStation",
+	"Rooms/Lower/Armory/Locker1",
 ]
 
 var _map: Node3D
@@ -52,6 +53,8 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 			for ore_type: OreType in level.cost:
 				hold[ore_type] = 99999.0
 	for path: String in STATIONS:
+		if not _ship.get_node(path) is UpgradeStation:
+			continue
 		var panel: WorldPanel = (_ship.get_node(path) as Station).card
 		var layout := Vector2(panel.size * panel.pixels_per_meter)
 		var viewport := SubViewport.new()
@@ -63,14 +66,42 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 			TranslationServer.set_locale(locale)
 			for upgrade: Upgrade in upgrades:
 				for mk: int in range(1, upgrade.max_mk() + 1):
-					# The longest it gets: locked by a mission, every ore short.
-					card.show_upgrade(upgrade, mk, hold, mk == 1, true, false)
-					await wait_process_frames(1)
 					var label: String = (
 						"%s %s MK%d on %s" % [locale, upgrade.display_name, mk, path]
 					)
+					# The tallest it gets (locked by a mission, every ore short), and with its
+					# buttons enabled (their style is wider than the disabled one).
+					card.show_upgrade(upgrade, mk, hold, mk == 1, true, false)
+					await wait_process_frames(1)
 					_assert_fits(card, layout, label)
+					card.show_upgrade(upgrade, mk, hold, true, false, true)
+					await wait_process_frames(1)
+					_assert_fits(card, layout, label + " enabled")
 		viewport.queue_free()
+
+
+func test_every_locker_card_fits_in_every_language() -> void:
+	var panel: WorldPanel = (_ship.get_node("Rooms/Lower/Armory/Locker1") as Station).card
+	var layout := Vector2(panel.size * panel.pixels_per_meter)
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(layout)
+	add_child_autofree(viewport)
+	var card := LOADOUT_CARD_SCENE.instantiate() as LoadoutCard
+	viewport.add_child(card)
+	for locale: String in SettingsMenu.languages():
+		TranslationServer.set_locale(locale)
+		for weapon_type: WeaponType in ALL_WEAPONS.weapons:
+			# Locked by a mission (buttons disabled) and usable (enabled buttons are wider), with
+			# either slot selected (framed amber).
+			for locked: bool in [true, false]:
+				for selected_slot: int in 2:
+					card.show_weapon(weapon_type, Upgrades.new(), true, locked, 0, selected_slot)
+					await wait_process_frames(1)
+					var label: String = (
+						"%s %s locked %s slot %d"
+						% [locale, weapon_type.display_name, locked, selected_slot + 1]
+					)
+					_assert_fits(card, layout, label)
 
 
 func test_every_terminal_fits_in_every_language() -> void:

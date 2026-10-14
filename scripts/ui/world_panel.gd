@@ -67,6 +67,9 @@ func _ready() -> void:
 	_viewport.size_2d_override_stretch = true
 	_viewport.size = layout
 	_viewport.transparent_bg = transparent
+	# Hidden (e.g. a station's card while nobody uses it), it doesn't render.
+	visibility_changed.connect(_on_visibility_changed)
+	_on_visibility_changed()
 	_show_menu()
 	var quad := QuadMesh.new()
 	quad.size = size
@@ -186,6 +189,12 @@ func _show_menu() -> void:
 	if menu:
 		content = menu.instantiate() as Control
 		_viewport.add_child(content)
+
+
+func _on_visibility_changed() -> void:
+	_viewport.render_target_update_mode = (
+		SubViewport.UPDATE_WHEN_VISIBLE if is_visible_in_tree() else SubViewport.UPDATE_DISABLED
+	)
 
 
 ## Draws the screen over everything else (the player in front of it), e.g. while it's used.

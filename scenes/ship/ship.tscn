@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/terminal.tscn" id="9_terminal"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="10_settings_menu"]
 [ext_resource type="PackedScene" path="res://scenes/ui/mission_menu.tscn" id="11_mission_menu"]
-[ext_resource type="PackedScene" path="res://scenes/ui/armory_menu.tscn" id="12_armory_menu"]
+[ext_resource type="PackedScene" path="res://scenes/stations/loadout_locker.tscn" id="12_loadout_locker"]
 [ext_resource type="Script" path="res://scripts/ship/ship_flight.gd" id="13_flight"]
 [ext_resource type="Resource" path="res://scenes/ship/flight_settings.tres" id="14_flight_settings"]
 [ext_resource type="PackedScene" path="res://scenes/stations/weapon_station.tscn" id="15_weapon_station"]
@@ -869,9 +869,6 @@ size = Vector3(1.2, 1.1, 8)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_n_1_4x1_5x1_4"]
 size = Vector3(1.4, 1.5, 1.4)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_n_1x2_2x0_6"]
-size = Vector3(1, 2.2, 0.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_n_1x2x0_6"]
 size = Vector3(1, 2, 0.6)
@@ -3835,66 +3832,6 @@ shape = SubResource("CylinderShape3D_reactor")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Rooms/Lower/EngineRoom/Reactor"]
 mesh = SubResource("CylinderMesh_reactor")
 
-[node name="Locker1" type="StaticBody3D" parent="Rooms/Lower/Armory"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1.1, -5.35)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Lower/Armory/Locker1"]
-shape = SubResource("BoxShape3D_n_1x2_2x0_6")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Rooms/Lower/Armory/Locker1"]
-transform = Transform3D(1, 0, 0, 0, 2.2, 0, 0, 0, 0.6, 0, 0, 0)
-mesh = SubResource("BoxMesh_locker")
-
-[node name="Locker2" type="StaticBody3D" parent="Rooms/Lower/Armory"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7, 1.1, -5.35)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Lower/Armory/Locker2"]
-shape = SubResource("BoxShape3D_n_1x2_2x0_6")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Rooms/Lower/Armory/Locker2"]
-transform = Transform3D(1, 0, 0, 0, 2.2, 0, 0, 0, 0.6, 0, 0, 0)
-mesh = SubResource("BoxMesh_locker")
-
-[node name="Locker3" type="StaticBody3D" parent="Rooms/Lower/Armory"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 1.1, -5.35)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Lower/Armory/Locker3"]
-shape = SubResource("BoxShape3D_n_1x2_2x0_6")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Rooms/Lower/Armory/Locker3"]
-transform = Transform3D(1, 0, 0, 0, 2.2, 0, 0, 0, 0.6, 0, 0, 0)
-mesh = SubResource("BoxMesh_locker")
-
-[node name="Locker4" type="StaticBody3D" parent="Rooms/Lower/Armory"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1.1, -5.35)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Lower/Armory/Locker4"]
-shape = SubResource("BoxShape3D_n_1x2_2x0_6")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Rooms/Lower/Armory/Locker4"]
-transform = Transform3D(1, 0, 0, 0, 2.2, 0, 0, 0, 0.6, 0, 0, 0)
-mesh = SubResource("BoxMesh_locker")
-
-[node name="Locker5" type="StaticBody3D" parent="Rooms/Lower/Armory"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1.1, -5.35)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Lower/Armory/Locker5"]
-shape = SubResource("BoxShape3D_n_1x2_2x0_6")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Rooms/Lower/Armory/Locker5"]
-transform = Transform3D(1, 0, 0, 0, 2.2, 0, 0, 0, 0.6, 0, 0, 0)
-mesh = SubResource("BoxMesh_locker")
-
-[node name="Locker6" type="StaticBody3D" parent="Rooms/Lower/Armory"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.1, -5.35)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Lower/Armory/Locker6"]
-shape = SubResource("BoxShape3D_n_1x2_2x0_6")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Rooms/Lower/Armory/Locker6"]
-transform = Transform3D(1, 0, 0, 0, 2.2, 0, 0, 0, 0.6, 0, 0, 0)
-mesh = SubResource("BoxMesh_locker")
-
 [node name="Counter" type="StaticBody3D" parent="Rooms/Lower/Weapons"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 3)
 
@@ -4542,9 +4479,25 @@ menu = ExtResource("11_mission_menu")
 view_height = 4.0
 view_focus = NodePath("../MissionView")
 
-[node name="ArmoryTerminal" parent="Rooms/Lower/Armory" instance=ExtResource("9_terminal")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -4.8)
-menu = ExtResource("12_armory_menu")
+[node name="Locker1" parent="Rooms/Lower/Armory" instance=ExtResource("12_loadout_locker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -5.4)
+number = 1
+color = Color(0.3, 0.85, 1, 1)
+
+[node name="Locker2" parent="Rooms/Lower/Armory" instance=ExtResource("12_loadout_locker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 0, -5.4)
+number = 2
+color = Color(0.45, 0.9, 0.4, 1)
+
+[node name="Locker3" parent="Rooms/Lower/Armory" instance=ExtResource("12_loadout_locker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0, -5.4)
+number = 3
+color = Color(0.9, 0.45, 0.85, 1)
+
+[node name="Locker4" parent="Rooms/Lower/Armory" instance=ExtResource("12_loadout_locker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, -5.4)
+number = 4
+color = Color(0.95, 0.9, 0.4, 1)
 
 [node name="UpgradeStation" parent="Rooms/Lower/Weapons" instance=ExtResource("15_weapon_station")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0, -4.4)

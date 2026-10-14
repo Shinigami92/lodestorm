@@ -154,15 +154,11 @@ msgstr ""
 msgid "Cabins · Lift · Bridge"
 msgstr ""
 
-#: scenes/ui/armory_menu.tscn
+#: scenes/stations/loadout_locker.tscn
 msgid "Loadout"
 msgstr ""
 
-#: scenes/ui/armory_menu.tscn
-msgid "Slot"
-msgstr ""
-
-#: scenes/ui/armory_menu.tscn
+#: scenes/ui/loadout_card.tscn
 #: scenes/ui/mission_menu.tscn
 #: scenes/ui/settings_menu.tscn
 #: scenes/ui/upgrade_card.tscn
@@ -324,27 +320,39 @@ msgstr ""
 msgid "No mission"
 msgstr ""
 
-#: scripts/ui/armory_menu.gd
+#: scripts/ui/loadout_card.gd
 #: scripts/ui/upgrade_card.gd
 msgid "Locked"
 msgstr ""
 
-#: scripts/ui/armory_menu.gd
+#: scripts/ui/loadout_card.gd
 msgid "Melee"
 msgstr ""
 
-#: scripts/ui/armory_menu.gd
+#: scripts/ui/loadout_card.gd
 msgid "Ranged"
 msgstr ""
 
-#: scripts/ui/armory_menu.gd
+#: scripts/ui/loadout_card.gd
 #: scripts/ui/mission_menu.gd
 #: scripts/ui/upgrade_card.gd
 msgid "Locked until everyone is back aboard."
 msgstr ""
 
-#: scripts/ui/armory_menu.gd
-msgid "Pick the weapons for the next mission."
+#: scripts/ui/loadout_card.gd
+msgid "Slots 1 and 2 go along on the next mission; one weapon always does."
+msgstr ""
+
+#: scripts/ui/loadout_card.gd
+msgid "Damage"
+msgstr ""
+
+#: scripts/ui/loadout_card.gd
+msgid "Magazine"
+msgstr ""
+
+#: scripts/ui/loadout_card.gd
+msgid "Slot %d"
 msgstr ""
 
 #: scripts/ui/mission_menu.gd

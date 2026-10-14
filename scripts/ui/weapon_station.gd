@@ -6,8 +6,6 @@ extends UpgradeStation
 ## (its rack slot stays empty meanwhile), where its parts are the upgrades: the damage at its MK
 ## pips, the magazine at its magazine pips. The rack grows with the weapons (`rack_spacing` each).
 
-## How see-through the weapons the player doesn't own yet are.
-const LOCKED_TRANSPARENCY: float = 0.75
 ## Where the holo card floats next to the bench's parts (see `StationPart.card_offset`).
 const BENCH_CARD_OFFSET := Vector2(1.5, -0.1)
 
@@ -82,7 +80,7 @@ func lay_on_bench(weapon_type: WeaponType) -> void:
 	_bench_parts.clear()
 	if _bench_display:
 		_bench_display.queue_free()
-	_bench_display = _display(weapon_type)
+	_bench_display = WeaponDisplay.create(weapon_type)
 	_bench_spot.add_child(_bench_display)
 	var pips_of: Dictionary[NodePath, Upgrade] = {
 		^"MkPips": weapon_type.upgrade, ^"MagazinePips": weapon_type.magazine_upgrade
@@ -140,26 +138,19 @@ func _build_rack() -> void:
 		part.item = weapon_type
 		part.pick_radius = rack_spacing * 0.4
 		part.position = Vector3(rack_spacing * i, 0.0, 0.0)
-		var display: Weapon = _display(weapon_type)
+		var display: Weapon = WeaponDisplay.create(weapon_type)
 		# Hanging with the barrel to the right, like on the bench.
 		display.rotation.y = -PI * 0.5
-		part.add_child(display)
 		part.outline = display
 		_rack.add_child(part)
+		part.add_child(display)
+		WeaponDisplay.center(display)
 		_rack_parts.append(part)
 	var box := _rack_panel.mesh.duplicate() as BoxMesh
 	_rack_panel.mesh = box
 	var length: float = rack_spacing * weapons.weapons.size()
 	box.size.x = length
 	_rack_panel.position.x = (length - rack_spacing) * 0.5
-
-
-## A weapon to look at: its scene, not acting, its pips showing the player's levels.
-func _display(weapon_type: WeaponType) -> Weapon:
-	var display := weapon_type.scene.instantiate() as Weapon
-	display.process_mode = Node.PROCESS_MODE_DISABLED
-	display.apply_upgrades(Upgrades.new(), weapon_type)
-	return display
 
 
 ## Shows the player's levels on the bench's weapon, and the weapons they don't own see-through.
@@ -173,6 +164,4 @@ func _show_owned() -> void:
 
 
 func _set_owned_look(root: Node3D, weapon_type: WeaponType) -> void:
-	var owned: bool = not user or user.arsenal.owns(weapon_type)
-	for node: Node in root.find_children("*", "GeometryInstance3D", true, false):
-		(node as GeometryInstance3D).transparency = 0.0 if owned else LOCKED_TRANSPARENCY
+	WeaponDisplay.show_owned(root, not user or user.arsenal.owns(weapon_type))

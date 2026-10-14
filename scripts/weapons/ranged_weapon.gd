@@ -15,7 +15,8 @@ extends Weapon
 
 ## Emitted when the loaded rounds change.
 signal rounds_changed(rounds: int)
-## Emitted when a reload can't start: full already, or no ore to pay more rounds than it holds.
+## Emitted when a reload can't start although the magazine isn't full: no spares and no ore to pay
+## more rounds than it holds.
 signal reload_denied
 ## Emitted after the timing press of a reload: whether it was within the window.
 signal reload_timed(hit: bool)
@@ -176,7 +177,9 @@ func _single() -> bool:
 
 func _start_reload() -> bool:
 	if not can_reload():
-		reload_denied.emit()
+		# A full magazine just needs nothing; only a missing reload is worth a warning.
+		if rounds < capacity():
+			reload_denied.emit()
 		return false
 	if not _single():
 		rounds = 0

@@ -45,6 +45,14 @@ func test_magazine_reload_throws_away_the_rest_and_pays_the_commonest_ore_first(
 	assert_almost_eq(_player.cargo[GREEN], 9.2, 0.001)
 
 
+func test_full_magazine_ignores_reload_without_a_warning() -> void:
+	var blaster := _blaster()
+	watch_signals(blaster)
+	assert_false(_player.reload())
+	assert_signal_not_emitted(blaster, "reload_denied")
+	assert_false(blaster.reloading)
+
+
 func test_magazine_reload_loads_what_the_ore_pays() -> void:
 	var blaster := _blaster()
 	blaster.rounds = 10

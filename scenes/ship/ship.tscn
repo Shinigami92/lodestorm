@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="10_settings_menu"]
 [ext_resource type="PackedScene" path="res://scenes/stations/navigator.tscn" id="11_navigator"]
 [ext_resource type="PackedScene" path="res://scenes/stations/flight_console.tscn" id="18_flight_console"]
+[ext_resource type="PackedScene" path="res://scenes/stations/bed.tscn" id="19_bed"]
 [ext_resource type="PackedScene" path="res://scenes/stations/loadout_locker.tscn" id="12_loadout_locker"]
 [ext_resource type="Script" path="res://scripts/ship/ship_flight.gd" id="13_flight"]
 [ext_resource type="Resource" path="res://scenes/ship/flight_settings.tres" id="14_flight_settings"]
@@ -4476,6 +4477,26 @@ holo_table = NodePath("../HoloTable")
 
 [node name="FlightConsole" parent="Rooms/Upper/Cockpit" instance=ExtResource("18_flight_console")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 0)
+
+[node name="BedStation" parent="Rooms/Upper/Cabin1" node_paths=PackedStringArray("bed") instance=ExtResource("19_bed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 0, -4.45)
+number = 1
+bed = NodePath("../Bed")
+
+[node name="BedStation" parent="Rooms/Upper/Cabin2" node_paths=PackedStringArray("bed") instance=ExtResource("19_bed")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1.75, 0, 4.45)
+number = 2
+bed = NodePath("../Bed")
+
+[node name="BedStation" parent="Rooms/Upper/Cabin3" node_paths=PackedStringArray("bed") instance=ExtResource("19_bed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 0, -4.45)
+number = 3
+bed = NodePath("../Bed")
+
+[node name="BedStation" parent="Rooms/Upper/Cabin4" node_paths=PackedStringArray("bed") instance=ExtResource("19_bed")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1.75, 0, 4.45)
+number = 4
+bed = NodePath("../Bed")
 
 [node name="Locker1" parent="Rooms/Lower/Armory" instance=ExtResource("12_loadout_locker")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -5.4)

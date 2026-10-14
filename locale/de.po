@@ -160,6 +160,23 @@ msgstr "Kabinen · Lift · Brücke"
 msgid "Loadout"
 msgstr "Ausrüstung"
 
+#: scenes/ui/bed_card.tscn
+msgid "Your bunk"
+msgstr "Deine Koje"
+
+#: scenes/ui/bed_card.tscn
+msgid "Sleep"
+msgstr "Schlafen"
+
+#: scenes/ui/bed_card.tscn
+#: scenes/ui/flight_card.tscn
+#: scenes/ui/loadout_card.tscn
+#: scenes/ui/navigator_card.tscn
+#: scenes/ui/settings_menu.tscn
+#: scenes/ui/upgrade_card.tscn
+msgid "Close"
+msgstr "Schließen"
+
 #: scenes/ui/flight_card.tscn
 #: scenes/ui/navigator_card.tscn
 msgid "Danger"
@@ -178,14 +195,6 @@ msgstr "Erze"
 #: scenes/ui/flight_card.tscn
 msgid "Set course"
 msgstr "Kurs setzen"
-
-#: scenes/ui/flight_card.tscn
-#: scenes/ui/loadout_card.tscn
-#: scenes/ui/navigator_card.tscn
-#: scenes/ui/settings_menu.tscn
-#: scenes/ui/upgrade_card.tscn
-msgid "Close"
-msgstr "Schließen"
 
 #: scenes/ui/navigator_card.tscn
 msgid "Back"
@@ -381,6 +390,14 @@ msgstr "Sturm"
 #: scripts/ship/ship.gd
 msgid "No mission"
 msgstr "Keine Mission"
+
+#: scripts/ui/bed_card.gd
+msgid "A run is underway: sleeping now loses it."
+msgstr "Eine Mission läuft: Wer jetzt schläft, verliert sie."
+
+#: scripts/ui/bed_card.gd
+msgid "Ends the game here. Your progress is saved."
+msgstr "Beendet das Spiel hier. Dein Fortschritt ist gespeichert."
 
 #: scripts/ui/flight_card.gd
 #: scripts/ui/navigator_card.gd

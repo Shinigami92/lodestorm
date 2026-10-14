@@ -17,12 +17,8 @@ extends Resource
 @export var respawn_delay: float = 3.0
 
 @export_group("Offers")
-## How many missions the holo table offers at a time; they run through the difficulties (easy,
-## normal, hard, easy, ...).
-@export var offers: int = 3
-## The kinds of places missions go to.
-@export var biomes: Array[LocationBiome] = []
-## Timer lengths a mission can have, relative to `duration`.
-@export var lengths: PackedFloat32Array = [1.0, 1.5, 2.0]
-## How many of its biome's nests a location has, per difficulty (easy, normal, hard).
+## Where missions go: one is offered per open region of its planets and moons.
+@export var system: StarSystem
+## How many of its biome's nests a location has, per difficulty (a region's danger: easy, normal,
+## hard).
 @export var nest_factors: PackedFloat32Array = [0.6, 1.0, 1.4]

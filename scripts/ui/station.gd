@@ -7,7 +7,8 @@ extends WorldMenu
 ## - mouse: the cursor points at them (outlined while hovered), a click selects one;
 ## - gamepad and keyboard: `move_*` and the ui_* directions move the highlight to the nearest part
 ##   in that direction on screen, `tab_prev`/`tab_next` switch between groups (`_cycle`, e.g. the
-##   next weapon on the rack), `interact` and `ui_accept` press the card's main action.
+##   next weapon on the rack), `interact` and `ui_accept` press the card's main action, `pause` and
+##   `ui_cancel` step back (`_back`) or close.
 ## The holo card (`Card`, a transparent `WorldPanel` showing a `StationCard`, which keeps to the
 ## middle of it and only takes the height it needs) floats beside the selected part,
 ## faces the camera and draws over everything; the mouse uses its buttons like on a screen. An
@@ -79,11 +80,14 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if not user:
 		return
-	if event is InputEventMouseButton or event is InputEventMouseMotion:
+	if _shortcut(event):
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton or event is InputEventMouseMotion:
 		_point(event as InputEventMouse)
 	elif CLOSE_ACTIONS.any(event.is_action_pressed):
 		get_viewport().set_input_as_handled()
-		close()
+		if not _back():
+			close()
 	elif event.is_action_pressed(&"tab_prev") or event.is_action_pressed(&"tab_next"):
 		get_viewport().set_input_as_handled()
 		_cycle(-1 if event.is_action_pressed(&"tab_prev") else 1)
@@ -91,8 +95,6 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		if card_menu:
 			card_menu.press_primary()
-	elif _shortcut(event):
-		get_viewport().set_input_as_handled()
 	else:
 		_steer(event)
 
@@ -162,6 +164,12 @@ func get_look_target() -> Vector3:
 	return global_position
 
 
+## Steps back one level (e.g. the navigator from a planet to the system) instead of closing.
+## Returns whether it did.
+func _back() -> bool:
+	return false
+
+
 ## Handles a station's own keys (e.g. the locker's `slot_1`/`slot_2`). Returns whether it did.
 func _shortcut(_event: InputEvent) -> bool:
 	return false
@@ -205,8 +213,10 @@ func _opened() -> void:
 		user.global_position = user_spot.global_position
 		user.reset_physics_interpolation()
 	_held.clear()
-	var parts: Array[StationPart] = get_parts()
-	select(parts[0] if not parts.is_empty() else null)
+	# A subclass may have picked what to start with already.
+	if not selected:
+		var parts: Array[StationPart] = get_parts()
+		select(parts[0] if not parts.is_empty() else null)
 	card.visible = true
 	card.set_on_top(true)
 	_leader.visible = true
@@ -235,17 +245,29 @@ func _point(event: InputEventMouse) -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	if not camera:
 		return
-	var nearest: StationPart = null
-	var nearest_distance: float = INF
-	for part: StationPart in get_pickable_parts():
-		var distance: float = part.distance_on_screen(camera, event.position)
-		if distance < nearest_distance:
-			nearest = part
-			nearest_distance = distance
+	var nearest: StationPart = _part_at(camera, event.position)
 	_hover(nearest)
 	var click := event as InputEventMouseButton
 	if click and click.pressed and click.button_index == MOUSE_BUTTON_LEFT and nearest:
 		_picked(nearest)
+
+
+## The part the mouse cursor at `screen_position` points at, or null: by default the pickable part
+## nearest to it on screen, within its `pick_radius`.
+func _part_at(camera: Camera3D, screen_position: Vector2) -> StationPart:
+	var nearest: StationPart = null
+	var nearest_distance: float = INF
+	for part: StationPart in get_pickable_parts():
+		var distance: float = part.distance_on_screen(camera, screen_position)
+		if distance < nearest_distance:
+			nearest = part
+			nearest_distance = distance
+	return nearest
+
+
+## Where the card floats: by default beside the selected part (its `card_offset`).
+func _card_position(camera: Camera3D) -> Vector3:
+	return selected.card_position(camera)
 
 
 func _hover(part: StationPart) -> void:
@@ -264,7 +286,7 @@ func _place_card(weight: float) -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	if not camera or not selected:
 		return
-	var goal: Vector3 = selected.card_position(camera)
+	var goal: Vector3 = _card_position(camera)
 	var view: Basis = camera.global_basis.orthonormalized()
 	card.global_transform = Transform3D(view, card.global_position.lerp(goal, weight))
 	_draw_leader(view)

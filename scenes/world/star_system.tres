@@ -1,0 +1,100 @@
+[gd_resource type="Resource" script_class="StarSystem" format=3]
+
+[ext_resource type="Script" path="res://scripts/world/star_system.gd" id="1_system"]
+[ext_resource type="Script" path="res://scripts/world/celestial_body.gd" id="2_body"]
+[ext_resource type="Script" path="res://scripts/world/region.gd" id="3_region"]
+[ext_resource type="Resource" path="res://scenes/locations/biomes/dust.tres" id="4_dust"]
+[ext_resource type="Resource" path="res://scenes/locations/biomes/overgrowth.tres" id="5_overgrowth"]
+
+[sub_resource type="Resource" id="Resource_redscar"]
+script = ExtResource("3_region")
+display_name = "Redscar Flats"
+biome = ExtResource("4_dust")
+danger = 0
+length = 1.0
+globe_position = Vector2(20, -30)
+
+[sub_resource type="Resource" id="Resource_mire"]
+script = ExtResource("3_region")
+display_name = "Hollow Mire"
+biome = ExtResource("5_overgrowth")
+danger = 1
+length = 1.5
+globe_position = Vector2(-15, 25)
+
+[sub_resource type="Resource" id="Resource_cinder"]
+script = ExtResource("3_region")
+display_name = "Cinder Steps"
+biome = ExtResource("4_dust")
+danger = 2
+length = 2.0
+globe_position = Vector2(45, 60)
+
+[sub_resource type="Resource" id="Resource_basin"]
+script = ExtResource("3_region")
+display_name = "Pale Basin"
+biome = ExtResource("4_dust")
+danger = 1
+length = 1.0
+globe_position = Vector2(10, 0)
+
+[sub_resource type="Resource" id="Resource_glare"]
+script = ExtResource("3_region")
+display_name = "Glare Fields"
+biome = ExtResource("4_dust")
+danger = 2
+length = 2.0
+globe_position = Vector2(0, 10)
+unlocked = false
+
+[sub_resource type="Resource" id="Resource_ember"]
+script = ExtResource("3_region")
+display_name = "Ember Reach"
+biome = ExtResource("4_dust")
+danger = 2
+length = 1.5
+globe_position = Vector2(-30, -40)
+unlocked = false
+
+[sub_resource type="Resource" id="Resource_vehra"]
+script = ExtResource("2_body")
+display_name = "Vehra"
+color = Color(0.95, 0.6, 0.3, 1)
+size = 0.8
+orbit_radius = 0.55
+orbit_angle = 120.0
+regions = Array[ExtResource("3_region")]([SubResource("Resource_glare"), SubResource("Resource_ember")])
+
+[sub_resource type="Resource" id="Resource_torvane"]
+script = ExtResource("2_body")
+display_name = "Torvane"
+color = Color(0.75, 0.5, 0.35, 1)
+size = 1.0
+orbit_radius = 1.0
+orbit_angle = 200.0
+regions = Array[ExtResource("3_region")]([SubResource("Resource_redscar"), SubResource("Resource_mire"), SubResource("Resource_cinder")])
+
+[sub_resource type="Resource" id="Resource_lisk"]
+script = ExtResource("2_body")
+display_name = "Lisk"
+kind = 1
+color = Color(0.7, 0.72, 0.78, 1)
+size = 0.45
+orbit_radius = 0.35
+orbit_angle = 40.0
+orbits = SubResource("Resource_torvane")
+regions = Array[ExtResource("3_region")]([SubResource("Resource_basin")])
+
+[sub_resource type="Resource" id="Resource_ostra"]
+script = ExtResource("2_body")
+display_name = "Waypost Ostra"
+kind = 2
+color = Color(0.55, 0.85, 1, 1)
+size = 0.7
+orbit_radius = 0.6
+orbit_angle = 330.0
+
+[resource]
+script = ExtResource("1_system")
+display_name = "Kesh"
+bodies = Array[ExtResource("2_body")]([SubResource("Resource_torvane"), SubResource("Resource_lisk"), SubResource("Resource_vehra"), SubResource("Resource_ostra")])

@@ -1,12 +1,14 @@
 class_name Mission
 extends Node
-## The mission loop around the ship. The holo table offers a few missions (`offers`). Picking one
-## (`preview`) prepares its location (a fresh instance of `location_scene` with the mission's biome
-## and seed, generated on a worker thread) and shows it on the holo table; confirming it
-## (`confirm`) sets course and the timer (`duration`): the ship's `flight` takes it there (taking
-## off from the current location first), and the location goes under the ship during the descent.
-## `select` does both at once. The game starts in space, or landed at `location` if the map has
-## one (tests).
+## The mission loop around the ship. The navigator at the holo table offers a mission per open
+## region of the star system (`offers`, `settings.system`), each a new section of its region (a
+## new seed after every run). Showing one at the navigator (`preview`) prepares its location (a
+## fresh instance of `location_scene` with the mission's biome and seed, generated on a worker
+## thread) and shows it on the holo table; choosing it as the destination (`choose`) is a separate
+## step, and confirming that at the cockpit's flight console (`confirm`) sets course and the timer
+## (`duration`): the ship's `flight` takes it there (taking off from the current location first),
+## and the location goes under the ship during the descent. `select` chooses and confirms at once.
+## The game starts in space, or landed at `location` if the map has one (tests).
 ## The ramp starts closed; the ramp button inside the ship only works with a mission picked and
 ## the ship landed there: it resets the timer, heals the players, lowers the ramp and locks the
 ## mission. The mission starts when the first player steps out; the timer then counts down, and at
@@ -58,6 +60,9 @@ var state: State = State.CLOSED
 var offers: Array[MissionBrief] = []
 ## The mission shown on the holo table (one of `offers`), or null.
 var previewed: MissionBrief
+## The mission chosen as the destination at the navigator (one of `offers`), or null: course is
+## set for it at the cockpit.
+var destination: MissionBrief
 ## The mission the ship flies to or stands at (one of `offers`), or null.
 var brief: MissionBrief
 ## Seconds until the storm hits, 0 afterwards.
@@ -81,7 +86,7 @@ var _tasks: Dictionary[MissionBrief, int] = {}
 ## Prepared locations nobody needs anymore whose planning still runs, by task; freed once done.
 var _discarded: Dictionary[int, Node3D] = {}
 ## The location the flight goes to, until it's placed under the ship.
-var _destination: Node3D
+var _destination_location: Node3D
 ## Where locations stand, relative to the ship's parent.
 var _location_transform: Transform3D
 
@@ -144,26 +149,26 @@ func _physics_process(delta: float) -> void:
 	_check_outcome()
 
 
-## Offers new missions, one per `settings.offers`, running through the difficulties; drops the
-## previewed and the picked one.
+## Offers new missions, one per open region of the star system, each with a new seed (a new
+## section of its region); drops the previewed and the picked one.
 func roll_offers() -> void:
 	_discard_prepared()
 	offers.clear()
 	previewed = null
+	destination = null
 	brief = null
-	for i: int in settings.offers:
-		var offer := MissionBrief.new()
-		if not settings.biomes.is_empty():
-			offer.biome = settings.biomes[_rng.randi() % settings.biomes.size()]
-		offer.world_seed = _rng.randi_range(1, 0x7fffffff)
-		if not settings.lengths.is_empty():
-			offer.length = settings.lengths[_rng.randi() % settings.lengths.size()]
-		offer.difficulty = (i % MissionBrief.Difficulty.size()) as MissionBrief.Difficulty
-		offers.append(offer)
-	offers.sort_custom(
-		func(a: MissionBrief, b: MissionBrief) -> bool: return a.difficulty < b.difficulty
-	)
+	if settings.system:
+		for region: Region in settings.system.open_regions():
+			offers.append(MissionBrief.for_region(region, _rng.randi_range(1, 0x7fffffff)))
 	offers_changed.emit()
+
+
+## The mission on offer for `region`, or null.
+func offer_for(region: Region) -> MissionBrief:
+	for offer: MissionBrief in offers:
+		if offer.region == region:
+			return offer
+	return null
 
 
 ## Whether a mission can be picked now: not once the ramp is down for one (it's locked then), not
@@ -176,10 +181,10 @@ func can_select() -> bool:
 	)
 
 
-## Shows `offer` (one of `offers`) on the holo table, preparing its location first if needed.
-## Returns whether it's shown.
+## Shows `offer` (one of `offers`) on the holo table, preparing its location first if needed (just
+## looking: it doesn't choose it). Returns whether it's shown.
 func preview(offer: MissionBrief) -> bool:
-	if offer not in offers or not can_select():
+	if offer not in offers:
 		return false
 	previewed = offer
 	_prepare(offer)
@@ -188,27 +193,39 @@ func preview(offer: MissionBrief) -> bool:
 	return true
 
 
-## Whether the previewed mission's location is still being prepared (the hologram shows it then).
-func is_preparing() -> bool:
-	return previewed != null and _tasks.has(previewed)
+## Chooses `offer` (one of `offers`) as the destination, preparing its location if needed. Not
+## once the ramp is down, in flight or while someone is dead (see `can_select`). Returns whether
+## it did.
+func choose(offer: MissionBrief) -> bool:
+	if offer not in offers or not can_select():
+		return false
+	destination = offer
+	_prepare(offer)
+	offers_changed.emit()
+	return true
 
 
-## Whether course can be set for the previewed mission now (not for the one the ship is at).
+## Whether `offer`'s location is still being prepared (the hologram shows it once it's ready).
+func is_preparing(offer: MissionBrief) -> bool:
+	return offer != null and _tasks.has(offer)
+
+
+## Whether course can be set for the destination now (not for the one the ship is at).
 func can_confirm() -> bool:
-	return can_select() and previewed != null and previewed != brief
+	return can_select() and destination != null and destination != brief
 
 
-## Sets course for the previewed mission: its timer, and the ship flies to its location. Returns
-## whether it did.
+## Sets course for the destination: its timer, and the ship flies to its location. Returns whether
+## it did.
 func confirm() -> bool:
 	if not can_confirm():
 		return false
-	brief = previewed
+	brief = destination
 	state = State.CLOSED
 	time_left = duration()
 	_duration = duration()
 	storm_time = 0.0
-	_destination = _prepared[brief]
+	_destination_location = _prepared[brief]
 	flight.destination_ready = not _tasks.has(brief)
 	flight.fly()
 	ship.ramp_button.enabled = _can_start_run()
@@ -217,9 +234,9 @@ func confirm() -> bool:
 	return true
 
 
-## Previews `offer` and sets course for it. Returns whether it did.
+## Chooses `offer` and sets course for it (tests, debugging). Returns whether it did.
 func select(offer: MissionBrief) -> bool:
-	return preview(offer) and confirm()
+	return choose(offer) and confirm()
 
 
 ## Finishes the flight at once (debug overlay, tests), waiting for the location to be prepared.
@@ -300,7 +317,7 @@ func _finish_preparing(offer: MissionBrief) -> void:
 	var generated := prepared as GeneratedLocation
 	if generated:
 		generated.build()
-	if prepared == _destination:
+	if prepared == _destination_location:
 		flight.destination_ready = true
 	if offer == previewed:
 		_show_hologram()
@@ -310,7 +327,7 @@ func _finish_preparing(offer: MissionBrief) -> void:
 func _discard_prepared() -> void:
 	for offer: MissionBrief in _prepared.keys():
 		var prepared: Node3D = _prepared[offer]
-		if prepared == _destination:
+		if prepared == _destination_location:
 			continue
 		if _tasks.has(offer):
 			_discarded[_tasks[offer]] = prepared
@@ -512,7 +529,7 @@ func _on_left_location() -> void:
 	_remove_location()
 	if state in [State.RETURNED, State.LOST]:
 		state = State.CLOSED
-	if not _destination:
+	if not _destination_location:
 		brief = null
 		offers_changed.emit()
 	_show_hologram()
@@ -524,6 +541,6 @@ func _on_landed() -> void:
 
 ## Under the clouds at the destination: it goes under the ship.
 func _on_reached_location() -> void:
-	if _destination:
-		_place(_destination)
-		_destination = null
+	if _destination_location:
+		_place(_destination_location)
+		_destination_location = null

@@ -19,8 +19,8 @@ const LANDMARK_COLOR := Color(1.0, 0.85, 0.35)
 ## Size of the ore beams (radius, height), in m of the hologram.
 @export var marker_size: Vector2 = Vector2(0.025, 0.3)
 
-var _location_material: ShaderMaterial = _material(LOCATION_COLOR)
-var _landmark_material: ShaderMaterial = _material(LANDMARK_COLOR)
+var _location_material: ShaderMaterial = hologram_material(LOCATION_COLOR)
+var _landmark_material: ShaderMaterial = hologram_material(LANDMARK_COLOR)
 var _marker_materials: Dictionary[OreType, ShaderMaterial] = {}
 
 @onready var _content: Node3D = $Hologram/Content
@@ -70,6 +70,16 @@ func show_location(
 	_add_markers(location)
 
 
+## Shows or hides the location hologram (the navigator shows the star system or a globe instead).
+func show_hologram(shown: bool) -> void:
+	($Hologram as Node3D).visible = shown
+
+
+## Scales the location hologram (the navigator grows it in while zooming into a landing site).
+func set_hologram_scale(value: float) -> void:
+	($Hologram as Node3D).scale = Vector3.ONE * maxf(value, 0.001)
+
+
 ## The ore beams in the hologram (one per ore node, in its ore's color).
 func get_markers() -> Array[MeshInstance3D]:
 	var markers: Array[MeshInstance3D] = []
@@ -99,7 +109,7 @@ func _add_markers(location: Node3D) -> void:
 
 func _marker_material(ore_type: OreType) -> ShaderMaterial:
 	if not _marker_materials.has(ore_type):
-		var material: ShaderMaterial = _material(ore_type.color)
+		var material: ShaderMaterial = hologram_material(ore_type.color)
 		material.set_shader_parameter(&"energy", 3.0)
 		_marker_materials[ore_type] = material
 	return _marker_materials[ore_type]
@@ -148,7 +158,8 @@ static func _is_shown(node: Node3D, space: Node3D) -> bool:
 	return true
 
 
-static func _material(color: Color) -> ShaderMaterial:
+## A hologram material in `color` (also for the navigator's hologram).
+static func hologram_material(color: Color) -> ShaderMaterial:
 	var material := ShaderMaterial.new()
 	material.shader = preload("res://assets/shaders/hologram.gdshader")
 	material.set_shader_parameter(&"color", color)

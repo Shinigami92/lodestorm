@@ -160,20 +160,36 @@ msgstr "Kabinen · Lift · Brücke"
 msgid "Loadout"
 msgstr "Ausrüstung"
 
+#: scenes/ui/flight_card.tscn
+#: scenes/ui/navigator_card.tscn
+msgid "Danger"
+msgstr "Gefahr"
+
+#: scenes/ui/flight_card.tscn
+#: scenes/ui/navigator_card.tscn
+msgid "Timer"
+msgstr "Timer"
+
+#: scenes/ui/flight_card.tscn
+#: scenes/ui/navigator_card.tscn
+msgid "Ores"
+msgstr "Erze"
+
+#: scenes/ui/flight_card.tscn
+msgid "Set course"
+msgstr "Kurs setzen"
+
+#: scenes/ui/flight_card.tscn
 #: scenes/ui/loadout_card.tscn
-#: scenes/ui/mission_menu.tscn
+#: scenes/ui/navigator_card.tscn
 #: scenes/ui/settings_menu.tscn
 #: scenes/ui/upgrade_card.tscn
 msgid "Close"
 msgstr "Schließen"
 
-#: scenes/ui/mission_menu.tscn
-msgid "Missions"
-msgstr "Missionen"
-
-#: scenes/ui/mission_menu.tscn
-msgid "Set course"
-msgstr "Kurs setzen"
+#: scenes/ui/navigator_card.tscn
+msgid "Back"
+msgstr "Zurück"
 
 #: scenes/ui/settings_menu.tscn
 msgid "Settings"
@@ -290,6 +306,50 @@ msgstr "Wuchtige Schläge, die alles davor treffen."
 msgid "A fan of pellets, strong up close."
 msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
 
+#: scenes/world/star_system.tres
+msgid "Kesh"
+msgstr "Kesh"
+
+#: scenes/world/star_system.tres
+msgid "Torvane"
+msgstr "Torvane"
+
+#: scenes/world/star_system.tres
+msgid "Redscar Flats"
+msgstr "Redscar Flats"
+
+#: scenes/world/star_system.tres
+msgid "Hollow Mire"
+msgstr "Hollow Mire"
+
+#: scenes/world/star_system.tres
+msgid "Cinder Steps"
+msgstr "Cinder Steps"
+
+#: scenes/world/star_system.tres
+msgid "Lisk"
+msgstr "Lisk"
+
+#: scenes/world/star_system.tres
+msgid "Pale Basin"
+msgstr "Pale Basin"
+
+#: scenes/world/star_system.tres
+msgid "Vehra"
+msgstr "Vehra"
+
+#: scenes/world/star_system.tres
+msgid "Glare Fields"
+msgstr "Glare Fields"
+
+#: scenes/world/star_system.tres
+msgid "Ember Reach"
+msgstr "Ember Reach"
+
+#: scenes/world/star_system.tres
+msgid "Waypost Ostra"
+msgstr "Waypost Ostra"
+
 #: scripts/mission/mission_brief.gd
 msgid "Easy"
 msgstr "Leicht"
@@ -322,7 +382,47 @@ msgstr "Sturm"
 msgid "No mission"
 msgstr "Keine Mission"
 
+#: scripts/ui/flight_card.gd
+#: scripts/ui/navigator_card.gd
+msgid "%d min"
+msgstr "%d Min."
+
+#: scripts/ui/flight_card.gd
+msgid "No destination"
+msgstr "Kein Ziel"
+
+#: scripts/ui/flight_card.gd
+#: scripts/ui/navigator_card.gd
+msgid "In flight: gear up and head for the ramp."
+msgstr "Im Flug: Ausrüsten und zur Rampe gehen."
+
+#: scripts/ui/flight_card.gd
 #: scripts/ui/loadout_card.gd
+#: scripts/ui/navigator_card.gd
+#: scripts/ui/upgrade_card.gd
+msgid "Locked until everyone is back aboard."
+msgstr "Gesperrt, bis alle wieder an Bord sind."
+
+#: scripts/ui/flight_card.gd
+msgid "Pick a destination at the navigator on the bridge."
+msgstr "Wähle ein Ziel am Navigator auf der Brücke."
+
+#: scripts/ui/flight_card.gd
+#: scripts/ui/navigator_card.gd
+msgid "Scanning the location..."
+msgstr "Ort wird gescannt …"
+
+#: scripts/ui/flight_card.gd
+msgid "Set course to fly there."
+msgstr "Kurs setzen, um dorthin zu fliegen."
+
+#: scripts/ui/flight_card.gd
+#: scripts/ui/navigator_card.gd
+msgid "Landed: lower the ramp in the cargo bay."
+msgstr "Gelandet: Rampe im Frachtraum senken."
+
+#: scripts/ui/loadout_card.gd
+#: scripts/ui/navigator_card.gd
 #: scripts/ui/upgrade_card.gd
 msgid "Locked"
 msgstr "Gesperrt"
@@ -334,12 +434,6 @@ msgstr "Nahkampf"
 #: scripts/ui/loadout_card.gd
 msgid "Ranged"
 msgstr "Fernkampf"
-
-#: scripts/ui/loadout_card.gd
-#: scripts/ui/mission_menu.gd
-#: scripts/ui/upgrade_card.gd
-msgid "Locked until everyone is back aboard."
-msgstr "Gesperrt, bis alle wieder an Bord sind."
 
 #: scripts/ui/loadout_card.gd
 msgid "Slots 1 and 2 go along on the next mission; one weapon always does."
@@ -357,29 +451,25 @@ msgstr "Magazin"
 msgid "Slot %d"
 msgstr "Platz %d"
 
-#: scripts/ui/mission_menu.gd
-msgid "%d min"
-msgstr "%d Min."
+#: scripts/ui/navigator_card.gd
+msgid "Star"
+msgstr "Stern"
 
-#: scripts/ui/mission_menu.gd
-msgid "In flight: gear up and head for the ramp."
-msgstr "Im Flug: Ausrüsten und zur Rampe gehen."
+#: scripts/ui/navigator_card.gd
+msgid "Zoom in"
+msgstr "Heranzoomen"
 
-#: scripts/ui/mission_menu.gd
-msgid "Scanning the location..."
-msgstr "Ort wird gescannt …"
+#: scripts/ui/navigator_card.gd
+msgid "No docking yet."
+msgstr "Noch kein Andocken möglich."
 
-#: scripts/ui/mission_menu.gd
-msgid "Set course to fly there."
-msgstr "Kurs setzen, um dorthin zu fliegen."
+#: scripts/ui/navigator_card.gd
+msgid "Set as destination"
+msgstr "Als Ziel setzen"
 
-#: scripts/ui/mission_menu.gd
-msgid "Landed: lower the ramp in the cargo bay."
-msgstr "Gelandet: Rampe im Frachtraum senken."
-
-#: scripts/ui/mission_menu.gd
-msgid "Pick a mission to see it on the hologram."
-msgstr "Mission wählen, um sie im Hologramm zu sehen."
+#: scripts/ui/navigator_card.gd
+msgid "Destination set: set course at the cockpit."
+msgstr "Ziel gesetzt: Kurs im Cockpit setzen."
 
 #: scripts/ui/settings_menu.gd
 msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
@@ -416,3 +506,15 @@ msgstr "Aufrüsten"
 #: scripts/ui/upgrade_card.gd
 msgid "Max"
 msgstr "Max"
+
+#: scripts/world/celestial_body.gd
+msgid "Moon"
+msgstr "Mond"
+
+#: scripts/world/celestial_body.gd
+msgid "Station"
+msgstr "Station"
+
+#: scripts/world/celestial_body.gd
+msgid "Planet"
+msgstr "Planet"

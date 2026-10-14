@@ -95,8 +95,9 @@ var give_ammo_time: float = 0.0
 var health: float
 ## Dead players can't move or act until they respawn.
 var dead: bool = false
-## The 3D menu (a world panel) the player is using, or null. Meanwhile it doesn't move or act.
-var menu: WorldPanel:
+## The 3D menu (a screen or a station) the player is using, or null. Meanwhile it doesn't move or
+## act.
+var menu: WorldMenu:
 	set(value):
 		menu = value
 		# The press that closed the menu (e.g. a click) doesn't act again in the world.
@@ -193,7 +194,7 @@ func _physics_process(delta: float) -> void:
 		_update_aim(camera, camera_basis, move)
 	else:
 		aim_target = null
-		_aim_towards(menu.global_position)
+		_aim_towards(menu.get_look_target())
 	var target_yaw: float = atan2(-aim_direction.x, -aim_direction.z)
 	var yaw: float = lerp_angle(rotation.y, target_yaw, 1.0 - exp(-settings.turn_speed * delta))
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.

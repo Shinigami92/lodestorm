@@ -32,7 +32,7 @@ func test_using_the_terminal_opens_its_menu() -> void:
 	assert_eq(_player.interact(), _terminal)
 	assert_eq(_panel.user, _player)
 	assert_eq(_player.menu, _panel)
-	assert_eq(WorldPanel.used_by(get_tree(), _player), _panel)
+	assert_eq(WorldMenu.used_by(get_tree(), _player), _panel)
 	assert_false(_terminal.enabled, "nobody else can use it meanwhile")
 	assert_true(_panel.content is SettingsMenu)
 	assert_eq(_focused().name, &"en", "the first control has the focus")

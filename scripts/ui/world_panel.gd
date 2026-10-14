@@ -1,11 +1,9 @@
 class_name WorldPanel
-extends Node3D
-## A screen in the world showing a menu (`menu`, a Control scene rendered in a SubViewport): how
-## menus work without a 2D HUD. One player uses it at a time (`open`). Meanwhile that player
-## doesn't move or act, their camera moves in to frame the screen (`view_height`, centered on
-## `view_focus` if set, e.g. to show what the menu changes next to it), the screen draws
-## over everything (nobody standing in front hides it), and the menu takes their input until it
-## closes (`close`, also with `pause` or `ui_cancel`):
+extends WorldMenu
+## A screen in the world showing a menu (`menu`, a Control scene rendered in a SubViewport): a
+## terminal's screen, or a station's holo card (see `Station`). While a player uses it (see
+## `WorldMenu`), the screen draws over everything (nobody standing in front hides it), and the menu
+## takes their input:
 ## - pointing: the mouse cursor, as a ray from the camera through the screen (`pixel_at`); a VR
 ##   controller will point the same way;
 ## - focus: `move_*` and the ui_* directions move the focus between controls, `interact` and
@@ -14,12 +12,6 @@ extends Node3D
 ## at about the resolution it covers on screen (zoomed in: sharp text; from afar: no shimmer), the
 ## menu's layout keeps `pixels_per_meter`.
 
-## Emitted when a player starts using the panel.
-signal opened(player: Player)
-## Emitted when the player using it is done.
-signal closed(player: Player)
-
-const GROUP: StringName = &"world_panels"
 ## Actions that steer the menu while it's open, and the GUI action each one sends.
 const NAVIGATION: Dictionary[StringName, StringName] = {
 	&"move_forward": &"ui_up",
@@ -33,8 +25,6 @@ const NAVIGATION: Dictionary[StringName, StringName] = {
 	&"ui_right": &"ui_right",
 	&"ui_accept": &"ui_accept",
 }
-## Actions that close the menu.
-const CLOSE_ACTIONS: Array[StringName] = [&"pause", &"ui_cancel"]
 ## Render resolution steps (as a factor of `pixels_per_meter`): half an octave apart, so zooming
 ## resizes the texture only a few times.
 const RESOLUTION_STEP: float = 0.5
@@ -54,14 +44,10 @@ const ON_TOP_PRIORITY: int = 10
 @export var size: Vector2 = Vector2(1.2, 0.75)
 ## The menu's layout size in pixels per m: its controls and fonts are sized for this.
 @export var pixels_per_meter: float = 800.0
-## How much the camera of the player using it sees (visible height in m): it frames the screen
-## with some room around it. TBD (playtest).
-@export var view_height: float = 1.6
-## What the camera of the player using it centers on; the screen when not set.
-@export var view_focus: Node3D
+## Whether the screen shows through where the menu draws nothing (e.g. a card smaller than its
+## screen).
+@export var transparent: bool = false
 
-## The player using it, or null.
-var user: Player
 ## The instanced `menu`.
 var content: Control
 
@@ -76,11 +62,11 @@ var _held: Dictionary[StringName, bool] = {}
 
 
 func _ready() -> void:
-	add_to_group(GROUP)
 	var layout := Vector2i((size * pixels_per_meter).round())
 	_viewport.size_2d_override = layout
 	_viewport.size_2d_override_stretch = true
 	_viewport.size = layout
+	_viewport.transparent_bg = transparent
 	_show_menu()
 	var quad := QuadMesh.new()
 	quad.size = size
@@ -99,7 +85,8 @@ func _input(event: InputEvent) -> void:
 	if not user:
 		return
 	if event is InputEventMouseButton or event is InputEventMouseMotion:
-		_point(event as InputEventMouse)
+		if point(event as InputEventMouse):
+			get_viewport().set_input_as_handled()
 		return
 	for action: StringName in CLOSE_ACTIONS:
 		if event.is_action_pressed(action):
@@ -130,39 +117,19 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## Starts `player` using the panel, unless someone else does already. Returns whether it opened.
-func open(player: Player) -> bool:
-	if user:
-		return user == player
-	user = player
-	player.menu = self
-	_set_on_top(true)
+func _opened() -> void:
+	set_on_top(true)
 	if content:
 		var first: Control = content.find_next_valid_focus()
 		if first:
 			first.grab_focus()
-	opened.emit(player)
-	return true
 
 
-## Ends using the panel.
-func close() -> void:
-	if not user:
-		return
-	var player: Player = user
-	user = null
-	if is_instance_valid(player) and player.menu == self:
-		player.menu = null
+func _closed() -> void:
 	_viewport.gui_release_focus()
-	_set_on_top(false)
+	set_on_top(false)
 	_pointer_inside = false
 	_held.clear()
-	closed.emit(player)
-
-
-## Where the camera of the player using it centers.
-func get_view_center() -> Vector3:
-	return view_focus.global_position if view_focus else global_position
 
 
 ## The menu pixel (in its layout size) where a ray hits the front of the screen, or `Vector2.INF`
@@ -186,39 +153,30 @@ func get_resolution() -> Vector2i:
 	return _viewport.size
 
 
-## The panel `player` is using, or null.
-static func used_by(tree: SceneTree, player: Node) -> WorldPanel:
-	if not player:
-		return null
-	for panel: WorldPanel in tree.get_nodes_in_group(GROUP):
-		if panel.user == player:
-			return panel
-	return null
-
-
 ## The panel showing `control` (a control in its menu), or null.
 static func showing(control: Control) -> WorldPanel:
 	return control.get_viewport().get_parent() as WorldPanel
 
 
-func _point(event: InputEventMouse) -> void:
+## Passes a mouse event on to the menu where the cursor points at the screen. Returns whether it
+## points at the screen.
+func point(event: InputEventMouse) -> bool:
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	if not camera:
-		return
+		return false
 	var pixel: Vector2 = pixel_at(
 		camera.project_ray_origin(event.position), camera.project_ray_normal(event.position)
 	)
 	var inside: bool = pixel != Vector2.INF
 	if not inside and not _pointer_inside:
-		return
+		return false
 	var moved := event.duplicate() as InputEventMouse
 	# Off the screen: one last move far outside the menu, so nothing stays hovered.
 	moved.position = pixel if inside else Vector2(-1000.0, -1000.0)
 	moved.global_position = moved.position
 	_pointer_inside = inside
 	_viewport.push_input(moved, true)
-	if inside:
-		get_viewport().set_input_as_handled()
+	return inside
 
 
 func _show_menu() -> void:
@@ -230,11 +188,13 @@ func _show_menu() -> void:
 		_viewport.add_child(content)
 
 
-## Draws the screen over everything else (the player in front of it) while it's used.
-func _set_on_top(on_top: bool) -> void:
+## Draws the screen over everything else (the player in front of it), e.g. while it's used.
+func set_on_top(on_top: bool) -> void:
 	_material.no_depth_test = on_top
 	_material.transparency = (
-		BaseMaterial3D.TRANSPARENCY_ALPHA if on_top else BaseMaterial3D.TRANSPARENCY_DISABLED
+		BaseMaterial3D.TRANSPARENCY_ALPHA
+		if on_top or transparent
+		else BaseMaterial3D.TRANSPARENCY_DISABLED
 	)
 	_material.render_priority = ON_TOP_PRIORITY if on_top else 0
 

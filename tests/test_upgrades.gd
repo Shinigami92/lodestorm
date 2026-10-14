@@ -14,12 +14,6 @@ const HOSE: Upgrade = preload("res://scenes/upgrades/miner_hose.tres")
 const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
 const GREEN: OreType = preload("res://scenes/mining/ores/ore_green.tres")
 const VIOLET: OreType = preload("res://scenes/mining/ores/ore_violet.tres")
-## In front of the consoles in the upgrade rooms (ship-local).
-const AT_CONSOLES: Dictionary[String, Vector3] = {
-	"Weapons": Vector3(-42.6875, 2.5, 5.1),
-	"Armor": Vector3(-30.5625, 2.5, 5.1),
-	"Miners": Vector3(-6.3125, 2.5, 5.1),
-}
 
 var _map: Node3D
 var _player: Player
@@ -215,8 +209,8 @@ func test_each_player_has_their_own_upgrades() -> void:
 	defaults.free()
 
 
-func test_every_upgrade_room_has_a_console() -> void:
-	var menus: Dictionary[String, Array] = {
+func test_every_upgrade_room_has_a_station() -> void:
+	var stations: Dictionary[String, Array] = {
 		"Weapons":
 		[
 			BLASTER.upgrade,
@@ -228,20 +222,21 @@ func test_every_upgrade_room_has_a_console() -> void:
 		"Armor": [ARMOR],
 		"Miners": [DRILL, TANK, HOSE],
 	}
-	for room: String in menus:
-		var menu: UpgradeMenu = await _open_console(room)
+	for room: String in stations:
+		var station: UpgradeStation = await _open_station(room)
 		var expected: Array[Upgrade] = []
-		expected.assign(menus[room])
-		assert_eq(menu.listed(), expected, room)
-		for upgrade: Upgrade in expected:
-			assert_not_null(menu.get_buy_button(upgrade), "%s: %s" % [room, upgrade.display_name])
-		WorldPanel.showing(menu).close()
+		expected.assign(stations[room])
+		assert_eq(station.get_upgrades(), expected, room)
+		assert_not_null(station.selected, "%s selects its first part" % room)
+		station.close()
 		await wait_process_frames(1)
 
 
-func test_console_buys_with_ore_from_the_hold() -> void:
-	var menu: UpgradeMenu = await _open_console("Armor")
-	var button: Button = menu.get_buy_button(ARMOR)
+func test_station_buys_with_ore_from_the_hold() -> void:
+	var station: UpgradeStation = await _open_station("Armor")
+	var card := station.card_menu as UpgradeCard
+	assert_eq(card.upgrade, ARMOR)
+	var button: Button = card.get_buy_button()
 	assert_true(button.disabled, "the hold is empty")
 	_ship.add_to_hold(CYAN, 1000.0)
 	await wait_process_frames(1)
@@ -249,45 +244,42 @@ func test_console_buys_with_ore_from_the_hold() -> void:
 	button.pressed.emit()
 	assert_eq(_player.upgrades.mk(ARMOR), 2)
 	assert_eq(_ship.hold[CYAN], 1000.0 - ARMOR.levels[0].cost[CYAN])
-	await wait_process_frames(2)
-	button = menu.get_buy_button(ARMOR)
+	await wait_process_frames(1)
 	assert_true(button.disabled, "MK3 needs green and violet")
 	_ship.add_to_hold(GREEN, 1000.0)
 	_ship.add_to_hold(VIOLET, 1000.0)
 	await wait_process_frames(1)
-	button.pressed.emit()
+	assert_true(card.press_primary(), "interact buys too")
 	assert_eq(_player.upgrades.mk(ARMOR), 3)
-	await wait_process_frames(2)
-	button = menu.get_buy_button(ARMOR)
+	await wait_process_frames(1)
 	assert_true(button.disabled, "at the highest level")
 	assert_eq(button.text, "Max")
 
 
-func test_console_locks_weapons_the_player_does_not_own() -> void:
-	var menu: UpgradeMenu = await _open_console("Weapons")
+func test_station_locks_weapons_the_player_does_not_own() -> void:
+	var station := await _open_station("Weapons") as WeaponStation
 	_ship.add_to_hold(CYAN, 1000.0)
 	await wait_process_frames(1)
-	assert_true(menu.get_buy_button(SHOTGUN.upgrade).disabled, "no shotgun yet")
-	assert_false(menu.buy(SHOTGUN.upgrade))
-	assert_false(menu.get_buy_button(BLASTER.upgrade).disabled)
+	assert_false(station.can_buy(SHOTGUN.upgrade), "no shotgun yet")
+	assert_false(station.buy(SHOTGUN.upgrade))
+	assert_true(station.can_buy(BLASTER.upgrade))
 	_player.arsenal.unlock(SHOTGUN)
-	await wait_process_frames(2)
-	assert_false(menu.get_buy_button(SHOTGUN.upgrade).disabled)
-	assert_true(menu.buy(SHOTGUN.upgrade))
+	assert_true(station.buy(SHOTGUN.upgrade))
 	assert_eq(_player.upgrades.mk(SHOTGUN.upgrade), 2)
 
 
-func test_console_locks_while_a_mission_is_underway() -> void:
-	var menu: UpgradeMenu = await _open_console("Miners")
+func test_station_locks_while_a_mission_is_underway() -> void:
+	var station: UpgradeStation = await _open_station("Miners")
 	_ship.add_to_hold(CYAN, 1000.0)
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	await wait_process_frames(2)
-	assert_true(menu.is_locked())
-	assert_true(menu.get_buy_button(DRILL).disabled)
-	assert_false(menu.buy(DRILL))
+	assert_true(station.is_locked())
+	assert_false(station.can_buy(DRILL))
+	assert_false(station.buy(DRILL))
 	assert_eq(_player.upgrades.mk(DRILL), 1)
 	assert_eq(_ship.hold[CYAN], 1000.0, "nothing paid")
+	assert_true((station.card_menu as UpgradeCard).get_buy_button().disabled)
 
 
 func test_debug_overlay_fills_the_hold() -> void:
@@ -298,14 +290,14 @@ func test_debug_overlay_fills_the_hold() -> void:
 		assert_gt(stored, 0.0)
 
 
-func _open_console(room: String) -> UpgradeMenu:
-	var terminal := _ship.get_node("Rooms/Lower/%s/UpgradeTerminal" % room) as Terminal
-	_player.global_position = _ship.to_global(AT_CONSOLES[room])
+func _open_station(room: String) -> UpgradeStation:
+	var station := _ship.get_node("Rooms/Lower/%s/UpgradeStation" % room) as UpgradeStation
+	var use: Interactable = station.use_point
+	_player.global_position = use.global_position + use.global_basis.z * 0.3
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(5)
-	assert_eq(_player.interact(), terminal, room)
-	var menu := terminal.panel.content as UpgradeMenu
+	assert_eq(_player.interact(), station.use_point, room)
+	assert_eq(station.user, _player)
 	await wait_process_frames(2)
-	assert_eq(menu.player, _player)
-	assert_eq(menu.ship, _ship)
-	return menu
+	assert_eq(station.ship, _ship)
+	return station

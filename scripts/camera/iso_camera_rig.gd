@@ -2,7 +2,7 @@ class_name IsoCameraRig
 extends Node3D
 ## Desktop camera: looks down at the target from a fixed isometric angle and follows it; inside a
 ## `CameraZone`, it looks at the zone's focus instead. While the target uses a 3D menu (a
-## `WorldPanel`), it moves in to frame the menu's screen, keeping the angle.
+## `WorldMenu`: a screen or a station), it moves in to frame it, keeping the angle.
 ## The VR diorama will be a separate rig; gameplay only uses the viewport's active camera.
 ## `shake` jiggles the view (e.g. the ship's hull in the clouds).
 
@@ -40,10 +40,10 @@ func _process(delta: float) -> void:
 	var zone: CameraZone = CameraZone.containing(get_tree(), body) if body else null
 	if zone:
 		goal = zone.focus_position()
-	var panel: WorldPanel = WorldPanel.used_by(get_tree(), target)
-	if panel:
-		goal = panel.get_view_center()
-		goal_zoom = panel.view_height / view_height()
+	var menu: WorldMenu = WorldMenu.used_by(get_tree(), target)
+	if menu:
+		goal = menu.get_view_center()
+		goal_zoom = menu.view_height / view_height()
 	var weight: float = 1.0 - exp(-settings.follow_speed * delta)
 	global_position = global_position.lerp(goal, weight)
 	if zoom != goal_zoom:

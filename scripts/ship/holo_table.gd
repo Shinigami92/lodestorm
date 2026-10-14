@@ -1,8 +1,10 @@
 class_name HoloTable
 extends Node3D
 ## The table in the middle of the bridge. Its projector shows a hologram of a mission location:
-## a scaled-down copy of the location's meshes, spinning slowly above the table, with landmarks
-## (where the ship stands) in a brighter color. Players stand around it to see where they're going.
+## a scaled-down copy of the location's meshes above the table, with landmarks (where the ship
+## stands) in a brighter color. It doesn't turn: it lies the way the ship stands in the location
+## (the ramp side to the right like aboard), so what lies beside the ship in the hologram lies
+## beside it outside. Players stand around it to see where they're going.
 ## Every ore node shows as a beam in its ore's color (`Hologram/Markers`), so players see where
 ## the ores lie and plan their route; at the hologram's scale the deposits themselves are specks.
 ## The location may still be outside the tree (a mission's location prepared before the flight).
@@ -14,8 +16,6 @@ const LANDMARK_COLOR := Color(1.0, 0.85, 0.35)
 @export var radius: float = 2.4
 ## Stretches heights, so flat locations still show their rocks and nests. TBD (playtest).
 @export var height_scale: float = 1.5
-## Turns per second.
-@export var spin_speed: float = 0.03
 ## Size of the ore beams (radius, height), in m of the hologram.
 @export var marker_size: Vector2 = Vector2(0.025, 0.3)
 
@@ -23,13 +23,8 @@ var _location_material: ShaderMaterial = _material(LOCATION_COLOR)
 var _landmark_material: ShaderMaterial = _material(LANDMARK_COLOR)
 var _marker_materials: Dictionary[OreType, ShaderMaterial] = {}
 
-@onready var _hologram: Node3D = $Hologram
 @onready var _content: Node3D = $Hologram/Content
 @onready var _markers: Node3D = $Hologram/Markers
-
-
-func _process(delta: float) -> void:
-	_hologram.rotate_y(TAU * spin_speed * delta)
 
 
 ## Shows `location` (as it is right now) and the `landmarks` in it as a hologram; null clears it.

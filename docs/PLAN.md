@@ -57,6 +57,8 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Ammo for ranged weapons (made from carried ore during a run, reloading with a timing press, magazine upgrades, refilling teammates' ammo), weapon MK upgrades, loadout slots for any weapon type
 - Skills (dash, more health, regeneration, rescue drone, miner radar, sentries) and keeping part of the carried ore on death
 - Quest framework: NPC quest givers, main and side quests tied to locations, quests that can't be missed, reputation, weapon blueprints as rewards (the shotgun first; until then only the debug overlay unlocks it)
+- In-world menus instead of flat terminals (see [UI](GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)): holo cards beside selectable parts, `tab_prev`/`tab_next`, a minimum text size and a test that every card fits in every language; the weapons rack and workbench, the armor fitting frame, the miners' maintenance pad, a locker per player in the armory; the bed to quit, the comms station (inviting works with co-op, M7); the skill graph comes with the skills, the wrist display's quest log with the quest framework
+- Navigator at the holo table (star system → planet, moon or station → region → landing site; the hologram no longer turns) and setting course at the cockpit's flight console; planets and moons with fixed regions (biome and set pieces), a new section generated per visit; stations as handcrafted maps without enemies
 - First story pieces: one crew NPC with a quest chain, one expedition log; crew NPCs explain the mechanics so far (e.g. ammo and spare magazines at the armory)
 
 ## M5 — Art pass (Blender MCP)

@@ -1,0 +1,131 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/upgrade_station.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/upgrade_card.tscn" id="3_card"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="4_use"]
+[ext_resource type="Script" path="res://scripts/ui/station_part.gd" id="5_part"]
+[ext_resource type="Resource" path="res://scenes/upgrades/armor.tres" id="6_armor"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.17, 0.175, 0.185, 1)
+metallic = 0.2
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glow"]
+shading_mode = 0
+albedo_color = Color(0.3, 0.85, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_post"]
+size = Vector3(0.14, 2.4, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_post"]
+material = SubResource("StandardMaterial3D_body")
+size = Vector3(0.14, 2.4, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_beam"]
+material = SubResource("StandardMaterial3D_body")
+size = Vector3(1.5, 0.14, 0.14)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_plate"]
+material = SubResource("StandardMaterial3D_body")
+top_radius = 0.6
+bottom_radius = 0.65
+height = 0.05
+
+[sub_resource type="BoxMesh" id="BoxMesh_strip"]
+material = SubResource("StandardMaterial3D_glow")
+size = Vector3(0.02, 2.2, 0.02)
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+material = SubResource("StandardMaterial3D_glow")
+inner_radius = 0.58
+outer_radius = 0.62
+
+[sub_resource type="TorusMesh" id="TorusMesh_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+inner_radius = 0.66
+outer_radius = 0.72
+
+[node name="ArmorStation" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+script = ExtResource("1_script")
+user_spot = NodePath("UserSpot")
+view_height = 2.6
+view_focus = NodePath("Focus")
+
+[node name="Plate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 0)
+mesh = SubResource("CylinderMesh_plate")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
+mesh = SubResource("TorusMesh_ring")
+
+[node name="PostLeft" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 1.2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PostLeft"]
+shape = SubResource("BoxShape3D_post")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PostLeft"]
+mesh = SubResource("BoxMesh_post")
+
+[node name="Strip" type="MeshInstance3D" parent="PostLeft"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07, 0, 0.07)
+mesh = SubResource("BoxMesh_strip")
+
+[node name="PostRight" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 1.2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PostRight"]
+shape = SubResource("BoxShape3D_post")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PostRight"]
+mesh = SubResource("BoxMesh_post")
+
+[node name="Strip" type="MeshInstance3D" parent="PostRight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07, 0, 0.07)
+mesh = SubResource("BoxMesh_strip")
+
+[node name="Beam" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.43, 0)
+mesh = SubResource("BoxMesh_beam")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0.5)
+light_color = Color(0.3, 0.85, 1, 1)
+light_energy = 0.6
+omni_range = 3.0
+
+[node name="UserSpot" type="Marker3D" parent="."]
+rotation = Vector3(0, 3.14159, 0)
+
+[node name="Suit" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+script = ExtResource("5_part")
+item = ExtResource("6_armor")
+pick_radius = 0.45
+card_offset = Vector2(1.05, 0.25)
+
+[node name="Focus" type="Marker3D" parent="."]
+position = Vector3(0.5, 1.2, 0)
+
+[node name="Use" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.3)
+script = ExtResource("4_use")
+interact_range = 1.4
+
+[node name="Highlight" type="MeshInstance3D" parent="Use"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, -0.3)
+visible = false
+mesh = SubResource("TorusMesh_highlight")
+
+[node name="Card" parent="." instance=ExtResource("2_panel")]
+size = Vector2(1, 0.96)
+pixels_per_meter = 500.0
+transparent = true
+menu = ExtResource("3_card")

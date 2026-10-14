@@ -40,9 +40,9 @@ func test_magazine_reload_throws_away_the_rest_and_pays_the_commonest_ore_first(
 	await _finish_reload(blaster)
 	assert_false(blaster.reloading)
 	assert_eq(blaster.rounds, blaster.capacity())
-	# A full magazine costs 30 * 0.25 = 7.5: all 5 cyan, then 2.5 / 1.25 = 2 green.
+	# A full magazine costs 24 * 0.25 = 6: all 5 cyan, then 1 / 1.25 = 0.8 green.
 	assert_almost_eq(_player.cargo[CYAN], 0.0, 0.001)
-	assert_almost_eq(_player.cargo[GREEN], 8.0, 0.001)
+	assert_almost_eq(_player.cargo[GREEN], 9.2, 0.001)
 
 
 func test_magazine_reload_loads_what_the_ore_pays() -> void:

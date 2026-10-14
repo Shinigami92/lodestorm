@@ -19,7 +19,7 @@ enum ReloadMode { MAGAZINE, SINGLE }
 
 @export_group("Ammo")
 ## Rounds (shots) a full magazine holds at MK1.
-@export var magazine: int = 30
+@export var magazine: int = 24
 ## Ore one round costs, in units of the commonest ore (see `OreType.ammo_yield`).
 @export var ore_per_round: float = 0.25
 @export var reload_mode: ReloadMode = ReloadMode.MAGAZINE

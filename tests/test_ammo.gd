@@ -74,7 +74,7 @@ func test_holding_interact_next_to_a_teammate_hands_them_a_magazine() -> void:
 	assert_true(_ring().visible, "the ring fills while handing it over")
 	await wait_seconds(_player.settings.give_ammo_time + 0.1)
 	assert_eq(their_blaster.rounds, their_blaster.capacity())
-	assert_almost_eq(_player.cargo[CYAN], 20.0 - 7.5, 0.001)
+	assert_almost_eq(_player.cargo[CYAN], 20.0 - 6.0, 0.001)
 	assert_null(_player.give_ammo_target, "once per hold")
 
 
@@ -112,7 +112,7 @@ func test_counter_shows_the_loaded_share_and_warns() -> void:
 	var blaster := _blaster()
 	var gauge := blaster.get_node("AmmoGauge") as AmmoGauge
 	assert_eq(_lit_segments(gauge, blaster), 6)
-	blaster.rounds = 15
+	blaster.rounds = blaster.capacity() / 2
 	assert_eq(_lit_segments(gauge, blaster), 3)
 	blaster.rounds = 2
 	var glow: Array[Color] = gauge.segment_glow(blaster, 6)

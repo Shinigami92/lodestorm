@@ -152,6 +152,12 @@ func step(direction: Vector2) -> void:
 		select(best)
 
 
+## Shows or hides the card and its leader line (e.g. while the bed's player falls asleep).
+func show_card(shown: bool) -> void:
+	card.visible = shown
+	_leader.visible = shown
+
+
 ## Shows the card again for what's selected (e.g. after buying).
 func refresh() -> void:
 	if card_menu:
@@ -173,6 +179,13 @@ func _back() -> bool:
 ## Handles a station's own keys (e.g. the locker's `slot_1`/`slot_2`). Returns whether it did.
 func _shortcut(_event: InputEvent) -> bool:
 	return false
+
+
+## The `number`th player (1: the first, the one playing solo), or null: whose locker or bed it is.
+## The order players joined in, until co-op gives them stable seats.
+static func nth_player(tree: SceneTree, number: int) -> Player:
+	var players: Array[Node] = tree.get_nodes_in_group(Player.GROUP)
+	return players[number - 1] as Player if number >= 1 and number <= players.size() else null
 
 
 ## Whether `player` may use it (e.g. only their own locker).

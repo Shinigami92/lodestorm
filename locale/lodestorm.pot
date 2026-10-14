@@ -158,6 +158,23 @@ msgstr ""
 msgid "Loadout"
 msgstr ""
 
+#: scenes/ui/bed_card.tscn
+msgid "Your bunk"
+msgstr ""
+
+#: scenes/ui/bed_card.tscn
+msgid "Sleep"
+msgstr ""
+
+#: scenes/ui/bed_card.tscn
+#: scenes/ui/flight_card.tscn
+#: scenes/ui/loadout_card.tscn
+#: scenes/ui/navigator_card.tscn
+#: scenes/ui/settings_menu.tscn
+#: scenes/ui/upgrade_card.tscn
+msgid "Close"
+msgstr ""
+
 #: scenes/ui/flight_card.tscn
 #: scenes/ui/navigator_card.tscn
 msgid "Danger"
@@ -175,14 +192,6 @@ msgstr ""
 
 #: scenes/ui/flight_card.tscn
 msgid "Set course"
-msgstr ""
-
-#: scenes/ui/flight_card.tscn
-#: scenes/ui/loadout_card.tscn
-#: scenes/ui/navigator_card.tscn
-#: scenes/ui/settings_menu.tscn
-#: scenes/ui/upgrade_card.tscn
-msgid "Close"
 msgstr ""
 
 #: scenes/ui/navigator_card.tscn
@@ -378,6 +387,14 @@ msgstr ""
 
 #: scripts/ship/ship.gd
 msgid "No mission"
+msgstr ""
+
+#: scripts/ui/bed_card.gd
+msgid "A run is underway: sleeping now loses it."
+msgstr ""
+
+#: scripts/ui/bed_card.gd
+msgid "Ends the game here. Your progress is saved."
 msgstr ""
 
 #: scripts/ui/flight_card.gd

@@ -85,8 +85,7 @@ func _process(delta: float) -> void:
 
 ## The player whose locker it is, or null.
 func get_owner_player() -> Player:
-	var players: Array[Node] = get_tree().get_nodes_in_group(Player.GROUP)
-	return players[number - 1] as Player if number <= players.size() else null
+	return Station.nth_player(get_tree(), number)
 
 
 func can_use(player: Player) -> bool:

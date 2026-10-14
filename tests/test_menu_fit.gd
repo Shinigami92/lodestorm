@@ -23,6 +23,7 @@ const STATIONS: PackedStringArray = [
 	"Rooms/Lower/Armory/Locker1",
 	"Rooms/Upper/Bridge/Navigator",
 	"Rooms/Upper/Cockpit/FlightConsole",
+	"Rooms/Upper/Cabin1/BedStation",
 ]
 
 var _map: Node3D
@@ -133,6 +134,20 @@ func test_navigator_and_flight_cards_fit_in_every_language() -> void:
 		await wait_process_frames(1)
 		_assert_card_fits(console, "%s destination" % locale)
 		console.close()
+
+
+func test_bed_card_fits_in_every_language() -> void:
+	var bed := _ship.get_node("Rooms/Upper/Cabin1/BedStation") as BedStation
+	var panel: WorldPanel = bed.card
+	var card := bed.card_menu as BedCard
+	for locale: String in SettingsMenu.languages():
+		TranslationServer.set_locale(locale)
+		for loses_run: bool in [false, true]:
+			card.visible = true
+			card.show_state(loses_run)
+			await wait_process_frames(1)
+			var layout := Vector2(panel.size * panel.pixels_per_meter)
+			_assert_fits(card, layout, "%s bed, run lost %s" % [locale, loses_run])
 
 
 func test_every_terminal_fits_in_every_language() -> void:

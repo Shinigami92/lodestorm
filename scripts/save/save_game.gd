@@ -5,7 +5,7 @@ extends Node
 ## levels) in `player.json`, both in `save/` under `directory`. It loads them when the map starts
 ## and saves whenever progress changes while no mission is underway; what changes during a
 ## mission is saved once it's over (returned or lost), so quitting mid-mission loses that run like
-## dying. The settings (`GameSettings`) are kept apart and survive `new_game`.
+## dying. The settings (`GameSettings`) are kept apart and survive `reset_progress`.
 ## Resources (ore types, weapons, upgrades) are saved by their path, so moving or renaming one of
 ## them needs a migration (`VERSION`). Unknown entries are skipped; a file that can't be read is
 ## kept as `<name>.corrupt` and the game starts from the defaults.
@@ -30,7 +30,7 @@ static var directory: String = "user://dev/" if OS.has_feature("editor") else "u
 
 ## Whether a save is queued for the end of the frame.
 var _save_queued: bool = false
-## Off after `new_game`, so nothing is written until the map reloads.
+## Off after `reset_progress`, so nothing is written until the map reloads.
 var _active: bool = true
 
 
@@ -97,13 +97,26 @@ func save_progress() -> void:
 		_write(PLAYER_FILE, player_data(player))
 
 
+## Whether this is solo play: one player and no co-op session. Only then can the progress be
+## reset; in co-op, host and guests keep theirs.
+static func is_solo(tree: SceneTree) -> bool:
+	return (
+		tree.get_multiplayer().multiplayer_peer is OfflineMultiplayerPeer
+		and tree.get_nodes_in_group(Player.GROUP).size() <= 1
+	)
+
+
 ## Wipes the progress and starts over from the defaults: deletes the save and reloads the map
-## (when it's the current scene). Irreversible; the settings stay.
-func new_game() -> void:
+## (when it's the current scene). Irreversible; the settings stay. Only in solo play
+## (`is_solo`); returns whether it reset.
+func reset_progress() -> bool:
+	if not is_solo(get_tree()):
+		return false
 	_active = false
 	erase()
 	if get_parent() == get_tree().current_scene:
 		get_tree().reload_current_scene.call_deferred()
+	return true
 
 
 ## What's saved of `ship`: the hold, in units per ore type.

@@ -55,7 +55,7 @@ func test_movement_and_interact_steer_the_menu() -> void:
 	assert_eq(TranslationServer.get_locale(), "de")
 	assert_eq(SettingsMenu.current_language(), "de")
 	_send(&"move_back")
-	assert_eq(_focused().name, &"NewGame")
+	assert_eq(_focused().name, &"ResetProgress")
 	_send(&"move_back")
 	assert_eq(_focused().name, &"Close")
 	_send(&"interact")

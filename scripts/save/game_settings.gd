@@ -1,7 +1,7 @@
 class_name GameSettings
 extends RefCounted
 ## The player's settings, kept apart from the progress (`SaveGame`) in `settings.cfg` next to the
-## save, so a new game keeps them. So far the language: the system's until one is picked.
+## save, so resetting keeps them. So far the language: the system's until one is picked.
 
 const FILE: String = "settings.cfg"
 

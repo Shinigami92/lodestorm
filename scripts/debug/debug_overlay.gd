@@ -237,11 +237,12 @@ func fill_hold() -> void:
 			ship.add_to_hold(ore_type, HOLD_FILL)
 
 
-## Deletes the save (the dev save in the editor) and reloads the map, without asking.
+## Deletes the save (the dev save in the editor) and reloads the map, without asking (solo only,
+## see `SaveGame.reset_progress`).
 func reset_save() -> void:
 	var save_game := get_tree().get_first_node_in_group(SaveGame.GROUP) as SaveGame
 	if save_game:
-		save_game.new_game()
+		save_game.reset_progress()
 	else:
 		SaveGame.erase()
 

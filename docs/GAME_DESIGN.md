@@ -40,7 +40,7 @@ A 3D isometric action/mining game with a dark, realistic sci-fi look. The player
 
 ### Localization and voice
 
-- **Languages:** English and German first, more later. All player-facing text goes through translations from the start, also the text in the world (3D menus, labels, the room names painted on the floors). German runs about a third longer than English, so panels and labels leave room for it. The game follows the system language; the settings terminal in cabin 1 picks another one and saves it (a new game keeps it). How it works: [`TECHNICAL.md`](TECHNICAL.md#localization).
+- **Languages:** English and German first, more later. All player-facing text goes through translations from the start, also the text in the world (3D menus, labels, the room names painted on the floors). German runs about a third longer than English, so panels and labels leave room for it. The game follows the system language; the settings terminal in cabin 1 picks another one and saves it (resetting keeps it). How it works: [`TECHNICAL.md`](TECHNICAL.md#localization).
 - **Translations by contributors:** the project is on GitHub, so new languages and fixes come in as pull requests (one translation file per language, readable in a diff; the CLA applies).
 - **Subtitles for every spoken line**, in every language, shown in the world, not on the screen: a speech bubble above the speaking NPC, radio lines next to the player. They work the same in VR (in the diorama).
 - **Voice-over** (wanted, English only is fine): generated with a free AI text-to-speech model that runs locally, like the concept images. Lines are generated ahead of time (per scripted line, an audio file), not while playing. The model needs good English (German is a bonus), a license that allows selling the game, and distinct voices per NPC that aren't cloned from real people without their consent. Which model: a spike (see [`PLAN.md`](PLAN.md)). Steam asks to disclose AI-generated content on the store page.
@@ -274,7 +274,7 @@ Standing at one spot until the timer runs low must not pay off. Directions to tr
 - A skill or upgrade keeps part of the carried ore on death (e.g. a canister that survives).
 - Back aboard (before the storm gets you): carried resources go into the ship's hold and are spent at the upgrade stations. The hold shows as big canisters by the back wall of the cargo bay (greybox: 900 units each, **TBD (playtest)**) and keeps growing over runs.
 - Players are healed for each new run (until the medical bay exists).
-- **Saving:** automatic, no save button. Progress (the hold, the owned weapons, the loadout, the upgrade levels) is saved whenever it changes aboard; what changes during a mission is saved once it's over, so quitting mid-mission loses that run like dying (the game starts aboard in space again). There is one save. **New game** on the settings terminal wipes it: it asks three times, each time saying that all progress is lost for good, and each confirm button waits a moment (greybox: 1 s, **TBD (playtest)**) so quick repeated presses can't get through. The settings (language) stay.
+- **Saving:** automatic, no save button. Progress (the hold, the owned weapons, the loadout, the upgrade levels) is saved whenever it changes aboard; what changes during a mission is saved once it's over, so quitting mid-mission loses that run like dying (the game starts aboard in space again). There is one save. **Reset progress** on the settings terminal wipes it: it asks three times, each time saying that all progress is lost for good, and each confirm button waits a moment (greybox: 1 s, **TBD (playtest)**) so quick repeated presses can't get through. The settings (language) stay. Only in solo play: in co-op the button is disabled with a hint, and host and guests keep their progress.
 
 ## 12. Progression / upgrades
 
@@ -298,6 +298,7 @@ Bought in the ship with ores and alloys (no experience levels, no player classes
 
 - The **host's save** holds the ship, story, crew and quests. Each player keeps their **own weapons, skills and loadout** and brings them along; players can inspect each other's gear. No trading for now.
 - Everyone gets the full haul in their own save; nothing is split.
+- Progress can only be reset in solo play (see [Death & persistence](#11-death--persistence)).
 - Each player places **their own miners**; a lost miner is lost for its owner.
 - **Tier sync:** each planet and difficulty has a maximum MK level, and stronger gear counts as that level, so guests with better gear don't carry the host through. Weapon types and unlocked skills stay. Alien numbers and health scale with the player count.
 

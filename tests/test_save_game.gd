@@ -2,6 +2,7 @@ extends GutTest
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 const SETTINGS_MENU: PackedScene = preload("res://scenes/ui/settings_menu.tscn")
+const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const BLASTER: WeaponType = preload("res://scenes/weapons/types/blaster.tres")
 const SHOTGUN: WeaponType = preload("res://scenes/weapons/types/shotgun.tres")
 const HAMMER: WeaponType = preload("res://scenes/weapons/types/hammer.tres")
@@ -139,19 +140,19 @@ func test_language_is_saved_apart_from_progress() -> void:
 	await wait_process_frames(1)
 	SaveGame.erase()
 	assert_false(SaveGame.exists())
-	assert_eq(GameSettings.saved_language(), "de", "a new game keeps the settings")
+	assert_eq(GameSettings.saved_language(), "de", "resetting keeps the settings")
 
 
-func test_new_game_asks_three_times() -> void:
+func test_reset_asks_three_times() -> void:
 	_player.upgrades.raise(ARMOR)
 	await wait_process_frames(1)
 	var menu := SETTINGS_MENU.instantiate() as SettingsMenu
 	menu.confirm_delay = 0.1
 	add_child_autofree(menu)
-	var new_game: Button = menu.get_node("%NewGame")
+	var reset: Button = menu.get_node("%ResetProgress")
 	var confirm: Button = menu.get_wipe_confirm_button()
 	var warning: Label = menu.get_node("%WipeWarning")
-	new_game.pressed.emit()
+	reset.pressed.emit()
 	for step: int in [1, 2, 3]:
 		assert_eq(menu.wipe_step, step)
 		assert_string_contains(confirm.text, "%d/3" % step)
@@ -173,14 +174,55 @@ func test_cancel_keeps_the_progress() -> void:
 	var menu := SETTINGS_MENU.instantiate() as SettingsMenu
 	menu.confirm_delay = 0.0
 	add_child_autofree(menu)
-	(menu.get_node("%NewGame") as Button).pressed.emit()
+	(menu.get_node("%ResetProgress") as Button).pressed.emit()
 	await wait_process_frames(1)
 	menu.get_wipe_confirm_button().pressed.emit()
 	await wait_process_frames(1)
 	(menu.get_node("%WipeCancel") as Button).pressed.emit()
 	assert_eq(menu.wipe_step, 0)
-	assert_true((menu.get_node("%NewGame") as Button).visible)
+	assert_true((menu.get_node("%ResetProgress") as Button).visible)
 	assert_true(SaveGame.exists())
+
+
+func test_reset_only_in_solo_play() -> void:
+	_player.upgrades.raise(ARMOR)
+	await wait_process_frames(1)
+	var menu := SETTINGS_MENU.instantiate() as SettingsMenu
+	menu.confirm_delay = 0.0
+	add_child_autofree(menu)
+	var reset: Button = menu.get_node("%ResetProgress")
+	var hint: Label = menu.get_node("%ResetHint")
+	await wait_process_frames(1)
+	assert_false(reset.disabled)
+	assert_false(hint.visible)
+	var guest := PLAYER_SCENE.instantiate() as Player
+	_map.add_child(guest)
+	await wait_process_frames(1)
+	assert_false(SaveGame.is_solo(get_tree()))
+	assert_true(reset.disabled, "co-op: everyone keeps their progress")
+	assert_true(hint.visible, "says why")
+	reset.pressed.emit()
+	assert_eq(menu.wipe_step, 0)
+	var save_game: SaveGame = _map.get_node("SaveGame")
+	assert_false(save_game.reset_progress())
+	assert_true(SaveGame.exists())
+	guest.free()
+	await wait_process_frames(1)
+	assert_false(reset.disabled, "solo again")
+	assert_false(hint.visible)
+
+
+func test_co_op_drops_the_reset_question() -> void:
+	var menu := SETTINGS_MENU.instantiate() as SettingsMenu
+	add_child_autofree(menu)
+	(menu.get_node("%ResetProgress") as Button).pressed.emit()
+	assert_eq(menu.wipe_step, 1)
+	var guest := PLAYER_SCENE.instantiate() as Player
+	_map.add_child(guest)
+	await wait_process_frames(2)
+	assert_eq(menu.wipe_step, 0)
+	assert_false((menu.get_node("%Wipe") as Control).visible)
+	guest.free()
 
 
 func _start() -> void:

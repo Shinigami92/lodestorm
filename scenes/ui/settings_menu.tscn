@@ -39,11 +39,19 @@ theme_override_constants/separation = 20
 layout_mode = 2
 text = "Progress"
 
-[node name="NewGame" type="Button" parent="Layout"]
+[node name="ResetProgress" type="Button" parent="Layout"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
-text = "New game"
+text = "Reset progress"
+
+[node name="ResetHint" type="Label" parent="Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+text = "Only in solo play. In co-op, host and guests keep their progress."
+autowrap_mode = 3
 
 [node name="Wipe" type="VBoxContainer" parent="Layout"]
 unique_name_in_owner = true

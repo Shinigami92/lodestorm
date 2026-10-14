@@ -56,7 +56,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Risk vs. reward: nodes running dry, mining sites drawing aliens, rare ore far out and near nests, late deposits
 - Ammo for ranged weapons (made from carried ore during a run, reloading with a timing press, magazine upgrades, refilling teammates' ammo), weapon MK upgrades, loadout slots for any weapon type
 - Skills (dash, more health, regeneration, rescue drone, miner radar, sentries) and keeping part of the carried ore on death
-- Quest framework: NPC quest givers, main and side quests tied to locations, quests that can't be missed, reputation
+- Quest framework: NPC quest givers, main and side quests tied to locations, quests that can't be missed, reputation, weapon blueprints as rewards (the shotgun first; until then only the debug overlay unlocks it)
 - First story pieces: one crew NPC with a quest chain, one expedition log
 
 ## M5 — Art pass (Blender MCP)

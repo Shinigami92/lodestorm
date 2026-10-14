@@ -154,10 +154,6 @@ msgstr ""
 msgid "Cabins · Lift · Bridge"
 msgstr ""
 
-#: scenes/ui/armor_upgrades_menu.tscn
-msgid "Armor upgrades"
-msgstr ""
-
 #: scenes/ui/armory_menu.tscn
 msgid "Loadout"
 msgstr ""
@@ -169,12 +165,8 @@ msgstr ""
 #: scenes/ui/armory_menu.tscn
 #: scenes/ui/mission_menu.tscn
 #: scenes/ui/settings_menu.tscn
-#: scenes/ui/upgrade_menu.tscn
+#: scenes/ui/upgrade_card.tscn
 msgid "Close"
-msgstr ""
-
-#: scenes/ui/miner_upgrades_menu.tscn
-msgid "Miner upgrades"
 msgstr ""
 
 #: scenes/ui/mission_menu.tscn
@@ -209,12 +201,8 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: scenes/ui/upgrade_menu.tscn
-msgid "Upgrades"
-msgstr ""
-
-#: scenes/ui/weapon_upgrades_menu.tscn
-msgid "Weapon upgrades"
+#: scenes/ui/upgrade_card.tscn
+msgid "Cost / hold"
 msgstr ""
 
 #: scenes/upgrades/armor.tres
@@ -337,7 +325,7 @@ msgid "No mission"
 msgstr ""
 
 #: scripts/ui/armory_menu.gd
-#: scripts/ui/upgrade_menu.gd
+#: scripts/ui/upgrade_card.gd
 msgid "Locked"
 msgstr ""
 
@@ -351,7 +339,7 @@ msgstr ""
 
 #: scripts/ui/armory_menu.gd
 #: scripts/ui/mission_menu.gd
-#: scripts/ui/upgrade_menu.gd
+#: scripts/ui/upgrade_card.gd
 msgid "Locked until everyone is back aboard."
 msgstr ""
 
@@ -407,22 +395,14 @@ msgstr ""
 msgid "Reset everything (3/3)"
 msgstr ""
 
-#: scripts/ui/upgrade_menu.gd
-msgid "Upgrade"
-msgstr ""
-
-#: scripts/ui/upgrade_menu.gd
-msgid "Max"
-msgstr ""
-
-#: scripts/ui/upgrade_menu.gd
+#: scripts/ui/upgrade_card.gd
 msgid "next: +%d %%"
 msgstr ""
 
-#: scripts/ui/upgrade_menu.gd
-msgid "Hold"
+#: scripts/ui/upgrade_card.gd
+msgid "Upgrade"
 msgstr ""
 
-#: scripts/ui/upgrade_menu.gd
-msgid "Upgrades are paid with ore from the hold."
+#: scripts/ui/upgrade_card.gd
+msgid "Max"
 msgstr ""

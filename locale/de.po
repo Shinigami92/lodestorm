@@ -156,10 +156,6 @@ msgstr "Lift\nFrachtraum · Rampe"
 msgid "Cabins · Lift · Bridge"
 msgstr "Kabinen · Lift · Brücke"
 
-#: scenes/ui/armor_upgrades_menu.tscn
-msgid "Armor upgrades"
-msgstr "Panzerungs-Upgrades"
-
 #: scenes/ui/armory_menu.tscn
 msgid "Loadout"
 msgstr "Ausrüstung"
@@ -171,13 +167,9 @@ msgstr "Platz"
 #: scenes/ui/armory_menu.tscn
 #: scenes/ui/mission_menu.tscn
 #: scenes/ui/settings_menu.tscn
-#: scenes/ui/upgrade_menu.tscn
+#: scenes/ui/upgrade_card.tscn
 msgid "Close"
 msgstr "Schließen"
-
-#: scenes/ui/miner_upgrades_menu.tscn
-msgid "Miner upgrades"
-msgstr "Miner-Upgrades"
 
 #: scenes/ui/mission_menu.tscn
 msgid "Missions"
@@ -211,13 +203,9 @@ msgstr "Nur, solange du allein bist. Mit anderen in deiner Sitzung behalten alle
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: scenes/ui/upgrade_menu.tscn
-msgid "Upgrades"
-msgstr "Upgrades"
-
-#: scenes/ui/weapon_upgrades_menu.tscn
-msgid "Weapon upgrades"
-msgstr "Waffen-Upgrades"
+#: scenes/ui/upgrade_card.tscn
+msgid "Cost / hold"
+msgstr "Kosten / Lager"
 
 #: scenes/upgrades/armor.tres
 msgid "Suit armor"
@@ -339,7 +327,7 @@ msgid "No mission"
 msgstr "Keine Mission"
 
 #: scripts/ui/armory_menu.gd
-#: scripts/ui/upgrade_menu.gd
+#: scripts/ui/upgrade_card.gd
 msgid "Locked"
 msgstr "Gesperrt"
 
@@ -353,7 +341,7 @@ msgstr "Fernkampf"
 
 #: scripts/ui/armory_menu.gd
 #: scripts/ui/mission_menu.gd
-#: scripts/ui/upgrade_menu.gd
+#: scripts/ui/upgrade_card.gd
 msgid "Locked until everyone is back aboard."
 msgstr "Gesperrt, bis alle wieder an Bord sind."
 
@@ -409,22 +397,14 @@ msgstr "Letzte Chance: Das löscht alles, unwiderruflich."
 msgid "Reset everything (3/3)"
 msgstr "Alles zurücksetzen (3/3)"
 
-#: scripts/ui/upgrade_menu.gd
-msgid "Upgrade"
-msgstr "Aufrüsten"
-
-#: scripts/ui/upgrade_menu.gd
-msgid "Max"
-msgstr "Max"
-
-#: scripts/ui/upgrade_menu.gd
+#: scripts/ui/upgrade_card.gd
 msgid "next: +%d %%"
 msgstr "nächste: +%d %%"
 
-#: scripts/ui/upgrade_menu.gd
-msgid "Hold"
-msgstr "Lager"
+#: scripts/ui/upgrade_card.gd
+msgid "Upgrade"
+msgstr "Aufrüsten"
 
-#: scripts/ui/upgrade_menu.gd
-msgid "Upgrades are paid with ore from the hold."
-msgstr "Upgrades werden mit Erz aus dem Lager bezahlt."
+#: scripts/ui/upgrade_card.gd
+msgid "Max"
+msgstr "Max"

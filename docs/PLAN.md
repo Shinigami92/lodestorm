@@ -45,7 +45,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - Medical bay respawn
 - Localization setup: English and German, all player-facing text through translations from the start (also the 3D menus and the text in the world)
 - Upgrade station(s) spending resources (a few weapon/armor/miner upgrades): a console per upgrade room, MK1–MK3 paid from the hold, MK pips on the weapons and the helmet
-- Save/load of persistent progress (host: ship, story, crew, quests; per player: weapons, skills, loadout, see [Co-op progression](GAME_DESIGN.md#co-op-progression))
+- Save/load of persistent progress, saved automatically aboard (host: the ship's hold, later story, crew and quests; per player: weapons, loadout, upgrades, later skills; see [Co-op progression](GAME_DESIGN.md#co-op-progression)), one save with "New game" at the settings terminal
 
 ## M4 — Progression & quests
 

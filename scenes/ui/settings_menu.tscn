@@ -14,7 +14,7 @@ script = ExtResource("1_script")
 
 [node name="Layout" type="VBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Layout"]
 layout_mode = 2
@@ -26,6 +26,7 @@ uppercase = true
 layout_mode = 2
 
 [node name="Language" type="Label" parent="Layout"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Language"
 
@@ -33,6 +34,42 @@ text = "Language"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 20
+
+[node name="Progress" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Progress"
+
+[node name="NewGame" type="Button" parent="Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "New game"
+
+[node name="Wipe" type="VBoxContainer" parent="Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="WipeWarning" type="Label" parent="Layout/Wipe"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Layout/Wipe"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="WipeConfirm" type="Button" parent="Layout/Wipe/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+
+[node name="WipeCancel" type="Button" parent="Layout/Wipe/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cancel"
 
 [node name="Spacer" type="Control" parent="Layout"]
 layout_mode = 2

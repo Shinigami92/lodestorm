@@ -193,6 +193,18 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
+#: scenes/ui/settings_menu.tscn
+msgid "Progress"
+msgstr ""
+
+#: scenes/ui/settings_menu.tscn
+msgid "New game"
+msgstr ""
+
+#: scenes/ui/settings_menu.tscn
+msgid "Cancel"
+msgstr ""
+
 #: scenes/ui/upgrade_menu.tscn
 msgid "Upgrades"
 msgstr ""
@@ -349,6 +361,30 @@ msgstr ""
 
 #: scripts/ui/mission_menu.gd
 msgid "Pick a mission to see it on the hologram."
+msgstr ""
+
+#: scripts/ui/settings_menu.gd
+msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
+msgstr ""
+
+#: scripts/ui/settings_menu.gd
+msgid "Wipe progress (1/3)"
+msgstr ""
+
+#: scripts/ui/settings_menu.gd
+msgid "Are you sure? Your progress will be gone for good, there is no way back."
+msgstr ""
+
+#: scripts/ui/settings_menu.gd
+msgid "Yes, wipe it (2/3)"
+msgstr ""
+
+#: scripts/ui/settings_menu.gd
+msgid "Last chance: this wipes everything, irreversibly."
+msgstr ""
+
+#: scripts/ui/settings_menu.gd
+msgid "Wipe everything (3/3)"
 msgstr ""
 
 #: scripts/ui/upgrade_menu.gd

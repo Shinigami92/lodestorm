@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://ee6jykh51n8m" path="res://scripts/mission/mission.gd" id="5_mission"]
 [ext_resource type="Resource" path="res://scenes/mission/mission_settings.tres" id="6_mission_settings"]
 [ext_resource type="Script" uid="uid://bk77ctab6xxa0" path="res://scripts/mission/weather.gd" id="7_weather"]
+[ext_resource type="Script" path="res://scripts/save/save_game.gd" id="8_save_game"]
 
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1
@@ -57,3 +58,9 @@ mission = NodePath("../Mission")
 environment = NodePath("../WorldEnvironment")
 sun = NodePath("../Sun")
 viewer = NodePath("../Player")
+
+[node name="SaveGame" type="Node" parent="." node_paths=PackedStringArray("ship", "player", "mission")]
+script = ExtResource("8_save_game")
+ship = NodePath("../Ship")
+player = NodePath("../Player")
+mission = NodePath("../Mission")

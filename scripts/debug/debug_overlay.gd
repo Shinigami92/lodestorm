@@ -237,6 +237,15 @@ func fill_hold() -> void:
 			ship.add_to_hold(ore_type, HOLD_FILL)
 
 
+## Deletes the save (the dev save in the editor) and reloads the map, without asking.
+func reset_save() -> void:
+	var save_game := get_tree().get_first_node_in_group(SaveGame.GROUP) as SaveGame
+	if save_game:
+		save_game.new_game()
+	else:
+		SaveGame.erase()
+
+
 func heal_players() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.heal()
@@ -291,6 +300,7 @@ func _build() -> void:
 	_button(actions, "Break miners", break_miners)
 	_button(actions, "Unlock weapons", unlock_weapons)
 	_button(actions, "Fill hold", fill_hold)
+	_button(actions, "Reset save", reset_save)
 	_button(actions, "Reset tuning", reset_tuning)
 
 	for path: String in TUNING:

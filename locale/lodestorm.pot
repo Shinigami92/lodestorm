@@ -7,7 +7,7 @@ msgid "Quartermaster"
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "What do you need?"
+msgid "How can I help you?"
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
@@ -15,15 +15,19 @@ msgid "Hello"
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "You're new aboard? I'm Brannik, the quartermaster. The armory is mine: your locker, your loadout and your ammo."
+msgid "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "Pick the weapons you take along at your locker, two at most, before the ramp goes down. From then on, the lockers stay shut until the run is over."
+msgid "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "If you have questions about ammo or reloading, ask me. Better here than out there with a swarm on your back."
+msgid "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay."
+msgstr ""
+
+#: scenes/crew/quartermaster.tres
+msgid "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
@@ -32,11 +36,15 @@ msgid "Ammo"
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works, and it uses up the most common one first, so your rare ore lasts longest."
+msgid "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "Rarer ore makes more rounds per unit. But without any ore you can't reload at all, so get your miners going early, or take the hammer along: it needs no ammo."
+msgid "The rarer the ore, the more rounds you get from the same amount."
+msgstr ""
+
+#: scenes/crew/quartermaster.tres
+msgid "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take the hammer along: it needs no ammo."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
@@ -49,11 +57,11 @@ msgid "Spare magazines"
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "Every ranged weapon you take along starts with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
+msgid "Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "The glowing cells on top of your backpack show your spare magazines. A dark cell means that magazine is used up."
+msgid "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
@@ -65,11 +73,11 @@ msgid "Reloading"
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "You can reload whenever you like, and your weapon also reloads by itself when the magazine runs empty."
+msgid "You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres
-msgid "But careful with the blaster: a reload throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
+msgid "But careful with the blaster: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
 msgstr ""
 
 #: scenes/crew/quartermaster.tres

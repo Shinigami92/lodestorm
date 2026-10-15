@@ -9,5 +9,5 @@ extends Resource
 ## to the topics.
 @export var greeting: Topic
 ## What the NPC says while the player picks a topic (the English text, translated).
-@export var prompt: String = "What do you need?"
+@export var prompt: String = "How can I help you?"
 @export var topics: Array[Topic] = []

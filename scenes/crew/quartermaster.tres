@@ -9,27 +9,27 @@
 script = ExtResource("3_topic")
 id = &"quartermaster.greeting"
 title = "Hello"
-lines = Array[String](["You're new aboard? I'm Brannik, the quartermaster. The armory is mine: your locker, your loadout and your ammo.", "Pick the weapons you take along at your locker, two at most, before the ramp goes down. From then on, the lockers stay shut until the run is over.", "If you have questions about ammo or reloading, ask me. Better here than out there with a swarm on your back."])
+lines = Array[String](["Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job.", "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though.", "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay.", "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."])
 
 [sub_resource type="Resource" id="Resource_ammo"]
 script = ExtResource("3_topic")
 id = &"quartermaster.ammo"
 title = "Ammo"
-lines = Array[String](["Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works, and it uses up the most common one first, so your rare ore lasts longest.", "Rarer ore makes more rounds per unit. But without any ore you can't reload at all, so get your miners going early, or take the hammer along: it needs no ammo.", "Aboard, every reload is free: the rounds come from the ship's stock."])
+lines = Array[String](["Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest.", "The rarer the ore, the more rounds you get from the same amount.", "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take the hammer along: it needs no ammo.", "Aboard, every reload is free: the rounds come from the ship's stock."])
 requires = Array[StringName]([&"quartermaster.greeting"])
 
 [sub_resource type="Resource" id="Resource_spares"]
 script = ExtResource("3_topic")
 id = &"quartermaster.spares"
 title = "Spare magazines"
-lines = Array[String](["Every ranged weapon you take along starts with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore.", "The glowing cells on top of your backpack show your spare magazines. A dark cell means that magazine is used up.", "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."])
+lines = Array[String](["Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore.", "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up.", "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."])
 requires = Array[StringName]([&"quartermaster.greeting"])
 
 [sub_resource type="Resource" id="Resource_reload"]
 script = ExtResource("3_topic")
 id = &"quartermaster.reload"
 title = "Reloading"
-lines = Array[String](["You can reload whenever you like, and your weapon also reloads by itself when the magazine runs empty.", "But careful with the blaster: a reload throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit.", "While you reload, you walk slower. So pick a moment when nothing is right on your heels."])
+lines = Array[String](["You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself.", "But careful with the blaster: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit.", "While you reload, you walk slower. So pick a moment when nothing is right on your heels."])
 requires = Array[StringName]([&"quartermaster.greeting"])
 
 [sub_resource type="Resource" id="Resource_timing"]
@@ -57,7 +57,7 @@ requires = Array[StringName]([&"quartermaster.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
-prompt = "What do you need?"
+prompt = "How can I help you?"
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResource("Resource_spares"), SubResource("Resource_reload"), SubResource("Resource_timing"), SubResource("Resource_shotgun"), SubResource("Resource_range")])
 
 [resource]

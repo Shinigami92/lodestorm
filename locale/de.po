@@ -9,24 +9,28 @@ msgid "Quartermaster"
 msgstr "Quartiermeister"
 
 #: scenes/crew/quartermaster.tres
-msgid "What do you need?"
-msgstr "Was brauchst du?"
+msgid "How can I help you?"
+msgstr "Wie kann ich dir helfen?"
 
 #: scenes/crew/quartermaster.tres
 msgid "Hello"
 msgstr "Hallo"
 
 #: scenes/crew/quartermaster.tres
-msgid "You're new aboard? I'm Brannik, the quartermaster. The armory is mine: your locker, your loadout and your ammo."
-msgstr "Du bist neu an Bord? Ich bin Brannik, der Quartiermeister. Die Waffenkammer ist mein Bereich: dein Spind, deine Ausrüstung und deine Munition."
+msgid "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
+msgstr "Gut, dass du da bist. Lass uns vor der nächsten Mission kurz die Waffenkammer durchgehen. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind."
 
 #: scenes/crew/quartermaster.tres
-msgid "Pick the weapons you take along at your locker, two at most, before the ramp goes down. From then on, the lockers stay shut until the run is over."
-msgstr "Such dir an deinem Spind die Waffen aus, die du mitnimmst, höchstens zwei, bevor die Rampe runtergeht. Ab dann bleiben die Spinde zu, bis die Mission vorbei ist."
+msgid "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
+msgstr "Such dir an deinem Spind die Waffen aus, mit denen du auf eine Mission gehen möchtest. Allerdings kannst du nur bis zu zwei Waffen gleichzeitig tragen."
 
 #: scenes/crew/quartermaster.tres
-msgid "If you have questions about ammo or reloading, ask me. Better here than out there with a swarm on your back."
-msgstr "Wenn du Fragen zu Munition oder zum Nachladen hast, frag mich. Besser hier als draußen, wenn dir ein Schwarm im Nacken sitzt."
+msgid "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay."
+msgstr "Während einer Mission hast du nur die Waffen zur Verfügung, die du bei dir trägst. Wähle also mit Bedacht, sonst müssen wir dich auf der Krankenstation begrüßen."
+
+#: scenes/crew/quartermaster.tres
+msgid "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
+msgstr "Wenn du Fragen zu Munition oder zum Nachladen hast, frag einfach mich. Besser hier als draußen, wenn dir ein Schwarm im Nacken sitzt."
 
 #: scenes/crew/quartermaster.tres
 #: scenes/skills/skill_tree.tres
@@ -34,12 +38,16 @@ msgid "Ammo"
 msgstr "Munition"
 
 #: scenes/crew/quartermaster.tres
-msgid "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works, and it uses up the most common one first, so your rare ore lasts longest."
-msgstr "Draußen stellt dein Anzug neue Munition aus dem Erz her, das du auf dem Rücken trägst. Jede Erzsorte funktioniert, und er verbraucht zuerst die häufigste, damit dein seltenes Erz am längsten reicht."
+msgid "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest."
+msgstr "Draußen stellt dein Anzug neue Munition aus dem Erz her, das du auf dem Rücken trägst. Jede Erzsorte funktioniert. Er verbraucht immer zuerst das Erz mit der niedrigsten Qualität, damit dein seltenes Erz am längsten reicht."
 
 #: scenes/crew/quartermaster.tres
-msgid "Rarer ore makes more rounds per unit. But without any ore you can't reload at all, so get your miners going early, or take the hammer along: it needs no ammo."
-msgstr "Aus seltenerem Erz wird mehr Munition pro Einheit. Ganz ohne Erz kannst du aber nicht nachladen. Stell also früh deine Miner auf, oder nimm den Hammer mit: Der braucht keine Munition."
+msgid "The rarer the ore, the more rounds you get from the same amount."
+msgstr "Je seltener das Erz, desto mehr Munition bekommst du aus der gleichen Menge."
+
+#: scenes/crew/quartermaster.tres
+msgid "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take the hammer along: it needs no ammo."
+msgstr "Sind deine Ersatzmagazine aufgebraucht, kannst du ohne Erz nicht mehr nachladen. Stell also früh deine Miner auf, oder nimm den Hammer mit: Der braucht keine Munition."
 
 #: scenes/crew/quartermaster.tres
 msgid "Aboard, every reload is free: the rounds come from the ship's stock."
@@ -51,12 +59,12 @@ msgid "Spare magazines"
 msgstr "Ersatzmagazine"
 
 #: scenes/crew/quartermaster.tres
-msgid "Every ranged weapon you take along starts with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
-msgstr "Jede Fernkampfwaffe, die du mitnimmst, bekommt zwei Ersatzmagazine aus dem Vorrat des Schiffs. Beim Nachladen werden die zuerst verbraucht, und sie kosten dich kein Erz."
+msgid "Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
+msgstr "Jede Fernkampfwaffe, die du mitnimmst, startet jede Mission mit zwei Ersatzmagazinen aus dem Vorrat des Schiffs. Beim Nachladen werden zuerst diese verbraucht, und sie kosten dich kein Erz."
 
 #: scenes/crew/quartermaster.tres
-msgid "The glowing cells on top of your backpack show your spare magazines. A dark cell means that magazine is used up."
-msgstr "Die leuchtenden Zellen oben auf deinem Rucksack zeigen deine Ersatzmagazine. Ist eine Zelle dunkel, ist dieses Magazin aufgebraucht."
+msgid "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up."
+msgstr "Draußen siehst du sie als leuchtende Zellen oben auf deinem Rucksack. Wird eine Zelle dunkel, ist dieses Magazin aufgebraucht."
 
 #: scenes/crew/quartermaster.tres
 msgid "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."
@@ -67,12 +75,12 @@ msgid "Reloading"
 msgstr "Nachladen"
 
 #: scenes/crew/quartermaster.tres
-msgid "You can reload whenever you like, and your weapon also reloads by itself when the magazine runs empty."
-msgstr "Du kannst jederzeit nachladen, und wenn das Magazin leer ist, lädt deine Waffe auch von selbst nach."
+msgid "You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself."
+msgstr "Du kannst nachladen, wann immer du willst, solange du noch ein Ersatzmagazin oder Erz dafür hast. Ist das Magazin leer, lädt deine Waffe von selbst nach."
 
 #: scenes/crew/quartermaster.tres
-msgid "But careful with the blaster: a reload throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
-msgstr "Aber Vorsicht beim Blaster: Beim Nachladen wirft er die Schüsse weg, die noch im Magazin sind. Lade ein halbvolles Magazin also nicht einfach aus Gewohnheit nach."
+msgid "But careful with the blaster: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
+msgstr "Aber Vorsicht beim Blaster: Das Nachladen wirft die Munition weg, die noch im Magazin ist. Lade ein halbvolles Magazin also nicht einfach aus Gewohnheit nach."
 
 #: scenes/crew/quartermaster.tres
 msgid "While you reload, you walk slower. So pick a moment when nothing is right on your heels."

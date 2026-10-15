@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="SkillTree" format=3]
+
+[ext_resource type="Script" path="res://scripts/skills/skill_cluster.gd" id="1_cluster"]
+[ext_resource type="Script" path="res://scripts/skills/skill.gd" id="2_skill"]
+[ext_resource type="Resource" path="res://scenes/skills/dash.tres" id="skill_dash"]
+[ext_resource type="Resource" path="res://scenes/skills/reload_on_the_move.tres" id="skill_reload_on_the_move"]
+[ext_resource type="Resource" path="res://scenes/skills/reinforced_suit.tres" id="skill_reinforced_suit"]
+[ext_resource type="Resource" path="res://scenes/skills/regeneration.tres" id="skill_regeneration"]
+[ext_resource type="Resource" path="res://scenes/skills/spare_magazines.tres" id="skill_spare_magazines"]
+[ext_resource type="Resource" path="res://scenes/skills/careful_reload.tres" id="skill_careful_reload"]
+[ext_resource type="Resource" path="res://scenes/skills/ore_scanner.tres" id="skill_ore_scanner"]
+[ext_resource type="Resource" path="res://scenes/skills/damage_readout.tres" id="skill_damage_readout"]
+[ext_resource type="Script" path="res://scripts/skills/skill_tree.gd" id="9_tree"]
+
+[sub_resource type="Resource" id="Cluster_Mobility"]
+script = ExtResource("1_cluster")
+display_name = "Mobility"
+color = Color(0.3, 0.95, 0.85, 1)
+center = Vector2(-1.25, 0.65)
+skills = Array[ExtResource("2_skill")]([ExtResource("skill_dash"), ExtResource("skill_reload_on_the_move")])
+
+[sub_resource type="Resource" id="Cluster_Survival"]
+script = ExtResource("1_cluster")
+display_name = "Survival"
+color = Color(0.4, 1, 0.45, 1)
+center = Vector2(1.25, 0.65)
+skills = Array[ExtResource("2_skill")]([ExtResource("skill_reinforced_suit"), ExtResource("skill_regeneration")])
+
+[sub_resource type="Resource" id="Cluster_Ammo"]
+script = ExtResource("1_cluster")
+display_name = "Ammo"
+color = Color(1, 0.5, 0.85, 1)
+center = Vector2(-1.25, -0.65)
+skills = Array[ExtResource("2_skill")]([ExtResource("skill_spare_magazines"), ExtResource("skill_careful_reload")])
+
+[sub_resource type="Resource" id="Cluster_Scanning"]
+script = ExtResource("1_cluster")
+display_name = "Scanning"
+color = Color(0.45, 0.65, 1, 1)
+center = Vector2(1.25, -0.65)
+skills = Array[ExtResource("2_skill")]([ExtResource("skill_ore_scanner"), ExtResource("skill_damage_readout")])
+
+[resource]
+script = ExtResource("9_tree")
+clusters = Array[ExtResource("1_cluster")]([SubResource("Cluster_Mobility"), SubResource("Cluster_Survival"), SubResource("Cluster_Ammo"), SubResource("Cluster_Scanning")])

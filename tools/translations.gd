@@ -8,7 +8,7 @@ extends SceneTree
 ## - scripts: `tr("Text")` and `tr("Text", "context")` with string literals,
 ## - scenes: the `text` of nodes (Label3D, ...), unless their auto translation is disabled,
 ## - resources: the player-facing texts of the resource types in `RESOURCE_TEXTS` (e.g. biomes,
-##   weapons, upgrades).
+##   weapons, upgrades, skills).
 
 const TEMPLATE_PATH := "res://locale/lodestorm.pot"
 const SOURCE_DIRS: Array[String] = ["res://scenes", "res://scripts"]
@@ -19,6 +19,10 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"CelestialBody": [&"display_name"],
 	"LocationBiome": [&"display_name"],
 	"Region": [&"display_name"],
+	"Skill": [&"display_name", &"description"],
+	"SkillCluster": [&"display_name"],
+	# Only for the clusters built into it.
+	"SkillTree": [],
 	"StarSystem": [&"display_name"],
 	"Upgrade": [&"display_name", &"description"],
 	"WeaponType": [&"display_name", &"description"],

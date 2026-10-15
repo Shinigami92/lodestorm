@@ -4,6 +4,8 @@ extends GutTest
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 const CARD_SCENE: PackedScene = preload("res://scenes/ui/upgrade_card.tscn")
 const LOADOUT_CARD_SCENE: PackedScene = preload("res://scenes/ui/loadout_card.tscn")
+const SKILL_CARD_SCENE: PackedScene = preload("res://scenes/ui/skill_card.tscn")
+const SKILL_TREE: SkillTree = preload("res://scenes/skills/skill_tree.tres")
 const ALL_WEAPONS: Arsenal = preload("res://scenes/weapons/all_weapons.tres")
 const UPGRADES: Array[Upgrade] = [
 	preload("res://scenes/upgrades/armor.tres"),
@@ -20,6 +22,7 @@ const STATIONS: PackedStringArray = [
 	"Rooms/Lower/Weapons/UpgradeStation",
 	"Rooms/Lower/Armor/UpgradeStation",
 	"Rooms/Lower/Miners/UpgradeStation",
+	"Rooms/Lower/Skills/SkillGraph",
 	"Rooms/Lower/Armory/Locker1",
 	"Rooms/Upper/Bridge/Navigator",
 	"Rooms/Upper/Cockpit/FlightConsole",
@@ -78,6 +81,34 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 					await wait_process_frames(1)
 					_assert_fits(card, layout, label + " enabled")
 		viewport.queue_free()
+
+
+func test_every_skill_card_fits_in_every_language() -> void:
+	var panel: WorldPanel = (_ship.get_node("Rooms/Lower/Skills/SkillGraph") as Station).card
+	var layout := Vector2(panel.size * panel.pixels_per_meter)
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(layout)
+	add_child_autofree(viewport)
+	var card := SKILL_CARD_SCENE.instantiate() as SkillCard
+	viewport.add_child(card)
+	var hold: Dictionary[OreType, float] = {}
+	for skill: Skill in SKILL_TREE.get_skills():
+		for rank: SkillRank in skill.ranks:
+			for ore_type: OreType in rank.cost:
+				hold[ore_type] = 99999.0
+	for locale: String in SettingsMenu.languages():
+		TranslationServer.set_locale(locale)
+		for skill: Skill in SKILL_TREE.get_skills():
+			for rank: int in range(0, skill.max_rank() + 1):
+				var label: String = "%s %s rank %d" % [locale, skill.display_name, rank]
+				# The tallest it gets (not open yet, locked by a mission), and with its buttons
+				# enabled (their style is wider than the disabled one).
+				card.show_skill(skill, rank, hold, skill.requires == null, true, false)
+				await wait_process_frames(1)
+				_assert_fits(card, layout, label)
+				card.show_skill(skill, rank, hold, true, false, true)
+				await wait_process_frames(1)
+				_assert_fits(card, layout, label + " enabled")
 
 
 func test_every_locker_card_fits_in_every_language() -> void:

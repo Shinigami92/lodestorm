@@ -154,6 +154,86 @@ msgstr ""
 msgid "Cabins · Lift · Bridge"
 msgstr ""
 
+#: scenes/skills/careful_reload.tres
+msgid "Careful reload"
+msgstr ""
+
+#: scenes/skills/careful_reload.tres
+msgid "Reloading keeps the rounds left in the magazine"
+msgstr ""
+
+#: scenes/skills/damage_readout.tres
+msgid "Damage readout"
+msgstr ""
+
+#: scenes/skills/damage_readout.tres
+msgid "Shows the damage of your hits on aliens"
+msgstr ""
+
+#: scenes/skills/dash.tres
+msgid "Dash"
+msgstr ""
+
+#: scenes/skills/dash.tres
+msgid "A short burst in the direction you move"
+msgstr ""
+
+#: scenes/skills/ore_scanner.tres
+msgid "Ore scanner"
+msgstr ""
+
+#: scenes/skills/ore_scanner.tres
+msgid "Points to the nearest ore node within 40 m"
+msgstr ""
+
+#: scenes/skills/regeneration.tres
+msgid "Regeneration"
+msgstr ""
+
+#: scenes/skills/regeneration.tres
+msgid "Heals 5 health per second after 5 s without damage"
+msgstr ""
+
+#: scenes/skills/reinforced_suit.tres
+msgid "Reinforced suit"
+msgstr ""
+
+#: scenes/skills/reinforced_suit.tres
+msgid "+20 health per rank"
+msgstr ""
+
+#: scenes/skills/reload_on_the_move.tres
+msgid "Reload on the move"
+msgstr ""
+
+#: scenes/skills/reload_on_the_move.tres
+msgid "Reload at full walking speed"
+msgstr ""
+
+#: scenes/skills/skill_tree.tres
+msgid "Mobility"
+msgstr ""
+
+#: scenes/skills/skill_tree.tres
+msgid "Survival"
+msgstr ""
+
+#: scenes/skills/skill_tree.tres
+msgid "Ammo"
+msgstr ""
+
+#: scenes/skills/skill_tree.tres
+msgid "Scanning"
+msgstr ""
+
+#: scenes/skills/spare_magazines.tres
+msgid "Spare magazines"
+msgstr ""
+
+#: scenes/skills/spare_magazines.tres
+msgid "One more spare magazine per ranged weapon and rank"
+msgstr ""
+
 #: scenes/stations/loadout_locker.tscn
 msgid "Loadout"
 msgstr ""
@@ -171,6 +251,7 @@ msgstr ""
 #: scenes/ui/loadout_card.tscn
 #: scenes/ui/navigator_card.tscn
 #: scenes/ui/settings_menu.tscn
+#: scenes/ui/skill_card.tscn
 #: scenes/ui/upgrade_card.tscn
 msgid "Close"
 msgstr ""
@@ -222,6 +303,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+#: scenes/ui/skill_card.tscn
 #: scenes/ui/upgrade_card.tscn
 msgid "Cost / hold"
 msgstr ""
@@ -414,6 +496,7 @@ msgstr ""
 #: scripts/ui/flight_card.gd
 #: scripts/ui/loadout_card.gd
 #: scripts/ui/navigator_card.gd
+#: scripts/ui/skill_card.gd
 #: scripts/ui/upgrade_card.gd
 msgid "Locked until everyone is back aboard."
 msgstr ""
@@ -508,6 +591,26 @@ msgstr ""
 
 #: scripts/ui/settings_menu.gd
 msgid "Reset everything (3/3)"
+msgstr ""
+
+#: scripts/ui/skill_card.gd
+msgid "Learn %s first"
+msgstr ""
+
+#: scripts/ui/skill_card.gd
+msgid "Learned"
+msgstr ""
+
+#: scripts/ui/skill_card.gd
+msgid "Rank %d of %d"
+msgstr ""
+
+#: scripts/ui/skill_card.gd
+msgid "Not learned yet"
+msgstr ""
+
+#: scripts/ui/skill_card.gd
+msgid "Learn"
 msgstr ""
 
 #: scripts/ui/upgrade_card.gd

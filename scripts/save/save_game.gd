@@ -2,13 +2,13 @@ class_name SaveGame
 extends Node
 ## Keeps the progress between sessions in one save: the host's (the ship's hold, later the story,
 ## crew and quests) in `ship.json` and the local player's (owned weapons, loadout, upgrade
-## levels) in `player.json`, both in `save/` under `directory`. It loads them when the map starts
-## and saves whenever progress changes while no mission is underway; what changes during a
-## mission is saved once it's over (returned or lost), so quitting mid-mission loses that run like
-## dying. The settings (`GameSettings`) are kept apart and survive `reset_progress`.
-## Resources (ore types, weapons, upgrades) are saved by their path, so moving or renaming one of
-## them needs a migration (`VERSION`). Unknown entries are skipped; a file that can't be read is
-## kept as `<name>.corrupt` and the game starts from the defaults.
+## levels, skill ranks) in `player.json`, both in `save/` under `directory`. It loads them when the
+## map starts and saves whenever progress changes while no mission is underway; what changes
+## during a mission is saved once it's over (returned or lost), so quitting mid-mission loses that
+## run like dying. The settings (`GameSettings`) are kept apart and survive `reset_progress`.
+## Resources (ore types, weapons, upgrades, skills) are saved by their path, so moving or renaming
+## one of them needs a migration (`VERSION`). Unknown entries are skipped; a file that can't be
+## read is kept as `<name>.corrupt` and the game starts from the defaults.
 
 const GROUP: StringName = &"save_games"
 ## The save format; raise it (and convert older saves in `_read`) when the format changes.
@@ -70,6 +70,7 @@ func _ready() -> void:
 		player.arsenal.changed.connect(_on_progress_changed)
 		player.loadout.changed.connect(_on_progress_changed)
 		player.upgrades.changed.connect(_on_progress_changed)
+		player.skills.changed.connect(_on_progress_changed)
 	if mission:
 		mission.returned.connect(save_progress)
 		mission.lost.connect(save_progress)
@@ -128,8 +129,8 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 	return {"version": VERSION, "hold": hold}
 
 
-## What's saved of `of_player`: the weapons it owns, its loadout (null: empty slot) and the MK
-## level of each upgrade it bought.
+## What's saved of `of_player`: the weapons it owns, its loadout (null: empty slot), the MK
+## level of each upgrade it bought and the rank of each skill it learned.
 static func player_data(of_player: Player) -> Dictionary:
 	var weapons: Array = []
 	for weapon_type: WeaponType in of_player.arsenal.weapons:
@@ -140,7 +141,16 @@ static func player_data(of_player: Player) -> Dictionary:
 	var levels: Dictionary = {}
 	for upgrade: Upgrade in of_player.upgrades.levels:
 		levels[upgrade.resource_path] = of_player.upgrades.levels[upgrade]
-	return {"version": VERSION, "arsenal": weapons, "loadout": loadout, "upgrades": levels}
+	var ranks: Dictionary = {}
+	for skill: Skill in of_player.skills.ranks:
+		ranks[skill.resource_path] = of_player.skills.ranks[skill]
+	return {
+		"version": VERSION,
+		"arsenal": weapons,
+		"loadout": loadout,
+		"upgrades": levels,
+		"skills": ranks,
+	}
 
 
 func _apply_ship(data: Dictionary) -> void:
@@ -183,6 +193,16 @@ func _apply_player(data: Dictionary) -> void:
 			else:
 				push_warning("Save: skipped upgrade %s" % path)
 		player.upgrades.emit_changed()
+	if data.has("skills"):
+		var ranks: Dictionary = data["skills"]
+		for path: Variant in ranks:
+			var skill := _resource(path) as Skill
+			var rank: float = _number(ranks[path], 0.0)
+			if skill and rank >= 1.0:
+				player.skills.ranks[skill] = clampi(roundi(rank), 1, skill.max_rank())
+			else:
+				push_warning("Save: skipped skill %s" % path)
+		player.skills.emit_changed()
 
 
 ## The project resource at `path` from a save, or null for anything else.

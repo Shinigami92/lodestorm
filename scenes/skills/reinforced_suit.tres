@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="Skill" format=3]
+
+[ext_resource type="Script" path="res://scripts/skills/skill_rank.gd" id="1_rank"]
+[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="2_ore_type"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="ore_cyan"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="ore_green"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="ore_violet"]
+[ext_resource type="Script" path="res://scripts/skills/skill.gd" id="9_skill"]
+
+[sub_resource type="Resource" id="Rank_1"]
+script = ExtResource("1_rank")
+cost = Dictionary[ExtResource("2_ore_type"), int]({
+ExtResource("ore_cyan"): 180
+})
+value = 20
+
+[sub_resource type="Resource" id="Rank_2"]
+script = ExtResource("1_rank")
+cost = Dictionary[ExtResource("2_ore_type"), int]({
+ExtResource("ore_cyan"): 240,
+ExtResource("ore_green"): 90
+})
+value = 40
+
+[sub_resource type="Resource" id="Rank_3"]
+script = ExtResource("1_rank")
+cost = Dictionary[ExtResource("2_ore_type"), int]({
+ExtResource("ore_green"): 180,
+ExtResource("ore_violet"): 90
+})
+value = 60
+
+[resource]
+script = ExtResource("9_skill")
+display_name = "Reinforced suit"
+description = "+20 health per rank"
+effect = 1
+ranks = Array[ExtResource("1_rank")]([SubResource("Rank_1"), SubResource("Rank_2"), SubResource("Rank_3")])

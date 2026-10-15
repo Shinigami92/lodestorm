@@ -156,6 +156,86 @@ msgstr "Lift\nFrachtraum · Rampe"
 msgid "Cabins · Lift · Bridge"
 msgstr "Kabinen · Lift · Brücke"
 
+#: scenes/skills/careful_reload.tres
+msgid "Careful reload"
+msgstr "Sorgfältiges Nachladen"
+
+#: scenes/skills/careful_reload.tres
+msgid "Reloading keeps the rounds left in the magazine"
+msgstr "Beim Nachladen bleiben die übrigen Schuss im Magazin"
+
+#: scenes/skills/damage_readout.tres
+msgid "Damage readout"
+msgstr "Schadensanzeige"
+
+#: scenes/skills/damage_readout.tres
+msgid "Shows the damage of your hits on aliens"
+msgstr "Zeigt den Schaden deiner Treffer an Aliens"
+
+#: scenes/skills/dash.tres
+msgid "Dash"
+msgstr "Schub"
+
+#: scenes/skills/dash.tres
+msgid "A short burst in the direction you move"
+msgstr "Ein kurzer Schub in Bewegungsrichtung"
+
+#: scenes/skills/ore_scanner.tres
+msgid "Ore scanner"
+msgstr "Erzscanner"
+
+#: scenes/skills/ore_scanner.tres
+msgid "Points to the nearest ore node within 40 m"
+msgstr "Zeigt zum nächsten Erzvorkommen im Umkreis von 40 m"
+
+#: scenes/skills/regeneration.tres
+msgid "Regeneration"
+msgstr "Regeneration"
+
+#: scenes/skills/regeneration.tres
+msgid "Heals 5 health per second after 5 s without damage"
+msgstr "Heilt 5 Gesundheit pro Sekunde nach 5 s ohne Schaden"
+
+#: scenes/skills/reinforced_suit.tres
+msgid "Reinforced suit"
+msgstr "Verstärkter Anzug"
+
+#: scenes/skills/reinforced_suit.tres
+msgid "+20 health per rank"
+msgstr "+20 Gesundheit pro Rang"
+
+#: scenes/skills/reload_on_the_move.tres
+msgid "Reload on the move"
+msgstr "Nachladen im Lauf"
+
+#: scenes/skills/reload_on_the_move.tres
+msgid "Reload at full walking speed"
+msgstr "Nachladen bei voller Laufgeschwindigkeit"
+
+#: scenes/skills/skill_tree.tres
+msgid "Mobility"
+msgstr "Mobilität"
+
+#: scenes/skills/skill_tree.tres
+msgid "Survival"
+msgstr "Überleben"
+
+#: scenes/skills/skill_tree.tres
+msgid "Ammo"
+msgstr "Munition"
+
+#: scenes/skills/skill_tree.tres
+msgid "Scanning"
+msgstr "Scannen"
+
+#: scenes/skills/spare_magazines.tres
+msgid "Spare magazines"
+msgstr "Ersatzmagazine"
+
+#: scenes/skills/spare_magazines.tres
+msgid "One more spare magazine per ranged weapon and rank"
+msgstr "Ein Ersatzmagazin mehr pro Fernkampfwaffe und Rang"
+
 #: scenes/stations/loadout_locker.tscn
 msgid "Loadout"
 msgstr "Ausrüstung"
@@ -173,6 +253,7 @@ msgstr "Schlafen"
 #: scenes/ui/loadout_card.tscn
 #: scenes/ui/navigator_card.tscn
 #: scenes/ui/settings_menu.tscn
+#: scenes/ui/skill_card.tscn
 #: scenes/ui/upgrade_card.tscn
 msgid "Close"
 msgstr "Schließen"
@@ -224,6 +305,7 @@ msgstr "Nur, solange du allein bist. Mit anderen in deiner Sitzung behalten alle
 msgid "Cancel"
 msgstr "Abbrechen"
 
+#: scenes/ui/skill_card.tscn
 #: scenes/ui/upgrade_card.tscn
 msgid "Cost / hold"
 msgstr "Kosten / Lager"
@@ -416,6 +498,7 @@ msgstr "Im Flug: Ausrüsten und zur Rampe gehen."
 #: scripts/ui/flight_card.gd
 #: scripts/ui/loadout_card.gd
 #: scripts/ui/navigator_card.gd
+#: scripts/ui/skill_card.gd
 #: scripts/ui/upgrade_card.gd
 msgid "Locked until everyone is back aboard."
 msgstr "Gesperrt, bis alle wieder an Bord sind."
@@ -511,6 +594,26 @@ msgstr "Letzte Chance: Das löscht alles, unwiderruflich."
 #: scripts/ui/settings_menu.gd
 msgid "Reset everything (3/3)"
 msgstr "Alles zurücksetzen (3/3)"
+
+#: scripts/ui/skill_card.gd
+msgid "Learn %s first"
+msgstr "Lerne zuerst %s"
+
+#: scripts/ui/skill_card.gd
+msgid "Learned"
+msgstr "Gelernt"
+
+#: scripts/ui/skill_card.gd
+msgid "Rank %d of %d"
+msgstr "Rang %d von %d"
+
+#: scripts/ui/skill_card.gd
+msgid "Not learned yet"
+msgstr "Noch nicht gelernt"
+
+#: scripts/ui/skill_card.gd
+msgid "Learn"
+msgstr "Lernen"
 
 #: scripts/ui/upgrade_card.gd
 msgid "next: +%d %%"

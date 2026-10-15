@@ -105,6 +105,8 @@ const TUNING: Dictionary[String, Array] = {
 const PANEL_WIDTH: float = 420.0
 ## Every weapon of the game, for `unlock_weapons`.
 const ALL_WEAPONS: Arsenal = preload("res://scenes/weapons/all_weapons.tres")
+## Every skill of the game, for `learn_skills`.
+const SKILL_TREE: SkillTree = preload("res://scenes/skills/skill_tree.tres")
 ## Ore types `fill_hold` adds, and how much of each.
 const HOLD_ORES: Array[OreType] = [
 	preload("res://scenes/mining/ores/ore_cyan.tres"),
@@ -247,6 +249,14 @@ func unlock_weapons() -> void:
 			player.arsenal.unlock(weapon_type)
 
 
+## Teaches every player every skill at its highest rank, to try them without paying.
+func learn_skills() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		for skill: Skill in SKILL_TREE.get_skills():
+			while player.skills.raise(skill):
+				pass
+
+
 ## Adds `CARGO_FILL` units of every ore type to each player's cargo, to test reloading.
 func give_ore() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -324,6 +334,7 @@ func _build() -> void:
 	_button(actions, "Hatch raiders", hatch_raiders)
 	_button(actions, "Break miners", break_miners)
 	_button(actions, "Unlock weapons", unlock_weapons)
+	_button(actions, "Learn skills", learn_skills)
 	_button(actions, "Fill hold", fill_hold)
 	_button(actions, "Give ore", give_ore)
 	_button(actions, "Reset save", reset_save)

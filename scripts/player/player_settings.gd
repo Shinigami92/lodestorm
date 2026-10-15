@@ -29,3 +29,9 @@ extends Resource
 ## Handing a teammate ammo: holding `interact` this long (s) within this distance (m) of them.
 @export var give_ammo_time: float = 0.8
 @export var give_ammo_range: float = 2.0
+## Dash (a skill): how far it goes (m), how long it takes (s) and how long until the next (s).
+@export var dash_distance: float = 4.0
+@export var dash_time: float = 0.18
+@export var dash_cooldown: float = 2.0
+## Regeneration (a skill) starts this long (s) after the last damage.
+@export var regeneration_delay: float = 5.0

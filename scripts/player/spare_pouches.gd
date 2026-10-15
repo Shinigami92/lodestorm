@@ -11,6 +11,8 @@ const DARK := Color(0.05, 0.05, 0.055)
 @export var pouch_size := Vector3(0.07, 0.035, 0.09)
 ## Distance between the pouches' centers in m.
 @export var spacing: float = 0.09
+## How wide the row gets at most (m): more pouches (spare magazine skill) get narrower.
+@export var max_width: float = 0.3
 ## How strongly full pouches glow.
 @export var energy: float = 2.5
 
@@ -43,17 +45,19 @@ func _build(slots: int) -> void:
 		remove_child(child)
 		child.free()
 	_materials.clear()
+	var step: float = minf(spacing, max_width / maxi(slots, 1))
+	var size := Vector3(pouch_size.x * step / spacing, pouch_size.y, pouch_size.z)
 	for i: int in slots:
 		var material := StandardMaterial3D.new()
 		material.emission_enabled = true
 		material.roughness = 0.6
 		Player.write_stencil(material)
 		var box := BoxMesh.new()
-		box.size = pouch_size
+		box.size = size
 		var pouch := MeshInstance3D.new()
 		pouch.mesh = box
 		pouch.material_override = material
 		pouch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		pouch.position = Vector3((i - (slots - 1) * 0.5) * spacing, 0.0, 0.0)
+		pouch.position = Vector3((i - (slots - 1) * 0.5) * step, 0.0, 0.0)
 		add_child(pouch)
 		_materials.append(material)

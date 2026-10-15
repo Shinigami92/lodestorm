@@ -8,6 +8,8 @@ const SHOTGUN: WeaponType = preload("res://scenes/weapons/types/shotgun.tres")
 const HAMMER: WeaponType = preload("res://scenes/weapons/types/hammer.tres")
 const ARMOR: Upgrade = preload("res://scenes/upgrades/armor.tres")
 const DRILL: Upgrade = preload("res://scenes/upgrades/miner_drill.tres")
+const SUIT: Skill = preload("res://scenes/skills/reinforced_suit.tres")
+const DASH: Skill = preload("res://scenes/skills/dash.tres")
 const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
 const GREEN: OreType = preload("res://scenes/mining/ores/ore_green.tres")
 const DIRECTORY: String = "user://test_save/"
@@ -59,6 +61,17 @@ func test_progress_survives_a_restart() -> void:
 	assert_eq(_player.upgrades.mk(DRILL), 3)
 	assert_eq(_player.health, _player.max_health(), "full health with the saved armor")
 	assert_gt(_player.max_health(), _player.settings.max_health)
+
+
+func test_skills_survive_a_restart() -> void:
+	_player.skills.raise(SUIT)
+	_player.skills.raise(SUIT)
+	_player.skills.raise(DASH)
+	await wait_process_frames(1)
+	await _restart()
+	assert_eq(_player.skills.rank(SUIT), 2)
+	assert_eq(_player.skills.rank(DASH), 1)
+	assert_eq(_player.health, _player.max_health(), "full health with the saved skills")
 
 
 func test_mission_progress_is_saved_when_it_is_over() -> void:
@@ -121,6 +134,7 @@ func test_unknown_entries_are_skipped() -> void:
 		"arsenal": [BLASTER.resource_path, "res://nothing.tres", 3, CYAN.resource_path],
 		"loadout": [HAMMER.resource_path, SHOTGUN.resource_path],
 		"upgrades": {ARMOR.resource_path: 99, "res://nothing.tres": 2, DRILL.resource_path: "x"},
+		"skills": {SUIT.resource_path: 99, ARMOR.resource_path: 1, DASH.resource_path: 0},
 	}
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
@@ -131,6 +145,8 @@ func test_unknown_entries_are_skipped() -> void:
 	assert_null(_player.loadout.get_weapon(1), "not owned")
 	assert_eq(_player.upgrades.mk(ARMOR), ARMOR.max_mk(), "clamped")
 	assert_eq(_player.upgrades.mk(DRILL), 1)
+	assert_eq(_player.skills.rank(SUIT), SUIT.max_rank(), "clamped")
+	assert_eq(_player.skills.ranks.size(), 1, "not a skill, rank 0")
 
 
 func test_language_is_saved_apart_from_progress() -> void:

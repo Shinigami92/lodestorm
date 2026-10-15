@@ -75,6 +75,8 @@ var ramp_open: bool = false
 ## Ore brought back over all runs and not spent yet, in units per ore type. Upgrades are paid from
 ## it (`pay`).
 var hold: Dictionary[OreType, float] = {}
+## What has happened in the story so far (e.g. what the crew told), saved with the ship.
+var story := Story.new()
 
 var _aboard: Array[Player] = []
 ## Players in the shooting range's weapon zone.

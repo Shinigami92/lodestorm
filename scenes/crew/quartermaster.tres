@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/crew/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" path="res://scripts/crew/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" path="res://scripts/crew/topic.gd" id="3_topic"]
+[ext_resource type="Resource" path="res://scenes/weapons/types/shotgun.tres" id="4_shotgun"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"quartermaster.greeting"
+title = "Hello"
+lines = Array[String](["Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job.", "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though.", "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay.", "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."])
+
+[sub_resource type="Resource" id="Resource_ammo"]
+script = ExtResource("3_topic")
+id = &"quartermaster.ammo"
+title = "Ammo"
+lines = Array[String](["Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest.", "The rarer the ore, the more rounds you get from the same amount.", "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take the hammer along: it needs no ammo.", "Aboard, every reload is free: the rounds come from the ship's stock."])
+requires = Array[StringName]([&"quartermaster.greeting"])
+
+[sub_resource type="Resource" id="Resource_spares"]
+script = ExtResource("3_topic")
+id = &"quartermaster.spares"
+title = "Spare magazines"
+lines = Array[String](["Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore.", "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up.", "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."])
+requires = Array[StringName]([&"quartermaster.greeting"])
+
+[sub_resource type="Resource" id="Resource_reload"]
+script = ExtResource("3_topic")
+id = &"quartermaster.reload"
+title = "Reloading"
+lines = Array[String](["You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself.", "But careful with the blaster: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit.", "While you reload, you walk slower. So pick a moment when nothing is right on your heels."])
+requires = Array[StringName]([&"quartermaster.greeting"])
+
+[sub_resource type="Resource" id="Resource_timing"]
+script = ExtResource("3_topic")
+id = &"quartermaster.timing"
+title = "Timing reload"
+lines = Array[String](["Here's a trick: press reload a second time while you're reloading. The ring on the ground around you shows how far the reload is, and it has a white mark.", "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead.", "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."])
+requires = Array[StringName]([&"quartermaster.reload"])
+
+[sub_resource type="Resource" id="Resource_shotgun"]
+script = ExtResource("3_topic")
+id = &"quartermaster.shotgun"
+title = "Shotgun"
+lines = Array[String](["So you've got a shotgun now. It has no magazine: it loads one shell after another, and keeps the shells that are already in.", "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded.", "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip a press, and that bonus starts over."])
+requires = Array[StringName]([&"quartermaster.greeting"])
+requires_weapon = ExtResource("4_shotgun")
+
+[sub_resource type="Resource" id="Resource_range"]
+script = ExtResource("3_topic")
+id = &"quartermaster.range"
+title = "Shooting range"
+lines = Array[String](["Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission.", "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end.", "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."])
+requires = Array[StringName]([&"quartermaster.greeting"])
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+prompt = "How can I help you?"
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResource("Resource_spares"), SubResource("Resource_reload"), SubResource("Resource_timing"), SubResource("Resource_shotgun"), SubResource("Resource_range")])
+
+[resource]
+script = ExtResource("1_profile")
+display_name = "Brannik"
+role = "Quartermaster"
+accent_color = Color(0.65, 0.45, 1, 1)
+cabin = 1
+dialogue = SubResource("Resource_dialogue")

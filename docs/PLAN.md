@@ -60,6 +60,17 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 - In-world menus instead of flat terminals (see [UI](GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)): holo cards beside selectable parts, `tab_prev`/`tab_next`, a minimum text size and a test that every card fits in every language; the weapons rack and workbench, the armor fitting frame, the miners' maintenance pad, a locker per player in the armory; the bed to quit; the skill graph comes with the skills, the wrist display's quest log with the quest framework
 - Navigator at the holo table (star system → planet, moon or station → region → landing site; the hologram no longer turns) and setting course at the cockpit's flight console; planets and moons with fixed regions (biome and set pieces), a new section generated per visit; stations as handcrafted maps without enemies
 - First story pieces: one crew NPC with a quest chain, one expedition log; crew NPCs explain the mechanics so far (e.g. ammo and spare magazines at the armory)
+- Station map: docking at a station (Waypost Ostra), a handcrafted map without enemies, with NPCs, a quest giver and maybe the ore exchange (see [Spaceship](GAME_DESIGN.md#5-spaceship-hub), Stations and outposts)
+
+Order of the remaining work (each step builds on the ones before):
+
+1. NPC template: a greybox crew figure with a name plate, talking to it as a station, speech bubbles, dialogue data with translation keys; first use: the quartermaster explains ammo, spare magazines and the timing reload
+2. More ores (towards 10–15, spread over the regions), then the refinery; independent of step 1, so it can swap places with it
+3. Quest framework and the wrist display's quest log, with the quartermaster's chain ending in the shotgun blueprint
+4. Station map (needs NPCs and quests to be more than an empty map)
+5. More weapons (blueprints from quests unlock them; their models come with the art pass)
+
+The rest (crafted miners, risk vs. reward, the voice spike, the remaining skills, the expedition log) fits in between where it helps.
 
 ## M5 — Art pass (Blender MCP)
 
@@ -96,4 +107,4 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 
 Epic / GOG ports. Iterate based on playtesting: more planets, alien types, miner types/defenses, mission objectives, NPC/story content.
 
-Not placed in a milestone yet (see [`GAME_DESIGN.md`](GAME_DESIGN.md)): the full story campaign and crew, stations and outposts, voice-over for all lines, the radio comms log, more languages, AI-driven NPCs (experiment).
+Not placed in a milestone yet (see [`GAME_DESIGN.md`](GAME_DESIGN.md)): the full story campaign and crew, more stations and the outposts, voice-over for all lines, the radio comms log, more languages, AI-driven NPCs (experiment).

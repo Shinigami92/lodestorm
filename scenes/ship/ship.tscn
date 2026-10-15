@@ -20,6 +20,8 @@
 [ext_resource type="PackedScene" path="res://scenes/stations/armor_station.tscn" id="16_armor_station"]
 [ext_resource type="PackedScene" path="res://scenes/stations/miner_station.tscn" id="17_miner_station"]
 [ext_resource type="PackedScene" path="res://scenes/stations/skill_graph.tscn" id="20_skill_graph"]
+[ext_resource type="PackedScene" path="res://scenes/crew/npc.tscn" id="21_npc"]
+[ext_resource type="Resource" path="res://scenes/crew/quartermaster.tres" id="22_quartermaster"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]
 albedo_color = Color(0.3, 0.31, 0.33, 1)
@@ -4518,6 +4520,10 @@ color = Color(0.9, 0.45, 0.85, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, -5.4)
 number = 4
 color = Color(0.95, 0.9, 0.4, 1)
+
+[node name="Quartermaster" parent="Rooms/Lower/Armory" instance=ExtResource("21_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, -4.2)
+profile = ExtResource("22_quartermaster")
 
 [node name="UpgradeStation" parent="Rooms/Lower/Weapons" instance=ExtResource("15_weapon_station")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0, -4.4)

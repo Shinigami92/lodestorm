@@ -4,6 +4,139 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: scenes/crew/quartermaster.tres
+msgid "Quartermaster"
+msgstr "Quartiermeister"
+
+#: scenes/crew/quartermaster.tres
+msgid "How can I help you?"
+msgstr "Wie kann ich dir helfen?"
+
+#: scenes/crew/quartermaster.tres
+msgid "Hello"
+msgstr "Hallo"
+
+#: scenes/crew/quartermaster.tres
+msgid "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
+msgstr "Gut, dass du da bist. Lass uns vor der nächsten Mission kurz die Waffenkammer durchgehen. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind."
+
+#: scenes/crew/quartermaster.tres
+msgid "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
+msgstr "Such dir an deinem Spind die Waffen aus, mit denen du auf eine Mission gehen möchtest. Allerdings kannst du nur bis zu zwei Waffen gleichzeitig tragen."
+
+#: scenes/crew/quartermaster.tres
+msgid "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay."
+msgstr "Während einer Mission hast du nur die Waffen zur Verfügung, die du bei dir trägst. Wähle also mit Bedacht, sonst müssen wir dich auf der Krankenstation begrüßen."
+
+#: scenes/crew/quartermaster.tres
+msgid "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
+msgstr "Wenn du Fragen zu Munition oder zum Nachladen hast, frag einfach mich. Besser hier als draußen, wenn dir ein Schwarm im Nacken sitzt."
+
+#: scenes/crew/quartermaster.tres
+#: scenes/skills/skill_tree.tres
+msgid "Ammo"
+msgstr "Munition"
+
+#: scenes/crew/quartermaster.tres
+msgid "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest."
+msgstr "Draußen stellt dein Anzug neue Munition aus dem Erz her, das du auf dem Rücken trägst. Jede Erzsorte funktioniert. Er verbraucht immer zuerst das Erz mit der niedrigsten Qualität, damit dein seltenes Erz am längsten reicht."
+
+#: scenes/crew/quartermaster.tres
+msgid "The rarer the ore, the more rounds you get from the same amount."
+msgstr "Je seltener das Erz, desto mehr Munition bekommst du aus der gleichen Menge."
+
+#: scenes/crew/quartermaster.tres
+msgid "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take the hammer along: it needs no ammo."
+msgstr "Sind deine Ersatzmagazine aufgebraucht, kannst du ohne Erz nicht mehr nachladen. Stell also früh deine Miner auf, oder nimm den Hammer mit: Der braucht keine Munition."
+
+#: scenes/crew/quartermaster.tres
+msgid "Aboard, every reload is free: the rounds come from the ship's stock."
+msgstr "An Bord kostet Nachladen nichts: Die Munition kommt dann aus dem Vorrat des Schiffs."
+
+#: scenes/crew/quartermaster.tres
+#: scenes/skills/spare_magazines.tres
+msgid "Spare magazines"
+msgstr "Ersatzmagazine"
+
+#: scenes/crew/quartermaster.tres
+msgid "Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
+msgstr "Jede Fernkampfwaffe, die du mitnimmst, startet jede Mission mit zwei Ersatzmagazinen aus dem Vorrat des Schiffs. Beim Nachladen werden zuerst diese verbraucht, und sie kosten dich kein Erz."
+
+#: scenes/crew/quartermaster.tres
+msgid "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up."
+msgstr "Draußen siehst du sie als leuchtende Zellen oben auf deinem Rucksack. Wird eine Zelle dunkel, ist dieses Magazin aufgebraucht."
+
+#: scenes/crew/quartermaster.tres
+msgid "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."
+msgstr "Neue Ersatzmagazine kann dein Anzug draußen nicht herstellen. Sind sie aufgebraucht, bezahlst du jedes Nachladen mit dem Erz, das du trägst."
+
+#: scenes/crew/quartermaster.tres
+msgid "Reloading"
+msgstr "Nachladen"
+
+#: scenes/crew/quartermaster.tres
+msgid "You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself."
+msgstr "Du kannst nachladen, wann immer du willst, solange du noch ein Ersatzmagazin oder Erz dafür hast. Ist das Magazin leer, lädt deine Waffe von selbst nach."
+
+#: scenes/crew/quartermaster.tres
+msgid "But careful with the blaster: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
+msgstr "Aber Vorsicht beim Blaster: Das Nachladen wirft die Munition weg, die noch im Magazin ist. Lade ein halbvolles Magazin also nicht einfach aus Gewohnheit nach."
+
+#: scenes/crew/quartermaster.tres
+msgid "While you reload, you walk slower. So pick a moment when nothing is right on your heels."
+msgstr "Während du nachlädst, gehst du langsamer. Such dir also einen Moment aus, in dem dir nichts direkt auf den Fersen ist."
+
+#: scenes/crew/quartermaster.tres
+msgid "Timing reload"
+msgstr "Timing-Nachladen"
+
+#: scenes/crew/quartermaster.tres
+msgid "Here's a trick: press reload a second time while you're reloading. The ring on the ground around you shows how far the reload is, and it has a white mark."
+msgstr "Ein Trick: Drück während des Nachladens ein zweites Mal auf Nachladen. Der Ring um dich herum am Boden zeigt, wie weit das Nachladen ist, und er hat eine weiße Markierung."
+
+#: scenes/crew/quartermaster.tres
+msgid "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead."
+msgstr "Drückst du genau dann, wenn der Ring die weiße Markierung erreicht, ist das Nachladen sofort fertig. Drückst du zu früh oder zu spät, dauert es stattdessen länger."
+
+#: scenes/crew/quartermaster.tres
+msgid "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
+msgstr "Drückst du gar kein zweites Mal, dauert es einfach so lange wie immer. Probier es also zuerst am Schießstand aus, dort kostet es dich nichts."
+
+#: scenes/crew/quartermaster.tres
+#: scenes/upgrades/shotgun.tres
+#: scenes/weapons/types/shotgun.tres
+msgid "Shotgun"
+msgstr "Schrotflinte"
+
+#: scenes/crew/quartermaster.tres
+msgid "So you've got a shotgun now. It has no magazine: it loads one shell after another, and keeps the shells that are already in."
+msgstr "Du hast jetzt also eine Schrotflinte. Sie hat kein Magazin, sondern lädt eine Patrone nach der anderen und behält die Patronen, die schon drin sind."
+
+#: scenes/crew/quartermaster.tres
+msgid "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded."
+msgstr "Drückst du mitten im Nachladen ab, hört sie mit dem Nachladen auf und feuert, was schon geladen ist."
+
+#: scenes/crew/quartermaster.tres
+msgid "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip a press, and that bonus starts over."
+msgstr "Der Timing-Trick klappt bei jeder einzelnen Patrone. Klappt er bei mehreren Patronen hintereinander, lädt jede etwas schneller. Verfehlst du eine oder drückst bei einer nicht, fängt dieser Vorteil von vorn an."
+
+#: scenes/crew/quartermaster.tres
+#: scenes/ship/ship.tscn
+msgid "Shooting range"
+msgstr "Schießstand"
+
+#: scenes/crew/quartermaster.tres
+msgid "Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
+msgstr "Gleich nebenan ist der Schießstand. Wenn du eine neue Waffe bekommst, probier sie dort aus, bevor du sie auf eine Mission mitnimmst."
+
+#: scenes/crew/quartermaster.tres
+msgid "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end."
+msgstr "Nachladen kostet dort nichts, du kannst das Timing also so oft üben, wie du willst. Die Ziele stehen am hinteren Ende."
+
+#: scenes/crew/quartermaster.tres
+msgid "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
+msgstr "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
+
 #: scenes/locations/biomes/dust.tres
 msgid "Dust flats"
 msgstr "Staubebene"
@@ -79,10 +212,6 @@ msgstr "Krankenstation"
 #: scenes/ship/ship.tscn
 msgid "Engine room"
 msgstr "Maschinenraum"
-
-#: scenes/ship/ship.tscn
-msgid "Shooting range"
-msgstr "Schießstand"
 
 #: scenes/ship/ship.tscn
 msgid "Armory"
@@ -221,16 +350,8 @@ msgid "Survival"
 msgstr "Überleben"
 
 #: scenes/skills/skill_tree.tres
-msgid "Ammo"
-msgstr "Munition"
-
-#: scenes/skills/skill_tree.tres
 msgid "Scanning"
 msgstr "Scannen"
-
-#: scenes/skills/spare_magazines.tres
-msgid "Spare magazines"
-msgstr "Ersatzmagazine"
 
 #: scenes/skills/spare_magazines.tres
 msgid "One more spare magazine per ranged weapon and rank"
@@ -278,6 +399,7 @@ msgid "Set course"
 msgstr "Kurs setzen"
 
 #: scenes/ui/navigator_card.tscn
+#: scripts/ui/talk_card.gd
 msgid "Back"
 msgstr "Zurück"
 
@@ -367,11 +489,6 @@ msgstr "Erztank"
 #: scenes/upgrades/miner_tank.tres
 msgid "Miners hold more ore"
 msgstr "Miner fassen mehr Erz"
-
-#: scenes/upgrades/shotgun.tres
-#: scenes/weapons/types/shotgun.tres
-msgid "Shotgun"
-msgstr "Schrotflinte"
 
 #: scenes/upgrades/shotgun.tres
 msgid "More damage per pellet"
@@ -614,6 +731,18 @@ msgstr "Noch nicht gelernt"
 #: scripts/ui/skill_card.gd
 msgid "Learn"
 msgstr "Lernen"
+
+#: scripts/ui/talk_card.gd
+msgid "Done"
+msgstr "Fertig"
+
+#: scripts/ui/talk_card.gd
+msgid "Continue"
+msgstr "Weiter"
+
+#: scripts/ui/talk_card.gd
+msgid "Goodbye"
+msgstr "Bis dann"
 
 #: scripts/ui/upgrade_card.gd
 msgid "next: +%d %%"

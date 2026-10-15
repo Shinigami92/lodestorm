@@ -283,6 +283,11 @@ func _card_position(camera: Camera3D) -> Vector3:
 	return selected.card_position(camera)
 
 
+## How big the card is (1: its `size`), e.g. scaled with a zoom so it keeps its size on screen.
+func _card_scale() -> float:
+	return 1.0
+
+
 func _hover(part: StationPart) -> void:
 	if hovered == part:
 		return
@@ -301,7 +306,10 @@ func _place_card(weight: float) -> void:
 		return
 	var goal: Vector3 = _card_position(camera)
 	var view: Basis = camera.global_basis.orthonormalized()
-	card.global_transform = Transform3D(view, card.global_position.lerp(goal, weight))
+	card.global_transform = Transform3D(
+		view * Basis.from_scale(Vector3.ONE * _card_scale()),
+		card.global_position.lerp(goal, weight)
+	)
 	_draw_leader(view)
 
 
@@ -312,7 +320,7 @@ func _draw_leader(view: Basis) -> void:
 		return
 	var to: Vector3 = selected.global_position
 	var side: float = signf(view.x.dot(to - card.global_position))
-	var from: Vector3 = card.global_position + view.x * side * card.size.x * 0.5
+	var from: Vector3 = card.global_position + view.x * side * card.size.x * 0.5 * _card_scale()
 	_leader_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	var across: Vector3 = view.z.cross(to - from).normalized() * LEADER_WIDTH * 0.5
 	_quad(from - across, from + across, to + across, to - across)

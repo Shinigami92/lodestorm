@@ -7,7 +7,8 @@ extends Weapon
 ## MK level). `reload` refills it, also automatically once it runs empty: from its spare magazines
 ## (`spare_rounds`, from the ship's stock) while it has any, then with ammo the holder's suit makes
 ## from carried ore (`OreAmmo`, paid per round loaded); aboard it's free. A magazine
-## reload throws away the rounds left in it and fills the whole magazine (the reload can't fire);
+## reload throws away the rounds left in it and fills the whole magazine (the reload can't fire;
+## with `careful`, it keeps them and only tops the magazine up);
 ## a single-round reload loads one round after another until it's full and stops when it fires.
 ## Pressing `reload` again during a reload (the round being loaded) is the timing press: within the
 ## window it finishes right away, outside it the reload takes longer. Single rounds loaded within
@@ -38,6 +39,9 @@ var rounds: int = 0:
 var magazine_multiplier: float = 1.0
 ## Pays the reloads with its carried ore (the holder); null: it can't reload.
 var supplier: Player
+## Whether a magazine reload keeps the rounds left in it and only tops it up (the careful reload
+## skill), instead of throwing them away.
+var careful: bool = false
 var reloading: bool = false
 ## Seconds into the current reload (with `ReloadMode.SINGLE`, of the round being loaded).
 var reload_elapsed: float = 0.0
@@ -106,6 +110,8 @@ func can_reload() -> bool:
 		return false
 	if settings.reload_mode == RangedWeaponSettings.ReloadMode.SINGLE:
 		return _available(1) >= 1
+	if careful:
+		return _available(capacity() - rounds) > 0
 	return _available(capacity()) > rounds
 
 
@@ -181,7 +187,7 @@ func _start_reload() -> bool:
 		if rounds < capacity():
 			reload_denied.emit()
 		return false
-	if not _single():
+	if not _single() and not careful:
 		rounds = 0
 	reloading = true
 	chain = 0
@@ -228,9 +234,10 @@ func _time_press() -> bool:
 ## more.
 func _finish_round() -> void:
 	if not _single():
-		var loaded: int = _available(capacity())
+		var kept: int = rounds if careful else 0
+		var loaded: int = _available(capacity() - kept)
 		_take(loaded)
-		rounds = loaded
+		rounds = kept + loaded
 		reloading = false
 		return
 	if _available(1) < 1:
@@ -288,6 +295,7 @@ func _fire(direction: Vector3) -> void:
 	projectile.max_distance = settings.projectile_range
 	projectile.damage = settings.damage * damage_multiplier
 	projectile.exclude = [holder.get_rid()]
+	projectile.shooter = holder
 	holder.get_parent().add_child(projectile)
 	projectile.global_position = Vector3(
 		holder.global_position.x, muzzle.y, holder.global_position.z

@@ -2,7 +2,8 @@ class_name SuitLight
 extends Node
 ## Lights the band around the suit's collar (`band`, the model's "SuitLight" mesh) to show the
 ## player's health: green, amber below half, red and blinking below a quarter, dark once dead.
-## Flashes white on damage, pulsing under steady damage (e.g. the storm).
+## Flashes white on damage, pulsing under steady damage (e.g. the storm). Pulses slowly while
+## the player regenerates (a skill).
 
 const COLOR_HEALTHY := Color(0.3, 1.0, 0.45)
 const COLOR_HURT := Color(1.0, 0.7, 0.15)
@@ -15,9 +16,14 @@ const BLINK_RATE: float = 3.0
 const FLASH_DURATION: float = 0.12
 ## Seconds from one flash to the next under steady damage.
 const FLASH_INTERVAL: float = 0.5
+## Pulses per second while regenerating, and how dim it gets between them.
+const REGENERATION_RATE: float = 0.8
+const REGENERATION_DIM: float = 0.35
 
 ## The color for the health shown, without blinking and flashes.
 var color: Color = COLOR_HEALTHY
+## Whether the player heals by itself right now (a slow pulse).
+var regenerating: bool = false
 ## The glowing mesh; it gets this light's material.
 var band: GeometryInstance3D:
 	set(value):
@@ -46,6 +52,9 @@ func _process(delta: float) -> void:
 	var brightness: float = 1.0
 	if color == COLOR_CRITICAL:
 		brightness = 0.25 + 0.75 * absf(cos(_time * PI * BLINK_RATE))
+	elif regenerating:
+		var wave: float = 0.5 + 0.5 * cos(_time * TAU * REGENERATION_RATE)
+		brightness = lerpf(REGENERATION_DIM, 1.0, wave)
 	var shown: Color = COLOR_FLASH if _flash_left > 0.0 else color
 	_material.albedo_color = shown
 	_material.emission = shown * brightness if color != COLOR_DEAD else Color.BLACK

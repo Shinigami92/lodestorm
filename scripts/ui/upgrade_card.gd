@@ -8,24 +8,18 @@ extends StationCard
 
 ## Dims what a locked upgrade would bring (the card itself and "Locked" stay readable).
 const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
-const MISSING_COLOR := Color(1.0, 0.4, 0.35)
 const PIP_LIT := Color(0.3, 0.85, 1.0)
 const PIP_DARK := Color(0.12, 0.18, 0.22)
 const PIP_SIZE := Vector2(30.0, 14.0)
-const ORE_CHIP_SIZE := Vector2(22.0, 22.0)
 
 ## The upgrade shown, or null.
 var upgrade: Upgrade
-
-## The level whose cost the cost row shows, and its amount label per ore type.
-var _cost_level: UpgradeLevel
-var _cost_labels: Dictionary[OreType, Label] = {}
 
 @onready var _title: Label = %Title
 @onready var _pips: HBoxContainer = %Pips
 @onready var _description: Label = %Description
 @onready var _effect: Label = %Effect
-@onready var _cost: HFlowContainer = %Cost
+@onready var _cost: OreCost = %Cost
 @onready var _cost_row: HFlowContainer = %CostRow
 @onready var _status: Label = %Status
 @onready var _buy: Button = %Buy
@@ -73,7 +67,7 @@ func show_upgrade(
 		return
 	_title.text = tr(shown.display_name)
 	_description.text = tr(shown.description)
-	_show_pips(mk if available else 0, shown.max_mk())
+	show_pips(_pips, mk if available else 0, shown.max_mk())
 	var next: UpgradeLevel = shown.level_after(mk)
 	if not available:
 		_effect.text = tr("Locked")
@@ -81,7 +75,10 @@ func show_upgrade(
 		_effect.text = tr("next: +%d %%") % _bonus(shown, mk + 1)
 	else:
 		_effect.text = "+%d %%" % _bonus(shown, mk)
-	_show_cost(next, hold)
+	var cost: Dictionary[OreType, int] = {}
+	if next:
+		cost = next.cost
+	_cost.show_cost(cost, hold)
 	_status.visible = locked
 	_status.text = tr("Locked until everyone is back aboard.")
 	_buy.text = tr("Upgrade") if next else tr("Max")
@@ -100,49 +97,19 @@ func get_buy_button() -> Button:
 	return _buy
 
 
-func _show_pips(mk: int, max_mk: int) -> void:
-	while _pips.get_child_count() < max_mk:
+## Shows level `mk` of `max_mk` as pips in `row` (also a skill's ranks).
+static func show_pips(row: HBoxContainer, mk: int, max_mk: int) -> void:
+	while row.get_child_count() < max_mk:
 		var pip := ColorRect.new()
 		pip.custom_minimum_size = PIP_SIZE
 		pip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		_pips.add_child(pip)
-	while _pips.get_child_count() > max_mk:
-		var last: Node = _pips.get_child(-1)
-		_pips.remove_child(last)
+		row.add_child(pip)
+	while row.get_child_count() > max_mk:
+		var last: Node = row.get_child(-1)
+		row.remove_child(last)
 		last.queue_free()
 	for i: int in max_mk:
-		(_pips.get_child(i) as ColorRect).color = PIP_LIT if i < mk else PIP_DARK
-
-
-## The next level's cost per ore, each as "cost / in the hold"; red where the hold is short.
-func _show_cost(next: UpgradeLevel, hold: Dictionary[OreType, float]) -> void:
-	if next != _cost_level:
-		_cost_level = next
-		for node: Node in _cost.get_children():
-			_cost.remove_child(node)
-			node.queue_free()
-		_cost_labels.clear()
-		if next:
-			for ore_type: OreType in next.cost:
-				var chip := ColorRect.new()
-				chip.color = ore_type.color
-				chip.custom_minimum_size = ORE_CHIP_SIZE
-				chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-				_cost.add_child(chip)
-				var amount: Label = _label("")
-				_cost.add_child(amount)
-				_cost_labels[ore_type] = amount
-	if not next:
-		return
-	for ore_type: OreType in _cost_labels:
-		var in_hold: float = hold.get(ore_type, 0.0)
-		var stored: int = floori(in_hold)
-		var label: Label = _cost_labels[ore_type]
-		label.text = "%d / %d" % [next.cost[ore_type], stored]
-		if stored < next.cost[ore_type]:
-			label.add_theme_color_override(&"font_color", MISSING_COLOR)
-		else:
-			label.remove_theme_color_override(&"font_color")
+		(row.get_child(i) as ColorRect).color = PIP_LIT if i < mk else PIP_DARK
 
 
 func _on_close_pressed() -> void:

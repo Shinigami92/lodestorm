@@ -38,6 +38,7 @@ func _attack() -> void:
 			hits.append(alien)
 	for alien: Alien in hits:
 		alien.take_damage(settings.damage * damage_multiplier)
+		DamageNumber.show_hit(holder, alien, settings.damage * damage_multiplier)
 	_play_sweep()
 	swung.emit(hits)
 

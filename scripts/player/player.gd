@@ -16,7 +16,11 @@ extends CharacterBody3D
 ## aboard), walking slower meanwhile. Holding `interact` next to a teammate, with nothing else to
 ## use there, hands them a magazine for their equipped weapon, paid from its ore. Its `upgrades`
 ## (bought at the upgrade stations) raise its weapons' damage and magazines, its armor
-## (`armor_upgrade`: more health, shown by pips on the helmet) and the miners it places.
+## (`armor_upgrade`: more health, shown by pips on the helmet) and the miners it places. Its
+## `skills` (learned at the skill graph) add health, regeneration, the dash (`suit_dash`, its
+## cooldown shown by a strip on the backpack), more spare magazines, reloading at full speed,
+## careful reloads, the ore scanner's arrow (`OreScanner`) and the damage readout
+## (`DamageNumber`).
 ## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
 ## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
@@ -32,7 +36,7 @@ const GROUP: StringName = &"players"
 
 ## Actions that make the player act; ones still held when a menu closes wait for their release.
 const ACTIONS: Array[StringName] = [
-	&"attack", &"place_miner", &"interact", &"switch_weapon", &"reload"
+	&"attack", &"place_miner", &"interact", &"switch_weapon", &"reload", &"dash"
 ]
 ## Ignore cursor positions this close to the player, the direction flips around too easily.
 const MIN_MOUSE_AIM_DISTANCE: float = 0.1
@@ -49,6 +53,9 @@ const ARMOR_PIPS_BONE: StringName = &"Head"
 ## isometric camera sees it from every side), following this bone.
 const POUCHES_POSITION := Vector3(0.0, 1.57, -0.25)
 const POUCHES_BONE: StringName = &"UpperChest"
+## Where the dash's cooldown strip sits, in the model's rest pose: across the back of the
+## backpack, following the same bone as the spare magazine cells.
+const DASH_STRIP_POSITION := Vector3(0.0, 1.22, -0.312)
 
 @export var settings: PlayerSettings
 ## The weapons the player owns; a new player starts with these. Each player gets its own copy.
@@ -59,6 +66,9 @@ const POUCHES_BONE: StringName = &"UpperChest"
 ## The MK levels bought at the upgrade stations; a new player starts with these. Each player gets
 ## its own copy.
 @export var upgrades: Upgrades
+## The skills learned at the skill graph; a new player starts with these. Each player gets its own
+## copy.
+@export var skills: Skills
 ## The suit's armor: its MK level multiplies the health.
 @export var armor_upgrade: Upgrade
 @export var miner_scene: PackedScene
@@ -95,6 +105,14 @@ var give_ammo_time: float = 0.0
 var health: float
 ## Dead players can't move or act until they respawn.
 var dead: bool = false
+## Whether it heals by itself right now (the regeneration skill).
+var regenerating: bool = false
+## Spare magazines per ranged weapon a run starts with, with the skills.
+var spare_magazines: int:
+	get:
+		return settings.spare_magazines + roundi(skills.value(Skill.Effect.SPARE_MAGAZINES))
+## The dash (a skill).
+var suit_dash := SuitDash.new()
 ## The 3D menu (a screen or a station) the player is using, or null. Meanwhile it doesn't move or
 ## act.
 var menu: WorldMenu:
@@ -122,6 +140,12 @@ var _max_health: float
 var _armor_pips := MkPips.new()
 ## Shows the equipped weapon's spare magazines.
 var _pouches := SparePouches.new()
+## Shows the dash's cooldown.
+var _dash_strip := DashStrip.new()
+## Points to the nearest free ore node.
+var _scanner := OreScanner.new()
+## Seconds since the last damage (for regeneration).
+var _since_damage: float = INF
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
@@ -147,8 +171,19 @@ func _ready() -> void:
 	upgrades = upgrades.duplicate() if upgrades else Upgrades.new()
 	upgrades.levels = upgrades.levels.duplicate()
 	upgrades.changed.connect(_on_upgrades_changed)
+	skills = skills.duplicate() if skills else Skills.new()
+	skills.ranks = skills.ranks.duplicate()
+	skills.changed.connect(_on_skills_changed)
 	_add_armor_pips()
 	_add_pouches()
+	_add_dash_strip()
+	_scanner.name = "OreScanner"
+	_scanner.position = Vector3.UP * 0.05
+	_scanner.min_distance = settings.miner_place_range
+	add_child(_scanner)
+	suit_dash.name = "SuitDash"
+	suit_dash.holder = self
+	add_child(suit_dash)
 	health = max_health()
 	_max_health = health
 	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()
@@ -178,10 +213,16 @@ func _physics_process(delta: float) -> void:
 		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
 	var move: Vector3 = IsoInput.camera_relative(move_input, camera_basis)
 	var speed: float = settings.move_speed
-	if _is_reloading():
+	if _is_reloading() and not skills.has(Skill.Effect.RELOAD_ON_THE_MOVE):
 		speed *= settings.reload_move_speed
-	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(
-		move * speed, settings.acceleration * delta
+	if acting and _action_just_pressed(&"dash"):
+		suit_dash.dash(move)
+	var horizontal: Vector3 = suit_dash.step(
+		Vector3(velocity.x, 0.0, velocity.z).move_toward(
+			move * speed, settings.acceleration * delta
+		),
+		speed,
+		delta
 	)
 	velocity = Vector3(horizontal.x, velocity.y, horizontal.z)
 	if is_on_floor():
@@ -222,6 +263,8 @@ func _physics_process(delta: float) -> void:
 	if _action_just_pressed(&"reload"):
 		reload()
 
+	_regenerate(delta)
+
 
 func _process(_delta: float) -> void:
 	var locked: bool = _is_lockable(aim_target)
@@ -229,6 +272,9 @@ func _process(_delta: float) -> void:
 	if locked:
 		_target_marker.global_position = aim_target.global_position + Vector3.UP * 0.05
 	_update_pouches()
+	_dash_strip.visible = skills.has(Skill.Effect.DASH)
+	_dash_strip.show_fill(suit_dash.ready_ratio())
+	_scanner.reach = skills.value(Skill.Effect.ORE_SCANNER)
 
 
 func _update_aim(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
@@ -362,7 +408,7 @@ func refill_ammo() -> void:
 	_spares.clear()
 	var ranged := weapon as RangedWeapon
 	if ranged:
-		ranged.fill(settings.spare_magazines)
+		ranged.fill(spare_magazines)
 
 
 ## Hands `teammate` a magazine for their equipped ranged weapon, paid from the carried ore (see
@@ -391,9 +437,12 @@ func get_weapon_type() -> WeaponType:
 	return _weapon_type
 
 
-## Health when unhurt, with the armor upgrade.
+## Health when unhurt, with the skills and the armor upgrade.
 func max_health() -> float:
-	return settings.max_health * upgrades.multiplier(armor_upgrade)
+	return (
+		(settings.max_health + skills.value(Skill.Effect.HEALTH))
+		* upgrades.multiplier(armor_upgrade)
+	)
 
 
 ## The pips showing the armor's MK level.
@@ -436,6 +485,7 @@ func take_cargo() -> Dictionary[OreType, float]:
 func take_damage(amount: float) -> void:
 	if dead or amount <= 0.0:
 		return
+	_since_damage = 0.0
 	_set_health(health - amount)
 	if health == 0.0:
 		_die()
@@ -512,6 +562,9 @@ func _die() -> void:
 	if menu:
 		menu.close()
 	velocity = Vector3.ZERO
+	suit_dash.cancel()
+	regenerating = false
+	_suit_light.regenerating = false
 	if weapon:
 		weapon.trigger_held = false
 		weapon.visible = false
@@ -591,9 +644,34 @@ func _update_pouches() -> void:
 	var gauge := ranged.get_node_or_null(^"AmmoGauge") as AmmoGauge
 	_pouches.show_spares(
 		float(ranged.spare_rounds) / ranged.capacity(),
-		settings.spare_magazines,
+		spare_magazines,
 		gauge.color if gauge else Color.WHITE
 	)
+
+
+## Puts the dash's cooldown strip across the back of the backpack, following the upper chest.
+func _add_dash_strip() -> void:
+	_dash_strip.name = "DashStrip"
+	add_child(_dash_strip)
+	_follow(
+		_bone_marker(POUCHES_BONE, Transform3D(Basis.IDENTITY, DASH_STRIP_POSITION)), _dash_strip
+	)
+	_dash_strip.visible = false
+	_mark_visible(_dash_strip)
+
+
+## Heals by itself with the regeneration skill, once it took no damage for a while.
+func _regenerate(delta: float) -> void:
+	_since_damage += delta
+	regenerating = (
+		not dead
+		and health < max_health()
+		and _since_damage >= settings.regeneration_delay
+		and skills.value(Skill.Effect.REGENERATION) > 0.0
+	)
+	_suit_light.regenerating = regenerating
+	if regenerating:
+		_set_health(health + skills.value(Skill.Effect.REGENERATION) * delta)
 
 
 ## A marker following `bone`, at `in_model` (in the model's rest pose). The marker is placed from
@@ -714,7 +792,8 @@ func _equip(weapon_type: WeaponType) -> void:
 		ranged.supplier = self
 		var loaded: int = _rounds.get(weapon_type, ranged.capacity())
 		ranged.rounds = mini(loaded, ranged.capacity())
-		ranged.spare_rounds = _spares.get(weapon_type, settings.spare_magazines * ranged.capacity())
+		ranged.spare_rounds = _spares.get(weapon_type, spare_magazines * ranged.capacity())
+		ranged.careful = skills.has(Skill.Effect.CAREFUL_RELOAD)
 		ranged.reload_denied.connect(_on_reload_denied)
 		ranged.reload_timed.connect(_on_reload_timed.bind(ranged))
 	weapon.visible = weapon_allowed and not dead
@@ -739,6 +818,17 @@ func _on_upgrades_changed() -> void:
 		weapon.apply_upgrades(upgrades, _weapon_type)
 	refill_ammo()
 	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
+	if not dead:
+		_set_health(health + max_health() - _max_health)
+
+
+## Skills are learned aboard: more spare magazines fill up, more health adds the difference, the
+## equipped weapon reloads carefully.
+func _on_skills_changed() -> void:
+	var ranged := weapon as RangedWeapon
+	if ranged:
+		ranged.careful = skills.has(Skill.Effect.CAREFUL_RELOAD)
+	refill_ammo()
 	if not dead:
 		_set_health(health + max_health() - _max_health)
 

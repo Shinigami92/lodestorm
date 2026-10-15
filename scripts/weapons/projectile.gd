@@ -15,6 +15,8 @@ var max_distance: float = 0.0
 var exclude: Array[RID] = []
 ## Damage dealt to an alien it hits.
 var damage: float = 0.0
+## Who fired it (e.g. for the damage readout), or null.
+var shooter: Node
 
 var _travelled: float = 0.0
 
@@ -35,6 +37,7 @@ func move_to(target: Vector3) -> bool:
 		var collider: Object = result["collider"]
 		if collider is Alien:
 			(collider as Alien).take_damage(damage)
+			DamageNumber.show_hit(shooter, collider as Alien, damage)
 		hit.emit(collider, global_position)
 		queue_free()
 		return false

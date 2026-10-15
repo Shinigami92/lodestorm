@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/ui/upgrade_card.gd" id="1_script"]
 [ext_resource type="Theme" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/ore_cost.gd" id="3_cost"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 24.0
@@ -76,6 +77,7 @@ text = "Cost / hold"
 [node name="Cost" type="HFlowContainer" parent="Layout/CostRow"]
 unique_name_in_owner = true
 layout_mode = 2
+script = ExtResource("3_cost")
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 4

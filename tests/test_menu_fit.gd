@@ -6,6 +6,7 @@ const CARD_SCENE: PackedScene = preload("res://scenes/ui/upgrade_card.tscn")
 const LOADOUT_CARD_SCENE: PackedScene = preload("res://scenes/ui/loadout_card.tscn")
 const SKILL_CARD_SCENE: PackedScene = preload("res://scenes/ui/skill_card.tscn")
 const SKILL_TREE: SkillTree = preload("res://scenes/skills/skill_tree.tres")
+const CREW: Array[NpcProfile] = [preload("res://scenes/crew/quartermaster.tres")]
 const ALL_WEAPONS: Arsenal = preload("res://scenes/weapons/all_weapons.tres")
 const UPGRADES: Array[Upgrade] = [
 	preload("res://scenes/upgrades/armor.tres"),
@@ -27,7 +28,12 @@ const STATIONS: PackedStringArray = [
 	"Rooms/Upper/Bridge/Navigator",
 	"Rooms/Upper/Cockpit/FlightConsole",
 	"Rooms/Upper/Cabin1/BedStation",
+	"Rooms/Lower/Armory/Quartermaster",
 ]
+## Crew members aboard, by their profile.
+const NPCS: Dictionary[String, String] = {
+	"res://scenes/crew/quartermaster.tres": "Rooms/Lower/Armory/Quartermaster",
+}
 
 var _map: Node3D
 var _player: Player
@@ -181,6 +187,39 @@ func test_bed_card_fits_in_every_language() -> void:
 			_assert_fits(card, layout, "%s bed, run lost %s" % [locale, loses_run])
 
 
+func test_every_crew_line_and_card_fits_in_every_language() -> void:
+	# Topics about a weapon show only to its owners.
+	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
+		_player.arsenal.unlock(weapon_type)
+	for profile: NpcProfile in CREW:
+		var npc := _ship.get_node(NPCS[profile.resource_path]) as Npc
+		_player.global_position = npc.use_point.global_position
+		var dialogue: Dialogue = profile.dialogue
+		var topics: Array[Topic] = dialogue.topics.duplicate()
+		topics.push_front(dialogue.greeting)
+		for locale: String in SettingsMenu.languages():
+			TranslationServer.set_locale(locale)
+			# Every topic open and new (the most buttons, the widest with their dots).
+			_ship.story.flags.clear()
+			for topic: Topic in topics:
+				for flag: StringName in topic.requires:
+					_ship.story.flags[flag] = true
+			npc.open(_player)
+			npc.leave_topic()
+			await wait_process_frames(1)
+			_assert_card_fits(npc, "%s %s topics" % [locale, profile.display_name])
+			_assert_bubble_fits(npc, "%s %s prompt" % [locale, profile.display_name])
+			for topic: Topic in topics:
+				npc.talk_about(topic)
+				for line: int in topic.lines.size():
+					await wait_process_frames(1)
+					var label: String = "%s %s line %d" % [locale, topic.id, line + 1]
+					_assert_card_fits(npc, label)
+					_assert_bubble_fits(npc, label)
+					npc.advance()
+			npc.close()
+
+
 func test_every_terminal_fits_in_every_language() -> void:
 	for locale: String in SettingsMenu.languages():
 		TranslationServer.set_locale(locale)
@@ -206,11 +245,27 @@ func test_text_reads_from_the_camera() -> void:
 		var card: WorldPanel = station.card
 		var text_height: float = font_size / card.pixels_per_meter * card.global_basis.y.length()
 		assert_gte(text_height / station.view_height, MIN_TEXT_HEIGHT, path)
+	for path: String in NPCS.values():
+		var npc := _ship.get_node(path) as Npc
+		var bubble: WorldPanel = npc.bubble
+		var text_height: float = (
+			font_size / bubble.pixels_per_meter * bubble.global_basis.y.length()
+		)
+		assert_gte(text_height / npc.view_height, MIN_TEXT_HEIGHT, path + " bubble")
 
 
 func _assert_card_fits(station: Station, label: String) -> void:
 	var panel: WorldPanel = station.card
 	_assert_fits(station.card_menu, Vector2(panel.size * panel.pixels_per_meter), label)
+
+
+func _assert_bubble_fits(npc: Npc, label: String) -> void:
+	var panel: WorldPanel = npc.bubble
+	var speech := panel.content as SpeechBubble
+	var needed: Vector2 = speech.get_needed_size()
+	var layout := Vector2(panel.size * panel.pixels_per_meter)
+	assert_lte(needed.x, layout.x + 0.5, "%s bubble: %s wide" % [label, needed.x])
+	assert_lte(needed.y, layout.y + 0.5, "%s bubble: %s high" % [label, needed.y])
 
 
 func _assert_fits(content: Control, layout: Vector2, label: String) -> void:

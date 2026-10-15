@@ -1,11 +1,12 @@
 class_name SaveGame
 extends Node
-## Keeps the progress between sessions in one save: the host's (the ship's hold, later the story,
-## crew and quests) in `ship.json` and the local player's (owned weapons, loadout, upgrade
-## levels, skill ranks) in `player.json`, both in `save/` under `directory`. It loads them when the
-## map starts and saves whenever progress changes while no mission is underway; what changes
-## during a mission is saved once it's over (returned or lost), so quitting mid-mission loses that
-## run like dying. The settings (`GameSettings`) are kept apart and survive `reset_progress`.
+## Keeps the progress between sessions in one save: the host's (the ship's hold and the story's
+## flags, later crew and quests) in `ship.json` and the local player's (owned weapons, loadout,
+## upgrade levels, skill ranks) in `player.json`, both in `save/` under `directory`. It loads
+## them when the map starts and saves whenever progress changes while no mission is underway;
+## what changes during a mission is saved once it's over (returned or lost), so quitting
+## mid-mission loses that run like dying. The settings (`GameSettings`) are kept apart and survive
+## `reset_progress`.
 ## Resources (ore types, weapons, upgrades, skills) are saved by their path, so moving or renaming
 ## one of them needs a migration (`VERSION`). Unknown entries are skipped; a file that can't be
 ## read is kept as `<name>.corrupt` and the game starts from the defaults.
@@ -66,6 +67,7 @@ func _ready() -> void:
 	load_progress()
 	if ship:
 		ship.hold_changed.connect(_on_progress_changed.unbind(2))
+		ship.story.changed.connect(_on_progress_changed)
 	if player:
 		player.arsenal.changed.connect(_on_progress_changed)
 		player.loadout.changed.connect(_on_progress_changed)
@@ -121,12 +123,16 @@ func reset_progress() -> bool:
 	return true
 
 
-## What's saved of `ship`: the hold, in units per ore type.
+## What's saved of `ship`: the hold, in units per ore type, and the story's flags.
 static func ship_data(of_ship: Ship) -> Dictionary:
 	var hold: Dictionary = {}
 	for ore_type: OreType in of_ship.hold:
 		hold[ore_type.resource_path] = of_ship.hold[ore_type]
-	return {"version": VERSION, "hold": hold}
+	var flags: Array = []
+	for flag: StringName in of_ship.story.flags:
+		flags.append(String(flag))
+	flags.sort()
+	return {"version": VERSION, "hold": hold, "story": flags}
 
 
 ## What's saved of `of_player`: the weapons it owns, its loadout (null: empty slot), the MK
@@ -162,6 +168,13 @@ func _apply_ship(data: Dictionary) -> void:
 			ship.add_to_hold(ore_type, amount)
 		else:
 			push_warning("Save: skipped hold entry %s" % path)
+	if data.get("story") is Array:
+		for flag: Variant in data["story"] as Array:
+			if flag is String and not (flag as String).is_empty():
+				ship.story.flags[StringName(flag as String)] = true
+			else:
+				push_warning("Save: skipped story flag %s" % flag)
+		ship.story.emit_changed()
 
 
 func _apply_player(data: Dictionary) -> void:

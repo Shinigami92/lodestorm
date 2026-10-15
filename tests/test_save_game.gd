@@ -74,6 +74,16 @@ func test_skills_survive_a_restart() -> void:
 	assert_eq(_player.health, _player.max_health(), "full health with the saved skills")
 
 
+func test_story_survives_a_restart() -> void:
+	_ship.story.set_flag(&"quartermaster.greeting")
+	_ship.story.set_flag(&"quartermaster.ammo")
+	await wait_process_frames(1)
+	await _restart()
+	assert_true(_ship.story.is_set(&"quartermaster.greeting"))
+	assert_true(_ship.story.is_set(&"quartermaster.ammo"))
+	assert_eq(_ship.story.flags.size(), 2)
+
+
 func test_mission_progress_is_saved_when_it_is_over() -> void:
 	_ship.add_to_hold(CYAN, 10.0)
 	await wait_process_frames(1)
@@ -128,6 +138,7 @@ func test_unknown_entries_are_skipped() -> void:
 			SHOTGUN.resource_path: 5.0,
 			GREEN.resource_path: -4.0,
 		},
+		"story": ["quartermaster.ammo", 3, ""],
 	}
 	var player_data: Dictionary = {
 		"version": SaveGame.VERSION,
@@ -140,6 +151,7 @@ func test_unknown_entries_are_skipped() -> void:
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
 	await _restart()
 	assert_eq(_ship.hold.keys(), [CYAN] as Array[OreType])
+	assert_eq(_ship.story.flags.keys(), [&"quartermaster.ammo"] as Array[StringName])
 	assert_eq(_player.arsenal.weapons, [BLASTER] as Array[WeaponType])
 	assert_null(_player.loadout.get_weapon(0), "not owned")
 	assert_null(_player.loadout.get_weapon(1), "not owned")

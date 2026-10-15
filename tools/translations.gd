@@ -8,7 +8,7 @@ extends SceneTree
 ## - scripts: `tr("Text")` and `tr("Text", "context")` with string literals,
 ## - scenes: the `text` of nodes (Label3D, ...), unless their auto translation is disabled,
 ## - resources: the player-facing texts of the resource types in `RESOURCE_TEXTS` (e.g. biomes,
-##   weapons, upgrades, skills).
+##   weapons, upgrades, skills, what the crew says).
 
 const TEMPLATE_PATH := "res://locale/lodestorm.pot"
 const SOURCE_DIRS: Array[String] = ["res://scenes", "res://scripts"]
@@ -17,13 +17,16 @@ const TEXT_PROPERTIES: Array[StringName] = [&"text", &"placeholder_text", &"tool
 ## Resource types (script class names) with player-facing texts, and their text properties.
 const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"CelestialBody": [&"display_name"],
+	"Dialogue": [&"prompt"],
 	"LocationBiome": [&"display_name"],
+	"NpcProfile": [&"role"],
 	"Region": [&"display_name"],
 	"Skill": [&"display_name", &"description"],
 	"SkillCluster": [&"display_name"],
 	# Only for the clusters built into it.
 	"SkillTree": [],
 	"StarSystem": [&"display_name"],
+	"Topic": [&"title", &"lines"],
 	"Upgrade": [&"display_name", &"description"],
 	"WeaponType": [&"display_name", &"description"],
 }
@@ -253,8 +256,11 @@ static func _collect_resource_texts(
 	var type: String = script.get_global_name() if script else ""
 	for property: StringName in RESOURCE_TEXTS.get(type, []):
 		var value: Variant = resource.get(property)
-		if value is String and not (value as String).is_empty():
-			texts.append(PackedStringArray(["", value]))
+		# A text, or a list of them (e.g. a topic's lines).
+		var values: Array = value if value is Array else [value]
+		for text: Variant in values:
+			if text is String and not (text as String).is_empty():
+				texts.append(PackedStringArray(["", text]))
 	for info: Dictionary in resource.get_property_list():
 		var usage: int = info["usage"]
 		if not usage & PROPERTY_USAGE_STORAGE:

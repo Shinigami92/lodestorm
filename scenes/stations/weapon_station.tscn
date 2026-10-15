@@ -93,7 +93,7 @@ visible = false
 mesh = SubResource("BoxMesh_highlight")
 
 [node name="Card" parent="." instance=ExtResource("3_panel")]
-size = Vector2(1, 0.96)
+size = Vector2(1, 1.02)
 pixels_per_meter = 500.0
 transparent = true
 menu = ExtResource("4_card")

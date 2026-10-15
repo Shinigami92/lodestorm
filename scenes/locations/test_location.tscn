@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/mining/ore_node.tscn" id="1_ore_node"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="2_ore_cyan"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="3_ore_green"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="4_ore_violet"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_kyrite.tres" id="2_ore_kyrite"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_olvane.tres" id="3_ore_olvane"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_vyrel.tres" id="4_ore_vyrel"]
 [ext_resource type="PackedScene" path="res://scenes/aliens/alien_nest.tscn" id="5_alien_nest"]
 [ext_resource type="Script" path="res://scripts/locations/location_navigation.gd" id="6_navigation"]
 
@@ -115,25 +115,25 @@ mesh = SubResource("BoxMesh_rock_small")
 
 [node name="OreNodes" type="Node3D" parent="."]
 
-[node name="CyanA" parent="OreNodes" instance=ExtResource("1_ore_node")]
+[node name="KyriteA" parent="OreNodes" instance=ExtResource("1_ore_node")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.828, 0, 2.828)
-ore_type = ExtResource("2_ore_cyan")
+ore_type = ExtResource("2_ore_kyrite")
 
-[node name="CyanB" parent="OreNodes" instance=ExtResource("1_ore_node")]
+[node name="KyriteB" parent="OreNodes" instance=ExtResource("1_ore_node")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.92, 0, -9.192)
-ore_type = ExtResource("2_ore_cyan")
+ore_type = ExtResource("2_ore_kyrite")
 
-[node name="GreenA" parent="OreNodes" instance=ExtResource("1_ore_node")]
+[node name="OlvaneA" parent="OreNodes" instance=ExtResource("1_ore_node")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.182, 0, -8.132)
-ore_type = ExtResource("3_ore_green")
+ore_type = ExtResource("3_ore_olvane")
 
-[node name="GreenB" parent="OreNodes" instance=ExtResource("1_ore_node")]
+[node name="OlvaneB" parent="OreNodes" instance=ExtResource("1_ore_node")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.828, 0, -22.627)
-ore_type = ExtResource("3_ore_green")
+ore_type = ExtResource("3_ore_olvane")
 
-[node name="Violet" parent="OreNodes" instance=ExtResource("1_ore_node")]
+[node name="Vyrel" parent="OreNodes" instance=ExtResource("1_ore_node")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.456, 0, -28.284)
-ore_type = ExtResource("4_ore_violet")
+ore_type = ExtResource("4_ore_vyrel")
 
 [node name="AlienNests" type="Node3D" parent="."]
 

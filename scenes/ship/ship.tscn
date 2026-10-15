@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://scripts/ship/ship.gd" id="1_script"]
 [ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="2_interactable"]
-[ext_resource type="Script" path="res://scripts/player/cargo_rack.gd" id="3_cargo_rack"]
 [ext_resource type="PackedScene" path="res://scenes/ship/holo_table.tscn" id="4_holo_table"]
 [ext_resource type="Shader" path="res://assets/shaders/hologram.gdshader" id="5_hologram"]
 [ext_resource type="Script" path="res://scripts/camera/camera_zone.gd" id="6_camera_zone"]
@@ -22,6 +21,7 @@
 [ext_resource type="PackedScene" path="res://scenes/stations/skill_graph.tscn" id="20_skill_graph"]
 [ext_resource type="PackedScene" path="res://scenes/crew/npc.tscn" id="21_npc"]
 [ext_resource type="Resource" path="res://scenes/crew/quartermaster.tres" id="22_quartermaster"]
+[ext_resource type="PackedScene" path="res://scenes/stations/ore_hold.tscn" id="40_ore_hold"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]
 albedo_color = Color(0.3, 0.31, 0.33, 1)
@@ -4435,10 +4435,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.5, 0)
 [node name="Respawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -8.75)
 
-[node name="HoldRack" type="Node3D" parent="."]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 9, 2.5, -13.6)
-script = ExtResource("3_cargo_rack")
-units_per_canister = 900.0
+[node name="OreHold" parent="." instance=ExtResource("40_ore_hold")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
 
 [node name="Beacon" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 11.5, -14.75)

@@ -3,9 +3,10 @@
 [ext_resource type="Script" path="res://scripts/locations/location_biome.gd" id="1_biome"]
 [ext_resource type="Script" path="res://scripts/locations/scatter_type.gd" id="2_scatter"]
 [ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="3_ore_type"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="4_ore_cyan"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="5_ore_green"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="6_ore_violet"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_pallin.tres" id="ore_pallin"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_vyrel.tres" id="ore_vyrel"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_halcyne.tres" id="ore_halcyne"]
 [ext_resource type="PackedScene" uid="uid://cyl7o2webmhio" path="res://assets/rocks/rocks.glb" id="3_rocks"]
 [ext_resource type="PackedScene" uid="uid://vgi6vo04bk0s" path="res://assets/plants/plants.glb" id="4_plants"]
 [ext_resource type="Material" path="res://assets/terrain/dust_terrain.tres" id="9_terrain"]
@@ -264,4 +265,4 @@ scree = 0.5
 tint_variation = 0.12
 scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_boulder_c"), SubResource("Resource_boulder_d"), SubResource("Resource_outcrop_a"), SubResource("Resource_outcrop_b"), SubResource("Resource_stones_a"), SubResource("Resource_stones_b"), SubResource("Resource_rubble_a"), SubResource("Resource_rubble_b"), SubResource("Resource_dust_spire_a"), SubResource("Resource_dust_shrub_a"), SubResource("Resource_dust_shrub_b"), SubResource("Resource_dust_debris_a"), SubResource("Resource_dust_debris_b")])
 nests = 10
-ores = Array[ExtResource("3_ore_type")]([ExtResource("4_ore_cyan"), ExtResource("5_ore_green"), ExtResource("6_ore_violet")])
+ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_kyrite"), ExtResource("ore_pallin"), ExtResource("ore_vyrel"), ExtResource("ore_halcyne")])

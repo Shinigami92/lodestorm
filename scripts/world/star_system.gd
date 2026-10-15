@@ -21,6 +21,11 @@ func open_regions() -> Array[Region]:
 	return open
 
 
+## The ores a visit to `region` finds (see `Region.ores_on`), commonest first.
+func ores_of(region: Region) -> Array[OreType]:
+	return region.ores_on(body_of(region))
+
+
 ## The body `region` belongs to, or null.
 func body_of(region: Region) -> CelestialBody:
 	for body: CelestialBody in bodies:

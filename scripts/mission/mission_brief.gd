@@ -9,17 +9,21 @@ enum Difficulty { EASY, NORMAL, HARD }
 ## The region it's a section of, or null (a location of `biome` anywhere).
 @export var region: Region
 @export var biome: LocationBiome
+## The ores found there, commonest first (rarer ones lie farther away); empty: the biome's.
+@export var ores: Array[OreType] = []
 @export var world_seed: int = 1
 ## The timer, relative to the standard mission (`MissionSettings.duration`).
 @export var length: float = 1.0
 @export var difficulty: Difficulty = Difficulty.NORMAL
 
 
-## A mission to a new section of `region` (from `world_seed`), with its biome, danger and length.
-static func for_region(region: Region, world_seed: int) -> MissionBrief:
+## A mission to a new section of `region` (from `world_seed`), with its biome, danger and length,
+## and the ores it finds (see `StarSystem.ores_of`).
+static func for_region(region: Region, world_seed: int, ores: Array[OreType] = []) -> MissionBrief:
 	var brief := MissionBrief.new()
 	brief.region = region
 	brief.biome = region.biome
+	brief.ores = ores
 	brief.world_seed = world_seed
 	brief.length = region.length
 	brief.difficulty = region.danger
@@ -37,6 +41,13 @@ func location_name() -> String:
 	elif biome:
 		place = tr(biome.display_name)
 	return ("%s %s-%d" % [place, letter, sector]).strip_edges()
+
+
+## The ores found there, commonest first: its own, or else its biome's.
+func found_ores() -> Array[OreType]:
+	if not ores.is_empty() or not biome:
+		return ores
+	return OreCatalog.sorted(biome.ores)
 
 
 ## The difficulty's name, translated.

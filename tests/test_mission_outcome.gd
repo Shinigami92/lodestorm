@@ -2,7 +2,7 @@ extends GutTest
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
-const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
+const KYRITE: OreType = preload("res://scenes/mining/ores/ore_kyrite.tres")
 
 var _map: Node3D
 var _player: Player
@@ -63,7 +63,7 @@ func test_storm_spares_players_aboard() -> void:
 func test_dying_in_storm_loses_mission_and_cargo() -> void:
 	await _open()
 	await _move(_player, _outside())
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	_mission.time_left = 0.0
 	_mission.storm_time = 1000.0
 	await wait_physics_frames(10)
@@ -72,7 +72,7 @@ func test_dying_in_storm_loses_mission_and_cargo() -> void:
 	assert_signal_emit_count(_mission, "lost", 1)
 	assert_signal_not_emitted(_mission, "returned")
 	assert_true(_player.cargo.is_empty())
-	assert_false(_ship.hold.has(CYAN), "nothing reached the hold")
+	assert_false(_ship.hold.has(KYRITE), "nothing reached the hold")
 
 
 func test_respawn_aboard_after_lost_mission() -> void:
@@ -129,13 +129,13 @@ func test_tuning_duration_updates_timer() -> void:
 func test_returning_stores_cargo_in_hold() -> void:
 	await _open()
 	await _move(_player, _outside())
-	_player.add_cargo(CYAN, 150.0)
+	_player.add_cargo(KYRITE, 150.0)
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	assert_true(_player.cargo.is_empty())
-	assert_eq(_ship.hold[CYAN], 150.0)
-	var rack: CargoRack = _ship.get_node("HoldRack")
-	assert_eq(rack.canister_count(CYAN), 1)
+	assert_eq(_ship.hold[KYRITE], 150.0)
+	var hold: OreHold = _ship.get_node("OreHold")
+	assert_gt(hold.get_tank(KYRITE).fill_level(), 0.0, "its tank shows it")
 
 
 func test_hold_keeps_cargo_over_runs() -> void:
@@ -143,9 +143,9 @@ func test_hold_keeps_cargo_over_runs() -> void:
 		TEST_MAP.pick_mission(_map)
 		await _open()
 		await _move(_player, _outside())
-		_player.add_cargo(CYAN, 100.0)
+		_player.add_cargo(KYRITE, 100.0)
 		await _move(_player, _inside())
-	assert_eq(_ship.hold[CYAN], 200.0)
+	assert_eq(_ship.hold[KYRITE], 200.0)
 
 
 func test_next_run_heals_players() -> void:
@@ -166,14 +166,14 @@ func test_mission_won_when_the_living_are_aboard() -> void:
 	await _open()
 	await _move(_player, _outside())
 	await _move(other, _outside())
-	other.add_cargo(CYAN, 50.0)
+	other.add_cargo(KYRITE, 50.0)
 	other.take_damage(other.settings.max_health)
-	_player.add_cargo(CYAN, 80.0)
+	_player.add_cargo(KYRITE, 80.0)
 	await wait_physics_frames(2)
 	assert_eq(_mission.state, Mission.State.RUNNING, "one player is still alive outside")
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
-	assert_eq(_ship.hold[CYAN], 80.0, "the dead player's cargo is lost")
+	assert_eq(_ship.hold[KYRITE], 80.0, "the dead player's cargo is lost")
 	assert_false(other.dead, "the dead respawn aboard")
 	await wait_physics_frames(3)
 	assert_true(_ship.is_aboard(other))

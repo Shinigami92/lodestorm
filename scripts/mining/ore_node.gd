@@ -30,8 +30,10 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	if ore_type.model and not ore_type.variants.is_empty():
 		_use_model()
+	var phase: float = OreGlow.phase_at(global_position)
 	for crystal: Node in _crystals.get_children():
 		(crystal as MeshInstance3D).material_override = ore_type.get_material()
+		OreGlow.set_phase(crystal as MeshInstance3D, phase)
 	_highlight.visible = highlighted
 
 

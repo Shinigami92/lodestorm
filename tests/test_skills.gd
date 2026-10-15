@@ -8,7 +8,7 @@ const MINER_SCENE: PackedScene = preload("res://scenes/mining/miner.tscn")
 const BLASTER: WeaponType = preload("res://scenes/weapons/types/blaster.tres")
 const HAMMER: WeaponType = preload("res://scenes/weapons/types/hammer.tres")
 const ARMOR: Upgrade = preload("res://scenes/upgrades/armor.tres")
-const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
+const KYRITE: OreType = preload("res://scenes/mining/ores/ore_kyrite.tres")
 const TREE: SkillTree = preload("res://scenes/skills/skill_tree.tres")
 const DASH: Skill = preload("res://scenes/skills/dash.tres")
 const RELOAD_ON_THE_MOVE: Skill = preload("res://scenes/skills/reload_on_the_move.tres")
@@ -274,7 +274,7 @@ func test_hits_with_the_hammer_show_their_damage() -> void:
 
 func _add_node(at: Vector3) -> OreNode:
 	var node := ORE_NODE.instantiate() as OreNode
-	node.ore_type = CYAN
+	node.ore_type = KYRITE
 	node.position = at
 	_arena.add_child(node)
 	return node

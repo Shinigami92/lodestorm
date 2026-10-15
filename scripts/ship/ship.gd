@@ -75,6 +75,8 @@ var ramp_open: bool = false
 ## Ore brought back over all runs and not spent yet, in units per ore type. Upgrades are paid from
 ## it (`pay`).
 var hold: Dictionary[OreType, float] = {}
+## Ores ever brought aboard (the hold shows the others as unknown).
+var found_ores: Dictionary[OreType, bool] = {}
 ## What has happened in the story so far (e.g. what the crew told), saved with the ship.
 var story := Story.new()
 
@@ -95,7 +97,7 @@ var _button_material := StandardMaterial3D.new()
 @onready var _weapon_zone: Area3D = $Rooms/Lower/ShootingRange/WeaponZone
 @onready var _boarding: Marker3D = $Boarding
 @onready var _respawn: Marker3D = $Respawn
-@onready var _hold_rack: CargoRack = $HoldRack
+@onready var _ore_hold: OreHold = $OreHold
 @onready var _floor: Node3D = $Hull/Floor
 @onready var _holo_table: HoloTable = $Rooms/Upper/Bridge/HoloTable
 @onready var _lower_cut: Node3D = $Hull/LowerCut
@@ -219,9 +221,18 @@ static func nearest(tree: SceneTree, from: Vector3) -> Ship:
 	return nearest_ship
 
 
+## Marks `ore_type` as brought aboard once (its tank in the hold shows it from then on).
+func mark_found(ore_type: OreType) -> void:
+	found_ores[ore_type] = true
+	var stored: float = hold.get(ore_type, 0.0)
+	_ore_hold.show_amount(ore_type, stored, true)
+
+
 func _set_hold(ore_type: OreType, amount: float) -> void:
 	hold[ore_type] = amount
-	_hold_rack.show_cargo(ore_type, amount)
+	if amount > 0.0:
+		found_ores[ore_type] = true
+	_ore_hold.show_amount(ore_type, amount, found_ores.has(ore_type))
 	hold_changed.emit(ore_type, amount)
 
 

@@ -1,7 +1,7 @@
 extends GutTest
 
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
-const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
+const KYRITE: OreType = preload("res://scenes/mining/ores/ore_kyrite.tres")
 
 var _player: Player
 var _light: SuitLight
@@ -42,13 +42,13 @@ func test_suit_light_shows_health() -> void:
 
 
 func test_dies_at_zero_health_and_drops_cargo() -> void:
-	_player.add_cargo(CYAN, 120.0)
+	_player.add_cargo(KYRITE, 120.0)
 	_player.take_damage(_player.settings.max_health + 50.0)
 	assert_eq(_player.health, 0.0)
 	assert_true(_player.dead)
 	assert_signal_emit_count(_player, "died", 1)
 	assert_true(_player.cargo.is_empty(), "everything carried is lost")
-	assert_eq((_player.get_node("CargoRack") as CargoRack).canister_count(CYAN), 0)
+	assert_eq((_player.get_node("CargoRack") as CargoRack).total(), 0.0)
 	assert_eq(_light.color, SuitLight.COLOR_DEAD)
 
 

@@ -11,7 +11,7 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
-	_node = _map.get_node("Location/OreNodes/CyanA") as OreNode
+	_node = _map.get_node("Location/OreNodes/KyriteA") as OreNode
 
 
 func test_connects_in_range_and_transfers() -> void:
@@ -76,7 +76,7 @@ func test_hose_is_visible_only_while_connected() -> void:
 
 
 func test_several_miners_connect_at_once() -> void:
-	var other_node: OreNode = _map.get_node("Location/OreNodes/GreenA") as OreNode
+	var other_node: OreNode = _map.get_node("Location/OreNodes/OlvaneA") as OreNode
 	var miner: Miner = _place_miner(0.0, 10.0)
 	var other: Miner = other_node.place_miner(_player.miner_scene)
 	other.settings = miner.settings

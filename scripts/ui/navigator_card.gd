@@ -8,13 +8,12 @@ extends StationCard
 const DANGER_COLORS: Array[Color] = [
 	Color(0.45, 0.95, 0.55), Color(1.0, 0.75, 0.3), Color(1.0, 0.4, 0.35)
 ]
-const ORE_CHIP_SIZE := Vector2(22.0, 22.0)
 const STATUS_COLOR := Color(1.0, 0.75, 0.3)
 
 ## What's shown (a body or a region), or null.
 var item: Resource
 
-## The ores the chips show.
+## The ores the badges show.
 var _shown_ores: Array[OreType] = []
 
 @onready var _title: Label = %Title
@@ -22,7 +21,7 @@ var _shown_ores: Array[OreType] = []
 @onready var _info: GridContainer = %Info
 @onready var _danger: Label = %Danger
 @onready var _timer: Label = %Timer
-@onready var _ores: HBoxContainer = %Ores
+@onready var _ores: HFlowContainer = %Ores
 @onready var _status: Label = %Status
 @onready var _primary: Button = %Primary
 @onready var _choose: Button = %Choose
@@ -80,9 +79,10 @@ func show_part(part: StationPart) -> void:
 		_danger.add_theme_color_override(&"font_color", DANGER_COLORS[shown_region.danger])
 		var minutes: float = (mission.settings.duration if mission else 900.0) * shown_region.length
 		_timer.text = tr("%d min") % roundi(minutes / 60.0)
+		var system: StarSystem = navigator.get_system()
 		var ores: Array[OreType] = []
-		if shown_region.biome:
-			ores = shown_region.biome.ores
+		if system:
+			ores = system.ores_of(shown_region)
 		_show_ores(ores)
 		_primary.visible = not at_landing_site
 		_primary.text = tr("Zoom in")
@@ -140,6 +140,7 @@ func _on_choose_pressed() -> void:
 		navigator.choose_destination()
 
 
+## The region's ores as badges with their names (from common to rare).
 func _show_ores(ores: Array[OreType]) -> void:
 	if ores == _shown_ores:
 		return
@@ -148,11 +149,7 @@ func _show_ores(ores: Array[OreType]) -> void:
 		_ores.remove_child(node)
 		node.queue_free()
 	for ore_type: OreType in ores:
-		var chip := ColorRect.new()
-		chip.color = ore_type.color
-		chip.custom_minimum_size = ORE_CHIP_SIZE
-		chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		_ores.add_child(chip)
+		_ores.add_child(OreBadge.new(ore_type))
 
 
 func _on_back_pressed() -> void:

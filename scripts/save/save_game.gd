@@ -15,6 +15,12 @@ const GROUP: StringName = &"save_games"
 ## The save format; raise it (and convert older saves in `_read`) when the format changes.
 const VERSION: int = 1
 const SHIP_FILE: String = "ship.json"
+## Resources that were renamed: their old path in older saves, and the new one.
+const RENAMED: Dictionary[String, String] = {
+	"res://scenes/mining/ores/ore_kyrite.tres": "res://scenes/mining/ores/ore_kyrite.tres",
+	"res://scenes/mining/ores/ore_olvane.tres": "res://scenes/mining/ores/ore_olvane.tres",
+	"res://scenes/mining/ores/ore_vyrel.tres": "res://scenes/mining/ores/ore_vyrel.tres",
+}
 const PLAYER_FILE: String = "player.json"
 
 ## Where the saves and the settings go: the user data folder, or a `dev/` folder in it for runs
@@ -123,16 +129,21 @@ func reset_progress() -> bool:
 	return true
 
 
-## What's saved of `ship`: the hold, in units per ore type, and the story's flags.
+## What's saved of `ship`: the hold, in units per ore type, the ores ever brought aboard and the
+## story's flags.
 static func ship_data(of_ship: Ship) -> Dictionary:
 	var hold: Dictionary = {}
 	for ore_type: OreType in of_ship.hold:
 		hold[ore_type.resource_path] = of_ship.hold[ore_type]
+	var found: Array = []
+	for ore_type: OreType in of_ship.found_ores:
+		found.append(ore_type.resource_path)
+	found.sort()
 	var flags: Array = []
 	for flag: StringName in of_ship.story.flags:
 		flags.append(String(flag))
 	flags.sort()
-	return {"version": VERSION, "hold": hold, "story": flags}
+	return {"version": VERSION, "hold": hold, "found": found, "story": flags}
 
 
 ## What's saved of `of_player`: the weapons it owns, its loadout (null: empty slot), the MK
@@ -168,6 +179,13 @@ func _apply_ship(data: Dictionary) -> void:
 			ship.add_to_hold(ore_type, amount)
 		else:
 			push_warning("Save: skipped hold entry %s" % path)
+	if data.get("found") is Array:
+		for path: Variant in data["found"] as Array:
+			var ore_type := _resource(path) as OreType
+			if ore_type:
+				ship.mark_found(ore_type)
+			else:
+				push_warning("Save: skipped found ore %s" % path)
 	if data.get("story") is Array:
 		for flag: Variant in data["story"] as Array:
 			if flag is String and not (flag as String).is_empty():
@@ -222,7 +240,7 @@ func _apply_player(data: Dictionary) -> void:
 static func _resource(path: Variant) -> Resource:
 	if not path is String:
 		return null
-	var res_path: String = path
+	var res_path: String = RENAMED.get(path, path)
 	if not res_path.begins_with("res://") or not ResourceLoader.exists(res_path):
 		return null
 	return load(res_path)

@@ -80,9 +80,13 @@ func _ready() -> void:
 	body_radius = (($CollisionShape3D as CollisionShape3D).shape as CylinderShape3D).radius
 	_face_camera()
 	if ore_type:
+		# In sync with the deposit it stands on (see `OreGlow.phase_at`).
+		var phase: float = OreGlow.phase_at(global_position)
 		for mesh: MeshInstance3D in _meshes(_fill):
-			mesh.material_override = ore_type.get_material()
-		_hose.material_override = ore_type.get_material()
+			mesh.material_override = ore_type.get_glow_material()
+			OreGlow.set_phase(mesh, phase)
+		_hose.material_override = ore_type.get_glow_material()
+		OreGlow.set_phase(_hose, phase)
 	_frame_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_frame_overlay.next_pass = preload("res://assets/shaders/rim_light.tres")
 	for frame: Node in _model.find_children("Frame*", "MeshInstance3D", true, false):
@@ -122,9 +126,10 @@ func is_full() -> bool:
 	return amount >= capacity()
 
 
-## Units mined per second, with the drill upgrade.
+## Units mined per second, with the drill upgrade (rarer ores mine slower, `OreType.mine_rate`).
 func fill_rate() -> float:
-	return settings.fill_rate * _multiplier(drill_upgrade)
+	var ore_rate: float = ore_type.mine_rate if ore_type else 1.0
+	return settings.fill_rate * ore_rate * _multiplier(drill_upgrade)
 
 
 ## Units it holds when full, with the tank upgrade.

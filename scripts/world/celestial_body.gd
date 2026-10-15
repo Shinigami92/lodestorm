@@ -20,6 +20,9 @@ enum Kind { PLANET, MOON, STATION }
 @export var orbits: CelestialBody
 ## Where the ship can land.
 @export var regions: Array[Region] = []
+## Its own rare ores (usually one), found in all its regions and nowhere else. A moon has its own
+## or none.
+@export var signature_ores: Array[OreType] = []
 
 
 ## Its kind's name, translated.

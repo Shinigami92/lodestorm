@@ -1,17 +1,25 @@
 """Ore crystal clusters: per ore type two ground variants and one wall cluster (concept: ores_v1..v4).
 
 Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
-    tools/blender.sh assets/ores/source/ores_build.py wip r1                       # all variants, iso + hero
-    tools/blender.sh assets/ores/source/ores_build.py wip r2 cyan_a,green_b iso,miner
-    tools/blender.sh assets/ores/source/ores_build.py final
-    tools/blender.sh assets/ores/source/ores_build.py sheet                        # only lineups, grid, sheet
+    tools/blender.sh assets/ores/source/ores_build.py wip r1                        # every ore, iso + hero
+    tools/blender.sh assets/ores/source/ores_build.py wip r2 kyrite_a,olvane iso,miner
+    tools/blender.sh assets/ores/source/ores_build.py wip r3 all types              # the "a" variants side by side
+    tools/blender.sh assets/ores/source/ores_build.py final kyrite                  # one ore, for ores_bake.py
+    tools/blender.sh assets/ores/source/ores_build.py sheet kyrite                  # only lineup, grid, sheet
+    tools/blender.sh assets/ores/source/ores_build.py icon kyrite,olvane            # badge icons (or "all")
 
-Everything it writes goes to tmp/assets/ores/: "wip <tag> [variants] [views]" renders quick previews into
-wip/<tag>_<variant>_<view>.png; "final" saves the procedural ores_procedural.blend (that ores_bake.py turns into the
-game asset), renders the final previews and a contact sheet (sheet.png).
+Everything except the icons goes to tmp/assets/ores/: "wip <tag> [ores|variants] [views]" renders quick previews into
+wip/<tag>_<variant>_<view>.png (an ore id selects all its variants); "final <ore>" saves <ore>/ores_procedural.blend
+(that ores_bake.py turns into the game asset), renders the final previews and a contact sheet (<ore>/sheet.png).
+"icon" renders each ore's badge icon to assets/ores/icons/<ore>.png: the crystals of its "a" variant as a white
+silhouette with dark facet lines on a transparent background, which the game tints in the ore's color (OreBadge).
 
-Each variant is a root empty Ore_<type>_<a|b|wall> holding one rocky base mesh Base_<type>_<variant> (baked later
-into a shared texture atlas) and the crystals as separate meshes Crystal_<type>_<n> (numbered per type across its
+Every ore type is a module ore_types/<id>.py with an `ORE = OreSpec(...)` (ore_geo.py): its crystal shape, how the
+crystals group, the preview color and the three variants. ORDER lists them (commonest first, the order of
+scenes/mining/ores/all_ores.tres); missing modules are skipped.
+
+Each variant is a root empty Ore_<ore>_<a|b|wall> holding one rocky base mesh Base_<ore>_<variant> (baked later
+into the ore's texture atlas) and the crystals as separate meshes Crystal_<ore>_<n> (numbered per ore across its
 variants). The crystals only carry geometry: they share the neutral placeholder material "OreCrystal", the game
 puts the ore type's glowing material on them (OreType.get_material()). Every crystal mesh has its origin at its
 root, so it can be scaled down from there (e.g. when mined out).
@@ -23,12 +31,10 @@ CLEARANCE is the worst case over all leg angles (from miner_glow_build.py), crys
 Wall variants: crystals grow toward -Y out of a rock chunk whose flat back lies on the wall plane y = 0; origin at
 the bottom center of that back face.
 
-The game camera looks from the +X/-Y diagonal: each type has its own silhouette there.
-- cyan: long hexagonal prisms with pyramid tips (some broken), in tall upright groups
-- green: chunky intergrown cubes and blocks with chipped corners, low and heavy
-- violet: thin sharp blade shards bursting out wide, some from broken-open geodes
+The game camera looks from the +X/-Y diagonal: each ore has its own silhouette there (see the type modules).
 """
 
+import importlib
 import math
 import pathlib
 import random
@@ -36,7 +42,9 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "assets" / "ores"
+ICONS = ROOT / "assets" / "ores" / "icons"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 import bmesh  # noqa: E402
 import bpy  # noqa: E402
@@ -45,298 +53,90 @@ from mathutils.bvhtree import BVHTree  # noqa: E402
 
 import common as C  # noqa: E402
 from common import T, basis, polar  # noqa: E402
+from ore_geo import (  # noqa: E402
+    BASE_CLEARANCE,
+    CLEARANCE,
+    DISC_R,
+    MAX_HEIGHT,
+    MAX_RADIUS,
+    OreSpec,
+    append_bm,
+    clip_poly,
+    cut,
+    finish_normals,
+    max_along,
+    geode,
+    rand_unit,
+    rock_hull,
+    slab,
+    table,
+    tilted,
+)
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
-TAG = ARGV[1] if len(ARGV) > 1 else "r0"
-ONLY = ARGV[2].split(",") if len(ARGV) > 2 and ARGV[2] != "all" else None
-VIEWS = ARGV[3].split(",") if len(ARGV) > 3 else ["iso", "hero"]
+if MODE in ("final", "sheet", "icon"):
+    TAG = ""
+    ONLY = ARGV[1].split(",") if len(ARGV) > 1 and ARGV[1] != "all" else None
+    VIEWS = []
+else:
+    TAG = ARGV[1] if len(ARGV) > 1 else "r0"
+    ONLY = ARGV[2].split(",") if len(ARGV) > 2 and ARGV[2] != "all" else None
+    VIEWS = ARGV[3].split(",") if len(ARGV) > 3 else ["iso", "hero"]
 
 ASSET = "Ores"
-TYPES = ("cyan", "green", "violet")
-# Ore colors from scenes/mining/ores/*.tres, only for the preview renders (the game owns the crystal material).
-ORE_COLOR = {"cyan": (0.2, 0.85, 0.95), "green": (0.35, 0.9, 0.25), "violet": (0.7, 0.3, 0.95)}
-# Muted mineral crust on the rock around the crystal roots (baked into the base texture).
-CRUST = {"cyan": (0.035, 0.075, 0.08), "green": (0.05, 0.075, 0.035), "violet": (0.065, 0.04, 0.085)}
+# Commonest first (common: biome ores; mid; signature: one per planet, outermost to innermost).
+ORDER = (
+    "kyrite",
+    "olvane",
+    "pallin",
+    "tessar",
+    "vyrel",
+    "duskine",
+    "halcyne",
+    "ressa",
+    "meridine",
+    "emerin",
+    "indral",
+    "selyx",
+    "noctile",
+    "aethrine",
+)
 
-# --- miner clearance (node space, Z-up, includes the 0.08 m MinerMount) ----------------------------------
-# (radius, max height): drill cone in the center, motor and hip ring, upper legs, then the inner edge of the
-# lower legs coming down to the feet at r 1.16..1.76. A few cm margin. TBD (playtest) with the final miner.
-CLEARANCE = [
-    (0.00, 0.10),
-    (0.12, 0.30),
-    (0.20, 0.47),
-    (0.28, 0.55),
-    (0.34, 0.66),
-    (0.45, 0.78),
-    (0.55, 0.86),
-    (0.75, 1.00),
-    (0.92, 1.10),
-    (1.00, 1.03),
-    (1.10, 0.79),
-    (1.20, 0.55),
-    (1.30, 0.31),
-]
-MAX_HEIGHT = 1.08  # tallest crystal (brief: under ~1.1 m)
-MAX_RADIUS = 1.10  # crystals stay inside this radius
-# The rock base: low under the drill, low at the rim where the miner's feet stand (top of the deposit disc).
-BASE_CLEARANCE = [(0.0, 0.08), (0.14, 0.2), (0.24, 0.38), (0.32, 0.48), (1.0, 0.5), (1.08, 0.24), (1.15, 0.1), (2.0, 0.1)]
-DISC_R = 1.33
 
-# --- variants ---------------------------------------------------------------------------------------
-# Ground groups: (angle deg, radius, crystal count, size range 0..1, max tilt deg). Angles: 0 = +X, 90 = +Y.
-VARIANTS = {
-    "cyan_a": dict(seed=11, groups=[(105, 0.62, 6, (0.5, 1.0), 22), (225, 0.72, 3, (0.35, 0.7), 28), (340, 0.72, 3, (0.25, 0.55), 30), (20, 0.2, 2, (0.1, 0.25), 25)]),
-    "cyan_b": dict(seed=23, groups=[(45, 0.64, 5, (0.5, 0.95), 24), (165, 0.7, 4, (0.45, 0.85), 26), (280, 0.62, 3, (0.3, 0.6), 30)]),
-    "green_a": dict(seed=31, groups=[(115, 0.55, 5, (0.55, 1.0), 18), (245, 0.72, 4, (0.35, 0.75), 22), (5, 0.74, 3, (0.25, 0.55), 22)]),
-    "green_b": dict(seed=43, groups=[(60, 0.6, 6, (0.5, 1.0), 20), (205, 0.66, 4, (0.35, 0.8), 22), (310, 0.8, 2, (0.2, 0.4), 22)]),
-    "violet_a": dict(seed=53, geodes=[(95, 0.56, 0.52, 8)], groups=[(230, 0.75, 4, (0.45, 0.85), 50), (335, 0.8, 3, (0.3, 0.6), 55)]),
-    "violet_b": dict(seed=67, geodes=[(30, 0.64, 0.4, 6), (200, 0.62, 0.42, 6)], groups=[(300, 0.82, 3, (0.35, 0.7), 55)]),
-    "cyan_wall": dict(seed=71, wall=True, count=7),
-    "green_wall": dict(seed=83, wall=True, count=7),
-    "violet_wall": dict(seed=97, wall=True, count=8),
-}
+def load_types() -> dict[str, OreSpec]:
+    specs = {}
+    for name in ORDER:
+        try:
+            module = importlib.import_module(f"ore_types.{name}")
+        except ModuleNotFoundError as e:
+            if e.name != f"ore_types.{name}":
+                raise
+            continue
+        specs[name] = module.ORE
+    return specs
+
+
+SPECS = load_types()
+TYPES = tuple(SPECS)
+if MODE in ("final", "sheet") and (ONLY is None or len(ONLY) != 1 or ONLY[0] not in SPECS):
+    raise SystemExit(f"{MODE} takes exactly one ore id: {', '.join(TYPES)}")
+VARIANT_KEYS = ("a", "b", "wall")
 LAYOUT_SPACING = 3.4
 PREVIEW_GLOW = 1.0
+ICON_GROUP_RADIUS = 0.45  # crystals rooted this close to the tallest one make the icon (m)
 LINEUP_ZOOM = 0.9  # roots are laid out on a grid in the .blend (no cross-occlusion in the AO bake)
 
 
 def variant_names() -> list[str]:
-    return [n for n in VARIANTS if ONLY is None or n in ONLY]
-
-
-# --- math helpers (T, basis, polar: common) ---------------------------------------------------------
-
-
-def table(tab: list, r: float) -> float:
-    if r <= tab[0][0]:
-        return tab[0][1]
-    for (r0, z0), (r1, z1) in zip(tab, tab[1:]):
-        if r <= r1:
-            return z0 + (z1 - z0) * (r - r0) / (r1 - r0)
-    return tab[-1][1]
-
-
-def rand_unit(rnd: random.Random) -> Vector:
-    while True:
-        v = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), rnd.uniform(-1, 1)))
-        if 0.05 < v.length <= 1.0:
-            return v.normalized()
-
-
-def tilted(axis: Vector, away: Vector, deg: float) -> Vector:
-    """axis rotated by deg toward the direction `away` (projected perpendicular to axis)."""
-    axis = axis.normalized()
-    side = away - axis * away.dot(axis)
-    if side.length < 1e-4:
-        side = Vector((1, 0, 0)) - axis * axis.x
-    side.normalize()
-    a = math.radians(deg)
-    return (axis * math.cos(a) + side * math.sin(a)).normalized()
-
-
-# --- bmesh helpers ----------------------------------------------------------------------------------
-
-
-def append_bm(dst: bmesh.types.BMesh, src: bmesh.types.BMesh, m: Matrix | None = None, smooth: bool = False) -> list:
-    m = m or Matrix.Identity(4)
-    vmap = {v: dst.verts.new(m @ v.co) for v in src.verts}
-    new = []
-    for f in src.faces:
-        nf = dst.faces.new([vmap[v] for v in f.verts])
-        nf.smooth = smooth
-        new.append(nf)
-    return list(vmap.values())
-
-
-def cut(bm: bmesh.types.BMesh, co: Vector, no: Vector) -> None:
-    """Cleave off everything on the +no side of the plane and cap the hole (broken tips, chipped corners)."""
-    geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
-    res = bmesh.ops.bisect_plane(bm, geom=geom, dist=1e-5, plane_co=co, plane_no=no, clear_outer=True)
-    edges = [e for e in res["geom_cut"] if isinstance(e, bmesh.types.BMEdge) and e.is_boundary]
-    if edges:
-        bmesh.ops.holes_fill(bm, edges=edges, sides=0)
-
-
-def max_along(bm: bmesh.types.BMesh, n: Vector) -> float:
-    return max(v.co.dot(n) for v in bm.verts)
-
-
-def finish_normals(bm: bmesh.types.BMesh) -> None:
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    for f in bm.faces:
-        f.smooth = False
-
-
-# --- crystal shapes (local: root at the origin, growing along +Z) ------------------------------------
-
-
-def shape_prism(rnd: random.Random, u: float) -> bmesh.types.BMesh:
-    """Cyan: long hexagonal prism with uneven face widths, slightly tapered, pyramid tip; tips often broken."""
-    length = 0.28 + 0.82 * u
-    radius = length * rnd.uniform(0.085, 0.11) + 0.022
-    bm = bmesh.new()
-    angs = [i / 6 * math.tau + rnd.uniform(-0.13, 0.13) for i in range(6)]
-    rads = [radius * rnd.uniform(0.85, 1.1) for _ in range(6)]
-    tip = min(radius * rnd.uniform(1.2, 1.8), length * 0.4)
-
-    def ring(z: float, s: float) -> list:
-        return [bm.verts.new((math.cos(a) * r * s, math.sin(a) * r * s, z)) for a, r in zip(angs, rads)]
-
-    rings = [ring(-0.12 * length - 0.04, 1.0), ring(length * 0.5, rnd.uniform(0.94, 1.02)), ring(length - tip, rnd.uniform(0.82, 0.92))]
-    apex = bm.verts.new((rnd.uniform(-0.25, 0.25) * radius, rnd.uniform(-0.25, 0.25) * radius, length))
-    for a, b in zip(rings, rings[1:]):
-        for i in range(6):
-            bm.faces.new((a[i], a[(i + 1) % 6], b[(i + 1) % 6], b[i]))
-    for i in range(6):
-        bm.faces.new((rings[-1][i], rings[-1][(i + 1) % 6], apex))
-    bm.faces.new(list(reversed(rings[0])))
-    if rnd.random() < 0.45:  # broken tip: slanted fracture below the pyramid
-        z = length - tip * rnd.uniform(0.3, 1.6)
-        cut(bm, Vector((0, 0, z)), tilted(Vector((0, 0, 1)), rand_unit(rnd), rnd.uniform(15, 45)))
-    if rnd.random() < 0.5:  # chipped edge
-        a = rnd.choice(angs)
-        d = Vector((math.cos(a), math.sin(a), 0))
-        z = rnd.uniform(0.3, 0.8) * (length - tip)
-        cut(bm, d * radius * 0.78 + Vector((0, 0, z)), (d + Vector((0, 0, rnd.uniform(-0.4, 0.6)))).normalized())
-    finish_normals(bm)
-    return bm
-
-
-def shape_block(rnd: random.Random, u: float) -> bmesh.types.BMesh:
-    """Green: chunky square block with a flat top (fluorite-like), sometimes intergrown with a second cube,
-    a corner or two chipped off. Big flat faces keep it reading as blocky from the game camera."""
-    edge = 0.14 + 0.3 * u
-    bm = bmesh.new()
-    sx, sy = edge * rnd.uniform(0.85, 1.15), edge * rnd.uniform(0.85, 1.15)
-    sz = edge * rnd.uniform(1.1, 1.9)
-    bmesh.ops.create_cube(bm, size=1.0, matrix=T((0, 0, sz / 2 - 0.25 * edge), None, (sx, sy, sz + 0.5 * edge)))
-    if rnd.random() < 0.35:  # intergrown twin: a smaller cube on the same axes (or turned 45 deg) stepping out
-        s = edge * rnd.uniform(0.5, 0.72)
-        corner = Vector((rnd.choice((-1, 1)) * sx * 0.42, rnd.choice((-1, 1)) * sy * 0.42, sz * rnd.uniform(0.25, 0.75)))
-        rot = Matrix.Rotation(rnd.choice((0.0, 0.0, math.pi / 4)) + rnd.uniform(-0.08, 0.08), 3, "Z")
-        bmesh.ops.create_cube(bm, size=1.0, matrix=T(corner, rot, (s, s, s * rnd.uniform(0.9, 1.25))))
-    top = Vector((0, 0, sz))
-    for _ in range(rnd.choice((0, 1, 1, 2))):  # chipped corners (octahedral cleavage)
-        c = Vector((rnd.choice((-1, 1)) * sx / 2, rnd.choice((-1, 1)) * sy / 2, top.z))
-        n = Vector((c.x / sx, c.y / sy, rnd.uniform(0.3, 0.7))).normalized()
-        cut(bm, c - n * edge * rnd.uniform(0.12, 0.25), n)
-    finish_normals(bm)
-    return bm
-
-
-def shape_shard(rnd: random.Random, u: float) -> bmesh.types.BMesh:
-    """Violet: thin, sharp blade-like shard (rhombic section), slightly bent, needle tip; sometimes snapped."""
-    length = 0.25 + 0.8 * u
-    width = length * rnd.uniform(0.075, 0.1) + 0.018
-    flat = rnd.uniform(0.35, 0.55)
-    bm = bmesh.new()
-    sec = [(width, 0), (0, width * flat), (-width, 0), (0, -width * flat)]
-    bend = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), 0)) * width * 0.6
-
-    def ring(z: float, s: float, off: Vector) -> list:
-        return [bm.verts.new((x * s + off.x, y * s + off.y, z)) for x, y in sec]
-
-    rings = [ring(-0.12 * length - 0.03, 1.0, Vector()), ring(length * 0.4, rnd.uniform(0.85, 1.0), bend), ring(length * 0.78, rnd.uniform(0.45, 0.6), bend * 1.6)]
-    apex = bm.verts.new((bend.x * 2.4, bend.y * 2.4, length))
-    n = len(sec)
-    for a, b in zip(rings, rings[1:]):
-        for i in range(n):
-            bm.faces.new((a[i], a[(i + 1) % n], b[(i + 1) % n], b[i]))
-    for i in range(n):
-        bm.faces.new((rings[-1][i], rings[-1][(i + 1) % n], apex))
-    bm.faces.new(list(reversed(rings[0])))
-    if rnd.random() < 0.25:  # snapped blade
-        cut(bm, Vector((0, 0, length * rnd.uniform(0.6, 0.85))), tilted(Vector((0, 0, 1)), rand_unit(rnd), rnd.uniform(25, 55)))
-    finish_normals(bm)
-    return bm
-
-
-SPREAD = {"cyan": 0.17, "green": 0.27, "violet": 0.2}  # how far a group's crystals root apart
-SHAPES = {"cyan": shape_prism, "green": shape_block, "violet": shape_shard}
-# Small offshoots at the base of a crystal (same object): (count choices, size factor).
-BUDDIES = {"cyan": ((0, 1, 1, 2), (0.18, 0.35)), "green": ((0, 1, 1), (0.25, 0.45)), "violet": ((1, 2, 2), (0.25, 0.5))}
-
-
-# --- rock shapes ------------------------------------------------------------------------------------
-
-
-def rock_hull(rnd: random.Random, size: Vector, cuts: int = 2, points: int = 16) -> bmesh.types.BMesh:
-    """Angular rock: convex hull of jittered points, cleaved by a few flat fracture planes."""
-    bm = bmesh.new()
-    for _ in range(points):
-        d = rand_unit(rnd)
-        bm.verts.new(Vector((d.x * size.x, d.y * size.y, d.z * size.z)) * rnd.uniform(0.75, 1.0))
-    res = bmesh.ops.convex_hull(bm, input=bm.verts[:], use_existing_faces=False)
-    loose = list({v for v in res["geom_interior"] + res["geom_unused"] if isinstance(v, bmesh.types.BMVert)})
-    if loose:
-        bmesh.ops.delete(bm, geom=loose, context="VERTS")
-    for _ in range(cuts):
-        n = rand_unit(rnd)
-        cut(bm, n * max_along(bm, n) * rnd.uniform(0.45, 0.8), n)
-    bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(4), verts=bm.verts[:], edges=bm.edges[:])
-    finish_normals(bm)
-    return bm
-
-
-def clip_poly(poly: list, n: Vector, d: float) -> list:
-    """Keep the part of a convex 2D polygon with p.n <= d."""
-    out = []
-    for i, a in enumerate(poly):
-        b = poly[(i + 1) % len(poly)]
-        da, db = a.dot(n) - d, b.dot(n) - d
-        if da <= 0:
-            out.append(a)
-        if da * db < 0:
-            out.append(a + (b - a) * (da / (da - db)))
-    return out
-
-
-def slab(bm: bmesh.types.BMesh, rnd: random.Random, poly: list, heights: list, bottom: float = -0.05) -> None:
-    """Prism from a CCW polygon: top vertices at the given heights, open bottom (buried). The top is a
-    faceted dome: an inset inner polygon raised a little, with uneven broken-down edges around it."""
-    n = len(poly)
-    cen = sum(poly, Vector((0, 0))) / n
-    k = rnd.uniform(0.62, 0.8)
-    rise = rnd.uniform(0.01, 0.035)
-    inner = [bm.verts.new((cen.x + (p.x - cen.x) * k, cen.y + (p.y - cen.y) * k, h + rise + rnd.uniform(-0.008, 0.012))) for p, h in zip(poly, heights)]
-    top = [bm.verts.new((p.x, p.y, max(0.012, h - rnd.uniform(0.0, 0.03)))) for p, h in zip(poly, heights)]
-    bot = [bm.verts.new((p.x, p.y, bottom)) for p in poly]
-    for i in range(n):
-        j = (i + 1) % n
-        bm.faces.new((bot[i], bot[j], top[j], top[i])).smooth = False
-        bm.faces.new((top[i], top[j], inner[j], inner[i])).smooth = False
-    bm.faces.new(inner).smooth = False
-
-
-def geode(bm: bmesh.types.BMesh, rnd: random.Random, center: Vector, radius: float, height: float, open_dir: float) -> list:
-    """Broken-open geode shell: thick jagged rim (lower on the open side), hollow inside. Returns the inner floor
-    and wall points to grow shards from."""
-    seg = 14
-    profile = [(1.0, -0.05, 0.0), (1.08, 0.5, 0.03), (0.95, 1.0, 0.04), (0.72, 0.92, 0.03), (0.62, 0.45, 0.02), (0.32, 0.1, 0.01)]
-    rim = []
-    for i in range(seg):
-        a = i / seg * 360
-        gap = math.cos(math.radians(a - open_dir))  # 1 on the open side
-        h = height * (rnd.uniform(0.7, 1.0) - 0.45 * max(0.0, gap) ** 2)
-        rim.append(max(h, height * 0.3))
-    rings = []
-    for pr, pz, jit in profile:
-        ring = []
-        for i in range(seg):
-            a = math.radians(i / seg * 360 + rnd.uniform(-6, 6))
-            r = radius * pr + rnd.uniform(-jit, jit) * radius * 2
-            z = pz * rim[i] if pz > 0 else pz
-            ring.append(bm.verts.new(center + Vector((math.cos(a) * r, math.sin(a) * r, z + rnd.uniform(-0.015, 0.015)))))
-        rings.append(ring)
-    floor = bm.verts.new(center + Vector((0, 0, 0.07)))
-    for a, b in zip(rings, rings[1:]):
-        for i in range(seg):
-            bm.faces.new((a[i], a[(i + 1) % seg], b[(i + 1) % seg], b[i])).smooth = False
-    for i in range(seg):
-        bm.faces.new((rings[-1][i], rings[-1][(i + 1) % seg], floor)).smooth = False
-    return [center + Vector((0, 0, 0.06))] + [v.co.copy() for v in rings[-1]] + [v.co.copy() for v in rings[-2]]
-
+    """Selected variants: ONLY lists ore ids (all their variants) or variant names (<ore>_<a|b|wall>)."""
+    names = []
+    for t in TYPES:
+        for v in VARIANT_KEYS:
+            n = f"{t}_{v}"
+            if ONLY is None or n in ONLY or t in ONLY:
+                names.append(n)
+    return names
 
 # --- materials --------------------------------------------------------------------------------------
 
@@ -423,10 +223,13 @@ def mat_crystal_placeholder() -> bpy.types.Material:
 def mat_crystal_preview(typ: str) -> bpy.types.Material:
     """Like OreType.get_material() (albedo = emission = ore color, roughness 0.2), but dimmer than its energy 2.5:
     Cycles + AgX burns that to white and hides the facets (renders only)."""
-    mat = C.mat_emissive(f"PreviewOre_{typ}", ORE_COLOR[typ], PREVIEW_GLOW)
+    mat = C.mat_emissive(f"PreviewOre_{typ}", SPECS[typ].color, PREVIEW_GLOW)
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Roughness"].default_value = 0.2
-    bsdf.inputs["Base Color"].default_value = (*(c * 0.3 for c in ORE_COLOR[typ]), 1.0)
+    bsdf.inputs["Base Color"].default_value = (*(c * 0.3 for c in SPECS[typ].color), 1.0)
+    if SPECS[typ].dark_body:  # near-black crystal: only a faint glow here, the game shader draws the veins
+        bsdf.inputs["Base Color"].default_value = (0.012, 0.012, 0.014, 1.0)
+        bsdf.inputs["Emission Strength"].default_value = PREVIEW_GLOW * 0.12
     return mat
 
 
@@ -451,12 +254,12 @@ class Variant:
         rnd, typ = self.rnd, self.typ
         bm = bmesh.new()
         spin = rand_unit(rnd)
-        append_bm(bm, SHAPES[typ](rnd, u), T(root, basis(direction, spin)))
-        counts, (f0, f1) = BUDDIES[typ]
+        append_bm(bm, SPECS[typ].shape(rnd, u), T(root, basis(direction, spin)))
+        counts, (f0, f1) = SPECS[typ].buddies
         for _ in range(rnd.choice(counts)):
             off = tilted(direction, rand_unit(rnd), 90) * rnd.uniform(0.04, 0.12) * (0.5 + u)
             d = tilted(direction, off, rnd.uniform(25, 55))
-            append_bm(bm, SHAPES[typ](rnd, u * rnd.uniform(f0, f1)), T(root + off - direction * 0.02, basis(d, rand_unit(rnd))))
+            append_bm(bm, SPECS[typ].shape(rnd, u * rnd.uniform(f0, f1)), T(root + off - direction * 0.02, basis(d, rand_unit(rnd))))
         if self.ground and not self.fit(bm, root):
             bm.free()
             return None
@@ -465,6 +268,8 @@ class Variant:
         bmesh.ops.translate(bm, verts=bm.verts[:], vec=-root)
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
+        if SPECS[typ].smooth:
+            me.shade_smooth()
         bm.free()
         obj = bpy.data.objects.new(name, me)
         obj.location = root
@@ -607,7 +412,7 @@ class Variant:
         """Color attribute "Crust" on the base: mineral color near the crystal roots and inside geodes."""
         me = self.base_obj.data
         attr = me.color_attributes.new("Crust", "FLOAT_COLOR", "POINT")
-        col = CRUST[self.typ]
+        col = SPECS[self.typ].crust
         loc = self.base_obj.location
         for i, v in enumerate(me.vertices):
             p = v.co + loc
@@ -648,8 +453,8 @@ class Variant:
         for a, r, n, size, tilt in spec["groups"]:
             center = polar(a, r)
             center.z = self.surface(center.x, center.y)
-            self.group(center, n, size, tilt, spread=SPREAD[self.typ])
-            self.mound(center, SPREAD[self.typ])
+            self.group(center, n, size, tilt, spread=SPECS[self.typ].spread)
+            self.mound(center, SPECS[self.typ].spread)
         for c, gr, n, pts in shard_sites:
             sizes = sorted((rnd.uniform(0.4, 0.95) for _ in range(n)), reverse=True)
             for k, u in enumerate(sizes):
@@ -674,15 +479,18 @@ class Variant:
             if first is None:
                 first = p.copy()
             d = tilted(Vector((0, 0, 1)), rand_unit(rnd), rnd.uniform(40, 75))
-            append_bm(bm, SHAPES[self.typ](rnd, 0.0), T(p, basis(d, rand_unit(rnd)), (0.35, 0.35, 0.35)))
+            append_bm(bm, SPECS[self.typ].shape(rnd, 0.0), T(p, basis(d, rand_unit(rnd)), (0.35, 0.35, 0.35)))
         COUNTERS[self.typ] += 1
         name = f"Crystal_{self.typ}_{COUNTERS[self.typ]}"
         bmesh.ops.translate(bm, verts=bm.verts[:], vec=-first)
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
+        if SPECS[self.typ].smooth:
+            me.shade_smooth()
         bm.free()
         obj = bpy.data.objects.new(name, me)
         obj.location = first
+        obj["chips"] = True  # loose bits around the pad: not part of a group (icons skip it)
         C.link(obj, self.root)
         C.assign(obj, CRYSTAL)
         self.crystals.append(obj)
@@ -702,8 +510,8 @@ class Variant:
         finish_normals(self.base)
         bvh = BVHTree.FromBMesh(self.base)
         self.geodes = []
-        sizes = {"cyan": (0.3, 0.8), "green": (0.15, 0.55), "violet": (0.35, 0.85)}[self.typ]
-        tilt = {"cyan": 30, "green": 35, "violet": 50}[self.typ]
+        sizes = SPECS[self.typ].wall_sizes
+        tilt = SPECS[self.typ].wall_tilt
         # One big group in the middle, a few smaller around it.
         sites = [(0.05, 0.62, self.spec["count"] - 3, sizes[1]), (-0.5, 0.35, 2, sizes[0] + 0.15), (0.48, 0.98, 1, sizes[0])]
         for x, z, n, umax in sites:
@@ -712,20 +520,20 @@ class Variant:
                 continue
             center = hit[0] + Vector((0, 0.05, 0))
             out = (hit[1] * 0.3 + Vector((0, -0.45, 0.85))).normalized()  # out of the face, mostly upward
-            self.group(center, n, (sizes[0], umax), tilt, spread=SPREAD[self.typ] + 0.05, up=out)
+            self.group(center, n, (sizes[0], umax), tilt, spread=SPECS[self.typ].spread + 0.05, up=out)
         self.rubble()
         self.finish_base()
         self.crust()
 
 
-def build_variant(name: str, index: int) -> Variant:
+def build_variant(name: str, column: int) -> Variant:
+    """Builds one variant; the .blend lays the roots out on a grid: a column per ore, a row per variant."""
     typ, var = name.split("_")
     root = C.asset_root(f"Ore_{typ}_{var}")
-    col = TYPES.index(typ)
-    row = ("a", "b", "wall").index(var)
-    root.location = ((col - 1) * LAYOUT_SPACING, (row - 1) * LAYOUT_SPACING, 0)
+    row = VARIANT_KEYS.index(var)
+    root.location = (column * LAYOUT_SPACING, (row - 1) * LAYOUT_SPACING, 0)
     root["layout_offset"] = list(root.location)  # zero it before export
-    v = Variant(name, VARIANTS[name], root)
+    v = Variant(name, SPECS[typ].variants[var], root)
     if v.ground:
         v.build_ground()
     else:
@@ -851,7 +659,7 @@ def lineup(variants: list[Variant], shown: list[Variant], path: pathlib.Path, sa
 
 
 def grid_view(variants: list[Variant], path: pathlib.Path, samples: int, size: int) -> None:
-    """All nine at their layout spots from roughly the game's camera distance."""
+    """All variants at their layout spots from roughly the game's camera distance."""
     solo(variants, None)
     C.render(path, "iso", samples, size, target=(0, 0, 0.3), zoom=1.45)
 
@@ -859,58 +667,127 @@ def grid_view(variants: list[Variant], path: pathlib.Path, samples: int, size: i
 # --- main -------------------------------------------------------------------------------------------
 
 
+def mat_icon() -> bpy.types.Material:
+    """White, lit from the upper left by its normal only (no shadows, no light objects), so every facet gets its own
+    flat grey: the game tints the icon in the ore color and the facets keep the crystal shape readable."""
+    if "OreIcon" in bpy.data.materials:
+        return bpy.data.materials["OreIcon"]
+    mat, nt, bsdf = C._new_material("OreIcon")
+    nt.nodes.remove(bsdf)
+    out = next(n for n in nt.nodes if n.type == "OUTPUT_MATERIAL")
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    light = nt.nodes.new("ShaderNodeVectorMath")
+    light.operation = "DOT_PRODUCT"
+    nt.links.new(geo.outputs["Normal"], light.inputs[0])
+    light.inputs[1].default_value = Vector((-0.2, -0.75, 0.65)).normalized()
+    shade = C._math(nt, "MULTIPLY_ADD", light.outputs["Value"], 0.6, 0.45, clamp=True)
+    emission = nt.nodes.new("ShaderNodeEmission")
+    nt.links.new(shade, emission.inputs["Strength"])
+    nt.links.new(emission.outputs["Emission"], out.inputs["Surface"])
+    return mat
+
+
+def render_icon(variants: list[Variant], v: Variant, path: pathlib.Path, size: int = 256) -> None:
+    """The variant's main crystal group (around its tallest crystal, without the rock and the loose chips) from the
+    game camera's direction, orthographic, framed tightly, on a transparent background: one group still reads at
+    badge size (~24 px), the whole cluster doesn't."""
+    solo(variants, v)
+    for o in variant_objects(v):
+        o.hide_render = True
+    icon = mat_icon()
+    shown = []
+    tallest = max((o for o in v.crystals if not o.get("chips")), key=lambda o: max((o.matrix_world @ p.co).z for p in o.data.vertices))
+    for o in v.crystals:
+        top = max((o.matrix_world @ p.co).z for p in o.data.vertices)
+        if o.get("chips") or top <= 0.15:
+            continue
+        if (o.location - tallest.location).xy.length < ICON_GROUP_RADIUS:
+            o.hide_render = False
+            C.assign(o, icon)
+            shown.append(o)
+    bpy.context.view_layer.update()
+    direction = Vector((7.0, -7.0, 9.5)).normalized()  # like C.render's iso view
+    cam = C._camera("custom")
+    cam.data.type = "ORTHO"
+    rot = (-direction).to_track_quat("-Z", "Y")
+    cam.rotation_euler = rot.to_euler()
+    inv = rot.to_matrix().inverted()
+    pts = [inv @ (o.matrix_world @ p.co) for o in shown for p in o.data.vertices]
+    lo = Vector((min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts)))
+    hi = Vector((max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts)))
+    center = rot.to_matrix() @ ((lo + hi) / 2)
+    cam.data.ortho_scale = max(hi.x - lo.x, hi.y - lo.y) * 1.08
+    cam.location = center + direction * 10.0
+    bpy.context.scene.camera = cam
+    scene = bpy.context.scene
+    C._render_settings(16, size)
+    scene.render.film_transparent = True
+    scene.cycles.use_denoising = False
+    scene.render.image_settings.color_mode = "RGBA"
+    scene.view_settings.view_transform = "Standard"
+    for name in ("PreviewGround", "PreviewFigure"):
+        if name in bpy.data.objects:
+            bpy.data.objects[name].hide_render = True
+    C._write_render(path)
+
+
 def main() -> None:
     global ROCK, CRYSTAL
     C.reset(ASSET)
     ROCK = mat_rock()
     CRYSTAL = mat_crystal_placeholder()
-    variants = [build_variant(n, i) for i, n in enumerate(variant_names())]
+    names = variant_names()
+    if MODE == "icon":
+        names = [n for n in names if n.endswith("_a")]
+    columns = [t for t in TYPES if any(n.startswith(f"{t}_") for n in names)]
+    variants = [build_variant(n, columns.index(n.split("_")[0])) for n in names]
     report(variants)
     print("STATS", C.stats())
     C.preview_scene(crystals=False, figure_location=(1.7, 1.7, 0.0))
     backdrop(False)
-    if MODE in ("final", "sheet"):
+    if MODE == "icon":
+        for v in variants:
+            render_icon(variants, v, ICONS / f"{v.typ}.png")
+    elif MODE in ("final", "sheet"):
+        out = OUT / columns[0]
         if MODE == "final":
             bpy.context.preferences.filepaths.save_version = 0
-            C.save_blend(OUT / "ores_procedural.blend")
+            C.save_blend(out / "ores_procedural.blend")
         set_preview_materials(variants, True)
-        shots = []
         for v in variants if MODE == "final" else []:
             solo(variants, v)
             backdrop(not v.ground)
             views = ["iso", "hero", "miner"] if v.ground else ["iso", "hero"]
             for view in views:
-                p = OUT / f"render_{v.name}_{view}.png"
-                render_view(p, v, view, 64, 768)
-                shots.append(p)
+                render_view(out / f"render_{v.name}_{view}.png", v, view, 64, 768)
         backdrop(False)
         bpy.data.objects["PreviewFigure"].location = (4.6, 4.6, 0)
-        for t in TYPES:
-            vs = [v for v in variants if v.typ == t]
-            lineup(variants, vs, OUT / f"render_lineup_{t}.png", 64, 1024, LINEUP_ZOOM)
-        grid_view(variants, OUT / "render_game_distance.png", 64, 1024)
-        order = []
-        for t in TYPES:
-            order += [OUT / f"render_{t}_{x}.png" for x in ("a_iso", "b_iso", "wall_iso", "a_hero", "b_hero", "wall_hero", "a_miner", "b_miner")]
-        order += [OUT / f"render_lineup_{t}.png" for t in TYPES] + [OUT / "render_game_distance.png"]
-        C.contact_sheet(order, OUT / "sheet.png", 8, 384)
+        lineup(variants, variants, out / "render_lineup.png", 64, 1024, LINEUP_ZOOM)
+        solo(variants, None)
+        C.render(out / "render_game_distance.png", "iso", 64, 1024, target=(0, 0, 0.3), zoom=1.0)
+        order = [out / f"render_{v.name}_{x}.png" for v in variants for x in ("iso", "hero")]
+        order += [out / f"render_{v.name}_miner.png" for v in variants if v.ground]
+        order += [out / "render_lineup.png", out / "render_game_distance.png"]
+        C.contact_sheet(order, out / "sheet.png", 4, 384)
     else:
         set_preview_materials(variants, True)
         for v in variants:
             solo(variants, v)
             backdrop(not v.ground)
             for view in VIEWS:
-                if view in ("lineup", "grid"):
+                if view in ("lineup", "grid", "types"):
                     continue
                 if view.startswith("miner") and not v.ground:
                     continue
                 render_view(OUT / "wip" / f"{TAG}_{v.name}_{view}.png", v, view, 24, 512)
         backdrop(False)
         if "lineup" in VIEWS:
-            for t in TYPES:
+            for t in columns:
                 vs = [v for v in variants if v.typ == t]
-                if vs:
-                    lineup(variants, vs, OUT / "wip" / f"{TAG}_lineup_{t}.png", 24, 768, LINEUP_ZOOM)
+                lineup(variants, vs, OUT / "wip" / f"{TAG}_lineup_{t}.png", 24, 768, LINEUP_ZOOM)
+        if "types" in VIEWS:
+            vs = [v for v in variants if v.var == "a"]
+            lineup(variants, vs, OUT / "wip" / f"{TAG}_types.png", 32, 1600, LINEUP_ZOOM * max(1.0, len(vs) / 3))
         if "grid" in VIEWS:
             grid_view(variants, OUT / "wip" / f"{TAG}_grid.png", 24, 768)
 

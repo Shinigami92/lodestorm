@@ -23,7 +23,7 @@ func dash(direction: Vector3 = Vector3.ZERO) -> bool:
 		return false
 	direction.y = 0.0
 	if direction.length() < 0.01:
-		direction = holder.aim_direction
+		direction = holder.aim.direction
 	var settings: PlayerSettings = holder.settings
 	_velocity = direction.normalized() * settings.dash_distance / settings.dash_time
 	_left = settings.dash_time

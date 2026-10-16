@@ -65,7 +65,7 @@ func test_projectile_flies_along_aim_direction() -> void:
 	var start: Vector3 = projectile.global_position
 	await wait_physics_frames(5)
 	var flown: Vector3 = projectile.global_position - start
-	assert_almost_eq(flown.normalized().dot(_player.aim_direction), 1.0, 0.001)
+	assert_almost_eq(flown.normalized().dot(_player.aim.direction), 1.0, 0.001)
 
 
 ## Standing right at a rock puts the muzzle inside it; the shot must still stop there.

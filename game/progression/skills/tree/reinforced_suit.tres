@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://c8krrfwmuxjq1" path="res://game/progression/skills/skill_rank.gd" id="1_rank"]
 [ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="2_ore_type"]
+[ext_resource type="Script" uid="uid://dn3kp4h0ew8sm" path="res://game/progression/skills/skill.gd" id="9_skill"]
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
 [ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="ore_olvane"]
 [ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
-[ext_resource type="Script" uid="uid://dn3kp4h0ew8sm" path="res://game/progression/skills/skill.gd" id="9_skill"]
 
 [sub_resource type="Resource" id="Rank_1"]
 script = ExtResource("1_rank")

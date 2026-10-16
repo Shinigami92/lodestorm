@@ -2,15 +2,15 @@
 
 [ext_resource type="Script" uid="uid://dsqb7ruc8ur3e" path="res://game/progression/skills/skill_cluster.gd" id="1_cluster"]
 [ext_resource type="Script" uid="uid://dn3kp4h0ew8sm" path="res://game/progression/skills/skill.gd" id="2_skill"]
-[ext_resource type="Resource" uid="uid://dguo6f27syxv8" path="res://game/progression/skills/tree/dash.tres" id="skill_dash"]
-[ext_resource type="Resource" uid="uid://b0nev6fp0638j" path="res://game/progression/skills/tree/reload_on_the_move.tres" id="skill_reload_on_the_move"]
-[ext_resource type="Resource" uid="uid://dcmdms2aj6mf3" path="res://game/progression/skills/tree/reinforced_suit.tres" id="skill_reinforced_suit"]
-[ext_resource type="Resource" uid="uid://cp5kjhr7ui32p" path="res://game/progression/skills/tree/regeneration.tres" id="skill_regeneration"]
-[ext_resource type="Resource" uid="uid://t86i6rprlnb8" path="res://game/progression/skills/tree/spare_magazines.tres" id="skill_spare_magazines"]
-[ext_resource type="Resource" uid="uid://buke7va311wqe" path="res://game/progression/skills/tree/careful_reload.tres" id="skill_careful_reload"]
-[ext_resource type="Resource" uid="uid://covyq0kdrqkpm" path="res://game/progression/skills/tree/ore_scanner.tres" id="skill_ore_scanner"]
-[ext_resource type="Resource" uid="uid://c381sba8246gm" path="res://game/progression/skills/tree/damage_readout.tres" id="skill_damage_readout"]
 [ext_resource type="Script" uid="uid://ccfhvru6ra2l2" path="res://game/progression/skills/skill_tree.gd" id="9_tree"]
+[ext_resource type="Resource" uid="uid://buke7va311wqe" path="res://game/progression/skills/tree/careful_reload.tres" id="skill_careful_reload"]
+[ext_resource type="Resource" uid="uid://c381sba8246gm" path="res://game/progression/skills/tree/damage_readout.tres" id="skill_damage_readout"]
+[ext_resource type="Resource" uid="uid://dguo6f27syxv8" path="res://game/progression/skills/tree/dash.tres" id="skill_dash"]
+[ext_resource type="Resource" uid="uid://covyq0kdrqkpm" path="res://game/progression/skills/tree/ore_scanner.tres" id="skill_ore_scanner"]
+[ext_resource type="Resource" uid="uid://cp5kjhr7ui32p" path="res://game/progression/skills/tree/regeneration.tres" id="skill_regeneration"]
+[ext_resource type="Resource" uid="uid://dcmdms2aj6mf3" path="res://game/progression/skills/tree/reinforced_suit.tres" id="skill_reinforced_suit"]
+[ext_resource type="Resource" uid="uid://b0nev6fp0638j" path="res://game/progression/skills/tree/reload_on_the_move.tres" id="skill_reload_on_the_move"]
+[ext_resource type="Resource" uid="uid://t86i6rprlnb8" path="res://game/progression/skills/tree/spare_magazines.tres" id="skill_spare_magazines"]
 
 [sub_resource type="Resource" id="Cluster_Mobility"]
 script = ExtResource("1_cluster")

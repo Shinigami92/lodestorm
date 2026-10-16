@@ -1,13 +1,12 @@
 [gd_scene format=3 uid="uid://3u1ip4gaomfq"]
 
 [ext_resource type="Script" uid="uid://bghpdroe6ovkt" path="res://game/ship/ship.gd" id="1_script"]
-[ext_resource type="Script" uid="uid://cultwlahxlbt4" path="res://game/ship/floor_guide.gd" id="8_floor_guide"]
-[ext_resource type="Script" uid="uid://da7relhl8kw3s" path="res://game/ship/lift.gd" id="7_lift"]
 [ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="2_interactable"]
-[ext_resource type="PackedScene" uid="uid://d08cgpg47au8u" path="res://game/stations/hold/ore_hold.tscn" id="40_ore_hold"]
+[ext_resource type="Script" uid="uid://da7relhl8kw3s" path="res://game/ship/lift.gd" id="7_lift"]
+[ext_resource type="Script" uid="uid://cultwlahxlbt4" path="res://game/ship/floor_guide.gd" id="8_floor_guide"]
 [ext_resource type="Script" uid="uid://cfp2hlhi1noj6" path="res://game/ship/ship_flight.gd" id="13_flight"]
 [ext_resource type="Resource" uid="uid://ldovtj8kwgqc" path="res://game/ship/flight_settings.tres" id="14_flight_settings"]
-[ext_resource type="StandardMaterial3D" uid="uid://bpk3xig2xe43q" path="res://game/ship/materials/guide.tres" id="mat_guide"]
+[ext_resource type="PackedScene" uid="uid://d08cgpg47au8u" path="res://game/stations/hold/ore_hold.tscn" id="40_ore_hold"]
 [ext_resource type="PackedScene" uid="uid://ddy8vwia8viwq" path="res://game/ship/hull.tscn" id="60_hull"]
 [ext_resource type="PackedScene" uid="uid://bgkql5ud28cj7" path="res://game/ship/rooms/upper/cockpit.tscn" id="61_cockpit"]
 [ext_resource type="PackedScene" uid="uid://m0p5ps2frbfx" path="res://game/ship/rooms/upper/bridge.tscn" id="62_bridge"]
@@ -38,26 +37,7 @@
 [ext_resource type="PackedScene" uid="uid://4sxy5ln6r01" path="res://game/ship/rooms/lower/skills.tscn" id="87_skills"]
 [ext_resource type="PackedScene" uid="uid://dwst14ybcrvcl" path="res://game/ship/rooms/lower/miners.tscn" id="88_miners"]
 [ext_resource type="PackedScene" uid="uid://mvfidldmdr6j" path="res://game/ship/rooms/cargo_bay.tscn" id="89_cargo_bay"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dark"]
-albedo_color = Color(0.17, 0.175, 0.185, 1)
-metallic = 0.2
-roughness = 0.6
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
-albedo_color = Color(0.3, 0.33, 0.38, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gate"]
-albedo_color = Color(1, 0.7, 0.15, 1)
-emission_enabled = true
-emission = Color(1, 0.7, 0.15, 1)
-emission_energy_multiplier = 0.8
-
-[sub_resource type="BoxMesh" id="BoxMesh_platform"]
-material = SubResource("StandardMaterial3D_platform")
-
-[sub_resource type="BoxMesh" id="BoxMesh_gate"]
-material = SubResource("StandardMaterial3D_gate")
+[ext_resource type="Material" uid="uid://bpk3xig2xe43q" path="res://game/ship/materials/guide.tres" id="mat_guide"]
 
 [sub_resource type="PrismMesh" id="PrismMesh_arrow"]
 material = ExtResource("mat_guide")
@@ -67,36 +47,44 @@ size = Vector3(0.9, 0.7, 0.02)
 material = ExtResource("mat_guide")
 size = Vector3(0.3, 0.6, 0.02)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_5_3x0_2x4_8"]
+size = Vector3(5.3, 0.2, 4.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
+albedo_color = Color(0.3, 0.33, 0.38, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_platform"]
+material = SubResource("StandardMaterial3D_platform")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_5_1x2x4_6"]
+size = Vector3(5.1, 2, 4.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_4x3x0_5"]
+size = Vector3(4, 3, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gate"]
+albedo_color = Color(1, 0.7, 0.15, 1)
+emission_enabled = true
+emission = Color(1, 0.7, 0.15, 1)
+emission_energy_multiplier = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_gate"]
+material = SubResource("StandardMaterial3D_gate")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_4x2x3"]
+size = Vector3(4, 2, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_4_8x0_2x4_8"]
+size = Vector3(4.8, 0.2, 4.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_4_6x2x4_6"]
+size = Vector3(4.6, 2, 4.6)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_n_0_5x3x3"]
 size = Vector3(0.5, 3, 3)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_n_3x2x4"]
 size = Vector3(3, 2, 4)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_n_4_6x2x4_6"]
-size = Vector3(4.6, 2, 4.6)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_n_4_8x0_2x4_8"]
-size = Vector3(4.8, 0.2, 4.8)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_n_4x2x3"]
-size = Vector3(4, 2, 3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_n_4x3x0_5"]
-size = Vector3(4, 3, 0.5)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_n_5_1x2x4_6"]
-size = Vector3(5.1, 2, 4.6)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_n_5_3x0_2x4_8"]
-size = Vector3(5.3, 0.2, 4.8)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_ramp"]
-size = Vector3(5, 0.2, 4)
-
-[sub_resource type="BoxMesh" id="BoxMesh_ramp"]
-material = SubResource("StandardMaterial3D_dark")
-size = Vector3(5, 0.2, 4)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_threshold"]
 albedo_color = Color(1, 0.95, 0.8, 1)
@@ -108,6 +96,18 @@ emission_energy_multiplier = 1.5
 material = SubResource("StandardMaterial3D_threshold")
 size = Vector3(0.5, 0.02, 4)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_ramp"]
+size = Vector3(5, 0.2, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dark"]
+albedo_color = Color(0.17, 0.175, 0.185, 1)
+metallic = 0.2
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_ramp"]
+material = SubResource("StandardMaterial3D_dark")
+size = Vector3(5, 0.2, 4)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_console"]
 size = Vector3(0.5, 1.2, 0.8)
 
@@ -115,140 +115,81 @@ size = Vector3(0.5, 1.2, 0.8)
 material = SubResource("StandardMaterial3D_dark")
 size = Vector3(0.5, 1.2, 0.8)
 
-[sub_resource type="BoxMesh" id="BoxMesh_button_face"]
-size = Vector3(0.3, 0.06, 0.5)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
 shading_mode = 0
-albedo_color = Color(1, 1, 1, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_button_highlight"]
 material = SubResource("StandardMaterial3D_highlight")
 size = Vector3(0.42, 0.02, 0.64)
 
+[sub_resource type="BoxMesh" id="BoxMesh_button_face"]
+size = Vector3(0.3, 0.06, 0.5)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_interior"]
 size = Vector3(95, 8.5, 29)
 
-[node name="Ship" type="Node3D"]
+[node name="Ship" type="Node3D" unique_id=1468279383]
 script = ExtResource("1_script")
 
-[node name="Hull" parent="." instance=ExtResource("60_hull")]
+[node name="Hull" parent="." unique_id=1099256681 instance=ExtResource("60_hull")]
 
-[node name="Rooms" type="Node3D" parent="."]
+[node name="Rooms" type="Node3D" parent="." unique_id=332082984]
 
-[node name="Lower" type="Node3D" parent="Rooms"]
+[node name="Lower" type="Node3D" parent="Rooms" unique_id=860414341]
 
-[node name="Upper" type="Node3D" parent="Rooms"]
-
-[node name="Cockpit" parent="Rooms/Upper" instance=ExtResource("61_cockpit")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 7, 0)
-
-[node name="Bridge" parent="Rooms/Upper" instance=ExtResource("62_bridge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 7, 0)
-
-[node name="UpperLobby" parent="Rooms/Upper" instance=ExtResource("63_upper_lobby")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 7, 6)
-
-[node name="UpperCorridor" parent="Rooms/Upper" instance=ExtResource("64_upper_corridor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35.5, 7, 0)
-
-[node name="MessHall" parent="Rooms/Upper" instance=ExtResource("65_mess_hall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 7, 0)
-
-[node name="Cabin1" parent="Rooms/Upper" instance=ExtResource("66_cabin_1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, -8.75)
-
-[node name="Cabin2" parent="Rooms/Upper" instance=ExtResource("67_cabin_2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, 8.75)
-
-[node name="Cabin3" parent="Rooms/Upper" instance=ExtResource("68_cabin_3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, -8.75)
-
-[node name="Cabin4" parent="Rooms/Upper" instance=ExtResource("69_cabin_4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, 8.75)
-
-[node name="Crew1" parent="Rooms/Upper" instance=ExtResource("70_crew_1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, -8.75)
-
-[node name="Crew5" parent="Rooms/Upper" instance=ExtResource("71_crew_5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, 8.75)
-
-[node name="Crew2" parent="Rooms/Upper" instance=ExtResource("72_crew_2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, -8.75)
-
-[node name="Crew6" parent="Rooms/Upper" instance=ExtResource("73_crew_6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, 8.75)
-
-[node name="Crew3" parent="Rooms/Upper" instance=ExtResource("74_crew_3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, -8.75)
-
-[node name="Crew7" parent="Rooms/Upper" instance=ExtResource("75_crew_7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, 8.75)
-
-[node name="Crew4" parent="Rooms/Upper" instance=ExtResource("76_crew_4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, -8.75)
-
-[node name="Crew8" parent="Rooms/Upper" instance=ExtResource("77_crew_8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, 8.75)
-
-[node name="MedicalBay" parent="Rooms/Lower" instance=ExtResource("78_medical_bay")]
+[node name="MedicalBay" parent="Rooms/Lower" unique_id=2047369333 instance=ExtResource("78_medical_bay")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -8.75)
 
-[node name="NoseCorridor" parent="Rooms/Lower" instance=ExtResource("79_nose_corridor")]
+[node name="NoseCorridor" parent="Rooms/Lower" unique_id=710259302 instance=ExtResource("79_nose_corridor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, 0)
 
-[node name="EngineRoom" parent="Rooms/Lower" instance=ExtResource("80_engine_room")]
+[node name="EngineRoom" parent="Rooms/Lower" unique_id=1388403900 instance=ExtResource("80_engine_room")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, 8.75)
 
-[node name="LowerLobby" parent="Rooms/Lower" instance=ExtResource("81_lower_lobby")]
+[node name="LowerLobby" parent="Rooms/Lower" unique_id=889511089 instance=ExtResource("81_lower_lobby")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 2.5, 6)
 
-[node name="ShootingRange" parent="Rooms/Lower" instance=ExtResource("82_shooting_range")]
+[node name="ShootingRange" parent="Rooms/Lower" unique_id=1891139342 instance=ExtResource("82_shooting_range")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.75, 2.5, -8.75)
 
-[node name="Armory" parent="Rooms/Lower" instance=ExtResource("83_armory")]
+[node name="Armory" parent="Rooms/Lower" unique_id=854646246 instance=ExtResource("83_armory")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 2.5, -8.75)
 
-[node name="LowerCorridor" parent="Rooms/Lower" instance=ExtResource("84_lower_corridor")]
+[node name="LowerCorridor" parent="Rooms/Lower" unique_id=496774163 instance=ExtResource("84_lower_corridor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.5, 2.5, 0)
 
-[node name="Weapons" parent="Rooms/Lower" instance=ExtResource("85_weapons")]
+[node name="Weapons" parent="Rooms/Lower" unique_id=1554021669 instance=ExtResource("85_weapons")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.6875, 2.5, 8.75)
 
-[node name="Armor" parent="Rooms/Lower" instance=ExtResource("86_armor")]
+[node name="Armor" parent="Rooms/Lower" unique_id=615224215 instance=ExtResource("86_armor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 2.5, 8.75)
 
-[node name="Skills" parent="Rooms/Lower" instance=ExtResource("87_skills")]
+[node name="Skills" parent="Rooms/Lower" unique_id=745002317 instance=ExtResource("87_skills")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 2.5, 8.75)
 
-[node name="Miners" parent="Rooms/Lower" instance=ExtResource("88_miners")]
+[node name="Miners" parent="Rooms/Lower" unique_id=1609283026 instance=ExtResource("88_miners")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 2.5, 8.75)
 
-[node name="CargoBay" parent="Rooms" instance=ExtResource("89_cargo_bay")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
+[node name="Guides" type="Node3D" parent="Rooms/Lower" unique_id=44489949]
 
-[node name="Guides" type="Node3D" parent="Rooms/Lower"]
-
-[node name="Guides" type="Node3D" parent="Rooms/Upper"]
-
-[node name="ToCargoBay" type="Node3D" parent="Rooms/Lower/Guides"]
+[node name="ToCargoBay" type="Node3D" parent="Rooms/Lower/Guides" unique_id=1284808028]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2.5, -1.2)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToCargoBay"]
+[node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToCargoBay" unique_id=626016528]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.31, 0.02, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToCargoBay/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToCargoBay/Arrow" unique_id=393765559]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToCargoBay/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToCargoBay/Arrow" unique_id=2035838614]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Lower/Guides/ToCargoBay"]
+[node name="Text" type="Label3D" parent="Rooms/Lower/Guides/ToCargoBay" unique_id=557628632]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
@@ -257,24 +198,24 @@ font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="ToNose" type="Node3D" parent="Rooms/Lower/Guides"]
+[node name="ToNose" type="Node3D" parent="Rooms/Lower/Guides" unique_id=771681307]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 2.5, -1.3)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToNose"]
+[node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToNose" unique_id=1297523591]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.43, 0.02, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToNose/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToNose/Arrow" unique_id=1701554502]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToNose/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToNose/Arrow" unique_id=1164906077]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Lower/Guides/ToNose"]
+[node name="Text" type="Label3D" parent="Rooms/Lower/Guides/ToNose" unique_id=1426237100]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
@@ -283,154 +224,214 @@ font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="ToNoseLift" type="Node3D" parent="Rooms/Lower/Guides"]
+[node name="ToNoseLift" type="Node3D" parent="Rooms/Lower/Guides" unique_id=768524191]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 2.5, 1.2)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToNoseLift"]
+[node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToNoseLift" unique_id=433097783]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -1.14)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToNoseLift/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToNoseLift/Arrow" unique_id=1054955639]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToNoseLift/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToNoseLift/Arrow" unique_id=569900634]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Lower/Guides/ToNoseLift"]
+[node name="Text" type="Label3D" parent="Rooms/Lower/Guides/ToNoseLift" unique_id=871118729]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "Lift\nBridge · Cabins"
+text = "Lift
+Bridge · Cabins"
 font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="ToTail" type="Node3D" parent="Rooms/Lower/Guides"]
+[node name="ToTail" type="Node3D" parent="Rooms/Lower/Guides" unique_id=591427225]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.25, 2.5, 6.5)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToTail"]
+[node name="Arrow" type="Node3D" parent="Rooms/Lower/Guides/ToTail" unique_id=136943555]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.99, 0.02, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToTail/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToTail/Arrow" unique_id=536406424]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToTail/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Lower/Guides/ToTail/Arrow" unique_id=845869766]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Lower/Guides/ToTail"]
+[node name="Text" type="Label3D" parent="Rooms/Lower/Guides/ToTail" unique_id=847063279]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "Range · Armory\nCargo bay"
+text = "Range · Armory
+Cargo bay"
 font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="ToLowerDeck" type="Node3D" parent="Rooms/Upper/Guides"]
+[node name="Upper" type="Node3D" parent="Rooms" unique_id=1958295115]
+
+[node name="Cockpit" parent="Rooms/Upper" unique_id=1320851103 instance=ExtResource("61_cockpit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 7, 0)
+
+[node name="Bridge" parent="Rooms/Upper" unique_id=1943368321 instance=ExtResource("62_bridge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 7, 0)
+
+[node name="UpperLobby" parent="Rooms/Upper" unique_id=502766582 instance=ExtResource("63_upper_lobby")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 7, 6)
+
+[node name="UpperCorridor" parent="Rooms/Upper" unique_id=1476978106 instance=ExtResource("64_upper_corridor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35.5, 7, 0)
+
+[node name="MessHall" parent="Rooms/Upper" unique_id=1713648318 instance=ExtResource("65_mess_hall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 7, 0)
+
+[node name="Cabin1" parent="Rooms/Upper" unique_id=753953313 instance=ExtResource("66_cabin_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, -8.75)
+
+[node name="Cabin2" parent="Rooms/Upper" unique_id=1358906650 instance=ExtResource("67_cabin_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, 8.75)
+
+[node name="Cabin3" parent="Rooms/Upper" unique_id=828099309 instance=ExtResource("68_cabin_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, -8.75)
+
+[node name="Cabin4" parent="Rooms/Upper" unique_id=1631790854 instance=ExtResource("69_cabin_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, 8.75)
+
+[node name="Crew1" parent="Rooms/Upper" unique_id=2106056606 instance=ExtResource("70_crew_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, -8.75)
+
+[node name="Crew5" parent="Rooms/Upper" unique_id=563873101 instance=ExtResource("71_crew_5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, 8.75)
+
+[node name="Crew2" parent="Rooms/Upper" unique_id=459162409 instance=ExtResource("72_crew_2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, -8.75)
+
+[node name="Crew6" parent="Rooms/Upper" unique_id=298863206 instance=ExtResource("73_crew_6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, 8.75)
+
+[node name="Crew3" parent="Rooms/Upper" unique_id=2094883304 instance=ExtResource("74_crew_3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, -8.75)
+
+[node name="Crew7" parent="Rooms/Upper" unique_id=87651447 instance=ExtResource("75_crew_7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, 8.75)
+
+[node name="Crew4" parent="Rooms/Upper" unique_id=1494909374 instance=ExtResource("76_crew_4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, -8.75)
+
+[node name="Crew8" parent="Rooms/Upper" unique_id=443563225 instance=ExtResource("77_crew_8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, 8.75)
+
+[node name="Guides" type="Node3D" parent="Rooms/Upper" unique_id=1028103118]
+
+[node name="ToLowerDeck" type="Node3D" parent="Rooms/Upper/Guides" unique_id=247198145]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 7, 1.2)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToLowerDeck"]
+[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToLowerDeck" unique_id=1446834973]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -1.14)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToLowerDeck/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToLowerDeck/Arrow" unique_id=595342262]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToLowerDeck/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToLowerDeck/Arrow" unique_id=187235306]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/ToLowerDeck"]
+[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/ToLowerDeck" unique_id=1408892912]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "Lift\nLower deck"
+text = "Lift
+Lower deck"
 font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="ToBridge" type="Node3D" parent="Rooms/Upper/Guides"]
+[node name="ToBridge" type="Node3D" parent="Rooms/Upper/Guides" unique_id=880378708]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.25, 7, 5)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToBridge"]
+[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToBridge" unique_id=2017753850]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1.87, 0.02, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToBridge/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToBridge/Arrow" unique_id=780478785]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToBridge/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToBridge/Arrow" unique_id=1980343869]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/ToBridge"]
+[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/ToBridge" unique_id=342438869]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "Bridge\nCockpit"
+text = "Bridge
+Cockpit"
 font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="ToCabins" type="Node3D" parent="Rooms/Upper/Guides"]
+[node name="ToCabins" type="Node3D" parent="Rooms/Upper/Guides" unique_id=1751609435]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.25, 7, 9)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToCabins"]
+[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToCabins" unique_id=1683458896]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2.83, 0.02, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToCabins/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToCabins/Arrow" unique_id=1196042631]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToCabins/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToCabins/Arrow" unique_id=245248014]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/ToCabins"]
+[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/ToCabins" unique_id=1340921194]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "Cabins · Mess\nCargo lift"
+text = "Cabins · Mess
+Cargo lift"
 font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="FromBridge" type="Node3D" parent="Rooms/Upper/Guides"]
+[node name="FromBridge" type="Node3D" parent="Rooms/Upper/Guides" unique_id=616177782]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61, 7, 3.5)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/FromBridge"]
+[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/FromBridge" unique_id=947069791]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.95, 0.02, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/FromBridge/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/FromBridge/Arrow" unique_id=1420288957]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/FromBridge/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/FromBridge/Arrow" unique_id=697339484]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/FromBridge"]
+[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/FromBridge" unique_id=1829164302]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
@@ -439,50 +440,51 @@ font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="ToCargoLift" type="Node3D" parent="Rooms/Upper/Guides"]
+[node name="ToCargoLift" type="Node3D" parent="Rooms/Upper/Guides" unique_id=1292304822]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 7, -10.8)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToCargoLift"]
+[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/ToCargoLift" unique_id=102379484]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.31, 0.02, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToCargoLift/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToCargoLift/Arrow" unique_id=2102849131]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToCargoLift/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/ToCargoLift/Arrow" unique_id=1693037039]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/ToCargoLift"]
+[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/ToCargoLift" unique_id=1329040931]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
-text = "Lift\nCargo bay · Ramp"
+text = "Lift
+Cargo bay · Ramp"
 font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="FromMess" type="Node3D" parent="Rooms/Upper/Guides"]
+[node name="FromMess" type="Node3D" parent="Rooms/Upper/Guides" unique_id=162756807]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 7, 1.3)
 script = ExtResource("8_floor_guide")
 
-[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/FromMess"]
+[node name="Arrow" type="Node3D" parent="Rooms/Upper/Guides/FromMess" unique_id=323075626]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.27, 0.02, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/FromMess/Arrow"]
+[node name="Head" type="MeshInstance3D" parent="Rooms/Upper/Guides/FromMess/Arrow" unique_id=996119345]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
 cast_shadow = 0
 mesh = SubResource("PrismMesh_arrow")
 
-[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/FromMess/Arrow"]
+[node name="Shaft" type="MeshInstance3D" parent="Rooms/Upper/Guides/FromMess/Arrow" unique_id=982959264]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_arrow_shaft")
 
-[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/FromMess"]
+[node name="Text" type="Label3D" parent="Rooms/Upper/Guides/FromMess" unique_id=811431923]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 pixel_size = 0.01
 modulate = Color(1, 0.8, 0.45, 1)
@@ -491,182 +493,185 @@ font_size = 48
 outline_size = 14
 uppercase = true
 
-[node name="Lifts" type="Node3D" parent="."]
+[node name="CargoBay" parent="Rooms" unique_id=1705099306 instance=ExtResource("89_cargo_bay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
 
-[node name="NoseLift" type="Node3D" parent="Lifts"]
+[node name="Lifts" type="Node3D" parent="." unique_id=1586470543]
+
+[node name="NoseLift" type="Node3D" parent="Lifts" unique_id=507318171]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 2.53, -5.5)
 script = ExtResource("7_lift")
 
-[node name="Platform" type="AnimatableBody3D" parent="Lifts/NoseLift"]
+[node name="Platform" type="AnimatableBody3D" parent="Lifts/NoseLift" unique_id=1206992241]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/Platform"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/Platform" unique_id=659899406]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 shape = SubResource("BoxShape3D_n_5_3x0_2x4_8")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Lifts/NoseLift/Platform"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Lifts/NoseLift/Platform" unique_id=2097009012]
 transform = Transform3D(5.3, 0, 0, 0, 0.2, 0, 0, 0, 4.8, 0, -0.1, 0)
 mesh = SubResource("BoxMesh_platform")
 
-[node name="Riders" type="Area3D" parent="Lifts/NoseLift/Platform"]
+[node name="Riders" type="Area3D" parent="Lifts/NoseLift/Platform" unique_id=207854366]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/Platform/Riders"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/Platform/Riders" unique_id=739908089]
 shape = SubResource("BoxShape3D_n_5_1x2x4_6")
 
-[node name="LowerGate" type="StaticBody3D" parent="Lifts/NoseLift"]
+[node name="LowerGate" type="StaticBody3D" parent="Lifts/NoseLift" unique_id=1450599042]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 2.75)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/LowerGate"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/LowerGate" unique_id=1048525638]
 shape = SubResource("BoxShape3D_n_4x3x0_5")
 
-[node name="Bar" type="MeshInstance3D" parent="Lifts/NoseLift/LowerGate"]
+[node name="Bar" type="MeshInstance3D" parent="Lifts/NoseLift/LowerGate" unique_id=861361960]
 transform = Transform3D(4, 0, 0, 0, 0.15, 0, 0, 0, 0.2, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_gate")
 
-[node name="LowerCall" type="Area3D" parent="Lifts/NoseLift"]
+[node name="LowerCall" type="Area3D" parent="Lifts/NoseLift" unique_id=1692016598]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4.75)
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/LowerCall"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/LowerCall" unique_id=1737726646]
 shape = SubResource("BoxShape3D_n_4x2x3")
 
-[node name="UpperGate" type="StaticBody3D" parent="Lifts/NoseLift"]
+[node name="UpperGate" type="StaticBody3D" parent="Lifts/NoseLift" unique_id=1864854446]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 2.75)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/UpperGate"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/UpperGate" unique_id=1449940038]
 shape = SubResource("BoxShape3D_n_4x3x0_5")
 
-[node name="Bar" type="MeshInstance3D" parent="Lifts/NoseLift/UpperGate"]
+[node name="Bar" type="MeshInstance3D" parent="Lifts/NoseLift/UpperGate" unique_id=1474198716]
 transform = Transform3D(4, 0, 0, 0, 0.15, 0, 0, 0, 0.2, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_gate")
 
-[node name="UpperCall" type="Area3D" parent="Lifts/NoseLift"]
+[node name="UpperCall" type="Area3D" parent="Lifts/NoseLift" unique_id=302737999]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, 4.75)
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/UpperCall"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/NoseLift/UpperCall" unique_id=663644978]
 shape = SubResource("BoxShape3D_n_4x2x3")
 
-[node name="CargoLift" type="Node3D" parent="Lifts"]
+[node name="CargoLift" type="Node3D" parent="Lifts" unique_id=1387594974]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 2.53, -12)
 script = ExtResource("7_lift")
 
-[node name="Platform" type="AnimatableBody3D" parent="Lifts/CargoLift"]
+[node name="Platform" type="AnimatableBody3D" parent="Lifts/CargoLift" unique_id=1558529190]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/Platform"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/Platform" unique_id=1470584002]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 shape = SubResource("BoxShape3D_n_4_8x0_2x4_8")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Lifts/CargoLift/Platform"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Lifts/CargoLift/Platform" unique_id=345596603]
 transform = Transform3D(4.8, 0, 0, 0, 0.2, 0, 0, 0, 4.8, 0, -0.1, 0)
 mesh = SubResource("BoxMesh_platform")
 
-[node name="Riders" type="Area3D" parent="Lifts/CargoLift/Platform"]
+[node name="Riders" type="Area3D" parent="Lifts/CargoLift/Platform" unique_id=1092997026]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/Platform/Riders"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/Platform/Riders" unique_id=1687510771]
 shape = SubResource("BoxShape3D_n_4_6x2x4_6")
 
-[node name="LowerGate" type="StaticBody3D" parent="Lifts/CargoLift"]
+[node name="LowerGate" type="StaticBody3D" parent="Lifts/CargoLift" unique_id=913686354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 2.75)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/LowerGate"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/LowerGate" unique_id=119270167]
 shape = SubResource("BoxShape3D_n_4x3x0_5")
 
-[node name="Bar" type="MeshInstance3D" parent="Lifts/CargoLift/LowerGate"]
+[node name="Bar" type="MeshInstance3D" parent="Lifts/CargoLift/LowerGate" unique_id=269886122]
 transform = Transform3D(4, 0, 0, 0, 0.15, 0, 0, 0, 0.2, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_gate")
 
-[node name="LowerCall" type="Area3D" parent="Lifts/CargoLift"]
+[node name="LowerCall" type="Area3D" parent="Lifts/CargoLift" unique_id=620276707]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4.75)
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/LowerCall"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/LowerCall" unique_id=1597587525]
 shape = SubResource("BoxShape3D_n_4x2x3")
 
-[node name="UpperGate" type="StaticBody3D" parent="Lifts/CargoLift"]
+[node name="UpperGate" type="StaticBody3D" parent="Lifts/CargoLift" unique_id=1062282992]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 6, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/UpperGate"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/UpperGate" unique_id=1293955308]
 shape = SubResource("BoxShape3D_n_0_5x3x3")
 
-[node name="Bar" type="MeshInstance3D" parent="Lifts/CargoLift/UpperGate"]
+[node name="Bar" type="MeshInstance3D" parent="Lifts/CargoLift/UpperGate" unique_id=1117627234]
 transform = Transform3D(0.2, 0, 0, 0, 0.15, 0, 0, 0, 3, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_gate")
 
-[node name="UpperCall" type="Area3D" parent="Lifts/CargoLift"]
+[node name="UpperCall" type="Area3D" parent="Lifts/CargoLift" unique_id=1460074281]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.75, 5.5, 0)
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/UpperCall"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lifts/CargoLift/UpperCall" unique_id=765519357]
 shape = SubResource("BoxShape3D_n_3x2x4")
 
-[node name="Threshold" type="MeshInstance3D" parent="."]
+[node name="Threshold" type="MeshInstance3D" parent="." unique_id=1588672764]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.75, 2.51, 0)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_threshold")
 
-[node name="Ramp" type="AnimatableBody3D" parent="."]
+[node name="Ramp" type="AnimatableBody3D" parent="." unique_id=1181717793]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.5, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp" unique_id=726996461]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, -0.1, 0)
 shape = SubResource("BoxShape3D_ramp")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ramp"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ramp" unique_id=985724533]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, -0.1, 0)
 mesh = SubResource("BoxMesh_ramp")
 
-[node name="RampButton" type="Node3D" parent="."]
+[node name="RampButton" type="Node3D" parent="." unique_id=1762330566]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.25, 3.1, -3)
 script = ExtResource("2_interactable")
 
-[node name="Console" type="StaticBody3D" parent="RampButton"]
+[node name="Console" type="StaticBody3D" parent="RampButton" unique_id=352313416]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RampButton/Console"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RampButton/Console" unique_id=359197729]
 shape = SubResource("BoxShape3D_console")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RampButton/Console"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RampButton/Console" unique_id=29118922]
 mesh = SubResource("BoxMesh_console")
 
-[node name="Highlight" type="MeshInstance3D" parent="RampButton"]
+[node name="Highlight" type="MeshInstance3D" parent="RampButton" unique_id=80984047]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.61, 0)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_button_highlight")
 
-[node name="Face" type="MeshInstance3D" parent="RampButton"]
+[node name="Face" type="MeshInstance3D" parent="RampButton" unique_id=113728311]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.63, 0)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_button_face")
 
-[node name="Interior" type="Area3D" parent="."]
+[node name="Interior" type="Area3D" parent="." unique_id=732979715]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 6.75, 0)
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Interior"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interior" unique_id=941260892]
 shape = SubResource("BoxShape3D_interior")
 
-[node name="Boarding" type="Marker3D" parent="."]
+[node name="Boarding" type="Marker3D" parent="." unique_id=310733272]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.5, 0)
 
-[node name="Respawn" type="Marker3D" parent="."]
+[node name="Respawn" type="Marker3D" parent="." unique_id=2010896817]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -8.75)
 
-[node name="OreHold" parent="." instance=ExtResource("40_ore_hold")]
+[node name="OreHold" parent="." unique_id=1339607864 instance=ExtResource("40_ore_hold")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
 
-[node name="Countdown" type="Label3D" parent="."]
+[node name="Countdown" type="Label3D" parent="." unique_id=1573614227]
 auto_translate_mode = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 8, 0)
+pixel_size = 0.015
 billboard = 1
 no_depth_test = true
-pixel_size = 0.015
 font_size = 128
 outline_size = 32
 uppercase = true
 
-[node name="Flight" type="Node3D" parent="."]
+[node name="Flight" type="Node3D" parent="." unique_id=216271355]
 script = ExtResource("13_flight")
 settings = ExtResource("14_flight_settings")

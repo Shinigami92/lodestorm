@@ -6,22 +6,20 @@
 [ext_resource type="Resource" uid="uid://dc5iplqjbh04" path="res://game/locations/biomes/dust.tres" id="4_dust"]
 [ext_resource type="Resource" uid="uid://caubseewpqqlm" path="res://game/locations/biomes/overgrowth.tres" id="5_overgrowth"]
 [ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="6_ore_type"]
-[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
 [ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
 
 [sub_resource type="Resource" id="Resource_redscar"]
 script = ExtResource("3_region")
 display_name = "Redscar Flats"
 biome = ExtResource("4_dust")
 danger = 0
-length = 1.0
 globe_position = Vector2(20, -30)
 
 [sub_resource type="Resource" id="Resource_mire"]
 script = ExtResource("3_region")
 display_name = "Hollow Mire"
 biome = ExtResource("5_overgrowth")
-danger = 1
 length = 1.5
 globe_position = Vector2(-15, 25)
 
@@ -33,13 +31,30 @@ danger = 2
 length = 2.0
 globe_position = Vector2(45, 60)
 
+[sub_resource type="Resource" id="Resource_torvane"]
+script = ExtResource("2_body")
+display_name = "Torvane"
+color = Color(0.75, 0.5, 0.35, 1)
+orbit_angle = 200.0
+regions = Array[ExtResource("3_region")]([SubResource("Resource_redscar"), SubResource("Resource_mire"), SubResource("Resource_cinder")])
+signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_meridine")])
+
 [sub_resource type="Resource" id="Resource_basin"]
 script = ExtResource("3_region")
 display_name = "Pale Basin"
 biome = ExtResource("4_dust")
-danger = 1
-length = 1.0
 globe_position = Vector2(10, 0)
+
+[sub_resource type="Resource" id="Resource_lisk"]
+script = ExtResource("2_body")
+display_name = "Lisk"
+kind = 1
+color = Color(0.7, 0.72, 0.78, 1)
+size = 0.45
+orbit_radius = 0.35
+orbit_angle = 40.0
+orbits = SubResource("Resource_torvane")
+regions = Array[ExtResource("3_region")]([SubResource("Resource_basin")])
 
 [sub_resource type="Resource" id="Resource_glare"]
 script = ExtResource("3_region")
@@ -68,27 +83,6 @@ orbit_radius = 0.55
 orbit_angle = 120.0
 regions = Array[ExtResource("3_region")]([SubResource("Resource_glare"), SubResource("Resource_ember")])
 signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_emerin")])
-
-[sub_resource type="Resource" id="Resource_torvane"]
-script = ExtResource("2_body")
-display_name = "Torvane"
-color = Color(0.75, 0.5, 0.35, 1)
-size = 1.0
-orbit_radius = 1.0
-orbit_angle = 200.0
-regions = Array[ExtResource("3_region")]([SubResource("Resource_redscar"), SubResource("Resource_mire"), SubResource("Resource_cinder")])
-signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_meridine")])
-
-[sub_resource type="Resource" id="Resource_lisk"]
-script = ExtResource("2_body")
-display_name = "Lisk"
-kind = 1
-color = Color(0.7, 0.72, 0.78, 1)
-size = 0.45
-orbit_radius = 0.35
-orbit_angle = 40.0
-orbits = SubResource("Resource_torvane")
-regions = Array[ExtResource("3_region")]([SubResource("Resource_basin")])
 
 [sub_resource type="Resource" id="Resource_ostra"]
 script = ExtResource("2_body")

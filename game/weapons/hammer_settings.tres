@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="MeleeWeaponSettings" format=3 uid="uid://bmvaidn1vcbd7"]
+
+[ext_resource type="Script" uid="uid://bfbxcrlc3di4i" path="res://game/weapons/melee_weapon_settings.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+attack_rate = 1.5

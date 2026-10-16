@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="Upgrade" format=3 uid="uid://cltwimsbnpgsc"]
+
+[ext_resource type="Script" uid="uid://c8jhtshxvf4c1" path="res://game/progression/upgrades/upgrade_level.gd" id="1_gtc0q"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="2_o58bc"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="3_wcral"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="4_saiud"]
+[ext_resource type="Script" uid="uid://4n5uapxvab0b" path="res://game/progression/upgrades/upgrade.gd" id="5_ljq3j"]
+
+[sub_resource type="Resource" id="Resource_dj48u"]
+script = ExtResource("1_gtc0q")
+cost = Dictionary[ExtResource("2_o58bc"), int]({
+ExtResource("3_wcral"): 270
+})
+multiplier = 1.25
+
+[sub_resource type="Resource" id="Resource_lsagx"]
+script = ExtResource("1_gtc0q")
+cost = Dictionary[ExtResource("2_o58bc"), int]({
+ExtResource("3_wcral"): 360,
+ExtResource("4_saiud"): 270
+})
+multiplier = 1.5
+
+[resource]
+script = ExtResource("5_ljq3j")
+display_name = "Shotgun"
+description = "More damage per pellet"
+levels = Array[ExtResource("1_gtc0q")]([SubResource("Resource_dj48u"), SubResource("Resource_lsagx")])

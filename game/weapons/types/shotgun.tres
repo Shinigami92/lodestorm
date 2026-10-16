@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://7jm5s1jr48n5"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://blrohu00nab0m" path="res://game/weapons/shotgun.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://cltwimsbnpgsc" path="res://game/progression/upgrades/shotgun.tres" id="3_upgrade"]
+[ext_resource type="Resource" uid="uid://df5cle300mt58" path="res://game/progression/upgrades/shotgun_magazine.tres" id="4_magazine"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Shotgun"
+description = "A fan of pellets, strong up close."
+scene = ExtResource("2_scene")
+upgrade = ExtResource("3_upgrade")
+magazine_upgrade = ExtResource("4_magazine")

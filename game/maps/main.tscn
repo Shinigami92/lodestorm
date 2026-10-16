@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://d3vsnxi2l5yo2"]
+
+[ext_resource type="PackedScene" uid="uid://buwqgu3osljqu" path="res://game/locations/generated_location.tscn" id="1_location"]
+[ext_resource type="PackedScene" uid="uid://3u1ip4gaomfq" path="res://game/ship/ship.tscn" id="2_ship"]
+[ext_resource type="PackedScene" uid="uid://xfwa58ktasv3" path="res://game/player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://d0xrpkjclw8rh" path="res://game/camera/iso_camera_rig.tscn" id="4_camera"]
+[ext_resource type="Script" uid="uid://ee6jykh51n8m" path="res://game/mission/mission.gd" id="5_mission"]
+[ext_resource type="Resource" uid="uid://drdo54n6me45h" path="res://game/mission/mission_settings.tres" id="6_mission_settings"]
+[ext_resource type="Script" uid="uid://bk77ctab6xxa0" path="res://game/mission/weather.gd" id="7_weather"]
+[ext_resource type="Script" uid="uid://b4p7dojarbr0f" path="res://game/save/save_game.gd" id="8_save_game"]
+
+[sub_resource type="Environment" id="Environment_map"]
+background_mode = 1
+background_color = Color(0.1, 0.095, 0.1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.42, 0.46, 0.55, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.6
+glow_hdr_threshold = 1.2
+
+[node name="TestMap" type="Node3D" unique_id=1166237391]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1955756721]
+environment = SubResource("Environment_map")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=832894179]
+transform = Transform3D(0.866025, -0.383022, 0.321394, 0, 0.642788, 0.766044, -0.5, -0.663414, 0.55667, 0, 10, 0)
+light_color = Color(1, 0.88, 0.74, 1)
+light_energy = 0.75
+shadow_enabled = true
+
+[node name="RimLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.707107, 0.264887, -0.655618, 0, 0.927184, 0.374607, 0.707107, 0.264887, -0.655618, 0, 10, 0)
+light_color = Color(0.55, 0.72, 1, 1)
+light_energy = 0.45
+
+[node name="Ship" parent="." unique_id=674942379 node_paths=PackedStringArray("viewer") instance=ExtResource("2_ship")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -20.506, 0, 20.506)
+viewer = NodePath("../Player")
+
+[node name="Player" parent="." unique_id=240598428 instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61.165, 7.05, 48.79)
+
+[node name="IsoCameraRig" parent="." unique_id=1063743358 node_paths=PackedStringArray("target") instance=ExtResource("4_camera")]
+target = NodePath("../Player")
+
+[node name="Mission" type="Node" parent="." unique_id=206700272 node_paths=PackedStringArray("ship")]
+script = ExtResource("5_mission")
+settings = ExtResource("6_mission_settings")
+ship = NodePath("../Ship")
+location_scene = ExtResource("1_location")
+
+[node name="Weather" type="Node" parent="." unique_id=1730492815 node_paths=PackedStringArray("mission", "environment", "sun", "viewer")]
+script = ExtResource("7_weather")
+mission = NodePath("../Mission")
+environment = NodePath("../WorldEnvironment")
+sun = NodePath("../Sun")
+viewer = NodePath("../Player")
+
+[node name="SaveGame" type="Node" parent="." node_paths=PackedStringArray("ship", "player", "mission")]
+script = ExtResource("8_save_game")
+ship = NodePath("../Ship")
+player = NodePath("../Player")
+mission = NodePath("../Mission")

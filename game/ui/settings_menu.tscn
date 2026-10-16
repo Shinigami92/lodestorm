@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://c1m25gkd63oyd"]
+
+[ext_resource type="Script" uid="uid://xcnubord88bf" path="res://game/ui/settings_menu.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+
+[node name="SettingsMenu" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Layout"]
+layout_mode = 2
+theme_type_variation = &"Title"
+text = "Settings"
+uppercase = true
+
+[node name="HSeparator" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Language" type="Label" parent="Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Language"
+
+[node name="Languages" type="HBoxContainer" parent="Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Progress" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Progress"
+
+[node name="ResetProgress" type="Button" parent="Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Reset progress"
+
+[node name="ResetHint" type="Label" parent="Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+text = "Only while you're alone. With others in your session, everyone keeps their progress."
+autowrap_mode = 3
+
+[node name="Wipe" type="VBoxContainer" parent="Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="WipeWarning" type="Label" parent="Layout/Wipe"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Layout/Wipe"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="WipeConfirm" type="Button" parent="Layout/Wipe/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+
+[node name="WipeCancel" type="Button" parent="Layout/Wipe/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cancel"
+
+[node name="Spacer" type="Control" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Footer" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+alignment = 2
+
+[node name="Close" type="Button" parent="Layout/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Close"

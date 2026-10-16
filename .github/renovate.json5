@@ -15,7 +15,7 @@
     },
     {
       // The editor plugin in addons/godot_ai/ must be updated by hand in the same PR
-      // (tests/test_addon_versions.gd fails until it matches)
+      // (tests/project/test_addon_versions.gd fails until it matches)
       "groupName": "godot-ai",
       "matchDepNames": ["godot-ai"]
     }

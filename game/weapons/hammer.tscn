@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://c8hhj07nu07v4"]
+
+[ext_resource type="Script" uid="uid://bedfq27s65p03" path="res://game/weapons/melee_weapon.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bmvaidn1vcbd7" path="res://game/weapons/hammer_settings.tres" id="2_settings"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://game/progression/upgrades/mk_pips.gd" id="9_pips"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.13, 0.135, 0.145, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.07, 0.07, 0.075, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+albedo_color = Color(0.3, 0.85, 1, 1)
+emission_enabled = true
+emission = Color(0.3, 0.85, 1, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_handle"]
+material = SubResource("StandardMaterial3D_grip")
+top_radius = 0.028
+bottom_radius = 0.028
+height = 0.85
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_head"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.4, 0.18, 0.18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_core"]
+material = SubResource("StandardMaterial3D_core")
+size = Vector3(0.07, 0.186, 0.186)
+
+[node name="Hammer" type="Node3D"]
+script = ExtResource("1_script")
+settings = ExtResource("2_settings")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Handle" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.05, -0.3)
+mesh = SubResource("CylinderMesh_handle")
+
+[node name="Head" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.72)
+mesh = SubResource("BoxMesh_head")
+
+[node name="Core" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.72)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_core")
+
+[node name="MkPips" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.141, -0.72)
+script = ExtResource("9_pips")

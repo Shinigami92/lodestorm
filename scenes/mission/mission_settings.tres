@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="MissionSettings" format=3 uid="uid://drdo54n6me45h"]
-
-[ext_resource type="Script" uid="uid://qb7djpt5g60q" path="res://scripts/mission/mission_settings.gd" id="1_script"]
-[ext_resource type="Resource" uid="uid://bw4gdvse5p2xr" path="res://scenes/world/star_system.tres" id="2_system"]
-
-[resource]
-script = ExtResource("1_script")
-duration = 900.0
-system = ExtResource("2_system")

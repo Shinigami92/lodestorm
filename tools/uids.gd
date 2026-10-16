@@ -3,7 +3,8 @@ extends SceneTree
 ## the UID of the file it points at, as the editor does when it saves them. Hand-written or
 ## hand-patched files miss them; a copied file keeps its original's UID and gets a new one.
 ## Run it with `tools/uids.sh` after adding or changing those files without the editor
-## (`tests/test_resource_uids.gd` fails until then). Only the UIDs are added; nothing else changes.
+## (`tests/project/test_resource_uids.gd` fails until then). Only the UIDs are added; nothing else
+## changes.
 
 ## Not part of the game: third-party code, caches and local scratch files.
 const SKIPPED_DIRS: Array[String] = ["res://addons", "res://.godot", "res://local", "res://tmp"]

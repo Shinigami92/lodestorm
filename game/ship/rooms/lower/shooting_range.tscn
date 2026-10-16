@@ -1,0 +1,159 @@
+[gd_scene format=3 uid="uid://wcom3psepci4"]
+
+[ext_resource type="Script" uid="uid://curuiumocswp3" path="res://game/camera/camera_zone.gd" id="6_camera_zone"]
+[ext_resource type="Shader" uid="uid://bflh6hi53tf0h" path="res://assets/shaders/hologram.gdshader" id="5_hologram"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_ShootingRange"]
+albedo_color = Color(0.45, 0.4, 0.4, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor_ShootingRange"]
+material = SubResource("StandardMaterial3D_floor_ShootingRange")
+size = Vector2(29.5, 11.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_target"]
+albedo_color = Color(0.85, 0.82, 0.75, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bullseye"]
+albedo_color = Color(0.9, 0.2, 0.15, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_firing_line"]
+albedo_color = Color(1, 0.8, 0.2, 1)
+emission_enabled = true
+emission = Color(1, 0.8, 0.2, 1)
+emission_energy_multiplier = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_target"]
+material = SubResource("StandardMaterial3D_target")
+
+[sub_resource type="BoxMesh" id="BoxMesh_firing_line"]
+material = SubResource("StandardMaterial3D_firing_line")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bullseye"]
+material = SubResource("StandardMaterial3D_bullseye")
+top_radius = 0.3
+bottom_radius = 0.3
+height = 0.02
+radial_segments = 24
+rings = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_barrier"]
+render_priority = 0
+shader = ExtResource("5_hologram")
+shader_parameter/color = Color(1, 0.6, 0.2, 1)
+shader_parameter/energy = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_barrier"]
+material = SubResource("ShaderMaterial_barrier")
+size = Vector3(2, 3, 0.05)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_0_2x1_6x1"]
+size = Vector3(0.2, 1.6, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_29_5x3x9_5"]
+size = Vector3(29.5, 3, 9.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_29_5x4x11_5"]
+size = Vector3(29.5, 4, 11.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_2x3x0_5"]
+size = Vector3(2, 3, 0.5)
+
+[node name="ShootingRange" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_floor_ShootingRange")
+
+[node name="Light" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 5.0
+spot_range = 3.8
+spot_angle = 76.8
+spot_angle_attenuation = 0.5
+
+[node name="Sign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
+pixel_size = 0.01
+text = "Shooting range"
+font_size = 96
+outline_size = 24
+uppercase = true
+
+[node name="Target1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.85, 0.8, -3)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Target1"]
+shape = SubResource("BoxShape3D_n_0_2x1_6x1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Target1"]
+transform = Transform3D(0.2, 0, 0, 0, 1.6, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_target")
+
+[node name="Bullseye" type="MeshInstance3D" parent="Target1"]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.11, 0.3, 0)
+mesh = SubResource("CylinderMesh_bullseye")
+
+[node name="Target2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.85, 0.8, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Target2"]
+shape = SubResource("BoxShape3D_n_0_2x1_6x1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Target2"]
+transform = Transform3D(0.2, 0, 0, 0, 1.6, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_target")
+
+[node name="Bullseye" type="MeshInstance3D" parent="Target2"]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.11, 0.3, 0)
+mesh = SubResource("CylinderMesh_bullseye")
+
+[node name="Target3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.85, 0.8, 3)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Target3"]
+shape = SubResource("BoxShape3D_n_0_2x1_6x1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Target3"]
+transform = Transform3D(0.2, 0, 0, 0, 1.6, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_target")
+
+[node name="Bullseye" type="MeshInstance3D" parent="Target3"]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.11, 0.3, 0)
+mesh = SubResource("CylinderMesh_bullseye")
+
+[node name="FiringLine" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.12, 0, 0, 0, 0.02, 0, 0, 0, 10.5, -10.25, 0.01, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_firing_line")
+
+[node name="WeaponZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -1)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponZone"]
+shape = SubResource("BoxShape3D_n_29_5x3x9_5")
+
+[node name="CameraZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+monitorable = false
+script = ExtResource("6_camera_zone")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CameraZone"]
+shape = SubResource("BoxShape3D_n_29_5x4x11_5")
+
+[node name="Focus" type="Marker3D" parent="CameraZone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+
+[node name="Barrier" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.75, 1.5, 6)
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Barrier"]
+shape = SubResource("BoxShape3D_n_2x3x0_5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Barrier"]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_barrier")

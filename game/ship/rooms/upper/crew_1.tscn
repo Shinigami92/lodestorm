@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://cj12d1sv1uynn"]
+
+[ext_resource type="StandardMaterial3D" uid="uid://bd4esevpwqv63" path="res://game/ship/materials/bed.tres" id="mat_bed"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Crew1"]
+albedo_color = Color(0.4, 0.4, 0.44, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor_Crew1"]
+material = SubResource("StandardMaterial3D_floor_Crew1")
+size = Vector2(4.5, 11.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bed"]
+material = ExtResource("mat_bed")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_1_2x0_5x2_2"]
+size = Vector3(1.2, 0.5, 2.2)
+
+[node name="Crew1" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_floor_Crew1")
+
+[node name="Light" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 5.0
+spot_range = 3.8
+spot_angle = 59.1
+spot_angle_attenuation = 0.5
+
+[node name="Sign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
+pixel_size = 0.01
+text = "Crew 1"
+font_size = 72
+outline_size = 24
+uppercase = true
+
+[node name="Bed" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 0.25, -4.45)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bed"]
+shape = SubResource("BoxShape3D_n_1_2x0_5x2_2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bed"]
+transform = Transform3D(1.2, 0, 0, 0, 0.5, 0, 0, 0, 2.2, 0, 0, 0)
+mesh = SubResource("BoxMesh_bed")

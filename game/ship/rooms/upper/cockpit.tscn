@@ -1,0 +1,90 @@
+[gd_scene format=3 uid="uid://bgkql5ud28cj7"]
+
+[ext_resource type="PackedScene" uid="uid://bm2aoqjie67tb" path="res://game/stations/flight/flight_console.tscn" id="18_flight_console"]
+[ext_resource type="StandardMaterial3D" uid="uid://d0bdki1n4b0el" path="res://game/ship/materials/prop.tres" id="mat_prop"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Cockpit"]
+albedo_color = Color(0.3, 0.36, 0.48, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor_Cockpit"]
+material = SubResource("StandardMaterial3D_floor_Cockpit")
+size = Vector2(8, 29)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_screen"]
+albedo_color = Color(0.3, 0.85, 1, 1)
+emission_enabled = true
+emission = Color(0.3, 0.85, 1, 1)
+emission_energy_multiplier = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_prop"]
+material = ExtResource("mat_prop")
+
+[sub_resource type="BoxMesh" id="BoxMesh_screen"]
+material = SubResource("StandardMaterial3D_screen")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_0_8x1x0_8"]
+size = Vector3(0.8, 1, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_1_2x1_1x8"]
+size = Vector3(1.2, 1.1, 8)
+
+[node name="Cockpit" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_floor_Cockpit")
+
+[node name="Light" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
+light_color = Color(0.8, 0.9, 1, 1)
+light_energy = 5.0
+spot_range = 3.8
+spot_angle = 76.2
+spot_angle_attenuation = 0.5
+
+[node name="Sign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 4.5)
+pixel_size = 0.01
+text = "Cockpit"
+font_size = 96
+outline_size = 24
+uppercase = true
+
+[node name="Console" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0.55, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Console"]
+shape = SubResource("BoxShape3D_n_1_2x1_1x8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Console"]
+transform = Transform3D(1.2, 0, 0, 0, 1.1, 0, 0, 0, 8, 0, 0, 0)
+mesh = SubResource("BoxMesh_prop")
+
+[node name="Screen" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.1, 0, 0, 0, 0.6, 0, 0, 0, 7.6, -3.75, 1.4, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_screen")
+
+[node name="PilotSeat" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.5, -1.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PilotSeat"]
+shape = SubResource("BoxShape3D_n_0_8x1x0_8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PilotSeat"]
+transform = Transform3D(0.8, 0, 0, 0, 1, 0, 0, 0, 0.8, 0, 0, 0)
+mesh = SubResource("BoxMesh_prop")
+
+[node name="CopilotSeat" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.5, 1.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CopilotSeat"]
+shape = SubResource("BoxShape3D_n_0_8x1x0_8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CopilotSeat"]
+transform = Transform3D(0.8, 0, 0, 0, 1, 0, 0, 0, 0.8, 0, 0, 0)
+mesh = SubResource("BoxMesh_prop")
+
+[node name="FlightConsole" parent="." instance=ExtResource("18_flight_console")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 0)

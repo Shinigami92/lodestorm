@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://m0p5ps2frbfx"]
+
+[ext_resource type="PackedScene" uid="uid://cdwn1ioiledej" path="res://game/ship/holo_table.tscn" id="4_holo_table"]
+[ext_resource type="PackedScene" uid="uid://c284r5im2gvf8" path="res://game/stations/navigator/navigator.tscn" id="11_navigator"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Bridge"]
+albedo_color = Color(0.36, 0.42, 0.52, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor_Bridge"]
+material = SubResource("StandardMaterial3D_floor_Bridge")
+size = Vector2(14, 29)
+
+[node name="Bridge" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_floor_Bridge")
+
+[node name="Light" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
+light_color = Color(0.8, 0.9, 1, 1)
+light_energy = 5.0
+spot_range = 3.8
+spot_angle = 77.1
+spot_angle_attenuation = 0.5
+
+[node name="Sign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 4.5)
+pixel_size = 0.01
+text = "Bridge"
+font_size = 96
+outline_size = 24
+uppercase = true
+
+[node name="HoloTable" parent="." instance=ExtResource("4_holo_table")]
+
+[node name="Navigator" parent="." node_paths=PackedStringArray("holo_table") instance=ExtResource("11_navigator")]
+holo_table = NodePath("../HoloTable")

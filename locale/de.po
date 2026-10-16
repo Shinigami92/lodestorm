@@ -141,7 +141,7 @@ msgid "The timing trick works on every single shell. Time several shells in a ro
 msgstr "Der Timing-Trick klappt bei jeder einzelnen Patrone. Klappt er bei mehreren Patronen hintereinander, lädt jede etwas schneller. Verfehlst du eine oder drückst bei einer nicht, fängt dieser Vorteil von vorn an."
 
 #: game/npcs/crew/quartermaster.tres
-#: game/ship/ship.tscn
+#: game/ship/rooms/lower/shooting_range.tscn
 msgid "Shooting range"
 msgstr "Schießstand"
 
@@ -384,6 +384,106 @@ msgstr "Schrotflinten-Magazin"
 msgid "More shells per load"
 msgstr "Mehr Patronen pro Ladung"
 
+#: game/ship/rooms/cargo_bay.tscn
+msgid "Cargo bay"
+msgstr "Frachtraum"
+
+#: game/ship/rooms/cargo_bay.tscn
+msgid "Armory · Upgrades\nRange · Medical · Engine"
+msgstr "Waffenkammer · Upgrades\nSchießstand · Krankenstation · Maschinenraum"
+
+#: game/ship/rooms/cargo_bay.tscn
+msgid "Lift\nMess · Cabins · Bridge"
+msgstr "Lift\nMesse · Kabinen · Brücke"
+
+#: game/ship/rooms/lower/armor.tscn
+msgid "Armor"
+msgstr "Panzerung"
+
+#: game/ship/rooms/lower/armory.tscn
+msgid "Armory"
+msgstr "Waffenkammer"
+
+#: game/ship/rooms/lower/engine_room.tscn
+msgid "Engine room"
+msgstr "Maschinenraum"
+
+#: game/ship/rooms/lower/medical_bay.tscn
+msgid "Medical bay"
+msgstr "Krankenstation"
+
+#: game/ship/rooms/lower/miners.tscn
+msgid "Miners"
+msgstr "Schürfer"
+
+#: game/ship/rooms/lower/skills.tscn
+msgid "Skills"
+msgstr "Fähigkeiten"
+
+#: game/ship/rooms/lower/weapons.tscn
+msgid "Weapons"
+msgstr "Waffen"
+
+#: game/ship/rooms/upper/bridge.tscn
+msgid "Bridge"
+msgstr "Brücke"
+
+#: game/ship/rooms/upper/cabin_1.tscn
+msgid "Cabin 1"
+msgstr "Kabine 1"
+
+#: game/ship/rooms/upper/cabin_2.tscn
+msgid "Cabin 2"
+msgstr "Kabine 2"
+
+#: game/ship/rooms/upper/cabin_3.tscn
+msgid "Cabin 3"
+msgstr "Kabine 3"
+
+#: game/ship/rooms/upper/cabin_4.tscn
+msgid "Cabin 4"
+msgstr "Kabine 4"
+
+#: game/ship/rooms/upper/cockpit.tscn
+msgid "Cockpit"
+msgstr "Cockpit"
+
+#: game/ship/rooms/upper/crew_1.tscn
+msgid "Crew 1"
+msgstr "Crew 1"
+
+#: game/ship/rooms/upper/crew_2.tscn
+msgid "Crew 2"
+msgstr "Crew 2"
+
+#: game/ship/rooms/upper/crew_3.tscn
+msgid "Crew 3"
+msgstr "Crew 3"
+
+#: game/ship/rooms/upper/crew_4.tscn
+msgid "Crew 4"
+msgstr "Crew 4"
+
+#: game/ship/rooms/upper/crew_5.tscn
+msgid "Crew 5"
+msgstr "Crew 5"
+
+#: game/ship/rooms/upper/crew_6.tscn
+msgid "Crew 6"
+msgstr "Crew 6"
+
+#: game/ship/rooms/upper/crew_7.tscn
+msgid "Crew 7"
+msgstr "Crew 7"
+
+#: game/ship/rooms/upper/crew_8.tscn
+msgid "Crew 8"
+msgstr "Crew 8"
+
+#: game/ship/rooms/upper/mess_hall.tscn
+msgid "Mess hall"
+msgstr "Messe"
+
 #: game/ship/ship.gd
 msgid "In flight"
 msgstr "Im Flug"
@@ -403,106 +503,6 @@ msgstr "Sturm"
 #: game/ship/ship.gd
 msgid "No mission"
 msgstr "Keine Mission"
-
-#: game/ship/ship.tscn
-msgid "Cockpit"
-msgstr "Cockpit"
-
-#: game/ship/ship.tscn
-msgid "Bridge"
-msgstr "Brücke"
-
-#: game/ship/ship.tscn
-msgid "Mess hall"
-msgstr "Messe"
-
-#: game/ship/ship.tscn
-msgid "Cabin 1"
-msgstr "Kabine 1"
-
-#: game/ship/ship.tscn
-msgid "Cabin 2"
-msgstr "Kabine 2"
-
-#: game/ship/ship.tscn
-msgid "Cabin 3"
-msgstr "Kabine 3"
-
-#: game/ship/ship.tscn
-msgid "Cabin 4"
-msgstr "Kabine 4"
-
-#: game/ship/ship.tscn
-msgid "Crew 1"
-msgstr "Crew 1"
-
-#: game/ship/ship.tscn
-msgid "Crew 5"
-msgstr "Crew 5"
-
-#: game/ship/ship.tscn
-msgid "Crew 2"
-msgstr "Crew 2"
-
-#: game/ship/ship.tscn
-msgid "Crew 6"
-msgstr "Crew 6"
-
-#: game/ship/ship.tscn
-msgid "Crew 3"
-msgstr "Crew 3"
-
-#: game/ship/ship.tscn
-msgid "Crew 7"
-msgstr "Crew 7"
-
-#: game/ship/ship.tscn
-msgid "Crew 4"
-msgstr "Crew 4"
-
-#: game/ship/ship.tscn
-msgid "Crew 8"
-msgstr "Crew 8"
-
-#: game/ship/ship.tscn
-msgid "Medical bay"
-msgstr "Krankenstation"
-
-#: game/ship/ship.tscn
-msgid "Engine room"
-msgstr "Maschinenraum"
-
-#: game/ship/ship.tscn
-msgid "Armory"
-msgstr "Waffenkammer"
-
-#: game/ship/ship.tscn
-msgid "Weapons"
-msgstr "Waffen"
-
-#: game/ship/ship.tscn
-msgid "Armor"
-msgstr "Panzerung"
-
-#: game/ship/ship.tscn
-msgid "Skills"
-msgstr "Fähigkeiten"
-
-#: game/ship/ship.tscn
-msgid "Miners"
-msgstr "Schürfer"
-
-#: game/ship/ship.tscn
-msgid "Cargo bay"
-msgstr "Frachtraum"
-
-#: game/ship/ship.tscn
-msgid "Armory · Upgrades\nRange · Medical · Engine"
-msgstr "Waffenkammer · Upgrades\nSchießstand · Krankenstation · Maschinenraum"
-
-#: game/ship/ship.tscn
-msgid "Lift\nMess · Cabins · Bridge"
-msgstr "Lift\nMesse · Kabinen · Brücke"
 
 #: game/ship/ship.tscn
 msgid "Cargo bay · Ramp"

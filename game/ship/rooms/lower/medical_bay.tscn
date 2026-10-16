@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://ds53bpwny3pdg"]
+
+[ext_resource type="StandardMaterial3D" uid="uid://bd4esevpwqv63" path="res://game/ship/materials/bed.tres" id="mat_bed"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_MedicalBay"]
+albedo_color = Color(0.4, 0.52, 0.5, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor_MedicalBay"]
+material = SubResource("StandardMaterial3D_floor_MedicalBay")
+size = Vector2(22.5, 11.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_respawn_pad"]
+albedo_color = Color(0.35, 0.75, 0.55, 1)
+emission_enabled = true
+emission = Color(0.35, 0.75, 0.55, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_bed"]
+material = ExtResource("mat_bed")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_respawn_pad"]
+material = SubResource("StandardMaterial3D_respawn_pad")
+top_radius = 1.0
+bottom_radius = 1.0
+height = 0.02
+radial_segments = 32
+rings = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n_1_2x0_7x2_2"]
+size = Vector3(1.2, 0.7, 2.2)
+
+[node name="MedicalBay" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_floor_MedicalBay")
+
+[node name="Light" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
+light_color = Color(0.9, 1, 0.95, 1)
+light_energy = 5.0
+spot_range = 3.8
+spot_angle = 73.7
+spot_angle_attenuation = 0.5
+
+[node name="Sign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
+pixel_size = 0.01
+text = "Medical bay"
+font_size = 96
+outline_size = 24
+uppercase = true
+
+[node name="RespawnPad" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_respawn_pad")
+
+[node name="Bed1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.35, -4.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bed1"]
+shape = SubResource("BoxShape3D_n_1_2x0_7x2_2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bed1"]
+transform = Transform3D(1.2, 0, 0, 0, 0.7, 0, 0, 0, 2.2, 0, 0, 0)
+mesh = SubResource("BoxMesh_bed")
+
+[node name="Bed2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.35, -4.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bed2"]
+shape = SubResource("BoxShape3D_n_1_2x0_7x2_2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bed2"]
+transform = Transform3D(1.2, 0, 0, 0, 0.7, 0, 0, 0, 2.2, 0, 0, 0)
+mesh = SubResource("BoxMesh_bed")
+
+[node name="Bed3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.35, -4.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bed3"]
+shape = SubResource("BoxShape3D_n_1_2x0_7x2_2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bed3"]
+transform = Transform3D(1.2, 0, 0, 0, 0.7, 0, 0, 0, 2.2, 0, 0, 0)
+mesh = SubResource("BoxMesh_bed")
+
+[node name="Bed4" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.35, -4.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bed4"]
+shape = SubResource("BoxShape3D_n_1_2x0_7x2_2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bed4"]
+transform = Transform3D(1.2, 0, 0, 0, 0.7, 0, 0, 0, 2.2, 0, 0, 0)
+mesh = SubResource("BoxMesh_bed")

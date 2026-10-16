@@ -1,0 +1,96 @@
+[gd_scene format=3 uid="uid://mvfidldmdr6j"]
+
+[ext_resource type="Script" uid="uid://cultwlahxlbt4" path="res://game/ship/floor_guide.gd" id="8_floor_guide"]
+[ext_resource type="StandardMaterial3D" uid="uid://bpk3xig2xe43q" path="res://game/ship/materials/guide.tres" id="mat_guide"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_CargoBay"]
+albedo_color = Color(0.4, 0.42, 0.45, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor_CargoBay"]
+material = SubResource("StandardMaterial3D_floor_CargoBay")
+size = Vector2(17.5, 29)
+
+[sub_resource type="PrismMesh" id="PrismMesh_arrow"]
+material = ExtResource("mat_guide")
+size = Vector3(0.9, 0.7, 0.02)
+
+[sub_resource type="BoxMesh" id="BoxMesh_arrow_shaft"]
+material = ExtResource("mat_guide")
+size = Vector3(0.3, 0.6, 0.02)
+
+[node name="CargoBay" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_floor_CargoBay")
+
+[node name="Light" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 8.2, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 5.0
+spot_range = 8.3
+spot_angle = 64.2
+spot_angle_attenuation = 0.5
+
+[node name="Sign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -3.6, 0.02, 5.5)
+pixel_size = 0.01
+text = "Cargo bay"
+font_size = 96
+outline_size = 24
+uppercase = true
+
+[node name="Guides" type="Node3D" parent="."]
+
+[node name="ToLowerDeck" type="Node3D" parent="Guides"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, 1.2)
+script = ExtResource("8_floor_guide")
+
+[node name="Arrow" type="Node3D" parent="Guides/ToLowerDeck"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.59, 0.02, 0)
+
+[node name="Head" type="MeshInstance3D" parent="Guides/ToLowerDeck/Arrow"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
+cast_shadow = 0
+mesh = SubResource("PrismMesh_arrow")
+
+[node name="Shaft" type="MeshInstance3D" parent="Guides/ToLowerDeck/Arrow"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_arrow_shaft")
+
+[node name="Text" type="Label3D" parent="Guides/ToLowerDeck"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
+pixel_size = 0.01
+modulate = Color(1, 0.8, 0.45, 1)
+text = "Armory · Upgrades\nRange · Medical · Engine"
+font_size = 48
+outline_size = 14
+uppercase = true
+
+[node name="ToLift" type="Node3D" parent="Guides"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.1, 0, -2.1)
+script = ExtResource("8_floor_guide")
+
+[node name="Arrow" type="Node3D" parent="Guides/ToLift"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -1.14)
+
+[node name="Head" type="MeshInstance3D" parent="Guides/ToLift/Arrow"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
+cast_shadow = 0
+mesh = SubResource("PrismMesh_arrow")
+
+[node name="Shaft" type="MeshInstance3D" parent="Guides/ToLift/Arrow"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_arrow_shaft")
+
+[node name="Text" type="Label3D" parent="Guides/ToLift"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
+pixel_size = 0.01
+modulate = Color(1, 0.8, 0.45, 1)
+text = "Lift\nMess · Cabins · Bridge"
+font_size = 48
+outline_size = 14
+uppercase = true

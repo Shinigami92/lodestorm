@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="Upgrade" format=3]
+[gd_resource type="Resource" script_class="Upgrade" format=3 uid="uid://df5cle300mt58"]
 
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade_level.gd" id="1_level"]
-[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="2_ore"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_kyrite.tres" id="3_kyrite"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_olvane.tres" id="4_green"]
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade.gd" id="5_upgrade"]
+[ext_resource type="Script" uid="uid://c8jhtshxvf4c1" path="res://scripts/upgrades/upgrade_level.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://scripts/mining/ore_type.gd" id="2_ore"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://scenes/mining/ores/ore_kyrite.tres" id="3_kyrite"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://scenes/mining/ores/ore_olvane.tres" id="4_green"]
+[ext_resource type="Script" uid="uid://4n5uapxvab0b" path="res://scripts/upgrades/upgrade.gd" id="5_upgrade"]
 
 [sub_resource type="Resource" id="Resource_mk2"]
 script = ExtResource("1_level")

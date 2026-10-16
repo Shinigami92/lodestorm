@@ -1,8 +1,8 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d08cgpg47au8u"]
 
-[ext_resource type="Script" path="res://scripts/ship/ore_hold.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/hold_card.tscn" id="3_card"]
+[ext_resource type="Script" uid="uid://d0nshthchaqdo" path="res://scripts/ship/ore_hold.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://bcuw77ni4tugy" path="res://scenes/ui/hold_card.tscn" id="3_card"]
 
 [node name="OreHold" type="Node3D"]
 script = ExtResource("1_script")

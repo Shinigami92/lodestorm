@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://blrohu00nab0m"]
 
-[ext_resource type="Script" path="res://scripts/weapons/ranged_weapon.gd" id="1_script"]
-[ext_resource type="Resource" path="res://scenes/weapons/shotgun_settings.tres" id="2_settings"]
-[ext_resource type="PackedScene" path="res://scenes/weapons/projectile.tscn" id="3_projectile"]
-[ext_resource type="Script" path="res://scripts/upgrades/mk_pips.gd" id="9_pips"]
-[ext_resource type="Script" path="res://scripts/weapons/shell_strip.gd" id="10_gauge"]
+[ext_resource type="Script" uid="uid://b4ej2yxcxsvyb" path="res://scripts/weapons/ranged_weapon.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://m1hasm0but8f" path="res://scenes/weapons/shotgun_settings.tres" id="2_settings"]
+[ext_resource type="PackedScene" uid="uid://dd7r01nggolxw" path="res://scenes/weapons/projectile.tscn" id="3_projectile"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://scripts/upgrades/mk_pips.gd" id="9_pips"]
+[ext_resource type="Script" uid="uid://3611pxyg528a" path="res://scripts/weapons/shell_strip.gd" id="10_gauge"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
 albedo_color = Color(0.13, 0.135, 0.145, 1)

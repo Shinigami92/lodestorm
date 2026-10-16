@@ -1,13 +1,13 @@
-[gd_resource type="Resource" script_class="StarSystem" format=3]
+[gd_resource type="Resource" script_class="StarSystem" format=3 uid="uid://bw4gdvse5p2xr"]
 
-[ext_resource type="Script" path="res://scripts/world/star_system.gd" id="1_system"]
-[ext_resource type="Script" path="res://scripts/world/celestial_body.gd" id="2_body"]
-[ext_resource type="Script" path="res://scripts/world/region.gd" id="3_region"]
-[ext_resource type="Resource" path="res://scenes/locations/biomes/dust.tres" id="4_dust"]
-[ext_resource type="Resource" path="res://scenes/locations/biomes/overgrowth.tres" id="5_overgrowth"]
-[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="6_ore_type"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_meridine.tres" id="ore_meridine"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_emerin.tres" id="ore_emerin"]
+[ext_resource type="Script" uid="uid://2evkrl3ge8de" path="res://scripts/world/star_system.gd" id="1_system"]
+[ext_resource type="Script" uid="uid://b6huhxdwk744g" path="res://scripts/world/celestial_body.gd" id="2_body"]
+[ext_resource type="Script" uid="uid://c3c4hiep58pra" path="res://scripts/world/region.gd" id="3_region"]
+[ext_resource type="Resource" uid="uid://dc5iplqjbh04" path="res://scenes/locations/biomes/dust.tres" id="4_dust"]
+[ext_resource type="Resource" uid="uid://caubseewpqqlm" path="res://scenes/locations/biomes/overgrowth.tres" id="5_overgrowth"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://scripts/mining/ore_type.gd" id="6_ore_type"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://scenes/mining/ores/ore_meridine.tres" id="ore_meridine"]
+[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://scenes/mining/ores/ore_emerin.tres" id="ore_emerin"]
 
 [sub_resource type="Resource" id="Resource_redscar"]
 script = ExtResource("3_region")

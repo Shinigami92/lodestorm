@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://q60mjf3tw6d4"]
 
-[ext_resource type="Script" path="res://scripts/ui/skill_station.gd" id="1_script"]
-[ext_resource type="Resource" path="res://scenes/skills/skill_tree.tres" id="2_tree"]
-[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="3_panel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/skill_card.tscn" id="4_card"]
-[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="5_use"]
+[ext_resource type="Script" uid="uid://cufm6iihtumw" path="res://scripts/ui/skill_station.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://ch0x746djwbcx" path="res://scenes/skills/skill_tree.tres" id="2_tree"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://scenes/ui/world_panel.tscn" id="3_panel"]
+[ext_resource type="PackedScene" uid="uid://dn07no8cv20yv" path="res://scenes/ui/skill_card.tscn" id="4_card"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://scripts/interaction/interactable.gd" id="5_use"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.17, 0.175, 0.185, 1)

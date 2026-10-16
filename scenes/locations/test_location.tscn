@@ -1,11 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://1vy0cnxr1pkx"]
 
-[ext_resource type="PackedScene" path="res://scenes/mining/ore_node.tscn" id="1_ore_node"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_kyrite.tres" id="2_ore_kyrite"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_olvane.tres" id="3_ore_olvane"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_vyrel.tres" id="4_ore_vyrel"]
-[ext_resource type="PackedScene" path="res://scenes/aliens/alien_nest.tscn" id="5_alien_nest"]
-[ext_resource type="Script" path="res://scripts/locations/location_navigation.gd" id="6_navigation"]
+[ext_resource type="PackedScene" uid="uid://cu5w8rpy5ilp8" path="res://scenes/mining/ore_node.tscn" id="1_ore_node"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://scenes/mining/ores/ore_kyrite.tres" id="2_ore_kyrite"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://scenes/mining/ores/ore_olvane.tres" id="3_ore_olvane"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://scenes/mining/ores/ore_vyrel.tres" id="4_ore_vyrel"]
+[ext_resource type="PackedScene" uid="uid://beugpk5q3qoe1" path="res://scenes/aliens/alien_nest.tscn" id="5_alien_nest"]
+[ext_resource type="Script" uid="uid://bqbxcchqpwytf" path="res://scripts/locations/location_navigation.gd" id="6_navigation"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(166, 1, 50)

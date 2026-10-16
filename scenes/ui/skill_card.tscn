@@ -1,8 +1,8 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dn07no8cv20yv"]
 
-[ext_resource type="Script" path="res://scripts/ui/skill_card.gd" id="1_script"]
-[ext_resource type="Theme" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
-[ext_resource type="Script" path="res://scripts/ui/ore_cost.gd" id="3_cost"]
+[ext_resource type="Script" uid="uid://c521sdusgfvx" path="res://scripts/ui/skill_card.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://3cpi3icxde12" path="res://scripts/ui/ore_cost.gd" id="3_cost"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 24.0

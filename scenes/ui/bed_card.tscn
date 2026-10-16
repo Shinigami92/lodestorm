@@ -1,7 +1,7 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dsqgroy83u2bd"]
 
-[ext_resource type="Script" path="res://scripts/ui/bed_card.gd" id="1_script"]
-[ext_resource type="Theme" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://csh65iwr7ss8w" path="res://scripts/ui/bed_card.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 24.0

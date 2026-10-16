@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="Skill" format=3]
+[gd_resource type="Resource" script_class="Skill" format=3 uid="uid://c381sba8246gm"]
 
-[ext_resource type="Script" path="res://scripts/skills/skill_rank.gd" id="1_rank"]
-[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="2_ore_type"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_kyrite.tres" id="ore_kyrite"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_olvane.tres" id="ore_olvane"]
-[ext_resource type="Resource" path="res://scenes/skills/ore_scanner.tres" id="requires"]
-[ext_resource type="Script" path="res://scripts/skills/skill.gd" id="9_skill"]
+[ext_resource type="Script" uid="uid://c8krrfwmuxjq1" path="res://scripts/skills/skill_rank.gd" id="1_rank"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://scripts/mining/ore_type.gd" id="2_ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://scenes/mining/ores/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://scenes/mining/ores/ore_olvane.tres" id="ore_olvane"]
+[ext_resource type="Resource" uid="uid://covyq0kdrqkpm" path="res://scenes/skills/ore_scanner.tres" id="requires"]
+[ext_resource type="Script" uid="uid://dn3kp4h0ew8sm" path="res://scripts/skills/skill.gd" id="9_skill"]
 
 [sub_resource type="Resource" id="Rank_1"]
 script = ExtResource("1_rank")

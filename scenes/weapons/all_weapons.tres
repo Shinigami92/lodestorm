@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="Arsenal" format=3]
+[gd_resource type="Resource" script_class="Arsenal" format=3 uid="uid://ca7jx6rwpdvbk"]
 
-[ext_resource type="Script" path="res://scripts/weapons/arsenal.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/weapons/weapon_type.gd" id="2_weapon_type"]
-[ext_resource type="Resource" path="res://scenes/weapons/types/blaster.tres" id="3_blaster"]
-[ext_resource type="Resource" path="res://scenes/weapons/types/shotgun.tres" id="4_shotgun"]
-[ext_resource type="Resource" path="res://scenes/weapons/types/hammer.tres" id="5_hammer"]
+[ext_resource type="Script" uid="uid://870eo5ge05ql" path="res://scripts/weapons/arsenal.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://scripts/weapons/weapon_type.gd" id="2_weapon_type"]
+[ext_resource type="Resource" uid="uid://bcy70upxk1eyk" path="res://scenes/weapons/types/blaster.tres" id="3_blaster"]
+[ext_resource type="Resource" uid="uid://7jm5s1jr48n5" path="res://scenes/weapons/types/shotgun.tres" id="4_shotgun"]
+[ext_resource type="Resource" uid="uid://bpp6gvbope5wb" path="res://scenes/weapons/types/hammer.tres" id="5_hammer"]
 
 [resource]
 script = ExtResource("1_script")

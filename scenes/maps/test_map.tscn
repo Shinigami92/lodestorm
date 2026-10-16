@@ -1,13 +1,13 @@
 [gd_scene format=3 uid="uid://d3vsnxi2l5yo2"]
 
-[ext_resource type="PackedScene" path="res://scenes/locations/generated_location.tscn" id="1_location"]
-[ext_resource type="PackedScene" path="res://scenes/ship/ship.tscn" id="2_ship"]
-[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
-[ext_resource type="PackedScene" path="res://scenes/camera/iso_camera_rig.tscn" id="4_camera"]
+[ext_resource type="PackedScene" uid="uid://buwqgu3osljqu" path="res://scenes/locations/generated_location.tscn" id="1_location"]
+[ext_resource type="PackedScene" uid="uid://3u1ip4gaomfq" path="res://scenes/ship/ship.tscn" id="2_ship"]
+[ext_resource type="PackedScene" uid="uid://xfwa58ktasv3" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://d0xrpkjclw8rh" path="res://scenes/camera/iso_camera_rig.tscn" id="4_camera"]
 [ext_resource type="Script" uid="uid://ee6jykh51n8m" path="res://scripts/mission/mission.gd" id="5_mission"]
-[ext_resource type="Resource" path="res://scenes/mission/mission_settings.tres" id="6_mission_settings"]
+[ext_resource type="Resource" uid="uid://drdo54n6me45h" path="res://scenes/mission/mission_settings.tres" id="6_mission_settings"]
 [ext_resource type="Script" uid="uid://bk77ctab6xxa0" path="res://scripts/mission/weather.gd" id="7_weather"]
-[ext_resource type="Script" path="res://scripts/save/save_game.gd" id="8_save_game"]
+[ext_resource type="Script" uid="uid://b4p7dojarbr0f" path="res://scripts/save/save_game.gd" id="8_save_game"]
 
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1

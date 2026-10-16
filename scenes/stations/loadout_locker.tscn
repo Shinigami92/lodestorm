@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dvjycwpwhh0kw"]
 
-[ext_resource type="Script" path="res://scripts/ui/loadout_station.gd" id="1_script"]
-[ext_resource type="Resource" path="res://scenes/weapons/all_weapons.tres" id="2_weapons"]
-[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="3_panel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/loadout_card.tscn" id="4_card"]
-[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="5_use"]
+[ext_resource type="Script" uid="uid://c8pdsr3g2riyu" path="res://scripts/ui/loadout_station.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://ca7jx6rwpdvbk" path="res://scenes/weapons/all_weapons.tres" id="2_weapons"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://scenes/ui/world_panel.tscn" id="3_panel"]
+[ext_resource type="PackedScene" uid="uid://c1yqvikxucboi" path="res://scenes/ui/loadout_card.tscn" id="4_card"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://scripts/interaction/interactable.gd" id="5_use"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.17, 0.175, 0.185, 1)

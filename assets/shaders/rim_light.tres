@@ -1,6 +1,6 @@
-[gd_resource type="ShaderMaterial" format=3]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://c3ugtgrs1cj2n"]
 
-[ext_resource type="Shader" path="res://assets/shaders/rim_light.gdshader" id="1_shader"]
+[ext_resource type="Shader" uid="uid://bpempsfanaxii" path="res://assets/shaders/rim_light.gdshader" id="1_shader"]
 
 [resource]
 render_priority = 1

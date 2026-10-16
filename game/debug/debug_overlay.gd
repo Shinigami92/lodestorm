@@ -375,7 +375,10 @@ func _add_slider(box: VBoxContainer, resource: Resource, path: String, row: Arra
 	value_label.text = _format(value, slider.step)
 	slider.value_changed.connect(
 		func(new_value: float) -> void:
-			resource.set(property, roundi(new_value) if whole else new_value)
+			if whole:
+				resource.set(property, roundi(new_value))
+			else:
+				resource.set(property, new_value)
 			value_label.text = _format(new_value, slider.step)
 	)
 

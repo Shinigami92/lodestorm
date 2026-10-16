@@ -63,10 +63,10 @@ func test_ship_shows_translated_texts() -> void:
 	TranslationServer.set_locale("de")
 	var map: Node3D = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(map)
-	var sign: Label3D = map.get_node("Ship/Rooms/Upper/Bridge/Sign") as Label3D
-	assert_eq(sign.text, "Bridge", "the scene keeps the English text")
-	assert_eq(sign.tr(sign.text), "Brücke")
-	assert_eq(sign.auto_translate_mode, Node.AUTO_TRANSLATE_MODE_INHERIT)
+	var room_sign: Label3D = map.get_node("Ship/Rooms/Upper/Bridge/Sign") as Label3D
+	assert_eq(room_sign.text, "Bridge", "the scene keeps the English text")
+	assert_eq(room_sign.tr(room_sign.text), "Brücke")
+	assert_eq(room_sign.auto_translate_mode, Node.AUTO_TRANSLATE_MODE_INHERIT)
 	var ship: Ship = map.get_node("Ship") as Ship
 	var mission: Mission = map.get_node("Mission") as Mission
 	mission.state = Mission.State.RETURNED

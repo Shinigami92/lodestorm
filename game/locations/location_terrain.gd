@@ -128,6 +128,7 @@ func reachable_from(start: Vector2, max_slope: float) -> PackedByteArray:
 		var current: int = queue[head]
 		head += 1
 		var x: int = current % (cells + 1)
+		@warning_ignore("integer_division")
 		var z: int = current / (cells + 1)
 		for offset: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
 			var nx: int = x + offset.x

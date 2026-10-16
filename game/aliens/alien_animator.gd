@@ -34,9 +34,9 @@ func setup(model: Node3D) -> void:
 	life.set_input_name(1, "dead")
 	life.set_input_reset(1, true)
 
-	var attack := AnimationNodeOneShot.new()
-	attack.fadein_time = 0.05
-	attack.fadeout_time = 0.15
+	var strike := AnimationNodeOneShot.new()
+	strike.fadein_time = 0.05
+	strike.fadeout_time = 0.15
 
 	var blend := AnimationNodeBlendTree.new()
 	blend.add_node(&"idle", _clip(player, &"Idle"))
@@ -44,7 +44,7 @@ func setup(model: Node3D) -> void:
 	blend.add_node(&"run_speed", AnimationNodeTimeScale.new())
 	blend.add_node(&"move", AnimationNodeBlend2.new())
 	blend.add_node(&"attack_clip", _clip(player, &"Attack", false))
-	blend.add_node(&"attack", attack)
+	blend.add_node(&"attack", strike)
 	blend.add_node(&"die", _clip(player, &"Die", false))
 	blend.add_node(&"life", life)
 	blend.connect_node(&"run_speed", 0, &"run")

@@ -154,8 +154,8 @@ func _shortcut(event: InputEvent) -> bool:
 	return false
 
 
-func _cycle(step: int) -> void:
-	selected_slot = posmod(selected_slot + step, _cradles.size())
+func _cycle(step_by: int) -> void:
+	selected_slot = posmod(selected_slot + step_by, _cradles.size())
 	_show_selected_slot()
 	refresh()
 

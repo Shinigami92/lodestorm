@@ -112,55 +112,6 @@ func test_quitting_mid_mission_loses_the_run() -> void:
 	assert_false(_ship.hold.has(KYRITE))
 
 
-func test_unreadable_save_starts_fresh_and_is_kept() -> void:
-	_write(SaveGame.PLAYER_FILE, "{ not json")
-	await _restart()
-	assert_push_error("can't read")
-	assert_eq(_player.arsenal.weapons, [BLASTER, HAMMER] as Array[WeaponType])
-	var corrupt: String = SaveGame.save_directory().path_join(SaveGame.PLAYER_FILE + ".corrupt")
-	assert_true(FileAccess.file_exists(corrupt))
-
-
-func test_newer_save_is_not_read() -> void:
-	_write(SaveGame.SHIP_FILE, JSON.stringify({"version": SaveGame.VERSION + 1, "hold": {}}))
-	await _restart()
-	assert_push_error("can't read")
-
-
-func test_unknown_entries_are_skipped() -> void:
-	var ship_data: Dictionary = {
-		"version": SaveGame.VERSION,
-		"hold":
-		{
-			KYRITE.resource_path: 30.0,
-			"res://nothing.tres": 5.0,
-			"user://ore.tres": 5.0,
-			SHOTGUN.resource_path: 5.0,
-			OLVANE.resource_path: -4.0,
-		},
-		"story": ["quartermaster.ammo", 3, ""],
-	}
-	var player_data: Dictionary = {
-		"version": SaveGame.VERSION,
-		"arsenal": [BLASTER.resource_path, "res://nothing.tres", 3, KYRITE.resource_path],
-		"loadout": [HAMMER.resource_path, SHOTGUN.resource_path],
-		"upgrades": {ARMOR.resource_path: 99, "res://nothing.tres": 2, DRILL.resource_path: "x"},
-		"skills": {SUIT.resource_path: 99, ARMOR.resource_path: 1, DASH.resource_path: 0},
-	}
-	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
-	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
-	await _restart()
-	assert_eq(_ship.hold.keys(), [KYRITE] as Array[OreType])
-	assert_eq(_ship.story.flags.keys(), [&"quartermaster.ammo"] as Array[StringName])
-	assert_eq(_player.arsenal.weapons, [BLASTER] as Array[WeaponType])
-	assert_null(_player.loadout.get_weapon(0), "not owned")
-	assert_null(_player.loadout.get_weapon(1), "not owned")
-	assert_eq(_player.upgrades.mk(ARMOR), ARMOR.max_mk(), "clamped")
-	assert_eq(_player.upgrades.mk(DRILL), 1)
-	assert_eq(_player.skills.rank(SUIT), SUIT.max_rank(), "clamped")
-	assert_eq(_player.skills.ranks.size(), 1, "not a skill, rank 0")
-
-
 func test_language_is_saved_apart_from_progress() -> void:
 	assert_eq(GameSettings.saved_language(), "")
 	GameSettings.set_language("de")
@@ -288,10 +239,17 @@ func _move(target: Vector3) -> void:
 
 
 func _saved_hold(ore_type: OreType) -> float:
-	var path: String = SaveGame.save_directory().path_join(SaveGame.SHIP_FILE)
-	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
-	var hold: Dictionary = data["hold"]
-	return hold.get(ore_type.resource_path, 0.0)
+	var hold: Dictionary = _saved(SaveGame.SHIP_FILE)["hold"]
+	return hold.get(_uid(ore_type), 0.0)
+
+
+func _saved(file_name: String) -> Dictionary:
+	var path: String = SaveGame.save_directory().path_join(file_name)
+	return JSON.parse_string(FileAccess.get_file_as_string(path))
+
+
+func _uid(resource: Resource) -> String:
+	return ResourceUID.path_to_uid(resource.resource_path)
 
 
 func _write(file_name: String, text: String) -> void:

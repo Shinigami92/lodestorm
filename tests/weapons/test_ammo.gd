@@ -130,6 +130,7 @@ func test_counter_shows_the_loaded_share_and_warns() -> void:
 	var blaster := _blaster()
 	var gauge := blaster.get_node("AmmoGauge") as AmmoGauge
 	assert_eq(_lit_segments(gauge, blaster), 6)
+	@warning_ignore("integer_division")
 	blaster.rounds = blaster.capacity() / 2
 	assert_eq(_lit_segments(gauge, blaster), 3)
 	blaster.rounds = 2

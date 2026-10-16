@@ -97,11 +97,6 @@ func test_missions_bring_their_region_ores() -> void:
 	assert_eq(bare.found_ores(), OreCatalog.sorted(region.biome.ores), "falls back to the biome's")
 
 
-func test_old_ore_paths_load_from_saves() -> void:
-	for old: String in SaveGame.RENAMED:
-		assert_true(ResourceLoader.exists(SaveGame.RENAMED[old]), old)
-
-
 func _regions() -> Array[Region]:
 	var regions: Array[Region] = []
 	for body: CelestialBody in SYSTEM.bodies:

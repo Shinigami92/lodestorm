@@ -105,11 +105,11 @@ func lay_on_bench(weapon_type: WeaponType) -> void:
 		select(_bench_parts[0] if not _bench_parts.is_empty() else null)
 
 
-func _cycle(step: int) -> void:
+func _cycle(step_by: int) -> void:
 	if not weapons or weapons.weapons.is_empty():
 		return
 	var index: int = weapons.weapons.find(bench_weapon)
-	lay_on_bench(weapons.weapons[posmod(index + step, weapons.weapons.size())])
+	lay_on_bench(weapons.weapons[posmod(index + step_by, weapons.weapons.size())])
 
 
 func _picked(part: StationPart) -> void:

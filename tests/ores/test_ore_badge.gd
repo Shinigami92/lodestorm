@@ -50,6 +50,7 @@ func test_ore_without_icon_gets_a_drawn_crystal() -> void:
 	assert_eq(texture, OreBadge.fallback_icon())
 	assert_eq(badge.get_shown_name(), "Testite")
 	var image: Image = texture.get_image()
+	@warning_ignore("integer_division")
 	var center: Color = image.get_pixel(OreBadge.FALLBACK_SIZE / 2, OreBadge.FALLBACK_SIZE / 2)
 	assert_eq(center.a, 1.0, "solid inside")
 	assert_eq(image.get_pixel(0, 0).a, 0.0, "transparent around it")

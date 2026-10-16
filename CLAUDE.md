@@ -10,7 +10,7 @@ Dark, realistic sci-fi 3D isometric mining/action game (Godot, version in `.godo
 ## Working agreements
 
 - Keep the docs up to date when decisions change; values marked **TBD (playtest)** are tuned later, don't invent final numbers.
-- Static typing everywhere (typing warnings are errors); code must pass `tools/lint.sh` (`gdformat --check`, `gdlint`; `ruff` for the Python asset scripts) and `tools/test.sh` (GUT, headless). CI enforces both; no git hooks.
+- Static typing everywhere; every GDScript warning is an error (a script with one doesn't load); code must pass `tools/lint.sh` (`gdformat --check`, `gdlint`; `ruff` for the Python asset scripts) and `tools/test.sh` (GUT, headless). CI enforces both; no git hooks.
 - Must run on Windows (Git Bash), Linux and macOS: POSIX shell scripts, no machine-specific paths, LF line endings — see `docs/TECHNICAL.md` (Cross-platform development).
 - Versions have a single source of truth and are referenced, never repeated: Godot in `.godot-version`, godot-ai in `.mcp.json` (its `addons/godot_ai/plugin.cfg` must match), gdtoolkit and ruff in `requirements-dev.txt`, GUT in `addons/gut/plugin.cfg`.
 - No 2D HUD: game information lives in the world or on the player; menus are 3D panels in the world (see `docs/GAME_DESIGN.md`, UI). 2D only for developer tools.

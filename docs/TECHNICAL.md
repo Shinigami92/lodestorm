@@ -20,11 +20,12 @@
 | `gdformat` (same toolkit) | Formatting, checked with `gdformat --check` — config in `gdformatrc` |
 | Godot GDScript warnings | Enforce static typing: `untyped_declaration`, `unsafe_property_access`, `unsafe_method_access`, `unsafe_call_argument` are **errors** in the project settings, so a violating script fails to load. `addons/` is exempt (Godot's default `directory_rules`) |
 | Unit tests | [GUT](https://github.com/bitwes/Gut) in `addons/gut/` (version in its `plugin.cfg`, must support the pinned Godot version), tests in `tests/` (`test_*.gd`, config `.gutconfig.json`), run headless |
+| [ruff](https://docs.astral.sh/ruff/) | Formatting and linting of the Python scripts (Blender asset scripts, `tools/blender/`) — config in `ruff.toml` (ruff's default rules, only overrides; line length 120 because the asset scripts are full of coordinate tables; target: Blender's bundled Python) |
 | `.editorconfig` | Consistent whitespace/line endings across editors |
 
 All checks are enforced by CI on every pull request (failing jobs block the merge), not by local git hooks. The same scripts run locally and in CI:
 
-- `tools/lint.sh` — `gdformat --check` + `gdlint` over the project (`addons/`, `local/`, `tmp/` excluded in the rc files). gdtoolkit is pinned in `requirements-dev.txt`: `pip install -r requirements-dev.txt`, ideally in a `.venv/` (gitignored).
+- `tools/lint.sh` — `gdformat --check` + `gdlint` over the project (`addons/`, `local/`, `tmp/` excluded in the rc files), then `ruff format --check` + `ruff check` (ruff skips what git ignores, and `addons/`); `tools/lint.sh gdscript` or `tools/lint.sh python` runs only one half. gdtoolkit and ruff are pinned in `requirements-dev.txt`: `pip install -r requirements-dev.txt`, ideally in a `.venv/` (gitignored).
 - `tools/test.sh` — imports the project (`tools/import.sh`: fails if the import prints any `ERROR`, e.g. an LFS pointer instead of a file), then runs GUT headless with `$GODOT4_EDITOR`, split round-robin over `TEST_JOBS` parallel processes (default 4; each one's output is printed when all are done). Extra arguments go to GUT in a single process instead (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
 - Tests run with `--fixed-fps 60` (the physics tick rate): every frame advances exactly one physics tick and simulated time doesn't wait for the wall clock, so `wait_seconds` / `wait_physics_frames` only take as long as computing the frames. Anything that runs in real time (worker threads, e.g. location planning) needs a generous `wait_until` timeout, since simulated seconds pass much faster.
 - GUT silently skips test scripts that fail to parse, so `tests/test_scripts_parse.gd` loads every project script and fails on parse or typing errors.
@@ -145,14 +146,14 @@ Input while used: mouse motion hovers the nearest pickable part, a click selects
 
 | Workflow | Trigger | Steps |
 |---|---|---|
-| `ci.yml` | PR, merge queue, push to `main` | gdformat check, gdlint, unit tests (headless Godot), import check |
+| `ci.yml` | PR, merge queue, push to `main` | gdformat check, gdlint, ruff, unit tests (headless Godot), import check |
 | `build.yml` | push to `main` | Export Windows + Linux (+ macOS later) builds, upload as workflow artifacts |
 | `release.yml` | git tag `v*` | Export builds, create GitHub Release with zipped builds attached |
 | `steam-deploy.yml` (later) | release / manual | Upload build to Steam via SteamCMD to a beta branch |
 
 Godot is run headless in CI with matching export templates (version read from `.godot-version`).
 
-`ci.yml` has two jobs, `Lint` (`tools/lint.sh`) and `Test` (`tools/test.sh`); both are required status checks in the `main` ruleset, so a failing job blocks the merge. The Godot binary and the Git LFS objects are cached between runs (LFS bandwidth quota). The shared setup steps are composite actions in `.github/actions/` (`lfs-pull`, `setup-godot`), so workflows don't repeat them.
+`ci.yml` has three jobs, `Lint GDScript` (`tools/lint.sh gdscript`), `Lint Python` (`tools/lint.sh python`) and `Test` (`tools/test.sh`); all are required status checks in the `main` ruleset, so a failing job blocks the merge. The Godot binary and the Git LFS objects are cached between runs (LFS bandwidth quota). The shared setup steps are composite actions in `.github/actions/` (`lfs-pull`, `setup-godot`), so workflows don't repeat them.
 
 `build.yml` runs `tools/export.sh` (also usable locally): it imports the project, then exports a release build of every preset in `export_presets.cfg` to its export path under `builds/` (gitignored); CI uploads them as the `lodestorm-windows` / `lodestorm-linux` workflow artifacts. Presets: Windows Desktop and Linux, x86_64, PCK next to the binary, `tests/` and `addons/gut/` excluded; the godot-ai plugin strips its own autoload from exports. `application/modify_resources` (exe icon and metadata) is off because it needs rcedit, and Wine on Linux CI; turn it on with the release work (M8). `export_presets.cfg` is committed: Godot keeps signing credentials in `.godot/export_credentials.cfg`, never put them in the presets.
 
@@ -165,7 +166,7 @@ Export templates: the full archive is >1 GB, so `setup-godot` (with `export-temp
 | Dependency | Source of truth | Note |
 |---|---|---|
 | GitHub Actions | `.github/workflows/*.yml`, `.github/actions/*/action.yml` | pinned to commit digests (`config:best-practices`) |
-| gdtoolkit | `requirements-dev.txt` | |
+| gdtoolkit, ruff | `requirements-dev.txt` | |
 | Godot | `.godot-version` | own PR (only `-stable` releases); open the project in the new editor so it updates `project.godot`, check GUT compatibility |
 | godot-ai | `.mcp.json` | own PR; replace `addons/godot_ai/` with the matching plugin in the same PR, `tests/test_addon_versions.gd` fails until the versions match |
 

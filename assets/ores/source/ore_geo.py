@@ -8,16 +8,18 @@ import math
 import pathlib
 import random
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-from mathutils import Matrix, Vector  # noqa: E402
+import itertools
 
-from common import T, basis, polar  # noqa: E402,F401  (re-exported for the type modules)
+import bmesh
+from mathutils import Matrix, Vector
+
+from common import T, basis, polar  # noqa: F401  (re-exported for the type modules)
 
 
 @dataclass
@@ -61,7 +63,16 @@ CLEARANCE = [
 MAX_HEIGHT = 1.08  # tallest crystal (brief: under ~1.1 m)
 MAX_RADIUS = 1.10  # crystals stay inside this radius
 # The rock base: low under the drill, low at the rim where the miner's feet stand (top of the deposit disc).
-BASE_CLEARANCE = [(0.0, 0.08), (0.14, 0.2), (0.24, 0.38), (0.32, 0.48), (1.0, 0.5), (1.08, 0.24), (1.15, 0.1), (2.0, 0.1)]
+BASE_CLEARANCE = [
+    (0.0, 0.08),
+    (0.14, 0.2),
+    (0.24, 0.38),
+    (0.32, 0.48),
+    (1.0, 0.5),
+    (1.08, 0.24),
+    (1.15, 0.1),
+    (2.0, 0.1),
+]
 DISC_R = 1.33
 
 
@@ -71,7 +82,7 @@ DISC_R = 1.33
 def table(tab: list, r: float) -> float:
     if r <= tab[0][0]:
         return tab[0][1]
-    for (r0, z0), (r1, z1) in zip(tab, tab[1:]):
+    for (r0, z0), (r1, z1) in itertools.pairwise(tab):
         if r <= r1:
             return z0 + (z1 - z0) * (r - r0) / (r1 - r0)
     return tab[-1][1]
@@ -128,8 +139,6 @@ def finish_normals(bm: bmesh.types.BMesh) -> None:
         f.smooth = False
 
 
-
-
 # --- rock shapes ------------------------------------------------------------------------------------
 
 
@@ -171,7 +180,10 @@ def slab(bm: bmesh.types.BMesh, rnd: random.Random, poly: list, heights: list, b
     cen = sum(poly, Vector((0, 0))) / n
     k = rnd.uniform(0.62, 0.8)
     rise = rnd.uniform(0.01, 0.035)
-    inner = [bm.verts.new((cen.x + (p.x - cen.x) * k, cen.y + (p.y - cen.y) * k, h + rise + rnd.uniform(-0.008, 0.012))) for p, h in zip(poly, heights)]
+    inner = [
+        bm.verts.new((cen.x + (p.x - cen.x) * k, cen.y + (p.y - cen.y) * k, h + rise + rnd.uniform(-0.008, 0.012)))
+        for p, h in zip(poly, heights)
+    ]
     top = [bm.verts.new((p.x, p.y, max(0.012, h - rnd.uniform(0.0, 0.03)))) for p, h in zip(poly, heights)]
     bot = [bm.verts.new((p.x, p.y, bottom)) for p in poly]
     for i in range(n):
@@ -181,11 +193,20 @@ def slab(bm: bmesh.types.BMesh, rnd: random.Random, poly: list, heights: list, b
     bm.faces.new(inner).smooth = False
 
 
-def geode(bm: bmesh.types.BMesh, rnd: random.Random, center: Vector, radius: float, height: float, open_dir: float) -> list:
+def geode(
+    bm: bmesh.types.BMesh, rnd: random.Random, center: Vector, radius: float, height: float, open_dir: float
+) -> list:
     """Broken-open geode shell: thick jagged rim (lower on the open side), hollow inside. Returns the inner floor
     and wall points to grow shards from."""
     seg = 14
-    profile = [(1.0, -0.05, 0.0), (1.08, 0.5, 0.03), (0.95, 1.0, 0.04), (0.72, 0.92, 0.03), (0.62, 0.45, 0.02), (0.32, 0.1, 0.01)]
+    profile = [
+        (1.0, -0.05, 0.0),
+        (1.08, 0.5, 0.03),
+        (0.95, 1.0, 0.04),
+        (0.72, 0.92, 0.03),
+        (0.62, 0.45, 0.02),
+        (0.32, 0.1, 0.01),
+    ]
     rim = []
     for i in range(seg):
         a = i / seg * 360
@@ -199,13 +220,14 @@ def geode(bm: bmesh.types.BMesh, rnd: random.Random, center: Vector, radius: flo
             a = math.radians(i / seg * 360 + rnd.uniform(-6, 6))
             r = radius * pr + rnd.uniform(-jit, jit) * radius * 2
             z = pz * rim[i] if pz > 0 else pz
-            ring.append(bm.verts.new(center + Vector((math.cos(a) * r, math.sin(a) * r, z + rnd.uniform(-0.015, 0.015)))))
+            ring.append(
+                bm.verts.new(center + Vector((math.cos(a) * r, math.sin(a) * r, z + rnd.uniform(-0.015, 0.015))))
+            )
         rings.append(ring)
     floor = bm.verts.new(center + Vector((0, 0, 0.07)))
-    for a, b in zip(rings, rings[1:]):
+    for a, b in itertools.pairwise(rings):
         for i in range(seg):
             bm.faces.new((a[i], a[(i + 1) % seg], b[(i + 1) % seg], b[i])).smooth = False
     for i in range(seg):
         bm.faces.new((rings[-1][i], rings[-1][(i + 1) % seg], floor)).smooth = False
     return [center + Vector((0, 0, 0.06))] + [v.co.copy() for v in rings[-1]] + [v.co.copy() for v in rings[-2]]
-

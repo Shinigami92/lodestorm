@@ -14,8 +14,8 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    name: Lint
+  lint-gdscript:
+    name: Lint GDScript
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,7 +32,27 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Check formatting and lint
-        run: tools/lint.sh
+        run: tools/lint.sh gdscript
+
+  lint-python:
+    name: Lint Python
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install dev tools
+        run: pip install -r requirements-dev.txt
+
+      - name: Check formatting and lint
+        run: tools/lint.sh python
 
   test:
     name: Test

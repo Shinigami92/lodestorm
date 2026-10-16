@@ -1,0 +1,21 @@
+# ruff config for the Python scripts (Blender asset scripts in assets/*/source/, tools/blender/):
+# ruff's default rules, only overrides here. Files ignored by git (tmp/, local/, .venv/) are skipped.
+extend-exclude = ["addons"]
+# Wider than gdformat's 100: the asset scripts are full of coordinate and color tables
+line-length = 120
+# Blender's bundled Python, which runs every script here
+target-version = "py313"
+
+[lint]
+ignore = [
+  # dict(a=1) reads like the bpy keyword-argument calls around it
+  "C408",
+  # zip(..., strict=True) would raise where it silently stopped at the shortest before; the scripts
+  # have no tests, and a changed bake result would only show in the re-baked assets
+  "B905",
+]
+
+[lint.isort]
+# The shared helpers in tools/blender/ and the ore kit's geometry module, put on sys.path by the
+# scripts that import them
+known-first-party = ["bake", "common", "ore_geo"]

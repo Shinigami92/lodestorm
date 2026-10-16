@@ -1,13 +1,14 @@
 """Meridine (signature, magenta, heartbeat): twisted spiral crystals, three-ridged like a drill bit, screwing
 around a winding axis as they grow and tapering to a point; some curl over into a hook."""
 
-import math  # noqa: F401
+import itertools
+import math
 import random
 
 import bmesh
-from mathutils import Matrix, Vector  # noqa: F401
+from mathutils import Matrix, Vector
 
-from ore_geo import T, OreSpec, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, cut, finish_normals, rand_unit, tilted  # noqa: F401
 
 
 def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
@@ -52,14 +53,18 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
             pos = pos + tan * seg
     apex = bm.verts.new(pos + tan * (length - bottom - body + radius * 0.5))
     n = len(sec)
-    for a, b in zip(rings, rings[1:]):
+    for a, b in itertools.pairwise(rings):
         for i in range(n):
             bm.faces.new((a[i], a[(i + 1) % n], b[(i + 1) % n], b[i]))
     for i in range(n):
         bm.faces.new((rings[-1][i], rings[-1][(i + 1) % n], apex))
     bm.faces.new(list(reversed(rings[0])))
     if rnd.random() < 0.15:  # snapped tip
-        cut(bm, Vector((0, 0, length * rnd.uniform(0.72, 0.88))), tilted(Vector((0, 0, 1)), rand_unit(rnd), rnd.uniform(20, 45)))
+        cut(
+            bm,
+            Vector((0, 0, length * rnd.uniform(0.72, 0.88))),
+            tilted(Vector((0, 0, 1)), rand_unit(rnd), rnd.uniform(20, 45)),
+        )
     bmesh.ops.rotate(bm, verts=bm.verts[:], cent=Vector(), matrix=Matrix.Rotation(rnd.uniform(0, math.tau), 3, "Z"))
     finish_normals(bm)
     return bm
@@ -75,8 +80,14 @@ ORE = OreSpec(
     wall_sizes=(0.35, 0.85),
     wall_tilt=35,
     variants={
-        "a": dict(seed=449, groups=[(100, 0.6, 4, (0.6, 1.0), 24), (230, 0.72, 3, (0.4, 0.75), 30), (345, 0.74, 2, (0.35, 0.6), 30)]),
-        "b": dict(seed=463, groups=[(50, 0.66, 3, (0.55, 0.95), 26), (170, 0.68, 3, (0.5, 0.85), 28), (290, 0.7, 3, (0.3, 0.65), 32)]),
+        "a": dict(
+            seed=449,
+            groups=[(100, 0.6, 4, (0.6, 1.0), 24), (230, 0.72, 3, (0.4, 0.75), 30), (345, 0.74, 2, (0.35, 0.6), 30)],
+        ),
+        "b": dict(
+            seed=463,
+            groups=[(50, 0.66, 3, (0.55, 0.95), 26), (170, 0.68, 3, (0.5, 0.85), 28), (290, 0.7, 3, (0.3, 0.65), 32)],
+        ),
         "wall": dict(seed=467, wall=True, count=7),
     },
 )

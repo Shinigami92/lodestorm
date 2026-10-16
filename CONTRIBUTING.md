@@ -7,7 +7,7 @@ Thanks for your interest! This guide covers how to set up the project and how ch
 - [Godot](https://godotengine.org/download), the exact version from [`.godot-version`](.godot-version) (standard build, not .NET)
 - [Git](https://git-scm.com/) with [Git LFS](https://git-lfs.com/)
 - On Windows: Git Bash (all scripts are POSIX shell; Windows, Linux and macOS are all supported for development)
-- [Python](https://www.python.org/) 3 for the GDScript formatter/linter ([gdtoolkit](https://github.com/Scony/godot-gdscript-toolkit), pinned in [`requirements-dev.txt`](requirements-dev.txt))
+- [Python](https://www.python.org/) 3 for the formatters/linters, pinned in [`requirements-dev.txt`](requirements-dev.txt): [gdtoolkit](https://github.com/Scony/godot-gdscript-toolkit) for GDScript, [ruff](https://docs.astral.sh/ruff/) for the Python asset scripts
 - Optional, for AI-assisted development with [Claude Code](https://claude.com/claude-code):
   - [uv](https://docs.astral.sh/uv/) (runs the MCP servers in [`.mcp.json`](.mcp.json))
   - [Blender](https://www.blender.org/download/) with the [Blender Lab MCP add-on](https://www.blender.org/lab/mcp-server/)
@@ -32,7 +32,7 @@ pip install -r requirements-dev.txt
 Run the same checks as CI before opening a pull request:
 
 ```sh
-tools/lint.sh   # gdformat --check + gdlint
+tools/lint.sh   # gdformat --check + gdlint, ruff format --check + ruff check (only one: gdscript | python)
 tools/test.sh   # GUT unit tests, headless (needs GODOT4_EDITOR)
 ```
 
@@ -57,6 +57,7 @@ Machine-specific paths live in environment variables, never in the repo:
 ## Code and assets
 
 - **GDScript:** statically typed everywhere, following the official style guide; code must pass `gdformat --check` and `gdlint`. Details: [Code quality](docs/TECHNICAL.md#2-code-quality).
+- **Python** (Blender asset scripts): must pass `ruff format --check` and `ruff check` (config in `ruff.toml`).
 - **Cross-platform:** no machine-specific paths, POSIX shell scripts, LF line endings, lowercase file names. Details: [Cross-platform development](docs/TECHNICAL.md#cross-platform-development).
 - **Versions** are defined once and referenced (Godot: `.godot-version`); don't hardcode them elsewhere.
 - **Tunable gameplay values** go into `Resource` files (`.tres`), not into code.

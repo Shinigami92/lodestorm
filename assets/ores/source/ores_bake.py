@@ -22,14 +22,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "assets" / "ores"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bpy  # noqa: E402
-from mathutils import Vector  # noqa: E402
+import bpy
+from mathutils import Vector
 
-import bake as B  # noqa: E402
-import common as C  # noqa: E402
+import bake as B
+import common as C
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import importlib  # noqa: E402
+import importlib
 
 ARGV = [a for a in C.args() if a != "verify"]
 if not ARGV:
@@ -131,7 +131,12 @@ def checks(job: B.Job, meshes: list) -> None:
         other = [o.name for o in root.children if o not in base and o not in crys]
         lo, hi = bounds(base)
         _clo, chi = bounds(crys)
-        rad = max(math.hypot(*(o.matrix_world @ v.co).xy) for o in crys for v in o.data.vertices if (o.matrix_world @ v.co).z > 0.04)
+        rad = max(
+            math.hypot(*(o.matrix_world @ v.co).xy)
+            for o in crys
+            for v in o.data.vertices
+            if (o.matrix_world @ v.co).z > 0.04
+        )
         print(
             f"CHECK {root.name}: root at {tuple(round(x, 3) for x in root.location)}, {len(crys)} crystals, base min"
             f" {tuple(round(x, 2) for x in lo)} max {tuple(round(x, 2) for x in hi)}; crystal top {chi.z:.2f} radius"

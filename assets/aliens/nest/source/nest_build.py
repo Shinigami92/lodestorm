@@ -27,12 +27,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "tmp" / "assets" / "nest"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Matrix, Vector, noise  # noqa: E402
+import itertools
 
-import common as C  # noqa: E402
-from common import T, basis  # noqa: E402
+import bmesh
+import bpy
+from mathutils import Matrix, Vector, noise
+
+import common as C
+from common import T, basis
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -87,7 +89,7 @@ SLIME_R = 3.25  # base radius of the slime layer between the tendril fingers
 def _chaikin(pts: list, n: int = 3) -> list:
     for _ in range(n):
         out = [pts[0]]
-        for a, b in zip(pts, pts[1:]):
+        for a, b in itertools.pairwise(pts):
             out.append((0.75 * a[0] + 0.25 * b[0], 0.75 * a[1] + 0.25 * b[1]))
             out.append((0.25 * a[0] + 0.75 * b[0], 0.25 * a[1] + 0.75 * b[1]))
         out.append(pts[-1])
@@ -97,7 +99,7 @@ def _chaikin(pts: list, n: int = 3) -> list:
 
 _PTS = _chaikin(PROFILE)
 _ARC = [0.0]
-for _a, _b in zip(_PTS, _PTS[1:]):
+for _a, _b in itertools.pairwise(_PTS):
     _ARC.append(_ARC[-1] + math.dist(_a, _b))
 PROF_LEN = _ARC[-1]
 
@@ -178,7 +180,7 @@ class Part:
     def faces(self, rows: list, mi: int, closed_u: bool, flip: bool = False) -> list:
         """Quad grid between consecutive rows of verts (each row the same length)."""
         out = []
-        for a, b in zip(rows, rows[1:]):
+        for a, b in itertools.pairwise(rows):
             n = len(a)
             for i in range(n if closed_u else n - 1):
                 j = (i + 1) % n
@@ -225,17 +227,25 @@ def catmull(ctrl: list, n: int) -> list:
         f = u - i
         p0, p1, p2, p3 = c[i], c[i + 1], c[i + 2], c[i + 3]
         out.append(
-            0.5 * ((2 * p1) + (-p0 + p2) * f + (2 * p0 - 5 * p1 + 4 * p2 - p3) * f * f + (-p0 + 3 * p1 - 3 * p2 + p3) * f**3)
+            0.5
+            * (
+                (2 * p1)
+                + (-p0 + p2) * f
+                + (2 * p0 - 5 * p1 + 4 * p2 - p3) * f * f
+                + (-p0 + 3 * p1 - 3 * p2 + p3) * f**3
+            )
         )
     return out
 
 
-def tube(part: Part, pts: list, radii: list, refs: list, sides: int, flat: float = 1.0, mi_fn=None, kind: float = 1.0) -> list:
+def tube(
+    part: Part, pts: list, radii: list, refs: list, sides: int, flat: float = 1.0, mi_fn=None, kind: float = 1.0
+) -> list:
     """Swept tube along pts with per-point radius; cross-section squashed to `flat` along refs (e.g. the
     surface normal, so tubes hug the surface). Radius 0 at the end makes a pointed tip; the start is open
     (start it buried in another surface)."""
     bm = part.bm
-    total = sum((b - a).length for a, b in zip(pts, pts[1:]))
+    total = sum((b - a).length for a, b in itertools.pairwise(pts))
     rows, faces, s = [], [], 0.0
     tip = start = None
     for i, p in enumerate(pts):
@@ -263,7 +273,7 @@ def tube(part: Part, pts: list, radii: list, refs: list, sides: int, flat: float
             v[part.flow] = (s, u, kind)
             row.append(v)
         rows.append(row)
-    for j, (ra, rb) in enumerate(zip(rows, rows[1:])):
+    for j, (ra, rb) in enumerate(itertools.pairwise(rows)):
         mi = mi_fn(j / max(len(rows) - 1, 1)) if mi_fn else 0
         faces += part.faces([ra, rb], mi, closed_u=True)
     if start is not None:
@@ -343,7 +353,7 @@ def mat_flesh() -> bpy.types.Material:
     col = C._mix_color(nt, big.outputs["Fac"], (0.095, 0.02, 0.013), (0.05, 0.013, 0.014))
     veins = C._bw(nt, _veins(nt, co, 2.6, 0.045))
     col = C._mix_color(nt, veins, col, (0.03, 0.007, 0.018))
-    s, u, kind = _flow(nt)
+    s, _u, kind = _flow(nt)
     jitter = _noise(nt, co, 3.0, 2.0, 0.5)
     phase = C._math(nt, "MULTIPLY_ADD", jitter.outputs["Fac"], 3.0, C._math(nt, "MULTIPLY", s, math.tau / 0.15))
     ribs = C._math(nt, "SINE", phase)  # -1..1 along tubes, irregular spacing
@@ -384,7 +394,7 @@ def mat_chitin() -> bpy.types.Material:
     big = _noise(nt, co, 2.2, 4.0, 0.5)
     shell = C._mix_color(nt, big.outputs["Fac"], (0.025, 0.012, 0.012), (0.055, 0.024, 0.02))
     shell = C._mix_color(nt, C._math(nt, "MULTIPLY", C._bw(nt, bands), 0.35), shell, (0.085, 0.045, 0.035))
-    s, u, kind = _flow(nt)
+    _s, u, kind = _flow(nt)
     tip = C._math(nt, "MULTIPLY", C._ramp(nt, 0.7, 1.0, u), kind)
     edge = _edges(nt, 0.012, 0.03, 0.16)
     breakup = _noise(nt, co, 9.0, 6.0, 0.6)
@@ -399,7 +409,9 @@ def mat_chitin() -> bpy.types.Material:
     rough = C._mix_float(nt, cav, rough, 0.08)
     nt.links.new(rough, bsdf.inputs["Roughness"])
     fine = _noise(nt, co, 40.0, 3.0, 0.6)
-    h = C._math(nt, "ADD", C._math(nt, "MULTIPLY", C._bw(nt, bands), 0.5), C._math(nt, "MULTIPLY", fine.outputs["Fac"], 0.2))
+    h = C._math(
+        nt, "ADD", C._math(nt, "MULTIPLY", C._bw(nt, bands), 0.5), C._math(nt, "MULTIPLY", fine.outputs["Fac"], 0.2)
+    )
     C._bump(nt, bsdf, h, 0.3, 0.008)
     return mat
 
@@ -409,7 +421,9 @@ def mat_resin() -> bpy.types.Material:
     mat, nt, bsdf = C._new_material("Resin")
     co = _coord(nt)
     streak = _noise(nt, co, 4.0, 6.0, 0.6, dist=2.0)
-    col = C._mix_color(nt, C._bw(nt, C._ramp(nt, 0.45, 0.75, streak.outputs["Fac"])), (0.016, 0.006, 0.005), (0.09, 0.035, 0.012))
+    col = C._mix_color(
+        nt, C._bw(nt, C._ramp(nt, 0.45, 0.75, streak.outputs["Fac"])), (0.016, 0.006, 0.005), (0.09, 0.035, 0.012)
+    )
     nt.links.new(col, bsdf.inputs["Base Color"])
     nt.links.new(C._mix_float(nt, streak.outputs["Fac"], 0.06, 0.2), bsdf.inputs["Roughness"])
     C._bump(nt, bsdf, streak.outputs["Fac"], 0.25, 0.01)
@@ -437,7 +451,9 @@ def mat_slime() -> bpy.types.Material:
     mat, nt, bsdf = C._new_material("Slime")
     co = _coord(nt)
     big = _noise(nt, co, 0.9, 3.0, 0.5)
-    nt.links.new(C._mix_color(nt, big.outputs["Fac"], (0.012, 0.004, 0.005), (0.032, 0.008, 0.011)), bsdf.inputs["Base Color"])
+    nt.links.new(
+        C._mix_color(nt, big.outputs["Fac"], (0.012, 0.004, 0.005), (0.032, 0.008, 0.011)), bsdf.inputs["Base Color"]
+    )
     nt.links.new(C._mix_float(nt, big.outputs["Fac"], 0.04, 0.14), bsdf.inputs["Roughness"])
     bsdf.inputs["Specular IOR Level"].default_value = 0.6
     ripple = _noise(nt, co, 2.5, 2.0, 0.4)
@@ -485,7 +501,7 @@ def build_mound_body(part: Part) -> None:
         t = j / (MOUND_RINGS - 1)
         ts.append(t)
         rows.append([part.bm.verts.new(P(i / MOUND_SEG * math.tau, t)) for i in range(MOUND_SEG)])
-    for j, (a, b) in enumerate(zip(rows, rows[1:])):
+    for j, (a, b) in enumerate(itertools.pairwise(rows)):
         mi = M_RESIN if ts[j] > T_CREST + 0.04 else M_FLESH
         faces = part.faces([a, b], mi, closed_u=True)
         orient(part, faces, (faces[0].calc_center_median() - Vector((0, 0, 0.3))) if ts[j] < T_CREST else Z, 0)
@@ -536,7 +552,11 @@ def build_plates(part: Part, rnd: random.Random) -> list:
 
 def build_sacs(part: Part, gaps: list, rnd: random.Random) -> None:
     for mid, hw in gaps:
-        for th, t, r in ((mid - hw * 0.35, t_at_z(0.32), 0.27), (mid + hw * 0.45, t_at_z(0.26), 0.22), (mid + hw * 0.05, t_at_z(0.62), 0.18)):
+        for th, t, r in (
+            (mid - hw * 0.35, t_at_z(0.32), 0.27),
+            (mid + hw * 0.45, t_at_z(0.26), 0.22),
+            (mid + hw * 0.05, t_at_z(0.62), 0.18),
+        ):
             p, n = P(th, t), N(th, t)
             c = p - n * (r * 0.15)
             rot = basis(n, Z)
@@ -607,7 +627,7 @@ def build_tendrils(part: Part, mound: Part, glands: list, rnd: random.Random) ->
         smooth_path(pts, refs, 2)
         # Radii by arc length; ground points sit half sunk into the slime.
         arcs = [0.0]
-        for a, b in zip(pts, pts[1:]):
+        for a, b in itertools.pairwise(pts):
             arcs.append(arcs[-1] + (b - a).length)
         radii = [taper(s / arcs[-1], r0, s) for s in arcs]
         radii[-1] = 0.0
@@ -721,7 +741,11 @@ def build_slime(nest, tips: list, rnd: random.Random) -> None:
         row = []
         for i in range(seg):
             a = i / seg * math.tau
-            edge = SLIME_R + 0.3 * noise.noise(Vector((math.cos(a) * 1.3, math.sin(a) * 1.3, 0.5))) + 0.08 * math.sin(11 * a)
+            edge = (
+                SLIME_R
+                + 0.3 * noise.noise(Vector((math.cos(a) * 1.3, math.sin(a) * 1.3, 0.5)))
+                + 0.08 * math.sin(11 * a)
+            )
             for ta, reach in tip_ang:
                 d = math.atan2(math.sin(a - ta), math.cos(a - ta))
                 edge += max(0.0, reach - 0.05 - edge) * math.exp(-((d / 0.24) ** 2))

@@ -25,12 +25,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "assets" / "blaster"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Matrix, Vector  # noqa: E402
+import bmesh
+import bpy
+from mathutils import Matrix, Vector
 
-import common as C  # noqa: E402
-from common import T, rx, ry  # noqa: E402
+import common as C
+from common import T, rx, ry
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -96,7 +96,9 @@ class Part(C.Part):
 
     def ycyl(self, y0, y1, r, z, seg=16, mi=0, r2=None, x=0.0, spin=0.0, scale=(1, 1, 1), caps=True):
         """Cylinder/frustum along +Y from y0 to y1 (r at y0, r2 at y1) on the axis (x, z)."""
-        return self.cyl((x, (y0 + y1) / 2, z), r, y1 - y0, seg, rot=ALONG_Y, mi=mi, r2=r2, spin=spin, scale=scale, caps=caps)
+        return self.cyl(
+            (x, (y0 + y1) / 2, z), r, y1 - y0, seg, rot=ALONG_Y, mi=mi, r2=r2, spin=spin, scale=scale, caps=caps
+        )
 
     def xcyl(self, loc, r, depth, seg=8, mi=0):
         """Short cylinder across X (bolt heads, knobs)."""
@@ -181,7 +183,10 @@ def mat_grip_rubber(name: str = "Rubber_Grip", color=(0.022, 0.021, 0.02)) -> bp
     """Rubberized grip: dull, slightly blotchy (hand wear polishes it), fine stipple in the bump."""
     mat, nt, bsdf = C._new_material(name)
     blotch = C._noise(nt, 14.0, 4.0, 0.55)
-    nt.links.new(C._mix_color(nt, blotch.outputs["Fac"], tuple(c * 0.8 for c in color), tuple(c * 1.5 for c in color)), bsdf.inputs["Base Color"])
+    nt.links.new(
+        C._mix_color(nt, blotch.outputs["Fac"], tuple(c * 0.8 for c in color), tuple(c * 1.5 for c in color)),
+        bsdf.inputs["Base Color"],
+    )
     nt.links.new(C._mix_float(nt, blotch.outputs["Fac"], 0.62, 0.9), bsdf.inputs["Roughness"])
     stipple = C._noise(nt, 900.0, 2.0, 0.5)
     C._bump(nt, bsdf, stipple.outputs["Fac"], 0.25, 0.0005)
@@ -227,7 +232,9 @@ def build_receiver(body: Part) -> None:
     )
     inset_faces(body, upper, Vector((1, 0, 0)), 0.006, -0.0015, min_area=0.004)
     body.side_prism(
-        [(-0.06, 0.052), (0.2, 0.052), (0.21, 0.07), (0.21, z0 + 0.004), (-0.08, z0 + 0.004), (-0.088, 0.075)], LOWER_W, mi=M_DARK
+        [(-0.06, 0.052), (0.2, 0.052), (0.21, 0.07), (0.21, z0 + 0.004), (-0.08, z0 + 0.004), (-0.088, 0.075)],
+        LOWER_W,
+        mi=M_DARK,
     )
     # Front end cap where shroud and emitter tube leave the receiver.
     body.box((0, y1 + 0.006, (TUBE_Z + z1) / 2 - 0.004), (UPPER_W - 0.008, 0.016, z1 - TUBE_Z + 0.02), mi=M_DARK)
@@ -285,7 +292,9 @@ def build_grip(body: Part) -> None:
     ]
     rot = rx(GRIP_TILT)
     body.side_prism(pts, 0.036, rot=rot, mi=M_RUBBER)
-    body.side_prism([(-0.036, -0.085), (0.034, -0.085), (0.036, -0.097), (-0.038, -0.097)], 0.04, rot=rot, mi=M_DARK)  # base cap
+    body.side_prism(
+        [(-0.036, -0.085), (0.034, -0.085), (0.036, -0.097), (-0.038, -0.097)], 0.04, rot=rot, mi=M_DARK
+    )  # base cap
     side = Vector((1, 0, 0))
     a, b, c = Vector((0, 0.022, 0.012)), Vector((0, 0.1, 0.012)), Vector((0, 0.112, 0.056))
     body.beam(a, b, 0.014, 0.009, side, M_DARK)
@@ -303,7 +312,9 @@ def build_cell_housing(body: Part) -> None:
     body.box(center, CELL_SIZE, rot=R, mi=M_DARK)
     body.box(CELL_PIVOT + R @ Vector((0, 0, -sz - 0.006)), (sx + 0.008, sy + 0.008, 0.014), rot=R, mi=M_PAINT)
     for s in (-1, 1):
-        body.box(center + R @ Vector((s * (sx / 2 + 0.002), 0, -0.006)), (0.004, sy - 0.014, sz - 0.03), rot=R, mi=M_STEEL)
+        body.box(
+            center + R @ Vector((s * (sx / 2 + 0.002), 0, -0.006)), (0.004, sy - 0.014, sz - 0.03), rot=R, mi=M_STEEL
+        )
     # Release latch at the front.
     body.detail = True
     body.box(CELL_PIVOT + R @ Vector((0, sy / 2 + 0.005, -0.02)), (0.02, 0.01, 0.022), rot=R, mi=M_STEEL)
@@ -360,7 +371,11 @@ def build_stock(body: Part) -> None:
     body.beam((0, UPPER_Y[0] + 0.01, 0.17), (0, yb, 0.164), 0.042, 0.038, side, M_PAINT)
     body.beam((0, -0.072, 0.07), (0, yb, 0.026), 0.034, 0.026, side, M_PAINT)
     body.side_prism([(yb - 0.018, 0.0), (yb + 0.022, 0.012), (yb + 0.02, 0.19), (yb - 0.018, 0.2)], 0.046, mi=M_PAINT)
-    body.side_prism([(STOCK_Y - 0.006, -0.004), (STOCK_Y + 0.004, -0.002), (STOCK_Y + 0.004, 0.204), (STOCK_Y - 0.006, 0.206)], 0.052, mi=M_RUBBER)
+    body.side_prism(
+        [(STOCK_Y - 0.006, -0.004), (STOCK_Y + 0.004, -0.002), (STOCK_Y + 0.004, 0.204), (STOCK_Y - 0.006, 0.206)],
+        0.052,
+        mi=M_RUBBER,
+    )
     body.box((0, -0.2, 0.19), (0.036, 0.1, 0.016), mi=M_RUBBER)
     body.box((0, -0.215, 0.135), (0.044, 0.03, 0.024), mi=M_DARK)  # stock lock on the buffer tube
     body.detail = True

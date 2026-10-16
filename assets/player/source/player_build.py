@@ -30,12 +30,13 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "assets" / "player"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Matrix, Vector  # noqa: E402
+import itertools
 
-import common as C  # noqa: E402
-from common import T, rx, ry, rz  # noqa: E402
+import bpy
+from mathutils import Matrix, Vector
+
+import common as C
+from common import T, rx, ry, rz
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -148,7 +149,7 @@ class Skin(C.Part):
                 ]
             )
         faces = []
-        for a, b in zip(loops, loops[1:]):
+        for a, b in itertools.pairwise(loops):
             for k in range(seg):
                 faces.append(self.bm.faces.new((a[k], a[(k + 1) % seg], b[(k + 1) % seg], b[k])))
         faces.append(self.bm.faces.new(list(reversed(loops[0]))))
@@ -168,7 +169,9 @@ def mat_fabric(name: str = "Undersuit") -> bpy.types.Material:
     """Dark padded fabric: fine ribbing in the bump, slight color variation."""
     mat, nt, bsdf = C._new_material(name)
     noise = C._noise(nt, 30.0, 4.0, 0.6)
-    nt.links.new(C._mix_color(nt, noise.outputs["Fac"], (0.022, 0.024, 0.027), (0.045, 0.045, 0.048)), bsdf.inputs["Base Color"])
+    nt.links.new(
+        C._mix_color(nt, noise.outputs["Fac"], (0.022, 0.024, 0.027), (0.045, 0.045, 0.048)), bsdf.inputs["Base Color"]
+    )
     bsdf.inputs["Roughness"].default_value = 0.88
     wave = nt.nodes.new("ShaderNodeTexWave")
     wave.inputs["Scale"].default_value = 90.0
@@ -178,7 +181,7 @@ def mat_fabric(name: str = "Undersuit") -> bpy.types.Material:
 
 
 def mat_visor(name: str = "Visor") -> bpy.types.Material:
-    mat, nt, bsdf = C._new_material(name)
+    mat, _nt, bsdf = C._new_material(name)
     bsdf.inputs["Base Color"].default_value = (0.03, 0.022, 0.016, 1.0)
     bsdf.inputs["Metallic"].default_value = 0.7
     bsdf.inputs["Roughness"].default_value = 0.08
@@ -236,29 +239,53 @@ def build_suit(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
         R(sk.box((s * 0.2, 0.0, 0.92), (0.06, 0.2, 0.17), ry(s * 12)), "Hips")  # hip plates
 
     for side, s in SIDES:
-        b = lambda n: f"{side}{n}"  # noqa: E731
+        b = lambda n, side=side: f"{side}{n}"
         # Shoulder: pauldron over the joint.
         R(sk.sphere((s * 0.27, 0.0, 1.47), 0.13, 16, 8, scale=(1.05, 1.0, 0.8)), b("UpperArm"))
         R(sk.cyl((s * 0.3, 0.0, 1.425), 0.13, 0.025, 16, ry(s * 18), mi=TRIM), b("UpperArm"))
         # Upper arm: undersuit (blends into the forearm across the elbow), bicep plate, elbow pad.
         sh, el, wr = Vector((s * 0.2, 0, ARM_Z)), Vector((s * ELBOW_X, 0, ARM_Z)), Vector((s * WRIST_X, 0, ARM_Z))
-        sk.blend(sk.tube(sh, el + Vector((s * 0.06, 0, 0)), 0.07, 0.06, 12, 6, FABRIC), b("UpperArm"), b("LowerArm"), el - Vector((s * 0.05, 0, 0)), el + Vector((s * 0.04, 0, 0)))
+        sk.blend(
+            sk.tube(sh, el + Vector((s * 0.06, 0, 0)), 0.07, 0.06, 12, 6, FABRIC),
+            b("UpperArm"),
+            b("LowerArm"),
+            el - Vector((s * 0.05, 0, 0)),
+            el + Vector((s * 0.04, 0, 0)),
+        )
         R(sk.box((s * 0.4, 0, ARM_Z + 0.01), (0.16, 0.13, 0.1)), b("UpperArm"))
         R(sk.sphere(el + Vector((0, 0.05, 0)), 0.06, 12, 6, scale=(1, 0.8, 1)), b("LowerArm"))
         # Forearm: gauntlet with a trim band.
-        R(sk.tube(el + Vector((s * 0.04, 0, 0)), wr - Vector((s * 0.01, 0, 0)), 0.075, 0.065, 14, 1, ARMOR, (1.0, 0.85)), b("LowerArm"))
+        R(
+            sk.tube(
+                el + Vector((s * 0.04, 0, 0)), wr - Vector((s * 0.01, 0, 0)), 0.075, 0.065, 14, 1, ARMOR, (1.0, 0.85)
+            ),
+            b("LowerArm"),
+        )
         R(sk.cyl(wr - Vector((s * 0.06, 0, 0)), 0.071, 0.025, 14, ry(90), mi=TRIM), b("LowerArm"))
         # Hand: a fist in a heavy glove, thumb.
         R(sk.box((s * 0.865, 0, ARM_Z - 0.005), (0.12, 0.095, 0.07), mi=RUBBER), b("Hand"))
         R(sk.box((s * 0.84, -0.055, ARM_Z - 0.01), (0.06, 0.03, 0.04), rz(s * 20), mi=RUBBER), b("Hand"))
         R(sk.tube(wr - Vector((s * 0.02, 0, 0)), wr + Vector((s * 0.03, 0, 0)), 0.05, 0.05, 12, 1, RUBBER), b("Hand"))
         # Leg: thigh undersuit (blends into the shin across the knee), thigh plate, knee pad, greave, boot.
-        hip, knee, ankle = Vector((s * HIP_X, 0, HIP_Z)), Vector((s * HIP_X, 0, KNEE_Z)), Vector((s * HIP_X, 0, ANKLE_Z))
-        sk.blend(sk.tube(hip + Vector((0, 0, 0.04)), knee - Vector((0, 0, 0.06)), 0.1, 0.08, 14, 6, FABRIC), b("UpperLeg"), b("LowerLeg"), knee + Vector((0, 0, 0.06)), knee - Vector((0, 0, 0.04)))
+        hip, knee, ankle = (
+            Vector((s * HIP_X, 0, HIP_Z)),
+            Vector((s * HIP_X, 0, KNEE_Z)),
+            Vector((s * HIP_X, 0, ANKLE_Z)),
+        )
+        sk.blend(
+            sk.tube(hip + Vector((0, 0, 0.04)), knee - Vector((0, 0, 0.06)), 0.1, 0.08, 14, 6, FABRIC),
+            b("UpperLeg"),
+            b("LowerLeg"),
+            knee + Vector((0, 0, 0.06)),
+            knee - Vector((0, 0, 0.04)),
+        )
         R(sk.box((s * HIP_X, -0.08, 0.74), (0.15, 0.06, 0.26), rx(-4)), b("UpperLeg"))
         R(sk.box((s * (HIP_X + 0.085), 0.0, 0.76), (0.04, 0.14, 0.22)), b("UpperLeg"))
         R(sk.sphere((s * HIP_X, -0.06, KNEE_Z), 0.08, 14, 7, scale=(1.0, 0.85, 1.05)), b("LowerLeg"))
-        R(sk.tube(knee - Vector((0, 0, 0.04)), ankle + Vector((0, 0, 0.08)), 0.085, 0.072, 14, 1, ARMOR, (1.0, 0.9)), b("LowerLeg"))
+        R(
+            sk.tube(knee - Vector((0, 0, 0.04)), ankle + Vector((0, 0, 0.08)), 0.085, 0.072, 14, 1, ARMOR, (1.0, 0.9)),
+            b("LowerLeg"),
+        )
         R(sk.box((s * HIP_X, -0.07, 0.33), (0.1, 0.04, 0.24), rx(-3)), b("LowerLeg"))
         R(sk.tube(ankle + Vector((0, 0, 0.02)), ankle + Vector((0, 0, 0.12)), 0.088, 0.085, 14, 1, TRIM), b("LowerLeg"))
         R(sk.box((s * HIP_X, -0.03, 0.075), (0.13, 0.22, 0.12)), b("Foot"))
@@ -405,8 +432,16 @@ def relaxed_arms(p: Pose, swing: dict | None = None) -> None:
 
 def aim_upper(p: Pose) -> None:
     p.spine(chest=rz(-14), upper=rz(-34), neck=rz(-16), head=rz(-4))
-    p.arm("Right", GRIP + Vector((0, 0.04, 0.03)), Vector((-0.6, 0.4, -1)), Vector((0, -0.75, -0.65)), Vector((1, 0, 0)))
-    p.arm("Left", FOREGRIP + Vector((0.04, 0.05, -0.02)), Vector((0.5, 0.2, -1)), Vector((-0.45, -0.9, 0.1)), Vector((0, 0, 1)))
+    p.arm(
+        "Right", GRIP + Vector((0, 0.04, 0.03)), Vector((-0.6, 0.4, -1)), Vector((0, -0.75, -0.65)), Vector((1, 0, 0))
+    )
+    p.arm(
+        "Left",
+        FOREGRIP + Vector((0.04, 0.05, -0.02)),
+        Vector((0.5, 0.2, -1)),
+        Vector((-0.45, -0.9, 0.1)),
+        Vector((0, 0, 1)),
+    )
 
 
 def idle(t: float, aim: bool = False) -> Pose:
@@ -432,7 +467,13 @@ def run(t: float, move: Vector) -> Pose:
     lean_axis = Vector((0, 0, 1)).cross(Vector((move.x, move.y, 0)))
     lean = Matrix.Rotation(math.radians(9 if fwd >= -0.5 else 5), 3, lean_axis)
     p = Pose(move * 0.05 + Vector((0, 0, -0.085 - 0.03 * bob)), rz(yaw) @ ry(-3 * side_share))
-    p.spine(spine=lean @ rz(yaw * 0.4), chest=lean @ rz(-yaw * 0.2), upper=lean @ rz(-yaw * 0.6), neck=rz(-yaw * 0.3), head=I3)
+    p.spine(
+        spine=lean @ rz(yaw * 0.4),
+        chest=lean @ rz(-yaw * 0.2),
+        upper=lean @ rz(-yaw * 0.6),
+        neck=rz(-yaw * 0.3),
+        head=I3,
+    )
     swing = {}
     for side, s in SIDES:
         u = (t + (0.0 if side == "Left" else 0.5)) % 1.0
@@ -469,14 +510,25 @@ def die(t: float) -> Pose:
         ankle = Vector((s * 0.13, -0.01 + 0.45 * f, ANKLE_Z - 0.02 * f))
         p.leg(side, ankle, Vector((s * 0.2, -1 + 0.6 * f, -1.6 * f)), 165 * f)  # ends with the soles up
         wrist = Vector((s * (0.3 + 0.12 * f), -0.05 - 0.75 * f, 0.93 - 0.85 * f))
-        p.arm(side, wrist, Vector((s * 0.5, 1 - f, 0.5 * f)), Vector((s * 0.2, -0.3 - f, -1 + f)), Vector((-s * (1 - f), 0, -f)))
+        p.arm(
+            side,
+            wrist,
+            Vector((s * 0.5, 1 - f, 0.5 * f)),
+            Vector((s * 0.2, -0.3 - f, -1 + f)),
+            Vector((-s * (1 - f), 0, -f)),
+        )
     return p
 
 
-MOVES = {"Run": Vector((0, -1, 0)), "RunBack": Vector((0, 1, 0)), "StrafeLeft": Vector((1, 0, 0)), "StrafeRight": Vector((-1, 0, 0))}
+MOVES = {
+    "Run": Vector((0, -1, 0)),
+    "RunBack": Vector((0, 1, 0)),
+    "StrafeLeft": Vector((1, 0, 0)),
+    "StrafeRight": Vector((-1, 0, 0)),
+}
 CLIPS = {  # name: (frames, pose(t) for t in 0..1)
     "Idle": (60, lambda t: idle(t)),
-    **{name: (RUN_FRAMES, (lambda m: lambda t: run(t, m))(m)) for name, m in MOVES.items()},
+    **{name: (RUN_FRAMES, lambda t, m=m: run(t, m)) for name, m in MOVES.items()},
     "Aim": (1, lambda t: idle(0.0, aim=True)),
     "Die": (36, die),
 }
@@ -486,8 +538,7 @@ def bake_clips(arm: bpy.types.Object) -> None:
     ad = arm.animation_data_create()
     for name, (frames, fn) in CLIPS.items():
         ad.action = None
-        last = frames if name not in ("Die",) else frames
-        for f in range(last + 1):
+        for f in range(frames + 1):
             apply(arm, fn(f / frames if frames else 0.0))
             for pb in arm.pose.bones:
                 pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)
@@ -511,7 +562,11 @@ def preview(arm: bpy.types.Object, tag: str) -> list:
     shots = []
     poses = [("aim", idle(0.0, aim=True)), ("idle", idle(0.25))]
     poses += [(f"run{i}", run(i / 4, MOVES["Run"])) for i in range(4)]
-    poses += [("back", run(0.1, MOVES["RunBack"])), ("strafeL", run(0.1, MOVES["StrafeLeft"])), ("strafeR", run(0.6, MOVES["StrafeRight"]))]
+    poses += [
+        ("back", run(0.1, MOVES["RunBack"])),
+        ("strafeL", run(0.1, MOVES["StrafeLeft"])),
+        ("strafeR", run(0.6, MOVES["StrafeRight"])),
+    ]
     poses += [("die3", die(0.35)), ("die10", die(1.0))]
     target = (0, 0, 0.95)
     for name, pose in poses:
@@ -536,7 +591,7 @@ def main() -> None:
     C.reset(ASSET)
     root = C.asset_root(ASSET)
     arm = build_skeleton(root)
-    suit, band = build_suit(root, arm)
+    _suit, _band = build_suit(root, arm)
     markers(arm)
     print("STATS", C.stats(), C.tris_per_object())
     preview(arm, TAG if MODE == "wip" else "final")

@@ -24,12 +24,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "assets" / "rocks"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Vector  # noqa: E402
+import bmesh
+import bpy
+from mathutils import Vector
 
-import bake as B  # noqa: E402
-import common as C  # noqa: E402
+import bake as B
+import common as C
 
 SIZE = 2048
 MARGIN_PX = 3  # pack margin (px at 2048); islands end up about 5 px apart
@@ -232,7 +232,9 @@ def render_closeup(job: B.Job, obj: bpy.types.Object, rocks: list, view: str) ->
     w = max(dx, dy, dz * 1.1) * 1.3 + 1.4
     target = side * 0.3 + Vector((0, 0, max(0.5, dz * 0.42)))
     zoom = w / (9.9 if view == "iso" else 6.3)
-    C.render(job.game / f"check_{obj.name}_{view}.png", view=view, samples=32, size=640, target=tuple(target), zoom=zoom)
+    C.render(
+        job.game / f"check_{obj.name}_{view}.png", view=view, samples=32, size=640, target=tuple(target), zoom=zoom
+    )
     obj.location, obj.rotation_euler, fig.location = loc, rot, fig_loc
     for o in rocks:
         o.hide_render = False

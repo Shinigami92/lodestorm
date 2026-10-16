@@ -158,10 +158,19 @@ class Part:
     def box(self, loc, size, rot: Matrix | None = None, mi: int = 0):
         return self._tag(bmesh.ops.create_cube(self.bm, size=1.0, matrix=T(loc, rot, size))["verts"], mi)
 
-    def cyl(self, loc, r, depth, seg=16, rot: Matrix | None = None, mi=0, r2=None, caps=True, scale=(1, 1, 1), spin=0.0):
+    def cyl(
+        self, loc, r, depth, seg=16, rot: Matrix | None = None, mi=0, r2=None, caps=True, scale=(1, 1, 1), spin=0.0
+    ):
         m = T(loc, rot, scale) @ rz(spin).to_4x4()
         verts = bmesh.ops.create_cone(
-            self.bm, cap_ends=caps, cap_tris=False, segments=seg, radius1=r, radius2=r if r2 is None else r2, depth=depth, matrix=m
+            self.bm,
+            cap_ends=caps,
+            cap_tris=False,
+            segments=seg,
+            radius1=r,
+            radius2=r if r2 is None else r2,
+            depth=depth,
+            matrix=m,
         )["verts"]
         return self._tag(verts, mi)
 
@@ -185,12 +194,21 @@ class Part:
         d = p1 - p0
         m = T((p0 + p1) / 2, basis(d, Vector((0, 0, 1)) if abs(d.normalized().z) < 0.9 else Vector((1, 0, 0))))
         verts = bmesh.ops.create_cone(
-            self.bm, cap_ends=True, cap_tris=False, segments=seg, radius1=r, radius2=r if r2 is None else r2, depth=d.length, matrix=m
+            self.bm,
+            cap_ends=True,
+            cap_tris=False,
+            segments=seg,
+            radius1=r,
+            radius2=r if r2 is None else r2,
+            depth=d.length,
+            matrix=m,
         )["verts"]
         return self._tag(verts, mi)
 
     def sphere(self, loc, r, seg=12, rings=6, scale=(1, 1, 1), rot=None, mi=0):
-        verts = bmesh.ops.create_uvsphere(self.bm, u_segments=seg, v_segments=rings, radius=r, matrix=T(loc, rot, scale))["verts"]
+        verts = bmesh.ops.create_uvsphere(
+            self.bm, u_segments=seg, v_segments=rings, radius=r, matrix=T(loc, rot, scale)
+        )["verts"]
         return self._tag(verts, mi)
 
     def ico(self, loc, r, scale=(1, 1, 1), rot=None, mi=0, sub=1):
@@ -391,7 +409,12 @@ def mat_painted_metal(
     breakup = _noise(nt, 18.0, 8.0, 0.65)
     # Edge wear: convex edges (pointiness > 0.5) broken up by noise.
     # wear 0 disables edge wear (pointiness never reaches 2).
-    edge = _ramp(nt, 0.565 - 0.015 * wear if wear > 0 else 2.0, 0.62 - 0.015 * wear if wear > 0 else 2.1, geo.outputs["Pointiness"])
+    edge = _ramp(
+        nt,
+        0.565 - 0.015 * wear if wear > 0 else 2.0,
+        0.62 - 0.015 * wear if wear > 0 else 2.1,
+        geo.outputs["Pointiness"],
+    )
     edge_mask = nt.nodes.new("ShaderNodeMath")
     edge_mask.operation = "MULTIPLY"
     nt.links.new(edge, edge_mask.inputs[0])
@@ -418,7 +441,9 @@ def mat_painted_metal(
     blot.inputs[1].default_value = 0.5 * grime
     nt.links.new(blot.outputs[0], grime_total.inputs[1])
     # Paint color varies slightly, then grime darkens it, then worn edges show steel.
-    paint = _mix_color(nt, breakup.outputs["Fac"], tuple(c * 0.85 for c in color), tuple(min(1, c * 1.1) for c in color))
+    paint = _mix_color(
+        nt, breakup.outputs["Fac"], tuple(c * 0.85 for c in color), tuple(min(1, c * 1.1) for c in color)
+    )
     grimy = _mix_color(nt, grime_total.outputs[0], paint, (0.035, 0.03, 0.025))
     steel = (0.55, 0.55, 0.56)
     base = _mix_color(nt, edge_mask.outputs[0], grimy, steel)
@@ -458,14 +483,14 @@ def mat_bare_metal(name: str = "BareMetal", color=(0.42, 0.42, 0.43), roughness:
 
 
 def mat_rubber(name: str = "Rubber", color=(0.025, 0.025, 0.025)) -> bpy.types.Material:
-    mat, nt, bsdf = _new_material(name)
+    mat, _nt, bsdf = _new_material(name)
     bsdf.inputs["Base Color"].default_value = (*color, 1.0)
     bsdf.inputs["Roughness"].default_value = 0.8
     return mat
 
 
 def mat_glass(name: str = "Glass", tint=(0.8, 0.95, 1.0)) -> bpy.types.Material:
-    mat, nt, bsdf = _new_material(name)
+    mat, _nt, bsdf = _new_material(name)
     bsdf.inputs["Base Color"].default_value = (*tint, 1.0)
     bsdf.inputs["Roughness"].default_value = 0.05
     bsdf.inputs["Transmission Weight"].default_value = 1.0
@@ -474,7 +499,7 @@ def mat_glass(name: str = "Glass", tint=(0.8, 0.95, 1.0)) -> bpy.types.Material:
 
 
 def mat_emissive(name: str, color: tuple[float, float, float], strength: float = 8.0) -> bpy.types.Material:
-    mat, nt, bsdf = _new_material(name)
+    mat, _nt, bsdf = _new_material(name)
     bsdf.inputs["Base Color"].default_value = (*color, 1.0)
     bsdf.inputs["Emission Color"].default_value = (*color, 1.0)
     bsdf.inputs["Emission Strength"].default_value = strength
@@ -524,7 +549,9 @@ def preview_scene(
     ground.name = "PreviewGround"
     gmat, nt, bsdf = _new_material("PreviewGround")
     noise = _noise(nt, 1.5, 8.0, 0.6)
-    nt.links.new(_mix_color(nt, noise.outputs["Fac"], (0.012, 0.011, 0.010), (0.04, 0.037, 0.034)), bsdf.inputs["Base Color"])
+    nt.links.new(
+        _mix_color(nt, noise.outputs["Fac"], (0.012, 0.011, 0.010), (0.04, 0.037, 0.034)), bsdf.inputs["Base Color"]
+    )
     bsdf.inputs["Roughness"].default_value = 0.9
     fine = _noise(nt, 30.0, 6.0, 0.7)
     bump = nt.nodes.new("ShaderNodeBump")
@@ -697,7 +724,9 @@ def _write_render(path: pathlib.Path) -> None:
     bpy.ops.render.render(write_still=True)
 
 
-def contact_sheet(paths: list, out: pathlib.Path, cols: int = 4, tile: int | None = None, background: float = 0.0) -> None:
+def contact_sheet(
+    paths: list, out: pathlib.Path, cols: int = 4, tile: int | None = None, background: float = 0.0
+) -> None:
     """Tile renders into one PNG (row-major, top-left first) with Blender's image API (no Pillow needed). tile=None
     keeps the first image's size; missing files leave their cell empty."""
     import numpy as np

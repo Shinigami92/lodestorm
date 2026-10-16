@@ -21,10 +21,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "tmp" / "assets" / "nest"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bpy  # noqa: E402
+import bpy
 
-import bake as B  # noqa: E402
-import common as C  # noqa: E402
+import bake as B
+import common as C
 
 GLOW_COLOR = (0.75, 1.0, 0.035)  # linear for the aliens' Color(0.9, 1, 0.2)
 SLIME_COLOR = (0.02, 0.006, 0.008)

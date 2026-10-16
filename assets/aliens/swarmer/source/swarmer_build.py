@@ -33,12 +33,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "tmp" / "assets" / "swarmer"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Matrix, Vector, noise  # noqa: E402
+import itertools
 
-import common as C  # noqa: E402
-from common import rx, ry, rz  # noqa: E402
+import bmesh
+import bpy
+from mathutils import Matrix, Vector, noise
+
+import common as C
+from common import rx, ry, rz
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -48,6 +50,7 @@ ASSET = "Swarmer"
 FPS = 30
 I3 = Matrix.Identity(3)
 SIDES = (("Left", 1.0), ("Right", -1.0))
+UP = Vector((0, 0, 1))
 
 # --- skeleton -------------------------------------------------------------------------------------
 
@@ -59,8 +62,20 @@ JAW_PIVOT = Vector((0, -0.63, 0.665))
 SNOUT = Vector((0, -1.02, 0.64))
 TAIL = [PELVIS, Vector((0, 0.76, 0.69)), Vector((0, 1.05, 0.77)), Vector((0, 1.32, 0.9))]
 # Leg joints per side (x for the left side): hip/shoulder, knee/elbow, ankle, ball of the foot, toe tips.
-FRONT = [Vector((0.13, -0.26, 0.6)), Vector((0.145, -0.15, 0.36)), Vector((0.14, -0.27, 0.11)), Vector((0.14, -0.33, 0.035)), Vector((0.14, -0.42, 0.0))]
-HIND = [Vector((0.125, 0.42, 0.6)), Vector((0.145, 0.22, 0.39)), Vector((0.14, 0.5, 0.2)), Vector((0.14, 0.42, 0.035)), Vector((0.14, 0.32, 0.0))]
+FRONT = [
+    Vector((0.13, -0.26, 0.6)),
+    Vector((0.145, -0.15, 0.36)),
+    Vector((0.14, -0.27, 0.11)),
+    Vector((0.14, -0.33, 0.035)),
+    Vector((0.14, -0.42, 0.0)),
+]
+HIND = [
+    Vector((0.125, 0.42, 0.6)),
+    Vector((0.145, 0.22, 0.39)),
+    Vector((0.14, 0.5, 0.2)),
+    Vector((0.14, 0.42, 0.035)),
+    Vector((0.14, 0.32, 0.0)),
+]
 SCYTHE = [Vector((0.1, -0.18, 0.8)), Vector((0.19, 0.2, 1.1)), Vector((0.24, -0.3, 1.42))]
 
 
@@ -172,7 +187,7 @@ class Skin(C.Part):
         loops = [[self.bm.verts.new(p) for p in ring] for ring in rings]
         n = len(loops[0])
         faces = []
-        for a, b in zip(loops, loops[1:]):
+        for a, b in itertools.pairwise(loops):
             for k in range(n):
                 faces.append(self.bm.faces.new((a[k], a[(k + 1) % n], b[(k + 1) % n], b[k])))
         if caps:
@@ -186,7 +201,10 @@ class Skin(C.Part):
         """Pointed cone (teeth, claws, spikes); flat squashes it sideways."""
         d = tip - base
         m = C.basis(d, Vector((1, 0, 0)) if abs(d.normalized().x) < 0.9 else Vector((0, 1, 0)))
-        ring = [self.bm.verts.new(base + m @ Vector((math.cos(a) * r, math.sin(a) * r * flat, 0))) for a in (math.tau * k / seg for k in range(seg))]
+        ring = [
+            self.bm.verts.new(base + m @ Vector((math.cos(a) * r, math.sin(a) * r * flat, 0)))
+            for a in (math.tau * k / seg for k in range(seg))
+        ]
         top = self.bm.verts.new(tip)
         faces = [self.bm.faces.new((ring[k], ring[(k + 1) % seg], top)) for k in range(seg)]
         faces.append(self.bm.faces.new(list(reversed(ring))))
@@ -202,7 +220,7 @@ class Skin(C.Part):
         return obj
 
 
-def frame_at(d: Vector, up: Vector = Vector((0, 0, 1))) -> tuple:
+def frame_at(d: Vector, up: Vector = UP) -> tuple:
     """Side and up axes of a cross-section perpendicular to d."""
     d = d.normalized()
     side = d.cross(up)
@@ -212,7 +230,17 @@ def frame_at(d: Vector, up: Vector = Vector((0, 0, 1))) -> tuple:
     return side, side.cross(d).normalized() * (1 if side.cross(d).z >= 0 else -1)
 
 
-def section(c: Vector, d: Vector, w: float, top: float, bot: float, seg: int, wobble: float = 0.0, seed: float = 0.0, up=Vector((0, 0, 1))) -> list:
+def section(
+    c: Vector,
+    d: Vector,
+    w: float,
+    top: float,
+    bot: float,
+    seg: int,
+    wobble: float = 0.0,
+    seed: float = 0.0,
+    up=UP,
+) -> list:
     """Cross-section around c (perpendicular to d): half-width w, top above, bot below; slightly squared."""
     side, upv = frame_at(d, up)
     pts = []
@@ -228,7 +256,17 @@ def section(c: Vector, d: Vector, w: float, top: float, bot: float, seg: int, wo
     return pts
 
 
-def tube_path(sk: Skin, pts: list, radii: list, seg: int, rings: int, mi: int, flat: float = 1.0, wobble: float = 0.0, up=Vector((0, 0, 1))):
+def tube_path(
+    sk: Skin,
+    pts: list,
+    radii: list,
+    seg: int,
+    rings: int,
+    mi: int,
+    flat: float = 1.0,
+    wobble: float = 0.0,
+    up=UP,
+):
     """Tube along a smooth path through pts with radii interpolated along it; flat squashes it vertically."""
     out = []
     for i in range(rings + 1):
@@ -288,7 +326,19 @@ def trunk_surface(y: float, a: float, out: float = 0.0) -> Vector:
     return c + Vector((x, 0, z))
 
 
-def shell(sk: Skin, y0: float, y1: float, a0: float, a1: float, out: float, thick: float, mi: int, nu: int = 6, nv: int = 3, lift: float = 0.0):
+def shell(
+    sk: Skin,
+    y0: float,
+    y1: float,
+    a0: float,
+    a1: float,
+    out: float,
+    thick: float,
+    mi: int,
+    nu: int = 6,
+    nv: int = 3,
+    lift: float = 0.0,
+):
     """Curved plate hugging the trunk between y0..y1 and angles a0..a1; its rear edge lifts off like a scale."""
     top_rows, bot_rows = [], []
     for i in range(nv + 1):
@@ -313,10 +363,24 @@ def _close_grid(sk: Skin, top_rows: list, bot_rows: list, mi: int):
     nv, nu = len(top_rows) - 1, len(top_rows[0]) - 1
     for i in range(nv):
         for k in range(nu):
-            faces.append(sk.bm.faces.new((top_rows[i][k], top_rows[i][k + 1], top_rows[i + 1][k + 1], top_rows[i + 1][k])))
-            faces.append(sk.bm.faces.new((bot_rows[i][k], bot_rows[i + 1][k], bot_rows[i + 1][k + 1], bot_rows[i][k + 1])))
-    rim_t = [r[0] for r in top_rows] + top_rows[-1][1:] + list(reversed([r[-1] for r in top_rows]))[1:] + list(reversed(top_rows[0]))[1:-1]
-    rim_b = [r[0] for r in bot_rows] + bot_rows[-1][1:] + list(reversed([r[-1] for r in bot_rows]))[1:] + list(reversed(bot_rows[0]))[1:-1]
+            faces.append(
+                sk.bm.faces.new((top_rows[i][k], top_rows[i][k + 1], top_rows[i + 1][k + 1], top_rows[i + 1][k]))
+            )
+            faces.append(
+                sk.bm.faces.new((bot_rows[i][k], bot_rows[i + 1][k], bot_rows[i + 1][k + 1], bot_rows[i][k + 1]))
+            )
+    rim_t = (
+        [r[0] for r in top_rows]
+        + top_rows[-1][1:]
+        + list(reversed([r[-1] for r in top_rows]))[1:]
+        + list(reversed(top_rows[0]))[1:-1]
+    )
+    rim_b = (
+        [r[0] for r in bot_rows]
+        + bot_rows[-1][1:]
+        + list(reversed([r[-1] for r in bot_rows]))[1:]
+        + list(reversed(bot_rows[0]))[1:-1]
+    )
     for k in range(len(rim_t)):
         k2 = (k + 1) % len(rim_t)
         faces.append(sk.bm.faces.new((rim_t[k], rim_b[k], rim_b[k2], rim_t[k2])))
@@ -442,7 +506,12 @@ def mat_bone() -> bpy.types.Material:
     cav = _cavity(nt, 0.04)
     col = C._mix_color(nt, C._math(nt, "MULTIPLY", cav, 0.85), col, (0.05, 0.03, 0.02))
     grime = _noise(nt, co, 4.0, 3.0, 0.5)
-    col = C._mix_color(nt, C._math(nt, "MULTIPLY", C._bw(nt, C._ramp(nt, 0.5, 0.7, grime.outputs["Fac"])), 0.6), col, (0.08, 0.04, 0.03))
+    col = C._mix_color(
+        nt,
+        C._math(nt, "MULTIPLY", C._bw(nt, C._ramp(nt, 0.5, 0.7, grime.outputs["Fac"])), 0.6),
+        col,
+        (0.08, 0.04, 0.03),
+    )
     nt.links.new(col, bsdf.inputs["Base Color"])
     nt.links.new(C._mix_float(nt, streak.outputs["Fac"], 0.3, 0.5), bsdf.inputs["Roughness"])
     C._bump(nt, bsdf, streak.outputs["Fac"], 0.25, 0.003)
@@ -454,7 +523,9 @@ def mat_mouth() -> bpy.types.Material:
     mat, nt, bsdf = C._new_material("Mouth")
     co = _coord(nt)
     big = _noise(nt, co, 30.0, 3.0, 0.5)
-    nt.links.new(C._mix_color(nt, big.outputs["Fac"], (0.16, 0.012, 0.012), (0.3, 0.04, 0.035)), bsdf.inputs["Base Color"])
+    nt.links.new(
+        C._mix_color(nt, big.outputs["Fac"], (0.16, 0.012, 0.012), (0.3, 0.04, 0.035)), bsdf.inputs["Base Color"]
+    )
     bsdf.inputs["Roughness"].default_value = 0.15
     C._bump(nt, bsdf, big.outputs["Fac"], 0.3, 0.003)
     return mat
@@ -481,9 +552,13 @@ def build_trunk(sk: Skin) -> None:
             sk.auto(tube_path(sk, pts, [0.012, 0.013, 0.012, 0.01, 0.006], 6, 6, SINEW), ["Spine", "Chest"])
     # Dorsal plates: overlapping shields from the neck to the rump, the rear edge of each lifting off.
     ys = [-0.6, -0.5, -0.4, -0.29, -0.18, -0.07, 0.04, 0.15, 0.26, 0.37, 0.48]
-    for i, (y0, y1) in enumerate(zip(ys, ys[1:])):
+    for i, (y0, y1) in enumerate(itertools.pairwise(ys)):
         width = 38 + 14 * math.sin(math.pi * i / (len(ys) - 2))
-        sk.auto(shell(sk, y0 - 0.02, y1 + 0.035, 90 - width, 90 + width, 0.006, 0.02, CHITIN, 6, 3, 0.015), ["Hips", "Spine", "Chest", "Neck"], 8.0)
+        sk.auto(
+            shell(sk, y0 - 0.02, y1 + 0.035, 90 - width, 90 + width, 0.006, 0.02, CHITIN, 6, 3, 0.015),
+            ["Hips", "Spine", "Chest", "Neck"],
+            8.0,
+        )
     # Side plates over the ribs and the haunches.
     for side, s in SIDES:
         a0, a1 = (5, 40) if s > 0 else (140, 175)
@@ -527,20 +602,25 @@ def build_neck_head(sk: Skin, eyes: Skin) -> None:
                 sk.rigid(sk.cone(base, base + Vector((s * 0.003, -0.004, length * 0.8)), 0.007, 5, BONE), "Jaw")
     # Brow ridges over the eyes and two horns sweeping back from the skull.
     for side, s in SIDES:
-        sk.rigid(sk.sphere((s * 0.06, -0.7, 0.78), 0.04, 10, 5, scale=(0.9, 2.0, 0.45), rot=ry(s * 25) @ rx(-8), mi=CHITIN), "Head")
+        sk.rigid(
+            sk.sphere((s * 0.06, -0.7, 0.78), 0.04, 10, 5, scale=(0.9, 2.0, 0.45), rot=ry(s * 25) @ rx(-8), mi=CHITIN),
+            "Head",
+        )
         horn = [Vector((s * 0.045, -0.6, 0.78)), Vector((s * 0.06, -0.52, 0.83)), Vector((s * 0.07, -0.42, 0.86))]
         sk.rigid(tube_path(sk, horn, [0.025, 0.016, 0.004], 6, 5, BONE), "Head")
         # Eyes: slanted glowing slits on the sides of the skull.
-        eyes.rigid(eyes.sphere((s * 0.068, -0.735, 0.752), 0.022, 10, 5, scale=(0.5, 1.4, 0.6), rot=rz(s * 20) @ rx(-12)), "Head")
+        eyes.rigid(
+            eyes.sphere((s * 0.068, -0.735, 0.752), 0.022, 10, 5, scale=(0.5, 1.4, 0.6), rot=rz(s * 20) @ rx(-12)),
+            "Head",
+        )
 
 
 def _mouth_faces(sk: Skin, verts: list, below: bool) -> None:
     for f in {f for v in verts for f in v.link_faces}:
         f.normal_update()
         n = f.normal
-        if (n.z < -0.6) if below else (n.z > 0.6):
-            if f.calc_center_median().y < -0.62:
-                f.material_index = MOUTH
+        if ((n.z < -0.6) if below else (n.z > 0.6)) and f.calc_center_median().y < -0.62:
+            f.material_index = MOUTH
 
 
 def build_tail(sk: Skin) -> None:
@@ -553,7 +633,9 @@ def build_tail(sk: Skin) -> None:
         d = path_point(pts, t + 0.02) - path_point(pts, t - 0.02)
         r = catmull([[x] for x in [0.055, 0.04, 0.026, 0.014, 0.006]], t)[0]
         bone = "Tail1" if t < 0.33 else "Tail2" if t < 0.66 else "Tail3"
-        rings = [section(c + d.normalized() * o, d, r + 0.006 + o * 0.15, r + 0.008, r + 0.002, 10) for o in (-0.012, 0.012)]
+        rings = [
+            section(c + d.normalized() * o, d, r + 0.006 + o * 0.15, r + 0.008, r + 0.002, 10) for o in (-0.012, 0.012)
+        ]
         sk.rigid(sk.loft(rings, CHITIN), bone)
     end = path_point(pts, 1.0)
     sk.rigid(sk.cone(end - Vector((0, 0.03, 0.02)), end + Vector((0, 0.08, 0.03)), 0.012, 6, BONE), "Tail3")
@@ -573,11 +655,30 @@ def build_legs(sk: Skin) -> None:
             sk.auto(tube_path(sk, [top, mid, j[1]], radii, 12, 6, SINEW, 1.0, 0.004), [body, up, low])
             # Lower leg: lean, a chitin greave on the front (hind: the shin points back).
             mid = j[1].lerp(j[2], 0.5)
-            sk.auto(tube_path(sk, [j[1], mid, j[2]], [0.055, 0.04, 0.032] if hind else [0.052, 0.038, 0.032], 10, 6, SINEW), [up, low, foot])
+            sk.auto(
+                tube_path(sk, [j[1], mid, j[2]], [0.055, 0.04, 0.032] if hind else [0.052, 0.038, 0.032], 10, 6, SINEW),
+                [up, low, foot],
+            )
             facing = Vector((0, -1, 0.2)) if hind else Vector((0, 1, 0.1))
-            sk.rigid(limb_plate(sk, j[1].lerp(j[2], 0.15), j[1].lerp(j[2], 0.8), 0.04, -70, 70, 0.014, CHITIN, -facing if hind else facing), low)
+            sk.rigid(
+                limb_plate(
+                    sk,
+                    j[1].lerp(j[2], 0.15),
+                    j[1].lerp(j[2], 0.8),
+                    0.04,
+                    -70,
+                    70,
+                    0.014,
+                    CHITIN,
+                    -facing if hind else facing,
+                ),
+                low,
+            )
             # Knee / elbow knob.
-            sk.rigid(sk.sphere(j[1] + (Vector((0, -0.015, 0)) if hind else Vector((0, 0.02, 0))), 0.035, 10, 5, mi=CHITIN), low)
+            sk.rigid(
+                sk.sphere(j[1] + (Vector((0, -0.015, 0)) if hind else Vector((0, 0.02, 0))), 0.035, 10, 5, mi=CHITIN),
+                low,
+            )
             # Foot: metatarsal (hind: long) to the ball, then three long toes with hooked claws.
             sk.auto(tube_path(sk, [j[2], j[2].lerp(j[3], 0.5), j[3]], [0.03, 0.027, 0.03], 8, 4, SINEW), [low, foot])
             sk.rigid(sk.sphere(j[3], 0.032, 10, 5, scale=(1.0, 1.2, 0.7), mi=SINEW), foot)
@@ -586,7 +687,12 @@ def build_legs(sk: Skin) -> None:
                 knuckle = j[3] + toe_dir * 0.06 + Vector((0, 0, 0.012))
                 tip = j[3] + toe_dir * (0.11 if k == 1 else 0.09) + Vector((0, 0, -0.025))
                 sk.rigid(tube_path(sk, [j[3], knuckle, tip - toe_dir * 0.02], [0.016, 0.013, 0.01], 6, 4, SINEW), foot)
-                sk.rigid(sk.cone(tip - toe_dir * 0.025 + Vector((0, 0, 0.012)), tip + Vector((0, 0, -0.012)), 0.009, 5, BONE), foot)
+                sk.rigid(
+                    sk.cone(
+                        tip - toe_dir * 0.025 + Vector((0, 0, 0.012)), tip + Vector((0, 0, -0.012)), 0.009, 5, BONE
+                    ),
+                    foot,
+                )
             # Dewclaw spur at the back of the ankle.
             back = Vector((0, 0.05, 0.03)) if not hind else Vector((0, 0.06, 0.02))
             sk.rigid(sk.cone(j[2] + Vector((0, 0.01, -0.02)), j[2] + back, 0.012, 5, BONE), low if hind else foot)
@@ -594,7 +700,7 @@ def build_legs(sk: Skin) -> None:
 
 def build_scythes(sk: Skin) -> None:
     for side, s in SIDES:
-        base, joint, tip = (mirror(p, s) for p in SCYTHE)
+        base, joint, _tip = (mirror(p, s) for p in SCYTHE)
         arm, blade = f"{side}Scythe", f"{side}ScytheBlade"
         # Mount: a knob of chitin on the shoulder.
         sk.auto(sk.sphere(base + Vector((0, 0, -0.02)), 0.055, 12, 6, scale=(1.0, 1.3, 0.8), mi=CHITIN), ["Chest", arm])
@@ -606,7 +712,13 @@ def build_scythes(sk: Skin) -> None:
         sk.rigid(sk.sphere(joint, 0.06, 10, 5, mi=BONE), blade)
         # Blade: a long flat curved scythe sweeping forward, sharp lower edge, a row of spurs on its back.
         n = 14
-        ctrl = [joint, joint + Vector((s * 0.02, -0.05, 0.2)), joint + Vector((s * 0.04, -0.3, 0.33)), joint + Vector((s * 0.05, -0.6, 0.27)), joint + Vector((s * 0.055, -0.8, 0.12))]
+        ctrl = [
+            joint,
+            joint + Vector((s * 0.02, -0.05, 0.2)),
+            joint + Vector((s * 0.04, -0.3, 0.33)),
+            joint + Vector((s * 0.05, -0.6, 0.27)),
+            joint + Vector((s * 0.055, -0.8, 0.12)),
+        ]
         top_rows, bot_rows = [], []
         spurs = []
         for i in range(n + 1):
@@ -820,7 +932,13 @@ def preview(arm: bpy.types.Object, tag: str) -> list:
     shots.append(OUT / "wip" / f"{tag}_side.png")
     C.render_from(OUT / "wip" / f"{tag}_head.png", Vector((0.9, -1.7, 0.9)), (0, -0.8, 0.68), 50, 32, 512)
     shots.append(OUT / "wip" / f"{tag}_head.png")
-    for name, pose in (("idle", idle(0.25)), ("run", run(0.25)), ("attack3", attack(0.3)), ("attack5", attack(0.5)), ("die", die(1.0))):
+    for name, pose in (
+        ("idle", idle(0.25)),
+        ("run", run(0.25)),
+        ("attack3", attack(0.3)),
+        ("attack5", attack(0.5)),
+        ("die", die(1.0)),
+    ):
         apply(arm, pose)
         bpy.context.view_layer.update()
         path = OUT / "wip" / f"{tag}_{name}.png"

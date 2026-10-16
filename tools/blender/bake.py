@@ -40,7 +40,7 @@ import os
 import pathlib
 import struct
 import sys
-from typing import Callable
+from collections.abc import Callable
 
 import bpy
 import numpy as np
@@ -622,11 +622,32 @@ def glb_summary(job: Job) -> None:
     print("GLB scene roots", [j["nodes"][i]["name"] for i in j["scenes"][0]["nodes"]])
     print(
         "GLB nodes",
-        [(nd["name"], [round(v, 3) for v in nd.get("translation", [0, 0, 0])], nd.get("rotation"), nd.get("scale"), len(nd.get("children", []))) for nd in j["nodes"]],
+        [
+            (
+                nd["name"],
+                [round(v, 3) for v in nd.get("translation", [0, 0, 0])],
+                nd.get("rotation"),
+                nd.get("scale"),
+                len(nd.get("children", [])),
+            )
+            for nd in j["nodes"]
+        ],
     )
-    print("GLB meshes", [(m["name"], [p.get("material") for p in m["primitives"]], sorted(m["primitives"][0]["attributes"])) for m in j["meshes"]])
+    print(
+        "GLB meshes",
+        [
+            (m["name"], [p.get("material") for p in m["primitives"]], sorted(m["primitives"][0]["attributes"]))
+            for m in j["meshes"]
+        ],
+    )
     print("GLB materials", [(m["name"], m.get("doubleSided", False)) for m in j["materials"]])
-    print("GLB images", [(im.get("name"), im.get("mimeType"), j["bufferViews"][im["bufferView"]]["byteLength"]) for im in j.get("images", [])])
+    print(
+        "GLB images",
+        [
+            (im.get("name"), im.get("mimeType"), j["bufferViews"][im["bufferView"]]["byteLength"])
+            for im in j.get("images", [])
+        ],
+    )
     print(f"GLB {job.material} material", json.dumps(next(m for m in j["materials"] if m["name"] == job.material)))
     print(f"GLB size {job.glb.stat().st_size / 1e6:.2f} MB")
 
@@ -644,7 +665,14 @@ def import_glb(job: Job) -> list:
     meshes, total = [], 0
     for o in sorted(bpy.context.scene.objects, key=lambda o: o.name):
         if o.type != "MESH":
-            print("CHECK node", o.name, o.type, "parent", o.parent.name if o.parent else None, tuple(round(v, 3) for v in o.location))
+            print(
+                "CHECK node",
+                o.name,
+                o.type,
+                "parent",
+                o.parent.name if o.parent else None,
+                tuple(round(v, 3) for v in o.location),
+            )
             continue
         ev = o.evaluated_get(dg)
         me = ev.to_mesh()

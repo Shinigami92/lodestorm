@@ -18,6 +18,7 @@
     "greybox",
     "gutconfig",
     "heredocs",
+    "isort",
     "lodestorm",
     "MSAA",
     "multiview",

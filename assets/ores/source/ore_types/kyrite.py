@@ -1,12 +1,13 @@
 """Kyrite (common, cyan, steady): long hexagonal prisms with pyramid tips (some broken), in tall upright groups."""
 
-import math  # noqa: F401
+import itertools
+import math
 import random
 
 import bmesh
 from mathutils import Matrix, Vector  # noqa: F401
 
-from ore_geo import T, OreSpec, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, cut, finish_normals, rand_unit, tilted  # noqa: F401
 
 
 def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
@@ -21,9 +22,13 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
     def ring(z: float, s: float) -> list:
         return [bm.verts.new((math.cos(a) * r * s, math.sin(a) * r * s, z)) for a, r in zip(angs, rads)]
 
-    rings = [ring(-0.12 * length - 0.04, 1.0), ring(length * 0.5, rnd.uniform(0.94, 1.02)), ring(length - tip, rnd.uniform(0.82, 0.92))]
+    rings = [
+        ring(-0.12 * length - 0.04, 1.0),
+        ring(length * 0.5, rnd.uniform(0.94, 1.02)),
+        ring(length - tip, rnd.uniform(0.82, 0.92)),
+    ]
     apex = bm.verts.new((rnd.uniform(-0.25, 0.25) * radius, rnd.uniform(-0.25, 0.25) * radius, length))
-    for a, b in zip(rings, rings[1:]):
+    for a, b in itertools.pairwise(rings):
         for i in range(6):
             bm.faces.new((a[i], a[(i + 1) % 6], b[(i + 1) % 6], b[i]))
     for i in range(6):
@@ -51,8 +56,19 @@ ORE = OreSpec(
     wall_sizes=(0.3, 0.8),
     wall_tilt=30,
     variants={
-        "a": dict(seed=11, groups=[(105, 0.62, 6, (0.5, 1.0), 22), (225, 0.72, 3, (0.35, 0.7), 28), (340, 0.72, 3, (0.25, 0.55), 30), (20, 0.2, 2, (0.1, 0.25), 25)]),
-        "b": dict(seed=23, groups=[(45, 0.64, 5, (0.5, 0.95), 24), (165, 0.7, 4, (0.45, 0.85), 26), (280, 0.62, 3, (0.3, 0.6), 30)]),
+        "a": dict(
+            seed=11,
+            groups=[
+                (105, 0.62, 6, (0.5, 1.0), 22),
+                (225, 0.72, 3, (0.35, 0.7), 28),
+                (340, 0.72, 3, (0.25, 0.55), 30),
+                (20, 0.2, 2, (0.1, 0.25), 25),
+            ],
+        ),
+        "b": dict(
+            seed=23,
+            groups=[(45, 0.64, 5, (0.5, 0.95), 24), (165, 0.7, 4, (0.45, 0.85), 26), (280, 0.62, 3, (0.3, 0.6), 30)],
+        ),
         "wall": dict(seed=71, wall=True, count=7),
     },
 )

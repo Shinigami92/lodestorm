@@ -1,13 +1,13 @@
 """Halcyne (mid, sky blue, flicker): tight bundles of thick flat-topped polygonal columns of different heights,
 like basalt organ pipes in miniature."""
 
-import math  # noqa: F401
+import math
 import random
 
 import bmesh
 from mathutils import Matrix, Vector  # noqa: F401
 
-from ore_geo import T, OreSpec, clip_poly, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, clip_poly, cut, finish_normals, rand_unit, tilted  # noqa: F401
 
 
 def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
@@ -41,7 +41,9 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
         if len(poly) < 3:
             continue
         h = height * (1.0 - 0.5 * (c.length / reach) ** 1.3) * rnd.uniform(0.6, 1.0)
-        slope = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1))) * (rnd.uniform(0.0, 0.12) if rnd.random() < 0.7 else rnd.uniform(0.25, 0.45))
+        slope = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1))) * (
+            rnd.uniform(0.0, 0.12) if rnd.random() < 0.7 else rnd.uniform(0.25, 0.45)
+        )
         top = [bm.verts.new((p.x, p.y, h + slope.dot(p - c))) for p in poly]
         bot = [bm.verts.new((p.x, p.y, bottom)) for p in poly]
         n = len(poly)
@@ -62,8 +64,14 @@ ORE = OreSpec(
     wall_sizes=(0.3, 0.75),
     wall_tilt=20,
     variants={
-        "a": dict(seed=131, groups=[(110, 0.58, 3, (0.45, 1.0), 12), (240, 0.72, 2, (0.35, 0.7), 15), (355, 0.74, 2, (0.25, 0.5), 18)]),
-        "b": dict(seed=139, groups=[(50, 0.62, 3, (0.5, 0.95), 12), (180, 0.7, 2, (0.4, 0.75), 14), (300, 0.75, 2, (0.2, 0.45), 18)]),
+        "a": dict(
+            seed=131,
+            groups=[(110, 0.58, 3, (0.45, 1.0), 12), (240, 0.72, 2, (0.35, 0.7), 15), (355, 0.74, 2, (0.25, 0.5), 18)],
+        ),
+        "b": dict(
+            seed=139,
+            groups=[(50, 0.62, 3, (0.5, 0.95), 12), (180, 0.7, 2, (0.4, 0.75), 14), (300, 0.75, 2, (0.2, 0.45), 18)],
+        ),
         "wall": dict(seed=149, wall=True, count=6),
     },
 )

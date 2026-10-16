@@ -2,6 +2,7 @@ extends GutTest
 
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 const TEST_MAP: PackedScene = preload("res://game/maps/main.tscn")
+const REAL_TIME := preload("res://tests/support/real_time.gd")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowth.tres")
 
@@ -200,13 +201,20 @@ func test_collision_matches_heights() -> void:
 func test_navigation_reaches_nests() -> void:
 	var location: GeneratedLocation = _generate(2)
 	var map: RID = location.get_world_3d().navigation_map
-	# The navigation map takes the baked mesh over in the background.
+	var navigation := location.get_node("Navigation") as LocationNavigation
+	# The walkable area is baked on a worker thread; the map takes it over at its next sync (and
+	# can't be queried before its first one).
 	var outside := Vector3(55.0, 0.0, 0.0)
-	await wait_until(
+	var walkable: bool = await REAL_TIME.wait_until(
 		func() -> bool:
-			return NavigationServer3D.map_get_closest_point(map, outside) != Vector3.ZERO,
-		5.0
+			return (
+				navigation.is_baked()
+				and NavigationServer3D.map_get_iteration_id(map) > 0
+				and NavigationServer3D.map_get_closest_point(map, outside) != Vector3.ZERO
+			),
+		60.0
 	)
+	assert_true(walkable, "baked and on the map in time")
 	var start: Vector3 = NavigationServer3D.map_get_closest_point(map, outside)
 	for nest: Node3D in location.get_node("AlienNests").get_children():
 		var path: PackedVector3Array = NavigationServer3D.map_get_path(

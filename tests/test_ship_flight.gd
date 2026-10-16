@@ -43,7 +43,7 @@ func _start() -> void:
 	_flight.settings = settings
 	watch_signals(_flight)
 	await wait_physics_frames(2)
-	# The ship's display (beacon, countdown) updates in _process.
+	# The ship's countdown updates in _process.
 	await wait_process_frames(2)
 
 

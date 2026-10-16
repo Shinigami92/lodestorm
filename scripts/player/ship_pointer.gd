@@ -1,8 +1,8 @@
 class_name ShipPointer
 extends Node3D
 ## An arrow on the ground around the player that points to the nearest ship's door once the
-## player is outside and farther away than `min_distance`, in the color of the ship's beacon
-## (blinking with it). Next to its tip, the ship's countdown shows the exact time left. Shows the
+## player is outside and farther away than `min_distance`, in the ship's status color (blinking
+## in the warning time). Next to its tip, the ship's countdown shows the exact time left. Shows the
 ## way back and how urgent it is while the ship is off-screen.
 
 ## Distance to the door (horizontally, in m) below which the arrow hides. TBD (playtest).
@@ -41,7 +41,7 @@ func _physics_process(_delta: float) -> void:
 
 func _process(_delta: float) -> void:
 	if visible and target:
-		_material.albedo_color = Color(target.beacon_color, 0.3 + 0.6 * target.beacon_brightness)
+		_material.albedo_color = Color(target.status_color, 0.3 + 0.6 * target.status_brightness)
 		_countdown.text = target.countdown_text
 		# Blinks less than the arrow, so the time stays readable.
-		_countdown.modulate = Color(target.beacon_color, 0.6 + 0.4 * target.beacon_brightness)
+		_countdown.modulate = Color(target.status_color, 0.6 + 0.4 * target.status_brightness)

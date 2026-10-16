@@ -6,7 +6,8 @@ extends Resource
 ## Seconds from the start until the storm turns lethal in a standard mission; each mission scales
 ## it by its `MissionBrief.length`.
 @export var duration: float = 300.0
-## In the last seconds before the storm the ship's beacon turns red and blinks.
+## In the last seconds before the storm the ship's status color turns red and the ship pointer
+## blinks.
 @export var warning_time: float = 60.0
 ## Storm damage per second to players outside when the storm hits.
 @export var storm_damage: float = 2.0

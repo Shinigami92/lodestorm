@@ -65,12 +65,17 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 Order of the remaining work (each step builds on the ones before):
 
 1. NPC template: a greybox crew figure with a name plate, talking to it as a station, speech bubbles, dialogue data with translation keys; first use: the quartermaster explains ammo, spare magazines and the timing reload
-2. More ores (14, spread over biomes and planets), then the refinery (its own design round; space reserved at the cargo bay's far end)
-3. Quest framework and the wrist display's quest log, with the quartermaster's chain ending in the shotgun blueprint
-4. Station map (needs NPCs and quests to be more than an empty map)
-5. More weapons (blueprints from quests unlock them; their models come with the art pass)
+2. More ores (14, spread over biomes and planets)
+3. Mission locations from map parts first (the 500 × 500 m field was a first iteration to walk on): a location put together from parts, with points of interest, corridors, open areas and the region's set pieces, so new biomes are built for it. Then the star system: about six planets and their moons with their regions and new biomes, so every signature ore has its planet; the navigator becomes a campaign map (regions as territories with markers for their ores and danger, later quests; flight routes between the bodies; a region's name plate with its danger). Afterwards a pass over which ores the weapons, upgrades and skills cost, now that it's clear where each ore is found (the amounts stay **TBD (playtest)**)
+4. More aliens (their own design round: how many, how kinds and roles combine, where they live) and the feel of combat: hit feedback, projectiles that tell the weapons apart, the basic alien fast enough to be a threat (and the blaster firing faster to match)
+5. Station map: docking at Waypost Ostra, the handcrafted map, maybe the ore exchange
+6. More crew: vendors at the ship's stations, NPCs on the station who explain the mechanics (crew joining through the story waits for the quests)
+7. More weapons (their own design round: in-game names for every weapon, like the ores and places; whether the blaster is the assault rifle). Until the quests hand out blueprints, the debug overlay unlocks them; their models come with the art pass
+8. Refinery and crafted miners together, in one design round: miners are what alloys are first needed for (the refinery's space is reserved at the cargo bay's far end)
+9. Destroyable nests
+10. Quest framework and the wrist display's quest log, with the quartermaster's chain ending in the shotgun blueprint
 
-The rest (crafted miners, risk vs. reward, the voice spike, the remaining skills, the expedition log) fits in between where it helps.
+The rest (risk vs. reward, the voice spike, the remaining skills, the expedition log) fits in between where it helps.
 
 ## M5 — Art pass (Blender MCP)
 

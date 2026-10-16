@@ -33,6 +33,8 @@ const SCREE_REACH: int = 2
 ## The kind of place; when not set, one of `biomes` is picked by the seed.
 @export var biome: LocationBiome
 @export var biomes: Array[LocationBiome] = []
+## The ores it has, commonest first (set by the mission from its region); empty: the biome's.
+@export var ores: Array[OreType] = []
 ## Same seed and biome, same world; 0: a new one every time.
 @export var world_seed: int = 0
 ## Edge length of the square world, in m.
@@ -196,9 +198,11 @@ func _distance_to_landing_site(at: Vector2) -> float:
 	return offset.max(Vector2.ZERO).length()
 
 
-## Ore fields: a few nodes of one type close together. The first two are close to the ramp.
+## Ore fields: a few nodes of one type close together. The first two are close to the ramp and
+## have the commonest ore; rarer ores lie farther away.
 func _pick_ore_sites() -> void:
-	if biome.ores.is_empty():
+	var found: Array[OreType] = ores if not ores.is_empty() else OreCatalog.sorted(biome.ores)
+	if found.is_empty():
 		return
 	var farthest: float = size * 0.75
 	var fields: Array[Vector3] = []
@@ -220,10 +224,10 @@ func _pick_ore_sites() -> void:
 			continue
 		fields.append(center)
 		var distance: float = Vector2(center.x, center.z).length()
-		var rank: float = distance / farthest * biome.ores.size() + _rng.randf_range(-0.6, 0.6)
-		var ore_type: OreType = biome.ores[clampi(int(rank), 0, biome.ores.size() - 1)]
+		var rank: float = distance / farthest * found.size() + _rng.randf_range(-0.6, 0.6)
+		var ore_type: OreType = found[clampi(int(rank), 0, found.size() - 1)]
 		if near:
-			ore_type = biome.ores[0]
+			ore_type = found[0]
 		var count: int = _rng.randi_range(biome.ore_nodes_per_field.x, biome.ore_nodes_per_field.y)
 		for node: int in count:
 			var site: Vector3 = Vector3(center.x, 0.0, center.z)

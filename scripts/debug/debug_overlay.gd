@@ -107,12 +107,9 @@ const PANEL_WIDTH: float = 420.0
 const ALL_WEAPONS: Arsenal = preload("res://scenes/weapons/all_weapons.tres")
 ## Every skill of the game, for `learn_skills`.
 const SKILL_TREE: SkillTree = preload("res://scenes/skills/skill_tree.tres")
-## Ore types `fill_hold` adds, and how much of each.
-const HOLD_ORES: Array[OreType] = [
-	preload("res://scenes/mining/ores/ore_cyan.tres"),
-	preload("res://scenes/mining/ores/ore_green.tres"),
-	preload("res://scenes/mining/ores/ore_violet.tres"),
-]
+## Every ore of the game: `fill_hold` and `give_ore` add each of them.
+const ALL_ORES: OreCatalog = preload("res://scenes/mining/ores/all_ores.tres")
+## How much `fill_hold` adds of each ore.
 const HOLD_FILL: float = 900.0
 const CARGO_FILL: float = 60.0
 
@@ -260,14 +257,14 @@ func learn_skills() -> void:
 ## Adds `CARGO_FILL` units of every ore type to each player's cargo, to test reloading.
 func give_ore() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
-		for ore_type: OreType in HOLD_ORES:
+		for ore_type: OreType in ALL_ORES.ores:
 			player.add_cargo(ore_type, CARGO_FILL)
 
 
 ## Adds `HOLD_FILL` units of every ore type to each ship's hold, to test the upgrade stations.
 func fill_hold() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
-		for ore_type: OreType in HOLD_ORES:
+		for ore_type: OreType in ALL_ORES.ores:
 			ship.add_to_hold(ore_type, HOLD_FILL)
 
 

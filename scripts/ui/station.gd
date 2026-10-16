@@ -48,7 +48,9 @@ var _leader := MeshInstance3D.new()
 var _leader_mesh := ImmediateMesh.new()
 
 @onready var card: WorldPanel = $Card
-@onready var use_point: Interactable = $Use
+## Where players use it; without a `Use` child the station opens itself (e.g. the hold, from its
+## silos).
+@onready var use_point: Interactable = get_node_or_null(^"Use") as Interactable
 
 
 func _ready() -> void:
@@ -56,7 +58,8 @@ func _ready() -> void:
 	if card_menu:
 		card_menu.station = self
 	card.visible = false
-	use_point.used.connect(_on_used)
+	if use_point:
+		use_point.used.connect(_on_used)
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_color = StationPart.SELECTED_COLOR
@@ -221,7 +224,8 @@ func _picked(part: StationPart) -> void:
 
 
 func _opened() -> void:
-	use_point.enabled = false
+	if use_point:
+		use_point.enabled = false
 	if user_spot:
 		user.global_position = user_spot.global_position
 		user.reset_physics_interpolation()
@@ -237,7 +241,8 @@ func _opened() -> void:
 
 
 func _closed() -> void:
-	use_point.enabled = true
+	if use_point:
+		use_point.enabled = true
 	card.visible = false
 	_leader.visible = false
 	card.set_on_top(false)

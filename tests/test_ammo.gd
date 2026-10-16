@@ -4,9 +4,9 @@ const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const BLASTER: WeaponType = preload("res://scenes/weapons/types/blaster.tres")
 const SHOTGUN: WeaponType = preload("res://scenes/weapons/types/shotgun.tres")
 const HAMMER: WeaponType = preload("res://scenes/weapons/types/hammer.tres")
-const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
-const GREEN: OreType = preload("res://scenes/mining/ores/ore_green.tres")
-const VIOLET: OreType = preload("res://scenes/mining/ores/ore_violet.tres")
+const KYRITE: OreType = preload("res://scenes/mining/ores/ore_kyrite.tres")
+const OLVANE: OreType = preload("res://scenes/mining/ores/ore_olvane.tres")
+const VYREL: OreType = preload("res://scenes/mining/ores/ore_vyrel.tres")
 
 var _arena: Node3D
 var _player: Player
@@ -85,14 +85,14 @@ func test_holding_interact_next_to_a_teammate_hands_them_a_magazine() -> void:
 	await wait_physics_frames(1)
 	var their_blaster := teammate.weapon as RangedWeapon
 	their_blaster.rounds = 3
-	_player.add_cargo(CYAN, 20.0)
+	_player.add_cargo(KYRITE, 20.0)
 	Input.action_press(&"interact")
 	await wait_physics_frames(2)
 	assert_eq(_player.give_ammo_target, teammate)
 	assert_true(_ring().visible, "the ring fills while handing it over")
 	await wait_seconds(_player.settings.give_ammo_time + 0.1)
 	assert_eq(their_blaster.rounds, their_blaster.capacity())
-	assert_almost_eq(_player.cargo[CYAN], 20.0 - 6.0, 0.001)
+	assert_almost_eq(_player.cargo[KYRITE], 20.0 - 6.0, 0.001)
 	assert_null(_player.give_ammo_target, "once per hold")
 
 
@@ -105,16 +105,16 @@ func test_teammates_without_ore_get_nothing() -> void:
 
 
 func test_ore_value_and_spending() -> void:
-	var cargo: Dictionary[OreType, float] = {VIOLET: 2.0, CYAN: 1.0, GREEN: 4.0}
+	var cargo: Dictionary[OreType, float] = {VYREL: 2.0, KYRITE: 1.0, OLVANE: 4.0}
 	assert_almost_eq(OreAmmo.value(cargo), 1.0 + 4.0 * 1.25 + 2.0 * 1.5, 0.001)
 	assert_eq(OreAmmo.affordable(cargo, 0.25), 36)
-	_player.add_cargo(VIOLET, 2.0)
-	_player.add_cargo(GREEN, 4.0)
-	_player.add_cargo(CYAN, 1.0)
+	_player.add_cargo(VYREL, 2.0)
+	_player.add_cargo(OLVANE, 4.0)
+	_player.add_cargo(KYRITE, 1.0)
 	OreAmmo.spend(_player, 3.5)
-	assert_almost_eq(_player.cargo[CYAN], 0.0, 0.001)
-	assert_almost_eq(_player.cargo[GREEN], 2.0, 0.001)
-	assert_almost_eq(_player.cargo[VIOLET], 2.0, 0.001, "rare ore is spent last")
+	assert_almost_eq(_player.cargo[KYRITE], 0.0, 0.001)
+	assert_almost_eq(_player.cargo[OLVANE], 2.0, 0.001)
+	assert_almost_eq(_player.cargo[VYREL], 2.0, 0.001, "rare ore is spent last")
 
 
 func test_magazine_upgrade_holds_more_and_lights_its_pips() -> void:
@@ -152,7 +152,7 @@ func test_shell_strip_has_a_shell_per_round() -> void:
 
 func test_ring_shows_a_reload() -> void:
 	_blaster().rounds = 0
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	_player.reload()
 	await wait_process_frames(2)
 	assert_true(_ring().visible)

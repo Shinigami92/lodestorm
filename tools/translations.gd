@@ -19,6 +19,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"CelestialBody": [&"display_name"],
 	"Dialogue": [&"prompt"],
 	"LocationBiome": [&"display_name"],
+	"OreType": [&"display_name"],
 	"NpcProfile": [&"role"],
 	"Region": [&"display_name"],
 	"Skill": [&"display_name", &"description"],

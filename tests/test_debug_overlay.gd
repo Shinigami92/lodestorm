@@ -104,7 +104,7 @@ func test_hatch_raiders() -> void:
 
 
 func test_break_miners() -> void:
-	var node: OreNode = _mission.location.get_node("OreNodes/CyanA") as OreNode
+	var node: OreNode = _mission.location.get_node("OreNodes/KyriteA") as OreNode
 	var miner: Miner = node.place_miner(_player.miner_scene)
 	_overlay.call(&"break_miners")
 	assert_true(miner.broken)

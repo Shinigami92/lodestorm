@@ -12,7 +12,7 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
-	_node = _map.get_node("Location/OreNodes/CyanA") as OreNode
+	_node = _map.get_node("Location/OreNodes/KyriteA") as OreNode
 	_miner = _node.place_miner(_player.miner_scene)
 	_miner.settings = _miner.settings.duplicate() as MinerSettings
 	_miner.settings.fill_rate = 10.0

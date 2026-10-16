@@ -113,6 +113,8 @@ var spare_magazines: int:
 		return settings.spare_magazines + roundi(skills.value(Skill.Effect.SPARE_MAGAZINES))
 ## The dash (a skill).
 var suit_dash := SuitDash.new()
+## The wrist display (`wrist` shows the cargo).
+var wrist := WristDisplay.new()
 ## The 3D menu (a screen or a station) the player is using, or null. Meanwhile it doesn't move or
 ## act.
 var menu: WorldMenu:
@@ -184,6 +186,9 @@ func _ready() -> void:
 	suit_dash.name = "SuitDash"
 	suit_dash.holder = self
 	add_child(suit_dash)
+	wrist.name = "WristDisplay"
+	wrist.holder = self
+	add_child(wrist)
 	health = max_health()
 	_max_health = health
 	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()

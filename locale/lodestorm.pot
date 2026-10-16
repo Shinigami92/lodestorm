@@ -143,6 +143,62 @@ msgstr ""
 msgid "Overgrowth"
 msgstr ""
 
+#: scenes/mining/ores/ore_aethrine.tres
+msgid "Aethrine"
+msgstr ""
+
+#: scenes/mining/ores/ore_duskine.tres
+msgid "Duskine"
+msgstr ""
+
+#: scenes/mining/ores/ore_emerin.tres
+msgid "Emerin"
+msgstr ""
+
+#: scenes/mining/ores/ore_halcyne.tres
+msgid "Halcyne"
+msgstr ""
+
+#: scenes/mining/ores/ore_indral.tres
+msgid "Indral"
+msgstr ""
+
+#: scenes/mining/ores/ore_kyrite.tres
+msgid "Kyrite"
+msgstr ""
+
+#: scenes/mining/ores/ore_meridine.tres
+msgid "Meridine"
+msgstr ""
+
+#: scenes/mining/ores/ore_noctile.tres
+msgid "Noctile"
+msgstr ""
+
+#: scenes/mining/ores/ore_olvane.tres
+msgid "Olvane"
+msgstr ""
+
+#: scenes/mining/ores/ore_pallin.tres
+msgid "Pallin"
+msgstr ""
+
+#: scenes/mining/ores/ore_ressa.tres
+msgid "Ressa"
+msgstr ""
+
+#: scenes/mining/ores/ore_selyx.tres
+msgid "Selyx"
+msgstr ""
+
+#: scenes/mining/ores/ore_tessar.tres
+msgid "Tessar"
+msgstr ""
+
+#: scenes/mining/ores/ore_vyrel.tres
+msgid "Vyrel"
+msgstr ""
+
 #: scenes/ship/ship.tscn
 msgid "Cockpit"
 msgstr ""
@@ -369,6 +425,7 @@ msgstr ""
 
 #: scenes/ui/bed_card.tscn
 #: scenes/ui/flight_card.tscn
+#: scenes/ui/hold_card.tscn
 #: scenes/ui/loadout_card.tscn
 #: scenes/ui/navigator_card.tscn
 #: scenes/ui/settings_menu.tscn
@@ -428,6 +485,14 @@ msgstr ""
 #: scenes/ui/skill_card.tscn
 #: scenes/ui/upgrade_card.tscn
 msgid "Cost / hold"
+msgstr ""
+
+#: scenes/ui/wrist_card.tscn
+msgid "Cargo"
+msgstr ""
+
+#: scenes/ui/wrist_card.tscn
+msgid "No ore carried."
 msgstr ""
 
 #: scenes/upgrades/armor.tres
@@ -636,6 +701,38 @@ msgstr ""
 msgid "Landed: lower the ramp in the cargo bay."
 msgstr ""
 
+#: scripts/ui/hold_card.gd
+msgid "Unknown ore"
+msgstr ""
+
+#: scripts/ui/hold_card.gd
+msgid "Not brought aboard yet."
+msgstr ""
+
+#: scripts/ui/hold_card.gd
+msgid "In the hold: %d"
+msgstr ""
+
+#: scripts/ui/hold_card.gd
+msgid "Found in no open region."
+msgstr ""
+
+#: scripts/ui/hold_card.gd
+msgid "Found in: %s"
+msgstr ""
+
+#: scripts/ui/hold_card.gd
+msgid "Mid ore"
+msgstr ""
+
+#: scripts/ui/hold_card.gd
+msgid "Signature ore"
+msgstr ""
+
+#: scripts/ui/hold_card.gd
+msgid "Common ore"
+msgstr ""
+
 #: scripts/ui/loadout_card.gd
 #: scripts/ui/navigator_card.gd
 #: scripts/ui/upgrade_card.gd
@@ -752,6 +849,10 @@ msgstr ""
 
 #: scripts/ui/upgrade_card.gd
 msgid "Max"
+msgstr ""
+
+#: scripts/ui/wrist_card.gd
+msgid "Total: %d"
 msgstr ""
 
 #: scripts/world/celestial_body.gd

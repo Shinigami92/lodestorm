@@ -10,8 +10,8 @@ const ARMOR: Upgrade = preload("res://scenes/upgrades/armor.tres")
 const DRILL: Upgrade = preload("res://scenes/upgrades/miner_drill.tres")
 const SUIT: Skill = preload("res://scenes/skills/reinforced_suit.tres")
 const DASH: Skill = preload("res://scenes/skills/dash.tres")
-const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
-const GREEN: OreType = preload("res://scenes/mining/ores/ore_green.tres")
+const KYRITE: OreType = preload("res://scenes/mining/ores/ore_kyrite.tres")
+const OLVANE: OreType = preload("res://scenes/mining/ores/ore_olvane.tres")
 const DIRECTORY: String = "user://test_save/"
 ## A local port for hosting a session in the tests.
 const HOST_PORT: int = 47913
@@ -40,8 +40,8 @@ func test_fresh_start_without_save() -> void:
 
 
 func test_progress_survives_a_restart() -> void:
-	_ship.add_to_hold(CYAN, 120.5)
-	_ship.add_to_hold(GREEN, 40.0)
+	_ship.add_to_hold(KYRITE, 120.5)
+	_ship.add_to_hold(OLVANE, 40.0)
 	_player.arsenal.unlock(SHOTGUN)
 	_player.loadout.assign(0, SHOTGUN)
 	_player.loadout.assign(1, null)
@@ -51,8 +51,8 @@ func test_progress_survives_a_restart() -> void:
 	await wait_process_frames(1)
 	assert_true(SaveGame.exists(), "saved right away")
 	await _restart()
-	assert_eq(_ship.hold[CYAN], 120.5)
-	assert_eq(_ship.hold[GREEN], 40.0)
+	assert_eq(_ship.hold[KYRITE], 120.5)
+	assert_eq(_ship.hold[OLVANE], 40.0)
 	assert_eq(_player.arsenal.weapons, [BLASTER, HAMMER, SHOTGUN] as Array[WeaponType])
 	assert_eq(_player.loadout.get_weapon(0), SHOTGUN)
 	assert_null(_player.loadout.get_weapon(1))
@@ -85,7 +85,7 @@ func test_story_survives_a_restart() -> void:
 
 
 func test_mission_progress_is_saved_when_it_is_over() -> void:
-	_ship.add_to_hold(CYAN, 10.0)
+	_ship.add_to_hold(KYRITE, 10.0)
 	await wait_process_frames(1)
 	_ship.ramp_duration = 0.25
 	TEST_MAP.pick_mission(_map)
@@ -93,23 +93,23 @@ func test_mission_progress_is_saved_when_it_is_over() -> void:
 	await wait_physics_frames(ceili(_ship.ramp_duration * Engine.physics_ticks_per_second) + 2)
 	assert_true(_mission.is_underway())
 	await _move(_ship.to_global(Vector3(22.0, 0.0, 0.0)))
-	_player.add_cargo(CYAN, 100.0)
-	_ship.add_to_hold(GREEN, 5.0)
+	_player.add_cargo(KYRITE, 100.0)
+	_ship.add_to_hold(OLVANE, 5.0)
 	await wait_process_frames(1)
-	assert_eq(_saved_hold(CYAN), 10.0, "nothing saved mid-mission")
+	assert_eq(_saved_hold(KYRITE), 10.0, "nothing saved mid-mission")
 	await _move(_ship.to_global(Vector3(10.0, 2.5, 0.0)))
 	assert_eq(_mission.state, Mission.State.RETURNED)
-	assert_eq(_saved_hold(CYAN), 110.0, "saved once everyone is back")
-	assert_eq(_saved_hold(GREEN), 5.0)
+	assert_eq(_saved_hold(KYRITE), 110.0, "saved once everyone is back")
+	assert_eq(_saved_hold(OLVANE), 5.0)
 
 
 func test_quitting_mid_mission_loses_the_run() -> void:
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	await wait_physics_frames(2)
-	_ship.add_to_hold(CYAN, 50.0)
+	_ship.add_to_hold(KYRITE, 50.0)
 	await _restart()
-	assert_false(_ship.hold.has(CYAN))
+	assert_false(_ship.hold.has(KYRITE))
 
 
 func test_unreadable_save_starts_fresh_and_is_kept() -> void:
@@ -132,17 +132,17 @@ func test_unknown_entries_are_skipped() -> void:
 		"version": SaveGame.VERSION,
 		"hold":
 		{
-			CYAN.resource_path: 30.0,
+			KYRITE.resource_path: 30.0,
 			"res://nothing.tres": 5.0,
 			"user://ore.tres": 5.0,
 			SHOTGUN.resource_path: 5.0,
-			GREEN.resource_path: -4.0,
+			OLVANE.resource_path: -4.0,
 		},
 		"story": ["quartermaster.ammo", 3, ""],
 	}
 	var player_data: Dictionary = {
 		"version": SaveGame.VERSION,
-		"arsenal": [BLASTER.resource_path, "res://nothing.tres", 3, CYAN.resource_path],
+		"arsenal": [BLASTER.resource_path, "res://nothing.tres", 3, KYRITE.resource_path],
 		"loadout": [HAMMER.resource_path, SHOTGUN.resource_path],
 		"upgrades": {ARMOR.resource_path: 99, "res://nothing.tres": 2, DRILL.resource_path: "x"},
 		"skills": {SUIT.resource_path: 99, ARMOR.resource_path: 1, DASH.resource_path: 0},
@@ -150,7 +150,7 @@ func test_unknown_entries_are_skipped() -> void:
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
 	await _restart()
-	assert_eq(_ship.hold.keys(), [CYAN] as Array[OreType])
+	assert_eq(_ship.hold.keys(), [KYRITE] as Array[OreType])
 	assert_eq(_ship.story.flags.keys(), [&"quartermaster.ammo"] as Array[StringName])
 	assert_eq(_player.arsenal.weapons, [BLASTER] as Array[WeaponType])
 	assert_null(_player.loadout.get_weapon(0), "not owned")

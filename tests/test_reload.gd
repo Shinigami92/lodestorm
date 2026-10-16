@@ -4,9 +4,9 @@ const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const BLASTER: WeaponType = preload("res://scenes/weapons/types/blaster.tres")
 const SHOTGUN: WeaponType = preload("res://scenes/weapons/types/shotgun.tres")
 const HAMMER: WeaponType = preload("res://scenes/weapons/types/hammer.tres")
-const CYAN: OreType = preload("res://scenes/mining/ores/ore_cyan.tres")
-const GREEN: OreType = preload("res://scenes/mining/ores/ore_green.tres")
-const VIOLET: OreType = preload("res://scenes/mining/ores/ore_violet.tres")
+const KYRITE: OreType = preload("res://scenes/mining/ores/ore_kyrite.tres")
+const OLVANE: OreType = preload("res://scenes/mining/ores/ore_olvane.tres")
+const VYREL: OreType = preload("res://scenes/mining/ores/ore_vyrel.tres")
 
 var _arena: Node3D
 var _player: Player
@@ -32,17 +32,17 @@ func after_each() -> void:
 func test_magazine_reload_throws_away_the_rest_and_pays_the_commonest_ore_first() -> void:
 	var blaster := _blaster()
 	blaster.rounds = 20
-	_player.add_cargo(GREEN, 10.0)
-	_player.add_cargo(CYAN, 5.0)
+	_player.add_cargo(OLVANE, 10.0)
+	_player.add_cargo(KYRITE, 5.0)
 	assert_true(_player.reload())
 	assert_true(blaster.reloading)
 	assert_eq(blaster.rounds, 0, "the rounds left in the magazine are lost")
 	await _finish_reload(blaster)
 	assert_false(blaster.reloading)
 	assert_eq(blaster.rounds, blaster.capacity())
-	# A full magazine costs 24 * 0.25 = 6: all 5 cyan, then 1 / 1.25 = 0.8 green.
-	assert_almost_eq(_player.cargo[CYAN], 0.0, 0.001)
-	assert_almost_eq(_player.cargo[GREEN], 9.2, 0.001)
+	# A full magazine costs 24 * 0.25 = 6: all 5 kyrite, then 1 / 1.25 = 0.8 olvane.
+	assert_almost_eq(_player.cargo[KYRITE], 0.0, 0.001)
+	assert_almost_eq(_player.cargo[OLVANE], 9.2, 0.001)
 
 
 func test_full_magazine_ignores_reload_without_a_warning() -> void:
@@ -56,19 +56,19 @@ func test_full_magazine_ignores_reload_without_a_warning() -> void:
 func test_magazine_reload_loads_what_the_ore_pays() -> void:
 	var blaster := _blaster()
 	blaster.rounds = 10
-	_player.add_cargo(CYAN, 2.0)
+	_player.add_cargo(KYRITE, 2.0)
 	assert_false(_player.reload(), "8 rounds wouldn't be more than the 10 loaded")
 	assert_eq(blaster.rounds, 10)
 	blaster.rounds = 0
 	await _finish_reload(blaster)
 	assert_eq(blaster.rounds, 8)
-	assert_almost_eq(_player.cargo[CYAN], 0.0, 0.001)
+	assert_almost_eq(_player.cargo[KYRITE], 0.0, 0.001)
 
 
 func test_empty_weapon_reloads_by_itself() -> void:
 	var blaster := _blaster()
 	blaster.rounds = 1
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	await _attack_once()
 	assert_eq(blaster.rounds, 0)
 	assert_true(blaster.reloading, "the last shot starts a reload")
@@ -77,7 +77,7 @@ func test_empty_weapon_reloads_by_itself() -> void:
 func test_timing_press_within_the_window_finishes_the_reload() -> void:
 	var blaster := _blaster()
 	blaster.rounds = 0
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	assert_true(_player.reload())
 	var settings: RangedWeaponSettings = blaster.settings
 	blaster.reload_elapsed = (
@@ -93,7 +93,7 @@ func test_timing_press_within_the_window_finishes_the_reload() -> void:
 func test_timing_press_outside_the_window_takes_longer() -> void:
 	var blaster := _blaster()
 	blaster.rounds = 0
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	_player.reload()
 	var settings: RangedWeaponSettings = blaster.settings
 	blaster.reload_elapsed = settings.sweet_spot_start * 0.5 * settings.reload_time
@@ -110,7 +110,7 @@ func test_timing_press_outside_the_window_takes_longer() -> void:
 
 
 func test_reloading_slows_the_player_down() -> void:
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	_blaster().rounds = 0
 	_player.reload()
 	Input.action_press(&"move_left")
@@ -122,7 +122,7 @@ func test_reloading_slows_the_player_down() -> void:
 func test_shotgun_loads_one_shell_after_another_and_fires_mid_reload() -> void:
 	var shotgun := _equip(SHOTGUN) as RangedWeapon
 	shotgun.rounds = 0
-	_player.add_cargo(CYAN, 2.5)
+	_player.add_cargo(KYRITE, 2.5)
 	assert_true(_player.reload())
 	await _finish_round(shotgun)
 	assert_eq(shotgun.rounds, 1)
@@ -130,9 +130,9 @@ func test_shotgun_loads_one_shell_after_another_and_fires_mid_reload() -> void:
 	await _finish_round(shotgun)
 	assert_eq(shotgun.rounds, 2)
 	assert_false(shotgun.reloading, "the ore pays no third shell")
-	assert_almost_eq(_player.cargo[CYAN], 0.5, 0.001)
+	assert_almost_eq(_player.cargo[KYRITE], 0.5, 0.001)
 
-	_player.add_cargo(CYAN, 10.0)
+	_player.add_cargo(KYRITE, 10.0)
 	_player.reload()
 	await _attack_once()
 	assert_eq(_fired.size(), shotgun.settings.pellets, "fires the loaded shells")
@@ -144,7 +144,7 @@ func test_shotgun_shells_timed_in_a_row_load_quicker() -> void:
 	var shotgun := _equip(SHOTGUN) as RangedWeapon
 	var settings: RangedWeaponSettings = shotgun.settings
 	shotgun.rounds = 0
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	_player.reload()
 	for shell: int in 2:
 		shotgun.reload_elapsed = (
@@ -170,7 +170,7 @@ func test_switching_keeps_the_rounds_and_cancels_a_reload() -> void:
 	blaster = _blaster()
 	assert_eq(blaster.rounds, 12)
 
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	_player.reload()
 	_player.switch_weapon()
 	_player.switch_weapon()
@@ -183,17 +183,17 @@ func test_reloads_use_the_spare_magazines_before_ore() -> void:
 	_give_spares(2)
 	var blaster := _blaster()
 	assert_eq(blaster.spare_rounds, 2 * blaster.capacity())
-	_player.add_cargo(CYAN, 100.0)
+	_player.add_cargo(KYRITE, 100.0)
 	for spare: int in 2:
 		blaster.rounds = 5
 		await _finish_reload(blaster)
 		assert_eq(blaster.rounds, blaster.capacity(), "the rest is thrown away, a full one goes in")
 		assert_eq(blaster.spare_rounds, (1 - spare) * blaster.capacity())
-		assert_eq(_player.cargo[CYAN], 100.0, "spares cost no ore")
+		assert_eq(_player.cargo[KYRITE], 100.0, "spares cost no ore")
 	blaster.rounds = 0
 	await _finish_reload(blaster)
 	assert_eq(blaster.rounds, blaster.capacity())
-	assert_lt(_player.cargo[CYAN], 100.0, "then ore pays")
+	assert_lt(_player.cargo[KYRITE], 100.0, "then ore pays")
 
 
 func test_empty_weapon_with_spares_reloads_without_ore() -> void:

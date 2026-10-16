@@ -1,13 +1,14 @@
-"""Game-ready ore clusters: bake the procedural rock of ores_procedural.blend into one shared texture atlas.
+"""Game-ready ore clusters: bake the procedural rock of one ore's ores_procedural.blend into its texture atlas.
 
-Run from the repo root, after ores_build.py final (see docs/TECHNICAL.md, Asset pipeline):
-    tools/blender.sh assets/ores/source/ores_bake.py          # bake, export, check renders
-    tools/blender.sh assets/ores/source/ores_bake.py verify   # only re-import and render the checks
+Run from the repo root, after ores_build.py final <ore> (see docs/TECHNICAL.md, Asset pipeline):
+    tools/blender.sh assets/ores/source/ores_bake.py kyrite          # bake, export, check renders
+    tools/blender.sh assets/ores/source/ores_bake.py kyrite verify   # only re-import and render the checks
 
-Writes the game asset assets/ores/ores.glb (textures embedded) and its source assets/ores/source/ores.blend; the
-separate PNGs, check renders and the procedural-vs-baked comparison sheets go to tmp/assets/ores/game/.
+One model kit per ore, so ores can be added and re-baked one at a time (and two at once, in parallel). Writes the
+game asset assets/ores/<ore>.glb (textures embedded) and its source assets/ores/source/<ore>.blend; the separate
+PNGs, check renders and the procedural-vs-baked comparison sheets go to tmp/assets/ores/<ore>/game/.
 
-The shared flow (tools/blender/bake.py) bakes the nine Base_* rocks into one 1024 atlas (at 2x, filtered down) with
+The shared flow (tools/blender/bake.py) bakes the three Base_* rocks into one 512 atlas (at 2x, filtered down) with
 one "OreRock" PBR material; the crystals keep the constant "OreCrystal" placeholder (the game overrides it). A
 temporary ground plane and cliff wall let the AO see what the previews saw; faces buried under the ground or pressed
 against the cliff get almost no texture space. The roots are exported at the origin (the .blend keeps the grid).
@@ -27,12 +28,18 @@ from mathutils import Vector  # noqa: E402
 import bake as B  # noqa: E402
 import common as C  # noqa: E402
 
-TYPES = ("cyan", "green", "violet")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import importlib  # noqa: E402
+
+ARGV = [a for a in C.args() if a != "verify"]
+if not ARGV:
+    raise SystemExit("usage: ores_bake.py <ore> [verify]")
+ORE = ARGV[0]
+SPEC = importlib.import_module(f"ore_types.{ORE}").ORE
 VARIANTS = ("a", "b", "wall")
-NAMES = [f"{t}_{v}" for t in TYPES for v in VARIANTS]
+NAMES = [f"{ORE}_{v}" for v in VARIANTS]
+OUT = OUT / ORE
 LAYOUT_SPACING = 3.4  # roots sit on this grid in the procedural .blend (ores_build.py)
-# Preview-only crystal look, same as ores_build.py (the game owns the crystal material).
-ORE_COLOR = {"cyan": (0.2, 0.85, 0.95), "green": (0.35, 0.9, 0.25), "violet": (0.7, 0.3, 0.95)}
 PREVIEW_GLOW = 1.0
 
 
@@ -59,20 +66,20 @@ def hidden_face(obj: bpy.types.Object, poly) -> float | None:
 
 
 JOB = B.Job(
-    name="ores",
+    name=ORE,
     asset="Ores",
     source=OUT / "ores_procedural.blend",
-    glb=ROOT / "assets" / "ores" / "ores.glb",
-    blend=ROOT / "assets" / "ores" / "source" / "ores.blend",
+    glb=ROOT / "assets" / "ores" / f"{ORE}.glb",
+    blend=ROOT / "assets" / "ores" / "source" / f"{ORE}.blend",
     game=OUT / "game",
     atlas=[f"Base_{n}" for n in NAMES],
     material="OreRock",
-    size=1024,  # shared atlas for the nine bases (brief); TBD (playtest)
+    size=512,  # the ore's three bases; TBD (playtest)
     supersample=2,  # anti-aliased cracks and edges
-    # The bases are faceted rock, so smart project makes ~1750 small islands: a scaled margin would eat most of the
-    # atlas. 2 px at 1024.
+    # The bases are faceted rock, so smart project makes many small islands: a scaled margin would eat most of the
+    # atlas. 2 px at 512.
     island_margin=0.0,
-    pack_margin=0.002,
+    pack_margin=0.004,
     shrink=hidden_face,
     drop_attributes=("Crust",),  # baked; keep it out of the glb
     export_at_origin=tuple(f"Ore_{n}" for n in NAMES),  # the game places each cluster by its root
@@ -88,12 +95,15 @@ def bounds(objs: list) -> tuple:
     return Vector(map(min, *pts)), Vector(map(max, *pts))
 
 
-def preview_crystal(typ: str) -> bpy.types.Material:
+def preview_crystal() -> bpy.types.Material:
     """Like ores_build.py: the game's ore material, dimmer (Cycles + AgX burns the real energy to white)."""
-    mat = C.mat_emissive(f"PreviewOre_{typ}", ORE_COLOR[typ], PREVIEW_GLOW)
+    mat = C.mat_emissive(f"PreviewOre_{ORE}", SPEC.color, PREVIEW_GLOW)
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Roughness"].default_value = 0.2
-    bsdf.inputs["Base Color"].default_value = (*(c * 0.3 for c in ORE_COLOR[typ]), 1.0)
+    bsdf.inputs["Base Color"].default_value = (*(c * 0.3 for c in SPEC.color), 1.0)
+    if SPEC.dark_body:
+        bsdf.inputs["Base Color"].default_value = (0.012, 0.012, 0.014, 1.0)
+        bsdf.inputs["Emission Strength"].default_value = PREVIEW_GLOW * 0.12
     return mat
 
 
@@ -128,11 +138,11 @@ def checks(job: B.Job, meshes: list) -> None:
             f" {rad:.2f}; other {other}"
         )
     crystals = [o for o in meshes if o.name.startswith("Crystal_")]
-    print("CHECK crystals", len(crystals), "names ok", all(o.name.split("_")[1] in TYPES for o in crystals))
+    print("CHECK crystals", len(crystals), "names ok", all(o.name.split("_")[1] == ORE for o in crystals))
 
     C.preview_scene(crystals=False, figure_location=(1.7, 1.7, 0.0))
     for o in crystals:
-        C.assign(o, preview_crystal(o.name.split("_")[1]))
+        C.assign(o, preview_crystal())
     cliff(False)
 
     def solo(keep) -> None:
@@ -153,8 +163,8 @@ def checks(job: B.Job, meshes: list) -> None:
     solo(None)
     bpy.data.objects["PreviewFigure"].location = (4.6, 4.6, 0)
     for r in roots:  # the build's layout grid, game-camera distance
-        t, v = r.name.split("_")[1:]
-        r.location = ((TYPES.index(t) - 1) * LAYOUT_SPACING, (VARIANTS.index(v) - 1) * LAYOUT_SPACING, 0)
+        v = r.name.split("_")[2]
+        r.location = (0, (VARIANTS.index(v) - 1) * LAYOUT_SPACING, 0)
     C.render(job.game / "check_game_distance.png", "iso", 64, 1024, target=(0, 0, 0.3), zoom=1.45)
     C.render(job.game / "check_iso.png", "iso", 96, 1024, target=(0, 0, 0.3), zoom=1.0)
     C.render(job.game / "check_hero.png", "hero", 96, 1024, target=(0, 0, 0.3), zoom=1.3)
@@ -163,7 +173,7 @@ def checks(job: B.Job, meshes: list) -> None:
         paths = []
         for n in NAMES:
             paths += [OUT / f"render_{n}_{view}.png", job.game / f"check_{n}_{view}.png"]
-        C.contact_sheet(paths, job.game / f"compare_{view}.png", 6, 384)
+        C.contact_sheet(paths, job.game / f"compare_{view}.png", 2, 384)
 
 
 B.run(JOB, checks)

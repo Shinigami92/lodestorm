@@ -17,6 +17,8 @@ const UPGRADES: Array[Upgrade] = [
 const TERMINALS: PackedStringArray = [
 	"Rooms/Upper/Cabin1/Terminal",
 ]
+## The most ores a place lists on the navigator and flight cards.
+const MAX_ORES_SHOWN: int = 6
 ## Body text is at least this part of the view's height (see GAME_DESIGN.md, UI).
 const MIN_TEXT_HEIGHT: float = 0.02
 const STATIONS: PackedStringArray = [
@@ -170,6 +172,39 @@ func test_navigator_and_flight_cards_fit_in_every_language() -> void:
 		mission.choose(mission.offers[0])
 		await wait_process_frames(1)
 		_assert_card_fits(console, "%s destination" % locale)
+		console.close()
+
+
+func test_navigator_and_flight_cards_fit_the_most_ores() -> void:
+	var navigator := _ship.get_node("Rooms/Upper/Bridge/Navigator") as NavigatorStation
+	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
+	var mission := _map.get_node("Mission") as Mission
+	var body: CelestialBody = mission.settings.system.bodies[0]
+	for candidate: CelestialBody in mission.settings.system.bodies:
+		if not candidate.regions.is_empty():
+			body = candidate
+			break
+	for locale: String in SettingsMenu.languages():
+		TranslationServer.set_locale(locale)
+		# The most ores a place lists, with the longest names in this language.
+		var ores: Array[OreType] = OreCatalog.all().ores.duplicate()
+		ores.sort_custom(
+			func(a: OreType, b: OreType) -> bool:
+				return a.get_display_name().length() > b.get_display_name().length()
+		)
+		ores.resize(MAX_ORES_SHOWN)
+		navigator.open(_player)
+		navigator.show_body(body)
+		navigator.select(navigator.get_part(body.regions[0]))
+		(navigator.card_menu as NavigatorCard)._show_ores(ores)
+		await wait_process_frames(1)
+		_assert_card_fits(navigator, "%s region with %d ores" % [locale, ores.size()])
+		navigator.close()
+		mission.choose(mission.offers[0])
+		console.open(_player)
+		(console.card_menu as FlightCard)._show_ores(ores)
+		await wait_process_frames(1)
+		_assert_card_fits(console, "%s destination with %d ores" % [locale, ores.size()])
 		console.close()
 
 

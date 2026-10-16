@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" path="res://scripts/upgrades/upgrade_level.gd" id="1_yag1e"]
 [ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="2_ppnrg"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_cyan.tres" id="3_m637x"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_green.tres" id="4_8nd0c"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_violet.tres" id="5_e6hf1"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_kyrite.tres" id="3_m637x"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_olvane.tres" id="4_8nd0c"]
+[ext_resource type="Resource" path="res://scenes/mining/ores/ore_vyrel.tres" id="5_e6hf1"]
 [ext_resource type="Script" path="res://scripts/upgrades/upgrade.gd" id="6_4ytru"]
 
 [sub_resource type="Resource" id="Resource_qsrme"]

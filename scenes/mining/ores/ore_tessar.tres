@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="OreType" format=3]
+
+[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/ores/tessar.glb" id="2_model"]
+[ext_resource type="Texture2D" path="res://assets/ores/icons/tessar.png" id="3_icon"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Tessar"
+tier = 4
+ammo_yield = 1.25
+color = Color(0.1, 0.85, 0.6, 1)
+glow = 4
+icon = ExtResource("3_icon")
+model = ExtResource("2_model")
+variants = Array[StringName]([&"Ore_tessar_a", &"Ore_tessar_b"])

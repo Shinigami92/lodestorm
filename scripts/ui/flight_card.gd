@@ -5,7 +5,7 @@ extends StationCard
 
 const STATUS_COLOR := Color(1.0, 0.75, 0.3)
 
-## The ores the chips show.
+## The ores the badges show.
 var _shown_ores: Array[OreType] = []
 
 @onready var _title: Label = %Title
@@ -13,7 +13,7 @@ var _shown_ores: Array[OreType] = []
 @onready var _info: GridContainer = %Info
 @onready var _danger: Label = %Danger
 @onready var _timer: Label = %Timer
-@onready var _ores: HBoxContainer = %Ores
+@onready var _ores: HFlowContainer = %Ores
 @onready var _status: Label = %Status
 @onready var _launch: Button = %Launch
 @onready var _close: Button = %Close
@@ -46,10 +46,7 @@ func show_part(part: StationPart) -> void:
 			&"font_color", NavigatorCard.DANGER_COLORS[destination.difficulty]
 		)
 		_timer.text = tr("%d min") % roundi(mission.settings.duration * destination.length / 60.0)
-		var ores: Array[OreType] = []
-		if destination.biome:
-			ores = destination.biome.ores
-		_show_ores(ores)
+		_show_ores(destination.found_ores())
 	else:
 		_title.text = tr("No destination")
 		_subtitle.text = ""
@@ -59,7 +56,7 @@ func show_part(part: StationPart) -> void:
 	_launch.disabled = not console.can_launch()
 
 
-## The destination's ores as chips (from common to rare).
+## The destination's ores as badges with their names (from common to rare).
 func _show_ores(ores: Array[OreType]) -> void:
 	if ores == _shown_ores:
 		return
@@ -68,11 +65,7 @@ func _show_ores(ores: Array[OreType]) -> void:
 		_ores.remove_child(node)
 		node.queue_free()
 	for ore_type: OreType in ores:
-		var chip := ColorRect.new()
-		chip.color = ore_type.color
-		chip.custom_minimum_size = NavigatorCard.ORE_CHIP_SIZE
-		chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		_ores.add_child(chip)
+		_ores.add_child(OreBadge.new(ore_type))
 
 
 func press_primary() -> bool:

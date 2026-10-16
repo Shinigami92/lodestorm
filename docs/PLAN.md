@@ -50,7 +50,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 ## M4 — Progression & quests
 
 - Spike: local AI voice-over (text to speech, offline, English) and subtitles as speech bubbles in the world, see [Localization and voice](GAME_DESIGN.md#localization-and-voice)
-- More ore types (towards 10–15), each identifiable by color, crystal shape and glow pattern; spread over biomes and planets
+- More ore types: 14 in three bands (4 common, 4 mid, 6 signature ores, one per planet), each identifiable by color, crystal shape and glow pattern; biomes carry the common and mid ores, planets their signature ore; the cargo on the back as layered tubes, the wrist display with the cargo, the hold as tanks in the cargo bay (see [Resources](GAME_DESIGN.md#9-resources))
 - Refinery: alloys from 2–3 ores, refining in real time
 - Crafted miners (upgraded one by one, picked up again, lost when left behind or when everyone dies), standard-issue miners, drill types
 - Risk vs. reward: nodes running dry, mining sites drawing aliens, rare ore far out and near nests, late deposits
@@ -65,7 +65,7 @@ Goal: reach a playable, fun core loop as early as possible with greybox visuals,
 Order of the remaining work (each step builds on the ones before):
 
 1. NPC template: a greybox crew figure with a name plate, talking to it as a station, speech bubbles, dialogue data with translation keys; first use: the quartermaster explains ammo, spare magazines and the timing reload
-2. More ores (towards 10–15, spread over the regions), then the refinery; independent of step 1, so it can swap places with it
+2. More ores (14, spread over biomes and planets), then the refinery (its own design round; space reserved at the cargo bay's far end)
 3. Quest framework and the wrist display's quest log, with the quartermaster's chain ending in the shotgun blueprint
 4. Station map (needs NPCs and quests to be more than an empty map)
 5. More weapons (blueprints from quests unlock them; their models come with the art pass)
@@ -75,7 +75,7 @@ The rest (crafted miners, risk vs. reward, the voice spike, the remaining skills
 ## M5 — Art pass (Blender MCP)
 
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, placing and pickup animations, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
-- Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<type>_wall` in `assets/ores/ores.glb`), which needs placement along the cliff edges
+- Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<ore>_wall` in `assets/ores/<ore>.glb`), which needs placement along the cliff edges
 - Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips
 - Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; raiders share its model (shaded darker) until they get their own strain; the brute and the spitter are still to model; the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so profiling (M6) may move it to a cheaper path or skip it for aliens off screen
 - Leftovers of the loadout: model the shotgun (with a shell per round in its strip, up to 12 with the magazine upgrade) and the hammer (greybox meshes so far) and give the hammer a swing animation (its head only sweeps sideways through the arc now; the player holds it in the rifle pose); a weapon rack in the armory that shows the owned weapons

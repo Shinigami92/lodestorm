@@ -148,7 +148,7 @@ func test_waits_for_every_player() -> void:
 
 func test_next_mission_resets_timer_and_outside_world() -> void:
 	await _open()
-	var node: OreNode = _map.get_node("Location/OreNodes/CyanA")
+	var node: OreNode = _map.get_node("Location/OreNodes/KyriteA")
 	await _move(_player, node.global_position + Vector3(1.5, 0.0, 0.0))
 	assert_not_null(_player.place_miner())
 	await _move(_player, _inside())
@@ -164,7 +164,7 @@ func test_next_mission_resets_timer_and_outside_world() -> void:
 	assert_eq(_mission.state, Mission.State.OPEN)
 	assert_eq(_mission.time_left, _mission.duration())
 	assert_eq(_mission.location, _map.get_node("Location"))
-	var fresh_node: OreNode = _map.get_node("Location/OreNodes/CyanA")
+	var fresh_node: OreNode = _map.get_node("Location/OreNodes/KyriteA")
 	assert_true(fresh_node.is_free(), "no miner from the last run")
 	await _move(_player, _outside())
 	assert_eq(_mission.state, Mission.State.RUNNING)

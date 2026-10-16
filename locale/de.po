@@ -145,6 +145,62 @@ msgstr "Staubebene"
 msgid "Overgrowth"
 msgstr "Wildwuchs"
 
+#: scenes/mining/ores/ore_aethrine.tres
+msgid "Aethrine"
+msgstr "Aethrine"
+
+#: scenes/mining/ores/ore_duskine.tres
+msgid "Duskine"
+msgstr "Duskine"
+
+#: scenes/mining/ores/ore_emerin.tres
+msgid "Emerin"
+msgstr "Emerin"
+
+#: scenes/mining/ores/ore_halcyne.tres
+msgid "Halcyne"
+msgstr "Halcyne"
+
+#: scenes/mining/ores/ore_indral.tres
+msgid "Indral"
+msgstr "Indral"
+
+#: scenes/mining/ores/ore_kyrite.tres
+msgid "Kyrite"
+msgstr "Kyrite"
+
+#: scenes/mining/ores/ore_meridine.tres
+msgid "Meridine"
+msgstr "Meridine"
+
+#: scenes/mining/ores/ore_noctile.tres
+msgid "Noctile"
+msgstr "Noctile"
+
+#: scenes/mining/ores/ore_olvane.tres
+msgid "Olvane"
+msgstr "Olvane"
+
+#: scenes/mining/ores/ore_pallin.tres
+msgid "Pallin"
+msgstr "Pallin"
+
+#: scenes/mining/ores/ore_ressa.tres
+msgid "Ressa"
+msgstr "Ressa"
+
+#: scenes/mining/ores/ore_selyx.tres
+msgid "Selyx"
+msgstr "Selyx"
+
+#: scenes/mining/ores/ore_tessar.tres
+msgid "Tessar"
+msgstr "Tessar"
+
+#: scenes/mining/ores/ore_vyrel.tres
+msgid "Vyrel"
+msgstr "Vyrel"
+
 #: scenes/ship/ship.tscn
 msgid "Cockpit"
 msgstr "Cockpit"
@@ -371,6 +427,7 @@ msgstr "Schlafen"
 
 #: scenes/ui/bed_card.tscn
 #: scenes/ui/flight_card.tscn
+#: scenes/ui/hold_card.tscn
 #: scenes/ui/loadout_card.tscn
 #: scenes/ui/navigator_card.tscn
 #: scenes/ui/settings_menu.tscn
@@ -431,6 +488,14 @@ msgstr "Abbrechen"
 #: scenes/ui/upgrade_card.tscn
 msgid "Cost / hold"
 msgstr "Kosten / Lager"
+
+#: scenes/ui/wrist_card.tscn
+msgid "Cargo"
+msgstr "Fracht"
+
+#: scenes/ui/wrist_card.tscn
+msgid "No ore carried."
+msgstr "Kein Erz dabei."
 
 #: scenes/upgrades/armor.tres
 msgid "Suit armor"
@@ -638,6 +703,38 @@ msgstr "Kurs setzen, um dorthin zu fliegen."
 msgid "Landed: lower the ramp in the cargo bay."
 msgstr "Gelandet: Rampe im Frachtraum senken."
 
+#: scripts/ui/hold_card.gd
+msgid "Unknown ore"
+msgstr "Unbekanntes Erz"
+
+#: scripts/ui/hold_card.gd
+msgid "Not brought aboard yet."
+msgstr "Noch nie an Bord gebracht."
+
+#: scripts/ui/hold_card.gd
+msgid "In the hold: %d"
+msgstr "Im Laderaum: %d"
+
+#: scripts/ui/hold_card.gd
+msgid "Found in no open region."
+msgstr "In keiner offenen Region zu finden."
+
+#: scripts/ui/hold_card.gd
+msgid "Found in: %s"
+msgstr "Zu finden in: %s"
+
+#: scripts/ui/hold_card.gd
+msgid "Mid ore"
+msgstr "Mittleres Erz"
+
+#: scripts/ui/hold_card.gd
+msgid "Signature ore"
+msgstr "Planetenerz"
+
+#: scripts/ui/hold_card.gd
+msgid "Common ore"
+msgstr "Häufiges Erz"
+
 #: scripts/ui/loadout_card.gd
 #: scripts/ui/navigator_card.gd
 #: scripts/ui/upgrade_card.gd
@@ -755,6 +852,10 @@ msgstr "Aufrüsten"
 #: scripts/ui/upgrade_card.gd
 msgid "Max"
 msgstr "Max"
+
+#: scripts/ui/wrist_card.gd
+msgid "Total: %d"
+msgstr "Gesamt: %d"
 
 #: scripts/world/celestial_body.gd
 msgid "Moon"

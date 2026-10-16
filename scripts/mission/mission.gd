@@ -159,7 +159,9 @@ func roll_offers() -> void:
 	brief = null
 	if settings.system:
 		for region: Region in settings.system.open_regions():
-			offers.append(MissionBrief.for_region(region, _rng.randi_range(1, 0x7fffffff)))
+			var world_seed: int = _rng.randi_range(1, 0x7fffffff)
+			var ores: Array[OreType] = settings.system.ores_of(region)
+			offers.append(MissionBrief.for_region(region, world_seed, ores))
 	offers_changed.emit()
 
 
@@ -292,6 +294,7 @@ func _instantiate(offer: MissionBrief) -> Node3D:
 	var generated := fresh as GeneratedLocation
 	if generated and offer:
 		generated.biome = offer.biome
+		generated.ores = offer.ores
 		generated.world_seed = offer.world_seed
 		generated.nest_factor = settings.nest_factors[offer.difficulty]
 	return fresh

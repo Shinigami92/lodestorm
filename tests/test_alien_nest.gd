@@ -177,7 +177,7 @@ func _set_raider_interval(seconds: float) -> void:
 
 ## A miner on an ore node of the location (far from the nest, nobody repairs it).
 func _place_miner() -> Miner:
-	var node: OreNode = _mission.location.get_node("OreNodes/CyanA") as OreNode
+	var node: OreNode = _mission.location.get_node("OreNodes/KyriteA") as OreNode
 	return node.place_miner(_player.miner_scene)
 
 

@@ -17,10 +17,10 @@ extends Node3D
 ## (`Hull/Upper/Cut`) do.
 ## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
 ## Windows in the outer walls look out from every room along them (and in from outside).
-## The beacon on the roof shows the mission time from far away: green, amber after half the time,
-## red and blinking in the warning time, steady red in the storm, blue once everyone is back and
-## grey when the mission is lost. A countdown above the door shows the exact time ("No mission"
-## until one is picked at the holo table, "In flight" on the way).
+## A countdown above the door shows the mission time ("No mission" until one is picked at the holo
+## table, "In flight" on the way) in its status color: green, amber after half the time, red in the
+## warning time (the ship pointer outside blinks then), red in the storm, blue once everyone is back
+## and grey when the mission is lost.
 ## Returned cargo goes into the hold, shown as big canisters by the back wall. Dead players
 ## respawn at `Respawn` in the medical bay.
 
@@ -62,12 +62,12 @@ const RAMP_OPEN_ANGLE: float = -0.523599
 ## Whose view the cutaway follows (the camera's player); without one, the first player aboard.
 @export var viewer: Node3D
 
-## The mission whose time the beacon and countdown show; set by the mission.
+## The mission whose time the countdown shows; set by the mission.
 var mission: Mission
-## The beacon's current color.
-var beacon_color: Color = COLOR_CALM
-## The beacon's current brightness (0 to 1), dims while blinking.
-var beacon_brightness: float = 1.0
+## The mission time's current color (countdown, ship pointer).
+var status_color: Color = COLOR_CALM
+## The status color's current brightness (0 to 1), dims while blinking.
+var status_brightness: float = 1.0
 ## What the countdown above the door shows: the time left, or the mission's state (translated).
 var countdown_text: String = ""
 ## Hides the countdown (it draws over everything): e.g. while the hold's silos by the ramp are
@@ -89,8 +89,6 @@ var _armed: Array[Player] = []
 ## What the cutaway shows right now.
 var _view: View = View.OUTSIDE
 var _ramp_angle: float = RAMP_CLOSED_ANGLE
-var _lamp_material := StandardMaterial3D.new()
-var _column_material := StandardMaterial3D.new()
 var _button_material := StandardMaterial3D.new()
 
 @onready var ramp_button: Interactable = $RampButton
@@ -108,9 +106,6 @@ var _button_material := StandardMaterial3D.new()
 @onready var _upper_cut: Node3D = $Hull/Upper/Cut
 @onready var _upper_rooms: Node3D = $Rooms/Upper
 @onready var _lifts: Node3D = $Lifts
-@onready var _lamp: MeshInstance3D = $Beacon/Lamp
-@onready var _column: MeshInstance3D = $Beacon/Column
-@onready var _light: OmniLight3D = $Beacon/Light
 @onready var _countdown: Label3D = $Countdown
 @onready var _button_face: MeshInstance3D = $RampButton/Face
 
@@ -123,13 +118,6 @@ func _ready() -> void:
 	_weapon_zone.body_exited.connect(_on_weapon_zone_exited)
 	_ramp_angle = RAMP_OPEN_ANGLE if ramp_open else RAMP_CLOSED_ANGLE
 	_ramp.rotation.z = _ramp_angle
-	_lamp_material.emission_enabled = true
-	_lamp_material.emission_energy_multiplier = 3.0
-	_lamp.material_override = _lamp_material
-	_column_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_column_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_column_material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-	_column.material_override = _column_material
 	_button_material.emission_enabled = true
 	_button_face.material_override = _button_material
 	_update_display()
@@ -240,45 +228,40 @@ func _set_hold(ore_type: OreType, amount: float) -> void:
 
 
 func _update_display() -> void:
-	beacon_brightness = 1.0
+	status_brightness = 1.0
 	if not mission:
-		beacon_color = COLOR_CALM
+		status_color = COLOR_CALM
 		countdown_text = ""
 	elif flight.is_flying():
-		beacon_color = COLOR_CALM
+		status_color = COLOR_CALM
 		countdown_text = tr("In flight")
 	elif mission.state == Mission.State.RETURNED:
-		beacon_color = COLOR_RETURNED
+		status_color = COLOR_RETURNED
 		countdown_text = tr("All aboard")
 	elif mission.state == Mission.State.LOST:
-		beacon_color = COLOR_LOST
+		status_color = COLOR_LOST
 		countdown_text = tr("Lost")
 	elif mission.state == Mission.State.STORM:
-		beacon_color = COLOR_WARNING
+		status_color = COLOR_WARNING
 		countdown_text = tr("Storm")
 	elif not mission.brief:
-		beacon_color = COLOR_CALM
+		status_color = COLOR_CALM
 		countdown_text = tr("No mission")
 	else:
 		var time_left: float = mission.time_left
 		var seconds: int = ceili(time_left)
 		countdown_text = "%d:%02d" % [floori(seconds / 60.0), seconds % 60]
 		if time_left <= mission.settings.warning_time:
-			beacon_color = COLOR_WARNING
+			status_color = COLOR_WARNING
 			# Tied to the timer, so the blinking stays in step with the countdown.
-			beacon_brightness = 0.25 + 0.75 * absf(cos(time_left * PI * WARNING_BLINK_RATE))
+			status_brightness = 0.25 + 0.75 * absf(cos(time_left * PI * WARNING_BLINK_RATE))
 		elif time_left <= mission.duration() * 0.5:
-			beacon_color = COLOR_HALF
+			status_color = COLOR_HALF
 		else:
-			beacon_color = COLOR_CALM
+			status_color = COLOR_CALM
 
-	_lamp_material.albedo_color = beacon_color
-	_lamp_material.emission = beacon_color * beacon_brightness
-	_column_material.albedo_color = Color(beacon_color, 0.35 * beacon_brightness)
-	_light.light_color = beacon_color
-	_light.light_energy = 2.0 * beacon_brightness
 	_countdown.text = countdown_text
-	_countdown.modulate = beacon_color
+	_countdown.modulate = status_color
 	_countdown.visible = not countdown_hidden
 
 	var button_color: Color = COLOR_BUTTON_DISABLED

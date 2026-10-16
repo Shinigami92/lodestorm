@@ -117,24 +117,24 @@ func test_ship_shows_time_left() -> void:
 	_mission.time_left = 600.4
 	await wait_process_frames(1)
 	assert_eq(countdown.text, "10:01")
-	# More than half the time is left, so the beacon is still calm.
+	# More than half the time is left, so the status is still calm.
 	_mission.time_left = _mission.duration() * 0.75
 	await wait_process_frames(1)
-	assert_eq(_ship.beacon_color, Ship.COLOR_CALM)
+	assert_eq(_ship.status_color, Ship.COLOR_CALM)
 
 
-func test_beacon_shows_how_urgent_it_is() -> void:
+func test_status_color_shows_how_urgent_it_is() -> void:
 	await _open()
 	await _move(_player, _outside())
 	_mission.time_left = _mission.duration() * 0.4
 	await wait_process_frames(1)
-	assert_eq(_ship.beacon_color, Ship.COLOR_HALF)
+	assert_eq(_ship.status_color, Ship.COLOR_HALF)
 	_mission.time_left = _mission.settings.warning_time * 0.5
 	await wait_process_frames(1)
-	assert_eq(_ship.beacon_color, Ship.COLOR_WARNING)
+	assert_eq(_ship.status_color, Ship.COLOR_WARNING)
 	await _move(_player, _inside())
 	await wait_process_frames(1)
-	assert_eq(_ship.beacon_color, Ship.COLOR_RETURNED)
+	assert_eq(_ship.status_color, Ship.COLOR_RETURNED)
 
 
 func test_pointer_hides_near_ship() -> void:

@@ -952,25 +952,6 @@ size = Vector3(0.42, 0.02, 0.64)
 [sub_resource type="BoxShape3D" id="BoxShape3D_interior"]
 size = Vector3(95, 8.5, 29)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_mast"]
-material = SubResource("StandardMaterial3D_dark")
-top_radius = 0.1
-bottom_radius = 0.1
-height = 1.5
-radial_segments = 8
-rings = 1
-
-[sub_resource type="SphereMesh" id="SphereMesh_lamp"]
-radius = 0.4
-height = 0.8
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_column"]
-top_radius = 0.3
-bottom_radius = 0.3
-height = 30.0
-radial_segments = 12
-rings = 1
-
 [node name="Ship" type="Node3D"]
 script = ExtResource("1_script")
 
@@ -4437,27 +4418,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -8.75)
 
 [node name="OreHold" parent="." instance=ExtResource("40_ore_hold")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
-
-[node name="Beacon" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 11.5, -14.75)
-
-[node name="Mast" type="MeshInstance3D" parent="Beacon"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
-mesh = SubResource("CylinderMesh_mast")
-
-[node name="Lamp" type="MeshInstance3D" parent="Beacon"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-cast_shadow = 0
-mesh = SubResource("SphereMesh_lamp")
-
-[node name="Column" type="MeshInstance3D" parent="Beacon"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
-cast_shadow = 0
-mesh = SubResource("CylinderMesh_column")
-
-[node name="Light" type="OmniLight3D" parent="Beacon"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-omni_range = 10.0
 
 [node name="Countdown" type="Label3D" parent="."]
 auto_translate_mode = 2

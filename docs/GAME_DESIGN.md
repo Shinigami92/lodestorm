@@ -80,7 +80,7 @@ Found by rating four rounds of concept images (generated locally, not part of th
 ### UI: in the world, not on the screen
 
 - **No 2D HUD** where it can be avoided. Game information is shown in the world or on the player (diegetic UI). This also keeps desktop and VR the same: a screen-space HUD doesn't work in VR anyway.
-- **Ideas (not final):** health and armor on the player's suit (lights, gauges), carried resources visible on the player (backpack / canisters filling up), ammo on the weapon, miner fill level on the miner itself, mission time via the environment (storm building up, ship beacon) or a display on the player's wrist.
+- **Ideas (not final):** health and armor on the player's suit (lights, gauges), carried resources visible on the player (backpack / canisters filling up), ammo on the weapon, miner fill level on the miner itself, mission time via the environment (storm building up) or a display on the player's wrist.
 - **The object is the menu.** Where something is chosen or bought, the player uses the thing itself, not a screen next to it: the weapon on a workbench, their own suit in a fitting frame, a miner on its maintenance pad, the star map on the holo table, the skill graph. The camera frames it, its parts become selectable (a weapon's barrel for its damage, its magazine, a miner's drill), and a small **holo card** beside the selected part shows what it is, its level pips (the same pips as on the weapons and the helmet), what the next level does, its cost and the action. This holds any number of weapons, upgrades and skills (there may be 50–100 skills), gives the rooms things to stand at (they fill with assets and NPCs later), and German only has to fit one kind of card. Flat **terminals** stay for system things only: the settings in cabin 1 and the comms station on the bridge.
 - **Using one** (values **TBD (playtest)**): a player walks up and uses it (`interact`). They stand still, and their camera moves in to frame it (keeping the isometric angle); nobody standing in front of it hides it. Leaving moves the camera back. One player uses it at a time.
   - **Mouse:** the cursor points at the parts and the card's buttons, like a 2D menu.
@@ -201,8 +201,8 @@ Standing at one spot until the timer runs low must not pay off. Directions to tr
 
 - Greybox: the test map has a 15 min timer (finding ore in the 500 m world takes a while) (`scenes/mission/mission_settings.tres`), **TBD (playtest)**.
 - The mission is **over when every player is back aboard**, in time or after the timer ran out. Dead players don't count: once everyone alive is aboard and at least one player made it, the mission ends (see [Death & persistence](#11-death--persistence)).
-- The time shows in the world: the ship's beacon (a light column above the roof, seen from far away) is green, turns amber after half the time, red and blinking in the last minute (**TBD (playtest)**) and steady red once the storm hits. A countdown hangs above the door.
-- Outside, when the door is farther away (greybox: 12 m, **TBD (playtest)**), an arrow on the ground around the player points to it in the beacon's color, with the countdown next to its tip, so the way back, the urgency and the exact time are visible while the ship is off-screen.
+- The time shows in the world: a countdown hangs above the door, in a status color that is green, turns amber after half the time, red in the last minute (**TBD (playtest)**) and stays red once the storm hits.
+- Outside, when the door is farther away (greybox: 12 m, **TBD (playtest)**), an arrow on the ground around the player points to it in the status color (blinking in the last minute), with the countdown next to its tip, so the way back, the urgency and the exact time are visible while the ship is off-screen.
 
 ### Timer expiry
 
@@ -299,7 +299,7 @@ Values in `scenes/weapons/*_settings.tres` and `scenes/player/player_settings.tr
 
 - Health shows on the suit: a light band around the collar is green, amber below half, red and blinking below a quarter, and flashes white on damage. Greybox: 100 HP, **TBD (playtest)**.
 - On death: the body drops where it stands, **everything carried this run is lost**, and the player respawns in the medical bay with full health.
-- When every player is dead, the mission is lost: the beacon turns grey, the countdown says LOST, and after a few seconds (greybox: 3 s, **TBD (playtest)**) everyone respawns aboard and the ramp goes up. The next run starts with a newly picked mission.
+- When every player is dead, the mission is lost: the countdown turns grey and says LOST, and after a few seconds (greybox: 3 s, **TBD (playtest)**) everyone respawns aboard and the ramp goes up. The next run starts with a newly picked mission.
 - Co-op: the mission ends when every player is either back aboard or dead, as long as at least one made it back. The dead lose what they carried and respawn aboard when it ends.
 - When every player dies, the miners on the planet are lost too (see [Miners](#7-miners)).
 - **Not too punishing:** losses should hurt, but not set players back for long.

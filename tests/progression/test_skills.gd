@@ -105,13 +105,13 @@ func test_regeneration_heals_after_a_while_without_damage() -> void:
 	var hurt: float = _player.health
 	await _wait_physics(0.3)
 	assert_eq(_player.health, hurt, "not right after the damage")
-	assert_false(_player.regenerating)
+	assert_false(_player.vitals.regenerating)
 	await _wait_physics(0.5)
-	assert_true(_player.regenerating)
+	assert_true(_player.vitals.regenerating)
 	assert_gt(_player.health, hurt)
 	await _wait_physics(40.0 / REGENERATION.ranks[0].value)
 	assert_eq(_player.health, _player.max_health())
-	assert_false(_player.regenerating, "stops at full health")
+	assert_false(_player.vitals.regenerating, "stops at full health")
 
 
 func test_no_regeneration_without_the_skill() -> void:

@@ -1,15 +1,14 @@
 class_name Player
 extends CharacterBody3D
-## Twin-stick player: moves relative to the camera and faces the aim direction. Aims at the
-## mouse cursor on the ground, with the right stick, or else in the movement direction, and
-## attacks there with the equipped weapon while `attack` is held. An alien under the cursor, or
-## close to where the stick points, gets locked on (a ring under it): the player turns to it and
-## shots fly straight at it, also up or down a slope. Places miners on the nearest
-## free ore node in range with `place_miner`, and carries the ore that miners' hoses move to it,
-## shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
+## Twin-stick player: moves relative to the camera and faces where it aims (`aim`: the mouse
+## cursor on the ground, the right stick or else the movement direction; aliens there get locked
+## on), and attacks there with the equipped weapon while `attack` is held. Places miners on the
+## nearest free ore node in range with `place_miner`, and carries the ore that miners' hoses move
+## to it, shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
 ## nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
-## menu (`menu`), it stands still and only the menu gets its input. Health shows on the suit light;
-## at zero health the player dies, drops everything carried and lies still until `respawn`.
+## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
+## the suit light; at zero health the player dies, drops everything carried and lies still until
+## `respawn`.
 ## Owns the weapons in its `arsenal` and carries the ones in its `loadout` (picked in the armory);
 ## `switch_weapon` equips the next one. Ranged weapons keep their loaded rounds while holstered
 ## for the run and `reload` them with ammo the suit makes from the carried ore (`OreAmmo`; free
@@ -38,11 +37,6 @@ const GROUP: StringName = &"players"
 const ACTIONS: Array[StringName] = [
 	&"attack", &"place_miner", &"interact", &"switch_weapon", &"reload", &"dash"
 ]
-## Ignore cursor positions this close to the player, the direction flips around too easily.
-const MIN_MOUSE_AIM_DISTANCE: float = 0.1
-## The cursor ray looks for the ground from this high above the player's feet (m), so ceilings and
-## the deck above (inside the ship) don't catch it.
-const CURSOR_CEILING: float = 3.0
 ## Stencil value the suit writes where it's visible (occluded_silhouette.gdshader skips those).
 const STENCIL_VISIBLE: int = 1
 ## Where the armor's MK pips sit, in the model's rest pose: on top of the helmet, left of its fin
@@ -75,10 +69,10 @@ const DASH_STRIP_POSITION := Vector3(0.0, 1.22, -0.312)
 ## Drawn over the suit: its silhouette behind walls and the rim light.
 @export var body_overlay: Material
 
-## Horizontal unit vector the player faces and attacks in.
-var aim_direction: Vector3 = Vector3.FORWARD
-## The alien locked on, or null.
-var aim_target: Alien
+## Where the player aims and the alien it locked on.
+var aim := PlayerAim.new()
+## Health, regeneration and death.
+var vitals := PlayerVitals.new()
 ## The equipped weapon, or null with an empty loadout.
 var weapon: Weapon
 ## The loadout slot of the equipped weapon (or the one to fill first when it's empty).
@@ -101,12 +95,14 @@ var ammo_free: bool = false
 ## The teammate `interact` hands ammo to while it's held, or null; and for how long it's held (s).
 var give_ammo_target: Player
 var give_ammo_time: float = 0.0
-## Current health, from 0 to `max_health()`.
-var health: float
+## Current health, from 0 to `max_health()` (see `vitals`).
+var health: float:
+	get:
+		return vitals.health
 ## Dead players can't move or act until they respawn.
-var dead: bool = false
-## Whether it heals by itself right now (the regeneration skill).
-var regenerating: bool = false
+var dead: bool:
+	get:
+		return vitals.dead
 ## Spare magazines per ranged weapon a run starts with, with the skills.
 var spare_magazines: int:
 	get:
@@ -127,8 +123,6 @@ var menu: WorldMenu:
 				_held_since_menu.append(action)
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-## Whether the mouse was used for aiming more recently than the right stick.
-var _aim_with_mouse: bool = false
 ## Actions held since a menu opened or closed; they're ignored until released.
 var _held_since_menu: Array[StringName] = []
 var _weapon_type: WeaponType
@@ -136,8 +130,6 @@ var _weapon_type: WeaponType
 var _rounds: Dictionary[WeaponType, int] = {}
 ## Spare rounds per ranged weapon of the loadout that isn't equipped; missing ones have all spares.
 var _spares: Dictionary[WeaponType, int] = {}
-## `max_health()` when health was last set, so an armor upgrade adds the difference.
-var _max_health: float
 ## Shows the armor's MK level.
 var _armor_pips := MkPips.new()
 ## Shows the equipped weapon's spare magazines.
@@ -146,8 +138,6 @@ var _pouches := SparePouches.new()
 var _dash_strip := DashStrip.new()
 ## Points to the nearest free ore node.
 var _scanner := OreScanner.new()
-## Seconds since the last damage (for regeneration).
-var _since_damage: float = INF
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _hose_port: Marker3D = $HosePort
@@ -189,8 +179,17 @@ func _ready() -> void:
 	wrist.name = "WristDisplay"
 	wrist.holder = self
 	add_child(wrist)
-	health = max_health()
-	_max_health = health
+	aim.name = "Aim"
+	aim.holder = self
+	aim.marker = _target_marker
+	add_child(aim)
+	vitals.name = "Vitals"
+	vitals.holder = self
+	vitals.light = _suit_light
+	vitals.changed.connect(health_changed.emit)
+	vitals.died.connect(_on_died)
+	add_child(vitals)
+	vitals.revive()
 	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()
 	arsenal.weapons = arsenal.weapons.duplicate()
 	loadout = loadout.duplicate() if loadout else Loadout.new()
@@ -199,14 +198,9 @@ func _ready() -> void:
 	_on_loadout_changed()
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
-		_aim_with_mouse = true
-
-
 func _physics_process(delta: float) -> void:
 	if dead:
-		aim_target = null
+		aim.target = null
 		return
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	var camera_basis: Basis = camera.global_basis if camera else Basis.IDENTITY
@@ -237,11 +231,11 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	if acting:
-		_update_aim(camera, camera_basis, move)
+		aim.update(camera, camera_basis, move)
 	else:
-		aim_target = null
-		_aim_towards(menu.get_look_target())
-	var target_yaw: float = atan2(-aim_direction.x, -aim_direction.z)
+		aim.target = null
+		aim.towards(menu.get_look_target())
+	var target_yaw: float = atan2(-aim.direction.x, -aim.direction.z)
 	var yaw: float = lerp_angle(rotation.y, target_yaw, 1.0 - exp(-settings.turn_speed * delta))
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.
 	basis = Basis(Vector3.UP, yaw)
@@ -249,9 +243,11 @@ func _physics_process(delta: float) -> void:
 	_animator.aiming = weapon != null and weapon_allowed
 
 	if weapon:
-		weapon.aim_direction = aim_direction
-		weapon.aim_target = aim_target
-		weapon.trigger_held = weapon_allowed and _action_held(&"attack") and not _mouse_over_ui()
+		weapon.aim_direction = aim.direction
+		weapon.aim_target = aim.target
+		weapon.trigger_held = (
+			weapon_allowed and _action_held(&"attack") and not aim.is_mouse_over_ui()
+		)
 
 	_update_miner_target()
 	if _action_just_pressed(&"place_miner"):
@@ -268,117 +264,14 @@ func _physics_process(delta: float) -> void:
 	if _action_just_pressed(&"reload"):
 		reload()
 
-	_regenerate(delta)
+	vitals.update(delta)
 
 
 func _process(_delta: float) -> void:
-	var locked: bool = _is_lockable(aim_target)
-	_target_marker.visible = locked
-	if locked:
-		_target_marker.global_position = aim_target.global_position + Vector3.UP * 0.05
 	_update_pouches()
 	_dash_strip.visible = skills.has(Skill.Effect.DASH)
 	_dash_strip.show_fill(suit_dash.ready_ratio())
 	_scanner.reach = skills.value(Skill.Effect.ORE_SCANNER)
-
-
-func _update_aim(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
-	var stick: Vector2 = Input.get_vector(&"aim_left", &"aim_right", &"aim_forward", &"aim_back")
-	if stick != Vector2.ZERO:
-		_aim_with_mouse = false
-		aim_with_stick(IsoInput.camera_relative(stick, camera_basis))
-	elif _aim_with_mouse and camera:
-		if not _mouse_over_ui():
-			aim_at_screen_position(camera, get_viewport().get_mouse_position())
-	else:
-		aim_target = null
-		if move != Vector3.ZERO:
-			aim_direction = move.normalized()
-	if not _is_lockable(aim_target):
-		aim_target = null
-	elif aim_target:
-		_aim_towards(aim_target.global_position)
-
-
-## Aims at what's under the given screen position: an alien close to it (locked on), or else
-## the point on the ground.
-func aim_at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
-	aim_target = _alien_near_screen_position(camera, screen_position)
-	if aim_target:
-		_aim_towards(aim_target.global_position)
-		return
-	var origin: Vector3 = camera.project_ray_origin(screen_position)
-	var normal: Vector3 = camera.project_ray_normal(screen_position)
-	var hit: Variant = Plane(Vector3.UP, global_position.y).intersects_ray(origin, normal)
-	# The ground under the cursor, also on a slope or hill (below the ceiling height).
-	var ceiling: Variant = Plane(Vector3.UP, global_position.y + CURSOR_CEILING).intersects_ray(
-		origin, normal
-	)
-	if ceiling != null:
-		var from: Vector3 = ceiling
-		var query := PhysicsRayQueryParameters3D.create(from, origin + normal * 1000.0)
-		query.exclude = [get_rid()]
-		var ground: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
-		if not ground.is_empty():
-			hit = ground[&"position"]
-	if hit != null:
-		_aim_towards(hit as Vector3)
-
-
-## Aims along `direction` (horizontal) and locks on the nearest alien close to it.
-func aim_with_stick(direction: Vector3) -> void:
-	aim_direction = direction.normalized()
-	var best: Alien
-	var best_distance: float = settings.stick_lock_range
-	var max_angle: float = deg_to_rad(settings.stick_lock_angle)
-	for alien: Alien in _aliens():
-		var offset: Vector3 = alien.global_position - global_position
-		offset.y = 0.0
-		var distance: float = offset.length()
-		if distance < best_distance and offset.angle_to(aim_direction) <= max_angle:
-			best = alien
-			best_distance = distance
-	aim_target = best
-
-
-func _aim_towards(point: Vector3) -> void:
-	var to_point: Vector3 = point - global_position
-	to_point.y = 0.0
-	if to_point.length() > MIN_MOUSE_AIM_DISTANCE:
-		aim_direction = to_point.normalized()
-
-
-## The alien closest to `screen_position` on screen, within the lock radius (the one already
-## locked on keeps it up to the larger release radius), or null.
-func _alien_near_screen_position(camera: Camera3D, screen_position: Vector2) -> Alien:
-	var screen_height: float = get_viewport().get_visible_rect().size.y
-	var best: Alien
-	var best_distance: float = INF
-	for alien: Alien in _aliens():
-		var point: Vector3 = alien.get_aim_point()
-		if camera.is_position_behind(point):
-			continue
-		var radius: float = (
-			settings.target_release_radius if alien == aim_target else settings.target_lock_radius
-		)
-		var distance: float = camera.unproject_position(point).distance_to(screen_position)
-		if distance <= radius * screen_height and distance < best_distance:
-			best = alien
-			best_distance = distance
-	return best
-
-
-func _aliens() -> Array[Alien]:
-	var aliens: Array[Alien] = []
-	for node: Node in get_tree().get_nodes_in_group(Alien.GROUP):
-		var alien := node as Alien
-		if _is_lockable(alien):
-			aliens.append(alien)
-	return aliens
-
-
-func _is_lockable(alien: Alien) -> bool:
-	return is_instance_valid(alien) and not alien.dead and alien.is_inside_tree()
 
 
 ## Places a miner on `miner_target` and returns it, or null without a target.
@@ -444,10 +337,7 @@ func get_weapon_type() -> WeaponType:
 
 ## Health when unhurt, with the skills and the armor upgrade.
 func max_health() -> float:
-	return (
-		(settings.max_health + skills.value(Skill.Effect.HEALTH))
-		* upgrades.multiplier(armor_upgrade)
-	)
+	return vitals.maximum()
 
 
 ## The pips showing the armor's MK level.
@@ -488,25 +378,17 @@ func take_cargo() -> Dictionary[OreType, float]:
 
 ## Loses `amount` health; dies at zero.
 func take_damage(amount: float) -> void:
-	if dead or amount <= 0.0:
-		return
-	_since_damage = 0.0
-	_set_health(health - amount)
-	if health == 0.0:
-		_die()
-	else:
-		_suit_light.flash()
+	vitals.damage(amount)
 
 
 ## Restores full health.
 func heal() -> void:
-	if not dead:
-		_set_health(max_health())
+	vitals.heal()
 
 
 ## Brings a dead player back at `at` with full health.
 func respawn(at: Vector3) -> void:
-	dead = false
+	vitals.revive()
 	_animator.dead = false
 	weapon_allowed = weapon_allowed
 	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
@@ -514,7 +396,6 @@ func respawn(at: Vector3) -> void:
 	global_position = at
 	velocity = Vector3.ZERO
 	reset_physics_interpolation()
-	_set_health(max_health())
 
 
 ## Where hoses attach, as rendered this frame (interpolated between physics steps).
@@ -551,25 +432,12 @@ func _action_just_pressed(action: StringName) -> bool:
 	return _action_held(action) and Input.is_action_just_pressed(action)
 
 
-func _mouse_over_ui() -> bool:
-	return _aim_with_mouse and get_viewport().gui_get_hovered_control() != null
-
-
-func _set_health(value: float) -> void:
-	_max_health = max_health()
-	health = clampf(value, 0.0, _max_health)
-	_suit_light.show_health(health / _max_health)
-	health_changed.emit(health)
-
-
-func _die() -> void:
-	dead = true
+## Drops everything and lies still until `respawn`.
+func _on_died() -> void:
 	if menu:
 		menu.close()
 	velocity = Vector3.ZERO
 	suit_dash.cancel()
-	regenerating = false
-	_suit_light.regenerating = false
 	if weapon:
 		weapon.trigger_held = false
 		weapon.visible = false
@@ -663,20 +531,6 @@ func _add_dash_strip() -> void:
 	)
 	_dash_strip.visible = false
 	_mark_visible(_dash_strip)
-
-
-## Heals by itself with the regeneration skill, once it took no damage for a while.
-func _regenerate(delta: float) -> void:
-	_since_damage += delta
-	regenerating = (
-		not dead
-		and health < max_health()
-		and _since_damage >= settings.regeneration_delay
-		and skills.value(Skill.Effect.REGENERATION) > 0.0
-	)
-	_suit_light.regenerating = regenerating
-	if regenerating:
-		_set_health(health + skills.value(Skill.Effect.REGENERATION) * delta)
 
 
 ## A marker following `bone`, at `in_model` (in the model's rest pose). The marker is placed from
@@ -823,8 +677,7 @@ func _on_upgrades_changed() -> void:
 		weapon.apply_upgrades(upgrades, _weapon_type)
 	refill_ammo()
 	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
-	if not dead:
-		_set_health(health + max_health() - _max_health)
+	vitals.update_maximum()
 
 
 ## Skills are learned aboard: more spare magazines fill up, more health adds the difference, the
@@ -834,8 +687,7 @@ func _on_skills_changed() -> void:
 	if ranged:
 		ranged.careful = skills.has(Skill.Effect.CAREFUL_RELOAD)
 	refill_ammo()
-	if not dead:
-		_set_health(health + max_health() - _max_health)
+	vitals.update_maximum()
 
 
 ## Keeps the equipped weapon in the loadout: the one in its slot, or else the first one there.

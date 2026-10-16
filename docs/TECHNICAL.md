@@ -49,7 +49,7 @@ The game lives in `game/`, one folder per feature: its scenes, scripts and resou
 | `models/` | `ModelParts` (reads parts from model kits) | |
 | `npcs/` | `Npc`, profiles, dialogue, topics, talk card, speech bubble; `crew/` profiles | station NPCs in their own folder |
 | `ores/` | `OreType`, catalog, glow, badge; `types/` one resource per ore | |
-| `player/` | player and its components (dash, scanner, cargo rack, ...); `wrist/` | the wrist display's quest log |
+| `player/` | player and its components (`PlayerAim`: aiming and lock-on, `PlayerVitals`: health and death, dash, scanner, cargo rack, ...); `wrist/` | the wrist display's quest log, VR and remote aim sources |
 | `progression/` | `skills/` (the graph's skills in `tree/`), `upgrades/` | more skills, MK > 3 |
 | `save/` | `SaveGame`, `GameSettings` | |
 | `ship/` | ship, flight, lift, floor guide, holo table; the generated `hull.tscn`, `rooms/` (a scene per room), shared `materials/` | refinery, the modeled hull and rooms |

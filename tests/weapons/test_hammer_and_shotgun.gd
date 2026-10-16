@@ -89,7 +89,7 @@ func test_shotgun_fires_a_fan_of_pellets() -> void:
 	var widest: float = 0.0
 	for projectile: Projectile in fired:
 		var direction: Vector3 = projectile.velocity.normalized()
-		widest = maxf(widest, rad_to_deg(direction.angle_to(_player.aim_direction)))
+		widest = maxf(widest, rad_to_deg(direction.angle_to(_player.aim.direction)))
 		assert_almost_eq(projectile.damage, shotgun.settings.damage, 0.001)
 	assert_almost_eq(widest, shotgun.settings.spread * 0.5, 0.5)
 

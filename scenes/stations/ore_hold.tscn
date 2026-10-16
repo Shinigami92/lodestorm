@@ -3,71 +3,25 @@
 [ext_resource type="Script" path="res://scripts/ship/ore_hold.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hold_card.tscn" id="3_card"]
-[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="4_use"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
-shading_mode = 0
-albedo_color = Color(1, 0.75, 0.3, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_highlight"]
-material = SubResource("StandardMaterial3D_highlight")
-size = Vector3(1.2, 0.02, 0.9)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_console"]
-albedo_color = Color(0.14, 0.15, 0.17, 1)
-metallic = 0.6
-roughness = 0.5
-
-[sub_resource type="BoxMesh" id="BoxMesh_console"]
-material = SubResource("StandardMaterial3D_console")
-size = Vector3(0.9, 1.0, 0.45)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_screen"]
-shading_mode = 0
-albedo_color = Color(0.3, 0.85, 1, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_screen"]
-material = SubResource("StandardMaterial3D_screen")
-size = Vector3(0.7, 0.04, 0.3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_console"]
-size = Vector3(0.9, 1.0, 0.45)
-
-[node name="OreHold" type="Node3D" node_paths=PackedStringArray("user_spot")]
+[node name="OreHold" type="Node3D"]
 script = ExtResource("1_script")
-user_spot = NodePath("UserSpot")
-view_height = 5.5
-
-[node name="Console" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 0, -9.3)
-
-[node name="Collision" type="CollisionShape3D" parent="Console"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-shape = SubResource("BoxShape3D_console")
-
-[node name="Body" type="MeshInstance3D" parent="Console"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-mesh = SubResource("BoxMesh_console")
-
-[node name="Screen" type="MeshInstance3D" parent="Console"]
-transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, 1.02, 0.02)
-mesh = SubResource("BoxMesh_screen")
-
-[node name="UserSpot" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 0, -8.4)
-
-[node name="Use" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 0, -8.4)
-script = ExtResource("4_use")
-interact_range = 1.3
-
-[node name="Highlight" type="MeshInstance3D" parent="Use"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
-visible = false
-mesh = SubResource("BoxMesh_highlight")
+view_height = 7.0
 
 [node name="Card" parent="." instance=ExtResource("2_panel")]
-size = Vector2(2.4, 1.6)
-pixels_per_meter = 230.0
+size = Vector2(3.1, 2.1)
+pixels_per_meter = 180.0
 transparent = true
 menu = ExtResource("3_card")
+
+[node name="BackLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 7.2, -5)
+light_color = Color(0.85, 0.9, 1, 1)
+light_energy = 1.4
+omni_range = 11.0
+
+[node name="FrontLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 5, 4.5)
+light_color = Color(0.85, 0.9, 1, 1)
+light_energy = 1.0
+omni_range = 7.0

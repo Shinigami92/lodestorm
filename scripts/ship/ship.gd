@@ -70,6 +70,9 @@ var beacon_color: Color = COLOR_CALM
 var beacon_brightness: float = 1.0
 ## What the countdown above the door shows: the time left, or the mission's state (translated).
 var countdown_text: String = ""
+## Hides the countdown (it draws over everything): e.g. while the hold's silos by the ramp are
+## looked at up close.
+var countdown_hidden: bool = false
 ## Whether the ramp is going down (or is down); it moves there over `ramp_duration`.
 var ramp_open: bool = false
 ## Ore brought back over all runs and not spent yet, in units per ore type. Upgrades are paid from
@@ -276,6 +279,7 @@ func _update_display() -> void:
 	_light.light_energy = 2.0 * beacon_brightness
 	_countdown.text = countdown_text
 	_countdown.modulate = beacon_color
+	_countdown.visible = not countdown_hidden
 
 	var button_color: Color = COLOR_BUTTON_DISABLED
 	if ramp_button.enabled:

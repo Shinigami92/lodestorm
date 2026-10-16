@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://ccobha20r222k"]
+
+[ext_resource type="PackedScene" uid="uid://dvjycwpwhh0kw" path="res://game/stations/loadout/loadout_locker.tscn" id="12_loadout_locker"]
+[ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="21_npc"]
+[ext_resource type="Resource" uid="uid://btff2f4twhwue" path="res://game/npcs/crew/quartermaster.tres" id="22_quartermaster"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Armory"]
+albedo_color = Color(0.44, 0.44, 0.36, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor_Armory"]
+material = SubResource("StandardMaterial3D_floor_Armory")
+size = Vector2(18, 11.5)
+
+[node name="Armory" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_floor_Armory")
+
+[node name="Light" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 5.0
+spot_range = 3.8
+spot_angle = 70.9
+spot_angle_attenuation = 0.5
+
+[node name="Sign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
+pixel_size = 0.01
+text = "Armory"
+font_size = 96
+outline_size = 24
+uppercase = true
+
+[node name="Locker1" parent="." instance=ExtResource("12_loadout_locker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -5.4)
+number = 1
+color = Color(0.3, 0.85, 1, 1)
+
+[node name="Locker2" parent="." instance=ExtResource("12_loadout_locker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 0, -5.4)
+number = 2
+color = Color(0.45, 0.9, 0.4, 1)
+
+[node name="Locker3" parent="." instance=ExtResource("12_loadout_locker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0, -5.4)
+number = 3
+color = Color(0.9, 0.45, 0.85, 1)
+
+[node name="Locker4" parent="." instance=ExtResource("12_loadout_locker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, -5.4)
+number = 4
+color = Color(0.95, 0.9, 0.4, 1)
+
+[node name="Quartermaster" parent="." instance=ExtResource("21_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, -4.2)
+profile = ExtResource("22_quartermaster")

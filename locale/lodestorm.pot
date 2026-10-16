@@ -139,7 +139,7 @@ msgid "The timing trick works on every single shell. Time several shells in a ro
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-#: game/ship/ship.tscn
+#: game/ship/rooms/lower/shooting_range.tscn
 msgid "Shooting range"
 msgstr ""
 
@@ -382,6 +382,106 @@ msgstr ""
 msgid "More shells per load"
 msgstr ""
 
+#: game/ship/rooms/cargo_bay.tscn
+msgid "Cargo bay"
+msgstr ""
+
+#: game/ship/rooms/cargo_bay.tscn
+msgid "Armory · Upgrades\nRange · Medical · Engine"
+msgstr ""
+
+#: game/ship/rooms/cargo_bay.tscn
+msgid "Lift\nMess · Cabins · Bridge"
+msgstr ""
+
+#: game/ship/rooms/lower/armor.tscn
+msgid "Armor"
+msgstr ""
+
+#: game/ship/rooms/lower/armory.tscn
+msgid "Armory"
+msgstr ""
+
+#: game/ship/rooms/lower/engine_room.tscn
+msgid "Engine room"
+msgstr ""
+
+#: game/ship/rooms/lower/medical_bay.tscn
+msgid "Medical bay"
+msgstr ""
+
+#: game/ship/rooms/lower/miners.tscn
+msgid "Miners"
+msgstr ""
+
+#: game/ship/rooms/lower/skills.tscn
+msgid "Skills"
+msgstr ""
+
+#: game/ship/rooms/lower/weapons.tscn
+msgid "Weapons"
+msgstr ""
+
+#: game/ship/rooms/upper/bridge.tscn
+msgid "Bridge"
+msgstr ""
+
+#: game/ship/rooms/upper/cabin_1.tscn
+msgid "Cabin 1"
+msgstr ""
+
+#: game/ship/rooms/upper/cabin_2.tscn
+msgid "Cabin 2"
+msgstr ""
+
+#: game/ship/rooms/upper/cabin_3.tscn
+msgid "Cabin 3"
+msgstr ""
+
+#: game/ship/rooms/upper/cabin_4.tscn
+msgid "Cabin 4"
+msgstr ""
+
+#: game/ship/rooms/upper/cockpit.tscn
+msgid "Cockpit"
+msgstr ""
+
+#: game/ship/rooms/upper/crew_1.tscn
+msgid "Crew 1"
+msgstr ""
+
+#: game/ship/rooms/upper/crew_2.tscn
+msgid "Crew 2"
+msgstr ""
+
+#: game/ship/rooms/upper/crew_3.tscn
+msgid "Crew 3"
+msgstr ""
+
+#: game/ship/rooms/upper/crew_4.tscn
+msgid "Crew 4"
+msgstr ""
+
+#: game/ship/rooms/upper/crew_5.tscn
+msgid "Crew 5"
+msgstr ""
+
+#: game/ship/rooms/upper/crew_6.tscn
+msgid "Crew 6"
+msgstr ""
+
+#: game/ship/rooms/upper/crew_7.tscn
+msgid "Crew 7"
+msgstr ""
+
+#: game/ship/rooms/upper/crew_8.tscn
+msgid "Crew 8"
+msgstr ""
+
+#: game/ship/rooms/upper/mess_hall.tscn
+msgid "Mess hall"
+msgstr ""
+
 #: game/ship/ship.gd
 msgid "In flight"
 msgstr ""
@@ -400,106 +500,6 @@ msgstr ""
 
 #: game/ship/ship.gd
 msgid "No mission"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Cockpit"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Bridge"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Mess hall"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Cabin 1"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Cabin 2"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Cabin 3"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Cabin 4"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Crew 1"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Crew 5"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Crew 2"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Crew 6"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Crew 3"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Crew 7"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Crew 4"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Crew 8"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Medical bay"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Engine room"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Armory"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Weapons"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Armor"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Skills"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Miners"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Cargo bay"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Armory · Upgrades\nRange · Medical · Engine"
-msgstr ""
-
-#: game/ship/ship.tscn
-msgid "Lift\nMess · Cabins · Bridge"
 msgstr ""
 
 #: game/ship/ship.tscn

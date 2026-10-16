@@ -13,6 +13,8 @@ lint_gdscript() {
 lint_python() {
 	ruff format --check . || status=1
 	ruff check . || status=1
+	# Generated scenes must match their generator
+	python game/ship/hull_build.py --check || status=1
 }
 
 case "${1:-all}" in

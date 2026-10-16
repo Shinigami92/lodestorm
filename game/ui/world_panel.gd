@@ -217,8 +217,8 @@ func _update_resolution() -> void:
 	var bottom: Vector3 = to_global(Vector3(0.0, -size.y * 0.5, 0.0))
 	var left: Vector3 = to_global(Vector3(-size.x * 0.5, 0.0, 0.0))
 	var right: Vector3 = to_global(Vector3(size.x * 0.5, 0.0, 0.0))
-	for point: Vector3 in [top, bottom, left, right]:
-		if camera.is_position_behind(point):
+	for corner: Vector3 in [top, bottom, left, right]:
+		if camera.is_position_behind(corner):
 			return
 	var on_screen := Vector2(
 		camera.unproject_position(left).distance_to(camera.unproject_position(right)),

@@ -95,9 +95,9 @@ func get_plate_text() -> String:
 ## The topics open now for `listener` (the player talking to them when null), in the dialogue's
 ## order: their story flags are set, and `listener` owns the weapon a topic is about.
 func get_choices(listener: Player = null) -> Array[Topic]:
-	var open: Array[Topic] = []
+	var choices: Array[Topic] = []
 	if not profile or not profile.dialogue:
-		return open
+		return choices
 	if not listener:
 		listener = user
 	var story: Story = get_story()
@@ -109,8 +109,8 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 			and not (listener and listener.arsenal.owns(listed.requires_weapon))
 		):
 			continue
-		open.append(listed)
-	return open
+		choices.append(listed)
+	return choices
 
 
 ## Whether nobody has heard `listed` to the end yet.

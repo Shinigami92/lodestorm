@@ -98,6 +98,7 @@ func _setup() -> void:
 		var leg_name: String = LEGS[index]
 		var leg := Leg.new()
 		leg.name = leg_name
+		@warning_ignore("integer_division")
 		leg.group = index / 2
 		leg.upper = skeleton.find_bone(leg_name + "UpperLeg")
 		leg.lower = skeleton.find_bone(leg_name + "LowerLeg")
@@ -129,17 +130,17 @@ func _process_modification_with_delta(delta: float) -> void:
 	if not _started:
 		plant_all()
 	var xform: Transform3D = skeleton.get_global_transform_interpolated()
-	var scale: float = xform.basis.get_scale().x
+	var size: float = xform.basis.get_scale().x
 	if delta > 0.0:
 		var moved: Vector3 = (xform.origin - _last_origin) / delta
 		_velocity = _velocity.lerp(Vector3(moved.x, 0.0, moved.z), minf(delta * 12.0, 1.0))
 	_last_origin = xform.origin
 	var speed: float = _velocity.length()
-	var reach: float = (step_distance + step_distance_per_speed * speed) * scale
+	var reach: float = (step_distance + step_distance_per_speed * speed) * size
 	var duration: float = clampf(step_duration - speed * 0.03, min_step_duration, step_duration)
 	for group: int in 2:
 		_update_pair(_groups[group], xform, reach, duration, _group_stepping(1 - group), delta)
-	var to_local: Transform3D = xform.affine_inverse()
+	var to_skeleton: Transform3D = xform.affine_inverse()
 	# Read every animated pose first: reading one after a write would update the whole skeleton.
 	var poses: Array[Transform3D] = []
 	for leg: Leg in _legs:
@@ -148,7 +149,7 @@ func _process_modification_with_delta(delta: float) -> void:
 	for i: int in _legs.size():
 		var leg: Leg = _legs[i]
 		feet[leg.name] = leg.planted
-		_solve(skeleton, leg, to_local * leg.planted, poses.slice(i * 4, i * 4 + 4))
+		_solve(skeleton, leg, to_skeleton * leg.planted, poses.slice(i * 4, i * 4 + 4))
 
 
 ## Moves the feet of one pair: steps in progress go on; once a planted foot is too far from its

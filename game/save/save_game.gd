@@ -7,21 +7,27 @@ extends Node
 ## what changes during a mission is saved once it's over (returned or lost), so quitting
 ## mid-mission loses that run like dying. The settings (`GameSettings`) are kept apart and survive
 ## `reset_progress`.
-## Resources (ore types, weapons, upgrades, skills) are saved by their path, so moving or renaming
-## one of them needs a migration (`VERSION`). Unknown entries are skipped; a file that can't be
-## read is kept as `<name>.corrupt` and the game starts from the defaults.
+## Resources (ore types, weapons, upgrades, skills) are saved by their UID, so they can be moved
+## and renamed; saves of version 1 named them by path, which `MOVED` follows. Unknown entries are
+## skipped, and a save without a known weapon keeps the default arsenal and loadout; a file that
+## can't be read is kept as `<name>.corrupt` and the game starts from the defaults.
 
 const GROUP: StringName = &"save_games"
 ## The save format; raise it (and convert older saves in `_read`) when the format changes.
-const VERSION: int = 1
+const VERSION: int = 2
 const SHIP_FILE: String = "ship.json"
-## Resources that were renamed: their old path in older saves, and the new one.
-const RENAMED: Dictionary[String, String] = {
-	"res://game/ores/types/ore_kyrite.tres": "res://game/ores/types/ore_kyrite.tres",
-	"res://game/ores/types/ore_olvane.tres": "res://game/ores/types/ore_olvane.tres",
-	"res://game/ores/types/ore_vyrel.tres": "res://game/ores/types/ore_vyrel.tres",
-}
 const PLAYER_FILE: String = "player.json"
+## Where resources named by path in version 1 saves went: a file, or a folder (ending in "/") and
+## everything in it.
+const MOVED: Dictionary[String, String] = {
+	"res://scenes/mining/ores/ore_cyan.tres": "res://game/ores/types/ore_kyrite.tres",
+	"res://scenes/mining/ores/ore_green.tres": "res://game/ores/types/ore_olvane.tres",
+	"res://scenes/mining/ores/ore_violet.tres": "res://game/ores/types/ore_vyrel.tres",
+	"res://scenes/mining/ores/": "res://game/ores/types/",
+	"res://scenes/weapons/types/": "res://game/weapons/types/",
+	"res://scenes/upgrades/": "res://game/progression/upgrades/",
+	"res://scenes/skills/": "res://game/progression/skills/tree/",
+}
 
 ## Where the saves and the settings go: the user data folder, or a `dev/` folder in it for runs
 ## from the editor, so debug shortcuts (unlock weapons, fill hold) never reach a real save. Empty:
@@ -39,6 +45,8 @@ static var directory: String = "user://dev/" if OS.has_feature("editor") else "u
 var _save_queued: bool = false
 ## Off after `reset_progress`, so nothing is written until the map reloads.
 var _active: bool = true
+## Whether the save just read was older or had to be repaired, so it's written again right away.
+var _outdated: bool = false
 
 
 ## The folder of the save (empty when saving is off).
@@ -92,6 +100,9 @@ func load_progress() -> void:
 		_apply_ship(_read(SHIP_FILE))
 	if player:
 		_apply_player(_read(PLAYER_FILE))
+	if _outdated:
+		_outdated = false
+		_on_progress_changed()
 
 
 ## Writes the ship's and the player's progress (nothing happens while saving is off).
@@ -134,10 +145,10 @@ func reset_progress() -> bool:
 static func ship_data(of_ship: Ship) -> Dictionary:
 	var hold: Dictionary = {}
 	for ore_type: OreType in of_ship.hold:
-		hold[ore_type.resource_path] = of_ship.hold[ore_type]
+		hold[_reference(ore_type)] = of_ship.hold[ore_type]
 	var found: Array = []
 	for ore_type: OreType in of_ship.found_ores:
-		found.append(ore_type.resource_path)
+		found.append(_reference(ore_type))
 	found.sort()
 	var flags: Array = []
 	for flag: StringName in of_ship.story.flags:
@@ -151,16 +162,19 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 static func player_data(of_player: Player) -> Dictionary:
 	var weapons: Array = []
 	for weapon_type: WeaponType in of_player.arsenal.weapons:
-		weapons.append(weapon_type.resource_path)
+		weapons.append(_reference(weapon_type))
 	var loadout: Array = []
 	for weapon_type: WeaponType in of_player.loadout.weapons:
-		loadout.append(weapon_type.resource_path if weapon_type else null)
+		if weapon_type:
+			loadout.append(_reference(weapon_type))
+		else:
+			loadout.append(null)
 	var levels: Dictionary = {}
 	for upgrade: Upgrade in of_player.upgrades.levels:
-		levels[upgrade.resource_path] = of_player.upgrades.levels[upgrade]
+		levels[_reference(upgrade)] = of_player.upgrades.levels[upgrade]
 	var ranks: Dictionary = {}
 	for skill: Skill in of_player.skills.ranks:
-		ranks[skill.resource_path] = of_player.skills.ranks[skill]
+		ranks[_reference(skill)] = of_player.skills.ranks[skill]
 	return {
 		"version": VERSION,
 		"arsenal": weapons,
@@ -178,6 +192,7 @@ func _apply_ship(data: Dictionary) -> void:
 		if ore_type and amount >= 0.0:
 			ship.add_to_hold(ore_type, amount)
 		else:
+			_outdated = true
 			push_warning("Save: skipped hold entry %s" % path)
 	if data.get("found") is Array:
 		for path: Variant in data["found"] as Array:
@@ -185,35 +200,51 @@ func _apply_ship(data: Dictionary) -> void:
 			if ore_type:
 				ship.mark_found(ore_type)
 			else:
+				_outdated = true
 				push_warning("Save: skipped found ore %s" % path)
 	if data.get("story") is Array:
 		for flag: Variant in data["story"] as Array:
 			if flag is String and not (flag as String).is_empty():
 				ship.story.flags[StringName(flag as String)] = true
 			else:
+				_outdated = true
 				push_warning("Save: skipped story flag %s" % flag)
 		ship.story.emit_changed()
 
 
 func _apply_player(data: Dictionary) -> void:
-	if data.has("arsenal"):
+	if data.get("arsenal") is Array:
 		var weapons: Array[WeaponType] = []
 		for path: Variant in data["arsenal"] as Array:
 			var weapon_type := _resource(path) as WeaponType
 			if weapon_type and weapon_type not in weapons:
 				weapons.append(weapon_type)
 			else:
+				_outdated = true
 				push_warning("Save: skipped weapon %s" % path)
-		player.arsenal.weapons = weapons
-		player.arsenal.emit_changed()
-	if data.has("loadout"):
-		var slots: Array = data["loadout"]
-		for slot: int in slots.size():
-			var weapon_type := _resource(slots[slot]) as WeaponType
-			# Only owned weapons; anything else leaves the slot empty.
-			player.loadout.assign(
-				slot, weapon_type if weapon_type and player.arsenal.owns(weapon_type) else null
-			)
+		# Weapons are never taken away, so a save without any is damaged: keep the default ones.
+		if weapons.is_empty():
+			_outdated = true
+			push_warning("Save: no known weapon, keeping the default arsenal")
+		else:
+			player.arsenal.weapons = weapons
+			player.arsenal.emit_changed()
+	if data.get("loadout") is Array:
+		# Only owned weapons; anything else leaves the slot empty.
+		var slots: Array[WeaponType] = []
+		for path: Variant in data["loadout"] as Array:
+			var weapon_type := _resource(path) as WeaponType
+			slots.append(weapon_type if weapon_type and player.arsenal.owns(weapon_type) else null)
+		# The locker never empties the loadout, so a save that does keeps the default one.
+		if slots.any(func(weapon_type: WeaponType) -> bool: return weapon_type != null):
+			for slot: int in slots.size():
+				player.loadout.assign(slot, slots[slot])
+		else:
+			_outdated = true
+			push_warning("Save: no owned weapon in the loadout, keeping the default one")
+			for slot: int in player.loadout.weapons.size():
+				if not player.arsenal.owns(player.loadout.get_weapon(slot)):
+					player.loadout.assign(slot, null)
 	if data.has("upgrades"):
 		var levels: Dictionary = data["upgrades"]
 		for path: Variant in levels:
@@ -222,6 +253,7 @@ func _apply_player(data: Dictionary) -> void:
 			if upgrade and mk >= 1.0:
 				player.upgrades.levels[upgrade] = clampi(roundi(mk), 1, upgrade.max_mk())
 			else:
+				_outdated = true
 				push_warning("Save: skipped upgrade %s" % path)
 		player.upgrades.emit_changed()
 	if data.has("skills"):
@@ -232,18 +264,39 @@ func _apply_player(data: Dictionary) -> void:
 			if skill and rank >= 1.0:
 				player.skills.ranks[skill] = clampi(roundi(rank), 1, skill.max_rank())
 			else:
+				_outdated = true
 				push_warning("Save: skipped skill %s" % path)
 		player.skills.emit_changed()
 
 
-## The project resource at `path` from a save, or null for anything else.
-static func _resource(path: Variant) -> Resource:
-	if not path is String:
+## How a save names `resource`: its UID (its path if it has none).
+static func _reference(resource: Resource) -> String:
+	return ResourceUID.path_to_uid(resource.resource_path)
+
+
+## The project resource a save names with `reference` (a UID, or a path in version 1 saves), or
+## null for anything else.
+static func _resource(reference: Variant) -> Resource:
+	if not reference is String:
 		return null
-	var res_path: String = RENAMED.get(path, path)
-	if not res_path.begins_with("res://") or not ResourceLoader.exists(res_path):
+	var path: String = reference
+	if path.begins_with("res://"):
+		path = _moved(path)
+	elif not path.begins_with("uid://"):
 		return null
-	return load(res_path)
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path)
+
+
+## Where the resource a version 1 save named `path` is now.
+static func _moved(path: String) -> String:
+	if path in MOVED:
+		return MOVED[path]
+	for old: String in MOVED:
+		if old.ends_with("/") and path.begins_with(old):
+			return MOVED[old] + path.trim_prefix(old)
+	return path
 
 
 ## `value` from a save as a number, or `fallback` when it isn't one.
@@ -267,6 +320,7 @@ func _read(file_name: String) -> Dictionary:
 	if data is Dictionary:
 		var version: float = _number((data as Dictionary).get("version"), INF)
 		if version <= VERSION:
+			_outdated = _outdated or version < VERSION
 			return data
 	push_error("Save: can't read %s, starting from the defaults" % path)
 	DirAccess.rename_absolute(path, path + ".corrupt")

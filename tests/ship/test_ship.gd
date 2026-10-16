@@ -89,9 +89,9 @@ func test_corridors_run_through_the_ship() -> void:
 func test_inner_walls_facing_camera_are_cut_down() -> void:
 	var cut: GeometryInstance3D = _ship.get_node("Hull/LowerCut/LowerCorridorBack1")
 	assert_eq(cut.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
-	var stub: MeshInstance3D = _ship.get_node("Hull/LowerCorridorBack1Stub")
-	assert_eq(stub.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
-	assert_lt(stub.get_aabb().size.y, 1.5)
+	var wall_stub: MeshInstance3D = _ship.get_node("Hull/LowerCorridorBack1Stub")
+	assert_eq(wall_stub.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	assert_lt(wall_stub.get_aabb().size.y, 1.5)
 
 
 func test_player_starts_in_cabin_1() -> void:

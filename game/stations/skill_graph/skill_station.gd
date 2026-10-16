@@ -207,11 +207,11 @@ func _closed() -> void:
 
 
 ## Jumps to the previous (-1) or next (1) cluster's first skill and centers on the cluster.
-func _cycle(step: int) -> void:
+func _cycle(step_by: int) -> void:
 	if not tree or tree.clusters.is_empty():
 		return
 	var index: int = tree.clusters.find(selected_cluster())
-	var cluster: SkillCluster = tree.clusters[posmod(index + step, tree.clusters.size())]
+	var cluster: SkillCluster = tree.clusters[posmod(index + step_by, tree.clusters.size())]
 	if cluster.skills.is_empty():
 		return
 	select(get_part(cluster.skills[0]))

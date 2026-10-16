@@ -211,7 +211,7 @@ func test_reload_throws_the_rest_away_without_careful_reload() -> void:
 
 func test_ore_scanner_points_to_the_nearest_node_in_range() -> void:
 	var near := _add_node(Vector3(0.0, 0.0, -10.0))
-	var other := _add_node(Vector3(30.0, 0.0, 0.0))
+	_add_node(Vector3(30.0, 0.0, 0.0))
 	_add_node(Vector3(-60.0, 0.0, 0.0))
 	var scanner := _player.get_node("OreScanner") as OreScanner
 	await _wait_physics(0.1)

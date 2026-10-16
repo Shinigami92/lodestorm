@@ -194,10 +194,10 @@ func _build_cluster(
 ) -> Array[OreTank]:
 	var size: Vector3 = TANKS[band]
 	var radius: float = size.x
-	var step: float = radius * 2.0 + GAP
+	var spacing: float = radius * 2.0 + GAP
 	var per_row: int = ROW_LENGTH[band]
 	var rows: int = ceili(float(ores.size()) / per_row)
-	var widest: float = (per_row - 1) * step + (window_shift(radius) if rows > 1 else 0.0)
+	var widest: float = (per_row - 1) * spacing + (window_shift(radius) if rows > 1 else 0.0)
 	var left: float = right_edge - radius - widest
 	var margin: float = front_lane_margin if side > 0 else LANE_MARGIN
 	var near_z: float = side * (LANE_WIDTH * 0.5 + margin + radius + 0.14)
@@ -206,8 +206,8 @@ func _build_cluster(
 	for i: int in ores.size():
 		var row: int = floori(float(i) / per_row)
 		var column: int = i % per_row
-		var x: float = left + column * step + row * window_shift(radius)
-		var z: float = near_z + side * row * step
+		var x: float = left + column * spacing + row * window_shift(radius)
+		var z: float = near_z + side * row * spacing
 		var tank := OreTank.new()
 		tank.setup(ores[i], radius, size.y, size.z)
 		tank.position = Vector3(x, size.y * 0.5, z)

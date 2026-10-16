@@ -146,7 +146,7 @@ func test_found_ores_are_saved() -> void:
 	_ship.add_to_hold(MERIDINE, 10.0)
 	assert_true(_ship.pay({MERIDINE: 10}))
 	var data: Dictionary = SaveGame.ship_data(_ship)
-	assert_has(data["found"] as Array, MERIDINE.resource_path)
+	assert_has(data["found"] as Array, ResourceUID.path_to_uid(MERIDINE.resource_path))
 
 
 func test_card_shows_the_selected_ore() -> void:

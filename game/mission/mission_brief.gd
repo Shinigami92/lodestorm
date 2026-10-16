@@ -17,16 +17,18 @@ enum Difficulty { EASY, NORMAL, HARD }
 @export var difficulty: Difficulty = Difficulty.NORMAL
 
 
-## A mission to a new section of `region` (from `world_seed`), with its biome, danger and length,
-## and the ores it finds (see `StarSystem.ores_of`).
-static func for_region(region: Region, world_seed: int, ores: Array[OreType] = []) -> MissionBrief:
+## A mission to a new section of `of_region` (from `section_seed`), with its biome, danger and
+## length, and the ores it finds (`found`, see `StarSystem.ores_of`).
+static func for_region(
+	of_region: Region, section_seed: int, found: Array[OreType] = []
+) -> MissionBrief:
 	var brief := MissionBrief.new()
-	brief.region = region
-	brief.biome = region.biome
-	brief.ores = ores
-	brief.world_seed = world_seed
-	brief.length = region.length
-	brief.difficulty = region.danger
+	brief.region = of_region
+	brief.biome = of_region.biome
+	brief.ores = found
+	brief.world_seed = section_seed
+	brief.length = of_region.length
+	brief.difficulty = of_region.danger
 	return brief
 
 

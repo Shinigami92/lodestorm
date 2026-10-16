@@ -19,7 +19,7 @@ func before_each() -> void:
 
 func test_shows_mission_location() -> void:
 	var meshes: int = _mission.location.find_children("*", "MeshInstance3D", true, false).size()
-	assert_gt(_content.get_child_count(), meshes / 2)
+	assert_gt(_content.get_child_count(), meshes / 2.0)
 
 
 func test_hologram_fits_above_table() -> void:

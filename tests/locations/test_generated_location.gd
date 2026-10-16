@@ -97,7 +97,7 @@ func test_ores_and_nests_are_reachable_and_on_the_ground() -> void:
 
 func test_has_ore_fields_and_nests() -> void:
 	var location: GeneratedLocation = _generate(5)
-	assert_gt(location.get_node("OreNodes").get_child_count(), location.biome.ore_fields / 2)
+	assert_gt(location.get_node("OreNodes").get_child_count(), location.biome.ore_fields / 2.0)
 	assert_gt(location.get_node("AlienNests").get_child_count(), 0)
 
 

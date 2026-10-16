@@ -191,11 +191,11 @@ static func _collect_files(dir: String, files: Array[String]) -> void:
 ## `[context, text]` of every `tr()` call with string literals in the script at `path`.
 static func _script_texts(path: String) -> Array[PackedStringArray]:
 	var string: String = '"((?:[^"\\\\]|\\\\.)*)"'
-	var call := RegEx.create_from_string(
+	var tr_call := RegEx.create_from_string(
 		"(?<![\\w])tr\\(\\s*%s\\s*(?:,\\s*%s\\s*)?\\)" % [string, string]
 	)
 	var texts: Array[PackedStringArray] = []
-	for found: RegExMatch in call.search_all(FileAccess.get_file_as_string(path)):
+	for found: RegExMatch in tr_call.search_all(FileAccess.get_file_as_string(path)):
 		texts.append(
 			PackedStringArray([found.get_string(2).c_unescape(), found.get_string(1).c_unescape()])
 		)
@@ -254,7 +254,7 @@ static func _collect_resource_texts(
 		return
 	visited.append(resource)
 	var script := resource.get_script() as Script
-	var type: String = script.get_global_name() if script else ""
+	var type: String = String(script.get_global_name()) if script else ""
 	for property: StringName in RESOURCE_TEXTS.get(type, []):
 		var value: Variant = resource.get(property)
 		# A text, or a list of them (e.g. a topic's lines).

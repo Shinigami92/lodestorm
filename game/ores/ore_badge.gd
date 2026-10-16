@@ -92,6 +92,7 @@ static func fallback_icon() -> Texture2D:
 			var covered: int = 0
 			var shade: float = 0.0
 			for sample: int in 16:
+				@warning_ignore("integer_division")
 				var at := Vector2(x + (sample % 4 + 0.5) / 4.0, y + (sample / 4 + 0.5) / 4.0)
 				var facet: float = _facet_shade(at / FALLBACK_SIZE * 2.2 - Vector2(1.1, 1.1))
 				if facet > 0.0:

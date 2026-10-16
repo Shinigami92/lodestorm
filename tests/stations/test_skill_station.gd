@@ -116,8 +116,8 @@ func test_card_covers_no_other_skill() -> void:
 			var size: Vector2 = _station.card.size * zoom
 			var card := Rect2(_station.card_spot(selected) - size * 0.5, size)
 			if zoom == 1.0:
-				var name: String = (selected.item as Skill).display_name
-				assert_true(_station.view_rect().encloses(card), "%s: card in view" % name)
+				var skill_name: String = (selected.item as Skill).display_name
+				assert_true(_station.view_rect().encloses(card), "%s: card in view" % skill_name)
 			for other: StationPart in _station.get_parts():
 				if other == selected:
 					continue

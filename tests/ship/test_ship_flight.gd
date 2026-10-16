@@ -1,6 +1,7 @@
 extends GutTest
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
+const REAL_TIME := preload("res://tests/support/real_time.gd")
 const MAP: PackedScene = preload("res://game/maps/main.tscn")
 const LOCATION: PackedScene = preload("res://game/locations/test_location.tscn")
 const GENERATED: PackedScene = preload("res://game/locations/generated_location.tscn")
@@ -161,7 +162,10 @@ func test_generated_location_is_prepared_in_the_background() -> void:
 	assert_true(_mission.is_preparing(offer), "planned on a worker thread")
 	var table: HoloTable = _ship.get_node("Rooms/Upper/Bridge/HoloTable") as HoloTable
 	assert_eq(table.get_markers().size(), 0, "nothing to show yet")
-	await wait_until(func() -> bool: return not _mission.is_preparing(offer), 20.0)
+	var planned: bool = await REAL_TIME.wait_until(
+		func() -> bool: return not _mission.is_preparing(offer), 60.0
+	)
+	assert_true(planned, "planned in time")
 	assert_gt(table.get_markers().size(), 0, "shown once it's ready")
 	assert_true(_mission.confirm())
 	assert_true(_flight.destination_ready)

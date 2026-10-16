@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="IsoCameraSettings" format=3]
+[gd_resource type="Resource" script_class="IsoCameraSettings" format=3 uid="uid://dgx5lsjfd8ons"]
 
-[ext_resource type="Script" path="res://scripts/camera/iso_camera_settings.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bdh3r34jts7vs" path="res://scripts/camera/iso_camera_settings.gd" id="1_script"]
 
 [resource]
 script = ExtResource("1_script")

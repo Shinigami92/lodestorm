@@ -1,7 +1,7 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c1m25gkd63oyd"]
 
-[ext_resource type="Script" path="res://scripts/ui/settings_menu.gd" id="1_script"]
-[ext_resource type="Theme" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://xcnubord88bf" path="res://scripts/ui/settings_menu.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
 
 [node name="SettingsMenu" type="PanelContainer"]
 anchors_preset = 15

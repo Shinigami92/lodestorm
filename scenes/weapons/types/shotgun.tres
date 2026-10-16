@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="WeaponType" format=3]
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://7jm5s1jr48n5"]
 
-[ext_resource type="Script" path="res://scripts/weapons/weapon_type.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/weapons/shotgun.tscn" id="2_scene"]
-[ext_resource type="Resource" path="res://scenes/upgrades/shotgun.tres" id="3_upgrade"]
-[ext_resource type="Resource" path="res://scenes/upgrades/shotgun_magazine.tres" id="4_magazine"]
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://scripts/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://blrohu00nab0m" path="res://scenes/weapons/shotgun.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://cltwimsbnpgsc" path="res://scenes/upgrades/shotgun.tres" id="3_upgrade"]
+[ext_resource type="Resource" uid="uid://df5cle300mt58" path="res://scenes/upgrades/shotgun_magazine.tres" id="4_magazine"]
 
 [resource]
 script = ExtResource("1_script")

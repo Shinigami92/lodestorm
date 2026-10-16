@@ -1,7 +1,7 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d057noxvdl5cn"]
 
-[ext_resource type="Script" path="res://scripts/ui/terminal.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="Script" uid="uid://fwtmxjh532bx" path="res://scripts/ui/terminal.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.17, 0.175, 0.185, 1)

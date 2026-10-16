@@ -1,9 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c284r5im2gvf8"]
 
-[ext_resource type="Script" path="res://scripts/ui/navigator_station.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/navigator_card.tscn" id="3_card"]
-[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="4_use"]
+[ext_resource type="Script" uid="uid://x4lc462ytw31" path="res://scripts/ui/navigator_station.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://d4omth1tytek" path="res://scenes/ui/navigator_card.tscn" id="3_card"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://scripts/interaction/interactable.gd" id="4_use"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
 shading_mode = 0

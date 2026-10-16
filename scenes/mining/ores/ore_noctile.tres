@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="OreType" format=3]
+[gd_resource type="Resource" script_class="OreType" format=3 uid="uid://bogktyyctiqjj"]
 
-[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://assets/ores/noctile.glb" id="2_model"]
-[ext_resource type="Texture2D" path="res://assets/ores/icons/noctile.png" id="3_icon"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://scripts/mining/ore_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://br8e18gpbfgq6" path="res://assets/ores/noctile.glb" id="2_model"]
+[ext_resource type="Texture2D" uid="uid://hys463e3qjpk" path="res://assets/ores/icons/noctile.png" id="3_icon"]
 
 [resource]
 script = ExtResource("1_script")

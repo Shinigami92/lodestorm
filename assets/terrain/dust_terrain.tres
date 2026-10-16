@@ -1,12 +1,12 @@
-[gd_resource type="ShaderMaterial" format=3]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://owg2nkxtwm3k"]
 
-[ext_resource type="Shader" path="res://assets/shaders/terrain.gdshader" id="1_shader"]
-[ext_resource type="Texture2D" path="res://assets/terrain/dust_ground_albedo.png" id="2_ground_albedo"]
-[ext_resource type="Texture2D" path="res://assets/terrain/dust_ground_nra.png" id="3_ground_nra"]
-[ext_resource type="Texture2D" path="res://assets/terrain/dust_scree_albedo.png" id="4_scree_albedo"]
-[ext_resource type="Texture2D" path="res://assets/terrain/dust_scree_nra.png" id="5_scree_nra"]
-[ext_resource type="Texture2D" path="res://assets/terrain/dust_rock_albedo.png" id="6_rock_albedo"]
-[ext_resource type="Texture2D" path="res://assets/terrain/dust_rock_nra.png" id="7_rock_nra"]
+[ext_resource type="Shader" uid="uid://bav0n8fm2mrnp" path="res://assets/shaders/terrain.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://bcluyl3jt83fx" path="res://assets/terrain/dust_ground_albedo.png" id="2_ground_albedo"]
+[ext_resource type="Texture2D" uid="uid://bo8q7n3apllog" path="res://assets/terrain/dust_ground_nra.png" id="3_ground_nra"]
+[ext_resource type="Texture2D" uid="uid://d2wnihqrcwfhj" path="res://assets/terrain/dust_scree_albedo.png" id="4_scree_albedo"]
+[ext_resource type="Texture2D" uid="uid://5ubpha0iq76i" path="res://assets/terrain/dust_scree_nra.png" id="5_scree_nra"]
+[ext_resource type="Texture2D" uid="uid://ch1qncj2wcbrs" path="res://assets/terrain/dust_rock_albedo.png" id="6_rock_albedo"]
+[ext_resource type="Texture2D" uid="uid://bnwkfqt0iwe84" path="res://assets/terrain/dust_rock_nra.png" id="7_rock_nra"]
 
 [resource]
 render_priority = 0

@@ -1,14 +1,14 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cjwiod2jjr10b"]
 
-[ext_resource type="Script" path="res://scripts/ui/upgrade_station.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/upgrade_card.tscn" id="3_card"]
-[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="4_use"]
-[ext_resource type="Script" path="res://scripts/ui/station_part.gd" id="5_part"]
+[ext_resource type="Script" uid="uid://j44xepbs4uh" path="res://scripts/ui/upgrade_station.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://scenes/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://ceg8u4hr0vdq4" path="res://scenes/ui/upgrade_card.tscn" id="3_card"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://scripts/interaction/interactable.gd" id="4_use"]
+[ext_resource type="Script" uid="uid://caav7amchkty" path="res://scripts/ui/station_part.gd" id="5_part"]
 [ext_resource type="PackedScene" uid="uid://csdfxtj8st356" path="res://assets/miners/miner_glow.glb" id="6_model"]
-[ext_resource type="Resource" path="res://scenes/upgrades/miner_drill.tres" id="7_drill"]
-[ext_resource type="Resource" path="res://scenes/upgrades/miner_tank.tres" id="8_tank"]
-[ext_resource type="Resource" path="res://scenes/upgrades/miner_hose.tres" id="9_hose"]
+[ext_resource type="Resource" uid="uid://dd0617pvpw6aq" path="res://scenes/upgrades/miner_drill.tres" id="7_drill"]
+[ext_resource type="Resource" uid="uid://6maon20x0hc5" path="res://scenes/upgrades/miner_tank.tres" id="8_tank"]
+[ext_resource type="Resource" uid="uid://b1limju0chui" path="res://scenes/upgrades/miner_hose.tres" id="9_hose"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.17, 0.175, 0.185, 1)

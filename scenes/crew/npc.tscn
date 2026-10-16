@@ -1,13 +1,13 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://xtv7qgd52xd4"]
 
-[ext_resource type="Script" path="res://scripts/crew/npc.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dhmiy6vnxbsvd" path="res://scripts/crew/npc.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://yj82i5sgqayt" path="res://assets/player/player.glb" id="2_model"]
-[ext_resource type="Script" path="res://scripts/player/player_animator.gd" id="3_animator"]
-[ext_resource type="Script" path="res://scripts/ui/station_part.gd" id="4_part"]
-[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="5_use"]
-[ext_resource type="PackedScene" path="res://scenes/ui/world_panel.tscn" id="6_panel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/talk_card.tscn" id="7_card"]
-[ext_resource type="PackedScene" path="res://scenes/ui/speech_bubble.tscn" id="8_bubble"]
+[ext_resource type="Script" uid="uid://dqnkf5jxxct5w" path="res://scripts/player/player_animator.gd" id="3_animator"]
+[ext_resource type="Script" uid="uid://caav7amchkty" path="res://scripts/ui/station_part.gd" id="4_part"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://scripts/interaction/interactable.gd" id="5_use"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://scenes/ui/world_panel.tscn" id="6_panel"]
+[ext_resource type="PackedScene" uid="uid://6635hh8a3yeo" path="res://scenes/ui/talk_card.tscn" id="7_card"]
+[ext_resource type="PackedScene" uid="uid://c76kk6ltt4vax" path="res://scenes/ui/speech_bubble.tscn" id="8_bubble"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35

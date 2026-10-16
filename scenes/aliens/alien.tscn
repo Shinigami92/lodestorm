@@ -1,9 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://caobhgim67sf0"]
 
-[ext_resource type="Script" path="res://scripts/aliens/alien.gd" id="1_script"]
-[ext_resource type="Resource" path="res://scenes/aliens/alien_settings.tres" id="2_settings"]
+[ext_resource type="Script" uid="uid://c2behlnycgfcc" path="res://scripts/aliens/alien.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bpm5khy2phwpi" path="res://scenes/aliens/alien_settings.tres" id="2_settings"]
 [ext_resource type="PackedScene" uid="uid://clpw1hmly8yen" path="res://assets/aliens/swarmer/swarmer.glb" id="3_model"]
-[ext_resource type="Script" path="res://scripts/aliens/alien_animator.gd" id="4_animator"]
+[ext_resource type="Script" uid="uid://05m4526f30dr" path="res://scripts/aliens/alien_animator.gd" id="4_animator"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.5

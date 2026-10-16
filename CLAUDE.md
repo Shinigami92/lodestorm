@@ -27,6 +27,7 @@ Setup in `docs/TECHNICAL.md` (MCP servers).
 ## Pitfalls
 
 - **Imports are async.** After adding or copying big `.glb`s, wait until every `<file>.glb.import` exists before running tests ("No loader found" otherwise); reimport copied or renamed files (stale UID warnings). Don't scan while Blender is still writing files.
+- **Hand-written `.tscn`/`.tres` need UIDs** (own and on every `ext_resource`): run `tools/uids.sh` after creating or patching them outside the editor.
 - **Typed loops:** type loop variables over untyped arrays (`for p: Vector3 in [...]`) and annotate values read from Variants, or scripts fail to parse with strict typing warnings.
 - **Shader built-ins aren't visible in helper functions** (`VIEW_INDEX`, `INV_VIEW_MATRIX`): pass them in as parameters.
 - **A SubViewport doesn't inherit `use_occlusion_culling`** from the project setting; set it on the viewport.

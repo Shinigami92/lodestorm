@@ -1,7 +1,7 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d0xrpkjclw8rh"]
 
-[ext_resource type="Script" path="res://scripts/camera/iso_camera_rig.gd" id="1_script"]
-[ext_resource type="Resource" path="res://scenes/camera/iso_camera_settings.tres" id="2_settings"]
+[ext_resource type="Script" uid="uid://r46mxleqatxg" path="res://scripts/camera/iso_camera_rig.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://dgx5lsjfd8ons" path="res://scenes/camera/iso_camera_settings.tres" id="2_settings"]
 
 [node name="IsoCameraRig" type="Node3D"]
 script = ExtResource("1_script")

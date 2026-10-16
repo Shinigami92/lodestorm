@@ -1,11 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cykcrssakcta5"]
 
-[ext_resource type="Script" path="res://scripts/weapons/ranged_weapon.gd" id="1_script"]
-[ext_resource type="Resource" path="res://scenes/weapons/blaster_settings.tres" id="2_settings"]
-[ext_resource type="PackedScene" path="res://scenes/weapons/projectile.tscn" id="3_projectile"]
+[ext_resource type="Script" uid="uid://b4ej2yxcxsvyb" path="res://scripts/weapons/ranged_weapon.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cpccmkaoknnt2" path="res://scenes/weapons/blaster_settings.tres" id="2_settings"]
+[ext_resource type="PackedScene" uid="uid://dd7r01nggolxw" path="res://scenes/weapons/projectile.tscn" id="3_projectile"]
 [ext_resource type="PackedScene" uid="uid://c3kldo0l8hc4m" path="res://assets/weapons/blaster.glb" id="4_model"]
-[ext_resource type="Script" path="res://scripts/upgrades/mk_pips.gd" id="9_pips"]
-[ext_resource type="Script" path="res://scripts/weapons/ammo_counter.gd" id="10_gauge"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://scripts/upgrades/mk_pips.gd" id="9_pips"]
+[ext_resource type="Script" uid="uid://mq7omc48iydo" path="res://scripts/weapons/ammo_counter.gd" id="10_gauge"]
 
 [node name="Blaster" type="Node3D"]
 script = ExtResource("1_script")

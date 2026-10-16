@@ -1,9 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://buwqgu3osljqu"]
 
-[ext_resource type="Script" path="res://scripts/locations/generated_location.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/locations/location_biome.gd" id="2_biome"]
-[ext_resource type="Resource" path="res://scenes/locations/biomes/dust.tres" id="3_dust"]
-[ext_resource type="Resource" path="res://scenes/locations/biomes/overgrowth.tres" id="4_overgrowth"]
+[ext_resource type="Script" uid="uid://e1wrwri6ksyc" path="res://scripts/locations/generated_location.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://c0m4q1xpgee51" path="res://scripts/locations/location_biome.gd" id="2_biome"]
+[ext_resource type="Resource" uid="uid://dc5iplqjbh04" path="res://scenes/locations/biomes/dust.tres" id="3_dust"]
+[ext_resource type="Resource" uid="uid://caubseewpqqlm" path="res://scenes/locations/biomes/overgrowth.tres" id="4_overgrowth"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_location"]
 geometry_parsed_geometry_type = 1

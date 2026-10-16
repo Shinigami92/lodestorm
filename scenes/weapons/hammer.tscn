@@ -1,8 +1,8 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c8hhj07nu07v4"]
 
-[ext_resource type="Script" path="res://scripts/weapons/melee_weapon.gd" id="1_script"]
-[ext_resource type="Resource" path="res://scenes/weapons/hammer_settings.tres" id="2_settings"]
-[ext_resource type="Script" path="res://scripts/upgrades/mk_pips.gd" id="9_pips"]
+[ext_resource type="Script" uid="uid://bedfq27s65p03" path="res://scripts/weapons/melee_weapon.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bmvaidn1vcbd7" path="res://scenes/weapons/hammer_settings.tres" id="2_settings"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://scripts/upgrades/mk_pips.gd" id="9_pips"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
 albedo_color = Color(0.13, 0.135, 0.145, 1)

@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="Upgrade" format=3]
+[gd_resource type="Resource" script_class="Upgrade" format=3 uid="uid://dd0617pvpw6aq"]
 
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade_level.gd" id="1_p5o0b"]
-[ext_resource type="Script" path="res://scripts/mining/ore_type.gd" id="2_bwv0e"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_kyrite.tres" id="3_x0ppl"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_olvane.tres" id="4_7vog6"]
-[ext_resource type="Resource" path="res://scenes/mining/ores/ore_vyrel.tres" id="5_0j1kg"]
-[ext_resource type="Script" path="res://scripts/upgrades/upgrade.gd" id="6_774k4"]
+[ext_resource type="Script" uid="uid://c8jhtshxvf4c1" path="res://scripts/upgrades/upgrade_level.gd" id="1_p5o0b"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://scripts/mining/ore_type.gd" id="2_bwv0e"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://scenes/mining/ores/ore_kyrite.tres" id="3_x0ppl"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://scenes/mining/ores/ore_olvane.tres" id="4_7vog6"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://scenes/mining/ores/ore_vyrel.tres" id="5_0j1kg"]
+[ext_resource type="Script" uid="uid://4n5uapxvab0b" path="res://scripts/upgrades/upgrade.gd" id="6_774k4"]
 
 [sub_resource type="Resource" id="Resource_m6pep"]
 script = ExtResource("1_p5o0b")

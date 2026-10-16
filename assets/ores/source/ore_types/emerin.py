@@ -2,13 +2,14 @@
 balanced on their lower point, mostly in crossed pairs leaning against each other (X shapes), a few standing
 alone or lying low across the rock."""
 
-import math  # noqa: F401
+import itertools
+import math
 import random
 
 import bmesh
 from mathutils import Matrix, Vector  # noqa: F401
 
-from ore_geo import T, OreSpec, append_bm, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, append_bm, cut, finish_normals, rand_unit, tilted
 
 
 def spindle(rnd: random.Random, length: float, width: float) -> bmesh.types.BMesh:
@@ -19,11 +20,16 @@ def spindle(rnd: random.Random, length: float, width: float) -> bmesh.types.BMes
     rads = [width * rnd.uniform(0.88, 1.08) for _ in range(6)]
     waist = rnd.uniform(0.42, 0.52)
     rings = []
-    for t, s in ((waist * 0.5, 0.6), (waist, 1.0), (waist + (1 - waist) * 0.45, 0.64), (waist + (1 - waist) * 0.75, 0.32)):
+    for t, s in (
+        (waist * 0.5, 0.6),
+        (waist, 1.0),
+        (waist + (1 - waist) * 0.45, 0.64),
+        (waist + (1 - waist) * 0.75, 0.32),
+    ):
         rings.append([bm.verts.new((math.cos(a) * r * s, math.sin(a) * r * s, t * length)) for a, r in zip(angs, rads)])
     lo = bm.verts.new((rnd.uniform(-0.2, 0.2) * width, rnd.uniform(-0.2, 0.2) * width, 0.0))
     hi = bm.verts.new((rnd.uniform(-0.2, 0.2) * width, rnd.uniform(-0.2, 0.2) * width, length))
-    for a, b in zip(rings, rings[1:]):
+    for a, b in itertools.pairwise(rings):
         for i in range(6):
             bm.faces.new((a[i], a[(i + 1) % 6], b[(i + 1) % 6], b[i]))
     for i in range(6):
@@ -78,8 +84,14 @@ ORE = OreSpec(
     wall_sizes=(0.35, 0.85),
     wall_tilt=25,
     variants={
-        "a": dict(seed=109, groups=[(110, 0.55, 4, (0.6, 1.0), 12), (230, 0.62, 3, (0.45, 0.85), 15), (345, 0.66, 3, (0.35, 0.7), 15)]),
-        "b": dict(seed=223, groups=[(40, 0.58, 4, (0.55, 0.95), 12), (170, 0.6, 3, (0.5, 0.9), 15), (290, 0.66, 3, (0.35, 0.7), 15)]),
+        "a": dict(
+            seed=109,
+            groups=[(110, 0.55, 4, (0.6, 1.0), 12), (230, 0.62, 3, (0.45, 0.85), 15), (345, 0.66, 3, (0.35, 0.7), 15)],
+        ),
+        "b": dict(
+            seed=223,
+            groups=[(40, 0.58, 4, (0.55, 0.95), 12), (170, 0.6, 3, (0.5, 0.9), 15), (290, 0.66, 3, (0.35, 0.7), 15)],
+        ),
         "wall": dict(seed=239, wall=True, count=7),
     },
 )

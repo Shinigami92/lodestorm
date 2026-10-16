@@ -33,12 +33,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "assets" / "rocks"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Matrix, Vector  # noqa: E402
+import bmesh
+import bpy
+from mathutils import Matrix, Vector
 
-import common as C  # noqa: E402
-from common import T, rx, ry, rz  # noqa: E402
+import common as C
+from common import T, rx, ry, rz
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -138,7 +138,9 @@ def box_points(rnd: random.Random, size, jitter: float = 0.14, extra: int = 6, b
     return pts
 
 
-def prism_points(rnd: random.Random, rx_: float, ry_: float, h: float, sides: int = 6, taper: float = 0.85, jitter: float = 0.12) -> list:
+def prism_points(
+    rnd: random.Random, rx_: float, ry_: float, h: float, sides: int = 6, taper: float = 0.85, jitter: float = 0.12
+) -> list:
     """Column from z = 0 to h with an irregular polygon cross-section (top scaled by taper)."""
     a0 = rnd.uniform(0, math.tau)
     pts = []
@@ -151,13 +153,25 @@ def prism_points(rnd: random.Random, rx_: float, ry_: float, h: float, sides: in
     return pts
 
 
-def chunk(rnd: random.Random, size, cuts: int = 3, m: Matrix | None = None, keep=(0.72, 0.9), **kw) -> bmesh.types.BMesh:
+def chunk(
+    rnd: random.Random, size, cuts: int = 3, m: Matrix | None = None, keep=(0.72, 0.9), **kw
+) -> bmesh.types.BMesh:
     bm = hull(box_points(rnd, size, **kw))
     shave(bm, rnd, cuts, keep)
     return place(bm, m) if m is not None else bm
 
 
-def column(rnd: random.Random, r: float, h: float, sides: int = 6, depth: float | None = None, taper: float = 0.85, top_tilt: float = 0.5, cuts: int = 1, m: Matrix | None = None) -> bmesh.types.BMesh:
+def column(
+    rnd: random.Random,
+    r: float,
+    h: float,
+    sides: int = 6,
+    depth: float | None = None,
+    taper: float = 0.85,
+    top_tilt: float = 0.5,
+    cuts: int = 1,
+    m: Matrix | None = None,
+) -> bmesh.types.BMesh:
     """Columnar block with a slanted, fractured top."""
     bm = hull(prism_points(rnd, r, depth if depth is not None else r * rnd.uniform(0.75, 1.0), h, sides, taper))
     a = rnd.uniform(0, math.tau)
@@ -179,7 +193,9 @@ def chip_cutter(rnd: random.Random, target: bmesh.types.BMesh, direction, size: 
     return chunk(rnd, (size, size * rnd.uniform(0.7, 1.1), size * rnd.uniform(0.6, 1.0)), 1, T(p, rand_rot(rnd, 60)))
 
 
-def crack_cutter(rnd: random.Random, center, length: float, depth: float, width: float = 0.05, rot: Matrix | None = None) -> bmesh.types.BMesh:
+def crack_cutter(
+    rnd: random.Random, center, length: float, depth: float, width: float = 0.05, rot: Matrix | None = None
+) -> bmesh.types.BMesh:
     """Thin slab (length along X, depth along Y, width along Z) that notches a crack into a face."""
     pts = []
     for cx in (-1, 1):
@@ -219,7 +235,9 @@ def _boolean(base: bpy.types.Object, op: str, coll: bpy.types.Collection) -> Non
         mod.solver = "EXACT"
 
 
-def solid(name: str, kind: str, parts: list, cutters: list = (), center_y: bool = True, back_y: float | None = None) -> bpy.types.Object:
+def solid(
+    name: str, kind: str, parts: list, cutters: list = (), center_y: bool = True, back_y: float | None = None
+) -> bpy.types.Object:
     """Union of the convex parts minus the cutters, cleaned up, bottom cut flat at -SINK, origin at the bottom
     center; returns the finished variant object in the asset collection."""
     base = bm_to_obj(parts[0], name + "_base")
@@ -284,7 +302,9 @@ def facet_attribute(me: bpy.types.Mesh, seed: str) -> None:
 def boulder_a() -> bpy.types.Object:
     """Blocky: a big faceted block with a smaller one wedged against it, chipped ridges."""
     rnd = random.Random(11)
-    main = chunk(rnd, (1.45, 1.3, 1.5), 5, T((0, 0, 0.55), rz(12)), keep=(0.74, 0.92), jitter=0.18, extra=10, bulge=0.18)
+    main = chunk(
+        rnd, (1.45, 1.3, 1.5), 5, T((0, 0, 0.55), rz(12)), keep=(0.74, 0.92), jitter=0.18, extra=10, bulge=0.18
+    )
     side = chunk(rnd, (0.9, 0.8, 0.8), 3, T((0.66, -0.4, 0.2), rz(-25) @ ry(14)), keep=(0.75, 0.9), jitter=0.15)
     chips = [chip_cutter(rnd, main, (0.6, -0.5, 0.8), 0.32), chip_cutter(rnd, main, (-0.7, 0.3, 0.6), 0.28)]
     crack = crack_cutter(rnd, (-0.1, -0.55, 0.55), 1.3, 0.9, 0.045, rz(8) @ rx(-10) @ ry(25))
@@ -295,7 +315,9 @@ def boulder_b() -> bpy.types.Object:
     """Slab: flat layered plates stacked off-center (strata), the upper one broken short."""
     rnd = random.Random(22)
     lower = chunk(rnd, (2.0, 1.3, 0.45), 4, T((0, 0, 0.02), rz(4) @ ry(5)), keep=(0.8, 0.94), extra=5, bulge=0.06)
-    upper = chunk(rnd, (1.45, 1.05, 0.36), 4, T((0.18, 0.08, 0.36), rz(-9) @ ry(7)), keep=(0.78, 0.92), extra=4, bulge=0.06)
+    upper = chunk(
+        rnd, (1.45, 1.05, 0.36), 4, T((0.18, 0.08, 0.36), rz(-9) @ ry(7)), keep=(0.78, 0.92), extra=4, bulge=0.06
+    )
     top = chunk(rnd, (0.7, 0.6, 0.26), 3, T((0.38, 0.15, 0.62), rz(20) @ rx(9)), keep=(0.75, 0.9))
     chips = [chip_cutter(rnd, lower, (-1, -0.4, 0.4), 0.3)]
     return solid("Boulder_b", "Boulder", [lower, upper, top], chips)
@@ -324,7 +346,9 @@ def boulder_c() -> bpy.types.Object:
 def boulder_d() -> bpy.types.Object:
     """Tall: an upright five-sided block with a steep fractured top and a fallen piece at its foot."""
     rnd = random.Random(44)
-    body = column(rnd, 0.55, 2.0, sides=5, depth=0.45, taper=0.72, top_tilt=1.2, cuts=2, m=T((0, 0, -0.2), ry(6) @ rz(15)))
+    body = column(
+        rnd, 0.55, 2.0, sides=5, depth=0.45, taper=0.72, top_tilt=1.2, cuts=2, m=T((0, 0, -0.2), ry(6) @ rz(15))
+    )
     foot = chunk(rnd, (0.75, 0.6, 0.55), 3, T((0.5, -0.32, 0.05), rz(30) @ ry(-20)))
     crack = crack_cutter(rnd, (0.0, -0.42, 1.05), 1.4, 0.7, 0.05, rz(15) @ ry(-18))
     chip = chip_cutter(rnd, body, (-0.5, -0.6, 0.3), 0.3)
@@ -354,10 +378,28 @@ def outcrop_a() -> bpy.types.Object:
     """Columnar spire cluster: tall prismatic columns with fractured tops, cracked across, fallen blocks."""
     rnd = random.Random(55)
     parts = []
-    cols = [(4.7, 0.62, (0.0, 0.1)), (3.9, 0.5, (0.62, -0.25)), (3.3, 0.48, (-0.6, -0.15)), (2.6, 0.45, (0.25, -0.75)), (2.1, 0.42, (-0.3, 0.7)), (1.5, 0.4, (0.95, 0.45))]
+    cols = [
+        (4.7, 0.62, (0.0, 0.1)),
+        (3.9, 0.5, (0.62, -0.25)),
+        (3.3, 0.48, (-0.6, -0.15)),
+        (2.6, 0.45, (0.25, -0.75)),
+        (2.1, 0.42, (-0.3, 0.7)),
+        (1.5, 0.4, (0.95, 0.45)),
+    ]
     for h, r, (x, y) in cols:
         lean = rx(rnd.uniform(-4, 4)) @ ry(rnd.uniform(-4, 4))
-        parts.append(column(rnd, r, h + SINK["Outcrop"], sides=rnd.choice((5, 6)), taper=rnd.uniform(0.7, 0.85), top_tilt=rnd.uniform(0.4, 1.0), cuts=2, m=T((x, y, -SINK["Outcrop"]), lean @ rz(rnd.uniform(0, 60)))))
+        parts.append(
+            column(
+                rnd,
+                r,
+                h + SINK["Outcrop"],
+                sides=rnd.choice((5, 6)),
+                taper=rnd.uniform(0.7, 0.85),
+                top_tilt=rnd.uniform(0.4, 1.0),
+                cuts=2,
+                m=T((x, y, -SINK["Outcrop"]), lean @ rz(rnd.uniform(0, 60))),
+            )
+        )
     for p in ((0.9, -0.85, 0.1), (-1.0, -0.6, 0.05), (-0.85, 0.75, 0.0)):
         parts.append(chunk(rnd, (0.65, 0.5, 0.45), 3, T(p, rand_rot(rnd, 25))))
     cutters = [
@@ -374,19 +416,47 @@ def outcrop_b() -> bpy.types.Object:
     """Shard cluster: pointed slabs splaying out of the ground, broken shards at their foot."""
     rnd = random.Random(66)
     parts = []
-    shards = [(3.8, 0.0, 4), (3.1, 70, 10), (2.7, 150, 13), (2.3, 215, 11), (1.9, 285, 15), (1.5, 330, 18), (1.3, 110, 21)]
+    shards = [
+        (3.8, 0.0, 4),
+        (3.1, 70, 10),
+        (2.7, 150, 13),
+        (2.3, 215, 11),
+        (1.9, 285, 15),
+        (1.5, 330, 18),
+        (1.3, 110, 21),
+    ]
     for h, ang, lean in shards:
-        bm = column(rnd, rnd.uniform(0.5, 0.66), h + SINK["Outcrop"], sides=rnd.choice((4, 5)), depth=rnd.uniform(0.28, 0.42), taper=rnd.uniform(0.3, 0.5), top_tilt=rnd.uniform(1.2, 2.4), cuts=2)
+        bm = column(
+            rnd,
+            rnd.uniform(0.5, 0.66),
+            h + SINK["Outcrop"],
+            sides=rnd.choice((4, 5)),
+            depth=rnd.uniform(0.28, 0.42),
+            taper=rnd.uniform(0.3, 0.5),
+            top_tilt=rnd.uniform(1.2, 2.4),
+            cuts=2,
+        )
         out = Vector((math.cos(math.radians(ang)), math.sin(math.radians(ang)), 0))
         axis = out.cross(Vector((0, 0, 1)))
-        m = T(out * 0.38 + Vector((0, 0, -SINK["Outcrop"]))) @ Matrix.Rotation(math.radians(-lean), 4, axis) @ rz(ang + 90 + rnd.uniform(-25, 25)).to_4x4()
+        m = (
+            T(out * 0.38 + Vector((0, 0, -SINK["Outcrop"])))
+            @ Matrix.Rotation(math.radians(-lean), 4, axis)
+            @ rz(ang + 90 + rnd.uniform(-25, 25)).to_4x4()
+        )
         parts.append(place(bm, m))
     for _ in range(4):
         a = rnd.uniform(0, math.tau)
         r = rnd.uniform(0.9, 1.3)
-        bm = column(rnd, rnd.uniform(0.3, 0.42), rnd.uniform(0.8, 1.2), sides=4, depth=0.2, taper=0.45, top_tilt=1.5, cuts=1)
-        parts.append(place(bm, T((math.cos(a) * r, math.sin(a) * r, 0.02), rz(math.degrees(a)) @ ry(rnd.uniform(70, 85)))))
-    cutters = [crack_cutter(rnd, (0.0, -0.3, 1.4), 1.2, 0.8, 0.06, rz(-30) @ ry(12)), crack_cutter(rnd, (0.0, -0.2, 2.5), 0.8, 0.6, 0.05, rz(10) @ ry(-15))]
+        bm = column(
+            rnd, rnd.uniform(0.3, 0.42), rnd.uniform(0.8, 1.2), sides=4, depth=0.2, taper=0.45, top_tilt=1.5, cuts=1
+        )
+        parts.append(
+            place(bm, T((math.cos(a) * r, math.sin(a) * r, 0.02), rz(math.degrees(a)) @ ry(rnd.uniform(70, 85))))
+        )
+    cutters = [
+        crack_cutter(rnd, (0.0, -0.3, 1.4), 1.2, 0.8, 0.06, rz(-30) @ ry(12)),
+        crack_cutter(rnd, (0.0, -0.2, 2.5), 0.8, 0.6, 0.05, rz(10) @ ry(-15)),
+    ]
     return solid("Outcrop_b", "Outcrop", parts, cutters)
 
 
@@ -402,7 +472,16 @@ def cliff_a() -> bpy.types.Object:
         front = rnd.uniform(-1.05, -0.6)
         depth = (CLIFF_BACK + 0.15 - front) / 2
         h = rnd.uniform(3.5, 5.3)
-        bm = column(rnd, w / 2 * 1.12, h + s, sides=rnd.choice((5, 6, 6)), depth=depth, taper=rnd.uniform(0.86, 0.95), top_tilt=rnd.uniform(0.3, 0.8), cuts=1)
+        bm = column(
+            rnd,
+            w / 2 * 1.12,
+            h + s,
+            sides=rnd.choice((5, 6, 6)),
+            depth=depth,
+            taper=rnd.uniform(0.86, 0.95),
+            top_tilt=rnd.uniform(0.3, 0.8),
+            cuts=1,
+        )
         parts.append(place(bm, T((cx, front + depth, -s), rx(rnd.uniform(-2, 3)))))
         x += w * rnd.uniform(0.82, 0.95)
     for x in (rnd.uniform(-2.4, -1.2), rnd.uniform(-0.4, 0.6), rnd.uniform(1.4, 2.4)):  # broken-off columns in front
@@ -411,13 +490,30 @@ def cliff_a() -> bpy.types.Object:
         parts.append(place(bm, T((x, -0.85, -s), rx(rnd.uniform(-6, 0)))))
     for _ in range(4):
         p = (rnd.uniform(-2.6, 2.6), rnd.uniform(-1.1, -0.85), rnd.uniform(-0.05, 0.1))
-        parts.append(chunk(rnd, (rnd.uniform(0.5, 0.9), rnd.uniform(0.45, 0.7), rnd.uniform(0.35, 0.6)), 3, T(p, rand_rot(rnd, 20))))
+        parts.append(
+            chunk(
+                rnd, (rnd.uniform(0.5, 0.9), rnd.uniform(0.45, 0.7), rnd.uniform(0.35, 0.6)), 3, T(p, rand_rot(rnd, 20))
+            )
+        )
     cutters = []
     for z in (1.3, 2.5, 3.6):
         for _ in range(2):
-            cutters.append(crack_cutter(rnd, (rnd.uniform(-2.4, 2.4), -1.1, z + rnd.uniform(-0.3, 0.3)), rnd.uniform(1.4, 2.4), 1.0, 0.07, rz(rnd.uniform(-6, 6)) @ ry(rnd.uniform(-8, 8))))
+            cutters.append(
+                crack_cutter(
+                    rnd,
+                    (rnd.uniform(-2.4, 2.4), -1.1, z + rnd.uniform(-0.3, 0.3)),
+                    rnd.uniform(1.4, 2.4),
+                    1.0,
+                    0.07,
+                    rz(rnd.uniform(-6, 6)) @ ry(rnd.uniform(-8, 8)),
+                )
+            )
     for _ in range(3):
-        cutters.append(chip_cutter(rnd, parts[rnd.randrange(len(parts) - 7)], (rnd.uniform(-0.5, 0.5), -0.6, 1.0), rnd.uniform(0.4, 0.6)))
+        cutters.append(
+            chip_cutter(
+                rnd, parts[rnd.randrange(len(parts) - 7)], (rnd.uniform(-0.5, 0.5), -0.6, 1.0), rnd.uniform(0.4, 0.6)
+            )
+        )
     return solid("Cliff_a", "Cliff", parts, cutters, center_y=False, back_y=CLIFF_BACK)
 
 
@@ -433,14 +529,20 @@ def cliff_b() -> bpy.types.Object:
         set_back = rnd.uniform(-0.18, 0.18) + 0.09 * layer  # upper strata recede: a cliff, not a stack
         cuts_x = sorted(rnd.uniform(-2.2, 2.2) for _ in range(rnd.choice((0, 1, 1, 2))))
         edges = [-3.1, *cuts_x, 3.1]
-        spans = [(edges[i] - (0.1 if i else 0), edges[i + 1] + (0.1 if i + 2 < len(edges) else 0)) for i in range(len(edges) - 1)]
+        spans = [
+            (edges[i] - (0.1 if i else 0), edges[i + 1] + (0.1 if i + 2 < len(edges) else 0))
+            for i in range(len(edges) - 1)
+        ]
         for x0, x1 in spans:
             front = -1.0 + set_back + rnd.uniform(-0.2, 0.2)
             last = z + th >= 4.5
             top = z + th + (rnd.uniform(-0.3, 0.3) if last else 0.0)
             z0 = z - 0.15 if layer else z  # overlap the layer below: no floating strata
             depth = CLIFF_BACK + 0.15 - front
-            m = T(((x0 + x1) / 2, front + depth / 2, (z0 + top) / 2), rz(rnd.uniform(-3, 3)) @ ry(dip + rnd.uniform(-1.5, 1.5)))
+            m = T(
+                ((x0 + x1) / 2, front + depth / 2, (z0 + top) / 2),
+                rz(rnd.uniform(-3, 3)) @ ry(dip + rnd.uniform(-1.5, 1.5)),
+            )
             bm = chunk(rnd, (x1 - x0, depth, top - z0), 0, m, jitter=0.03, extra=0)
             for _ in range(rnd.randint(3, 6)):  # jagged front: facets at varied angles
                 cut(bm, (rnd.uniform(-1.0, 1.0), -1.0, rnd.uniform(-0.5, 0.5)), rnd.uniform(0.88, 0.97))
@@ -455,10 +557,28 @@ def cliff_b() -> bpy.types.Object:
         layer += 1
     for _ in range(3):
         p = (rnd.uniform(-2.6, 2.6), rnd.uniform(-1.25, -0.95), rnd.uniform(-0.05, 0.1))
-        parts.append(chunk(rnd, (rnd.uniform(0.6, 1.0), rnd.uniform(0.5, 0.8), rnd.uniform(0.35, 0.55)), 4, T(p, rand_rot(rnd, 25))))
-    cutters = [chip_cutter(rnd, parts[rnd.randrange(len(parts) - 3)], (rnd.uniform(-0.6, 0.6), -0.7, 0.8), rnd.uniform(0.4, 0.6)) for _ in range(4)]
+        parts.append(
+            chunk(
+                rnd, (rnd.uniform(0.6, 1.0), rnd.uniform(0.5, 0.8), rnd.uniform(0.35, 0.55)), 4, T(p, rand_rot(rnd, 25))
+            )
+        )
+    cutters = [
+        chip_cutter(
+            rnd, parts[rnd.randrange(len(parts) - 3)], (rnd.uniform(-0.6, 0.6), -0.7, 0.8), rnd.uniform(0.4, 0.6)
+        )
+        for _ in range(4)
+    ]
     for _ in range(3):  # vertical joints
-        cutters.append(crack_cutter(rnd, (rnd.uniform(-2.5, 2.5), -1.1, rnd.uniform(1.0, 3.5)), 2.0, 1.2, 0.07, ry(90 + rnd.uniform(-10, 10))))
+        cutters.append(
+            crack_cutter(
+                rnd,
+                (rnd.uniform(-2.5, 2.5), -1.1, rnd.uniform(1.0, 3.5)),
+                2.0,
+                1.2,
+                0.07,
+                ry(90 + rnd.uniform(-10, 10)),
+            )
+        )
     return solid("Cliff_b", "Cliff", parts, cutters, center_y=False, back_y=CLIFF_BACK)
 
 
@@ -511,8 +631,14 @@ def mat_rock() -> bpy.types.Material:
     warped = warp_c.outputs[0]
 
     breakup = C._noise(nt, 2.2, 4.0, 0.55)
-    crack_big = math_node("MULTIPLY", C._voronoi_lines(nt, warped, 0.9, 0.028), C._ramp(nt, 0.45, 0.6, breakup.outputs["Fac"]))
-    crack_fine = math_node("MULTIPLY", C._voronoi_lines(nt, warped, 3.0, 0.022), math_node("MULTIPLY", C._ramp(nt, 0.55, 0.7, breakup.outputs["Fac"]), 0.6))
+    crack_big = math_node(
+        "MULTIPLY", C._voronoi_lines(nt, warped, 0.9, 0.028), C._ramp(nt, 0.45, 0.6, breakup.outputs["Fac"])
+    )
+    crack_fine = math_node(
+        "MULTIPLY",
+        C._voronoi_lines(nt, warped, 3.0, 0.022),
+        math_node("MULTIPLY", C._ramp(nt, 0.55, 0.7, breakup.outputs["Fac"]), 0.6),
+    )
     crack = math_node("MAXIMUM", crack_big, crack_fine)
 
     # Base tone: large noise between dark and lighter grey-brown, per-facet variation, strata bands along Z.
@@ -687,7 +813,11 @@ def render_scatter(path: pathlib.Path, samples: int, size: int) -> pathlib.Path:
         d.hide_render = False
         d.parent = None
         d.location = (x, y, -sink * scale)
-        d.rotation_euler = (math.radians(rnd.uniform(-tilt, tilt)), math.radians(rnd.uniform(-tilt, tilt)), math.radians(rot if rot is not None else rnd.uniform(0, 360)))
+        d.rotation_euler = (
+            math.radians(rnd.uniform(-tilt, tilt)),
+            math.radians(rnd.uniform(-tilt, tilt)),
+            math.radians(rot if rot is not None else rnd.uniform(0, 360)),
+        )
         d.scale = (scale,) * 3
         dupes.append(d)
 
@@ -740,7 +870,9 @@ def report() -> None:
         me.calc_loop_triangles()
         zs = [v.co.z for v in me.vertices]
         manifold = _is_manifold(obj)
-        print(f"STATS {name}: tris={len(me.loop_triangles)} size={tuple(round(d, 2) for d in obj.dimensions)} z=({min(zs):.2f}, {max(zs):.2f}) manifold={manifold}")
+        print(
+            f"STATS {name}: tris={len(me.loop_triangles)} size={tuple(round(d, 2) for d in obj.dimensions)} z=({min(zs):.2f}, {max(zs):.2f}) manifold={manifold}"
+        )
         obj.evaluated_get(dg).to_mesh_clear()
     print("STATS", C.stats())
 
@@ -750,7 +882,13 @@ def _is_manifold(obj: bpy.types.Object) -> bool:
     bm.from_mesh(obj.data)
     bad = [e for e in bm.edges if not e.is_manifold]
     if bad:
-        print("NONMANIFOLD", obj.name, len(bad), [tuple(round(c, 2) for c in (e.verts[0].co + e.verts[1].co) / 2) for e in bad[:6]], [len(e.link_faces) for e in bad[:6]])
+        print(
+            "NONMANIFOLD",
+            obj.name,
+            len(bad),
+            [tuple(round(c, 2) for c in (e.verts[0].co + e.verts[1].co) / 2) for e in bad[:6]],
+            [len(e.link_faces) for e in bad[:6]],
+        )
     bm.free()
     return not bad
 

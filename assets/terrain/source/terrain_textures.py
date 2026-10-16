@@ -27,8 +27,8 @@ import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
-import bake as B  # noqa: E402
-import common as C  # noqa: E402
+import bake as B
+import common as C
 
 OUT = ROOT / "assets" / "terrain"
 TMP = ROOT / "tmp" / "terrain"
@@ -363,7 +363,12 @@ class Nodes:
         """Periodic 4D noise, `scale` features per meter (about), standardized: mean 0, std about 1 (the node's
         Fac has std ~0.09 around 0.5)."""
         tex = self.node(
-            "ShaderNodeTexNoise", props={"noise_dimensions": "4D"}, Vector=self.torus, W=self.w, Scale=scale, Detail=detail
+            "ShaderNodeTexNoise",
+            props={"noise_dimensions": "4D"},
+            Vector=self.torus,
+            W=self.w,
+            Scale=scale,
+            Detail=detail,
         )
         tex.inputs["Roughness"].default_value = roughness
         tex.inputs["Distortion"].default_value = distortion
@@ -530,7 +535,10 @@ def dust_ground(rng: np.random.Generator) -> float:
     sand_mat = n.finish(color, rough, detail, ao_distance=0.15)
 
     s = Nodes("DustPebble", tile)
-    base = s.palette(s.attribute("rand"), [(0.38, 0.34, 0.30), (0.45, 0.38, 0.31), (0.33, 0.30, 0.27), (0.50, 0.45, 0.38), (0.41, 0.32, 0.25)])
+    base = s.palette(
+        s.attribute("rand"),
+        [(0.38, 0.34, 0.30), (0.45, 0.38, 0.31), (0.33, 0.30, 0.27), (0.50, 0.45, 0.38), (0.41, 0.32, 0.25)],
+    )
     speck = s.noise(60.0, 4.0, 0.6)
     color = s.mix(s.ramp(speck, 0.5, 2.0), base, srgb(0.25, 0.22, 0.2))
     dust = s.ramp(s.noise(14.0, 2.0), 0.3, 1.2)
@@ -560,7 +568,17 @@ def dust_scree(rng: np.random.Generator) -> float:
     sand_mat = n.finish(color, 0.96, n.math("MULTIPLY", grain, 0.0006), ao_distance=0.1)
 
     s = Nodes("ScreeStone", tile)
-    base = s.palette(s.attribute("rand"), [(0.36, 0.32, 0.29), (0.44, 0.38, 0.32), (0.31, 0.28, 0.26), (0.50, 0.44, 0.37), (0.40, 0.31, 0.25), (0.35, 0.34, 0.33)])
+    base = s.palette(
+        s.attribute("rand"),
+        [
+            (0.36, 0.32, 0.29),
+            (0.44, 0.38, 0.32),
+            (0.31, 0.28, 0.26),
+            (0.50, 0.44, 0.37),
+            (0.40, 0.31, 0.25),
+            (0.35, 0.34, 0.33),
+        ],
+    )
     speck = s.noise(50.0, 4.0, 0.6)
     color = s.mix(s.math("MULTIPLY", s.ramp(speck, 0.8, 2.2), 0.7), base, srgb(0.2, 0.18, 0.16))
     dust = s.ramp(s.noise(10.0, 2.0), 0.5, 1.5)
@@ -580,7 +598,7 @@ def dust_rock(rng: np.random.Generator) -> float:
     """Dust flats cliff (a wall, image up = world up): sandstone strata of different hardness, the soft ones
     weathered back, finely laminated and split by a few vertical joints."""
     tile = 8.0
-    xs, ys = coords(tile)
+    _xs, ys = coords(tile)
     # Strata: bands of random thickness filling the tile's height, each recessed by its softness.
     bounds = [0.0]
     while bounds[-1] < tile - 0.3:
@@ -615,7 +633,10 @@ def dust_rock(rng: np.random.Generator) -> float:
     fine_s = n.scalar(float_image("fine", fine))
     grain = n.noise(40.0, 5.0, 0.65)
     mottle = n.noise(3.0, 3.0, 0.6)
-    color = n.palette(n.math("ADD", shade_s, n.math("MULTIPLY", mottle, 0.04)), [(0.30, 0.25, 0.20), (0.36, 0.29, 0.22), (0.27, 0.24, 0.21), (0.40, 0.32, 0.24), (0.32, 0.26, 0.21)])
+    color = n.palette(
+        n.math("ADD", shade_s, n.math("MULTIPLY", mottle, 0.04)),
+        [(0.30, 0.25, 0.20), (0.36, 0.29, 0.22), (0.27, 0.24, 0.21), (0.40, 0.32, 0.24), (0.32, 0.26, 0.21)],
+    )
     color = n.mix(n.math("MULTIPLY", dark_s, 0.4), color, srgb(0.21, 0.18, 0.15))
     color = n.mix(n.math("MULTIPLY", n.ramp(grain, 0.5, 2.0), 0.4), color, srgb(0.22, 0.19, 0.16))
     color = n.mix(n.math("MULTIPLY", joint_s, 0.7), color, srgb(0.15, 0.13, 0.11))
@@ -657,7 +678,9 @@ def overgrowth_ground(rng: np.random.Generator) -> float:
 
     s = Nodes("SoilStone", tile)
     lichen = s.ramp(s.noise(8.0, 3.0, 0.6), 0.3, 0.9)
-    base = s.palette(s.attribute("rand"), [(0.25, 0.25, 0.24), (0.30, 0.29, 0.27), (0.22, 0.22, 0.21), (0.34, 0.33, 0.30)])
+    base = s.palette(
+        s.attribute("rand"), [(0.25, 0.25, 0.24), (0.30, 0.29, 0.27), (0.22, 0.22, 0.21), (0.34, 0.33, 0.30)]
+    )
     color = s.mix(lichen, base, srgb(0.25, 0.28, 0.14))
     stone_mat = s.finish(color, s.lerp(lichen, 0.55, 0.9), s.math("MULTIPLY", s.noise(50.0), 0.0005), ao_distance=0.08)
 
@@ -670,7 +693,23 @@ def overgrowth_ground(rng: np.random.Generator) -> float:
     placed: list = []
     kw = dict(subdivisions=2, cuts=2, smooth=True, flat=(0.5, 0.8))
     stones(rng, "Stones", tile, height, 50, (0.03, 0.11), stone_mat, sink=0.35, others=placed, spacing=1.5, **kw)
-    stones(rng, "Buds", tile, height, 160, (0.004, 0.009), bud_mat, flat=(0.7, 1.0), subdivisions=2, cuts=0, lumps=0.05, smooth=True, sink=0.2, others=placed, where=lambda x, y: 1.0 if sample(moss, tile, x, y) > 0.5 else 0.05)
+    stones(
+        rng,
+        "Buds",
+        tile,
+        height,
+        160,
+        (0.004, 0.009),
+        bud_mat,
+        flat=(0.7, 1.0),
+        subdivisions=2,
+        cuts=0,
+        lumps=0.05,
+        smooth=True,
+        sink=0.2,
+        others=placed,
+        where=lambda x, y: 1.0 if sample(moss, tile, x, y) > 0.5 else 0.05,
+    )
     return tile
 
 
@@ -691,7 +730,10 @@ def overgrowth_scree(rng: np.random.Generator) -> float:
     soil_mat = n.finish(color, n.lerp(moss_s, 0.8, 0.95), n.math("MULTIPLY", fuzz, 0.0008), ao_distance=0.1)
 
     s = Nodes("WetStone", tile)
-    base = s.palette(s.attribute("rand"), [(0.24, 0.24, 0.23), (0.30, 0.29, 0.27), (0.21, 0.21, 0.21), (0.35, 0.34, 0.31), (0.27, 0.26, 0.22)])
+    base = s.palette(
+        s.attribute("rand"),
+        [(0.24, 0.24, 0.23), (0.30, 0.29, 0.27), (0.21, 0.21, 0.21), (0.35, 0.34, 0.31), (0.27, 0.26, 0.22)],
+    )
     speck = s.noise(40.0, 4.0, 0.6)
     lichen = s.ramp(s.noise(6.0, 3.0, 0.6), 0.6, 1.2)
     color = s.mix(s.math("MULTIPLY", s.ramp(speck, 0.8, 2.2), 0.6), base, srgb(0.15, 0.15, 0.14))
@@ -719,11 +761,18 @@ def overgrowth_rock(rng: np.random.Generator) -> float:
     count = cell.max() + 1
     tilt = rng.normal(scale=0.04, size=(count, 2))
     lift = rng.uniform(-0.06, 0.06, count)
-    blocks = (tilt[cell, 0] * np.sin(math.tau * xs / tile) + tilt[cell, 1] * np.sin(math.tau * ys / tile)) * tile * 0.3 + lift[cell]
+    blocks = (
+        tilt[cell, 0] * np.sin(math.tau * xs / tile) + tilt[cell, 1] * np.sin(math.tau * ys / tile)
+    ) * tile * 0.3 + lift[cell]
     rounded = smoothstep(0.0, 0.03, edge)
     height = blocks * rounded - (1.0 - rounded) * 0.05 + 0.15 * blobs(rng, tile, 3.0) + 0.015 * blobs(rng, tile, 0.3, 3)
     ledge = -np.gradient(height, axis=0) * SIZE / tile  # facing up (+Y) on the wall
-    moss = np.clip(smoothstep(0.2, 0.9, 1.0 - rounded) + smoothstep(0.1, 0.5, ledge) * smoothstep(-0.3, 0.5, blobs(rng, tile, 0.5)), 0, 1)
+    moss = np.clip(
+        smoothstep(0.2, 0.9, 1.0 - rounded)
+        + smoothstep(0.1, 0.5, ledge) * smoothstep(-0.3, 0.5, blobs(rng, tile, 0.5)),
+        0,
+        1,
+    )
     joints = 1.0 - smoothstep(0.0, 0.004, edge)
     tone = blobs(rng, tile, 1.0, 2)
     spots = specks(rng, tile, 0.03, 0.06)
@@ -741,7 +790,9 @@ def overgrowth_rock(rng: np.random.Generator) -> float:
     color = n.mix(moss_s, rock, n.mix(n.unit(fuzz, 0.2), srgb(0.14, 0.16, 0.085), srgb(0.24, 0.26, 0.13)))
     color = n.mix(n.math("MULTIPLY", joint_s, 0.7), color, srgb(0.08, 0.08, 0.07))
     rough = n.lerp(moss_s, n.lerp(n.unit(grain), 0.7, 0.9), 0.95)
-    detail = n.math("ADD", n.math("MULTIPLY", grain, 0.0015), n.math("MULTIPLY", n.math("MULTIPLY", moss_s, fuzz), 0.0015))
+    detail = n.math(
+        "ADD", n.math("MULTIPLY", grain, 0.0015), n.math("MULTIPLY", n.math("MULTIPLY", moss_s, fuzz), 0.0015)
+    )
     ground_grid(height, tile, n.finish(color, rough, detail, ao_distance=0.3))
     return tile
 
@@ -846,7 +897,9 @@ def build(name: str, preview: bool) -> dict:
     rng = np.random.default_rng(sum(map(ord, name)) * 7919)
     tile = LAYERS[name](rng)
     scene_setup(tile)
-    passes = {kind: render_pass(kind, TMP / f"{name}_{kind}.exr") for kind in ("albedo", "rough", "normal", "height", "ao")}
+    passes = {
+        kind: render_pass(kind, TMP / f"{name}_{kind}.exr") for kind in ("albedo", "rough", "normal", "height", "ao")
+    }
     normal = passes["normal"][..., :3] * 2.0 - 1.0
     normal /= np.linalg.norm(normal, axis=2, keepdims=True) + 1e-9
     height = passes["height"][..., 0]

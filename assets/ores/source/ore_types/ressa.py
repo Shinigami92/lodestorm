@@ -4,9 +4,9 @@ import math  # noqa: F401
 import random
 
 import bmesh
-from mathutils import Matrix, Vector  # noqa: F401
+from mathutils import Matrix, Vector
 
-from ore_geo import T, OreSpec, cut, finish_normals, polar, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, cut, finish_normals, polar, rand_unit, tilted
 
 
 def ball(bm: bmesh.types.BMesh, center: Vector, r: float) -> None:
@@ -59,8 +59,14 @@ ORE = OreSpec(
     wall_tilt=25,
     smooth=True,
     variants={
-        "a": dict(seed=151, groups=[(115, 0.55, 3, (0.55, 1.0), 12), (245, 0.72, 2, (0.4, 0.7), 15), (0, 0.74, 2, (0.3, 0.5), 15)]),
-        "b": dict(seed=163, groups=[(55, 0.6, 3, (0.5, 0.95), 12), (190, 0.7, 2, (0.4, 0.75), 15), (310, 0.75, 2, (0.3, 0.5), 15)]),
+        "a": dict(
+            seed=151,
+            groups=[(115, 0.55, 3, (0.55, 1.0), 12), (245, 0.72, 2, (0.4, 0.7), 15), (0, 0.74, 2, (0.3, 0.5), 15)],
+        ),
+        "b": dict(
+            seed=163,
+            groups=[(55, 0.6, 3, (0.5, 0.95), 12), (190, 0.7, 2, (0.4, 0.75), 15), (310, 0.75, 2, (0.3, 0.5), 15)],
+        ),
         "wall": dict(seed=173, wall=True, count=6),
     },
 )

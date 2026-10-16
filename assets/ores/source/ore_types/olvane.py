@@ -1,12 +1,12 @@
 """Olvane (common, green, steady): chunky intergrown cubes and blocks with chipped corners, low and heavy."""
 
-import math  # noqa: F401
+import math
 import random
 
 import bmesh
-from mathutils import Matrix, Vector  # noqa: F401
+from mathutils import Matrix, Vector
 
-from ore_geo import T, OreSpec, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, cut, finish_normals, rand_unit, tilted  # noqa: F401
 
 
 def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
@@ -19,7 +19,9 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
     bmesh.ops.create_cube(bm, size=1.0, matrix=T((0, 0, sz / 2 - 0.25 * edge), None, (sx, sy, sz + 0.5 * edge)))
     if rnd.random() < 0.35:  # intergrown twin: a smaller cube on the same axes (or turned 45 deg) stepping out
         s = edge * rnd.uniform(0.5, 0.72)
-        corner = Vector((rnd.choice((-1, 1)) * sx * 0.42, rnd.choice((-1, 1)) * sy * 0.42, sz * rnd.uniform(0.25, 0.75)))
+        corner = Vector(
+            (rnd.choice((-1, 1)) * sx * 0.42, rnd.choice((-1, 1)) * sy * 0.42, sz * rnd.uniform(0.25, 0.75))
+        )
         rot = Matrix.Rotation(rnd.choice((0.0, 0.0, math.pi / 4)) + rnd.uniform(-0.08, 0.08), 3, "Z")
         bmesh.ops.create_cube(bm, size=1.0, matrix=T(corner, rot, (s, s, s * rnd.uniform(0.9, 1.25))))
     top = Vector((0, 0, sz))
@@ -41,8 +43,14 @@ ORE = OreSpec(
     wall_sizes=(0.15, 0.55),
     wall_tilt=35,
     variants={
-        "a": dict(seed=31, groups=[(115, 0.55, 5, (0.55, 1.0), 18), (245, 0.72, 4, (0.35, 0.75), 22), (5, 0.74, 3, (0.25, 0.55), 22)]),
-        "b": dict(seed=43, groups=[(60, 0.6, 6, (0.5, 1.0), 20), (205, 0.66, 4, (0.35, 0.8), 22), (310, 0.8, 2, (0.2, 0.4), 22)]),
+        "a": dict(
+            seed=31,
+            groups=[(115, 0.55, 5, (0.55, 1.0), 18), (245, 0.72, 4, (0.35, 0.75), 22), (5, 0.74, 3, (0.25, 0.55), 22)],
+        ),
+        "b": dict(
+            seed=43,
+            groups=[(60, 0.6, 6, (0.5, 1.0), 20), (205, 0.66, 4, (0.35, 0.8), 22), (310, 0.8, 2, (0.2, 0.4), 22)],
+        ),
         "wall": dict(seed=83, wall=True, count=7),
     },
 )

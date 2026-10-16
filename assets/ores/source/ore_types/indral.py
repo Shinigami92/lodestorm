@@ -1,19 +1,25 @@
 """Indral (signature, indigo, fast pulse): chunky gem-like rhombic dodecahedra (garnet habit, edges bevelled by
 small trapezohedron faces), half sunk into the rock in clusters of very different sizes."""
 
-import math  # noqa: F401
+import math
 import random
 
 import bmesh
-from mathutils import Matrix, Vector  # noqa: F401
+from mathutils import Matrix, Vector
 
-from ore_geo import T, OreSpec, append_bm, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, append_bm, cut, finish_normals, rand_unit, tilted  # noqa: F401
 
 # Garnet habit: rhombic dodecahedron {110} with its edges bevelled by trapezohedron {211} faces. The gem is the
 # intersection of those half-spaces; its corners are precomputed per bevel amount.
 FACES = [Vector(v).normalized() for v in ((1, 1, 0), (1, -1, 0), (1, 0, 1), (1, 0, -1), (0, 1, 1), (0, 1, -1))]
 FACES += [-n for n in FACES]
-BEVELS = [Vector((sx * a, sy * b, sz * c)).normalized() for a, b, c in ((2, 1, 1), (1, 2, 1), (1, 1, 2)) for sx in (-1, 1) for sy in (-1, 1) for sz in (-1, 1)]
+BEVELS = [
+    Vector((sx * a, sy * b, sz * c)).normalized()
+    for a, b, c in ((2, 1, 1), (1, 2, 1), (1, 1, 2))
+    for sx in (-1, 1)
+    for sy in (-1, 1)
+    for sz in (-1, 1)
+]
 FACE_DIST = 1.0  # {110} faces at distance 1: corners of the plain dodecahedron at sqrt(2) (4-fold) and sqrt(1.5)
 EDGE_DIST = 2 / math.sqrt(3)  # where a {211} plane touches the dodecahedron's edge
 CORNER_CACHE: dict = {}
@@ -64,7 +70,11 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
         r2 = radius * rnd.uniform(0.45, 0.65)
         d = tilted(Vector((0, 0, 1)), rand_unit(rnd), rnd.uniform(45, 80))
         g = gem(rnd, r2)
-        append_bm(bm, g, T(d * radius * 0.85 + Vector((0, 0, radius * 0.1)), rand_unit(rnd).to_track_quat("Z", "Y").to_matrix()))
+        append_bm(
+            bm,
+            g,
+            T(d * radius * 0.85 + Vector((0, 0, radius * 0.1)), rand_unit(rnd).to_track_quat("Z", "Y").to_matrix()),
+        )
         g.free()
     finish_normals(bm)
     return bm
@@ -80,8 +90,14 @@ ORE = OreSpec(
     wall_sizes=(0.25, 0.8),
     wall_tilt=40,
     variants={
-        "a": dict(seed=311, groups=[(110, 0.6, 6, (0.25, 1.0), 30), (240, 0.72, 5, (0.2, 0.7), 30), (355, 0.76, 4, (0.1, 0.5), 30)]),
-        "b": dict(seed=331, groups=[(55, 0.64, 5, (0.3, 0.95), 30), (185, 0.68, 6, (0.2, 0.85), 30), (300, 0.76, 4, (0.1, 0.5), 30)]),
+        "a": dict(
+            seed=311,
+            groups=[(110, 0.6, 6, (0.25, 1.0), 30), (240, 0.72, 5, (0.2, 0.7), 30), (355, 0.76, 4, (0.1, 0.5), 30)],
+        ),
+        "b": dict(
+            seed=331,
+            groups=[(55, 0.64, 5, (0.3, 0.95), 30), (185, 0.68, 6, (0.2, 0.85), 30), (300, 0.76, 4, (0.1, 0.5), 30)],
+        ),
         "wall": dict(seed=347, wall=True, count=7),
     },
 )

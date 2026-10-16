@@ -30,11 +30,13 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "assets" / "plants"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Matrix, Vector, noise  # noqa: E402
+import itertools
 
-import common as C  # noqa: E402
+import bmesh
+import bpy
+from mathutils import Matrix, Vector, noise
+
+import common as C
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -45,7 +47,13 @@ TAU = math.tau
 UP = Vector((0, 0, 1))
 
 DUST = ["Dust_Debris_a", "Dust_Shrub_a", "Dust_Spire_a", "Dust_Shrub_b", "Dust_Debris_b"]
-OVERGROWTH = ["Overgrowth_Frond_b", "Overgrowth_Fungus_a", "Overgrowth_Tube_a", "Overgrowth_Fungus_b", "Overgrowth_Frond_a"]
+OVERGROWTH = [
+    "Overgrowth_Frond_b",
+    "Overgrowth_Fungus_a",
+    "Overgrowth_Tube_a",
+    "Overgrowth_Fungus_b",
+    "Overgrowth_Frond_a",
+]
 ROW_STEP = 2.1
 ROW_DIR = Vector((math.sqrt(0.5), math.sqrt(0.5), 0))  # perpendicular to the iso view: nothing hides behind a neighbor
 ROW_CENTER = {"dust": Vector((2.0, -2.0, 0)), "overgrowth": Vector((-2.0, 2.0, 0))}
@@ -64,7 +72,9 @@ def sph(az_deg: float, elev_deg: float) -> Vector:
     return Vector((math.cos(e) * math.cos(a), math.cos(e) * math.sin(a), math.sin(e)))
 
 
-def arc(base: Vector, direction: Vector, length: float, droop: float = 0.0, n: int = 5, curl: Vector | None = None) -> list:
+def arc(
+    base: Vector, direction: Vector, length: float, droop: float = 0.0, n: int = 5, curl: Vector | None = None
+) -> list:
     """Points of a gently bent stem: straight along `direction`, pulled down by `droop` (negative: curls up)."""
     d = Vector(direction).normalized()
     pts = []
@@ -140,8 +150,21 @@ class Plant:
         for k in range(n):
             self.face((r[(k + 1) % n], r[k], apex) if reverse else (r[k], r[(k + 1) % n], apex), smooth)
 
-    def sweep(self, pts, radii, seg, side=None, grads=None, tip=False, cap_end=False, cap_start=False, spin=0.0,
-              glow=0.0, plate=0.0, smooth=True):
+    def sweep(
+        self,
+        pts,
+        radii,
+        seg,
+        side=None,
+        grads=None,
+        tip=False,
+        cap_end=False,
+        cap_start=False,
+        spin=0.0,
+        glow=0.0,
+        plate=0.0,
+        smooth=True,
+    ):
         """Tube along pts; radii per point: r or (rx along N, ry along B). tip: the last point is a spike tip.
         Returns (rings, frames) so callers can extend the end (e.g. a tube mouth)."""
         n = len(pts)
@@ -154,7 +177,7 @@ class Plant:
             rx, ry = (r, r) if isinstance(r, (int, float)) else r
             g = glow[i] if isinstance(glow, (list, tuple)) else glow
             rings.append(self.ring(pts[i], N[i], B[i], rx, ry, seg, spin, grads[i], g, plate))
-        for a, b in zip(rings, rings[1:]):
+        for a, b in itertools.pairwise(rings):
             self.bridge(a, b, smooth)
         if tip:
             g = glow[-1] if isinstance(glow, (list, tuple)) else glow
@@ -183,7 +206,7 @@ class Plant:
                     local += noise.noise_vector(local * wfreq + c * 1.7) * wobble * r
                 ring.append(self.v(c + rot @ local, g, 0.0, p))
             rings.append((idx, ring))
-        for (_, a), (_, b) in zip(rings, rings[1:]):
+        for (_, a), (_, b) in itertools.pairwise(rings):
             self.bridge(a, b, smooth)
         if 0 in apexes and rings:
             self.fan(rings[0][1], apexes[0], smooth, reverse=True)
@@ -211,14 +234,16 @@ class Plant:
     def bulb(self, center, r, glow=1.0, grad=1.0):
         """Tiny bioluminescent bulb: a squashed hexagonal bipyramid (12 triangles), smooth shaded a dot."""
         c = Vector(center)
-        ring = [self.v(c + Vector((math.cos(k * TAU / 6) * r, math.sin(k * TAU / 6) * r, 0)), grad, glow) for k in range(6)]
+        ring = [
+            self.v(c + Vector((math.cos(k * TAU / 6) * r, math.sin(k * TAU / 6) * r, 0)), grad, glow) for k in range(6)
+        ]
         self.fan(ring, self.v(c + Vector((0, 0, r * 0.6)), grad, glow))
         self.fan(ring, self.v(c + Vector((0, 0, -r * 0.6)), grad, glow), reverse=True)
 
     def stone(self, center, size, npts=12, rot_z=0.0, tilt=(0.0, 0.0), grad=0.0, jag=0.25):
         """Jagged pebble: convex hull of jittered points on an ellipsoid, flat shaded (~2n-4 triangles)."""
         sx, sy, sz = size
-        rot = (Matrix.Rotation(rot_z, 3, "Z") @ Matrix.Rotation(tilt[0], 3, "X") @ Matrix.Rotation(tilt[1], 3, "Y"))
+        rot = Matrix.Rotation(rot_z, 3, "Z") @ Matrix.Rotation(tilt[0], 3, "X") @ Matrix.Rotation(tilt[1], 3, "Y")
         pts = []
         for i in range(npts):
             # Fibonacci sphere + jitter: well spread, all on the hull.
@@ -446,54 +471,123 @@ def make_materials() -> dict:
     # Dust flats: dry, dark olive-brown bodies with pale bleached tips; dark against the sand like the concept.
     M["Dust_Shrub_a"] = mat_plant(
         "Plant_Dust_Shrub_a",
-        [(0.0, (0.02, 0.024, 0.008)), (0.45, (0.048, 0.052, 0.02)), (0.8, (0.1, 0.088, 0.045)), (1.0, (0.18, 0.145, 0.085))],
-        rough=(0.6, 0.85), ground_col=DUST_GROUND, streaks=0.7,
+        [
+            (0.0, (0.02, 0.024, 0.008)),
+            (0.45, (0.048, 0.052, 0.02)),
+            (0.8, (0.1, 0.088, 0.045)),
+            (1.0, (0.18, 0.145, 0.085)),
+        ],
+        rough=(0.6, 0.85),
+        ground_col=DUST_GROUND,
+        streaks=0.7,
     )
     M["Dust_Shrub_b"] = mat_plant(
         "Plant_Dust_Shrub_b",
-        [(0.0, (0.02, 0.014, 0.008)), (0.35, (0.06, 0.045, 0.026)), (0.75, (0.13, 0.105, 0.065)), (1.0, (0.22, 0.185, 0.125))],
-        rough=(0.65, 0.9), ground_col=DUST_GROUND, streaks=0.4,
+        [
+            (0.0, (0.02, 0.014, 0.008)),
+            (0.35, (0.06, 0.045, 0.026)),
+            (0.75, (0.13, 0.105, 0.065)),
+            (1.0, (0.22, 0.185, 0.125)),
+        ],
+        rough=(0.65, 0.9),
+        ground_col=DUST_GROUND,
+        streaks=0.4,
     )
     M["Dust_Spire_a"] = mat_plant(
         "Plant_Dust_Spire_a",
-        [(0.0, (0.03, 0.024, 0.013)), (0.4, (0.062, 0.048, 0.028)), (0.8, (0.1, 0.08, 0.05)), (1.0, (0.15, 0.125, 0.085))],
-        rough=(0.6, 0.85), ground_col=DUST_GROUND, ground_h=0.2, streaks=1.0, glow_col=GLOW_AMBER, glow_strength=3.0,
+        [
+            (0.0, (0.03, 0.024, 0.013)),
+            (0.4, (0.062, 0.048, 0.028)),
+            (0.8, (0.1, 0.08, 0.05)),
+            (1.0, (0.15, 0.125, 0.085)),
+        ],
+        rough=(0.6, 0.85),
+        ground_col=DUST_GROUND,
+        ground_h=0.2,
+        streaks=1.0,
+        glow_col=GLOW_AMBER,
+        glow_strength=3.0,
     )
     M["Dust_Debris_a"] = mat_plant(
         "Plant_Dust_Debris_a",
         [(0.0, (0.028, 0.026, 0.024)), (1.0, (0.05, 0.045, 0.04))],
-        rough=(0.75, 0.95), ground_col=DUST_GROUND, ground_h=0.05, top_dust=0.85, bump=0.4, var=0.35,
+        rough=(0.75, 0.95),
+        ground_col=DUST_GROUND,
+        ground_h=0.05,
+        top_dust=0.85,
+        bump=0.4,
+        var=0.35,
     )
     M["Dust_Debris_b"] = mat_plant(
         "Plant_Dust_Debris_b",
         [(0.0, (0.13, 0.115, 0.09)), (1.0, (0.2, 0.18, 0.145))],
-        rough=(0.55, 0.8), ground_col=DUST_GROUND, ground_h=0.06, streaks=0.5, top_dust=0.6, var=0.3,
+        rough=(0.55, 0.8),
+        ground_col=DUST_GROUND,
+        ground_h=0.06,
+        streaks=0.5,
+        top_dust=0.6,
+        var=0.3,
     )
     # Overgrowth: fleshy, wet-looking, dark olive / teal, with tiny dim teal bulbs.
     M["Overgrowth_Fungus_a"] = mat_plant(
         "Plant_Overgrowth_Fungus_a",
         [(0.0, (0.01, 0.013, 0.006)), (0.55, (0.032, 0.045, 0.016)), (1.0, (0.065, 0.078, 0.036))],
-        rough=(0.4, 0.7), ground_col=MUD, ground_h=0.15, pores=True, glow_col=GLOW_TEAL, glow_strength=3.0,
+        rough=(0.4, 0.7),
+        ground_col=MUD,
+        ground_h=0.15,
+        pores=True,
+        glow_col=GLOW_TEAL,
+        glow_strength=3.0,
     )
     M["Overgrowth_Fungus_b"] = mat_plant(
         "Plant_Overgrowth_Fungus_b",
-        [(0.0, (0.025, 0.024, 0.014)), (0.45, (0.08, 0.072, 0.05)), (0.55, (0.02, 0.022, 0.014)), (0.75, (0.055, 0.048, 0.032)), (1.0, (0.09, 0.08, 0.055))],
-        rough=(0.35, 0.65), ground_col=MUD, ground_h=0.15, plates=True, streaks=0.3, glow_col=GLOW_TEAL, glow_strength=3.0,
+        [
+            (0.0, (0.025, 0.024, 0.014)),
+            (0.45, (0.08, 0.072, 0.05)),
+            (0.55, (0.02, 0.022, 0.014)),
+            (0.75, (0.055, 0.048, 0.032)),
+            (1.0, (0.09, 0.08, 0.055)),
+        ],
+        rough=(0.35, 0.65),
+        ground_col=MUD,
+        ground_h=0.15,
+        plates=True,
+        streaks=0.3,
+        glow_col=GLOW_TEAL,
+        glow_strength=3.0,
     )
     M["Overgrowth_Tube_a"] = mat_plant(
         "Plant_Overgrowth_Tube_a",
-        [(0.0, (0.01, 0.02, 0.016)), (0.5, (0.02, 0.048, 0.04)), (0.88, (0.05, 0.075, 0.058)), (1.0, (0.085, 0.085, 0.06))],
-        rough=(0.35, 0.65), ground_col=MUD, ground_h=0.2, streaks=0.5, glow_col=GLOW_TEAL, glow_strength=3.0,
+        [
+            (0.0, (0.01, 0.02, 0.016)),
+            (0.5, (0.02, 0.048, 0.04)),
+            (0.88, (0.05, 0.075, 0.058)),
+            (1.0, (0.085, 0.085, 0.06)),
+        ],
+        rough=(0.35, 0.65),
+        ground_col=MUD,
+        ground_h=0.2,
+        streaks=0.5,
+        glow_col=GLOW_TEAL,
+        glow_strength=3.0,
     )
     M["Overgrowth_Frond_a"] = mat_plant(
         "Plant_Overgrowth_Frond_a",
         [(0.0, (0.012, 0.018, 0.008)), (0.4, (0.032, 0.052, 0.018)), (1.0, (0.045, 0.075, 0.05))],
-        rough=(0.4, 0.7), ground_col=MUD, streaks=0.6, glow_col=GLOW_TEAL, glow_strength=3.0,
+        rough=(0.4, 0.7),
+        ground_col=MUD,
+        streaks=0.6,
+        glow_col=GLOW_TEAL,
+        glow_strength=3.0,
     )
     M["Overgrowth_Frond_b"] = mat_plant(
         "Plant_Overgrowth_Frond_b",
         [(0.0, (0.01, 0.015, 0.006)), (0.5, (0.038, 0.052, 0.018)), (1.0, (0.095, 0.09, 0.045))],
-        rough=(0.45, 0.75), ground_col=MUD, streaks=0.5, glow_col=GLOW_TEAL, glow_strength=2.5,
+        rough=(0.45, 0.75),
+        ground_col=MUD,
+        streaks=0.5,
+        glow_col=GLOW_TEAL,
+        glow_strength=2.5,
     )
     return M
 
@@ -518,11 +612,16 @@ def blade(p: Plant, base, direction, length, width, thick, droop, n=4, grad0=0.0
 def build_dust_shrub_a(root, M):
     """Dry yucca-like rosette: ~45 keeled blades, long and upright in the middle, short and drooping outside."""
     p = Plant("Dust_Shrub_a", 11)
-    p.lathe((0, 0, 0), [(0.0, -0.08, 0.0, 0), (0.15, -0.08, 0.0, 0), (0.16, 0.05, 0.05, 0), (0.1, 0.14, 0.15, 0), (0.0, 0.17, 0.2, 0)], 7, wobble=0.15)
+    p.lathe(
+        (0, 0, 0),
+        [(0.0, -0.08, 0.0, 0), (0.15, -0.08, 0.0, 0), (0.16, 0.05, 0.05, 0), (0.1, 0.14, 0.15, 0), (0.0, 0.17, 0.2, 0)],
+        7,
+        wobble=0.15,
+    )
     count = 44
     for i in range(count):
         f = i / (count - 1)
-        elev = lerp(84, 10, f ** 0.85) + p.rnd.uniform(-7, 7)
+        elev = lerp(84, 10, f**0.85) + p.rnd.uniform(-7, 7)
         az = i * 137.5 + p.rnd.uniform(-12, 12)
         length = lerp(1.05, 0.55, f) * p.rnd.uniform(0.85, 1.1)
         base = sph(az, 0) * (0.03 + 0.1 * f) + Vector((0, 0, lerp(0.12, 0.03, f)))
@@ -538,7 +637,12 @@ def build_dust_shrub_a(root, M):
 def build_dust_shrub_b(root, M):
     """Dry bristle tuft (the dark spiky clumps of the concept): stiff needles radiating from a low dome."""
     p = Plant("Dust_Shrub_b", 23)
-    p.lathe((0, 0, 0), [(0.0, -0.08, 0.0, 0), (0.24, -0.08, 0.0, 0), (0.26, 0.06, 0.1, 0), (0.18, 0.2, 0.2, 0), (0.0, 0.26, 0.25, 0)], 8, wobble=0.2)
+    p.lathe(
+        (0, 0, 0),
+        [(0.0, -0.08, 0.0, 0), (0.24, -0.08, 0.0, 0), (0.26, 0.06, 0.1, 0), (0.18, 0.2, 0.2, 0), (0.0, 0.26, 0.25, 0)],
+        8,
+        wobble=0.2,
+    )
     count = 84
     golden = math.pi * (3 - math.sqrt(5))
     for i in range(count):
@@ -555,15 +659,29 @@ def build_dust_shrub_b(root, M):
     return p.finish(root, M["Dust_Shrub_b"])
 
 
-def stalk(p: Plant, base, height, r0, r1, seg, lean: Vector, rings=12, nodes=3, tip=True, spikes=0, spike_len=(0.6, 0.25),
-          grad_top=1.0, glands=0):
+def stalk(
+    p: Plant,
+    base,
+    height,
+    r0,
+    r1,
+    seg,
+    lean: Vector,
+    rings=12,
+    nodes=3,
+    tip=True,
+    spikes=0,
+    spike_len=(0.6, 0.25),
+    grad_top=1.0,
+    glands=0,
+):
     """Segmented dry stalk with knotted nodes and upward-curving side spikes."""
     pts, radii = [], []
     for i in range(rings):
         t = i / (rings - 1)
         sway = Vector((math.sin(t * 2.6) * 0.06, math.cos(t * 2.1) * 0.04, 0))
         pts.append(Vector(base) + Vector((0, 0, -0.12 + (height + 0.12) * t)) + lean * t * t + sway * t)
-        r = lerp(r0, r1, t ** 0.8)
+        r = lerp(r0, r1, t**0.8)
         if nodes and i % nodes == 0 and 0 < i < rings - 1:
             r *= 1.22
         radii.append(r)
@@ -579,7 +697,7 @@ def stalk(p: Plant, base, height, r0, r1, seg, lean: Vector, rings=12, nodes=3, 
         c = a.lerp(b, idx - int(idx))
         az = i * 137.5 + p.rnd.uniform(-15, 15)
         out = sph(az, 0)
-        r = lerp(r0, r1, h ** 0.8)
+        r = lerp(r0, r1, h**0.8)
         length = lerp(spike_len[0], spike_len[1], f) * p.rnd.uniform(0.8, 1.15)
         d = sph(az, p.rnd.uniform(5, 30))
         spts = arc(c + out * r * 0.6, d, length, droop=-p.rnd.uniform(0.35, 0.6), n=4)
@@ -591,7 +709,7 @@ def stalk(p: Plant, base, height, r0, r1, seg, lean: Vector, rings=12, nodes=3, 
         idx = h * (rings - 1)
         c = pts[int(idx)].lerp(pts[min(int(idx) + 1, rings - 1)], idx - int(idx))
         az = i * 151 + 20
-        r = lerp(r0, r1, h ** 0.8)
+        r = lerp(r0, r1, h**0.8)
         tips.append((c, az, r))
     return pts, tips
 
@@ -601,21 +719,57 @@ def build_dust_spire_a(root, M):
     thorns, a shorter second stalk and a broken stub, standing in a rosette of dead drooping blades; a few
     dried pods near the top carry tiny dim amber glands."""
     p = Plant("Dust_Spire_a", 37)
-    _, tips = stalk(p, (0, 0, 0), 3.5, 0.16, 0.03, 7, Vector((0.08, 0.05, 0)), rings=16, nodes=3, spikes=24,
-                    spike_len=(0.85, 0.3), glands=4)
-    stalk(p, (0.26, 0.13, 0), 2.25, 0.11, 0.022, 6, Vector((0.3, 0.15, 0)), rings=11, nodes=3, spikes=11, spike_len=(0.55, 0.22))
+    _, tips = stalk(
+        p,
+        (0, 0, 0),
+        3.5,
+        0.16,
+        0.03,
+        7,
+        Vector((0.08, 0.05, 0)),
+        rings=16,
+        nodes=3,
+        spikes=24,
+        spike_len=(0.85, 0.3),
+        glands=4,
+    )
+    stalk(
+        p,
+        (0.26, 0.13, 0),
+        2.25,
+        0.11,
+        0.022,
+        6,
+        Vector((0.3, 0.15, 0)),
+        rings=11,
+        nodes=3,
+        spikes=11,
+        spike_len=(0.55, 0.22),
+    )
     stalk(p, (-0.18, 0.22, 0), 1.0, 0.1, 0.08, 6, Vector((-0.08, 0.06, 0)), rings=5, nodes=2, tip=False, grad_top=0.85)
     for c, az, r in tips:  # seed pods hanging from the main stalk, a gland at each pod's tip
         out = sph(az, 0)
         top = c + out * r
         bottom = top + out * 0.06 + Vector((0, 0, -0.17))
-        p.sweep([top, top.lerp(bottom, 0.45) + out * 0.03, bottom], [0.018, 0.034, 0.0], 4, grads=[0.8, 0.9, 1.0], tip=True)
+        p.sweep(
+            [top, top.lerp(bottom, 0.45) + out * 0.03, bottom], [0.018, 0.034, 0.0], 4, grads=[0.8, 0.9, 1.0], tip=True
+        )
         p.bulb(bottom + Vector((0, 0, -0.012)), 0.02)
     for i in range(11):
         az = i * 137.5 + p.rnd.uniform(-15, 15)
         base = sph(az, 0) * 0.12 + Vector((0, 0, 0.06))
-        blade(p, base, sph(az, p.rnd.uniform(25, 50)), p.rnd.uniform(0.75, 1.05), 0.085, 0.026, p.rnd.uniform(0.55, 0.85), n=5,
-              taper=(1.0, 0.95, 0.75, 0.4), grad0=0.15)
+        blade(
+            p,
+            base,
+            sph(az, p.rnd.uniform(25, 50)),
+            p.rnd.uniform(0.75, 1.05),
+            0.085,
+            0.026,
+            p.rnd.uniform(0.55, 0.85),
+            n=5,
+            taper=(1.0, 0.95, 0.75, 0.4),
+            grad0=0.15,
+        )
     return p.finish(root, M["Dust_Spire_a"])
 
 
@@ -627,14 +781,24 @@ def build_dust_debris_a(root, M):
         a = i * 1.7 + 0.5
         r = p.rnd.uniform(0.28, 0.45)
         s = p.rnd.uniform(0.09, 0.15)
-        p.stone((math.cos(a) * r, math.sin(a) * r, s * 0.15), (s, s * p.rnd.uniform(0.6, 0.9), s * 0.6), npts=14,
-                rot_z=p.rnd.uniform(0, 3), tilt=(p.rnd.uniform(-0.3, 0.3), p.rnd.uniform(-0.3, 0.3)))
+        p.stone(
+            (math.cos(a) * r, math.sin(a) * r, s * 0.15),
+            (s, s * p.rnd.uniform(0.6, 0.9), s * 0.6),
+            npts=14,
+            rot_z=p.rnd.uniform(0, 3),
+            tilt=(p.rnd.uniform(-0.3, 0.3), p.rnd.uniform(-0.3, 0.3)),
+        )
     for i in range(12):
         a = p.rnd.uniform(0, TAU)
         r = p.rnd.uniform(0.15, 0.62) ** 0.9
         s = p.rnd.uniform(0.03, 0.07)
-        p.stone((math.cos(a) * r, math.sin(a) * r, s * 0.2), (s, s * p.rnd.uniform(0.6, 1.0), s * 0.55), npts=8,
-                rot_z=p.rnd.uniform(0, 3), tilt=(p.rnd.uniform(-0.4, 0.4), p.rnd.uniform(-0.4, 0.4)))
+        p.stone(
+            (math.cos(a) * r, math.sin(a) * r, s * 0.2),
+            (s, s * p.rnd.uniform(0.6, 1.0), s * 0.55),
+            npts=8,
+            rot_z=p.rnd.uniform(0, 3),
+            tilt=(p.rnd.uniform(-0.4, 0.4), p.rnd.uniform(-0.4, 0.4)),
+        )
     for i in range(3):  # thin flaked shards
         a = p.rnd.uniform(0, TAU)
         r = p.rnd.uniform(0.25, 0.5)
@@ -650,7 +814,13 @@ def build_dust_debris_b(root, M):
         x = -0.36 + i * 0.17
         c = Vector((x, spine_y + math.sin(i * 0.8) * 0.03, 0.02))
         p.stone(c, (0.065, 0.075, 0.06), npts=12, rot_z=0.1 * i, grad=0.4, jag=0.15)
-        p.sweep([c + Vector((0, 0, 0.03)), c + Vector((-0.02, -0.03, 0.12))], [(0.018, 0.03), 0.0], 4, grads=[0.5, 1.0], tip=True)
+        p.sweep(
+            [c + Vector((0, 0, 0.03)), c + Vector((-0.02, -0.03, 0.12))],
+            [(0.018, 0.03), 0.0],
+            4,
+            grads=[0.5, 1.0],
+            tip=True,
+        )
     for i in range(4):  # ribs: arcs out of the spine, over, and back into the ground
         x = -0.32 + i * 0.19
         span = lerp(0.62, 0.48, abs(i - 1.5) / 1.5)
@@ -667,7 +837,15 @@ def build_dust_debris_b(root, M):
     # Long bone lying across the front, ends knobbed.
     a, b = Vector((-0.45, 0.42, 0.015)), Vector((0.32, 0.18, 0.03))
     pts = [a.lerp(b, t) + Vector((0, 0, math.sin(t * math.pi) * 0.015)) for t in (0, 0.15, 0.35, 0.65, 0.85, 1.0)]
-    p.sweep(pts, [0.05, 0.034, 0.028, 0.028, 0.032, 0.045], 6, side=UP, grads=[0.5, 0.7, 0.8, 0.8, 0.7, 0.6], cap_end=True, cap_start=True)
+    p.sweep(
+        pts,
+        [0.05, 0.034, 0.028, 0.028, 0.032, 0.045],
+        6,
+        side=UP,
+        grads=[0.5, 0.7, 0.8, 0.8, 0.7, 0.6],
+        cap_end=True,
+        cap_start=True,
+    )
     p.stone(a + Vector((-0.02, 0.0, 0.0)), (0.07, 0.06, 0.05), npts=10, grad=0.5, jag=0.12)
     p.stone(b + Vector((0.03, -0.01, 0.0)), (0.06, 0.07, 0.045), npts=10, grad=0.5, jag=0.12)
     for i in range(4):  # fragments
@@ -710,15 +888,22 @@ def mushroom(p: Plant, base, height, cap_r, lean_dir: Vector, lean: float, seg: 
     stalk_r = cap_r * 0.24
     lean_v = Vector(lean_dir).normalized() * lean
     n = 6
-    pts = [base + Vector((0, 0, -0.08 + (height + 0.08) * (i / (n - 1)))) + lean_v * (i / (n - 1)) ** 2 for i in range(n)]
+    pts = [
+        base + Vector((0, 0, -0.08 + (height + 0.08) * (i / (n - 1)))) + lean_v * (i / (n - 1)) ** 2 for i in range(n)
+    ]
     radii = [stalk_r * 1.9, stalk_r * 1.25, stalk_r, stalk_r * 0.92, stalk_r * 0.9, stalk_r * 1.05]
     p.sweep(pts, radii, max(6, seg - 4), side=Vector((1, 0, 0)), grads=[0.0, 0.15, 0.3, 0.38, 0.44, 0.48])
     for k in range(3):  # buttress roots
         az = k * 120 + p.rnd.uniform(0, 60)
         o = sph(az, 0)
         r0 = base + o * stalk_r * 1.2 + Vector((0, 0, 0.12 * cap_r / 0.5))
-        p.sweep([r0, r0 + o * stalk_r * 1.6 + Vector((0, 0, -0.08)), r0 + o * stalk_r * 2.6 + Vector((0, 0, -0.2))],
-                [stalk_r * 0.5, stalk_r * 0.3, 0.0], 3, grads=[0.1, 0.05, 0.0], tip=True)
+        p.sweep(
+            [r0, r0 + o * stalk_r * 1.6 + Vector((0, 0, -0.08)), r0 + o * stalk_r * 2.6 + Vector((0, 0, -0.2))],
+            [stalk_r * 0.5, stalk_r * 0.3, 0.0],
+            3,
+            grads=[0.1, 0.05, 0.0],
+            tip=True,
+        )
     top = pts[-1]
     tilt_axis = UP.cross(Vector(lean_dir).normalized())
     rot = Matrix.Rotation(lean * 0.6, 3, tilt_axis) if tilt_axis.length > 1e-3 else Matrix.Identity(3)
@@ -765,7 +950,7 @@ def tube(p: Plant, base, height, r, lean_dir: Vector, lean: float, seg: int):
         pts.append(base + Vector((0, 0, -0.1 + (height + 0.1) * t)) + lean_v * t * t + bend * t)
         rr = r * (1.7 - 0.7 * min(1.0, t * 3.5))  # flared foot
         rr *= 1.12 if i % 2 else 0.9  # fleshy ribs
-        rr *= 1.0 + 0.25 * math.exp(-((t - 0.6) / 0.18) ** 2)  # belly below the neck
+        rr *= 1.0 + 0.25 * math.exp(-(((t - 0.6) / 0.18) ** 2))  # belly below the neck
         radii.append(rr * lerp(1.0, 0.8, t))
     rings, (T, N, B) = p.sweep(pts, radii, seg, side=Vector((1, 0, 0)), grads=[0.85 * i / (n - 1) for i in range(n)])
     top, t_, n_, b_ = pts[-1], T[-1], N[-1], B[-1]
@@ -792,7 +977,11 @@ def build_overgrowth_tube_a(root, M):
     ]
     for (x, y), h, r, d, lean, seg in specs:
         tube(p, (x, y, 0), h, r, Vector((*d, 0)), lean, seg)
-    for c, s in (((0.05, 0.05, 0.0), (0.42, 0.36, 0.18)), ((0.3, -0.25, -0.02), (0.22, 0.2, 0.1)), ((-0.25, 0.1, -0.02), (0.25, 0.28, 0.12))):
+    for c, s in (
+        ((0.05, 0.05, 0.0), (0.42, 0.36, 0.18)),
+        ((0.3, -0.25, -0.02), (0.22, 0.2, 0.1)),
+        ((-0.25, 0.1, -0.02), (0.25, 0.28, 0.12)),
+    ):
         p.blob(c, 1.0, scale=s, wobble=0.2, grad=0.05)
     return p.finish(root, M["Overgrowth_Tube_a"])
 
@@ -827,14 +1016,26 @@ def fiddlehead(p: Plant, base, height, curl_dir: Vector, rc: float, seg=5):
 def build_overgrowth_frond_a(root, M):
     """Low frond cluster: a dozen broad arching fronds around two curled young ones."""
     p = Plant("Overgrowth_Frond_a", 97)
-    p.lathe((0, 0, 0), [(0.0, -0.06, 0.0, 0), (0.12, -0.06, 0.0, 0), (0.11, 0.06, 0.05, 0), (0.0, 0.1, 0.1, 0)], 6, wobble=0.2)
+    p.lathe(
+        (0, 0, 0),
+        [(0.0, -0.06, 0.0, 0), (0.12, -0.06, 0.0, 0), (0.11, 0.06, 0.05, 0), (0.0, 0.1, 0.1, 0)],
+        6,
+        wobble=0.2,
+    )
     for i in range(13):
         f = i / 12
         az = i * 137.5 + p.rnd.uniform(-10, 10)
         elev = lerp(72, 42, f) + p.rnd.uniform(-5, 5)  # inner fronds upright, outer ones arch out
         base = sph(az, 0) * 0.05 + Vector((0, 0, 0.03))
-        frond(p, base, sph(az, elev), lerp(0.85, 1.1, f) * p.rnd.uniform(0.9, 1.1), p.rnd.uniform(0.2, 0.26), 0.016,
-              lerp(0.35, 0.7, f) * p.rnd.uniform(0.85, 1.15))
+        frond(
+            p,
+            base,
+            sph(az, elev),
+            lerp(0.85, 1.1, f) * p.rnd.uniform(0.9, 1.1),
+            p.rnd.uniform(0.2, 0.26),
+            0.016,
+            lerp(0.35, 0.7, f) * p.rnd.uniform(0.85, 1.15),
+        )
     fiddlehead(p, (0.03, 0.02, 0), 0.7, Vector((1, -0.6, 0)), 0.09)
     return p.finish(root, M["Overgrowth_Frond_a"])
 
@@ -847,14 +1048,26 @@ def build_overgrowth_frond_b(root, M):
         az = i * 137.5 + p.rnd.uniform(-12, 12)
         elev = p.rnd.uniform(52, 86)
         base = sph(az, 0) * p.rnd.uniform(0.02, 0.09) + Vector((0, 0, -0.02))
-        blade(p, base, sph(az, elev), p.rnd.uniform(0.45, 0.8), 0.045, 0.016, p.rnd.uniform(0.2, 0.5), n=5, taper=(1.0, 1.0, 0.8, 0.45))
+        blade(
+            p,
+            base,
+            sph(az, elev),
+            p.rnd.uniform(0.45, 0.8),
+            0.045,
+            0.016,
+            p.rnd.uniform(0.2, 0.5),
+            n=5,
+            taper=(1.0, 1.0, 0.8, 0.45),
+        )
     for i in range(3):
         az = i * 120 + p.rnd.uniform(-25, 25)
         h = p.rnd.uniform(0.7, 0.95)
         base = sph(az, 0) * 0.04
         top = base + sph(az, 84) * h
         mid = base.lerp(top, 0.5) + sph(az, 0) * 0.03
-        p.sweep([base + Vector((0, 0, -0.03)), mid, top], [0.011, 0.008, 0.006], 3, grads=[0.2, 0.6, 0.95], cap_end=True)
+        p.sweep(
+            [base + Vector((0, 0, -0.03)), mid, top], [0.011, 0.008, 0.006], 3, grads=[0.2, 0.6, 0.95], cap_end=True
+        )
         p.bulb(top + Vector((0, 0, 0.018)), 0.024)
     return p.finish(root, M["Overgrowth_Frond_b"])
 
@@ -929,14 +1142,23 @@ def scatter(objs: dict, biome: str, seed: int) -> list:
     counts = (
         {"Dust_Shrub_a": 9, "Dust_Shrub_b": 12, "Dust_Spire_a": 4, "Dust_Debris_a": 8, "Dust_Debris_b": 3}
         if biome == "dust"
-        else {"Overgrowth_Frond_b": 24, "Overgrowth_Fungus_a": 8, "Overgrowth_Tube_a": 4, "Overgrowth_Fungus_b": 5, "Overgrowth_Frond_a": 9}
+        else {
+            "Overgrowth_Frond_b": 24,
+            "Overgrowth_Fungus_a": 8,
+            "Overgrowth_Tube_a": 4,
+            "Overgrowth_Fungus_b": 5,
+            "Overgrowth_Frond_a": 9,
+        }
     )
     copies, placed = [], []
     for name, count in counts.items():
         for _ in range(count):
             for _try in range(30):
                 x, y = rnd.uniform(-7, 7), rnd.uniform(-7, 7)
-                if all((x - px) ** 2 + (y - py) ** 2 > 1.0 for px, py in placed) and (x - 1.5) ** 2 + (y + 1.5) ** 2 > 2.0:
+                if (
+                    all((x - px) ** 2 + (y - py) ** 2 > 1.0 for px, py in placed)
+                    and (x - 1.5) ** 2 + (y + 1.5) ** 2 > 2.0
+                ):
                     break
             placed.append((x, y))
             o = objs[name].copy()
@@ -998,8 +1220,14 @@ def render_set(objs: dict, prefix: str, samples: int, size: int, close: bool) ->
                 zoom = max(0.2, min(0.62, 0.12 + h * 0.16))
                 for view in ("iso", "hero"):
                     path = OUT / f"{prefix}_{name}_{view}.png"
-                    C.render(path, view=view, samples=samples, size=size // 2 if size > 512 else size, target=tgt,
-                             zoom=zoom * (0.9 if view == "iso" else 1.0))
+                    C.render(
+                        path,
+                        view=view,
+                        samples=samples,
+                        size=size // 2 if size > 512 else size,
+                        target=tgt,
+                        zoom=zoom * (0.9 if view == "iso" else 1.0),
+                    )
                     paths.append(path)
     return paths
 

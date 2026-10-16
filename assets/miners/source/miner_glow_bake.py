@@ -19,10 +19,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "miner_assets" / "glow"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bpy  # noqa: E402
+import bpy
 
-import bake as B  # noqa: E402
-import common as C  # noqa: E402
+import bake as B
+import common as C
 
 
 def finish(job: B.Job, objs: list) -> None:

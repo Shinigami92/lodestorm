@@ -24,15 +24,21 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bpy  # noqa: E402
-from mathutils import Vector  # noqa: E402
+import bpy
+from mathutils import Vector
 
-import bake as B  # noqa: E402
-import common as C  # noqa: E402
+import bake as B
+import common as C
 
 ASSET = "Plants"
 DUST = ["Dust_Debris_a", "Dust_Shrub_a", "Dust_Spire_a", "Dust_Shrub_b", "Dust_Debris_b"]
-OVERGROWTH = ["Overgrowth_Frond_b", "Overgrowth_Fungus_a", "Overgrowth_Tube_a", "Overgrowth_Fungus_b", "Overgrowth_Frond_a"]
+OVERGROWTH = [
+    "Overgrowth_Frond_b",
+    "Overgrowth_Fungus_a",
+    "Overgrowth_Tube_a",
+    "Overgrowth_Fungus_b",
+    "Overgrowth_Frond_a",
+]
 VARIANTS = DUST + OVERGROWTH
 
 # Check-render layout, as in plants_build.py (rows perpendicular to the iso view).
@@ -102,14 +108,23 @@ def scatter(objs: dict, biome: str, seed: int) -> list:
     counts = (
         {"Dust_Shrub_a": 9, "Dust_Shrub_b": 12, "Dust_Spire_a": 4, "Dust_Debris_a": 8, "Dust_Debris_b": 3}
         if biome == "dust"
-        else {"Overgrowth_Frond_b": 24, "Overgrowth_Fungus_a": 8, "Overgrowth_Tube_a": 4, "Overgrowth_Fungus_b": 5, "Overgrowth_Frond_a": 9}
+        else {
+            "Overgrowth_Frond_b": 24,
+            "Overgrowth_Fungus_a": 8,
+            "Overgrowth_Tube_a": 4,
+            "Overgrowth_Fungus_b": 5,
+            "Overgrowth_Frond_a": 9,
+        }
     )
     copies, placed = [], []
     for name, count in counts.items():
         for _ in range(count):
             for _try in range(30):
                 x, y = rnd.uniform(-7, 7), rnd.uniform(-7, 7)
-                if all((x - px) ** 2 + (y - py) ** 2 > 1.0 for px, py in placed) and (x - 1.5) ** 2 + (y + 1.5) ** 2 > 2.0:
+                if (
+                    all((x - px) ** 2 + (y - py) ** 2 > 1.0 for px, py in placed)
+                    and (x - 1.5) ** 2 + (y + 1.5) ** 2 > 2.0
+                ):
                     break
             placed.append((x, y))
             o = objs[name].copy()
@@ -152,7 +167,9 @@ def checks(job: B.Job, meshes: list) -> None:
         C.render(job.game / f"check_{biome}_hero.png", view="hero", samples=64, size=1024, target=tgt, zoom=1.7)
         show_only(sets[biome])
         fig.location = (1.5, -1.5, 0)
-        C.render(job.game / f"check_{biome}_scatter.png", view="iso", samples=48, size=768, target=(0, 0, 0.3), zoom=1.45)
+        C.render(
+            job.game / f"check_{biome}_scatter.png", view="iso", samples=48, size=768, target=(0, 0, 0.3), zoom=1.45
+        )
         if "noclose" in sys.argv:
             continue
         for name in names:  # close-ups like plants_build.py's final_<Variant>_<view>.png
@@ -163,7 +180,14 @@ def checks(job: B.Job, meshes: list) -> None:
             tgt = tuple(obj.location + Vector((0, 0, max(0.15, h * 0.45))))
             zoom = max(0.2, min(0.62, 0.12 + h * 0.16))
             for view in ("iso", "hero"):
-                C.render(job.game / f"check_{name}_{view}.png", view=view, samples=48, size=384, target=tgt, zoom=zoom * (0.9 if view == "iso" else 1.0))
+                C.render(
+                    job.game / f"check_{name}_{view}.png",
+                    view=view,
+                    samples=48,
+                    size=384,
+                    target=tgt,
+                    zoom=zoom * (0.9 if view == "iso" else 1.0),
+                )
 
 
 B.run(JOB, checks)

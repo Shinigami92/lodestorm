@@ -1,12 +1,12 @@
 """Tessar (common, teal, wave rising up): leaning stacks of thin hexagonal plates fanned open like books, layered edges."""
 
-import math  # noqa: F401
+import math
 import random
 
 import bmesh
-from mathutils import Matrix, Vector  # noqa: F401
+from mathutils import Matrix, Vector
 
-from ore_geo import T, OreSpec, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, cut, finish_normals, rand_unit, tilted  # noqa: F401
 
 
 def plate(bm: bmesh.types.BMesh, rnd: random.Random, m: Matrix, radius: float, thick: float) -> None:
@@ -45,12 +45,24 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
         c = Vector((math.tan(lean) * h + rnd.uniform(-0.08, 0.08) * big, rnd.uniform(-0.08, 0.08) * big, h))
         r = big * (1.0 - 0.25 * t) * rnd.uniform(0.9, 1.08) * (0.85 if k == 0 else 1.0)
         tilt = (t - 0.3) * fan + rnd.uniform(-0.06, 0.06)
-        rot = Matrix.Rotation(tilt, 3, "Y") @ Matrix.Rotation(rnd.uniform(-0.12, 0.12), 3, "X") @ Matrix.Rotation(rnd.uniform(0, math.pi / 3), 3, "Z") @ flat
+        rot = (
+            Matrix.Rotation(tilt, 3, "Y")
+            @ Matrix.Rotation(rnd.uniform(-0.12, 0.12), 3, "X")
+            @ Matrix.Rotation(rnd.uniform(0, math.pi / 3), 3, "Z")
+            @ flat
+        )
         plate(bm, rnd, T(c, rot), r, thick)
         top = c
     core = big * 0.18  # thin hexagonal core through the stack
-    ring0 = [bm.verts.new((math.cos(i / 6 * math.tau) * core, math.sin(i / 6 * math.tau) * core, -0.05)) for i in range(6)]
-    ring1 = [bm.verts.new(top + Vector((math.cos(i / 6 * math.tau) * core * 0.7, math.sin(i / 6 * math.tau) * core * 0.7, 0))) for i in range(6)]
+    ring0 = [
+        bm.verts.new((math.cos(i / 6 * math.tau) * core, math.sin(i / 6 * math.tau) * core, -0.05)) for i in range(6)
+    ]
+    ring1 = [
+        bm.verts.new(
+            top + Vector((math.cos(i / 6 * math.tau) * core * 0.7, math.sin(i / 6 * math.tau) * core * 0.7, 0))
+        )
+        for i in range(6)
+    ]
     for i in range(6):
         bm.faces.new((ring0[i], ring0[(i + 1) % 6], ring1[(i + 1) % 6], ring1[i]))
     if rnd.random() < 0.3:  # a plate edge chipped off
@@ -70,8 +82,20 @@ ORE = OreSpec(
     wall_sizes=(0.3, 0.75),
     wall_tilt=18,
     variants={
-        "a": dict(seed=137, groups=[(110, 0.62, 1, (1.0, 1.0), 8), (190, 0.72, 2, (0.5, 0.75), 18), (260, 0.74, 2, (0.4, 0.65), 20), (350, 0.74, 2, (0.3, 0.55), 20), (40, 0.28, 1, (0.15, 0.3), 15)]),
-        "b": dict(seed=149, groups=[(40, 0.64, 3, (0.55, 1.0), 18), (160, 0.7, 2, (0.45, 0.8), 20), (285, 0.68, 2, (0.3, 0.6), 20)]),
+        "a": dict(
+            seed=137,
+            groups=[
+                (110, 0.62, 1, (1.0, 1.0), 8),
+                (190, 0.72, 2, (0.5, 0.75), 18),
+                (260, 0.74, 2, (0.4, 0.65), 20),
+                (350, 0.74, 2, (0.3, 0.55), 20),
+                (40, 0.28, 1, (0.15, 0.3), 15),
+            ],
+        ),
+        "b": dict(
+            seed=149,
+            groups=[(40, 0.64, 3, (0.55, 1.0), 18), (160, 0.7, 2, (0.45, 0.8), 20), (285, 0.68, 2, (0.3, 0.6), 20)],
+        ),
         "wall": dict(seed=151, wall=True, count=6),
     },
 )

@@ -1,12 +1,12 @@
 """Noctile (signature, mint-white veins, breathing core): rough near-black orbs, some broken open to a crystal-lined hollow."""
 
-import math  # noqa: F401
+import math
 import random
 
 import bmesh
 from mathutils import Matrix, Vector  # noqa: F401
 
-from ore_geo import T, OreSpec, basis, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, basis, cut, finish_normals, rand_unit, tilted
 
 
 def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
@@ -26,7 +26,9 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
     if u > 0.4 and rnd.random() < 0.8 * u:  # broken open
         n = tilted(Vector((0, 0, 1)), rand_unit(rnd), rnd.uniform(35, 65))
         plane = center + n * radius * rnd.uniform(0.05, 0.3)
-        res = bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], dist=1e-5, plane_co=plane, plane_no=n, clear_outer=True)
+        res = bmesh.ops.bisect_plane(
+            bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], dist=1e-5, plane_co=plane, plane_no=n, clear_outer=True
+        )
         rim = [e for e in res["geom_cut"] if isinstance(e, bmesh.types.BMEdge) and e.is_boundary]
         rind = rnd.uniform(0.7, 0.78)
         inner = {}
@@ -49,7 +51,10 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
             d = (d + n * 0.6).normalized()
             s = radius * rnd.uniform(0.15, 0.26)
             m = T(p - d * s * 0.3, basis(d, rand_unit(rnd)))
-            base = [bm.verts.new(m @ Vector((math.cos(a) * s * 0.45, math.sin(a) * s * 0.45, 0))) for a in (0.0, 2.094, 4.189)]
+            base = [
+                bm.verts.new(m @ Vector((math.cos(a) * s * 0.45, math.sin(a) * s * 0.45, 0)))
+                for a in (0.0, 2.094, 4.189)
+            ]
             apex = bm.verts.new(m @ Vector((0, 0, s * 1.6)))
             for j in range(3):
                 bm.faces.new((base[j], base[(j + 1) % 3], apex))
@@ -71,8 +76,15 @@ ORE = OreSpec(
     wall_sizes=(0.3, 0.75),
     wall_tilt=35,
     variants={
-        "a": dict(seed=151, groups=[(110, 0.64, 4, (0.6, 1.0), 30), (235, 0.74, 3, (0.4, 0.75), 30), (350, 0.74, 3, (0.3, 0.6), 30)]),
-        "b": dict(seed=163, geodes=[(200, 0.64, 0.42, 4)], groups=[(60, 0.64, 4, (0.55, 1.0), 30), (320, 0.76, 3, (0.35, 0.65), 30)]),
+        "a": dict(
+            seed=151,
+            groups=[(110, 0.64, 4, (0.6, 1.0), 30), (235, 0.74, 3, (0.4, 0.75), 30), (350, 0.74, 3, (0.3, 0.6), 30)],
+        ),
+        "b": dict(
+            seed=163,
+            geodes=[(200, 0.64, 0.42, 4)],
+            groups=[(60, 0.64, 4, (0.55, 1.0), 30), (320, 0.76, 3, (0.35, 0.65), 30)],
+        ),
         "wall": dict(seed=173, wall=True, count=7),
     },
     dark_body=True,

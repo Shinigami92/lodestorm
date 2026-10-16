@@ -1,12 +1,12 @@
 """Pallin (common, pale ice blue, slow pulse): sprays of thin frost needles bursting from a few points, like hoarfrost."""
 
-import math  # noqa: F401
+import math
 import random
 
 import bmesh
 from mathutils import Matrix, Vector  # noqa: F401
 
-from ore_geo import T, OreSpec, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, cut, finish_normals, rand_unit, tilted  # noqa: F401
 
 
 def needle(bm: bmesh.types.BMesh, base: Vector, d: Vector, length: float, radius: float, spin: float) -> None:
@@ -14,7 +14,9 @@ def needle(bm: bmesh.types.BMesh, base: Vector, d: Vector, length: float, radius
     z = d.normalized()
     x = tilted(z, Vector((math.cos(spin), math.sin(spin), 0.3)), 90)
     y = z.cross(x)
-    ring = [bm.verts.new(base + (x * math.cos(a) + y * math.sin(a)) * radius) for a in (0.0, math.tau / 3, math.tau * 2 / 3)]
+    ring = [
+        bm.verts.new(base + (x * math.cos(a) + y * math.sin(a)) * radius) for a in (0.0, math.tau / 3, math.tau * 2 / 3)
+    ]
     apex = bm.verts.new(base + z * length)
     for i in range(3):
         bm.faces.new((ring[i], ring[(i + 1) % 3], apex))
@@ -46,7 +48,12 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
         base = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), 0)) * 0.015 + d * 0.01 - Vector((0, 0, 0.03))
         needle(bm, base, d, length, radius, rnd.uniform(0, math.tau))
     knot = 0.035 + 0.06 * u  # frosted knot where the needles meet
-    bmesh.ops.create_icosphere(bm, subdivisions=1, radius=1.0, matrix=T((0, 0, knot * 0.2), None, (knot, knot * rnd.uniform(0.85, 1.15), knot * 0.8)))
+    bmesh.ops.create_icosphere(
+        bm,
+        subdivisions=1,
+        radius=1.0,
+        matrix=T((0, 0, knot * 0.2), None, (knot, knot * rnd.uniform(0.85, 1.15), knot * 0.8)),
+    )
     finish_normals(bm)
     return bm
 
@@ -61,8 +68,19 @@ ORE = OreSpec(
     wall_sizes=(0.3, 0.8),
     wall_tilt=35,
     variants={
-        "a": dict(seed=113, groups=[(100, 0.6, 3, (0.55, 1.0), 25), (230, 0.72, 2, (0.4, 0.7), 30), (345, 0.74, 2, (0.3, 0.55), 30), (30, 0.25, 1, (0.15, 0.25), 20)]),
-        "b": dict(seed=127, groups=[(50, 0.64, 3, (0.5, 0.95), 25), (170, 0.7, 3, (0.4, 0.8), 28), (290, 0.66, 2, (0.3, 0.6), 30)]),
+        "a": dict(
+            seed=113,
+            groups=[
+                (100, 0.6, 3, (0.55, 1.0), 25),
+                (230, 0.72, 2, (0.4, 0.7), 30),
+                (345, 0.74, 2, (0.3, 0.55), 30),
+                (30, 0.25, 1, (0.15, 0.25), 20),
+            ],
+        ),
+        "b": dict(
+            seed=127,
+            groups=[(50, 0.64, 3, (0.5, 0.95), 25), (170, 0.7, 3, (0.4, 0.8), 28), (290, 0.66, 2, (0.3, 0.6), 30)],
+        ),
         "wall": dict(seed=131, wall=True, count=6),
     },
 )

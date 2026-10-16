@@ -46,14 +46,14 @@ ICONS = ROOT / "assets" / "ores" / "icons"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Matrix, Vector  # noqa: E402
-from mathutils.bvhtree import BVHTree  # noqa: E402
+import bmesh
+import bpy
+from mathutils import Matrix, Vector
+from mathutils.bvhtree import BVHTree
 
-import common as C  # noqa: E402
-from common import T, basis, polar  # noqa: E402
-from ore_geo import (  # noqa: E402
+import common as C
+from common import T, basis, polar
+from ore_geo import (
     BASE_CLEARANCE,
     CLEARANCE,
     DISC_R,
@@ -64,7 +64,6 @@ from ore_geo import (  # noqa: E402
     clip_poly,
     cut,
     finish_normals,
-    max_along,
     geode,
     rand_unit,
     rock_hull,
@@ -138,6 +137,7 @@ def variant_names() -> list[str]:
                 names.append(n)
     return names
 
+
 # --- materials --------------------------------------------------------------------------------------
 
 
@@ -151,7 +151,9 @@ def mat_rock() -> bpy.types.Material:
     big = C._noise(nt, 1.4, 6.0, 0.55)
     grain = C._noise(nt, 16.0, 8.0, 0.7)
     col = C._mix_color(nt, big.outputs["Fac"], (0.017, 0.016, 0.015), (0.048, 0.043, 0.038))
-    col = C._mix_color(nt, C._math(nt, "MULTIPLY", C._ramp(nt, 0.35, 0.7, grain.outputs["Fac"]), 0.35), col, (0.068, 0.062, 0.055))
+    col = C._mix_color(
+        nt, C._math(nt, "MULTIPLY", C._ramp(nt, 0.35, 0.7, grain.outputs["Fac"]), 0.35), col, (0.068, 0.062, 0.055)
+    )
     # Mineral crust around the crystal roots.
     attr = nt.nodes.new("ShaderNodeAttribute")
     attr.attribute_type = "GEOMETRY"
@@ -163,7 +165,9 @@ def mat_rock() -> bpy.types.Material:
     sep = nt.nodes.new("ShaderNodeSeparateXYZ")
     nt.links.new(geo.outputs["Normal"], sep.inputs["Vector"])
     dust_noise = C._noise(nt, 3.5, 6.0, 0.6)
-    dust = C._math(nt, "MULTIPLY", C._ramp(nt, 0.55, 0.95, sep.outputs["Z"]), C._ramp(nt, 0.4, 0.7, dust_noise.outputs["Fac"]))
+    dust = C._math(
+        nt, "MULTIPLY", C._ramp(nt, 0.55, 0.95, sep.outputs["Z"]), C._ramp(nt, 0.4, 0.7, dust_noise.outputs["Fac"])
+    )
     dust = C._math(nt, "MULTIPLY", dust, C._math(nt, "SUBTRACT", 1.0, crust, clamp=True))
     col = C._mix_color(nt, C._math(nt, "MULTIPLY", dust, 0.75), col, (0.078, 0.07, 0.06))
     # Chipped edges: convex edges found with the Bevel node (works on low-poly facets, unlike Pointiness).
@@ -259,7 +263,11 @@ class Variant:
         for _ in range(rnd.choice(counts)):
             off = tilted(direction, rand_unit(rnd), 90) * rnd.uniform(0.04, 0.12) * (0.5 + u)
             d = tilted(direction, off, rnd.uniform(25, 55))
-            append_bm(bm, SPECS[typ].shape(rnd, u * rnd.uniform(f0, f1)), T(root + off - direction * 0.02, basis(d, rand_unit(rnd))))
+            append_bm(
+                bm,
+                SPECS[typ].shape(rnd, u * rnd.uniform(f0, f1)),
+                T(root + off - direction * 0.02, basis(d, rand_unit(rnd))),
+            )
         if self.ground and not self.fit(bm, root):
             bm.free()
             return None
@@ -310,7 +318,9 @@ class Variant:
         hit = BVHTree.FromBMesh(self.base).ray_cast(Vector((p.x, -3.0, p.z)), Vector((0, 1, 0)))
         return hit[0] + Vector((0, 0.05, 0)) if hit[0] is not None else p
 
-    def group(self, center: Vector, n: int, size: tuple, tilt: float, spread: float = 0.2, up: Vector | None = None) -> None:
+    def group(
+        self, center: Vector, n: int, size: tuple, tilt: float, spread: float = 0.2, up: Vector | None = None
+    ) -> None:
         rnd = self.rnd
         up = up or Vector((0, 0, 1))
         sizes = sorted((rnd.uniform(*size) for _ in range(n - 1)), reverse=True)
@@ -332,10 +342,15 @@ class Variant:
 
     # Rock.
 
-    def rock(self, center: Vector, size: Vector, cuts: int = 2, clamp: bool = True, tilt: float = 0.35, points: int = 16) -> None:
+    def rock(
+        self, center: Vector, size: Vector, cuts: int = 2, clamp: bool = True, tilt: float = 0.35, points: int = 16
+    ) -> None:
         rnd = self.rnd
         bm = rock_hull(rnd, size, cuts, points)
-        m = T(center, Matrix.Rotation(rnd.uniform(0, math.tau), 3, "Z") @ Matrix.Rotation(rnd.uniform(-tilt, tilt), 3, "X"))
+        m = T(
+            center,
+            Matrix.Rotation(rnd.uniform(0, math.tau), 3, "Z") @ Matrix.Rotation(rnd.uniform(-tilt, tilt), 3, "X"),
+        )
         verts = append_bm(self.base, bm, m)
         bm.free()
         if clamp and self.ground:  # squash vertically until it clears the miner
@@ -391,13 +406,23 @@ class Variant:
             for _ in range(rnd.choice((0, 1, 1, 2))):
                 off = tilted(Vector((0, 0, 1)), rand_unit(rnd), 90) * rnd.uniform(0.05, 0.14)
                 s = rnd.uniform(0.07, 0.15)
-                self.rock(root + off + Vector((0, 0, rnd.uniform(0.0, 0.04))), Vector((s, s * rnd.uniform(0.7, 1.2), s * rnd.uniform(0.5, 0.9))), 1, points=11)
+                self.rock(
+                    root + off + Vector((0, 0, rnd.uniform(0.0, 0.04))),
+                    Vector((s, s * rnd.uniform(0.7, 1.2), s * rnd.uniform(0.5, 0.9))),
+                    1,
+                    points=11,
+                )
         if not self.ground:
             return
         for _ in range(9):
             p = polar(rnd.uniform(0, 360), rnd.uniform(0.35, 1.2))
             s = rnd.uniform(0.035, 0.09)
-            self.rock(p + Vector((0, 0, self.surface(p.x, p.y) - s * 0.2)), Vector((s, s * rnd.uniform(0.7, 1.3), s * rnd.uniform(0.4, 0.8))), 1, points=9)
+            self.rock(
+                p + Vector((0, 0, self.surface(p.x, p.y) - s * 0.2)),
+                Vector((s, s * rnd.uniform(0.7, 1.3), s * rnd.uniform(0.4, 0.8))),
+                1,
+                points=9,
+            )
 
     def mound(self, center: Vector, spread: float) -> None:
         """Upheaved angular blocks around a crystal group: the crystals burst out of jagged rock."""
@@ -499,21 +524,32 @@ class Variant:
         """Rock chunk with a flat back on the wall plane (y = 0) and a flat bottom; crystals grow out of its
         front toward -Y, fanning up and sideways."""
         rnd = self.rnd
-        chunks = [((0.0, -0.26, 0.68), (0.85, 0.45, 0.7)), ((-0.6, -0.16, 0.32), (0.48, 0.34, 0.4)), ((0.55, -0.18, 1.05), (0.45, 0.32, 0.4)), ((0.45, -0.2, 0.3), (0.4, 0.32, 0.33))]
+        chunks = [
+            ((0.0, -0.26, 0.68), (0.85, 0.45, 0.7)),
+            ((-0.6, -0.16, 0.32), (0.48, 0.34, 0.4)),
+            ((0.55, -0.18, 1.05), (0.45, 0.32, 0.4)),
+            ((0.45, -0.2, 0.3), (0.4, 0.32, 0.33)),
+        ]
         for c, s in chunks:
             bm = rock_hull(rnd, Vector(s), 2, 18)
             append_bm(self.base, bm, T(c, Matrix.Rotation(rnd.uniform(-0.3, 0.3), 3, "Y")))
             bm.free()
         cut(self.base, Vector((0, 0, 0)), Vector((0, 1, 0)))  # flat back on the wall
         cut(self.base, Vector((0, 0, 0)), Vector((0, 0, -1)))  # flat bottom
-        bmesh.ops.dissolve_limit(self.base, angle_limit=math.radians(2), verts=self.base.verts[:], edges=self.base.edges[:])
+        bmesh.ops.dissolve_limit(
+            self.base, angle_limit=math.radians(2), verts=self.base.verts[:], edges=self.base.edges[:]
+        )
         finish_normals(self.base)
         bvh = BVHTree.FromBMesh(self.base)
         self.geodes = []
         sizes = SPECS[self.typ].wall_sizes
         tilt = SPECS[self.typ].wall_tilt
         # One big group in the middle, a few smaller around it.
-        sites = [(0.05, 0.62, self.spec["count"] - 3, sizes[1]), (-0.5, 0.35, 2, sizes[0] + 0.15), (0.48, 0.98, 1, sizes[0])]
+        sites = [
+            (0.05, 0.62, self.spec["count"] - 3, sizes[1]),
+            (-0.5, 0.35, 2, sizes[0] + 0.15),
+            (0.48, 0.98, 1, sizes[0]),
+        ]
         for x, z, n, umax in sites:
             hit = bvh.ray_cast(Vector((x, -3, z)), Vector((0, 1, 0)))
             if hit[0] is None:
@@ -644,7 +680,15 @@ def render_view(path: pathlib.Path, v: Variant, view: str, samples: int, size: i
         raise ValueError(view)
 
 
-def lineup(variants: list[Variant], shown: list[Variant], path: pathlib.Path, samples: int, size: int, zoom: float, target_z: float = 0.4) -> None:
+def lineup(
+    variants: list[Variant],
+    shown: list[Variant],
+    path: pathlib.Path,
+    samples: int,
+    size: int,
+    zoom: float,
+    target_z: float = 0.4,
+) -> None:
     """The `shown` variants side by side along the screen's horizontal (same depth), iso camera."""
     right = Vector((1, 1, 0)).normalized()
     solo(variants, None)
@@ -696,7 +740,10 @@ def render_icon(variants: list[Variant], v: Variant, path: pathlib.Path, size: i
         o.hide_render = True
     icon = mat_icon()
     shown = []
-    tallest = max((o for o in v.crystals if not o.get("chips")), key=lambda o: max((o.matrix_world @ p.co).z for p in o.data.vertices))
+    tallest = max(
+        (o for o in v.crystals if not o.get("chips")),
+        key=lambda o: max((o.matrix_world @ p.co).z for p in o.data.vertices),
+    )
     for o in v.crystals:
         top = max((o.matrix_world @ p.co).z for p in o.data.vertices)
         if o.get("chips") or top <= 0.15:

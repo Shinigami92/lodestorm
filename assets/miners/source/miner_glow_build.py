@@ -18,12 +18,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "miner_assets" / "glow"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bmesh  # noqa: E402
-import bpy  # noqa: E402
-from mathutils import Vector  # noqa: E402
+import bmesh
+import bpy
+from mathutils import Vector
 
-import common as C  # noqa: E402
-from common import Part, basis, polar, rx, ry, rz  # noqa: E402
+import common as C
+from common import Part, basis, polar, rx, ry, rz
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -292,7 +292,7 @@ def build_legs(miner, lights: Part) -> None:
         t = polar(deg + 90, 1, 0)
         up = Vector((0, 0, 1))
 
-        def P(r, z):
+        def P(r, z, u=u, up=up):
             return u * r + up * z
 
         hip, knee, ankle = P(*HIP), P(*KNEE), P(*ANKLE)
@@ -313,7 +313,15 @@ def build_legs(miner, lights: Part) -> None:
         d2 = (ankle - knee).normalized()
         n_out = (u * -d2.z + up * d2.dot(u)).normalized()  # in-plane normal of the lower segment, outward
         legs.beam(knee, ankle, 0.2, 0.24, t, M_PAINT, taper=0.72)
-        legs.beam(knee.lerp(ankle, 0.12) + n_out * 0.09, knee.lerp(ankle, 0.7) + n_out * 0.065, 0.21, 0.05, t, M_DARK, taper=0.85)
+        legs.beam(
+            knee.lerp(ankle, 0.12) + n_out * 0.09,
+            knee.lerp(ankle, 0.7) + n_out * 0.065,
+            0.21,
+            0.05,
+            t,
+            M_DARK,
+            taper=0.85,
+        )
         # Ankle + foot.
         legs.rod(ankle - t * 0.1, ankle + t * 0.1, 0.085, 10, mi=M_DARK)
         for s in (-1, 1):

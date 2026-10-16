@@ -1,12 +1,13 @@
 """Selyx (signature, pale lavender, wave): tufts of very fine, curving hair-like fibers in soft fountains."""
 
-import math  # noqa: F401
+import itertools
+import math
 import random
 
 import bmesh
 from mathutils import Matrix, Vector  # noqa: F401
 
-from ore_geo import T, OreSpec, cut, finish_normals, rand_unit, tilted  # noqa: F401
+from ore_geo import OreSpec, T, cut, finish_normals, rand_unit, tilted  # noqa: F401
 
 
 def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
@@ -43,9 +44,11 @@ def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:
             d = (segs[max(k - 1, 0)] + segs[k]).normalized()
             w = width * (1.0 - 0.6 * steps[k]) * rnd.uniform(0.85, 1.15)
             n = d.cross(side).normalized()
-            rings.append([bm.verts.new(pts[k] + (side * math.cos(b) + n * math.sin(b)) * w) for b in (0.0, 2.094, 4.189)])
+            rings.append(
+                [bm.verts.new(pts[k] + (side * math.cos(b) + n * math.sin(b)) * w) for b in (0.0, 2.094, 4.189)]
+            )
         apex = bm.verts.new(pts[-1])
-        for ra, rb in zip(rings, rings[1:]):
+        for ra, rb in itertools.pairwise(rings):
             for j in range(3):
                 bm.faces.new((ra[j], ra[(j + 1) % 3], rb[(j + 1) % 3], rb[j]))
         for j in range(3):
@@ -64,8 +67,25 @@ ORE = OreSpec(
     wall_sizes=(0.35, 0.8),
     wall_tilt=30,
     variants={
-        "a": dict(seed=113, groups=[(110, 0.6, 1, (1.0, 1.0), 5), (195, 0.74, 1, (0.5, 0.5), 15), (250, 0.82, 1, (0.35, 0.35), 15), (320, 0.76, 1, (0.45, 0.45), 15), (30, 0.82, 1, (0.35, 0.35), 15)]),
-        "b": dict(seed=127, groups=[(50, 0.6, 1, (1.0, 1.0), 5), (150, 0.76, 1, (0.5, 0.5), 15), (215, 0.82, 1, (0.35, 0.35), 15), (290, 0.74, 2, (0.4, 0.45), 20)]),
+        "a": dict(
+            seed=113,
+            groups=[
+                (110, 0.6, 1, (1.0, 1.0), 5),
+                (195, 0.74, 1, (0.5, 0.5), 15),
+                (250, 0.82, 1, (0.35, 0.35), 15),
+                (320, 0.76, 1, (0.45, 0.45), 15),
+                (30, 0.82, 1, (0.35, 0.35), 15),
+            ],
+        ),
+        "b": dict(
+            seed=127,
+            groups=[
+                (50, 0.6, 1, (1.0, 1.0), 5),
+                (150, 0.76, 1, (0.5, 0.5), 15),
+                (215, 0.82, 1, (0.35, 0.35), 15),
+                (290, 0.74, 2, (0.4, 0.45), 20),
+            ],
+        ),
         "wall": dict(seed=139, wall=True, count=6),
     },
 )

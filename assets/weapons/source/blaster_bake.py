@@ -20,11 +20,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "tmp" / "assets" / "blaster"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
-import bpy  # noqa: E402
-from mathutils import Vector  # noqa: E402
+import bpy
+from mathutils import Vector
 
-import bake as B  # noqa: E402
-import common as C  # noqa: E402
+import bake as B
+import common as C
 
 ASSET = "Blaster"
 HOLD_Z = 1.1  # check renders lift the gun to the hand height, like blaster_build.py's previews

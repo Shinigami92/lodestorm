@@ -13,7 +13,7 @@ procedural rocks_procedural.blend that the bake stage turns into the game asset 
 it). In the .blend the variants stand unrotated in a row along X, 3 m apart (bake layout, so the AO bake doesn't
 pick up neighbors); the bake stage zeroes their locations before the export.
 
-Game contract (scripts/locations/scatter_type.gd): a ScatterType draws ONE mesh many times (random scale, tilt,
+Game contract (game/locations/scatter_type.gd): a ScatterType draws ONE mesh many times (random scale, tilt,
 sink), so every variant is one closed mesh object with one material ("Rock"), its origin at the ground contact
 point (bottom center), sitting on z = 0 with extra rock below ground (SINK) so tilted or sunk instances don't
 float. Cliffs face -Y (toward the camera side) with a flat back at y = +CLIFF_BACK. Budgets (TBD (playtest)):

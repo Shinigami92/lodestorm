@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://c284r5im2gvf8"]
+
+[ext_resource type="Script" uid="uid://x4lc462ytw31" path="res://game/stations/navigator/navigator_station.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://d4omth1tytek" path="res://game/stations/navigator/navigator_card.tscn" id="3_card"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="4_use"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="TorusMesh" id="TorusMesh_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+inner_radius = 2.5
+outer_radius = 2.62
+rings = 128
+
+[node name="Navigator" type="Node3D" node_paths=PackedStringArray("view_focus")]
+script = ExtResource("1_script")
+view_height = 3.6
+view_focus = NodePath("Focus")
+
+[node name="View" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="Focus" type="Marker3D" parent="."]
+position = Vector3(0.8, 1.4, 0)
+
+[node name="Use" type="Node3D" parent="."]
+script = ExtResource("4_use")
+interact_range = 3.4
+
+[node name="Highlight" type="MeshInstance3D" parent="Use"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+visible = false
+mesh = SubResource("TorusMesh_highlight")
+
+[node name="Card" parent="." instance=ExtResource("2_panel")]
+size = Vector2(1.25, 1.55)
+pixels_per_meter = 400.0
+transparent = true
+menu = ExtResource("3_card")

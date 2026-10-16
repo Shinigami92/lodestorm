@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bcy70upxk1eyk"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cykcrssakcta5" path="res://game/weapons/blaster.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://jjw1gevkr1h2" path="res://game/progression/upgrades/blaster.tres" id="3_upgrade"]
+[ext_resource type="Resource" uid="uid://nkbawto3e28v" path="res://game/progression/upgrades/blaster_magazine.tres" id="4_magazine"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Blaster"
+description = "Rapid shots that reach far."
+scene = ExtResource("2_scene")
+upgrade = ExtResource("3_upgrade")
+magazine_upgrade = ExtResource("4_magazine")

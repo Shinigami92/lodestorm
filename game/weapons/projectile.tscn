@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dd7r01nggolxw"]
+
+[ext_resource type="Script" uid="uid://dcqbngkowrnpf" path="res://game/weapons/projectile.gd" id="1_script"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_projectile"]
+shading_mode = 0
+albedo_color = Color(1, 0.9, 0.3, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_projectile"]
+material = SubResource("StandardMaterial3D_projectile")
+radius = 0.1
+height = 0.2
+
+[node name="Projectile" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_projectile")

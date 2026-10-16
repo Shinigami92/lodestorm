@@ -11,7 +11,7 @@ extends SceneTree
 ##   weapons, upgrades, skills, what the crew says).
 
 const TEMPLATE_PATH := "res://locale/lodestorm.pot"
-const SOURCE_DIRS: Array[String] = ["res://scenes", "res://scripts"]
+const SOURCE_DIRS: Array[String] = ["res://game"]
 ## Node properties that hold player-facing text.
 const TEXT_PROPERTIES: Array[StringName] = [&"text", &"placeholder_text", &"tooltip_text"]
 ## Resource types (script class names) with player-facing texts, and their text properties.

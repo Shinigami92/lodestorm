@@ -27,7 +27,7 @@ class OreSpec:
     """One ore type's look in Blender. `shape(rnd, u)` makes one crystal (u: 0 smallest .. 1 biggest) as a bmesh,
     root at the origin, growing along +Z. Variants: "a", "b" (ground) and "wall", see ores_build.py."""
 
-    name: str  # ore id, same as scenes/mining/ores/<id>.tres
+    name: str  # ore id, game/ores/types/ore_<id>.tres
     color: tuple  # ore color from the .tres, only for the preview renders (the game owns the crystal material)
     crust: tuple  # muted mineral crust on the rock around the crystal roots (baked into the base texture)
     shape: Callable

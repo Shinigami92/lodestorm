@@ -1,6 +1,0 @@
-[gd_resource type="Resource" script_class="FlightSettings" format=3 uid="uid://ldovtj8kwgqc"]
-
-[ext_resource type="Script" uid="uid://cvaik7dnxoft6" path="res://scripts/ship/flight_settings.gd" id="1_script"]
-
-[resource]
-script = ExtResource("1_script")

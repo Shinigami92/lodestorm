@@ -9,7 +9,7 @@ Everything it writes goes to tmp/assets/nest/: "wip <tag> [views]" renders quick
 wip/<tag>_*.png; "final" renders iso/hero/back/far, a contact sheet (sheet.png) and saves the procedural
 nest_procedural.blend that the bake stage turns into the game asset.
 
-Game contract (scenes/aliens/alien_nest.tscn): collision cylinder r 1.6 m x 2.4 m, the mound stays inside it;
+Game contract (game/aliens/nest/alien_nest.tscn): collision cylinder r 1.6 m x 2.4 m, the mound stays inside it;
 tendrils and slime spread to ~4.5 m; aliens hatch at settings.hatch_radius (3.5 m). Objects under the root
 empty "Nest": Mound, Tendrils (share one texture atlas when baked), Slime and Mouth (own simple materials, the
 game pulses the Mouth's glow), Glands (small glowing pustules, same glow material as the Mouth) and the empty

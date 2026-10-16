@@ -2,867 +2,867 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-#: scenes/crew/quartermaster.tres
-msgid "Quartermaster"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "How can I help you?"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Hello"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-#: scenes/skills/skill_tree.tres
-msgid "Ammo"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "The rarer the ore, the more rounds you get from the same amount."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take the hammer along: it needs no ammo."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Aboard, every reload is free: the rounds come from the ship's stock."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-#: scenes/skills/spare_magazines.tres
-msgid "Spare magazines"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Reloading"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "But careful with the blaster: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "While you reload, you walk slower. So pick a moment when nothing is right on your heels."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Timing reload"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Here's a trick: press reload a second time while you're reloading. The ring on the ground around you shows how far the reload is, and it has a white mark."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-#: scenes/upgrades/shotgun.tres
-#: scenes/weapons/types/shotgun.tres
-msgid "Shotgun"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "So you've got a shotgun now. It has no magazine: it loads one shell after another, and keeps the shells that are already in."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip a press, and that bonus starts over."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-#: scenes/ship/ship.tscn
-msgid "Shooting range"
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end."
-msgstr ""
-
-#: scenes/crew/quartermaster.tres
-msgid "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
-msgstr ""
-
-#: scenes/locations/biomes/dust.tres
+#: game/locations/biomes/dust.tres
 msgid "Dust flats"
 msgstr ""
 
-#: scenes/locations/biomes/overgrowth.tres
+#: game/locations/biomes/overgrowth.tres
 msgid "Overgrowth"
 msgstr ""
 
-#: scenes/mining/ores/ore_aethrine.tres
-msgid "Aethrine"
-msgstr ""
-
-#: scenes/mining/ores/ore_duskine.tres
-msgid "Duskine"
-msgstr ""
-
-#: scenes/mining/ores/ore_emerin.tres
-msgid "Emerin"
-msgstr ""
-
-#: scenes/mining/ores/ore_halcyne.tres
-msgid "Halcyne"
-msgstr ""
-
-#: scenes/mining/ores/ore_indral.tres
-msgid "Indral"
-msgstr ""
-
-#: scenes/mining/ores/ore_kyrite.tres
-msgid "Kyrite"
-msgstr ""
-
-#: scenes/mining/ores/ore_meridine.tres
-msgid "Meridine"
-msgstr ""
-
-#: scenes/mining/ores/ore_noctile.tres
-msgid "Noctile"
-msgstr ""
-
-#: scenes/mining/ores/ore_olvane.tres
-msgid "Olvane"
-msgstr ""
-
-#: scenes/mining/ores/ore_pallin.tres
-msgid "Pallin"
-msgstr ""
-
-#: scenes/mining/ores/ore_ressa.tres
-msgid "Ressa"
-msgstr ""
-
-#: scenes/mining/ores/ore_selyx.tres
-msgid "Selyx"
-msgstr ""
-
-#: scenes/mining/ores/ore_tessar.tres
-msgid "Tessar"
-msgstr ""
-
-#: scenes/mining/ores/ore_vyrel.tres
-msgid "Vyrel"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cockpit"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Bridge"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Mess hall"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cabin 1"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cabin 2"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cabin 3"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cabin 4"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Crew 1"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Crew 5"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Crew 2"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Crew 6"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Crew 3"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Crew 7"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Crew 4"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Crew 8"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Medical bay"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Engine room"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Armory"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Weapons"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Armor"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Skills"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Miners"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cargo bay"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Armory · Upgrades\nRange · Medical · Engine"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Lift\nMess · Cabins · Bridge"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cargo bay · Ramp"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Lift · Medical · Engine"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Lift\nBridge · Cabins"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Range · Armory\nCargo bay"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Lift\nLower deck"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Bridge\nCockpit"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cabins · Mess\nCargo lift"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Lift · Cabins · Mess"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Lift\nCargo bay · Ramp"
-msgstr ""
-
-#: scenes/ship/ship.tscn
-msgid "Cabins · Lift · Bridge"
-msgstr ""
-
-#: scenes/skills/careful_reload.tres
-msgid "Careful reload"
-msgstr ""
-
-#: scenes/skills/careful_reload.tres
-msgid "Reloading keeps the rounds left in the magazine"
-msgstr ""
-
-#: scenes/skills/damage_readout.tres
-msgid "Damage readout"
-msgstr ""
-
-#: scenes/skills/damage_readout.tres
-msgid "Shows the damage of your hits on aliens"
-msgstr ""
-
-#: scenes/skills/dash.tres
-msgid "Dash"
-msgstr ""
-
-#: scenes/skills/dash.tres
-msgid "A short burst in the direction you move"
-msgstr ""
-
-#: scenes/skills/ore_scanner.tres
-msgid "Ore scanner"
-msgstr ""
-
-#: scenes/skills/ore_scanner.tres
-msgid "Points to the nearest ore node within 40 m"
-msgstr ""
-
-#: scenes/skills/regeneration.tres
-msgid "Regeneration"
-msgstr ""
-
-#: scenes/skills/regeneration.tres
-msgid "Heals 5 health per second after 5 s without damage"
-msgstr ""
-
-#: scenes/skills/reinforced_suit.tres
-msgid "Reinforced suit"
-msgstr ""
-
-#: scenes/skills/reinforced_suit.tres
-msgid "+20 health per rank"
-msgstr ""
-
-#: scenes/skills/reload_on_the_move.tres
-msgid "Reload on the move"
-msgstr ""
-
-#: scenes/skills/reload_on_the_move.tres
-msgid "Reload at full walking speed"
-msgstr ""
-
-#: scenes/skills/skill_tree.tres
-msgid "Mobility"
-msgstr ""
-
-#: scenes/skills/skill_tree.tres
-msgid "Survival"
-msgstr ""
-
-#: scenes/skills/skill_tree.tres
-msgid "Scanning"
-msgstr ""
-
-#: scenes/skills/spare_magazines.tres
-msgid "One more spare magazine per ranged weapon and rank"
-msgstr ""
-
-#: scenes/stations/loadout_locker.tscn
-msgid "Loadout"
-msgstr ""
-
-#: scenes/ui/bed_card.tscn
-msgid "Your bunk"
-msgstr ""
-
-#: scenes/ui/bed_card.tscn
-msgid "Sleep"
-msgstr ""
-
-#: scenes/ui/bed_card.tscn
-#: scenes/ui/flight_card.tscn
-#: scenes/ui/hold_card.tscn
-#: scenes/ui/loadout_card.tscn
-#: scenes/ui/navigator_card.tscn
-#: scenes/ui/settings_menu.tscn
-#: scenes/ui/skill_card.tscn
-#: scenes/ui/upgrade_card.tscn
-msgid "Close"
-msgstr ""
-
-#: scenes/ui/flight_card.tscn
-#: scenes/ui/navigator_card.tscn
-msgid "Danger"
-msgstr ""
-
-#: scenes/ui/flight_card.tscn
-#: scenes/ui/navigator_card.tscn
-msgid "Timer"
-msgstr ""
-
-#: scenes/ui/flight_card.tscn
-#: scenes/ui/navigator_card.tscn
-msgid "Ores"
-msgstr ""
-
-#: scenes/ui/flight_card.tscn
-msgid "Set course"
-msgstr ""
-
-#: scenes/ui/navigator_card.tscn
-#: scripts/ui/talk_card.gd
-msgid "Back"
-msgstr ""
-
-#: scenes/ui/settings_menu.tscn
-msgid "Settings"
-msgstr ""
-
-#: scenes/ui/settings_menu.tscn
-msgid "Language"
-msgstr ""
-
-#: scenes/ui/settings_menu.tscn
-msgid "Progress"
-msgstr ""
-
-#: scenes/ui/settings_menu.tscn
-msgid "Reset progress"
-msgstr ""
-
-#: scenes/ui/settings_menu.tscn
-msgid "Only while you're alone. With others in your session, everyone keeps their progress."
-msgstr ""
-
-#: scenes/ui/settings_menu.tscn
-msgid "Cancel"
-msgstr ""
-
-#: scenes/ui/skill_card.tscn
-#: scenes/ui/upgrade_card.tscn
-msgid "Cost / hold"
-msgstr ""
-
-#: scenes/ui/wrist_card.tscn
-msgid "Cargo"
-msgstr ""
-
-#: scenes/ui/wrist_card.tscn
-msgid "No ore carried."
-msgstr ""
-
-#: scenes/upgrades/armor.tres
-msgid "Suit armor"
-msgstr ""
-
-#: scenes/upgrades/armor.tres
-msgid "More health"
-msgstr ""
-
-#: scenes/upgrades/blaster.tres
-#: scenes/weapons/types/blaster.tres
-msgid "Blaster"
-msgstr ""
-
-#: scenes/upgrades/blaster.tres
-msgid "More damage per shot"
-msgstr ""
-
-#: scenes/upgrades/blaster_magazine.tres
-msgid "Blaster magazine"
-msgstr ""
-
-#: scenes/upgrades/blaster_magazine.tres
-msgid "More rounds per magazine"
-msgstr ""
-
-#: scenes/upgrades/hammer.tres
-#: scenes/weapons/types/hammer.tres
-msgid "Hammer"
-msgstr ""
-
-#: scenes/upgrades/hammer.tres
-msgid "More damage per swing"
-msgstr ""
-
-#: scenes/upgrades/miner_drill.tres
-msgid "Drill"
-msgstr ""
-
-#: scenes/upgrades/miner_drill.tres
-msgid "Miners mine faster"
-msgstr ""
-
-#: scenes/upgrades/miner_hose.tres
-msgid "Hose"
-msgstr ""
-
-#: scenes/upgrades/miner_hose.tres
-msgid "Longer hose reach, faster transfer"
-msgstr ""
-
-#: scenes/upgrades/miner_tank.tres
-msgid "Ore tank"
-msgstr ""
-
-#: scenes/upgrades/miner_tank.tres
-msgid "Miners hold more ore"
-msgstr ""
-
-#: scenes/upgrades/shotgun.tres
-msgid "More damage per pellet"
-msgstr ""
-
-#: scenes/upgrades/shotgun_magazine.tres
-msgid "Shotgun magazine"
-msgstr ""
-
-#: scenes/upgrades/shotgun_magazine.tres
-msgid "More shells per load"
-msgstr ""
-
-#: scenes/weapons/types/blaster.tres
-msgid "Rapid shots that reach far."
-msgstr ""
-
-#: scenes/weapons/types/hammer.tres
-msgid "Heavy swings that hit everything in front."
-msgstr ""
-
-#: scenes/weapons/types/shotgun.tres
-msgid "A fan of pellets, strong up close."
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Kesh"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Torvane"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Redscar Flats"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Hollow Mire"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Cinder Steps"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Lisk"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Pale Basin"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Vehra"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Glare Fields"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Ember Reach"
-msgstr ""
-
-#: scenes/world/star_system.tres
-msgid "Waypost Ostra"
-msgstr ""
-
-#: scripts/mission/mission_brief.gd
+#: game/mission/mission_brief.gd
 msgid "Easy"
 msgstr ""
 
-#: scripts/mission/mission_brief.gd
+#: game/mission/mission_brief.gd
 msgid "Hard"
 msgstr ""
 
-#: scripts/mission/mission_brief.gd
+#: game/mission/mission_brief.gd
 msgid "Normal"
 msgstr ""
 
-#: scripts/ship/ship.gd
-msgid "In flight"
+#: game/npcs/crew/quartermaster.tres
+msgid "Quartermaster"
 msgstr ""
 
-#: scripts/ship/ship.gd
-msgid "All aboard"
+#: game/npcs/crew/quartermaster.tres
+msgid "How can I help you?"
 msgstr ""
 
-#: scripts/ship/ship.gd
-msgid "Lost"
+#: game/npcs/crew/quartermaster.tres
+msgid "Hello"
 msgstr ""
 
-#: scripts/ship/ship.gd
-msgid "Storm"
+#: game/npcs/crew/quartermaster.tres
+msgid "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
 msgstr ""
 
-#: scripts/ship/ship.gd
-msgid "No mission"
+#: game/npcs/crew/quartermaster.tres
+msgid "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
 msgstr ""
 
-#: scripts/ui/bed_card.gd
-msgid "A run is underway: sleeping now loses it."
+#: game/npcs/crew/quartermaster.tres
+msgid "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay."
 msgstr ""
 
-#: scripts/ui/bed_card.gd
-msgid "Ends the game here. Your progress is saved."
+#: game/npcs/crew/quartermaster.tres
+msgid "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
 msgstr ""
 
-#: scripts/ui/flight_card.gd
-#: scripts/ui/navigator_card.gd
-msgid "%d min"
+#: game/npcs/crew/quartermaster.tres
+#: game/progression/skills/tree/skill_tree.tres
+msgid "Ammo"
 msgstr ""
 
-#: scripts/ui/flight_card.gd
-msgid "No destination"
+#: game/npcs/crew/quartermaster.tres
+msgid "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest."
 msgstr ""
 
-#: scripts/ui/flight_card.gd
-#: scripts/ui/navigator_card.gd
-msgid "In flight: gear up and head for the ramp."
+#: game/npcs/crew/quartermaster.tres
+msgid "The rarer the ore, the more rounds you get from the same amount."
 msgstr ""
 
-#: scripts/ui/flight_card.gd
-#: scripts/ui/loadout_card.gd
-#: scripts/ui/navigator_card.gd
-#: scripts/ui/skill_card.gd
-#: scripts/ui/upgrade_card.gd
-msgid "Locked until everyone is back aboard."
+#: game/npcs/crew/quartermaster.tres
+msgid "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take the hammer along: it needs no ammo."
 msgstr ""
 
-#: scripts/ui/flight_card.gd
-msgid "Pick a destination at the navigator on the bridge."
+#: game/npcs/crew/quartermaster.tres
+msgid "Aboard, every reload is free: the rounds come from the ship's stock."
 msgstr ""
 
-#: scripts/ui/flight_card.gd
-#: scripts/ui/navigator_card.gd
-msgid "Scanning the location..."
+#: game/npcs/crew/quartermaster.tres
+#: game/progression/skills/tree/spare_magazines.tres
+msgid "Spare magazines"
 msgstr ""
 
-#: scripts/ui/flight_card.gd
-msgid "Set course to fly there."
+#: game/npcs/crew/quartermaster.tres
+msgid "Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
 msgstr ""
 
-#: scripts/ui/flight_card.gd
-#: scripts/ui/navigator_card.gd
-msgid "Landed: lower the ramp in the cargo bay."
+#: game/npcs/crew/quartermaster.tres
+msgid "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up."
 msgstr ""
 
-#: scripts/ui/hold_card.gd
-msgid "Unknown ore"
+#: game/npcs/crew/quartermaster.tres
+msgid "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."
 msgstr ""
 
-#: scripts/ui/hold_card.gd
-msgid "Not brought aboard yet."
+#: game/npcs/crew/quartermaster.tres
+msgid "Reloading"
 msgstr ""
 
-#: scripts/ui/hold_card.gd
-msgid "In the hold: %d"
+#: game/npcs/crew/quartermaster.tres
+msgid "You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself."
 msgstr ""
 
-#: scripts/ui/hold_card.gd
-msgid "Found in no open region."
+#: game/npcs/crew/quartermaster.tres
+msgid "But careful with the blaster: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
 msgstr ""
 
-#: scripts/ui/hold_card.gd
-msgid "Found in: %s"
+#: game/npcs/crew/quartermaster.tres
+msgid "While you reload, you walk slower. So pick a moment when nothing is right on your heels."
 msgstr ""
 
-#: scripts/ui/hold_card.gd
-msgid "Mid ore"
+#: game/npcs/crew/quartermaster.tres
+msgid "Timing reload"
 msgstr ""
 
-#: scripts/ui/hold_card.gd
-msgid "Signature ore"
+#: game/npcs/crew/quartermaster.tres
+msgid "Here's a trick: press reload a second time while you're reloading. The ring on the ground around you shows how far the reload is, and it has a white mark."
 msgstr ""
 
-#: scripts/ui/hold_card.gd
-msgid "Common ore"
+#: game/npcs/crew/quartermaster.tres
+msgid "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead."
 msgstr ""
 
-#: scripts/ui/loadout_card.gd
-#: scripts/ui/navigator_card.gd
-#: scripts/ui/upgrade_card.gd
-msgid "Locked"
+#: game/npcs/crew/quartermaster.tres
+msgid "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
 msgstr ""
 
-#: scripts/ui/loadout_card.gd
-msgid "Melee"
+#: game/npcs/crew/quartermaster.tres
+#: game/progression/upgrades/shotgun.tres
+#: game/weapons/types/shotgun.tres
+msgid "Shotgun"
 msgstr ""
 
-#: scripts/ui/loadout_card.gd
-msgid "Ranged"
+#: game/npcs/crew/quartermaster.tres
+msgid "So you've got a shotgun now. It has no magazine: it loads one shell after another, and keeps the shells that are already in."
 msgstr ""
 
-#: scripts/ui/loadout_card.gd
-msgid "Slots 1 and 2 go along on the next mission; one weapon always does."
+#: game/npcs/crew/quartermaster.tres
+msgid "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded."
 msgstr ""
 
-#: scripts/ui/loadout_card.gd
-msgid "Damage"
+#: game/npcs/crew/quartermaster.tres
+msgid "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip a press, and that bonus starts over."
 msgstr ""
 
-#: scripts/ui/loadout_card.gd
-msgid "Magazine"
+#: game/npcs/crew/quartermaster.tres
+#: game/ship/ship.tscn
+msgid "Shooting range"
 msgstr ""
 
-#: scripts/ui/loadout_card.gd
-msgid "Slot %d"
+#: game/npcs/crew/quartermaster.tres
+msgid "Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
 msgstr ""
 
-#: scripts/ui/navigator_card.gd
-msgid "Star"
+#: game/npcs/crew/quartermaster.tres
+msgid "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end."
 msgstr ""
 
-#: scripts/ui/navigator_card.gd
-msgid "Zoom in"
+#: game/npcs/crew/quartermaster.tres
+msgid "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
 msgstr ""
 
-#: scripts/ui/navigator_card.gd
-msgid "No docking yet."
-msgstr ""
-
-#: scripts/ui/navigator_card.gd
-msgid "Set as destination"
-msgstr ""
-
-#: scripts/ui/navigator_card.gd
-msgid "Destination set: set course at the cockpit."
-msgstr ""
-
-#: scripts/ui/settings_menu.gd
-msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
-msgstr ""
-
-#: scripts/ui/settings_menu.gd
-msgid "Reset progress (1/3)"
-msgstr ""
-
-#: scripts/ui/settings_menu.gd
-msgid "Are you sure? Your progress will be gone for good, there is no way back."
-msgstr ""
-
-#: scripts/ui/settings_menu.gd
-msgid "Yes, reset it (2/3)"
-msgstr ""
-
-#: scripts/ui/settings_menu.gd
-msgid "Last chance: this wipes everything, irreversibly."
-msgstr ""
-
-#: scripts/ui/settings_menu.gd
-msgid "Reset everything (3/3)"
-msgstr ""
-
-#: scripts/ui/skill_card.gd
-msgid "Learn %s first"
-msgstr ""
-
-#: scripts/ui/skill_card.gd
-msgid "Learned"
-msgstr ""
-
-#: scripts/ui/skill_card.gd
-msgid "Rank %d of %d"
-msgstr ""
-
-#: scripts/ui/skill_card.gd
-msgid "Not learned yet"
-msgstr ""
-
-#: scripts/ui/skill_card.gd
-msgid "Learn"
-msgstr ""
-
-#: scripts/ui/talk_card.gd
+#: game/npcs/talk_card.gd
 msgid "Done"
 msgstr ""
 
-#: scripts/ui/talk_card.gd
+#: game/npcs/talk_card.gd
 msgid "Continue"
 msgstr ""
 
-#: scripts/ui/talk_card.gd
+#: game/npcs/talk_card.gd
+#: game/stations/navigator/navigator_card.tscn
+msgid "Back"
+msgstr ""
+
+#: game/npcs/talk_card.gd
 msgid "Goodbye"
 msgstr ""
 
-#: scripts/ui/upgrade_card.gd
-msgid "next: +%d %%"
+#: game/ores/types/ore_aethrine.tres
+msgid "Aethrine"
 msgstr ""
 
-#: scripts/ui/upgrade_card.gd
-msgid "Upgrade"
+#: game/ores/types/ore_duskine.tres
+msgid "Duskine"
 msgstr ""
 
-#: scripts/ui/upgrade_card.gd
-msgid "Max"
+#: game/ores/types/ore_emerin.tres
+msgid "Emerin"
 msgstr ""
 
-#: scripts/ui/wrist_card.gd
+#: game/ores/types/ore_halcyne.tres
+msgid "Halcyne"
+msgstr ""
+
+#: game/ores/types/ore_indral.tres
+msgid "Indral"
+msgstr ""
+
+#: game/ores/types/ore_kyrite.tres
+msgid "Kyrite"
+msgstr ""
+
+#: game/ores/types/ore_meridine.tres
+msgid "Meridine"
+msgstr ""
+
+#: game/ores/types/ore_noctile.tres
+msgid "Noctile"
+msgstr ""
+
+#: game/ores/types/ore_olvane.tres
+msgid "Olvane"
+msgstr ""
+
+#: game/ores/types/ore_pallin.tres
+msgid "Pallin"
+msgstr ""
+
+#: game/ores/types/ore_ressa.tres
+msgid "Ressa"
+msgstr ""
+
+#: game/ores/types/ore_selyx.tres
+msgid "Selyx"
+msgstr ""
+
+#: game/ores/types/ore_tessar.tres
+msgid "Tessar"
+msgstr ""
+
+#: game/ores/types/ore_vyrel.tres
+msgid "Vyrel"
+msgstr ""
+
+#: game/player/wrist/wrist_card.gd
 msgid "Total: %d"
 msgstr ""
 
-#: scripts/world/celestial_body.gd
+#: game/player/wrist/wrist_card.tscn
+msgid "Cargo"
+msgstr ""
+
+#: game/player/wrist/wrist_card.tscn
+msgid "No ore carried."
+msgstr ""
+
+#: game/progression/skills/tree/careful_reload.tres
+msgid "Careful reload"
+msgstr ""
+
+#: game/progression/skills/tree/careful_reload.tres
+msgid "Reloading keeps the rounds left in the magazine"
+msgstr ""
+
+#: game/progression/skills/tree/damage_readout.tres
+msgid "Damage readout"
+msgstr ""
+
+#: game/progression/skills/tree/damage_readout.tres
+msgid "Shows the damage of your hits on aliens"
+msgstr ""
+
+#: game/progression/skills/tree/dash.tres
+msgid "Dash"
+msgstr ""
+
+#: game/progression/skills/tree/dash.tres
+msgid "A short burst in the direction you move"
+msgstr ""
+
+#: game/progression/skills/tree/ore_scanner.tres
+msgid "Ore scanner"
+msgstr ""
+
+#: game/progression/skills/tree/ore_scanner.tres
+msgid "Points to the nearest ore node within 40 m"
+msgstr ""
+
+#: game/progression/skills/tree/regeneration.tres
+msgid "Regeneration"
+msgstr ""
+
+#: game/progression/skills/tree/regeneration.tres
+msgid "Heals 5 health per second after 5 s without damage"
+msgstr ""
+
+#: game/progression/skills/tree/reinforced_suit.tres
+msgid "Reinforced suit"
+msgstr ""
+
+#: game/progression/skills/tree/reinforced_suit.tres
+msgid "+20 health per rank"
+msgstr ""
+
+#: game/progression/skills/tree/reload_on_the_move.tres
+msgid "Reload on the move"
+msgstr ""
+
+#: game/progression/skills/tree/reload_on_the_move.tres
+msgid "Reload at full walking speed"
+msgstr ""
+
+#: game/progression/skills/tree/skill_tree.tres
+msgid "Mobility"
+msgstr ""
+
+#: game/progression/skills/tree/skill_tree.tres
+msgid "Survival"
+msgstr ""
+
+#: game/progression/skills/tree/skill_tree.tres
+msgid "Scanning"
+msgstr ""
+
+#: game/progression/skills/tree/spare_magazines.tres
+msgid "One more spare magazine per ranged weapon and rank"
+msgstr ""
+
+#: game/progression/upgrades/armor.tres
+msgid "Suit armor"
+msgstr ""
+
+#: game/progression/upgrades/armor.tres
+msgid "More health"
+msgstr ""
+
+#: game/progression/upgrades/blaster.tres
+#: game/weapons/types/blaster.tres
+msgid "Blaster"
+msgstr ""
+
+#: game/progression/upgrades/blaster.tres
+msgid "More damage per shot"
+msgstr ""
+
+#: game/progression/upgrades/blaster_magazine.tres
+msgid "Blaster magazine"
+msgstr ""
+
+#: game/progression/upgrades/blaster_magazine.tres
+msgid "More rounds per magazine"
+msgstr ""
+
+#: game/progression/upgrades/hammer.tres
+#: game/weapons/types/hammer.tres
+msgid "Hammer"
+msgstr ""
+
+#: game/progression/upgrades/hammer.tres
+msgid "More damage per swing"
+msgstr ""
+
+#: game/progression/upgrades/miner_drill.tres
+msgid "Drill"
+msgstr ""
+
+#: game/progression/upgrades/miner_drill.tres
+msgid "Miners mine faster"
+msgstr ""
+
+#: game/progression/upgrades/miner_hose.tres
+msgid "Hose"
+msgstr ""
+
+#: game/progression/upgrades/miner_hose.tres
+msgid "Longer hose reach, faster transfer"
+msgstr ""
+
+#: game/progression/upgrades/miner_tank.tres
+msgid "Ore tank"
+msgstr ""
+
+#: game/progression/upgrades/miner_tank.tres
+msgid "Miners hold more ore"
+msgstr ""
+
+#: game/progression/upgrades/shotgun.tres
+msgid "More damage per pellet"
+msgstr ""
+
+#: game/progression/upgrades/shotgun_magazine.tres
+msgid "Shotgun magazine"
+msgstr ""
+
+#: game/progression/upgrades/shotgun_magazine.tres
+msgid "More shells per load"
+msgstr ""
+
+#: game/ship/ship.gd
+msgid "In flight"
+msgstr ""
+
+#: game/ship/ship.gd
+msgid "All aboard"
+msgstr ""
+
+#: game/ship/ship.gd
+msgid "Lost"
+msgstr ""
+
+#: game/ship/ship.gd
+msgid "Storm"
+msgstr ""
+
+#: game/ship/ship.gd
+msgid "No mission"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cockpit"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Bridge"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Mess hall"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cabin 1"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cabin 2"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cabin 3"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cabin 4"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Crew 1"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Crew 5"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Crew 2"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Crew 6"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Crew 3"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Crew 7"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Crew 4"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Crew 8"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Medical bay"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Engine room"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Armory"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Weapons"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Armor"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Skills"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Miners"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cargo bay"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Armory · Upgrades\nRange · Medical · Engine"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Lift\nMess · Cabins · Bridge"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cargo bay · Ramp"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Lift · Medical · Engine"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Lift\nBridge · Cabins"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Range · Armory\nCargo bay"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Lift\nLower deck"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Bridge\nCockpit"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cabins · Mess\nCargo lift"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Lift · Cabins · Mess"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Lift\nCargo bay · Ramp"
+msgstr ""
+
+#: game/ship/ship.tscn
+msgid "Cabins · Lift · Bridge"
+msgstr ""
+
+#: game/stations/bed/bed_card.gd
+msgid "A run is underway: sleeping now loses it."
+msgstr ""
+
+#: game/stations/bed/bed_card.gd
+msgid "Ends the game here. Your progress is saved."
+msgstr ""
+
+#: game/stations/bed/bed_card.tscn
+msgid "Your bunk"
+msgstr ""
+
+#: game/stations/bed/bed_card.tscn
+msgid "Sleep"
+msgstr ""
+
+#: game/stations/bed/bed_card.tscn
+#: game/stations/flight/flight_card.tscn
+#: game/stations/hold/hold_card.tscn
+#: game/stations/loadout/loadout_card.tscn
+#: game/stations/navigator/navigator_card.tscn
+#: game/stations/skill_graph/skill_card.tscn
+#: game/stations/upgrade/upgrade_card.tscn
+#: game/ui/settings_menu.tscn
+msgid "Close"
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+#: game/stations/navigator/navigator_card.gd
+msgid "%d min"
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+msgid "No destination"
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+#: game/stations/navigator/navigator_card.gd
+msgid "In flight: gear up and head for the ramp."
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+#: game/stations/loadout/loadout_card.gd
+#: game/stations/navigator/navigator_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Locked until everyone is back aboard."
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+msgid "Pick a destination at the navigator on the bridge."
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+#: game/stations/navigator/navigator_card.gd
+msgid "Scanning the location..."
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+msgid "Set course to fly there."
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+#: game/stations/navigator/navigator_card.gd
+msgid "Landed: lower the ramp in the cargo bay."
+msgstr ""
+
+#: game/stations/flight/flight_card.tscn
+#: game/stations/navigator/navigator_card.tscn
+msgid "Danger"
+msgstr ""
+
+#: game/stations/flight/flight_card.tscn
+#: game/stations/navigator/navigator_card.tscn
+msgid "Timer"
+msgstr ""
+
+#: game/stations/flight/flight_card.tscn
+#: game/stations/navigator/navigator_card.tscn
+msgid "Ores"
+msgstr ""
+
+#: game/stations/flight/flight_card.tscn
+msgid "Set course"
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
+msgid "Unknown ore"
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
+msgid "Not brought aboard yet."
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
+msgid "In the hold: %d"
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
+msgid "Found in no open region."
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
+msgid "Found in: %s"
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
+msgid "Mid ore"
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
+msgid "Signature ore"
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
+msgid "Common ore"
+msgstr ""
+
+#: game/stations/loadout/loadout_card.gd
+#: game/stations/navigator/navigator_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Locked"
+msgstr ""
+
+#: game/stations/loadout/loadout_card.gd
+msgid "Melee"
+msgstr ""
+
+#: game/stations/loadout/loadout_card.gd
+msgid "Ranged"
+msgstr ""
+
+#: game/stations/loadout/loadout_card.gd
+msgid "Slots 1 and 2 go along on the next mission; one weapon always does."
+msgstr ""
+
+#: game/stations/loadout/loadout_card.gd
+msgid "Damage"
+msgstr ""
+
+#: game/stations/loadout/loadout_card.gd
+msgid "Magazine"
+msgstr ""
+
+#: game/stations/loadout/loadout_card.gd
+msgid "Slot %d"
+msgstr ""
+
+#: game/stations/loadout/loadout_locker.tscn
+msgid "Loadout"
+msgstr ""
+
+#: game/stations/navigator/navigator_card.gd
+msgid "Star"
+msgstr ""
+
+#: game/stations/navigator/navigator_card.gd
+msgid "Zoom in"
+msgstr ""
+
+#: game/stations/navigator/navigator_card.gd
+msgid "No docking yet."
+msgstr ""
+
+#: game/stations/navigator/navigator_card.gd
+msgid "Set as destination"
+msgstr ""
+
+#: game/stations/navigator/navigator_card.gd
+msgid "Destination set: set course at the cockpit."
+msgstr ""
+
+#: game/stations/skill_graph/skill_card.gd
+msgid "Learn %s first"
+msgstr ""
+
+#: game/stations/skill_graph/skill_card.gd
+msgid "Learned"
+msgstr ""
+
+#: game/stations/skill_graph/skill_card.gd
+msgid "Rank %d of %d"
+msgstr ""
+
+#: game/stations/skill_graph/skill_card.gd
+msgid "Not learned yet"
+msgstr ""
+
+#: game/stations/skill_graph/skill_card.gd
+msgid "Learn"
+msgstr ""
+
+#: game/stations/skill_graph/skill_card.tscn
+#: game/stations/upgrade/upgrade_card.tscn
+msgid "Cost / hold"
+msgstr ""
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "next: +%d %%"
+msgstr ""
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Upgrade"
+msgstr ""
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Max"
+msgstr ""
+
+#: game/ui/settings_menu.gd
+msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
+msgstr ""
+
+#: game/ui/settings_menu.gd
+msgid "Reset progress (1/3)"
+msgstr ""
+
+#: game/ui/settings_menu.gd
+msgid "Are you sure? Your progress will be gone for good, there is no way back."
+msgstr ""
+
+#: game/ui/settings_menu.gd
+msgid "Yes, reset it (2/3)"
+msgstr ""
+
+#: game/ui/settings_menu.gd
+msgid "Last chance: this wipes everything, irreversibly."
+msgstr ""
+
+#: game/ui/settings_menu.gd
+msgid "Reset everything (3/3)"
+msgstr ""
+
+#: game/ui/settings_menu.tscn
+msgid "Settings"
+msgstr ""
+
+#: game/ui/settings_menu.tscn
+msgid "Language"
+msgstr ""
+
+#: game/ui/settings_menu.tscn
+msgid "Progress"
+msgstr ""
+
+#: game/ui/settings_menu.tscn
+msgid "Reset progress"
+msgstr ""
+
+#: game/ui/settings_menu.tscn
+msgid "Only while you're alone. With others in your session, everyone keeps their progress."
+msgstr ""
+
+#: game/ui/settings_menu.tscn
+msgid "Cancel"
+msgstr ""
+
+#: game/weapons/types/blaster.tres
+msgid "Rapid shots that reach far."
+msgstr ""
+
+#: game/weapons/types/hammer.tres
+msgid "Heavy swings that hit everything in front."
+msgstr ""
+
+#: game/weapons/types/shotgun.tres
+msgid "A fan of pellets, strong up close."
+msgstr ""
+
+#: game/world/celestial_body.gd
 msgid "Moon"
 msgstr ""
 
-#: scripts/world/celestial_body.gd
+#: game/world/celestial_body.gd
 msgid "Station"
 msgstr ""
 
-#: scripts/world/celestial_body.gd
+#: game/world/celestial_body.gd
 msgid "Planet"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Kesh"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Torvane"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Redscar Flats"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Hollow Mire"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Cinder Steps"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Lisk"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Pale Basin"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Vehra"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Glare Fields"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Ember Reach"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Waypost Ostra"
 msgstr ""

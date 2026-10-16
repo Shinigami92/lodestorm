@@ -3,8 +3,8 @@ extends RefCounted
 ## flying to a generated outside world: its ore nodes, rocks and nests sit at fixed spots near the
 ## ship, and it's quick to set up. Every location the ship flies to is a fresh test location.
 
-const MAP: PackedScene = preload("res://scenes/maps/test_map.tscn")
-const LOCATION: PackedScene = preload("res://scenes/locations/test_location.tscn")
+const MAP: PackedScene = preload("res://game/maps/main.tscn")
+const LOCATION: PackedScene = preload("res://game/locations/test_location.tscn")
 
 
 static func instantiate() -> Node3D:

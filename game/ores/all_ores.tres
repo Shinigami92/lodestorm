@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="OreCatalog" format=3 uid="uid://dq84e4vrfsfn6"]
+
+[ext_resource type="Script" uid="uid://c8ypek0qo11bb" path="res://game/ores/ore_catalog.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="1_ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="2_kyrite"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="3_olvane"]
+[ext_resource type="Resource" uid="uid://cgxpfq8uqcagh" path="res://game/ores/types/ore_pallin.tres" id="4_pallin"]
+[ext_resource type="Resource" uid="uid://dymgaqh26njgt" path="res://game/ores/types/ore_tessar.tres" id="5_tessar"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="6_vyrel"]
+[ext_resource type="Resource" uid="uid://dfy3xlckv7gf7" path="res://game/ores/types/ore_duskine.tres" id="7_duskine"]
+[ext_resource type="Resource" uid="uid://1uonnxu85sni" path="res://game/ores/types/ore_halcyne.tres" id="8_halcyne"]
+[ext_resource type="Resource" uid="uid://cad77sebiwhrt" path="res://game/ores/types/ore_ressa.tres" id="9_ressa"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="10_meridine"]
+[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="11_emerin"]
+[ext_resource type="Resource" uid="uid://dsspev82ieiuo" path="res://game/ores/types/ore_indral.tres" id="12_indral"]
+[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="13_selyx"]
+[ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="14_noctile"]
+[ext_resource type="Resource" uid="uid://1v26qj8f1fdi" path="res://game/ores/types/ore_aethrine.tres" id="15_aethrine"]
+
+[resource]
+script = ExtResource("1_script")
+ores = Array[ExtResource("1_ore_type")]([ExtResource("2_kyrite"), ExtResource("3_olvane"), ExtResource("4_pallin"), ExtResource("5_tessar"), ExtResource("6_vyrel"), ExtResource("7_duskine"), ExtResource("8_halcyne"), ExtResource("9_ressa"), ExtResource("10_meridine"), ExtResource("11_emerin"), ExtResource("12_indral"), ExtResource("13_selyx"), ExtResource("14_noctile"), ExtResource("15_aethrine")])

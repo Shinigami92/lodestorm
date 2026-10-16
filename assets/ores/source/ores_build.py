@@ -16,7 +16,7 @@ silhouette with dark facet lines on a transparent background, which the game tin
 
 Every ore type is a module ore_types/<id>.py with an `ORE = OreSpec(...)` (ore_geo.py): its crystal shape, how the
 crystals group, the preview color and the three variants. ORDER lists them (commonest first, the order of
-scenes/mining/ores/all_ores.tres); missing modules are skipped.
+game/ores/all_ores.tres); missing modules are skipped.
 
 Each variant is a root empty Ore_<ore>_<a|b|wall> holding one rocky base mesh Base_<ore>_<variant> (baked later
 into the ore's texture atlas) and the crystals as separate meshes Crystal_<ore>_<n> (numbered per ore across its

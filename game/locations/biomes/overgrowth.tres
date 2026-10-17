@@ -222,6 +222,7 @@ weight = 0.8
 [resource]
 script = ExtResource("1_biome")
 display_name = "Overgrowth"
+map_color = Color(0.45, 0.62, 0.35, 1)
 area_radius = Vector2(16, 34)
 pass_width = Vector2(8, 14)
 area_spacing = 14.0

@@ -12,8 +12,11 @@ extends Station
 ## shown (`Mission.preview`); choosing it as the destination (`Mission.choose`, a new section of
 ## the region) takes "Set as destination", and course is set at the cockpit's flight console.
 ## Stations can't be docked at yet and locked planets and regions can't be visited: zooming stops
-## short of them. The star system shows orbit lines, the star (with its name on the card) and
-## stations as station shapes. The card floats beside the hologram, so it never covers a region.
+## short of them. The star system shows orbit lines (spread evenly, so every body fits on the
+## table), the star (with its name on the card), stations as station shapes, a name plate per body
+## with its signature ore ("?" while out of reach), the ship's marker and routes to where it can
+## go. A globe fills its regions in their biome's color, with a plate per region (name, danger
+## pips, ores). The card floats beside the hologram, so it never covers a region.
 ## Players use it from anywhere around the table; walking away leaves the hologram as it is.
 
 enum Level { SYSTEM, BODY, REGION }
@@ -36,11 +39,24 @@ const HOLOGRAM_ENERGY: float = 0.9
 ## it free.
 const LANDING_SCALE: float = 0.8
 const ORBIT_COLOR := Color(0.3, 0.85, 1.0)
+## The ship's marker and the route to the destination; the routes to the other reachable bodies.
+const SHIP_COLOR := Color(1.0, 0.72, 0.3)
+const ROUTE_COLOR := Color(0.3, 0.85, 1.0)
+## Distance between a route's dots, in m, and how high a route arcs (of its length).
+const ROUTE_STEP: float = 0.045
+const ROUTE_ARC: float = 0.22
+## How far a plate on the globe faces the camera at least to show (cosine), and fully.
+const PLATE_FACING_FROM: float = 0.15
+const PLATE_FACING_FULL: float = 0.45
 
-## The system view's size: distance from the star (in m) of a body at `orbit_radius` 1, and the
-## size (in m) of a body of `size` 1.
-@export var system_scale: float = 1.6
-@export var body_scale: float = 0.36
+## The system view's size, so every body fits on the table: the innermost and the outermost orbit
+## around the star (in m; the ones in between spread evenly, in the order of their
+## `orbit_radius`), how far apart the moons' orbits around a planet's surface are, and the size
+## (in m) of a body of `size` 1.
+@export var inner_orbit: float = 0.4
+@export var outer_orbit: float = 1.25
+@export var moon_orbit: float = 0.1
+@export var body_scale: float = 0.24
 ## The globe's radius in m, and how far a region reaches on it from its center (degrees).
 @export var globe_radius: float = 0.9
 @export var region_reach: float = 35.0
@@ -71,6 +87,13 @@ var _globe_material: ShaderMaterial
 var _body_parts: Dictionary[CelestialBody, StationPart] = {}
 ## Every hologram material of the system view and its energy at full view (they fade together).
 var _system_materials: Dictionary[ShaderMaterial, float] = {}
+## The system view's name plates and how visible each is at full view.
+var _system_plates: Dictionary[HoloPlate, float] = {}
+## The ship's marker and the routes (rebuilt when the destination changes).
+var _routes: Node3D
+var _route_materials: Dictionary[Color, ShaderMaterial] = {}
+## The globe's region plates and where each region's center lies on it.
+var _region_plates: Dictionary[HoloPlate, Vector3] = {}
 
 ## Where the system view and the globe are built (above the table).
 @onready var _view: Node3D = $View
@@ -80,6 +103,8 @@ func _process(delta: float) -> void:
 	super(delta)
 	if not mission:
 		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
+		if mission:
+			mission.offers_changed.connect(_build_routes)
 	if not mission:
 		return
 	if not _system:
@@ -107,6 +132,72 @@ func get_system() -> StarSystem:
 
 func get_parts() -> Array[StationPart]:
 	return _parts.duplicate()
+
+
+## How far `shown_body`'s orbit lies from what it orbits in the system view, in m: the star's
+## orbits spread evenly from `inner_orbit` to `outer_orbit` in the order of their `orbit_radius`,
+## a planet's moons one `moon_orbit` after another outside its surface.
+func display_orbit(shown_body: CelestialBody) -> float:
+	var system: StarSystem = get_system()
+	if not system:
+		return 0.0
+	var siblings: Array[CelestialBody] = []
+	for other: CelestialBody in system.bodies:
+		if other.orbits == shown_body.orbits:
+			siblings.append(other)
+	siblings.sort_custom(
+		func(a: CelestialBody, b: CelestialBody) -> bool: return a.orbit_radius < b.orbit_radius
+	)
+	var index: int = siblings.find(shown_body)
+	if shown_body.orbits:
+		return shown_body.orbits.size * body_scale * 0.5 + moon_orbit * (index + 1)
+	if siblings.size() < 2:
+		return outer_orbit
+	return lerpf(inner_orbit, outer_orbit, float(index) / (siblings.size() - 1))
+
+
+## The planet or moon the ship is at: where it flew last, else the first one it can go to.
+func ship_body() -> CelestialBody:
+	if mission and mission.at_body:
+		return mission.at_body
+	var system: StarSystem = get_system()
+	if system:
+		for candidate: CelestialBody in system.bodies:
+			if candidate.kind != CelestialBody.Kind.STATION and candidate.is_reachable():
+				return candidate
+	return null
+
+
+## The name plates shown: the system view's (one per body) or the globe's (one per region).
+func get_plates() -> Array[HoloPlate]:
+	var plates: Array[HoloPlate] = []
+	plates.assign(_region_plates.keys() if _parts_level == Level.BODY else _system_plates.keys())
+	return plates
+
+
+## The routes drawn: `{body: the body a route goes to, chosen: whether it's the destination's}`.
+func get_routes() -> Array[Dictionary]:
+	var routes: Array[Dictionary] = []
+	if _routes:
+		for child: Node in _routes.get_children():
+			if child.has_meta(&"to"):
+				routes.append({"body": child.get_meta(&"to"), "chosen": child.get_meta(&"chosen")})
+	return routes
+
+
+## The ores a plate or card lists for `shown_region` (commonest first): the signature ores of a
+## body that can't be reached yet are null ("?").
+func shown_ores(shown_region: Region) -> Array[OreType]:
+	var system: StarSystem = get_system()
+	if not system:
+		return []
+	var shown_body: CelestialBody = system.body_of(shown_region)
+	var ores: Array[OreType] = system.ores_of(shown_region)
+	if shown_body and not shown_body.is_reachable():
+		for i: int in ores.size():
+			if ores[i] in shown_body.signature_ores:
+				ores[i] = null
+	return ores
 
 
 ## The part showing `item` (a body or a region), or null.
@@ -279,6 +370,9 @@ func rebuild_hologram() -> void:
 	_globe_material = null
 	_body_parts.clear()
 	_system_materials.clear()
+	_system_plates.clear()
+	_region_plates.clear()
+	_routes = null
 	_build_system()
 	_jump(zoom_target)
 
@@ -381,6 +475,8 @@ func _show_zoom() -> void:
 			_globe.transform = Transform3D.IDENTITY
 		_globe_material.set_shader_parameter(&"fade", globe_fade)
 		_update_globe_highlight()
+		# The plates step aside once the zoom heads into a region.
+		_show_region_plates(globe_fade * (1.0 - smoothstep(1.0, 1.15, stage)))
 	if holo_table:
 		var site: float = _crossfade(stage - 1.0) if stage >= 1.0 else 0.0
 		holo_table.show_hologram(site > 0.0)
@@ -402,6 +498,27 @@ static func _crossfade(t: float) -> float:
 func _fade_system(fade: float) -> void:
 	for material: ShaderMaterial in _system_materials:
 		material.set_shader_parameter(&"energy", _system_materials[material] * fade)
+	# Plates only at the system view itself: zooming away, they'd grow huge.
+	var plates_fade: float = fade * (1.0 - smoothstep(0.0, 0.25, zoom))
+	for plate: HoloPlate in _system_plates:
+		plate.visible = plates_fade > 0.02
+		plate.opacity = _system_plates[plate] * plates_fade
+
+
+## Shows the globe's region plates facing the camera (`fade`: the globe's), hiding the ones on its
+## far side.
+func _show_region_plates(fade: float) -> void:
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	for plate: HoloPlate in _region_plates:
+		var facing: float = 1.0
+		if camera:
+			var center: Vector3 = _globe.global_position
+			var out: Vector3 = (_globe.global_basis * _region_plates[plate]).normalized()
+			facing = out.dot((camera.global_position - center).normalized())
+		var shown: float = fade * smoothstep(PLATE_FACING_FROM, PLATE_FACING_FULL, facing)
+		var region_shown := plate.get_meta(&"region") as Region
+		plate.visible = shown > 0.02
+		plate.opacity = shown * (1.0 if region_shown.unlocked else UNREACHABLE_FADE + 0.25)
 
 
 ## The star in the middle (its part shows the system's name), the orbit lines, and a part per
@@ -419,7 +536,7 @@ func _build_system() -> void:
 	var placed: Dictionary[CelestialBody, Vector3] = {}
 	for shown_body: CelestialBody in system.bodies:
 		var angle: float = deg_to_rad(shown_body.orbit_angle)
-		var radius: float = shown_body.orbit_radius * system_scale
+		var radius: float = display_orbit(shown_body)
 		var center: Vector3 = placed.get(shown_body.orbits, Vector3.ZERO)
 		placed[shown_body] = center + Vector3(cos(angle), 0.0, sin(angle)) * radius
 		var orbit: MeshInstance3D = _hologram_mesh(_ring_mesh(radius, 0.006), ORBIT_COLOR, 0.35)
@@ -439,6 +556,7 @@ func _build_system() -> void:
 		part.add_child(shape)
 		part.outline = shape
 		_body_parts[shown_body] = part
+		_add_body_plate(shown_body, part)
 	var star := StationPart.new()
 	star.item = system
 	star.pick_radius = body_scale * 0.8
@@ -448,6 +566,102 @@ func _build_system() -> void:
 	)
 	star.add_child(star_sphere)
 	star.outline = star_sphere
+	_build_routes()
+
+
+## A plate below `shown_body` (in its `part`): its name, and its signature ore ("?" while it can't
+## be reached).
+func _add_body_plate(shown_body: CelestialBody, part: StationPart) -> void:
+	var ores: Array[OreType] = []
+	for ore_type: OreType in shown_body.signature_ores:
+		ores.append(ore_type if shown_body.is_reachable() else null)
+	var plate := HoloPlate.new(tr(shown_body.display_name), ores, -1, Color.WHITE, 40)
+	# Below a planet, above a moon: so a planet's and its moons' plates don't overlap.
+	var side: Vector3 = Vector3.UP if shown_body.orbits else Vector3.DOWN
+	plate.position = (
+		side * (shown_body.size * body_scale * 0.5 + (0.1 if shown_body.orbits else 0.05))
+	)
+	part.add_child(plate)
+	_system_plates[plate] = 1.0 if shown_body.is_reachable() else UNREACHABLE_FADE + 0.25
+
+
+## The ship's marker above the body it's at, a route from there to the destination's body and
+## fainter ones to every other body it can go to.
+func _build_routes() -> void:
+	if not _system:
+		return
+	if _routes:
+		_system.remove_child(_routes)
+		_routes.queue_free()
+	_routes = Node3D.new()
+	_routes.name = "Routes"
+	_system.add_child(_routes)
+	var from: CelestialBody = ship_body()
+	if not from or not _body_parts.has(from):
+		return
+	var start: Vector3 = _body_parts[from].position
+	var marker := MeshInstance3D.new()
+	var cone := CylinderMesh.new()
+	cone.top_radius = 0.05
+	cone.bottom_radius = 0.0
+	cone.height = 0.1
+	cone.radial_segments = 3
+	marker.mesh = cone
+	marker.material_override = _route_material(SHIP_COLOR, 1.6)
+	marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	marker.position = start + Vector3.UP * (from.size * body_scale * 0.5 + 0.1)
+	marker.name = "Ship"
+	_routes.add_child(marker)
+	var target: CelestialBody = null
+	var system: StarSystem = get_system()
+	if mission and mission.destination and mission.destination.region and system:
+		target = system.body_of(mission.destination.region)
+	for other: CelestialBody in _body_parts:
+		if other == from or not other.is_reachable():
+			continue
+		var chosen: bool = other == target
+		var route: Node3D = _route(start, _body_parts[other].position, chosen)
+		route.set_meta(&"to", other)
+		route.set_meta(&"chosen", chosen)
+		_routes.add_child(route)
+
+
+## A dotted arc from `start` to `end` (bright for the destination's route).
+func _route(start: Vector3, end: Vector3, chosen: bool) -> Node3D:
+	var lift: Vector3 = Vector3.UP * start.distance_to(end) * ROUTE_ARC
+	var middle: Vector3 = (start + end) * 0.5 + lift
+	var count: int = maxi(ceili(start.distance_to(end) / ROUTE_STEP), 2)
+	var dot := SphereMesh.new()
+	var radius: float = 0.014 if chosen else 0.009
+	dot.radius = radius
+	dot.height = radius * 2.0
+	dot.radial_segments = 6
+	dot.rings = 3
+	var multimesh := MultiMesh.new()
+	multimesh.transform_format = MultiMesh.TRANSFORM_3D
+	multimesh.mesh = dot
+	# Leave the ends free: they'd sit inside the bodies.
+	multimesh.instance_count = maxi(count - 3, 1)
+	for i: int in multimesh.instance_count:
+		var t: float = float(i + 2) / count
+		var at: Vector3 = start.lerp(middle, t).lerp(middle.lerp(end, t), t)
+		multimesh.set_instance_transform(i, Transform3D(Basis.IDENTITY, at))
+	var dots := MultiMeshInstance3D.new()
+	dots.multimesh = multimesh
+	dots.material_override = _route_material(
+		SHIP_COLOR if chosen else ROUTE_COLOR, 2.0 if chosen else 1.0
+	)
+	dots.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return dots
+
+
+## The hologram material of the routes in `color`, one per color; it fades with the system view.
+func _route_material(color: Color, energy: float) -> ShaderMaterial:
+	if not _route_materials.has(color):
+		_route_materials[color] = HoloTable.hologram_material(color)
+	var material: ShaderMaterial = _route_materials[color]
+	_system_materials[material] = HOLOGRAM_ENERGY * energy
+	return material
 
 
 ## A station in the system view: a ring around a hub, with two spokes.
@@ -489,6 +703,7 @@ func _build_globe() -> void:
 	mesh.radial_segments = 64
 	mesh.rings = 32
 	var sphere := MeshInstance3D.new()
+	sphere.name = "Sphere"
 	sphere.mesh = mesh
 	sphere.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_globe_material = ShaderMaterial.new()
@@ -497,12 +712,27 @@ func _build_globe() -> void:
 	_globe_material.set_shader_parameter(&"max_angle", deg_to_rad(region_reach))
 	var dirs: PackedVector3Array = []
 	var colors: PackedColorArray = []
+	var edges: PackedColorArray = []
+	_region_plates.clear()
 	for shown_region: Region in body.regions:
 		var dir: Vector3 = _region_dir(shown_region)
 		dirs.append(dir)
-		var color: Color = NavigatorCard.DANGER_COLORS[shown_region.danger]
-		color.a = 1.0 if shown_region.unlocked else UNREACHABLE_FADE
-		colors.append(color)
+		var reach: float = 1.0 if shown_region.unlocked else UNREACHABLE_FADE
+		var color: Color = shown_region.biome.map_color if shown_region.biome else Color.WHITE
+		colors.append(Color(color, reach))
+		edges.append(Color(NavigatorCard.DANGER_COLORS[shown_region.danger], reach))
+		var plate := HoloPlate.new(
+			tr(shown_region.display_name),
+			shown_ores(shown_region),
+			shown_region.danger,
+			NavigatorCard.DANGER_COLORS[shown_region.danger],
+			44
+		)
+		plate.set_meta(&"region", shown_region)
+		plate.position = dir * (globe_radius + 0.04)
+		plate.visible = false
+		_globe.add_child(plate)
+		_region_plates[plate] = dir
 		var part := StationPart.new()
 		part.item = shown_region
 		part.pick_radius = 0.2
@@ -510,6 +740,7 @@ func _build_globe() -> void:
 		_globe.add_child(part)
 	_globe_material.set_shader_parameter(&"region_dirs", dirs)
 	_globe_material.set_shader_parameter(&"region_colors", colors)
+	_globe_material.set_shader_parameter(&"region_edges", edges)
 	_globe_material.set_shader_parameter(&"region_count", body.regions.size())
 	sphere.material_override = _globe_material
 	_globe.add_child(sphere)

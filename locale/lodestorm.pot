@@ -734,6 +734,10 @@ msgstr ""
 msgid "Destination set: set course at the cockpit."
 msgstr ""
 
+#: game/stations/navigator/navigator_card.gd
+msgid "Tier %d"
+msgstr ""
+
 #: game/stations/skill_graph/skill_card.gd
 msgid "Learn %s first"
 msgstr ""

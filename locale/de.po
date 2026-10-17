@@ -736,6 +736,10 @@ msgstr "Als Ziel setzen"
 msgid "Destination set: set course at the cockpit."
 msgstr "Ziel gesetzt: Kurs im Cockpit setzen."
 
+#: game/stations/navigator/navigator_card.gd
+msgid "Tier %d"
+msgstr "Stufe %d"
+
 #: game/stations/skill_graph/skill_card.gd
 msgid "Learn %s first"
 msgstr "Lerne zuerst %s"

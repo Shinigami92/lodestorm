@@ -148,6 +148,7 @@ weight = 0.8
 [resource]
 script = ExtResource("1_biome")
 display_name = "Ash fields"
+map_color = Color(0.5, 0.46, 0.48, 1)
 area_radius = Vector2(16, 34)
 pass_width = Vector2(9, 15)
 area_spacing = 15.0

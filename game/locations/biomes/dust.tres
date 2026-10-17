@@ -260,6 +260,7 @@ weight = 0.8
 [resource]
 script = ExtResource("1_biome")
 display_name = "Dust flats"
+map_color = Color(0.78, 0.58, 0.4, 1)
 pass_width = Vector2(10, 18)
 floor_relief = 2.0
 floor_relief_size = 70.0

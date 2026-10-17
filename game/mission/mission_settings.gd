@@ -23,3 +23,6 @@ extends Resource
 ## How many of its biome's nests a location has, per difficulty (a region's danger: easy, normal,
 ## hard).
 @export var nest_factors: PackedFloat32Array = [0.6, 1.0, 1.4]
+## How many open areas a generated location of a standard mission has; each mission scales it by
+## its `MissionBrief.length` (a longer run gets a bigger location).
+@export var location_areas: int = 11

@@ -27,6 +27,7 @@ script = ExtResource("4_animator")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 path_desired_distance = 1.0
+path_search_max_polygons = 0
 radius = 0.6
 neighbor_distance = 6.0
 time_horizon_agents = 0.5

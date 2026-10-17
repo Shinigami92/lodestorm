@@ -1,0 +1,232 @@
+extends Control
+## Developer tool (2D): plans generated locations and draws them from above, to check layouts
+## faster than in the game. Light ground is walkable from the ship, dark ground isn't; magenta
+## marks spots a player could fall to without a way back (should be none). Yellow lines are the
+## passes, rings the areas (with their kind and the walking distance from the ship), dots the ore
+## nodes in their ore's color, red rings the nests, faint stripes the lanes kept free.
+## Keys: Left/Right seed, Up/Down number of areas, B next biome, R random seed, S save a picture
+## (`user://location_viewer/`).
+## From the command line it saves one picture and quits:
+## `"$GODOT4_EDITOR" --path . game/debug/location_viewer.tscn -- --seed=3 --areas=11
+## --biome=1 --shot=tmp/layout.png` (`--biome`: index into `BIOMES`).
+
+const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
+const BIOMES: Array[LocationBiome] = [
+	preload("res://game/locations/biomes/dust.tres"),
+	preload("res://game/locations/biomes/overgrowth.tres"),
+]
+## Player speed on foot, in m/s (`PlayerSettings.move_speed`), to show distances as walking time.
+const WALK_SPEED: float = 6.0
+const KIND_COLORS: Dictionary[LocationLayout.Kind, Color] = {
+	LocationLayout.Kind.LANDING: Color(0.35, 0.8, 1.0),
+	LocationLayout.Kind.BASIN: Color(0.85, 0.85, 0.85),
+	LocationLayout.Kind.CROSSROADS: Color(0.85, 0.85, 0.85),
+	LocationLayout.Kind.ORE_POCKET: Color(0.75, 0.5, 1.0),
+	LocationLayout.Kind.NEST_HOLLOW: Color(1.0, 0.3, 0.3),
+	LocationLayout.Kind.PLATEAU: Color(0.45, 0.95, 0.8),
+	LocationLayout.Kind.CRATER: Color(1.0, 0.6, 0.25),
+}
+
+var world_seed: int = 1
+var area_count: int = 11
+var biome_index: int = 0
+
+var _location: GeneratedLocation
+var _picture: ImageTexture
+var _took: int = 0
+var _stuck: PackedVector2Array
+## Screen pixels per m, and where the location's origin is on the screen.
+var _zoom: float = 1.0
+var _offset: Vector2 = Vector2.ZERO
+
+@onready var _info: Label = $Info
+
+
+func _ready() -> void:
+	var shot: String = ""
+	for argument: String in OS.get_cmdline_user_args():
+		var value: String = argument.get_slice("=", 1)
+		match argument.get_slice("=", 0):
+			"--seed":
+				world_seed = value.to_int()
+			"--areas":
+				area_count = value.to_int()
+			"--biome":
+				biome_index = clampi(value.to_int(), 0, BIOMES.size() - 1)
+			"--shot":
+				shot = value
+	_generate()
+	resized.connect(queue_redraw)
+	if not shot.is_empty():
+		await get_tree().create_timer(0.5).timeout
+		var image: Image = get_viewport().get_texture().get_image()
+		image.save_png(ProjectSettings.globalize_path("res://").path_join(shot))
+		get_tree().quit()
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	var key := event as InputEventKey
+	if not key or not key.pressed:
+		return
+	match key.keycode:
+		KEY_RIGHT:
+			world_seed += 1
+		KEY_LEFT:
+			world_seed = maxi(world_seed - 1, 1)
+		KEY_UP:
+			area_count += 1
+		KEY_DOWN:
+			area_count = maxi(area_count - 1, 2)
+		KEY_B:
+			biome_index = (biome_index + 1) % BIOMES.size()
+		KEY_R:
+			world_seed = randi_range(1, 99999)
+		KEY_S:
+			_save()
+			return
+		_:
+			return
+	_generate()
+
+
+func _exit_tree() -> void:
+	if _location:
+		_location.free()
+
+
+func _generate() -> void:
+	if _location:
+		_location.free()
+	_location = LOCATION.instantiate() as GeneratedLocation
+	_location.biome = BIOMES[biome_index]
+	_location.world_seed = world_seed
+	_location.area_count = area_count
+	var started: int = Time.get_ticks_msec()
+	_location.plan()
+	_took = Time.get_ticks_msec() - started
+	_stuck = _location.stuck_spots()
+	_picture = ImageTexture.create_from_image(_draw_ground())
+	var layout: LocationLayout = _location.layout
+	_info.text = (
+		(
+			"Seed %d · %s · %d areas (%d asked) · %d passes, %d loops · %d m wide\n"
+			+ "Farthest %d m along the passes (%d s on foot) · %d ore nodes · %d nests · "
+			+ "%d stuck spots · planned in %d ms\n"
+			+ "Left/Right seed · Up/Down areas · B biome · R random · S save"
+		)
+		% [
+			world_seed,
+			_location.biome.display_name,
+			layout.areas.size(),
+			area_count,
+			layout.passes.size(),
+			layout.loops(),
+			_location.size,
+			layout.farthest(),
+			layout.farthest() / WALK_SPEED,
+			_location.planned_ore_sites().size(),
+			_location.planned_nest_sites().size(),
+			_stuck.size(),
+			_took,
+		]
+	)
+	queue_redraw()
+
+
+## The ground from above: shaded by its slope, light where it's walkable from the ship.
+func _draw_ground() -> Image:
+	var terrain: LocationTerrain = _location.terrain
+	var side: int = terrain.cells + 1
+	var image := Image.create(side, side, false, Image.FORMAT_RGB8)
+	var light := Vector3(-0.6, 0.55, -0.6).normalized()
+	var top: float = _location.biome.wall_height + _location.biome.rock_relief
+	for z: int in side:
+		for x: int in side:
+			var at: Vector3 = terrain.point(x, z)
+			var shade: float = clampf(terrain.normal(x, z).dot(light), 0.0, 1.0)
+			var color: Color
+			if _location.is_reachable(at.x, at.z):
+				color = Color(0.78, 0.68, 0.52)
+				if _location.is_on_lane(at.x, at.z):
+					color = color.lerp(Color(0.95, 0.85, 0.55), 0.25)
+			else:
+				color = Color(0.3, 0.3, 0.33).lerp(
+					Color(0.55, 0.55, 0.6), clampf(at.y / top, 0.0, 1.0)
+				)
+			image.set_pixel(x, z, color * (0.45 + 0.7 * shade))
+	return image
+
+
+func _draw() -> void:
+	if not _picture:
+		return
+	var terrain: LocationTerrain = _location.terrain
+	_zoom = minf(size.x, size.y) / terrain.size()
+	_offset = (size - Vector2.ONE * terrain.size() * _zoom) * 0.5 - terrain.origin * _zoom
+	draw_texture_rect(
+		_picture, Rect2(_to_screen(terrain.origin), Vector2.ONE * terrain.size() * _zoom), false
+	)
+	var font: Font = get_theme_default_font()
+	var site: Rect2 = _location.landing_site
+	draw_rect(
+		Rect2(_to_screen(site.position), site.size * _zoom), Color(0.35, 0.8, 1.0), false, 2.0
+	)
+	for way: LocationLayout.Pass in _location.layout.passes:
+		var points := PackedVector2Array()
+		for point: Vector2 in way.points:
+			points.append(_to_screen(point))
+		draw_polyline(points, Color(1.0, 0.85, 0.3, 0.8), 2.0)
+	for area: LocationLayout.Area in _location.layout.areas:
+		var color: Color = KIND_COLORS[area.kind]
+		var center: Vector2 = _to_screen(area.center)
+		draw_arc(center, area.radius * _zoom, 0.0, TAU, 48, color, 1.5)
+		draw_circle(center, 5.0, color)
+		if area.kind == LocationLayout.Kind.PLATEAU:
+			draw_arc(
+				_to_screen(Vector2(area.mesa.x, area.mesa.y)),
+				area.mesa.z * _zoom,
+				0.0,
+				TAU,
+				32,
+				color,
+				2.0
+			)
+			draw_line(
+				_to_screen(area.ramp_start),
+				_to_screen(area.ramp_start + area.ramp_direction * area.ramp_length),
+				color,
+				LocationLayout.RAMP_WIDTH * _zoom
+			)
+		var kind_name: String = LocationLayout.Kind.keys()[area.kind]
+		var label: String = kind_name.capitalize()
+		if area.kind != LocationLayout.Kind.LANDING:
+			label += " %d m" % area.distance
+		draw_string_outline(
+			font, center + Vector2(8, -6), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, 4, Color.BLACK
+		)
+		draw_string(
+			font, center + Vector2(8, -6), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE
+		)
+	var ore_sites: Array[Vector3] = _location.planned_ore_sites()
+	var ore_types: Array[OreType] = _location.planned_ore_types()
+	for i: int in ore_sites.size():
+		draw_circle(_to_screen(Vector2(ore_sites[i].x, ore_sites[i].z)), 4.0, ore_types[i].color)
+	for nest: Vector3 in _location.planned_nest_sites():
+		draw_arc(_to_screen(Vector2(nest.x, nest.z)), 6.0, 0.0, TAU, 16, Color(1.0, 0.2, 0.2), 2.5)
+	for spot: Vector2 in _stuck:
+		draw_circle(_to_screen(spot), 3.0, Color(1.0, 0.0, 1.0))
+
+
+## Location-local `at` (x, z) on the screen.
+func _to_screen(at: Vector2) -> Vector2:
+	return _offset + at * _zoom
+
+
+func _save() -> void:
+	DirAccess.make_dir_recursive_absolute("user://location_viewer")
+	var path: String = (
+		"user://location_viewer/%s_%d_%d.png"
+		% [BIOMES[biome_index].resource_path.get_file().get_basename(), area_count, world_seed]
+	)
+	get_viewport().get_texture().get_image().save_png(path)
+	print("Saved ", ProjectSettings.globalize_path(path))

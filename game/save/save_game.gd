@@ -1,8 +1,9 @@
 class_name SaveGame
 extends Node
-## Keeps the progress between sessions in one save: the host's (the ship's hold and the story's
-## flags, later crew and quests) in `ship.json` and the local player's (owned weapons, loadout,
-## upgrade levels, skill ranks) in `player.json`, both in `save/` under `directory`. It loads
+## Keeps the progress between sessions in one save: the host's (the ship's hold, its heat shield,
+## where it is and the story's flags, later crew and quests) in `ship.json` and the local
+## player's (owned weapons, loadout, upgrade levels, skill ranks) in `player.json`, both in
+## `save/` under `directory`. It loads
 ## them when the map starts and saves whenever progress changes while no mission is underway;
 ## what changes during a mission is saved once it's over (returned or lost), so quitting
 ## mid-mission loses that run like dying. The settings (`GameSettings`) are kept apart and survive
@@ -82,12 +83,14 @@ func _ready() -> void:
 	if ship:
 		ship.hold_changed.connect(_on_progress_changed.unbind(2))
 		ship.story.changed.connect(_on_progress_changed)
+		ship.heat_shield.changed.connect(_on_progress_changed)
 	if player:
 		player.arsenal.changed.connect(_on_progress_changed)
 		player.loadout.changed.connect(_on_progress_changed)
 		player.upgrades.changed.connect(_on_progress_changed)
 		player.skills.changed.connect(_on_progress_changed)
 	if mission:
+		mission.selected.connect(_on_progress_changed.unbind(1))
 		mission.returned.connect(save_progress)
 		mission.lost.connect(save_progress)
 
@@ -140,8 +143,9 @@ func reset_progress() -> bool:
 	return true
 
 
-## What's saved of `ship`: the hold, in units per ore type, the ores ever brought aboard and the
-## story's flags.
+## What's saved of `ship`: the hold, in units per ore type, the ores ever brought aboard, the
+## story's flags, the heat shield (its MK level, whether the next plate is the ship's project and
+## what's paid into it) and the body the ship is at (its id; none before the first flight).
 static func ship_data(of_ship: Ship) -> Dictionary:
 	var hold: Dictionary = {}
 	for ore_type: OreType in of_ship.hold:
@@ -154,7 +158,20 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 	for flag: StringName in of_ship.story.flags:
 		flags.append(String(flag))
 	flags.sort()
-	return {"version": VERSION, "hold": hold, "found": found, "story": flags}
+	var shield: HeatShield = of_ship.heat_shield
+	var paid: Dictionary = {}
+	for ore_type: OreType in shield.paid:
+		paid[_reference(ore_type)] = shield.paid[ore_type]
+	var data: Dictionary = {
+		"version": VERSION,
+		"hold": hold,
+		"found": found,
+		"story": flags,
+		"shield": {"mk": shield.mk, "project": shield.project, "paid": paid},
+	}
+	if of_ship.mission and of_ship.mission.at_body:
+		data["at"] = String(of_ship.mission.at_body.id)
+	return data
 
 
 ## What's saved of `of_player`: the weapons it owns, its loadout (null: empty slot), the MK
@@ -210,6 +227,47 @@ func _apply_ship(data: Dictionary) -> void:
 				_outdated = true
 				push_warning("Save: skipped story flag %s" % flag)
 		ship.story.emit_changed()
+	if data.get("shield") is Dictionary:
+		_apply_shield(data["shield"] as Dictionary)
+	if data.has("at"):
+		_apply_position(data["at"])
+
+
+func _apply_shield(data: Dictionary) -> void:
+	var mk: float = _number(data.get("mk"), 0.0)
+	if mk < 1.0 or mk > ship.heat_shield.max_mk():
+		_outdated = true
+		push_warning("Save: skipped heat shield level %s" % data.get("mk"))
+		mk = clampf(mk, 1.0, ship.heat_shield.max_mk())
+	var paid: Dictionary[OreType, float] = {}
+	var saved_paid: Dictionary = {}
+	if data.get("paid") is Dictionary:
+		saved_paid = data["paid"]
+	for path: Variant in saved_paid:
+		var ore_type := _resource(path) as OreType
+		var amount: float = _number(saved_paid[path], -1.0)
+		if ore_type and amount >= 0.0:
+			paid[ore_type] = amount
+		else:
+			_outdated = true
+			push_warning("Save: skipped heat shield payment %s" % path)
+	var is_project: bool = false
+	if data.get("project") is bool:
+		is_project = data["project"]
+	ship.heat_shield.restore(roundi(mk), is_project, paid)
+
+
+## Puts the ship at the body a save names, if the heat shield reaches it.
+func _apply_position(id: Variant) -> void:
+	var system: StarSystem = mission.settings.system if mission and mission.settings else null
+	var body: CelestialBody = null
+	if id is String and system:
+		body = system.body_by_id(StringName(id as String))
+	if body and body.is_reachable(ship.heat_shield.mk) and mission:
+		mission.at_body = body
+	else:
+		_outdated = true
+		push_warning("Save: skipped the ship's position %s" % id)
 
 
 func _apply_player(data: Dictionary) -> void:

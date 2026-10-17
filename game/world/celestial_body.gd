@@ -7,12 +7,14 @@ extends Resource
 ## Saved by number in resources: add new kinds at the end.
 enum Kind { PLANET, MOON, STATION, GAS_GIANT }
 
+## Stable name for saves (where the ship is), unique in its star system.
+@export var id: StringName = &""
 ## Player-facing name.
 @export var display_name: String = ""
 @export var kind: Kind = Kind.PLANET
 ## How dangerous it is, growing from the outermost planet (1) inwards; a moon has its planet's.
-## Scales its aliens and caps the MK levels in co-op (later, see GAME_DESIGN.md, Co-op
-## progression).
+## The ship's heat shield needs this MK level to reach it (see `HeatShield`). Scales its aliens and
+## caps the MK levels in co-op (later, see GAME_DESIGN.md, Co-op progression).
 @export_range(1, 6, 1, "or_greater") var tier: int = 1
 ## Its color in the navigator's hologram.
 @export var color: Color = Color(0.5, 0.6, 0.7)
@@ -43,12 +45,7 @@ func kind_name() -> String:
 	return tr("Planet")
 
 
-## Whether the ship can go there now: a station can't be docked at yet, a body needs an open
-## region.
-func is_reachable() -> bool:
-	if kind == Kind.STATION:
-		return false
-	for region: Region in regions:
-		if region.unlocked:
-			return true
-	return false
+## Whether the ship can go there with heat shield MK `shield_mk`: its tier is at most that, and
+## it has regions to land in (a station can't be docked at yet, a gas giant has none).
+func is_reachable(shield_mk: int) -> bool:
+	return kind != Kind.STATION and tier <= shield_mk and not regions.is_empty()

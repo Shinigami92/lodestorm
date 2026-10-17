@@ -39,6 +39,7 @@ func _start() -> void:
 	_flight = _ship.flight
 	var settings := _flight.settings.duplicate() as FlightSettings
 	settings.departure_time = PHASE_TIME
+	settings.travel_time = PHASE_TIME * 3.0
 	settings.descent_time = PHASE_TIME
 	settings.touchdown_time = PHASE_TIME
 	settings.takeoff_delay = PHASE_TIME
@@ -139,6 +140,36 @@ func test_preview_shows_the_location_before_setting_course() -> void:
 	assert_eq(_mission.brief, offer)
 	assert_false(_mission.can_confirm())
 	assert_eq(_flight.phase, ShipFlight.Phase.DEPARTURE)
+
+
+## Within the body the ship is at, the way through space is short; to another planet or moon it's
+## longer, with the destination growing below the ship.
+func test_flight_to_another_body_crosses_space() -> void:
+	await _start_in_space()
+	var system: StarSystem = _mission.settings.system
+	var here: CelestialBody = _mission.ship_body()
+	var near: MissionBrief = null
+	var far: MissionBrief = null
+	for offer: MissionBrief in _mission.offers:
+		var body: CelestialBody = system.body_of(offer.region)
+		if body == here and not near:
+			near = offer
+		elif body != here and not far:
+			far = offer
+	assert_true(_mission.select(near))
+	assert_eq(_flight.phase_duration(), PHASE_TIME, "same body")
+	assert_null(_flight.get_destination_body())
+	assert_eq(_flight.destination_amount(), 0.0)
+	_mission.skip_flight()
+	assert_true(_mission.select(far))
+	await _wait_for_phase(ShipFlight.Phase.DEPARTURE)
+	assert_eq(_flight.phase_duration(), PHASE_TIME * 3.0, "to another body")
+	assert_eq(_flight.get_destination_body(), system.body_of(far.region))
+	await wait_physics_frames(3)
+	assert_gt(_flight.destination_amount(), 0.0, "it shows below the ship")
+	assert_eq(_mission.at_body, system.body_of(far.region))
+	_mission.skip_flight()
+	assert_null(_flight.get_destination_body(), "landed")
 
 
 func test_descent_waits_for_the_location() -> void:

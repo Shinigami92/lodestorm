@@ -110,19 +110,20 @@ func test_break_miners() -> void:
 	assert_true(miner.broken)
 
 
-func test_unlock_regions_offers_every_region() -> void:
+func test_install_shield_opens_the_next_planet() -> void:
+	var ship: Ship = _mission.ship
+	var before: int = _mission.offers.size()
+	_overlay.call(&"install_shield")
+	assert_eq(ship.heat_shield.mk, 2)
+	assert_gt(_mission.offers.size(), before)
+
+
+func test_open_all_offers_every_region() -> void:
 	var system: StarSystem = _mission.settings.system
-	var locked: Array[Region] = []
 	var regions: int = 0
 	for body: CelestialBody in system.bodies:
 		regions += body.regions.size()
-		for region: Region in body.regions:
-			if not region.unlocked:
-				locked.append(region)
-	assert_gt(locked.size(), 0)
-	_overlay.call(&"unlock_regions")
-	var offers: int = _mission.offers.size()
-	# The star system is shared by every test: lock them again.
-	for region: Region in locked:
-		region.unlocked = false
-	assert_eq(offers, regions)
+	assert_lt(_mission.offers.size(), regions)
+	_overlay.call(&"open_all_bodies")
+	assert_eq(_mission.ship.heat_shield.mk, _mission.ship.heat_shield.max_mk())
+	assert_eq(_mission.offers.size(), regions)

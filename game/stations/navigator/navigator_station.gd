@@ -105,6 +105,7 @@ func _process(delta: float) -> void:
 		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
 		if mission:
 			mission.offers_changed.connect(_build_routes)
+			mission.ship.heat_shield.level_changed.connect(rebuild_hologram.unbind(1))
 	if not mission:
 		return
 	if not _system:
@@ -158,14 +159,7 @@ func display_orbit(shown_body: CelestialBody) -> float:
 
 ## The planet or moon the ship is at: where it flew last, else the first one it can go to.
 func ship_body() -> CelestialBody:
-	if mission and mission.at_body:
-		return mission.at_body
-	var system: StarSystem = get_system()
-	if system:
-		for candidate: CelestialBody in system.bodies:
-			if candidate.kind != CelestialBody.Kind.STATION and candidate.is_reachable():
-				return candidate
-	return null
+	return mission.ship_body() if mission else null
 
 
 ## The name plates shown: the system view's (one per body) or the globe's (one per region).
@@ -193,7 +187,7 @@ func shown_ores(shown_region: Region) -> Array[OreType]:
 		return []
 	var shown_body: CelestialBody = system.body_of(shown_region)
 	var ores: Array[OreType] = system.ores_of(shown_region)
-	if shown_body and not shown_body.is_reachable():
+	if shown_body and not is_reachable(shown_body):
 		for i: int in ores.size():
 			if ores[i] in shown_body.signature_ores:
 				ores[i] = null
@@ -208,13 +202,25 @@ func get_part(item: Resource) -> StationPart:
 	return null
 
 
-## Whether `item` can be zoomed into: a reachable body, an open region (not the star).
+## Whether `item` can be zoomed into: a body the ship's heat shield reaches, or one of its regions
+## (not the star).
 func is_reachable(item: Resource) -> bool:
 	var shown_body := item as CelestialBody
-	if shown_body:
-		return shown_body.is_reachable()
 	var shown_region := item as Region
-	return shown_region != null and shown_region.unlocked
+	if shown_region and get_system():
+		shown_body = get_system().body_of(shown_region)
+	return shown_body != null and shown_body.is_reachable(shield_mk())
+
+
+## The ship's heat shield MK level: how far inwards it can fly.
+func shield_mk() -> int:
+	var shield: HeatShield = get_heat_shield()
+	return shield.mk if shield else 1
+
+
+## The ship's heat shield, or null.
+func get_heat_shield() -> HeatShield:
+	return mission.ship.heat_shield if mission and mission.ship else null
 
 
 ## The mission on offer for `item` (a region), or null.
@@ -238,7 +244,7 @@ func activate() -> bool:
 func choose_destination() -> bool:
 	var picked := selected.item as Region if selected else null
 	var offer: MissionBrief = get_offer(picked)
-	if not offer or not picked.unlocked:
+	if not offer or not is_reachable(picked):
 		return false
 	return offer == mission.destination or mission.choose(offer)
 
@@ -279,7 +285,7 @@ func set_zoom_target(value: float) -> void:
 	if from_level == Level.SYSTEM and value > 0.0:
 		if selected:
 			body = selected.item as CelestialBody
-		if not body or not body.is_reachable():
+		if not body or not is_reachable(body):
 			value = minf(value, UNREACHABLE_LIMIT)
 		elif not _globe or _globe.get_meta(&"body", null) != body:
 			_build_globe()
@@ -289,7 +295,7 @@ func set_zoom_target(value: float) -> void:
 			region = towards
 		if value >= 2.0 - 0.001 and not _show_landing_site():
 			value = minf(value, 1.0 + UNREACHABLE_LIMIT)
-		elif not region or not region.unlocked:
+		elif not region or not is_reachable(region):
 			value = minf(value, 1.0 + UNREACHABLE_LIMIT)
 	zoom_target = value
 	var to_level: Level = _level_of(value)
@@ -355,8 +361,8 @@ func _card_position(camera: Camera3D) -> Vector3:
 	return _view.global_position + view.x * card_spot.x + view.y * card_spot.y
 
 
-## Builds the hologram again (e.g. once regions were unlocked: it shows what can be reached),
-## keeping what it shows.
+## Builds the hologram again (e.g. once the heat shield got another plate: it shows what can be
+## reached), keeping what it shows.
 func rebuild_hologram() -> void:
 	if not _system:
 		# Not shown yet: it's built with what can be reached when it first is.
@@ -387,7 +393,7 @@ func _jump(value: float) -> void:
 
 ## Shows the region's landing site on the holo table (just looking). Returns whether it does.
 func _show_landing_site() -> bool:
-	if not region or not region.unlocked:
+	if not region or not is_reachable(region):
 		return false
 	var offer: MissionBrief = get_offer(region)
 	return offer != null and (offer == mission.previewed or mission.preview(offer))
@@ -518,7 +524,7 @@ func _show_region_plates(fade: float) -> void:
 		var shown: float = fade * smoothstep(PLATE_FACING_FROM, PLATE_FACING_FULL, facing)
 		var region_shown := plate.get_meta(&"region") as Region
 		plate.visible = shown > 0.02
-		plate.opacity = shown * (1.0 if region_shown.unlocked else UNREACHABLE_FADE + 0.25)
+		plate.opacity = shown * (1.0 if is_reachable(region_shown) else UNREACHABLE_FADE + 0.25)
 
 
 ## The star in the middle (its part shows the system's name), the orbit lines, and a part per
@@ -547,7 +553,7 @@ func _build_system() -> void:
 		part.pick_radius = shown_body.size * body_scale * 0.6 + 0.1
 		part.position = placed[shown_body]
 		_system.add_child(part)
-		var reach: float = 1.0 if shown_body.is_reachable() else UNREACHABLE_FADE
+		var reach: float = 1.0 if is_reachable(shown_body) else UNREACHABLE_FADE
 		var shape: Node3D = (
 			_station_shape(shown_body, reach)
 			if shown_body.kind == CelestialBody.Kind.STATION
@@ -574,7 +580,7 @@ func _build_system() -> void:
 func _add_body_plate(shown_body: CelestialBody, part: StationPart) -> void:
 	var ores: Array[OreType] = []
 	for ore_type: OreType in shown_body.signature_ores:
-		ores.append(ore_type if shown_body.is_reachable() else null)
+		ores.append(ore_type if is_reachable(shown_body) else null)
 	var plate := HoloPlate.new(tr(shown_body.display_name), ores, -1, Color.WHITE, 40)
 	# Below a planet, above a moon: so a planet's and its moons' plates don't overlap.
 	var side: Vector3 = Vector3.UP if shown_body.orbits else Vector3.DOWN
@@ -582,7 +588,7 @@ func _add_body_plate(shown_body: CelestialBody, part: StationPart) -> void:
 		side * (shown_body.size * body_scale * 0.5 + (0.1 if shown_body.orbits else 0.05))
 	)
 	part.add_child(plate)
-	_system_plates[plate] = 1.0 if shown_body.is_reachable() else UNREACHABLE_FADE + 0.25
+	_system_plates[plate] = 1.0 if is_reachable(shown_body) else UNREACHABLE_FADE + 0.25
 
 
 ## The ship's marker above the body it's at, a route from there to the destination's body and
@@ -617,7 +623,7 @@ func _build_routes() -> void:
 	if mission and mission.destination and mission.destination.region and system:
 		target = system.body_of(mission.destination.region)
 	for other: CelestialBody in _body_parts:
-		if other == from or not other.is_reachable():
+		if other == from or not is_reachable(other):
 			continue
 		var chosen: bool = other == target
 		var route: Node3D = _route(start, _body_parts[other].position, chosen)
@@ -717,7 +723,7 @@ func _build_globe() -> void:
 	for shown_region: Region in body.regions:
 		var dir: Vector3 = _region_dir(shown_region)
 		dirs.append(dir)
-		var reach: float = 1.0 if shown_region.unlocked else UNREACHABLE_FADE
+		var reach: float = 1.0 if is_reachable(shown_region) else UNREACHABLE_FADE
 		var color: Color = shown_region.biome.map_color if shown_region.biome else Color.WHITE
 		colors.append(Color(color, reach))
 		edges.append(Color(NavigatorCard.DANGER_COLORS[shown_region.danger], reach))

@@ -100,8 +100,9 @@ func get_reading_order() -> Array[StationPart]:
 func regions_with(ore_type: OreType) -> Array[Region]:
 	var found_in: Array[Region] = []
 	var system: StarSystem = mission.settings.system if mission and mission.settings else null
+	var ship := get_parent() as Ship
 	if system:
-		for region: Region in system.open_regions():
+		for region: Region in system.open_regions(ship.heat_shield.mk if ship else 1):
 			if ore_type in system.ores_of(region):
 				found_in.append(region)
 	return found_in

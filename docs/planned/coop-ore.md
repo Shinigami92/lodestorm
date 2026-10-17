@@ -1,6 +1,6 @@
 # Whose ore (planned)
 
-Decided 2026-10-17. Built in parts: the ship's projects with the heat shield (M4 step 4), the players' own holds with the refinery (M4 step 11), quest deliveries with the quests (M4 step 15), the rest with co-op (M7); see [`PLAN.md`](../PLAN.md). All values **TBD (playtest)**. Today the hold is the ship's and lives in the host's save (`ship.json`); solo, the player is the host, so it doesn't show. Co-op rules so far: see [Co-op progression](../GAME_DESIGN.md#co-op-progression).
+Decided 2026-10-17. Built in parts: the ship's project with the heat shield (done, M4 step 4 A, see [Opening planets](../GAME_DESIGN.md#6-missions)), the players' own holds with the refinery (M4 step 11), quest deliveries with the quests (M4 step 15), the rest with co-op (M7); see [`PLAN.md`](../PLAN.md). All values **TBD (playtest)**. Today the hold is the ship's and lives in the host's save (`ship.json`); solo, the player is the host, so it doesn't show. Co-op rules so far: see [Co-op progression](../GAME_DESIGN.md#co-op-progression).
 
 ## Every player has their own hold
 
@@ -13,11 +13,11 @@ Decided 2026-10-17. Built in parts: the ship's projects with the heat shield (M4
 
 The ship's costs would otherwise fall on the host alone, who'd fall behind their guests. Since everyone gets the whole haul, the ship takes its part **before** the haul is shared, so everyone pays the same, and nobody's hold is touched.
 
-- **The ship's project:** at the engine room, the host picks the next heat shield plate as the ship's current project (see [`opening-planets.md`](opening-planets.md)). From then on, every run that comes back pays into it first, with exactly the ores it still needs, until it's paid; then it's installed. Example: the plate needs 300 Meridine; a run brings home 200, the plate takes all 200, and everyone's share of Meridine from that run is 0; the next run brings 150, the plate takes the last 100, and everyone gets 50.
+- **The ship's project** (built: the heat shield's next plate, see [Opening planets](../GAME_DESIGN.md#6-missions)): every run that comes back pays into it first, before the haul is shared; with the players' own holds, what's left of the haul goes to every player.
 - **Quest deliveries the same:** while a quest step asks for an amount of an ore ("bring 300 Kyrite", see [`quests.md`](quests.md)), the hauls pay into it the same way; it's handed in at the NPC once it's full. Several projects and deliveries at once fill in a fixed order (the ship's project first, then the deliveries in the order they were accepted).
-- **Paying the rest from the hold:** the host at the engine room, and whoever hands in a quest step, can pay what's still missing from their own hold at any time; that's always their own choice, never someone else's ore. Solo works the same way: a project fills from what you bring home, or from your silos if you choose.
+- **Paying the rest from the hold:** the host at the engine room (built), and whoever hands in a quest step, can pay what's still missing from their own hold at any time; that's always their own choice, never someone else's ore. Solo works the same way: a project fills from what you bring home, or from your silos if you choose.
 - **Alloys** never come from a haul: a step that asks for an alloy is paid from the rack of the player handing it in.
-- **Shown in the world:** the plate on the drive core fills up like a silo as it's paid; when a run comes back, the cargo hatch and the silos show what the ship and the quests took ("Heat shield: 200 Meridine").
+- **Shown in the world:** the plate on the drive core fills up like a silo as it's paid (built); when a run comes back, the cargo hatch and the silos show what the ship and the quests took ("Heat shield: 200 Meridine").
 - **Rewards in ore or alloys** go to every player in the session, like a haul; the other rewards (reputation, a crew member joining, a furnace) belong to the host's ship and story, blueprints to everyone (as decided).
 
 A guest pays into the host's ship but not into their own: when they host later, their own ship still needs its plates. That's fair: the host paid nothing for the guest's ship either.

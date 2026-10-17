@@ -4,8 +4,8 @@ extends CanvasLayer
 ## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
 ## every scene using them sees the new values right away; they last until the game stops and
 ## aren't written to the files. Also shows the mission and flight state and has shortcuts for
-## testing the flight, storm, death, fights, weapons, ammo and upgrades. Integer settings get
-## whole-number sliders.
+## testing the flight, storm, death, fights, weapons, ammo, upgrades and the heat shield. Integer
+## settings get whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -20,6 +20,7 @@ const TUNING: Dictionary[String, Array] = {
 	"res://game/ship/flight_settings.tres":
 	[
 		["departure_time", 0.0, 60.0, 1.0],
+		["travel_time", 0.0, 120.0, 1.0],
 		["descent_time", 0.0, 120.0, 1.0],
 		["touchdown_time", 0.0, 30.0, 0.5],
 		["takeoff_delay", 0.0, 30.0, 0.5],
@@ -246,18 +247,19 @@ func unlock_weapons() -> void:
 			player.arsenal.unlock(weapon_type)
 
 
-## Opens every region of the star system, to try later planets' biomes before they're unlocked.
-func unlock_regions() -> void:
-	var mission: Mission = _mission()
-	if not mission or not mission.settings.system:
-		return
-	for body: CelestialBody in mission.settings.system.bodies:
-		for region: Region in body.regions:
-			region.unlocked = true
-	mission.offer_open_regions()
-	for node: Node in get_tree().root.find_children("*", "Node3D", true, false):
-		if node is NavigatorStation:
-			(node as NavigatorStation).rebuild_hologram()
+## Installs the next plate of every ship's heat shield without paying: the next planet inwards
+## opens.
+func install_shield() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		ship.heat_shield.install_next()
+
+
+## Installs every plate of every ship's heat shield, to try later planets' biomes before they're
+## reached.
+func open_all_bodies() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		while ship.heat_shield.install_next():
+			pass
 
 
 ## Teaches every player every skill at its highest rank, to try them without paying.
@@ -345,7 +347,8 @@ func _build() -> void:
 	_button(actions, "Hatch raiders", hatch_raiders)
 	_button(actions, "Break miners", break_miners)
 	_button(actions, "Unlock weapons", unlock_weapons)
-	_button(actions, "Unlock regions", unlock_regions)
+	_button(actions, "Install shield", install_shield)
+	_button(actions, "Open all", open_all_bodies)
 	_button(actions, "Learn skills", learn_skills)
 	_button(actions, "Fill hold", fill_hold)
 	_button(actions, "Give ore", give_ore)

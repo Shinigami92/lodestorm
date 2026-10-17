@@ -55,7 +55,7 @@ func test_body_plates_hide_what_cannot_be_reached() -> void:
 			continue
 		var expected: Array[OreType] = []
 		for ore_type: OreType in body.signature_ores:
-			expected.append(ore_type if body.is_reachable() else null)
+			expected.append(ore_type if body.is_reachable(1) else null)
 		assert_eq(plate.get_ores(), expected, body.display_name)
 
 
@@ -91,8 +91,8 @@ func test_region_plates_show_danger_and_ores() -> void:
 			var ores: Array[OreType] = plate.get_ores()
 			assert_eq(ores, _navigator.shown_ores(region), region.display_name)
 			for ore_type: OreType in body.signature_ores:
-				assert_eq(ore_type in ores, body.is_reachable(), region.display_name)
-			assert_eq(ores.has(null), not body.is_reachable(), region.display_name)
+				assert_eq(ore_type in ores, body.is_reachable(1), region.display_name)
+			assert_eq(ores.has(null), not body.is_reachable(1), region.display_name)
 		var globe := _navigator.get_node("View/Globe/Sphere") as MeshInstance3D
 		var fills: PackedColorArray = (
 			(globe.material_override as ShaderMaterial).get_shader_parameter(&"region_colors")

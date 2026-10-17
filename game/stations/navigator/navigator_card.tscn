@@ -97,6 +97,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 26
 autowrap_mode = 3
 
+[node name="Needs" type="HFlowContainer" parent="Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 4
+
 [node name="Buttons" type="HFlowContainer" parent="Layout"]
 layout_mode = 2
 theme_override_constants/h_separation = 12

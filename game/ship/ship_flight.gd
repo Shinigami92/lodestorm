@@ -5,7 +5,9 @@ extends Node3D
 ## a location (`fly`) runs through the departure in space (stars streak past), the descent
 ## through the clouds (the location is placed under them, once it's ready) and the touchdown (the
 ## clouds clear and the ground shows); from a location, the take-off comes first (climbing through
-## the clouds into space, where the location is left behind). `take_off` only goes back to space.
+## the clouds into space, where the location is left behind). A flight to another planet or moon
+## stays longer in space (`FlightSettings.travel_time`), with the destination growing below the
+## ship. `take_off` only goes back to space.
 ## The ramp only opens while landed. Durations in `settings`; `skip` jumps to the end (debug,
 ## tests). Its look: star streaks and passing clouds around the hull, and the camera shakes in the
 ## clouds; the sky and fog follow `space_amount` and `cloud_amount` (see `Weather`).
@@ -44,6 +46,11 @@ const STREAK_SPEED: float = 160.0
 const CLOUD_SPEED: float = 20.0
 ## Camera shake in the thick of the clouds, in m.
 const SHAKE: float = 0.05
+## Ship-local spot of the destination body on the way to it (below and behind the hull, seen
+## through the windows and past the decks), and its radius in m at the start and the end of the
+## way.
+const DESTINATION_CENTER := Vector3(-30.0, -260.0, -420.0)
+const DESTINATION_RADIUS := Vector2(20.0, 160.0)
 
 @export var settings: FlightSettings
 @export var cloud_color := Color(0.5, 0.45, 0.42)
@@ -56,8 +63,12 @@ var destination_ready: bool = false
 
 ## Whether the flight goes on to a location after the take-off.
 var _destination: bool = false
+## The planet or moon the flight crosses space to, or null (a flight within the same body).
+var _destination_body: CelestialBody
 var _streaks: GPUParticles3D
 var _clouds: GPUParticles3D
+var _body_view: MeshInstance3D
+var _body_material := StandardMaterial3D.new()
 
 
 func _ready() -> void:
@@ -65,6 +76,8 @@ func _ready() -> void:
 	add_child(_streaks)
 	_clouds = _make_clouds()
 	add_child(_clouds)
+	_body_view = _make_body_view()
+	add_child(_body_view)
 	_update_look()
 
 
@@ -81,11 +94,13 @@ func _process(_delta: float) -> void:
 
 
 ## Starts the flight to the next location: from space right away, from a location after the
-## take-off. Returns whether it started (not while flying already).
-func fly() -> bool:
+## take-off. `to_body`: the planet or moon it's on when that's another one than the ship's (a
+## longer way through space), else null. Returns whether it started (not while flying already).
+func fly(to_body: CelestialBody = null) -> bool:
 	if is_flying():
 		return false
 	_destination = true
+	_destination_body = to_body
 	_enter(Phase.TAKEOFF if phase == Phase.LANDED else Phase.DEPARTURE)
 	return true
 
@@ -95,6 +110,7 @@ func take_off() -> bool:
 	if phase != Phase.LANDED:
 		return false
 	_destination = false
+	_destination_body = null
 	_enter(Phase.TAKEOFF)
 	return true
 
@@ -102,6 +118,7 @@ func take_off() -> bool:
 ## Stands the ship on the ground right away (a map that starts with a location).
 func land_now() -> void:
 	_destination = false
+	_destination_body = null
 	_enter(Phase.LANDED)
 
 
@@ -124,7 +141,7 @@ func is_flying() -> bool:
 func phase_duration() -> float:
 	match phase:
 		Phase.DEPARTURE:
-			return settings.departure_time
+			return settings.travel_time if _destination_body else settings.departure_time
 		Phase.DESCENT:
 			return settings.descent_time
 		Phase.TOUCHDOWN:
@@ -167,6 +184,24 @@ func cloud_amount() -> float:
 	return 0.0
 
 
+## The planet or moon the flight crosses space to, or null (within the same body, or not flying).
+func get_destination_body() -> CelestialBody:
+	return _destination_body if _destination else null
+
+
+## How big the destination body shows below the ship, from 0 (not at all) to 1 (filling the view
+## as the descent begins): it grows over the way through space to another body.
+func destination_amount() -> float:
+	if not get_destination_body():
+		return 0.0
+	match phase:
+		Phase.DEPARTURE:
+			return progress()
+		Phase.DESCENT:
+			return 1.0 - smoothstep(0.0, 0.3, progress())
+	return 0.0
+
+
 ## How many stars streak past, from 0 to 1.
 func streak_amount() -> float:
 	if phase != Phase.DEPARTURE:
@@ -199,6 +234,7 @@ func _advance() -> void:
 				_enter(Phase.TOUCHDOWN)
 		Phase.TOUCHDOWN:
 			_destination = false
+			_destination_body = null
 			_enter(Phase.LANDED)
 			landed.emit()
 		Phase.TAKEOFF:
@@ -225,6 +261,37 @@ func _update_look() -> void:
 	var shake: float = shake_amount()
 	for rig: IsoCameraRig in get_tree().get_nodes_in_group(IsoCameraRig.GROUP):
 		rig.shake = shake
+	var body_amount: float = destination_amount()
+	_body_view.visible = body_amount > 0.0
+	if _body_view.visible:
+		var shown: CelestialBody = get_destination_body()
+		var grow: float = progress() if phase == Phase.DEPARTURE else 1.0
+		var radius: float = lerpf(
+			DESTINATION_RADIUS.x, DESTINATION_RADIUS.y, smoothstep(0.0, 1.0, grow)
+		)
+		_body_view.scale = Vector3.ONE * radius
+		_body_material.albedo_color = Color(shown.color, body_amount)
+
+
+## The destination body seen on the way: a sphere in its color, lit from the side.
+func _make_body_view() -> MeshInstance3D:
+	var view := MeshInstance3D.new()
+	view.name = "Destination"
+	var mesh := SphereMesh.new()
+	mesh.radius = 1.0
+	mesh.height = 2.0
+	mesh.radial_segments = 48
+	mesh.rings = 24
+	view.mesh = mesh
+	_body_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_body_material.roughness = 0.9
+	_body_material.disable_fog = true
+	_body_material.disable_receive_shadows = true
+	view.material_override = _body_material
+	view.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	view.position = DESTINATION_CENTER
+	view.visible = false
+	return view
 
 
 func _make_streaks() -> GPUParticles3D:

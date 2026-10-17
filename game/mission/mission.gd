@@ -1,13 +1,15 @@
 class_name Mission
 extends Node
 ## The mission loop around the ship. The navigator at the holo table offers a mission per open
-## region of the star system (`offers`, `settings.system`), each a new section of its region (a
+## region of the star system (`offers`, `settings.system`; the regions of the bodies the ship's
+## heat shield reaches, more once it gets another plate), each a new section of its region (a
 ## new seed after every run). Showing one at the navigator (`preview`) prepares its location (a
 ## fresh instance of `location_scene` with the mission's biome and seed, generated on a worker
 ## thread) and shows it on the holo table; choosing it as the destination (`choose`) is a separate
 ## step, and confirming that at the cockpit's flight console (`confirm`) sets course and the timer
-## (`duration`): the ship's `flight` takes it there (taking off from the current location first),
-## and the location goes under the ship during the descent. `select` chooses and confirms at once.
+## (`duration`): the ship's `flight` takes it there (taking off from the current location first;
+## a longer way through space to another planet or moon), and the location goes under the ship
+## during the descent. `select` chooses and confirms at once.
 ## The game starts in space, or landed at `location` if the map has one (tests).
 ## The ramp starts closed; the ramp button inside the ship only works with a mission picked and
 ## the ship landed there: it resets the timer, heals the players, lowers the ramp and locks the
@@ -15,7 +17,8 @@ extends Node
 ## zero the storm hits (`time_up`) and hurts everyone outside, more with every second. Players who
 ## die drop what they carried.
 ## The mission is won (`returned`) once every living player is back aboard, in time or during the
-## storm: their cargo goes into the ship's hold, the dead respawn aboard and the ramp goes up.
+## storm: their cargo is the haul (see `Ship.store_haul`), the dead respawn aboard and the ramp
+## goes up.
 ## It's lost (`lost`) when nobody is left alive; after `settings.respawn_delay` everyone respawns
 ## aboard. Either way the mission is done: new ones are offered, and once the ramp is up the ship
 ## takes off into space after the flight's `takeoff_delay`, unless a new course is set before.
@@ -65,7 +68,8 @@ var previewed: MissionBrief
 var destination: MissionBrief
 ## The mission the ship flies to or stands at (one of `offers`), or null.
 var brief: MissionBrief
-## The planet or moon the ship is at (where it flew last), or null before its first flight.
+## The planet or moon the ship is at (where it flew last; saved), or null before its first flight
+## (see `ship_body`).
 var at_body: CelestialBody
 ## Seconds until the storm hits, 0 afterwards.
 var time_left: float
@@ -103,6 +107,7 @@ func _ready() -> void:
 	_respawn_left = settings.respawn_delay
 	_takeoff_left = flight.settings.takeoff_delay
 	ship.mission = self
+	ship.heat_shield.level_changed.connect(_on_shield_level_changed.unbind(1))
 	flight.left_location.connect(_on_left_location)
 	flight.reached_location.connect(_on_reached_location)
 	flight.landed.connect(_on_landed)
@@ -162,17 +167,28 @@ func roll_offers() -> void:
 	offer_open_regions()
 
 
-## Offers a mission for every open region that has none yet (e.g. once regions were unlocked),
-## keeping the others.
+## Offers a mission for every open region that has none yet (e.g. once the heat shield got
+## another plate), keeping the others.
 func offer_open_regions() -> void:
 	if settings.system:
-		for region: Region in settings.system.open_regions():
+		for region: Region in settings.system.open_regions(ship.heat_shield.mk):
 			if offer_for(region):
 				continue
 			var world_seed: int = _rng.randi_range(1, 0x7fffffff)
 			var ores: Array[OreType] = settings.system.ores_of(region)
 			offers.append(MissionBrief.for_region(region, world_seed, ores))
 	offers_changed.emit()
+
+
+## The planet or moon the ship is at: where it flew last, else the first one it can go to (where
+## a new game starts), or null.
+func ship_body() -> CelestialBody:
+	if at_body or not settings.system:
+		return at_body
+	for candidate: CelestialBody in settings.system.bodies:
+		if candidate.is_reachable(ship.heat_shield.mk):
+			return candidate
+	return null
 
 
 ## The mission on offer for `region`, or null.
@@ -234,6 +250,7 @@ func confirm() -> bool:
 		return false
 	brief = destination
 	state = State.CLOSED
+	var from_body: CelestialBody = ship_body()
 	if settings.system and brief.region:
 		at_body = settings.system.body_of(brief.region)
 	time_left = duration()
@@ -241,7 +258,8 @@ func confirm() -> bool:
 	storm_time = 0.0
 	_destination_location = _prepared[brief]
 	flight.destination_ready = not _tasks.has(brief)
-	flight.fly()
+	# Within the same body the ship only takes off and lands; to another one it crosses space.
+	flight.fly(at_body if at_body != from_body else null)
 	ship.ramp_button.enabled = _can_start_run()
 	selected.emit(brief)
 	offers_changed.emit()
@@ -485,9 +503,15 @@ func _take_off_after_delay(delta: float) -> void:
 func _return(players: Array[Player]) -> void:
 	state = State.RETURNED
 	ship.ramp_open = false
+	var haul: Dictionary[OreType, float] = {}
 	for player: Player in players:
-		if not player.dead:
-			ship.store_cargo(player)
+		if player.dead:
+			continue
+		var cargo: Dictionary[OreType, float] = player.take_cargo()
+		for ore_type: OreType in cargo:
+			var so_far: float = haul.get(ore_type, 0.0)
+			haul[ore_type] = so_far + cargo[ore_type]
+	ship.store_haul(haul)
 	_respawn_dead()
 	_takeoff_left = flight.settings.takeoff_delay
 	roll_offers()
@@ -557,6 +581,11 @@ func _on_left_location() -> void:
 		brief = null
 		offers_changed.emit()
 	_show_hologram()
+
+
+## Another plate on the heat shield: the bodies it reaches now offer missions too.
+func _on_shield_level_changed() -> void:
+	offer_open_regions()
 
 
 func _on_landed() -> void:

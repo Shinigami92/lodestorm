@@ -11,6 +11,7 @@ const SUIT: Skill = preload("res://game/progression/skills/tree/reinforced_suit.
 const DASH: Skill = preload("res://game/progression/skills/tree/dash.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")
+const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
 const DIRECTORY: String = "user://test_save_format/"
 
 var _map: Node3D
@@ -89,6 +90,52 @@ func test_resources_are_saved_by_uid() -> void:
 	assert_eq(upgrades, {_uid(ARMOR): 2.0})
 	assert_eq(skills, {_uid(DASH): 1.0})
 	assert_true(_uid(KYRITE).begins_with("uid://"))
+
+
+## The heat shield (level, project, what's paid) and where the ship is are the host's.
+func test_heat_shield_and_position_are_saved() -> void:
+	var mission := _map.get_node("Mission") as Mission
+	_ship.heat_shield.install_next()
+	_ship.heat_shield.set_project()
+	_ship.heat_shield.take_from({MERIDINE: 120.0})
+	var lisk: CelestialBody = mission.settings.system.body_by_id(&"lisk")
+	mission.at_body = lisk
+	_ship.heat_shield.emit_changed()
+	await wait_process_frames(1)
+	var saved: Dictionary = _saved(SaveGame.SHIP_FILE)
+	var at: String = saved["at"]
+	var shield: Dictionary = saved["shield"]
+	var mk: float = shield["mk"]
+	var project: bool = shield["project"]
+	assert_eq(at, "lisk")
+	assert_eq(mk, 2.0)
+	assert_true(project)
+	await _restart()
+	mission = _map.get_node("Mission") as Mission
+	assert_eq(_ship.heat_shield.mk, 2)
+	assert_true(_ship.heat_shield.project)
+	assert_eq(mission.at_body, lisk)
+	var vehra: Region = mission.settings.system.body_by_id(&"vehra").regions[0]
+	assert_not_null(mission.offer_for(vehra), "the planet it opened offers missions again")
+
+
+func test_damaged_heat_shield_and_position_are_skipped() -> void:
+	var ship_data: Dictionary = {
+		"version": SaveGame.VERSION,
+		"shield": {"mk": 99, "project": "yes", "paid": {KYRITE.resource_path: 5.0, "x": 3}},
+		"at": "zairen",
+	}
+	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
+	await _restart()
+	var mission := _map.get_node("Mission") as Mission
+	assert_eq(_ship.heat_shield.mk, _ship.heat_shield.max_mk(), "clamped")
+	assert_false(_ship.heat_shield.project)
+	assert_eq(mission.at_body, mission.settings.system.body_by_id(&"zairen"))
+	ship_data["shield"] = {"mk": 1}
+	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
+	await _restart()
+	mission = _map.get_node("Mission") as Mission
+	assert_null(mission.at_body, "out of the shield's reach")
 
 
 ## Version 1 saved paths, from before the resources moved into game/ (and three ores were renamed).

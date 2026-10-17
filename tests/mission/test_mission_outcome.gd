@@ -3,6 +3,7 @@ extends GutTest
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
+const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
 
 var _map: Node3D
 var _player: Player
@@ -146,6 +147,21 @@ func test_hold_keeps_cargo_over_runs() -> void:
 		_player.add_cargo(KYRITE, 100.0)
 		await _move(_player, _inside())
 	assert_eq(_ship.hold[KYRITE], 200.0)
+
+
+## While the heat shield's next plate is the ship's project, the haul pays into it first.
+func test_returning_pays_the_ships_project_first() -> void:
+	_ship.heat_shield.set_project()
+	await _open()
+	await _move(_player, _outside())
+	_player.add_cargo(MERIDINE, 120.0)
+	_player.add_cargo(KYRITE, 30.0)
+	await _move(_player, _inside())
+	assert_eq(_mission.state, Mission.State.RETURNED)
+	assert_eq(_ship.heat_shield.paid[MERIDINE], 120.0)
+	var stored: float = _ship.hold.get(MERIDINE, 0.0)
+	assert_eq(stored, 0.0, "the plate took all of it")
+	assert_eq(_ship.hold[KYRITE], 30.0)
 
 
 func test_next_run_heals_players() -> void:

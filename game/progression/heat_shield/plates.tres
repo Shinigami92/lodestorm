@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="ShieldPlates" format=3 uid="uid://df6ksmis86y77"]
+
+[ext_resource type="Script" uid="uid://cu8fkifc6safc" path="res://game/progression/heat_shield/shield_plates.gd" id="1_plates"]
+[ext_resource type="Script" uid="uid://balv6xqkvtoo5" path="res://game/progression/heat_shield/shield_plate.gd" id="2_plate"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="3_ore_type"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
+[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
+[ext_resource type="Resource" uid="uid://1uonnxu85sni" path="res://game/ores/types/ore_halcyne.tres" id="ore_halcyne"]
+[ext_resource type="Resource" uid="uid://dsspev82ieiuo" path="res://game/ores/types/ore_indral.tres" id="ore_indral"]
+[ext_resource type="Resource" uid="uid://cad77sebiwhrt" path="res://game/ores/types/ore_ressa.tres" id="ore_ressa"]
+[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
+[ext_resource type="Resource" uid="uid://dfy3xlckv7gf7" path="res://game/ores/types/ore_duskine.tres" id="ore_duskine"]
+[ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="ore_noctile"]
+
+[sub_resource type="Resource" id="Plate_mk2"]
+script = ExtResource("2_plate")
+cost = Dictionary[ExtResource("3_ore_type"), int]({
+ExtResource("ore_meridine"): 300,
+ExtResource("ore_vyrel"): 400
+})
+
+[sub_resource type="Resource" id="Plate_mk3"]
+script = ExtResource("2_plate")
+cost = Dictionary[ExtResource("3_ore_type"), int]({
+ExtResource("ore_emerin"): 300,
+ExtResource("ore_halcyne"): 400
+})
+
+[sub_resource type="Resource" id="Plate_mk4"]
+script = ExtResource("2_plate")
+cost = Dictionary[ExtResource("3_ore_type"), int]({
+ExtResource("ore_indral"): 300,
+ExtResource("ore_ressa"): 400
+})
+
+[sub_resource type="Resource" id="Plate_mk5"]
+script = ExtResource("2_plate")
+cost = Dictionary[ExtResource("3_ore_type"), int]({
+ExtResource("ore_selyx"): 300,
+ExtResource("ore_duskine"): 400
+})
+
+[sub_resource type="Resource" id="Plate_mk6"]
+script = ExtResource("2_plate")
+cost = Dictionary[ExtResource("3_ore_type"), int]({
+ExtResource("ore_noctile"): 300,
+ExtResource("ore_duskine"): 500
+})
+
+[resource]
+script = ExtResource("1_plates")
+plates = Array[ExtResource("2_plate")]([SubResource("Plate_mk2"), SubResource("Plate_mk3"), SubResource("Plate_mk4"), SubResource("Plate_mk5"), SubResource("Plate_mk6")])

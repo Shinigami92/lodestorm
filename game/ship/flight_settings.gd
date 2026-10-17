@@ -5,6 +5,8 @@ extends Resource
 
 ## Seconds in space on the way, before the descent starts.
 @export var departure_time: float = 6.0
+## Seconds in space on the way to another planet or moon, instead of `departure_time`.
+@export var travel_time: float = 14.0
 ## Seconds descending through the clouds; longer if the location isn't ready yet.
 @export var descent_time: float = 14.0
 ## Seconds from below the clouds until the ship stands on the ground.

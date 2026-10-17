@@ -6,7 +6,8 @@ extends Node3D
 ## origin, on a flat landing site; the location's axes are the ship's (nose to -x, ramp to +x).
 ## Ores and nests only lie where players can walk to from the ship; rarer ores lie farther along
 ## the passes, the rarest in dead ends. Every walkable spot leads back to the ship: there are no
-## pits to fall into.
+## pits to fall into. Some areas hold a point of interest or one of the region's set pieces (see
+## `LocationParts`); their markers place ore, nests and crates first.
 ## Everything the generator places is greybox; the values are TBD (playtest).
 ## Generating takes a while, so it runs in two steps: `plan` does the heavy work without touching
 ## nodes or servers, so it can run on a worker thread while the location is outside the tree (the
@@ -107,6 +108,11 @@ const SHAPED_KINDS: Array[LocationLayout.Kind] = [
 @export var view_direction: Vector3 = Vector3.ZERO
 ## Scales the biome's number of nests (the mission's difficulty).
 @export var nest_factor: float = 1.0
+## The region's set pieces: always placed (the mission sets them).
+@export var set_pieces: Array[PartPlacement] = []
+## What the crates hold, in the order they're placed (later quest fragments, set by the mission);
+## the others hold a supply cache.
+@export var crate_contents: Array[CrateContent] = []
 ## Baked for the aliens once the world is generated (none without it).
 @export var navigation_mesh: NavigationMesh
 
@@ -116,6 +122,8 @@ var terrain: LocationTerrain
 var layout: LocationLayout
 ## Edge length of the square ground, in m (it grows with the layout).
 var size: float = 0.0
+## Its points of interest and set pieces.
+var parts := LocationParts.new()
 
 var _rng := RandomNumberGenerator.new()
 ## Grid points players can walk to from the ship (1 = reachable).
@@ -161,7 +169,10 @@ func plan() -> void:
 	layout = LocationLayout.generate(
 		_rng, area_count, biome, landing_yard, landing_site.grow(LANDING_MARGIN)
 	)
+	parts.choose(_rng, layout, set_pieces, biome.part_pool, biome.parts_per_area)
 	_generate_ground()
+	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE)
+	parts.settle(_rng, self)
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE)
 	_pick_ore_sites()
 	_pick_nest_sites()
@@ -182,6 +193,7 @@ func build() -> void:
 	_add_ground()
 	_add_bounds()
 	_add_scatter()
+	parts.build(self, crate_contents)
 	_add_ore_nodes()
 	_add_nests()
 	if navigation_mesh:
@@ -477,18 +489,23 @@ func _pick_ore_sites() -> void:
 	var found: Array[OreType] = ores if not ores.is_empty() else OreCatalog.sorted(biome.ores)
 	if found.is_empty():
 		return
+	var fields: int = parts.ore_sites(found, _ore_sites, _ore_site_types)
+	for i: int in _ore_sites.size():
+		_ore_sites[i].y = terrain.height_at(_ore_sites[i].x, _ore_sites[i].z)
 	var landing: LocationLayout.Area = layout.areas[0]
 	_add_ore_field(found[0], landing, true)
 	_add_ore_field(found[0], landing, true)
 	var others: Array[LocationLayout.Area] = []
 	for area: LocationLayout.Area in layout.areas:
+		var part: LocationParts.Placed = parts.part_in(area)
+		if part and part.info.count(PartMarker.Kind.ORE) > 0:
+			continue
 		if area.kind == LocationLayout.Kind.ORE_POCKET:
 			_add_ore_field(found[found.size() - 1], area, false)
 		elif area.kind not in [LocationLayout.Kind.LANDING, LocationLayout.Kind.NEST_HOLLOW]:
 			others.append(area)
 	var wanted: int = roundi(layout.areas.size() * biome.ore_fields_per_area)
 	var farthest: float = maxf(layout.farthest(), 1.0)
-	var fields: int = 0
 	for attempt: int in wanted * 3:
 		if others.is_empty() or fields >= wanted:
 			break
@@ -531,7 +548,7 @@ func _add_ore_field(ore_type: OreType, area: LocationLayout.Area, near: bool) ->
 			)
 		if site == Vector3.INF:
 			continue
-		_add_site(site, ORE_SITE_RADIUS, 1.5)
+		add_site(site, ORE_SITE_RADIUS, 1.5)
 		_ore_sites.append(Vector3(site.x, terrain.height_at(site.x, site.z), site.z))
 		_ore_site_types.append(ore_type)
 	return true
@@ -541,6 +558,13 @@ func _add_ore_field(ore_type: OreType, area: LocationLayout.Area, near: bool) ->
 ## the others, the areas every way out goes through last (so they rarely block the way back).
 func _pick_nest_sites() -> void:
 	var wanted: int = roundi(layout.areas.size() * biome.nests_per_area * nest_factor)
+	# The parts' nest markers first, where nests may be.
+	for part: LocationParts.Placed in parts.placed:
+		if part.area.distance < biome.nest_min_distance:
+			continue
+		for site: Vector3 in part.markers(PartMarker.Kind.NEST):
+			if _nest_sites.size() < wanted:
+				_nest_sites.append(Vector3(site.x, terrain.height_at(site.x, site.z), site.z))
 	var cut: PackedInt32Array = layout.cut_areas()
 	var first: Array[LocationLayout.Area] = []
 	var spread: Array[LocationLayout.Area] = []
@@ -578,7 +602,7 @@ func _pick_nest_sites() -> void:
 		)
 		if site == Vector3.INF:
 			continue
-		_add_site(site, NEST_SITE_RADIUS, 3.5)
+		add_site(site, NEST_SITE_RADIUS, 3.5)
 		_nest_sites.append(Vector3(site.x, terrain.height_at(site.x, site.z), site.z))
 
 
@@ -608,6 +632,8 @@ func _find_site(radius: float, fits: Callable, around: Vector2, spread: float) -
 ## Whether the ground within `radius` of `at` is reachable, off the lanes and even enough to build
 ## on, and flattening it changes no step from walkable to too steep or back.
 func _is_gentle(at: Vector2, radius: float) -> bool:
+	if parts.covers(at, radius):
+		return false
 	var points: Array[Vector2i] = _grid_within(at, radius)
 	if points.is_empty():
 		return false
@@ -621,23 +647,23 @@ func _is_gentle(at: Vector2, radius: float) -> bool:
 		highest = maxf(highest, terrain.heights[index])
 	if highest - lowest > MAX_SITE_RISE * radius * 2.0:
 		return false
-	return _flattening_keeps_steps(at, radius)
+	return flattening_keeps_steps(at, radius)
 
 
-## Whether flattening a site of `radius` at `at` (see `_add_site`) leaves every step between
+## Whether flattening a site of `radius` at `at` (see `add_site`) leaves every step between
 ## neighboring grid points as it was: walkable ones walkable, too steep ones too steep.
-func _flattening_keeps_steps(at: Vector2, radius: float) -> bool:
+func flattening_keeps_steps(at: Vector2, radius: float, falloff: float = SITE_FALLOFF) -> bool:
 	var level: float = terrain.height_at(at.x, at.y)
 	var max_rise: float = MAX_WALK_SLOPE * cell
 	var changed: Dictionary[int, float] = {}
-	var around: Array[Vector2i] = _grid_within(at, radius + SITE_FALLOFF + cell)
+	var around: Array[Vector2i] = _grid_within(at, radius + falloff + cell)
 	if around.is_empty():
 		return false
 	for point: Vector2i in around:
 		var index: int = terrain.index(point.x, point.y)
 		var spot: Vector3 = terrain.point(point.x, point.y)
 		var outside: float = Vector2(spot.x, spot.z).distance_to(at) - radius
-		var weight: float = 1.0 - smoothstep(0.0, SITE_FALLOFF, outside)
+		var weight: float = 1.0 - smoothstep(0.0, falloff, outside)
 		changed[index] = lerpf(terrain.heights[index], level, weight)
 	for point: Vector2i in around:
 		var index: int = terrain.index(point.x, point.y)
@@ -675,10 +701,11 @@ func _far_from(at: Vector2, sites: Array[Vector3], distance: float) -> bool:
 	return true
 
 
-## Flattens the ground at `site` and keeps scatter away from it (`room` m beyond `radius`).
-func _add_site(site: Vector3, radius: float, room: float) -> void:
+## Flattens the ground at `site` (blending back over `falloff` m) and keeps scatter away from it
+## (`room` m beyond `radius`).
+func add_site(site: Vector3, radius: float, room: float, falloff: float = SITE_FALLOFF) -> void:
 	var at := Vector2(site.x, site.z)
-	terrain.flatten(at, radius, SITE_FALLOFF, terrain.height_at(at.x, at.y))
+	terrain.flatten(at, radius, falloff, terrain.height_at(at.x, at.y))
 	_clearings.append(Vector3(site.x, site.z, radius + room))
 
 

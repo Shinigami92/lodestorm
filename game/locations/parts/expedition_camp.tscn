@@ -1,0 +1,142 @@
+[gd_scene format=3 uid="uid://xwf5jkcqbffk"]
+
+[ext_resource type="Script" uid="uid://x5qe10ai7345" path="res://game/locations/parts/map_part.gd" id="1_y6vo7"]
+[ext_resource type="Script" uid="uid://pes3suoudko7" path="res://game/locations/parts/beacon_light.gd" id="2_75e4b"]
+[ext_resource type="Script" uid="uid://uqm3dgi8uv5j" path="res://game/locations/parts/part_marker.gd" id="3_fciw1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5poxf"]
+albedo_color = Color(0.68, 0.68, 0.64, 1)
+metallic = 0.3
+roughness = 0.6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_wi5ak"]
+radius = 1.1
+height = 4.4
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8nogf"]
+radius = 1.1
+height = 4.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhuax"]
+albedo_color = Color(0.7, 0.36, 0.12, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_amvak"]
+size = Vector3(0.3, 2.3, 2.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w07v0"]
+albedo_color = Color(0.2, 0.21, 0.22, 1)
+metallic = 0.5
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_s68bd"]
+size = Vector3(1.2, 1.2, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gyidq"]
+size = Vector3(0.8, 0.6, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ekj8h"]
+size = Vector3(0.8, 0.6, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ykok1"]
+size = Vector3(0.6, 0.5, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qld4n"]
+size = Vector3(0.6, 0.5, 0.6)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_le8pw"]
+top_radius = 0.07
+bottom_radius = 0.07
+height = 3.4
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_bymhu"]
+height = 3.4
+radius = 0.07
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kbt1b"]
+albedo_color = Color(1, 0.7, 0.3, 1)
+roughness = 0.5
+emission_enabled = true
+emission = Color(1, 0.7, 0.3, 1)
+emission_energy_multiplier = 6.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_2bivh"]
+radius = 0.18
+height = 0.36
+
+[node name="ExpeditionCamp" type="Node3D"]
+script = ExtResource("1_y6vo7")
+display_name = "Expedition camp"
+footprint = 10.0
+prop_radius = 5.0
+area_kinds = Array[int]([1, 2, 6])
+
+[node name="Pod" type="StaticBody3D" parent="."]
+transform = Transform3D(-3.7855173e-08, -0.8660254, 0.5, 1, -4.371139e-08, 0, 2.1855694e-08, 0.5, 0.8660254, -0.4, 0.95, 1.4)
+
+[node name="Mesh" type="MeshInstance3D" parent="Pod"]
+material_override = SubResource("StandardMaterial3D_5poxf")
+mesh = SubResource("CapsuleMesh_wi5ak")
+
+[node name="Shape" type="CollisionShape3D" parent="Pod"]
+shape = SubResource("CapsuleShape3D_8nogf")
+
+[node name="Stripe" type="Node3D" parent="."]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -0.4, 0.95, 1.4)
+
+[node name="Mesh" type="MeshInstance3D" parent="Stripe"]
+material_override = SubResource("StandardMaterial3D_mhuax")
+mesh = SubResource("BoxMesh_amvak")
+
+[node name="Hatch" type="Node3D" parent="."]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 0.3, 1, 0.25)
+
+[node name="Mesh" type="MeshInstance3D" parent="Hatch"]
+material_override = SubResource("StandardMaterial3D_w07v0")
+mesh = SubResource("BoxMesh_s68bd")
+
+[node name="Supplies1" type="StaticBody3D" parent="."]
+transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, 2.6, 0.3, 2.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Supplies1"]
+material_override = SubResource("StandardMaterial3D_w07v0")
+mesh = SubResource("BoxMesh_gyidq")
+
+[node name="Shape" type="CollisionShape3D" parent="Supplies1"]
+shape = SubResource("BoxShape3D_ekj8h")
+
+[node name="Supplies2" type="StaticBody3D" parent="."]
+transform = Transform3D(0.90630776, 0, -0.42261827, 0, 1, 0, 0.42261827, 0, 0.90630776, 3.2, 0.25, 1.7)
+
+[node name="Mesh" type="MeshInstance3D" parent="Supplies2"]
+material_override = SubResource("StandardMaterial3D_mhuax")
+mesh = SubResource("BoxMesh_ykok1")
+
+[node name="Shape" type="CollisionShape3D" parent="Supplies2"]
+shape = SubResource("BoxShape3D_qld4n")
+
+[node name="Mast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1.7, -1.4)
+
+[node name="Mesh" type="MeshInstance3D" parent="Mast"]
+material_override = SubResource("StandardMaterial3D_w07v0")
+mesh = SubResource("CylinderMesh_le8pw")
+
+[node name="Shape" type="CollisionShape3D" parent="Mast"]
+shape = SubResource("CylinderShape3D_bymhu")
+
+[node name="Beacon" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 3.5, -1.4)
+material_override = SubResource("StandardMaterial3D_kbt1b")
+mesh = SubResource("SphereMesh_2bivh")
+script = ExtResource("2_75e4b")
+
+[node name="Glow" type="OmniLight3D" parent="Beacon"]
+light_color = Color(1, 0.7, 0.3, 1)
+light_energy = 1.5
+omni_range = 7.0
+
+[node name="QuestAnchor" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0, -2.6)
+script = ExtResource("3_fciw1")
+kind = 3

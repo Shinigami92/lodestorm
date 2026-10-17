@@ -1,0 +1,142 @@
+[gd_scene format=3 uid="uid://whlciwm73uw6"]
+
+[ext_resource type="Script" uid="uid://x5qe10ai7345" path="res://game/locations/parts/map_part.gd" id="1_vqaw7"]
+[ext_resource type="Script" uid="uid://uqm3dgi8uv5j" path="res://game/locations/parts/part_marker.gd" id="2_cbvr6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q48cx"]
+albedo_color = Color(0.32, 0.36, 0.44, 1)
+metallic = 0.3
+roughness = 0.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_xrlvf"]
+size = Vector3(1.4, 3.2, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ig7q5"]
+size = Vector3(1.4, 3.2, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ux8sq"]
+size = Vector3(1.4, 4.6, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kdk1r"]
+size = Vector3(1.4, 4.6, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xuvwj"]
+size = Vector3(1.4, 5.8, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rra6r"]
+size = Vector3(1.4, 5.8, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2c8xn"]
+size = Vector3(1.4, 6.4, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1ooow"]
+size = Vector3(1.4, 6.4, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3s50h"]
+size = Vector3(1.4, 5.2, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_axlp8"]
+size = Vector3(1.4, 5.2, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_g2had"]
+size = Vector3(1.4, 4.2, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fug76"]
+size = Vector3(1.4, 4.2, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_y88ir"]
+size = Vector3(1.4, 2.8, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pe0uf"]
+size = Vector3(1.4, 2.8, 1.4)
+
+[node name="RichVein" type="Node3D"]
+script = ExtResource("1_vqaw7")
+display_name = "Rich vein"
+footprint = 11.0
+area_kinds = Array[int]([3, 1, 2])
+
+[node name="Crystal1" type="StaticBody3D" parent="."]
+transform = Transform3D(0.9418379, 0.1468938, -0.30226424, -0.085251175, 0.9744255, 0.2079117, 0.3250749, -0.17005074, 0.9302737, -5.5242405, 1.28, 2.8147411)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crystal1"]
+material_override = SubResource("StandardMaterial3D_q48cx")
+mesh = SubResource("BoxMesh_xrlvf")
+
+[node name="Shape" type="CollisionShape3D" parent="Crystal1"]
+shape = SubResource("BoxShape3D_ig7q5")
+
+[node name="Crystal2" type="StaticBody3D" parent="."]
+transform = Transform3D(0.9934958, -0.10227962, 0.05004913, 0.08334745, 0.9526658, 0.2923717, -0.07758375, -0.2862986, 0.9549942, -4.1486096, 1.84, 4.6074977)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crystal2"]
+material_override = SubResource("StandardMaterial3D_q48cx")
+mesh = SubResource("BoxMesh_ux8sq")
+
+[node name="Shape" type="CollisionShape3D" parent="Crystal2"]
+shape = SubResource("BoxShape3D_kdk1r")
+
+[node name="Crystal3" type="StaticBody3D" parent="."]
+transform = Transform3D(0.9233487, -0.072165705, 0.37711966, -0.08080939, 0.9236557, 0.37460658, -0.37536246, -0.37636733, 0.84702456, -2.2218814, 2.32, 5.7881985)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crystal3"]
+material_override = SubResource("StandardMaterial3D_q48cx")
+mesh = SubResource("BoxMesh_xuvwj")
+
+[node name="Shape" type="CollisionShape3D" parent="Crystal3"]
+shape = SubResource("BoxShape3D_rra6r")
+
+[node name="Crystal4" type="StaticBody3D" parent="."]
+transform = Transform3D(0.69160277, -0.20808475, 0.6916548, 0.085251175, 0.9744255, 0.2079117, -0.7172293, -0.084827915, 0.6916548, 0, 2.56, 6.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crystal4"]
+material_override = SubResource("StandardMaterial3D_q48cx")
+mesh = SubResource("BoxMesh_2c8xn")
+
+[node name="Shape" type="CollisionShape3D" parent="Crystal4"]
+shape = SubResource("BoxShape3D_1ooow")
+
+[node name="Crystal5" type="StaticBody3D" parent="."]
+transform = Transform3D(0.42846772, -0.23062904, 0.8736279, -0.08334745, 0.9526658, 0.2923717, -0.89970475, -0.19808649, 0.38896418, 2.2218814, 2.08, 5.7881985)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crystal5"]
+material_override = SubResource("StandardMaterial3D_q48cx")
+mesh = SubResource("BoxMesh_3s50h")
+
+[node name="Shape" type="CollisionShape3D" parent="Crystal5"]
+shape = SubResource("BoxShape3D_axlp8")
+
+[node name="Crystal6" type="StaticBody3D" parent="."]
+transform = Transform3D(0.019532453, -0.37723103, 0.92591316, 0.08080939, 0.9236557, 0.37460658, -0.99653816, 0.067505494, 0.04852507, 4.1486096, 1.68, 4.6074977)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crystal6"]
+material_override = SubResource("StandardMaterial3D_q48cx")
+mesh = SubResource("BoxMesh_g2had")
+
+[node name="Shape" type="CollisionShape3D" parent="Crystal6"]
+shape = SubResource("BoxShape3D_fug76")
+
+[node name="Crystal7" type="StaticBody3D" parent="."]
+transform = Transform3D(-0.2906073, -0.22391595, 0.93027365, -0.085251175, 0.9744255, 0.2079117, -0.9530371, -0.018886253, -0.30226427, 5.5242405, 1.12, 2.8147411)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crystal7"]
+material_override = SubResource("StandardMaterial3D_q48cx")
+mesh = SubResource("BoxMesh_y88ir")
+
+[node name="Shape" type="CollisionShape3D" parent="Crystal7"]
+shape = SubResource("BoxShape3D_pe0uf")
+
+[node name="Ore1" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 2.2)
+script = ExtResource("2_cbvr6")
+band = 2
+
+[node name="Ore2" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.4)
+script = ExtResource("2_cbvr6")
+band = 2
+
+[node name="Ore3" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 2.2)
+script = ExtResource("2_cbvr6")
+band = 2

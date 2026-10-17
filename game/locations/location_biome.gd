@@ -52,6 +52,12 @@ extends Resource
 @export_group("Scatter")
 @export var scatter: Array[ScatterType] = []
 
+@export_group("Points of interest")
+## Map parts its locations pick their points of interest from.
+@export var part_pool: Array[PartPlacement] = []
+## Points of interest per area (besides the region's set pieces).
+@export var parts_per_area: float = 0.25
+
 @export_group("Ores")
 ## Ore types from common to rare: rarer ones lie farther away from the ship.
 @export var ores: Array[OreType] = []

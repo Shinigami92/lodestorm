@@ -2,9 +2,9 @@ class_name OccludedSilhouette
 extends RefCounted
 ## Shows bodies hidden behind cliffs, plants or walls as see-through silhouettes in a color
 ## (`assets/shaders/occluded_silhouette.gdshader`), so what matters stays readable from the
-## isometric camera: players, aliens, miners, ore. Only a depth and stencil test, so it works from
-## any camera, VR's too. A body's meshes mark where they're visible in the stencil buffer
-## (`mark_visible`), so its silhouette only shows where something else hides it.
+## isometric camera: players, aliens, miners, ore, unopened crates. Only a depth and stencil
+## test, so it works from any camera, VR's too. A body's meshes mark where they're visible in the
+## stencil buffer (`mark_visible`), so its silhouette only shows where something else hides it.
 
 const SHADER: Shader = preload("res://assets/shaders/occluded_silhouette.gdshader")
 ## Stencil value bodies write where they're visible (the silhouette skips those pixels).
@@ -12,6 +12,7 @@ const STENCIL_VISIBLE: int = 1
 const PLAYER_COLOR := Color(0.95, 0.55, 0.15, 0.7)
 const ALIEN_COLOR := Color(0.95, 0.15, 0.1, 0.6)
 const MINER_COLOR := Color(0.6, 0.85, 1.0, 0.55)
+const CRATE_COLOR := Color(1.0, 0.72, 0.28, 0.5)
 ## Ore shows fainter than the rest, in its own color.
 const ORE_ALPHA: float = 0.5
 

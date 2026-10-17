@@ -3,20 +3,25 @@ extends Control
 ## faster than in the game. Light ground is walkable from the ship, dark ground isn't; magenta
 ## marks spots a player could fall to without a way back (should be none). Yellow lines are the
 ## passes, rings the areas (with their kind and the walking distance from the ship), dots the ore
-## nodes in their ore's color, red rings the nests, faint stripes the lanes kept free.
+## nodes in their ore's color, red rings the nests, faint stripes the lanes kept free. Amber
+## rings are map parts (their footprint, the props' circle and their name; a set piece's name in
+## capitals), amber squares their crates, amber diamonds their quest sites.
 ## The white arrow shows where the camera looks (the rock on its side stays low to see over).
-## Keys: Left/Right seed, Up/Down number of areas, B next biome, V camera view on and off, R random
-## seed, S save a picture (`user://location_viewer/`).
+## Keys: Left/Right seed, Up/Down number of areas, B next biome, G next region (its biome and set
+## pieces; none: only the biome's points of interest), V camera view on and off, R random seed,
+## S save a picture (`user://location_viewer/`).
 ## From the command line it saves one picture and quits:
 ## `"$GODOT4_EDITOR" --path . game/debug/location_viewer.tscn -- --seed=3 --areas=11
-## --biome=1 --view=1 --shot=tmp/layout.png` (`--biome`: index into `BIOMES`, `--view=0`: no
-## camera view).
+## --biome=1 --region=0 --view=1 --shot=tmp/layout.png` (`--biome`: index into `BIOMES`,
+## `--region`: index into the star system's regions (-1: none), `--view=0`: no camera view).
 
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 const BIOMES: Array[LocationBiome] = [
 	preload("res://game/locations/biomes/dust.tres"),
 	preload("res://game/locations/biomes/overgrowth.tres"),
 ]
+const STAR_SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
+const PART_COLOR := Color(1.0, 0.75, 0.3)
 ## Where the camera looks in the game when the ship's nose points along -x (the isometric view).
 const VIEW := Vector3(-0.577, -0.577, -0.577)
 ## Player speed on foot, in m/s (`PlayerSettings.move_speed`), to show distances as walking time.
@@ -35,6 +40,8 @@ var world_seed: int = 1
 var area_count: int = 11
 var biome_index: int = 0
 var with_view: bool = true
+## Index into `_regions`, or -1.
+var region_index: int = -1
 
 var _location: GeneratedLocation
 var _picture: ImageTexture
@@ -45,6 +52,7 @@ var _zoom: float = 1.0
 var _offset: Vector2 = Vector2.ZERO
 
 @onready var _info: Label = $Info
+@onready var _regions: Array[Region] = _all_regions()
 
 
 func _ready() -> void:
@@ -60,6 +68,8 @@ func _ready() -> void:
 				biome_index = clampi(value.to_int(), 0, BIOMES.size() - 1)
 			"--view":
 				with_view = value.to_int() != 0
+			"--region":
+				region_index = clampi(value.to_int(), -1, _regions.size() - 1)
 			"--shot":
 				shot = value
 	_generate()
@@ -88,6 +98,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			biome_index = (biome_index + 1) % BIOMES.size()
 		KEY_V:
 			with_view = not with_view
+		KEY_G:
+			region_index = (region_index + 2) % (_regions.size() + 1) - 1
 		KEY_R:
 			world_seed = randi_range(1, 99999)
 		KEY_S:
@@ -108,6 +120,10 @@ func _generate() -> void:
 		_location.free()
 	_location = LOCATION.instantiate() as GeneratedLocation
 	_location.biome = BIOMES[biome_index]
+	var region: Region = _regions[region_index] if region_index >= 0 else null
+	if region:
+		_location.biome = region.biome
+		_location.set_pieces = region.set_pieces
 	_location.world_seed = world_seed
 	_location.area_count = area_count
 	_location.view_direction = VIEW if with_view else Vector3.ZERO
@@ -119,13 +135,15 @@ func _generate() -> void:
 	var layout: LocationLayout = _location.layout
 	_info.text = (
 		(
-			"Seed %d · %s · %d areas (%d asked) · %d passes, %d loops · %d m wide\n"
+			"Seed %d · %s · %s · %d areas (%d asked) · %d passes, %d loops · %d m wide\n"
 			+ "Farthest %d m along the passes (%d s on foot) · %d ore nodes · %d nests · "
-			+ "%d stuck spots · planned in %d ms\n"
-			+ "Left/Right seed · Up/Down areas · B biome · V view (%s) · R random · S save"
+			+ "%d parts · %d stuck spots · planned in %d ms\n"
+			+ "Left/Right seed · Up/Down areas · B biome · G region · V view (%s) · R random · "
+			+ "S save"
 		)
 		% [
 			world_seed,
+			region.display_name if region else "No region",
 			_location.biome.display_name,
 			layout.areas.size(),
 			area_count,
@@ -136,6 +154,7 @@ func _generate() -> void:
 			layout.farthest() / WALK_SPEED,
 			_location.planned_ore_sites().size(),
 			_location.planned_nest_sites().size(),
+			_location.parts.placed.size(),
 			_stuck.size(),
 			_took,
 			"on" if with_view else "off",
@@ -224,6 +243,7 @@ func _draw() -> void:
 		draw_circle(_to_screen(Vector2(ore_sites[i].x, ore_sites[i].z)), 4.0, ore_types[i].color)
 	for nest: Vector3 in _location.planned_nest_sites():
 		draw_arc(_to_screen(Vector2(nest.x, nest.z)), 6.0, 0.0, TAU, 16, Color(1.0, 0.2, 0.2), 2.5)
+	_draw_parts(font)
 	for spot: Vector2 in _stuck:
 		draw_circle(_to_screen(spot), 3.0, Color(1.0, 0.0, 1.0))
 	if with_view:
@@ -231,6 +251,38 @@ func _draw() -> void:
 		var forward := Vector2(VIEW.x, VIEW.z).normalized()
 		draw_line(corner - forward * 30.0, corner + forward * 30.0, Color.WHITE, 3.0)
 		draw_circle(corner + forward * 30.0, 6.0, Color.WHITE)
+
+
+## The map parts: footprint, props, name, crates and quest sites.
+func _draw_parts(font: Font) -> void:
+	for part: LocationParts.Placed in _location.parts.placed:
+		var center: Vector2 = _to_screen(Vector2(part.origin.x, part.origin.z))
+		draw_arc(center, part.info.footprint * _zoom, 0.0, TAU, 48, PART_COLOR, 2.0)
+		draw_circle(center, part.info.prop_radius * _zoom, Color(PART_COLOR, 0.35))
+		var front := Vector2(-sin(part.turn), -cos(part.turn))
+		draw_line(center, center + front * part.info.footprint * _zoom, PART_COLOR, 2.0)
+		for crate: Vector3 in part.markers(PartMarker.Kind.CRATE):
+			var at: Vector2 = _to_screen(Vector2(crate.x, crate.z))
+			draw_rect(Rect2(at - Vector2.ONE * 4.0, Vector2.ONE * 8.0), PART_COLOR)
+		for anchor: Vector3 in part.markers(PartMarker.Kind.QUEST_ANCHOR):
+			var at: Vector2 = _to_screen(Vector2(anchor.x, anchor.z))
+			var diamond := PackedVector2Array(
+				[at + Vector2(0, -6), at + Vector2(6, 0), at + Vector2(0, 6), at + Vector2(-6, 0)]
+			)
+			draw_colored_polygon(diamond, PART_COLOR)
+		var label: String = part.info.display_name
+		if part.set_piece:
+			label = label.to_upper()
+		var text_at: Vector2 = center + Vector2(8, 14)
+		draw_string_outline(font, text_at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, 4, Color.BLACK)
+		draw_string(font, text_at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, PART_COLOR)
+
+
+func _all_regions() -> Array[Region]:
+	var regions: Array[Region] = []
+	for body: CelestialBody in STAR_SYSTEM.bodies:
+		regions.append_array(body.regions)
+	return regions
 
 
 ## Location-local `at` (x, z) on the screen.

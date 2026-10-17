@@ -298,6 +298,8 @@ func _instantiate(offer: MissionBrief) -> Node3D:
 		generated.world_seed = offer.world_seed
 		generated.nest_factor = settings.nest_factors[offer.difficulty]
 		generated.area_count = maxi(roundi(settings.location_areas * offer.length), 4)
+		if offer.region:
+			generated.set_pieces = offer.region.set_pieces
 		var rig := get_tree().get_first_node_in_group(IsoCameraRig.GROUP) as IsoCameraRig
 		if rig:
 			# Where the camera looks, seen from the location (it stands where the ship lands).

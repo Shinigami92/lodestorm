@@ -364,9 +364,13 @@ func test_rock_stays_low_on_the_camera_side() -> void:
 		var higher: int = 0
 		var side: int = viewed.terrain.cells + 1
 		for i: int in viewed.terrain.heights.size():
-			# On the rock (the ore and nest sites, flattened on the open ground, lie elsewhere).
+			# On the rock.
 			var at: Vector3 = viewed.terrain.point(i % side, floori(i / float(side)))
 			if viewed.is_reachable(at.x, at.z) or flat.is_reachable(at.x, at.z):
+				continue
+			# Nor where the ground flattened under a site or a map part blends back (they lie a bit
+			# differently with the view).
+			if _near_site(viewed, at) or _near_site(flat, at):
 				continue
 			var difference: float = viewed.terrain.heights[i] - flat.terrain.heights[i]
 			if difference > 0.01:
@@ -396,6 +400,23 @@ func test_lanes_stay_free() -> void:
 	)
 	for site: Node3D in sites:
 		assert_false(location.is_on_lane(site.position.x, site.position.z), site.name)
+
+
+func _near_site(location: GeneratedLocation, at: Vector3) -> bool:
+	var point := Vector2(at.x, at.z)
+	var reach: float = LocationParts.FALLOFFS.max() + location.cell
+	for part: LocationParts.Placed in location.parts.placed:
+		var center := Vector2(part.origin.x, part.origin.z)
+		if center.distance_to(point) < part.info.footprint + reach:
+			return true
+	reach = GeneratedLocation.SITE_FALLOFF + location.cell
+	for nest: Vector3 in location.planned_nest_sites():
+		if Vector2(nest.x, nest.z).distance_to(point) < GeneratedLocation.NEST_SITE_RADIUS + reach:
+			return true
+	for ore: Vector3 in location.planned_ore_sites():
+		if Vector2(ore.x, ore.z).distance_to(point) < GeneratedLocation.ORE_SITE_RADIUS + reach:
+			return true
+	return false
 
 
 func _nests_in(location: GeneratedLocation, area: LocationLayout.Area) -> int:

@@ -30,6 +30,13 @@ func before_each() -> void:
 	watch_signals(_alien)
 
 
+## Aliens find their way however long it is: around the rock of a generated location the default
+## search limit runs out (and Godot logs an error every frame).
+func test_path_search_has_no_polygon_limit() -> void:
+	var agent := _alien.get_node("NavigationAgent3D") as NavigationAgent3D
+	assert_eq(agent.path_search_max_polygons, 0)
+
+
 func test_waits_until_player_in_range() -> void:
 	await _place_alien(_alien.settings.detection_range + 3.0)
 	await wait_physics_frames(10)

@@ -264,6 +264,25 @@ func _card_position(camera: Camera3D) -> Vector3:
 	return _view.global_position + view.x * card_spot.x + view.y * card_spot.y
 
 
+## Builds the hologram again (e.g. once regions were unlocked: it shows what can be reached),
+## keeping what it shows.
+func rebuild_hologram() -> void:
+	if not _system:
+		# Not shown yet: it's built with what can be reached when it first is.
+		return
+	for view: Node3D in [_system, _globe]:
+		if view:
+			_view.remove_child(view)
+			view.queue_free()
+	_system = null
+	_globe = null
+	_globe_material = null
+	_body_parts.clear()
+	_system_materials.clear()
+	_build_system()
+	_jump(zoom_target)
+
+
 ## Jumps to `value` without easing (opening, showing a body or region directly).
 func _jump(value: float) -> void:
 	zoom_target = value

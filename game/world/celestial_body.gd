@@ -1,13 +1,19 @@
 class_name CelestialBody
 extends Resource
 ## A planet, moon or station of the star system, with the regions the ship can land in. Stations
-## are handcrafted maps (later); until they exist they can't be docked at.
+## are handcrafted maps (later); until they exist they can't be docked at. A gas giant has no
+## regions: the ship lands on its moons.
 
-enum Kind { PLANET, MOON, STATION }
+## Saved by number in resources: add new kinds at the end.
+enum Kind { PLANET, MOON, STATION, GAS_GIANT }
 
 ## Player-facing name.
 @export var display_name: String = ""
 @export var kind: Kind = Kind.PLANET
+## How dangerous it is, growing from the outermost planet (1) inwards; a moon has its planet's.
+## Scales its aliens and caps the MK levels in co-op (later, see GAME_DESIGN.md, Co-op
+## progression).
+@export_range(1, 6, 1, "or_greater") var tier: int = 1
 ## Its color in the navigator's hologram.
 @export var color: Color = Color(0.5, 0.6, 0.7)
 ## Its size in the system view, relative to the others.
@@ -32,6 +38,8 @@ func kind_name() -> String:
 			return tr("Moon")
 		Kind.STATION:
 			return tr("Station")
+		Kind.GAS_GIANT:
+			return tr("Gas giant")
 	return tr("Planet")
 
 

@@ -1,0 +1,25 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://dr3kd8f5pwegy"]
+
+[ext_resource type="Shader" uid="uid://bav0n8fm2mrnp" path="res://assets/shaders/terrain.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://bcluyl3jt83fx" path="res://assets/terrain/dust_ground_albedo.png" id="2_ground_albedo"]
+[ext_resource type="Texture2D" uid="uid://bo8q7n3apllog" path="res://assets/terrain/dust_ground_nra.png" id="3_ground_nra"]
+[ext_resource type="Texture2D" uid="uid://d2wnihqrcwfhj" path="res://assets/terrain/dust_scree_albedo.png" id="4_scree_albedo"]
+[ext_resource type="Texture2D" uid="uid://5ubpha0iq76i" path="res://assets/terrain/dust_scree_nra.png" id="5_scree_nra"]
+[ext_resource type="Texture2D" uid="uid://r3lpe3dvvwjx" path="res://assets/terrain/overgrowth_rock_albedo.png" id="6_rock_albedo"]
+[ext_resource type="Texture2D" uid="uid://c6eenwaptgruv" path="res://assets/terrain/overgrowth_rock_nra.png" id="7_rock_nra"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/ground_albedo = ExtResource("2_ground_albedo")
+shader_parameter/ground_nra = ExtResource("3_ground_nra")
+shader_parameter/ground_tile = 6.0
+shader_parameter/scree_albedo = ExtResource("4_scree_albedo")
+shader_parameter/scree_nra = ExtResource("5_scree_nra")
+shader_parameter/scree_tile = 4.0
+shader_parameter/rock_albedo = ExtResource("6_rock_albedo")
+shader_parameter/rock_nra = ExtResource("7_rock_nra")
+shader_parameter/rock_tile = 8.0
+shader_parameter/ground_tint = Color(0.78, 1.1, 1.35, 1)
+shader_parameter/scree_tint = Color(0.85, 1.15, 1.4, 1)
+shader_parameter/rock_tint = Color(0.85, 1.05, 1.15, 1)

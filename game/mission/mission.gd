@@ -157,8 +157,16 @@ func roll_offers() -> void:
 	previewed = null
 	destination = null
 	brief = null
+	offer_open_regions()
+
+
+## Offers a mission for every open region that has none yet (e.g. once regions were unlocked),
+## keeping the others.
+func offer_open_regions() -> void:
 	if settings.system:
 		for region: Region in settings.system.open_regions():
+			if offer_for(region):
+				continue
 			var world_seed: int = _rng.randi_range(1, 0x7fffffff)
 			var ores: Array[OreType] = settings.system.ores_of(region)
 			offers.append(MissionBrief.for_region(region, world_seed, ores))

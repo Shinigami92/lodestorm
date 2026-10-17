@@ -108,3 +108,21 @@ func test_break_miners() -> void:
 	var miner: Miner = node.place_miner(_player.miner_scene)
 	_overlay.call(&"break_miners")
 	assert_true(miner.broken)
+
+
+func test_unlock_regions_offers_every_region() -> void:
+	var system: StarSystem = _mission.settings.system
+	var locked: Array[Region] = []
+	var regions: int = 0
+	for body: CelestialBody in system.bodies:
+		regions += body.regions.size()
+		for region: Region in body.regions:
+			if not region.unlocked:
+				locked.append(region)
+	assert_gt(locked.size(), 0)
+	_overlay.call(&"unlock_regions")
+	var offers: int = _mission.offers.size()
+	# The star system is shared by every test: lock them again.
+	for region: Region in locked:
+		region.unlocked = false
+	assert_eq(offers, regions)

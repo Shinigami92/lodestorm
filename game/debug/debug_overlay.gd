@@ -246,6 +246,20 @@ func unlock_weapons() -> void:
 			player.arsenal.unlock(weapon_type)
 
 
+## Opens every region of the star system, to try later planets' biomes before they're unlocked.
+func unlock_regions() -> void:
+	var mission: Mission = _mission()
+	if not mission or not mission.settings.system:
+		return
+	for body: CelestialBody in mission.settings.system.bodies:
+		for region: Region in body.regions:
+			region.unlocked = true
+	mission.offer_open_regions()
+	for node: Node in get_tree().root.find_children("*", "Node3D", true, false):
+		if node is NavigatorStation:
+			(node as NavigatorStation).rebuild_hologram()
+
+
 ## Teaches every player every skill at its highest rank, to try them without paying.
 func learn_skills() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -331,6 +345,7 @@ func _build() -> void:
 	_button(actions, "Hatch raiders", hatch_raiders)
 	_button(actions, "Break miners", break_miners)
 	_button(actions, "Unlock weapons", unlock_weapons)
+	_button(actions, "Unlock regions", unlock_regions)
 	_button(actions, "Learn skills", learn_skills)
 	_button(actions, "Fill hold", fill_hold)
 	_button(actions, "Give ore", give_ore)

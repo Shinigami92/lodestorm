@@ -5,12 +5,21 @@ extends GutTest
 const PARTS_DIR: String = "res://game/locations/parts/"
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 const STAR_SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
-const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
-const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowth.tres")
+## Every biome: what holds for one holds for all.
+const BIOMES: Array[LocationBiome] = [
+	preload("res://game/locations/biomes/dust.tres"),
+	preload("res://game/locations/biomes/overgrowth.tres"),
+	preload("res://game/locations/biomes/frost.tres"),
+	preload("res://game/locations/biomes/salt.tres"),
+	preload("res://game/locations/biomes/ash.tres"),
+	preload("res://game/locations/biomes/glass.tres"),
+]
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const HOLO_TABLE: PackedScene = preload("res://game/ship/holo_table.tscn")
 const VIEW := Vector3(-0.577, -0.577, -0.577)
 const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
+## Seeds per biome (or region) in the sweeps over every biome (or region).
+const BIOME_SEEDS: int = 3
 const AREAS: int = 9
 ## Width of the ring around the props that stays walkable at least, in m.
 const RING: float = 2.5
@@ -108,13 +117,21 @@ func test_props_leave_a_walkable_ring() -> void:
 
 
 ## Every region's set pieces are in every section of it; the parts stand on reachable ground that
-## kept every step, their markers (crates, ore, quest sites) too, and nobody gets stuck.
+## kept every step, their markers (crates, ore, quest sites) too, and nobody gets stuck. Regions
+## with the same biome and set pieces plan the same, so each pair is swept once.
 func test_set_pieces_always_placed_and_parts_reachable() -> void:
 	var regions: Array[Region] = []
+	var swept: Array[String] = []
 	for body: CelestialBody in STAR_SYSTEM.bodies:
-		regions.append_array(body.regions)
+		for region: Region in body.regions:
+			var key: String = region.biome.resource_path
+			for placement: PartPlacement in region.set_pieces:
+				key += " %s %d" % [placement.scene.resource_path, placement.rule]
+			if key not in swept:
+				swept.append(key)
+				regions.append(region)
 	for region: Region in regions:
-		for world_seed: int in SWEEP_SEEDS:
+		for world_seed: int in _seeds(region.biome, 2):
 			var location: GeneratedLocation = _plan(world_seed, region.biome, region.set_pieces)
 			var label: String = "%s seed %d" % [region.display_name, world_seed]
 			var set_pieces: Array[PackedScene] = []
@@ -134,9 +151,9 @@ func test_set_pieces_always_placed_and_parts_reachable() -> void:
 ## The biomes' points of interest come up about once per four areas, never two in one area, and
 ## their markers lead: ore nodes and nests on them.
 func test_points_of_interest_and_markers_lead() -> void:
-	for biome: LocationBiome in [DUST, OVERGROWTH]:
+	for biome: LocationBiome in BIOMES:
 		var parts: int = 0
-		for world_seed: int in SWEEP_SEEDS:
+		for world_seed: int in _seeds(biome):
 			var location: GeneratedLocation = _plan(world_seed, biome)
 			var areas: Array[LocationLayout.Area] = []
 			for part: LocationParts.Placed in location.parts.placed:
@@ -146,7 +163,7 @@ func test_points_of_interest_and_markers_lead() -> void:
 					assert_true(_has_site(location.planned_ore_sites(), ore), biome.display_name)
 			parts += location.parts.placed.size()
 			location.free()
-		assert_gt(parts, SWEEP_SEEDS.size(), biome.display_name)
+		assert_gt(parts, BIOME_SEEDS, biome.display_name)
 
 
 ## A rich vein's markers hold the location's rarest ore.
@@ -347,3 +364,13 @@ static func _relative(node: Node3D, root: Node3D) -> Transform3D:
 		result = (at as Node3D).transform * result
 		at = at.get_parent()
 	return result
+
+
+## The seeds a sweep plans `biome` with: `count` of them, different for every biome, so the sweeps
+## over all biomes cover as many seeds as they plan locations.
+static func _seeds(biome: LocationBiome, count: int = BIOME_SEEDS) -> Array[int]:
+	var first: int = 1 + BIOMES.find(biome) * count
+	var seeds: Array[int] = []
+	for world_seed: int in range(first, first + count):
+		seeds.append(world_seed)
+	return seeds

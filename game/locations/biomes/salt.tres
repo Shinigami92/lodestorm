@@ -1,0 +1,160 @@
+[gd_resource type="Resource" script_class="LocationBiome" format=3 uid="uid://ulap8g7ne47t"]
+
+[ext_resource type="Script" uid="uid://c0m4q1xpgee51" path="res://game/locations/location_biome.gd" id="1_biome"]
+[ext_resource type="Script" uid="uid://bmkkrh2gm0kjs" path="res://game/locations/scatter_type.gd" id="2_scatter"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="3_ore_type"]
+[ext_resource type="PackedScene" uid="uid://cyl7o2webmhio" path="res://assets/rocks/rocks.glb" id="3_rocks"]
+[ext_resource type="PackedScene" uid="uid://vgi6vo04bk0s" path="res://assets/plants/plants.glb" id="4_plants"]
+[ext_resource type="Material" uid="uid://nx37wdaeeuii" path="res://assets/terrain/salt_terrain.tres" id="9_terrain"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="ore_olvane"]
+[ext_resource type="Resource" uid="uid://cad77sebiwhrt" path="res://game/ores/types/ore_ressa.tres" id="ore_ressa"]
+[ext_resource type="Resource" uid="uid://dymgaqh26njgt" path="res://game/ores/types/ore_tessar.tres" id="ore_tessar"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
+[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
+[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
+[ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
+[ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
+
+[sub_resource type="Resource" id="Resource_boulder_a"]
+script = ExtResource("2_scatter")
+display_name = "Boulder a"
+model = ExtResource("3_rocks")
+model_part = &"Boulder_a"
+density = 0.15
+clustering = 0.6
+patch_size = 30.0
+min_scale = 0.6
+max_scale = 1.8
+max_slope = 0.8
+sink = 0.05
+max_tilt = 15.0
+blocking_radius = 0.9
+blocking_height = 1.1
+
+[sub_resource type="Resource" id="Resource_boulder_b"]
+script = ExtResource("2_scatter")
+display_name = "Boulder b"
+model = ExtResource("3_rocks")
+model_part = &"Boulder_b"
+density = 0.15
+clustering = 0.6
+patch_size = 30.0
+min_scale = 0.6
+max_scale = 1.8
+max_slope = 0.8
+sink = 0.05
+max_tilt = 15.0
+blocking_radius = 0.9
+blocking_height = 0.8
+
+[sub_resource type="Resource" id="Resource_outcrop_a"]
+script = ExtResource("2_scatter")
+display_name = "Outcrop a"
+model = ExtResource("3_rocks")
+model_part = &"Outcrop_a"
+density = 0.03
+clustering = 0.7
+patch_size = 60.0
+max_scale = 1.3
+max_slope = 0.5
+sink = 0.1
+max_tilt = 4.0
+blocking_radius = 1.1
+blocking_height = 4.3
+
+[sub_resource type="Resource" id="Resource_stones_a"]
+script = ExtResource("2_scatter")
+display_name = "Stones a"
+model = ExtResource("3_rocks")
+model_part = &"Rubble_a"
+density = 6.0
+clustering = 0.3
+patch_size = 15.0
+min_scale = 0.2
+max_scale = 0.4
+max_slope = 1.2
+sink = 0.02
+max_tilt = 20.0
+visibility_range = 50.0
+cast_shadow = false
+
+[sub_resource type="Resource" id="Resource_rubble_a"]
+script = ExtResource("2_scatter")
+display_name = "Rubble a"
+model = ExtResource("3_rocks")
+model_part = &"Rubble_a"
+patch_size = 25.0
+min_scale = 0.7
+max_scale = 1.5
+max_slope = 0.8
+max_tilt = 10.0
+visibility_range = 120.0
+cast_shadow = false
+
+[sub_resource type="Resource" id="Resource_dust_debris_a"]
+script = ExtResource("2_scatter")
+display_name = "Dust Debris a"
+model = ExtResource("4_plants")
+model_part = &"Dust_Debris_a"
+patch_size = 25.0
+max_scale = 1.5
+max_slope = 0.7
+max_tilt = 5.0
+visibility_range = 100.0
+cast_shadow = false
+
+[sub_resource type="Resource" id="Resource_dust_debris_b"]
+script = ExtResource("2_scatter")
+display_name = "Dust Debris b"
+model = ExtResource("4_plants")
+model_part = &"Dust_Debris_b"
+density = 0.3
+patch_size = 25.0
+max_scale = 1.5
+max_slope = 0.7
+max_tilt = 5.0
+visibility_range = 100.0
+cast_shadow = false
+
+[sub_resource type="Resource" id="Placement_wreck"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+
+[sub_resource type="Resource" id="Placement_outpost"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
+
+[sub_resource type="Resource" id="Placement_vein"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+weight = 0.8
+
+[sub_resource type="Resource" id="Placement_crater"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+weight = 0.8
+
+[resource]
+script = ExtResource("1_biome")
+display_name = "Salt pans"
+area_radius = Vector2(22, 42)
+pass_width = Vector2(11, 18)
+area_spread = 95.0
+floor_relief = 0.8
+floor_relief_size = 90.0
+wall_height = 7.0
+cliff_width = 3.5
+rock_relief = 8.0
+plateau_step = 3.5
+bump_height = 0.3
+ground_material = ExtResource("9_terrain")
+low_ground_tint = Color(0.9, 0.9, 0.9, 1)
+tint_variation = 0.05
+scree = 0.3
+scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_outcrop_a"), SubResource("Resource_stones_a"), SubResource("Resource_rubble_a"), SubResource("Resource_dust_debris_a"), SubResource("Resource_dust_debris_b")])
+ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_tessar"), ExtResource("ore_vyrel"), ExtResource("ore_ressa")])
+nests_per_area = 0.9
+part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])

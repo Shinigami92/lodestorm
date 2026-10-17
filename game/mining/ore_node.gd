@@ -1,9 +1,14 @@
 class_name OreNode
 extends Node3D
 ## A deposit of one ore type that a single miner can be placed on. Shows a ring while it's the
-## spot a player would place their next miner on.
+## spot a player would place their next miner on. Close to a player, its crystals also show behind
+## cliffs, as a faint silhouette in the ore's color (farther out finding ore stays exploring).
 
 const GROUP: StringName = &"ore_nodes"
+## How close a player must be for the crystals to show behind cliffs, in m. TBD (playtest).
+const SILHOUETTE_RANGE: float = 30.0
+## How often the distance to the players is checked, in s.
+const SILHOUETTE_CHECK: float = 0.25
 
 @export var ore_type: OreType
 ## Which of the ore type's model variants this node shows (wraps around), so neighboring nodes
@@ -20,6 +25,9 @@ var highlighted: bool = false:
 		if is_node_ready():
 			_highlight.visible = value
 
+var _silhouette: ShaderMaterial
+var _check_left: float = 0.0
+
 @onready var _mount: Marker3D = $MinerMount
 @onready var _deposit: MeshInstance3D = $Deposit
 @onready var _crystals: Node3D = $Crystals
@@ -35,6 +43,37 @@ func _ready() -> void:
 		(crystal as MeshInstance3D).material_override = ore_type.get_material()
 		OreGlow.set_phase(crystal as MeshInstance3D, phase)
 	_highlight.visible = highlighted
+	var color: Color = ore_type.color
+	color.a = OccludedSilhouette.ORE_ALPHA
+	_silhouette = OccludedSilhouette.overlay(color)
+	OccludedSilhouette.mark_visible(self)
+
+
+func _process(delta: float) -> void:
+	_check_left -= delta
+	if _check_left > 0.0:
+		return
+	_check_left = SILHOUETTE_CHECK
+	var shown: bool = false
+	for player: Node3D in get_tree().get_nodes_in_group(Player.GROUP):
+		if player.global_position.distance_to(global_position) <= SILHOUETTE_RANGE:
+			shown = true
+			break
+	show_silhouette(shown)
+
+
+## Whether the crystals show behind cliffs (close to a player).
+func is_silhouette_shown() -> bool:
+	return (
+		_crystals.get_child_count() > 0
+		and ((_crystals.get_child(0) as GeometryInstance3D).material_overlay != null)
+	)
+
+
+## Shows the crystals behind cliffs or not.
+func show_silhouette(shown: bool) -> void:
+	for crystal: Node in _crystals.get_children():
+		(crystal as GeometryInstance3D).material_overlay = _silhouette if shown else null
 
 
 ## Replaces the greybox deposit and crystals with the variant's meshes from the ore type's model.

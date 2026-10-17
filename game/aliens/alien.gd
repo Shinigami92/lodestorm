@@ -88,7 +88,10 @@ func _ready() -> void:
 		_rim = preload("res://assets/shaders/rim_light.tres").duplicate() as ShaderMaterial
 		_rim.set_shader_parameter(&"strength", RIM_STRENGTH)
 	_overlay.next_pass = _rim
-	(_model.find_child("Creature", true, false) as GeometryInstance3D).material_overlay = _overlay
+	# Seen behind cliffs too, as a red silhouette.
+	var creature := _model.find_child("Creature", true, false) as GeometryInstance3D
+	creature.material_overlay = OccludedSilhouette.overlay(OccludedSilhouette.ALIEN_COLOR, _overlay)
+	OccludedSilhouette.mark_visible(_model)
 	_update_look()
 	_body.scale = Vector3.ONE * 0.01
 	_hatch_tween = create_tween()

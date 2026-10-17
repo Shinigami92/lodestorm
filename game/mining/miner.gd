@@ -89,8 +89,13 @@ func _ready() -> void:
 		OreGlow.set_phase(_hose, phase)
 	_frame_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_frame_overlay.next_pass = preload("res://assets/shaders/rim_light.tres")
+	# Seen behind cliffs too, as a silhouette.
+	var silhouette: ShaderMaterial = OccludedSilhouette.overlay(
+		OccludedSilhouette.MINER_COLOR, _frame_overlay
+	)
 	for frame: Node in _model.find_children("Frame*", "MeshInstance3D", true, false):
-		(frame as MeshInstance3D).material_overlay = _frame_overlay
+		(frame as MeshInstance3D).material_overlay = silhouette
+	OccludedSilhouette.mark_visible(_model)
 	_hose.visible = false
 	_update_gauge()
 	_update_frame()

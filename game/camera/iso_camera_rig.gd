@@ -70,6 +70,11 @@ func _shake(delta: float) -> void:
 	_camera.v_offset = shake * (sin(t * 29.0 + 0.7) + 0.6 * sin(t * 41.0)) / 1.6
 
 
+## Where the camera looks (its forward direction, global).
+func view_direction() -> Vector3:
+	return -global_basis.z
+
+
 ## How much the camera sees at its target without zoom (visible height in m).
 func view_height() -> float:
 	if settings.orthographic:

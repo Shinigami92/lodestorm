@@ -48,6 +48,15 @@ const SITE_FALLOFF: float = 3.0
 ## Share of the wall's height the cliff rises on its first grid square: much more than players
 ## can step up (`MAX_WALK_SLOPE`).
 const FIRST_STEP: float = 0.6
+## The least the cliff rises on its first grid square, in m (low walls on the camera's side too):
+## more than players step up even where bumps and swells of the ground lean towards it.
+const MIN_CLIFF_STEP: float = 3.0
+## Tallest plant or rock that grows on the rock on the camera's side, in m (taller ones would hide
+## the open ground behind the low ledge there).
+const CAMERA_SIDE_SCATTER: float = 1.0
+## Share of the view's drop the rock on the camera's side rises at most, so the camera also sees
+## a bit of the open ground beyond the cliff's foot.
+const VIEW_MARGIN: float = 0.85
 ## How close a nest may be to the landing site in a straight line, relative to
 ## `LocationBiome.nest_min_distance` (which counts along the passes).
 const NEST_STRAIGHT_SHARE: float = 0.6
@@ -91,6 +100,11 @@ const SHAPED_KINDS: Array[LocationLayout.Kind] = [
 @export var nest_spacing: float = 20.0
 ## Closest a nest is to an ore node, in m.
 @export var nest_ore_spacing: float = 12.0
+## Where the camera looks, location-local (its forward direction; the mission sets it from where
+## the ship lands). The rock between the camera and the open ground stays low enough to see over:
+## a ledge (`LocationBiome.near_wall_height`), then rising no steeper than the view. Zero: the
+## rock is equally high all around.
+@export var view_direction: Vector3 = Vector3.ZERO
 ## Scales the biome's number of nests (the mission's difficulty).
 @export var nest_factor: float = 1.0
 ## Baked for the aliens once the world is generated (none without it).
@@ -108,6 +122,8 @@ var _rng := RandomNumberGenerator.new()
 var _reachable: PackedByteArray
 ## Grid points on a lane along a pass (1 = keep free).
 var _lanes: PackedByteArray
+## Grid points on the rock on the camera's side of the open ground (1 = only low scatter).
+var _camera_side: PackedByteArray
 ## Areas whose open ground has its own shape (hollows, craters, plateaus).
 var _shaped_areas: Array[LocationLayout.Area] = []
 ## Places scatter keeps away from (x, z, radius), location-local.
@@ -212,54 +228,9 @@ func planned_nest_sites() -> Array[Vector3]:
 
 
 ## Spots (location-local x, z) a player could fall to from walkable ground without a way back to
-## the ship: should be none. A fall ends where the ground stops dropping steeply.
+## the ship: should be none (see `LocationTerrain.stuck_spots`).
 func stuck_spots() -> PackedVector2Array:
-	var stuck := PackedVector2Array()
-	var max_rise: float = MAX_WALK_SLOPE * cell
-	var side: int = terrain.cells + 1
-	for current: int in _reachable.size():
-		if not _reachable[current]:
-			continue
-		var x: int = current % side
-		@warning_ignore("integer_division")
-		var z: int = current / side
-		for next: Vector2i in _neighbors(x, z):
-			var below: int = terrain.index(next.x, next.y)
-			if _reachable[below] or terrain.heights[current] - terrain.heights[below] <= max_rise:
-				continue
-			var landed: Vector2i = _slide_down(next)
-			if not _reachable[terrain.index(landed.x, landed.y)]:
-				var at: Vector3 = terrain.point(landed.x, landed.y)
-				stuck.append(Vector2(at.x, at.z))
-	return stuck
-
-
-## Where something falling onto grid point `from` comes to rest: down the steepest way while it's
-## too steep to stand, until it reaches walkable ground.
-func _slide_down(from: Vector2i) -> Vector2i:
-	var max_rise: float = MAX_WALK_SLOPE * cell
-	var at: Vector2i = from
-	for step: int in terrain.cells * 2:
-		if _reachable[terrain.index(at.x, at.y)]:
-			return at
-		var lowest: Vector2i = at
-		for next: Vector2i in _neighbors(at.x, at.y):
-			if terrain.get_height(next.x, next.y) < terrain.get_height(lowest.x, lowest.y):
-				lowest = next
-		var drop: float = terrain.get_height(at.x, at.y) - terrain.get_height(lowest.x, lowest.y)
-		if lowest == at or drop <= max_rise * 0.5:
-			return at
-		at = lowest
-	return at
-
-
-func _neighbors(x: int, z: int) -> Array[Vector2i]:
-	var found: Array[Vector2i] = []
-	for offset: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-		var next: Vector2i = Vector2i(x, z) + offset
-		if next.x >= 0 and next.y >= 0 and next.x <= terrain.cells and next.y <= terrain.cells:
-			found.append(next)
-	return found
+	return terrain.stuck_spots(_reachable, MAX_WALK_SLOPE)
 
 
 func _generate_ground() -> void:
@@ -276,7 +247,9 @@ func _generate_ground() -> void:
 	var swells: FastNoiseLite = _noise(1.0 / biome.floor_relief_size, 3)
 	var rock: FastNoiseLite = _noise(1.0 / 90.0, 3)
 	var bumps: FastNoiseLite = _noise(1.0 / 12.0, 2)
-	var outside: PackedFloat32Array = _distance_outside(_carve(wobble))
+	var outside: PackedFloat32Array = terrain.distance_outside(_carve(wobble))
+	_camera_side = PackedByteArray()
+	_camera_side.resize(terrain.heights.size())
 	for area: LocationLayout.Area in layout.areas:
 		if area.kind in SHAPED_KINDS:
 			_shaped_areas.append(area)
@@ -286,7 +259,16 @@ func _generate_ground() -> void:
 			var walls: float = _walls(outside[terrain.index(x, z)])
 			var ground: float = _shape_of_areas(at, swells)
 			var high: float = maxf(rock.get_noise_2dv(at) + 0.2, 0.0) * biome.rock_relief
-			var height: float = ground + walls * (biome.wall_height + _terrace(high))
+			var rock_height: float = biome.wall_height + _terrace(high)
+			var cap: Vector2 = _view_cap(x, z, outside)
+			rock_height = lerpf(rock_height, minf(rock_height, cap.x), cap.y)
+			if walls > 0.0 and cap.y > 0.1:
+				_camera_side[terrain.index(x, z)] = 1
+			var lift: float = walls * rock_height
+			if walls > 0.0:
+				# However bumpy the ground, the first step onto the rock is too high to climb.
+				lift = maxf(lift, minf(rock_height, MIN_CLIFF_STEP))
+			var height: float = ground + lift
 			height += bumps.get_noise_2dv(at) * biome.bump_height
 			var to_edge: float = minf(minf(x, cells - x), minf(z, cells - z)) * cell
 			var rim: float = 1.0 - smoothstep(0.0, rim_width, to_edge)
@@ -294,6 +276,37 @@ func _generate_ground() -> void:
 			terrain.set_height(x, z, height)
 	# One grid square more, so the ground between the grid points inside is flat too.
 	terrain.flatten_rect(landing_site.grow(cell), landing_falloff, 0.0)
+
+
+## How high the rock at grid point `x`, `z` may rise so the camera sees over it to the open ground
+## (`outside`: the distance from it), and how much that applies (by how much the rock lies on the
+## camera's side): (height, weight); weight 0 without a view direction.
+func _view_cap(x: int, z: int, outside: PackedFloat32Array) -> Vector2:
+	var forward := Vector2(view_direction.x, view_direction.z)
+	var distance: float = outside[terrain.index(x, z)]
+	if forward.length() < 0.01 or distance <= 0.0:
+		return Vector2(INF, 0.0)
+	# How much the view drops per m it goes forward.
+	var drop: float = -view_direction.y / forward.length()
+	var toward: Vector2 = Vector2(
+		(
+			outside[terrain.index(maxi(x - 1, 0), z)]
+			- outside[terrain.index(mini(x + 1, terrain.cells), z)]
+		),
+		(
+			outside[terrain.index(x, maxi(z - 1, 0))]
+			- outside[terrain.index(x, mini(z + 1, terrain.cells))]
+		)
+	)
+	if toward.length() < 0.001:
+		return Vector2(INF, 0.0)
+	var facing: float = toward.normalized().dot(forward.normalized())
+	var weight: float = smoothstep(0.1, 0.5, facing)
+	if weight <= 0.0:
+		return Vector2(INF, 0.0)
+	# Along the view, the open ground is this far ahead.
+	var ahead: float = distance / maxf(facing, 0.3)
+	return Vector2(biome.near_wall_height + _terrace(drop * VIEW_MARGIN * ahead), weight)
 
 
 ## How open each grid point is: positive inside an area, a pass or around the landing site (how
@@ -342,38 +355,6 @@ func _walls(distance: float) -> float:
 		return 0.0
 	var full: float = maxf(biome.cliff_width, cell * 1.5)
 	return lerpf(FIRST_STEP, 1.0, smoothstep(cell, full, distance))
-
-
-## How far each grid point lies from the open ground (`openness` above 0), in m: 0 on it. The
-## cliffs rise over this distance, so they're equally steep everywhere, however the outlines wobble.
-func _distance_outside(openness: PackedFloat32Array) -> PackedFloat32Array:
-	var side: int = terrain.cells + 1
-	var distance := PackedFloat32Array()
-	distance.resize(openness.size())
-	for i: int in openness.size():
-		distance[i] = 0.0 if openness[i] > 0.0 else INF
-	# Two sweeps (chamfer distance: straight steps 1, diagonal ones √2 grid squares).
-	var steps: Array[Vector3i] = [
-		Vector3i(-1, 0, 10), Vector3i(0, -1, 10), Vector3i(-1, -1, 14), Vector3i(1, -1, 14)
-	]
-	for sweep: int in 2:
-		var direction: int = 1 if sweep == 0 else -1
-		for row: int in side:
-			var z: int = row if sweep == 0 else side - 1 - row
-			for column: int in side:
-				var x: int = column if sweep == 0 else side - 1 - column
-				var index: int = z * side + x
-				for step: Vector3i in steps:
-					var nx: int = x + step.x * direction
-					var nz: int = z + step.y * direction
-					if nx < 0 or nz < 0 or nx >= side or nz >= side:
-						continue
-					var through: float = distance[nz * side + nx] + step.z * 0.1
-					if through < distance[index]:
-						distance[index] = through
-	for i: int in distance.size():
-		distance[i] *= cell
-	return distance
 
 
 ## Raises `openness` around `center` to a round outline of `radius`, wobbling by `wobble` (a share
@@ -660,7 +641,7 @@ func _flattening_keeps_steps(at: Vector2, radius: float) -> bool:
 		changed[index] = lerpf(terrain.heights[index], level, weight)
 	for point: Vector2i in around:
 		var index: int = terrain.index(point.x, point.y)
-		for next: Vector2i in _neighbors(point.x, point.y):
+		for next: Vector2i in terrain.neighbors(point.x, point.y):
 			var other: int = terrain.index(next.x, next.y)
 			var before: float = absf(terrain.heights[index] - terrain.heights[other])
 			var next_height: float = (
@@ -840,7 +821,8 @@ func _scatter_transforms(type: ScatterType, blockers: Array[Vector3]) -> Array[T
 				continue
 			var grown: float = _rng.randf_range(type.min_scale, type.max_scale)
 			var radius: float = type.blocking_radius * grown
-			if not _can_scatter(at, type.max_slope, radius, blockers):
+			var tall: bool = type.blocking_height * grown > CAMERA_SIDE_SCATTER
+			if not _can_scatter(at, type.max_slope, radius, blockers, tall):
 				continue
 			if radius > 0.0:
 				blockers.append(Vector3(at.x, at.y, radius))
@@ -853,14 +835,21 @@ func _scatter_transforms(type: ScatterType, blockers: Array[Vector3]) -> Array[T
 	return placed
 
 
-func _can_scatter(at: Vector2, max_slope: float, radius: float, blockers: Array[Vector3]) -> bool:
+## Whether something of `radius` (0: not blocking) can grow at `at`: not on lanes, clearings or
+## ground steeper than `max_slope`, away from other `blockers`, and not `tall` on the camera's side.
+func _can_scatter(
+	at: Vector2, max_slope: float, radius: float, blockers: Array[Vector3], tall: bool
+) -> bool:
 	if not terrain.rect().grow(-cell).has_point(at):
 		return false
 	if _distance_to_landing_site(at) < 4.0 + radius:
 		return false
 	var grid: Vector2i = Vector2i(terrain.to_grid(at).round())
-	var on_lane: bool = radius > 0.0 and _lanes[terrain.index(grid.x, grid.y)] == 1
-	if on_lane or terrain.slope(grid.x, grid.y) > max_slope:
+	var index: int = terrain.index(grid.x, grid.y)
+	var kept_free: bool = (
+		(radius > 0.0 and _lanes[index] == 1) or (tall and _camera_side[index] == 1)
+	)
+	if kept_free or terrain.slope(grid.x, grid.y) > max_slope:
 		return false
 	for clearing: Vector3 in _clearings:
 		if at.distance_to(Vector2(clearing.x, clearing.y)) < clearing.z + radius:

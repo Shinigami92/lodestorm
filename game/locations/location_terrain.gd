@@ -154,15 +154,9 @@ func flatten_rect(area: Rect2, falloff: float, height: float) -> void:
 	_flatten_area(area.get_center(), area.size * 0.5, falloff, height, false)
 
 
-## Mesh of the grid squares from `from` (inclusive) to `to` (exclusive), its vertex colors from
-## `paint` (called with a grid point's position and normal, returns its color).
-func build_mesh(from: Vector2i, to: Vector2i, paint: Callable) -> ArrayMesh:
-	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, build_arrays(from, to, paint))
-	return mesh
-
-
-## The surface arrays of `build_mesh`, without creating the mesh (safe on a worker thread).
+## Surface arrays (for an `ArrayMesh`) of the grid squares from `from` (inclusive) to `to`
+## (exclusive), their vertex colors from `paint` (called with a grid point's position and normal,
+## returns its color). Safe on a worker thread.
 func build_arrays(from: Vector2i, to: Vector2i, paint: Callable) -> Array:
 	var width: int = to.x - from.x + 1
 	var vertices := PackedVector3Array()
@@ -193,14 +187,8 @@ func build_arrays(from: Vector2i, to: Vector2i, paint: Callable) -> Array:
 	return arrays
 
 
-## Collision triangles of the same grid squares as `build_mesh`.
-func build_shape(from: Vector2i, to: Vector2i) -> ConcavePolygonShape3D:
-	var shape := ConcavePolygonShape3D.new()
-	shape.set_faces(build_faces(from, to))
-	return shape
-
-
-## The triangles of `build_shape`, without creating the shape (safe on a worker thread).
+## Collision triangles (for a `ConcavePolygonShape3D`) of the same grid squares as `build_arrays`.
+## Safe on a worker thread.
 func build_faces(from: Vector2i, to: Vector2i) -> PackedVector3Array:
 	var faces := PackedVector3Array()
 	for z: int in range(from.y, to.y):
@@ -230,3 +218,88 @@ func _flatten_area(
 			var weight: float = 1.0 - smoothstep(0.0, maxf(falloff, 0.001), outside)
 			if weight > 0.0:
 				set_height(x, z, lerpf(get_height(x, z), height, weight))
+
+
+## Spots (location-local x, z) something could fall to from the `reachable` grid points (see
+## `reachable_from`) without a way back: where the ground stops dropping steeper than `max_slope`
+## and it isn't reachable. A fall ends where the ground stops dropping steeply.
+func stuck_spots(reachable: PackedByteArray, max_slope: float) -> PackedVector2Array:
+	var stuck := PackedVector2Array()
+	var max_rise: float = max_slope * cell
+	var side: int = cells + 1
+	for current: int in reachable.size():
+		if not reachable[current]:
+			continue
+		var x: int = current % side
+		@warning_ignore("integer_division")
+		var z: int = current / side
+		for next: Vector2i in neighbors(x, z):
+			var below: int = index(next.x, next.y)
+			if reachable[below] or heights[current] - heights[below] <= max_rise:
+				continue
+			var landed: Vector2i = _slide_down(next, reachable, max_slope)
+			if not reachable[index(landed.x, landed.y)]:
+				var at: Vector3 = point(landed.x, landed.y)
+				stuck.append(Vector2(at.x, at.z))
+	return stuck
+
+
+## Where something falling onto grid point `from` comes to rest: down the steepest way while it's
+## too steep to stand, until it reaches walkable ground.
+func _slide_down(from: Vector2i, reachable: PackedByteArray, max_slope: float) -> Vector2i:
+	var max_rise: float = max_slope * cell
+	var at: Vector2i = from
+	for step: int in cells * 2:
+		if reachable[index(at.x, at.y)]:
+			return at
+		var lowest: Vector2i = at
+		for next: Vector2i in neighbors(at.x, at.y):
+			if get_height(next.x, next.y) < get_height(lowest.x, lowest.y):
+				lowest = next
+		var drop: float = get_height(at.x, at.y) - get_height(lowest.x, lowest.y)
+		if lowest == at or drop <= max_rise * 0.5:
+			return at
+		at = lowest
+	return at
+
+
+## The grid points next to `x`, `z` (not diagonally), on the grid.
+func neighbors(x: int, z: int) -> Array[Vector2i]:
+	var found: Array[Vector2i] = []
+	for offset: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		var next: Vector2i = Vector2i(x, z) + offset
+		if next.x >= 0 and next.y >= 0 and next.x <= cells and next.y <= cells:
+			found.append(next)
+	return found
+
+
+## How far each grid point lies from the grid points where `openness` is above 0 (chamfer
+## distance, row by row like `heights`), in m: 0 on them.
+func distance_outside(openness: PackedFloat32Array) -> PackedFloat32Array:
+	var side: int = cells + 1
+	var distance := PackedFloat32Array()
+	distance.resize(openness.size())
+	for i: int in openness.size():
+		distance[i] = 0.0 if openness[i] > 0.0 else INF
+	# Two sweeps (chamfer distance: straight steps 1, diagonal ones √2 grid squares).
+	var steps: Array[Vector3i] = [
+		Vector3i(-1, 0, 10), Vector3i(0, -1, 10), Vector3i(-1, -1, 14), Vector3i(1, -1, 14)
+	]
+	for sweep: int in 2:
+		var direction: int = 1 if sweep == 0 else -1
+		for row: int in side:
+			var z: int = row if sweep == 0 else side - 1 - row
+			for column: int in side:
+				var x: int = column if sweep == 0 else side - 1 - column
+				var here: int = z * side + x
+				for step: Vector3i in steps:
+					var nx: int = x + step.x * direction
+					var nz: int = z + step.y * direction
+					if nx < 0 or nz < 0 or nx >= side or nz >= side:
+						continue
+					var through: float = distance[nz * side + nx] + step.z * 0.1
+					if through < distance[here]:
+						distance[here] = through
+	for i: int in distance.size():
+		distance[i] *= cell
+	return distance

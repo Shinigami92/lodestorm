@@ -4,17 +4,21 @@ extends Control
 ## marks spots a player could fall to without a way back (should be none). Yellow lines are the
 ## passes, rings the areas (with their kind and the walking distance from the ship), dots the ore
 ## nodes in their ore's color, red rings the nests, faint stripes the lanes kept free.
-## Keys: Left/Right seed, Up/Down number of areas, B next biome, R random seed, S save a picture
-## (`user://location_viewer/`).
+## The white arrow shows where the camera looks (the rock on its side stays low to see over).
+## Keys: Left/Right seed, Up/Down number of areas, B next biome, V camera view on and off, R random
+## seed, S save a picture (`user://location_viewer/`).
 ## From the command line it saves one picture and quits:
 ## `"$GODOT4_EDITOR" --path . game/debug/location_viewer.tscn -- --seed=3 --areas=11
-## --biome=1 --shot=tmp/layout.png` (`--biome`: index into `BIOMES`).
+## --biome=1 --view=1 --shot=tmp/layout.png` (`--biome`: index into `BIOMES`, `--view=0`: no
+## camera view).
 
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 const BIOMES: Array[LocationBiome] = [
 	preload("res://game/locations/biomes/dust.tres"),
 	preload("res://game/locations/biomes/overgrowth.tres"),
 ]
+## Where the camera looks in the game when the ship's nose points along -x (the isometric view).
+const VIEW := Vector3(-0.577, -0.577, -0.577)
 ## Player speed on foot, in m/s (`PlayerSettings.move_speed`), to show distances as walking time.
 const WALK_SPEED: float = 6.0
 const KIND_COLORS: Dictionary[LocationLayout.Kind, Color] = {
@@ -30,6 +34,7 @@ const KIND_COLORS: Dictionary[LocationLayout.Kind, Color] = {
 var world_seed: int = 1
 var area_count: int = 11
 var biome_index: int = 0
+var with_view: bool = true
 
 var _location: GeneratedLocation
 var _picture: ImageTexture
@@ -53,6 +58,8 @@ func _ready() -> void:
 				area_count = value.to_int()
 			"--biome":
 				biome_index = clampi(value.to_int(), 0, BIOMES.size() - 1)
+			"--view":
+				with_view = value.to_int() != 0
 			"--shot":
 				shot = value
 	_generate()
@@ -79,6 +86,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			area_count = maxi(area_count - 1, 2)
 		KEY_B:
 			biome_index = (biome_index + 1) % BIOMES.size()
+		KEY_V:
+			with_view = not with_view
 		KEY_R:
 			world_seed = randi_range(1, 99999)
 		KEY_S:
@@ -101,6 +110,7 @@ func _generate() -> void:
 	_location.biome = BIOMES[biome_index]
 	_location.world_seed = world_seed
 	_location.area_count = area_count
+	_location.view_direction = VIEW if with_view else Vector3.ZERO
 	var started: int = Time.get_ticks_msec()
 	_location.plan()
 	_took = Time.get_ticks_msec() - started
@@ -112,7 +122,7 @@ func _generate() -> void:
 			"Seed %d · %s · %d areas (%d asked) · %d passes, %d loops · %d m wide\n"
 			+ "Farthest %d m along the passes (%d s on foot) · %d ore nodes · %d nests · "
 			+ "%d stuck spots · planned in %d ms\n"
-			+ "Left/Right seed · Up/Down areas · B biome · R random · S save"
+			+ "Left/Right seed · Up/Down areas · B biome · V view (%s) · R random · S save"
 		)
 		% [
 			world_seed,
@@ -128,6 +138,7 @@ func _generate() -> void:
 			_location.planned_nest_sites().size(),
 			_stuck.size(),
 			_took,
+			"on" if with_view else "off",
 		]
 	)
 	queue_redraw()
@@ -215,6 +226,11 @@ func _draw() -> void:
 		draw_arc(_to_screen(Vector2(nest.x, nest.z)), 6.0, 0.0, TAU, 16, Color(1.0, 0.2, 0.2), 2.5)
 	for spot: Vector2 in _stuck:
 		draw_circle(_to_screen(spot), 3.0, Color(1.0, 0.0, 1.0))
+	if with_view:
+		var corner: Vector2 = _to_screen(terrain.origin) + Vector2(60.0, 60.0)
+		var forward := Vector2(VIEW.x, VIEW.z).normalized()
+		draw_line(corner - forward * 30.0, corner + forward * 30.0, Color.WHITE, 3.0)
+		draw_circle(corner + forward * 30.0, 6.0, Color.WHITE)
 
 
 ## Location-local `at` (x, z) on the screen.

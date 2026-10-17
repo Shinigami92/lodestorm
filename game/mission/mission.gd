@@ -298,6 +298,12 @@ func _instantiate(offer: MissionBrief) -> Node3D:
 		generated.world_seed = offer.world_seed
 		generated.nest_factor = settings.nest_factors[offer.difficulty]
 		generated.area_count = maxi(roundi(settings.location_areas * offer.length), 4)
+		var rig := get_tree().get_first_node_in_group(IsoCameraRig.GROUP) as IsoCameraRig
+		if rig:
+			# Where the camera looks, seen from the location (it stands where the ship lands).
+			var parent := ship.get_parent() as Node3D
+			var location_basis: Basis = parent.global_basis * _location_transform.basis
+			generated.view_direction = location_basis.inverse() * rig.view_direction()
 	return fresh
 
 

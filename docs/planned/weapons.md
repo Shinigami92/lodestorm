@@ -1,0 +1,72 @@
+# Weapons (planned)
+
+Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Today there are three weapons (blaster, shotgun, hammer) with magazines and single shells, damage and magazine upgrades, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens).
+
+## The roster
+
+- **18 weapons:** 12 ranged, 6 melee. Two to start with, then about three per planet (about 120 runs over 40 h, so a new one every 6–7 runs). Fewer melee weapons, since ranged ones have more ways to differ (feed, delivery, range), but every planet brings ranged and melee ones. The count is data: the armory, the workbench and the tests work for any number.
+- **Three origins**, which shape their look and group them on the racks:
+  - **Colony arms:** the militia's standard issue, plain and sturdy.
+  - **Converted mining tools:** the prospectors' tradition; industrial, weathered, hazard paint.
+  - **Expedition prototypes:** built by the lost expedition from signature ores and found along its trail; odd and glowing.
+- **Names:** a short invented name per weapon (untranslated, like the ores and places), each with its own first letter, and a plain class word under it on the card (translated: "Harl — Assault rifle" / "Harl — Sturmgewehr"). The blaster becomes Harl, the assault rifle. Nadir and Zenith, the expedition's first and last prototype, are a pair on purpose.
+
+| Name | Weapon (German) | Origin | How it plays | Good against |
+|---|---|---|---|---|
+| **Harl** | assault rifle (Sturmgewehr), today's blaster | colony | fast single shots, magazine | all-round |
+| **Brask** | shotgun (Schrotflinte) | colony | pellet fan, shell by shell | close bursts |
+| **Grindle** | rotary gun (Rotorkanone) | colony | spins up before firing, a huge belt, a long reload, walks slower while firing | swarms, sustained |
+| **Quill** | rail rifle (Schienengewehr) | colony | hold to charge, release; a full charge pierces every alien in a line and shows its line while charging | armored aliens, aliens in a pass |
+| **Pinner** | rivet pistol (Nietpistole) | colony | weak, semi-automatic; a battery that recharges, no ore | the ranged fallback when the ore runs out |
+| **Scald** | thermal cutter (Schneidbrenner) | tool | short cone, continuous, sets aliens burning; heat | swarms up close |
+| **Tremor** | seismic launcher (Seismikwerfer) | tool | lobs charges in an arc over rocks and cliffs, a blast on impact, few rounds | groups, behind cover |
+| **Wick** | charge layer (Ladungsleger) | tool | places a few proximity charges on the ground | raiders on the way to the miners |
+| **Fulgen** | arc caster (Bogenwerfer) | prototype | lightning to the nearest alien in a cone, jumping to aliens close to it; little aiming | swarms; VR and accessibility |
+| **Kith** | mender (Heilstrahler) | prototype | a beam that heals teammates (and revives downed ones from 5 m, see [`coop-revive.md`](coop-revive.md)) and repairs miners, weak damage to aliens; heat | co-op support (solo: repairing miners) |
+| **Nadir** | gravity projector (Gravitationswerfer) | prototype | a well that pulls aliens into one spot and holds them, then bursts; battery | setting up the other weapons |
+| **Zenith** | star lance (Sternlanze) | prototype | a continuous piercing beam; heat; the campaign's last weapon | everything, at a price in rare ore |
+| **Dray** | hammer (Hammer) | tool | a wide arc, several aliens at once | crowds |
+| **Riven** | blade (Klinge) | tool | a fast, narrow combo; the third hit lunges forward | single fast aliens |
+| **Auger** | drill lance (Bohrlanze) | tool | a 4 m thrust that pierces a line; holding drills into one target with rising damage | armored aliens |
+| **Jag** | rock saw (Gesteinssäge) | tool | held, continuous, staggers what it touches | holding a choke point |
+| **Clout** | power fist (Kraftfaust) | prototype | hold to charge a punch that throws aliens into others | knockback, crowd control |
+| **Mantle** | shield (Schild) | prototype | blocks shots and spit in front, also for teammates behind; a bash | spitters, protecting miners |
+
+- **Order over the campaign:** start: Harl, Dray. Torvane (and Lisk): Brask (the quartermaster's chain), Riven, Pinner. Vehra: Grindle, Wick, Clout. Cassor (and Mirr): Quill, Kith, Auger. Gaulm's moons: Tremor, Fulgen, Mantle. Skelde: Scald, Jag, Nadir. Zairen: Zenith. Early weapons are plain, later ones exotic and paid with rarer ores.
+
+## Feeds
+
+Every ranged weapon runs on ore, except the batteries; each feed has its own reload or rhythm and its own display on the weapon:
+
+- **Magazine** (Harl, Quill, Tremor, Wick, Fulgen) and **single rounds** (Brask): as today (see [Ammo and reloading](../GAME_DESIGN.md#ammo-and-reloading)).
+- **Belt** (Grindle): a magazine with a spin-up and a long reload; its drum is the display.
+- **Heat** (Scald, Kith, Zenith): fires continuously from a fuel cell, which is its magazine (spares first, then refilled from ore). Heat builds while firing and stops it when full. **Venting** works like the timing reload: a press within the window vents at once, so the timing skill carries over; heat sets the rhythm, ore stays the cost.
+- **Battery** (Pinner, Nadir): recharges by itself, no ore. Pinner as the weak fallback, Nadir because it deals little damage itself.
+
+The spare magazine rules and skills apply to every weapon fed with ore (cells, belts, loads of shells).
+
+## How they play together
+
+- **Against the aliens:** weapons work with two alien values, **armor** and **stagger resistance** (see [`aliens.md`](aliens.md)). Effects instead of damage types: burn, shock (chain), knockback, pull, slow. No elemental weaknesses and nothing only one weapon can kill: each strain has weapons that are better against it, never required ones.
+- **Solo and co-op:** no weapon is dead weight alone (Kith repairs miners, Mantle shields miners and sentries, Nadir sets up the player's own second weapon). Co-op combos (Nadir with Tremor, Mantle in front of Quill) are a bonus.
+- **Telling them apart:** by silhouette and projectile (each its own shot shape, trail and impact). Ammo colors come from a warm palette (amber, orange, gold, warm white), shared by several weapons and never an ore's hue, so shots never read as ore; the blaster's cyan (Kyrite's color) becomes warm white. The suit ring shows every feed the same way (magazine fill, shells, heat, charge, battery; see [`player-display.md`](player-display.md)).
+- **VR:** every weapon aims with one direction (mouse or stick on desktop, the hand in VR); none needs precise aim beyond the screen. Melee swings on the button in VR too, for now.
+
+## Upgrades and getting them
+
+- **Upgrade parts:** three per weapon at the workbench instead of today's damage and magazine: **damage**, **capacity** (magazine, belt, cell, heat; for melee: swing speed) and a **part of its own** (e.g. Quill: charge time; Grindle: spin-up; Fulgen: jumps; Kith: heal rate; Tremor: blast radius; Wick: charges placed; Dray: arc width; Mantle: block angle). In the data, a list of parts per weapon, so a weapon can get more later. MK levels beyond 3 come with the planets (see [`opening-planets.md`](opening-planets.md)).
+- **Getting them:** blueprints from quests (see [`quests.md`](quests.md)): colony arms and tools from the crew's quest chains, the six prototypes from the lost expedition's sites (story). A blueprint lets the player **build** the weapon once at the workbench for ore (later weapons with the planet's signature ore, the prototypes also with alloys, see [`refinery.md`](refinery.md)), so a lucky blueprint isn't free and early ores stay useful. In co-op everyone in the session gets the blueprint and builds it from their own hold. The debug overlay keeps unlocking them.
+
+## The armory and the workbench
+
+- **Weapon wall:** a locker can't hold 18 weapons, so a weapon wall across the armory shows every weapon once, in rows by origin, the ones not owned yet see-through as now, and the camera follows the selected one; each locker keeps its two loadout cradles, and players pick from the wall into their own.
+- **Workbench rack:** the weapons room's rack holds them in rows by origin too.
+
+## Loadout and switching
+
+- **Draw time:** switching takes a draw time per weapon (greybox: 0.3 s for light ones, 0.6 s for heavy ones, 0.8 s for the rotary gun) and cancels a reload or a charge.
+- **Slots stay 2;** a third one comes later as a skill deep in a tree (rare ores), since choosing from many weapons is the point.
+
+## Data and tests
+
+A weapon is composed of Resources: a **feed** (magazine, single, belt, heat, battery), a **delivery** (projectile with pierce, arc or blast; beam; cone; chain; placed charge; swing; thrust; held; block) and **effects** (damage, burn, knockback, pull, heal), so most new weapons are data plus a greybox scene. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.

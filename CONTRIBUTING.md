@@ -47,7 +47,7 @@ Machine-specific paths live in environment variables, never in the repo:
 
 ## Workflow
 
-1. **Open an issue first** for anything bigger than a small fix, so we can agree on the approach before you spend time on it. Design changes should fit [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) and the current milestone in [`docs/PLAN.md`](docs/PLAN.md).
+1. **Open an issue first** for anything bigger than a small fix, so we can agree on the approach before you spend time on it. Design changes should fit [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md), the designs already decided in [`docs/planned/`](docs/planned/README.md) and the current milestone in [`docs/PLAN.md`](docs/PLAN.md).
 2. **Fork and branch** from `main`; keep one topic per branch. `main` is protected: every change goes through a pull request.
 3. **Keep pull requests small** and focused. Describe what changed and why, and how you tested it (desktop, gamepad, VR if relevant).
 4. **CI must pass** (formatting, linting, tests, import check); failing jobs block the merge. There are no git hooks, run `tools/lint.sh` and `tools/test.sh` yourself.

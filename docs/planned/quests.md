@@ -1,0 +1,38 @@
+# Quests (planned)
+
+Decided 2026-10-17, built in M4 step 15 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today there are story flags and NPC topics (see [NPCs](../GAME_DESIGN.md#5-spaceship-hub)) and crates with supply caches, but no quests; what quests are for: see [Quests](../GAME_DESIGN.md#quests).
+
+## How quests work
+
+- **Built from data:** a quest has its giver, its kind (main, side, request), what it needs to be offered (story flags, an opened body, reputation), its **steps** and its rewards. A step has one or more **goals** and ends with a **hand-in** at the giver or at another NPC it names. Each kind of goal is a Resource of its own, so a new kind is code once and data after. Its lines (the offer, a goal done, the hand-in) use the dialogue Resources; the Dialogue Manager addon gets a second look before the story writing starts.
+- **Eight kinds of goals:** **deliver** an amount of an ore (filled from the hauls while the step is active, or paid from the hold of whoever hands it in) or an alloy (from their rack), see [`coop-ore.md`](coop-ore.md); **clear nests** in a region (needs destroyable nests, M4 step 12); **recover fragments** from a region's crates; **recover an item** at a quest site; **reach a site** (find the expedition's camp, scan a wreck: walk into it); **hunt** a strain in a region (e.g. five spitters) or the Ravager (see [`aliens.md`](aliens.md)); **mine** an amount of an ore in one run (brought aboard); **build** something aboard (a weapon from its blueprint, a crafted miner, an upgrade level), which teaches the stations.
+- **Offering and accepting:** while an NPC has a quest to offer, their amber marker is a **diamond** (the round one stays for new topics). The quest is a topic in their list ("About that job..."); its card shows what it asks, where, and the rewards, with **Accept** and **Not now** (it stays offered, nothing is lost). No limit on active quests.
+- **Quest sites:** while a step is active, it puts what it needs into its region's next visits: a quest site (a map part, in an area that fits), fragments into the crates, a nest group, the hunted strain. They go away once the step is done; the region's own set pieces stay.
+- **What counts:** a run's progress counts once someone gets back aboard (a lost run counts nothing); carried quest items once their carrier is aboard. Kills and cleared nests count for the whole group. A quest never fails; a step stays open until it's done.
+- **Rewards** show on the offer card before accepting, as badges: ores or alloys, a blueprint, a furnace (see [`refinery.md`](refinery.md)), a crew member joining (see [`crew.md`](crew.md)), reputation, new topics or the next quest. No experience points, no random loot.
+- **Reputation:** five pips per NPC, on their name plate. Quests raise it; it opens their later chains and personal topics, nothing else (no prices), and it never drops.
+
+## Blueprint fragments and quest items
+
+A quest step can ask for the fragments of a blueprint in a region (e.g. "recover the three fragments in Redscar Flats"). Only while that step is active do the region's crates hold them, one per crate, so it takes one run or several; there are no fragments outside quests (otherwise a crate holds the supply cache, as today). A fragment is carried like ore (lost when its carrier dies, and found again in a later crate) and counts once it's aboard. Handing the step in at the quest giver puts the fragments together and opens the next step, e.g. the blueprint's unlock. Quest items belong to their quest (shown on the back while carried and on the quest board), so there is no inventory and no trading; bringing something to a station is a hand-in at an NPC there.
+
+## What's told
+
+- **The main story:** one main chain in six acts, one per planet (the moons inside their planet's act), each with 4–6 steps, along the lost expedition's trail. Each act ends at the next heat shield level (the story wraps it, but the heat shield can always be installed without it, see [`opening-planets.md`](opening-planets.md)) and gives the prototype blueprints (see [`weapons.md`](weapons.md)). One main step is always active; Selin (the council member at Waypost Ostra) and the pilot carry it. The acts' outline: see [`story.md`](story.md).
+- **Side chains:** each crew member and station NPC has 2–3 chains over the campaign (about 25–35 side quests besides the requests): their posts' blueprints (the gunsmith's colony arms, the engineer's furnaces, later the miner mechanic's drill heads), crew joining, and their own story. Some steps have a bonus goal (e.g. "also clear the third nest") that pays a little extra.
+- **Requests:** NPCs (on the station above all, where there are no shops, see [`station.md`](station.md)) ask for an amount of an ore or a refined alloy, delivered from the hold by a hand-in at them, like any quest step. The depot master always has two open, the other NPCs one now and then; a new one comes after one is handed in. Each pays reputation and another ore or alloy at a better rate than the exchange. Never needed for the story.
+- **The expedition's logs:** one per region (25) at the expedition's sites, optional lore, found by walking into the log's site (no quest needed); read again at the quest board (later also at the comms log, M7). The main story never depends on them.
+
+## Seeing them
+
+- **The quest board** on the bridge, next to the navigator, used like any station (not on the player). It lists the **Main** and **Side** quests (a row per quest: its name, giver, where, and the step's progress) with a collapsed **Done** group; a quest's detail shows the step's text, where it's done, the rewards and **Track**. It also holds the expedition's logs and the **Jobs**: the furnaces, upgrades and skills running on the wall clock with the time left, finished ones on top until seen (each station shows its own as well, see [`refinery.md`](refinery.md)). Lists scroll with group headings, and a test checks the board in every language with the most content.
+- **Tracking:** one quest at a time (one per session in co-op, so the group follows one goal); anyone can accept, hand in and change the tracked one.
+- **During a run** nothing needs looking up: the navigator shows an amber diamond on regions with an active step (filled for the tracked quest), on their plate and on the globe; in the location, the tracked quest's site, the crates with its fragments and its nests show amber beams (also in the hologram); the suit ring points to the tracked quest's site (see [`player-display.md`](player-display.md)). Over the radio (a radio bubble): a short line when landing in a region with an active step and when a step's goal is done ("That's the second nest. Come back to me."); the lines stay with the quest and can be heard again at the giver.
+
+## Co-op
+
+Quests belong to the host's save. Anyone can open a crate and carry a fragment, and it counts for the host's quest once its carrier is aboard. A reward that unlocks gear (a blueprint) goes to every player in the session at the hand-in, into their own save, and so do ores and alloys (like a haul); the rest is the host's (see [`coop-ore.md`](coop-ore.md)). A guest's own quests don't show in someone else's session for now.
+
+## First content
+
+Brannik's chain (deliver 300 Kyrite → clear two nests in Hollow Mire → recover three fragments in Redscar Flats → the hand-in gives the shotgun blueprint, then building it), Okoro's first furnace (deliver Kyrite and Vyrel to rebuild it, then he explains refining), the depot master's requests at Waypost Ostra. The main story's first act follows in its own step, written first.

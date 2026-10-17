@@ -2,114 +2,139 @@
 
 Goal: reach a playable, fun core loop as early as possible with greybox visuals, then layer hub, art, VR and co-op on top. Each milestone ends with something playable.
 
-## M0 — Project setup
+How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`](GAME_DESIGN.md) and [`TECHNICAL.md`](TECHNICAL.md)), **Todo** the work still to do, in order. Where a design round already decided the details, the step links to its file in [`planned/`](planned/README.md); a step without one gets its own question round first. A finished pull request moves its line from Todo to Done, and the built part of its design moves from `planned/` into `GAME_DESIGN.md`.
+
+## Done
+
+### M0 — Project setup ✓
 
 - Git repo + Godot `.gitignore`, `.gitattributes` (LFS), `.editorconfig`, LICENSE (CC BY-NC-SA 4.0), CONTRIBUTING + CLA, README
-- Godot project (version pinned in `.godot-version`), folder structure (`scenes/`, `scripts/`, `assets/`, `docs/`, `tests/`)
-- gdtoolkit (`gdlint`, `gdformat`) config, enforced by CI (no local git hooks)
-- Static typing warnings enabled in project settings
-- Unit test framework + one example test
-- GitHub Actions: `ci.yml` (format, lint, tests) and `build.yml` (Windows/Linux export artifacts)
-- Renovate for dependency updates
-- Input map: keyboard/mouse + gamepad actions (move, aim, attack, interact, ...)
-- Rendering settings with performance targets in mind (Forward+ desktop, check Mobile/compatible path for VR later)
+- Godot project (version pinned in `.godot-version`), folder structure (one folder per feature in `game/`, `assets/`, `docs/`, `tests/`, see [Project layout](TECHNICAL.md#project-layout))
+- gdtoolkit (`gdlint`, `gdformat`) and ruff config, enforced by CI (no local git hooks); every GDScript warning is an error
+- GUT tests, run headless; GitHub Actions `ci.yml` (lint, tests) and `build.yml` (Windows/Linux exports); Renovate for dependency updates
+- Input map: keyboard/mouse + gamepad actions; rendering settings with the performance targets in mind
 
-## M1 — Outside loop (greybox) ⭐ core fun test
+### M1 — Outside loop (greybox) ✓
 
-- One small test map with resource nodes (2–3 ore types)
-- Player: movement, aiming (mouse + right stick), shooting (one ranged weapon; weapon base class ready for more, incl. melee)
-- Isometric camera
-- Place miners on nodes; miners fill over time and stop when full
-- Hose: auto-connect within radius, visible line, transfer while moving
-- Big greybox ship with the ramp on the right, lowered by a button inside: the mission (and its timer) starts when the first player steps out and ends when everyone is back aboard; the ramp goes up, and the button starts the next run in a fresh outside world
-- Timer expiry → storm damage
-- Win (return in time → resources kept) / lose (death → resources lost)
-- Player feedback in the world, no 2D HUD (see [UI](GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)): miner fill level, carried resources, timer / storm
-- Debug overlay for tuning values (fill rate, transfer speed, timer); 2D is fine here, developer tool only
+- Player movement, twin-stick aiming, the isometric camera; one ranged weapon on a weapon base class ready for more, incl. melee
+- Miners on ore nodes filling over time; the hose transferring while moving
+- The ship with its ramp on the right and the ramp button; the mission (and its timer) from the first player stepping out to everyone back aboard; the storm when the timer runs out; win (resources kept) and lose (resources lost)
+- Feedback in the world, no 2D HUD: miner fill level, carried resources, timer and storm; the debug overlay for tuning
 
-## M2 — Aliens
+### M2 — Aliens ✓
 
-- Basic alien(s): chase + attack player
-- Spawner with escalation over time
-- Aliens optionally targeting miners
-- Aliens damage the player (health, death and respawn exist since M1 for the storm)
+- The swarmer chasing and attacking players; nests with hunters escalating over a run; raiders going for the miners; health, death and respawn
 
-## M3 — Ship hub
+### M3 — Ship hub ✓
 
-- Greybox ship interior with rooms
-- Bigger outside world, generated per run from a seed and a biome (hills, plateaus and cliffs, plants and rocks, ore fields, nests); still greybox
-- Spike: 3D menus (UI on a panel in the world, input via mouse, gamepad and later VR controllers, readability)
-- Mission selection as a 3D menu at the bridge's holo table (pick from a few missions: location, timer, difficulty; the hologram previews the location, with the ore fields in their colors)
-- Loadout selection before a mission (3D menu in the armory): pick a few of the owned weapons; first weapons besides the blaster: shotgun and hammer, switching between the loadout's weapons
-- Ship states (space / landed + weather): start in space, land at the location when a mission is picked (loading it during the flight), take off into space once everyone is back aboard after the mission; the mission is confirmed at the holo table after previewing it
-- Medical bay respawn
-- Localization setup: English and German, all player-facing text through translations from the start (also the 3D menus and the text in the world)
-- Upgrade station(s) spending resources (a few weapon/armor/miner upgrades): a console per upgrade room, MK1–MK3 paid from the hold, MK pips on the weapons and the helmet
-- Save/load of persistent progress, saved automatically aboard (host: the ship's hold, later story, crew and quests; per player: weapons, loadout, upgrades, later skills; see [Co-op progression](GAME_DESIGN.md#co-op-progression)), one save with "Reset progress" at the settings terminal
+- The greybox ship interior with its rooms, lifts and floor signs; the outside world generated per run from a seed and a biome
+- 3D menus (screens and stations); mission selection at the holo table; the loadout at the armory's lockers (blaster, shotgun, hammer, switching); ship states (space, flight, landed, take-off)
+- Medical bay respawn; localization (English and German); upgrade stations (MK1–MK3 from the hold, MK pips); saving and "Reset progress"
 
-## M4 — Progression & quests
+### M4 — Progression & quests (so far)
 
-- Spike: local AI voice-over (text to speech, offline, English) and subtitles as speech bubbles in the world, see [Localization and voice](GAME_DESIGN.md#localization-and-voice)
-- More ore types: 14 in three bands (4 common, 4 mid, 6 signature ores, one per planet), each identifiable by color, crystal shape and glow pattern; biomes carry the common and mid ores, planets their signature ore; the cargo on the back as layered tubes, the wrist display with the cargo, the hold as tanks in the cargo bay (see [Resources](GAME_DESIGN.md#9-resources))
-- Refinery: alloys from 2–3 ores, refining in real time
-- Crafted miners (upgraded one by one, picked up again, lost when left behind or when everyone dies), standard-issue miners, drill types
-- Risk vs. reward: nodes running dry, mining sites drawing aliens, rare ore far out and near nests, late deposits
-- Ammo for ranged weapons (made from carried ore during a run, reloading with a timing press, magazine upgrades, refilling teammates' ammo), weapon MK upgrades, loadout slots for any weapon type
-- Skills with the skill graph in the skills room: the first eight in four clusters (dash, reload on the move, reinforced suit, regeneration, spare magazines, careful reload, ore scanner, damage readout; see [Progression](GAME_DESIGN.md#12-progression--upgrades)); then the rescue drone, rebuilding spare magazines from ore, the miner radar and keeping part of the carried ore on death (sentries with co-op, M7)
-- Quest framework: NPC quest givers, main and side quests tied to locations, quests that can't be missed, reputation, weapon blueprints as rewards (the shotgun first; until then only the debug overlay unlocks it)
-- In-world menus instead of flat terminals (see [UI](GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)): holo cards beside selectable parts, `tab_prev`/`tab_next`, a minimum text size and a test that every card fits in every language; the weapons rack and workbench, the armor fitting frame, the miners' maintenance pad, a locker per player in the armory; the bed to quit; the skill graph comes with the skills, the wrist display's quest log with the quest framework
-- Navigator at the holo table (star system → planet, moon or station → region → landing site; the hologram no longer turns) and setting course at the cockpit's flight console; planets and moons with fixed regions (biome and set pieces), a new section generated per visit; stations as handcrafted maps without enemies
-- First story pieces: one crew NPC with a quest chain, one expedition log; crew NPCs explain the mechanics so far (e.g. ammo and spare magazines at the armory)
-- Station map: docking at a station (Waypost Ostra), a handcrafted map without enemies, with NPCs, a quest giver and maybe the ore exchange (see [Spaceship](GAME_DESIGN.md#5-spaceship-hub), Stations and outposts)
+- Ammo made from carried ore, spare magazines, the timing reload, magazine upgrades, handing a teammate ammo; loadout slots for any weapon type
+- The skill graph with the first eight skills in four clusters (dash, reload on the move, reinforced suit, regeneration, spare magazines, careful reload, ore scanner, damage readout)
+- In-world menus instead of flat terminals: holo cards beside selectable parts, `tab_prev`/`tab_next`, the minimum text size and the fit test in every language; the weapons rack and workbench, the fitting frame, the miners' maintenance pad, the lockers, the bed to quit
+- Step 1: the NPC template, with the quartermaster (Brannik) explaining ammo, spare magazines and the timing reload
+- Step 2: 14 ores in three bands (color, crystal shape, glow pattern), spread over biomes and planets; the cargo on the back as layered tubes; the hold as silo clusters in the cargo bay; the wrist display with the cargo (to be removed, see Todo)
+- Step 3: mission locations from map parts (areas and passes, points of interest, set pieces, crates with supply caches; the low rock on the camera's side, silhouettes behind cliffs); **A** the star system's data (six planets with a gas giant, four moons, 25 regions, tiers, four new biomes as greybox); **B** the navigator as a campaign map, and setting course at the cockpit's flight console
 
-Order of the remaining work (each step builds on the ones before):
+## Todo
 
-1. NPC template: a greybox crew figure with a name plate, talking to it as a station, speech bubbles, dialogue data with translation keys; first use: the quartermaster explains ammo, spare magazines and the timing reload
-2. More ores (14, spread over biomes and planets)
-3. Mission locations from map parts first (the 500 × 500 m field was a first iteration to walk on): a location put together from parts, with points of interest, corridors, open areas and the region's set pieces, so new biomes are built for it. Then the star system (decided, see [Missions](GAME_DESIGN.md#6-missions), Planets, moons and regions), in four PRs: **A** the world data (six planets with a gas giant, four moons, 25 regions, tiers, four new biomes as greybox); **B** the navigator as a campaign map (done: orbits compressed to fit the table, the ship's position and a route to the destination, a badge row with each region's ores, a name plate with tier and danger pips, locked bodies see-through with their signature ore as "?", each globe colored by its regions' biomes); **C** the four new biomes' ground texture sets (Blender); **D** opening planets with the engine room's upgrade, tier and storm scaling, and a pass over which ores the weapons, upgrades and skills cost, now that it's clear where each ore is found (the amounts stay **TBD (playtest)**)
-4. More aliens (their own design round: how many, how kinds and roles combine, where they live) and the feel of combat: hit feedback, projectiles that tell the weapons apart, the basic alien fast enough to be a threat (and the blaster firing faster to match)
-5. Station map: docking at Waypost Ostra, the handcrafted map, maybe the ore exchange
-6. More crew: vendors at the ship's stations, the medic at the medical bay (health carries over between runs, players heal there before the next one, and the medic explains it), NPCs on the station who explain the mechanics (crew joining through the story waits for the quests)
-7. More weapons (their own design round: in-game names for every weapon, like the ores and places; whether the blaster is the assault rifle). Until the quests hand out blueprints, the debug overlay unlocks them; their models come with the art pass
-8. Refinery and crafted miners together, in one design round: miners are what alloys are first needed for (the refinery's space is reserved at the cargo bay's far end)
-9. Destroyable nests
-10. Quest framework and the wrist display's quest log, with the quartermaster's chain ending in the shotgun blueprint; quest steps that put blueprint fragments into a region's crates. Before it, a design round on the wrist display: with cargo, quests and quest items it gets crowded and hard to read
+### M4 — Progression & quests (the rest, in order)
 
-The rest (risk vs. reward, the voice spike, the remaining skills, the expedition log) fits in between where it helps.
+Each step builds on the ones before it (steps 1–3 are done).
 
-## M5 — Art pass (Blender MCP)
+- [ ] **Step 4 — opening planets** ([`planned/opening-planets.md`](planned/opening-planets.md))
+  - [ ] **A** the engine room's heat shield station (host only; the plate as the ship's project, paid from the hauls or topped up from the hold, see [`planned/coop-ore.md`](planned/coop-ore.md)), the shield's level and where the ship is in the save (replacing `Region.unlocked`), the locked body's card, longer flights to another body, debug actions (install the next level, open all)
+  - [ ] **B** each opened planet raising the highest MK level (up to MK8) and the co-op cap (tier + 2), aliens and storm scaling per tier, the ore-cost pass over the weapons, upgrades and skills by the new rule (amounts **TBD (playtest)**)
+- [ ] **Step 5 — the player during a mission** ([`planned/player-display.md`](planned/player-display.md)); early, because the aliens, weapons, crafted miners and skills all show on the suit ring
+  - [ ] **A** the title view and the pause panel ([`planned/menu-pause.md`](planned/menu-pause.md)): the wrist display's frame becomes the pause panel (the `wrist` action and its cargo menu go), pausing solo (also on focus loss), the settings in one component (pause panel and cabin terminal), quitting, credits
+  - [ ] **B** the suit ring (health, ammo, spare magazines, dash, hit direction, fading), replacing the reload ring, the backpack's spare cells and the dash strip, with a probe that takes shots of crowded moments (reloading under fire, a big haul, low health) to compare
+  - [ ] **C** ore arriving, the ground markings' own shapes, teammates' reduced rings, the ring settings (in the new settings)
+  - [ ] **D** the palette probe ([`planned/art.md`](planned/art.md)): every color the game uses side by side, normal and for the three common color blindnesses
+- [ ] **Step 6 — the biomes' own geography** ([`planned/biomes.md`](planned/biomes.md)), in greybox (their textures and meshes come with the art pass, M5)
+  - [ ] **A** the framework (barrier, pass style, own area kinds and hazard as data on the biome; gaps with blocked edges and the navigation mesh around them; the location viewer and seed sweep) with the *Frost fields* first (on Lisk, open now; crevasses, snow bridges, ice shelf, frozen lake)
+  - [ ] **B** *Salt pans* and *Ash fields* (sinkholes, causeways, lava channels, ridges, vents)
+  - [ ] **C** *Glass plains* and *Dust flats* (terraces, shard fences, slot canyons, buttes, dry washes)
+  - [ ] **D** *Overgrowth* (growth walls, trails, mire)
+- [ ] **Step 7 — more aliens, the feel of combat, sound effects** ([`planned/aliens.md`](planned/aliens.md), [`planned/sfx.md`](planned/sfx.md))
+  - [ ] **A** strains and roles as data, armor and stagger, hit feedback, telegraphs, the swarmer's pounce and speed, the blaster at 8 shots a second, the cap on living aliens
+  - [ ] **B** tiers 1–2 (mite, spitter, burrower), hatch tables, packs, biome leanings
+  - [ ] **C** tiers 3–4 (Brute, Shrieker, bloater, Tender), miners drawing raiders, the end-of-run frenzy
+  - [ ] **D** tier 5 (darter, stalker) and the Ravager (greybox bodies from primitives; models with the art pass)
+  - [ ] **E1** the audio setup (buses, the listener at the player, volumes on the settings terminal, randomizers, the synthesis scripts and build, the manifest and its license test) with the weapons, player and interface sounds
+  - [ ] **E2** the aliens', mining, mission and storm sounds
+- [ ] **Step 8 — the station** ([`planned/station.md`](planned/station.md)); concept images first
+  - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs
+  - [ ] **B** the named NPCs with their first topics, ambient colonists
+  - [ ] **C** the ore exchange counter (deliveries and requests come with the quests, step 15)
+- [ ] **Step 9 — more crew** ([`planned/crew.md`](planned/crew.md))
+  - [ ] **A** the seven new crew members at their posts (profiles, greybox accessories, greetings and first topics)
+  - [ ] **B** health carrying over, the med bed, the medic's topics, the ramp card's hint
+  - [ ] **C** reactions to events and the pilot's two radio lines (crew joining through the story waits for the quests)
+- [ ] **Step 10 — more weapons** ([`planned/weapons.md`](planned/weapons.md)); until the quests hand out blueprints, the debug overlay unlocks them; greybox meshes, models with the art pass
+  - [ ] **A** the weapon framework (feed, delivery and effects as Resources, a list of upgrade parts per weapon, draw time, building a weapon from its blueprint for ore), Harl, Brask and Dray ported and renamed
+  - [ ] **B** the armory's weapon wall and the workbench rack in rows by origin, for any number
+  - [ ] **C** ranged weapons 1 (Grindle, Quill, Pinner, Tremor, Wick)
+  - [ ] **D** ranged weapons 2 (Scald, Fulgen, Kith, Nadir, Zenith)
+  - [ ] **E** melee weapons (Riven, Auger, Jag, Clout, Mantle)
+- [ ] **Step 11 — refinery, crafted miners, timed upgrades** ([`planned/refinery.md`](planned/refinery.md))
+  - [ ] **A** `ItemType`, every player's own hold in their own save (moved from the ship's, see [`planned/coop-ore.md`](planned/coop-ore.md)), the eight alloys as data, the refinery at the cargo bay's far end (furnaces unlocked one by one, up to four, one alloy in any amount each, on the wall clock; the ingot rack; recipe discovery; debug unlock until the quests), the engineer's topics
+  - [ ] **B** upgrades and skills taking real time (1 min to 6 h each, paid when started, any number at once, shown on the pips and the skill graph)
+  - [ ] **C** crafted miners (the miner bay, building, per-miner parts with plating, up to 6 per run, standard-issue miners filling up, picking up and losing them)
+  - [ ] **D** drill hardness, alloys in the MK4+ costs and the prototypes' build cost
+- [ ] **Step 12 — destroyable nests** ([`planned/nests.md`](planned/nests.md)): one PR with nest health and armor, the defense bursts with their warning, the three stages and the collapse, its hunters and raiders stopping, the hive's surge, a signal for the quests' "clear nests" goal, a debug shortcut
+- [ ] **Step 13 — reasons to move on** ([`planned/risk-reward.md`](planned/risk-reward.md)); after the crafted miners (dry nodes matter once miners are picked up again) and the nests (the rich fields between them)
+  - [ ] **A** nodes running dry (amounts, three stages, the dry look, the miner's amber blink, the scanner skipping them) and the rich fields in nest hollows
+  - [ ] **B** the late deposit (timing, the meteor's streak, boom and beam, the impact site reserved at generation, the radio line, the nest's pack)
+  - [ ] **C** the cargo hatch at the ramp (independent: can come any time earlier)
+- [ ] **Step 14 — more skills** ([`planned/skills.md`](planned/skills.md)): one PR with the rescue drone, the hardened canister, rebuilding spares and the miner radar (its amber pointer shows dry nodes too; the sentries with co-op, M7)
+- [ ] **Step 15 — quests** ([`planned/quests.md`](planned/quests.md))
+  - [ ] **A** quests as data (quest, steps, goals, rewards, story flags), offering with the diamond marker, accepting, hand-ins, the goals deliver (filled from the hauls), reach a site, mine and build, the quest board on the bridge (quests, logs, jobs), tracking
+  - [ ] **B** quest sites in regions, the goals clear nests, recover fragments, recover an item and hunt, the navigator's diamonds, amber beams, radio lines
+  - [ ] **C** first content: the quartermaster's chain ending in the shotgun blueprint, the engineer's first furnace (the other furnaces through later quests), the depot master's requests, reputation pips
+  - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first), the expedition's logs
+
+### M5 — Art pass (Blender MCP)
 
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, placing and pickup animations, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
 - Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<ore>_wall` in `assets/ores/<ore>.glb`), which needs placement along the cliff edges
 - Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips
-- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; raiders share its model (shaded darker) until they get their own strain; the brute and the spitter are still to model; the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so profiling (M6) may move it to a cheaper path or skip it for aliens off screen
-- Leftovers of the loadout: model the shotgun (with a shell per round in its strip, up to 12 with the magazine upgrade) and the hammer (greybox meshes so far) and give the hammer a swing animation (its head only sweeps sideways through the arc now; the player holds it in the rifle pose); a weapon rack in the armory that shows the owned weapons
-- Basic VFX/SFX for mining, shooting, reloading (a cue for the timing window, also for VR and accessibility), storm
+- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; raiders share its model (shaded darker) until they get their own strain; the other strains are still to model (see [`planned/aliens.md`](planned/aliens.md)); the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so profiling (M6) may move it to a cheaper path or skip it for aliens off screen
+- Leftovers of the loadout: model the shotgun (with a shell per round in its strip, up to 12 with the magazine upgrade) and the hammer (greybox meshes so far) and give the hammer a swing animation (its head only sweeps sideways through the arc now; the player holds it in the rifle pose)
+- The biomes' textures and meshes (from M4 step 6, see [`planned/biomes.md`](planned/biomes.md)): per biome a ground texture set (floor, barrier, the barrier's lip), its scatter (5–8 rocks and plants) and its feature meshes (snow bridge, crust crossing, shard spikes, fungal stalks, lava), with parallel Blender agents (heavy on the GPU: ask first)
+- The sky per body and the far ring of land beyond the map ([`planned/vr-view.md`](planned/vr-view.md)); each body's light, the darkness floor and the storm's light steps ([`planned/art.md`](planned/art.md))
+- Basic VFX for mining, shooting, reloading, storm (the sound effects come earlier, M4 step 7)
+- Voice-over, after the models ([`planned/voice.md`](planned/voice.md)): **A** the spike (the candidates rendered, the listening page, the comparison and decision written into `TECHNICAL.md`); **B** the pipeline tool, the Voice and Radio buses and "Voice on/off", playback from the bubbles and the radio filter, Brannik voiced; the other NPCs with the tool
 
-## M6 — VR
+### M6 — VR
 
 - OpenXR setup for Steam Frame
-- Tabletop diorama camera rig
+- The VR viewpoint ([`planned/vr-view.md`](planned/vr-view.md)): the head on the desktop camera's line, following the character (with the comfort options), the haze around the character, the surrounding flight effects, the ship's cut edges capped
 - VR controller mapping onto existing input actions
 - 90 FPS profiling
 
-## M7 — Co-op
+### M7 — Co-op
 
 - Godot high-level multiplayer (host + up to 3 clients), drop-in: friends join a player's session any time, no separate solo mode
 - Comms station on the bridge: invites through the platform (Steam overlay), and the comms log (radio lines to listen to again)
 - Sync players, miners, aliens, resources
+- Player colors with numbers on the suit, silhouettes, rings, lockers and miners ([`planned/art.md`](planned/art.md))
+- Reviving each other ([`planned/coop-revive.md`](planned/coop-revive.md)): going down, reviving by standing close, shorter bleed-outs, respawning after 30 s
 - Shared ship hub
 - Co-op progression: host save plus each player's own gear, tier sync (see [Co-op progression](GAME_DESIGN.md#co-op-progression))
 
-## M8 — Platform services & release
+### M8 — Platform services & release
 
 - `PlatformService` abstraction + GodotSteam backend
 - Achievements (in-game list + Steam)
 - `release.yml` (GitHub Releases on tag) and `steam-deploy.yml`
 - Steam store page / Early Access preparation (see [`TECHNICAL.md`](TECHNICAL.md#steam-publishing--first-timer-checklist))
 
-## Afterwards
+### Afterwards
 
 Epic / GOG ports. Iterate based on playtesting: more planets, alien types, miner types/defenses, mission objectives, NPC/story content.
 
-Not placed in a milestone yet (see [`GAME_DESIGN.md`](GAME_DESIGN.md)): the full story campaign and crew, more stations and the outposts, voice-over for all lines, the radio comms log, more languages, AI-driven NPCs (experiment).
+Not placed in a milestone yet (see [`GAME_DESIGN.md`](GAME_DESIGN.md)): the full story campaign, the second station (the lost expedition's base) and the inhabited outposts, voice-over for all lines, more languages, AI-driven NPCs (experiment).

@@ -16,9 +16,3 @@ extends Resource
 @export_range(5.0, 90.0, 0.1, "degrees") var fov: float = 30.0
 ## How fast the camera catches up with the target (higher = tighter, 0 = no follow).
 @export var follow_speed: float = 8.0
-## Radius of the cut-away around the line from the camera to the target, in m: the outside world's
-## ground in between (a cliff on the camera's side of a narrow pass) is dithered out. 0: none.
-@export var cutaway_radius: float = 7.0
-## Where on the target the cut-away aims: this high above its origin (the feet), in m. The ground
-## below it (where it stands) stays.
-@export var cutaway_height: float = 1.2

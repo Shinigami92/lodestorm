@@ -29,6 +29,10 @@ extends Resource
 ## Width of the cliff between the open ground and the rock, in m (steep: much less than the wall's
 ## height).
 @export var cliff_width: float = 4.0
+## How high the rock on the camera's side of the open ground rises at first, in m: a ledge
+## nobody can climb either; behind it, it rises no steeper than the camera looks down (see
+## `GeneratedLocation.view_direction`).
+@export var near_wall_height: float = 3.5
 ## How much higher the rock rises in places beyond the walls, in m.
 @export var rock_relief: float = 10.0
 ## Height of one step of the rock, in m: it rises in flat layers.

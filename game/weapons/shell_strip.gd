@@ -23,7 +23,7 @@ func build(capacity: int) -> void:
 		var material := StandardMaterial3D.new()
 		material.albedo_color = Color(0.05, 0.045, 0.04)
 		material.emission_enabled = true
-		Player.write_stencil(material)
+		OccludedSilhouette.write_stencil(material)
 		var box := BoxMesh.new()
 		box.size = Vector3(size.x, size.y, pitch - gap)
 		var shell := MeshInstance3D.new()

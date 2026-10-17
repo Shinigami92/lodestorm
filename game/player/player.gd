@@ -37,8 +37,6 @@ const GROUP: StringName = &"players"
 const ACTIONS: Array[StringName] = [
 	&"attack", &"place_miner", &"interact", &"switch_weapon", &"reload", &"dash"
 ]
-## Stencil value the suit writes where it's visible (occluded_silhouette.gdshader skips those).
-const STENCIL_VISIBLE: int = 1
 ## Where the armor's MK pips sit, in the model's rest pose: on top of the helmet, left of its fin
 ## (the isometric camera always sees it), following this bone.
 const ARMOR_PIPS_POSITION := Vector3(0.075, 1.805, 0.0)
@@ -155,7 +153,7 @@ func _ready() -> void:
 	_animator.setup(_model)
 	_suit_light.band = _model.find_child("SuitLight") as GeometryInstance3D
 	(_model.find_child("Suit") as GeometryInstance3D).material_overlay = body_overlay
-	_mark_visible(_model)
+	OccludedSilhouette.mark_visible(_model)
 	_attach(_weapon_mount, "WeaponGrip")
 	_attach(_cargo_rack, "CargoRack")
 	_attach(_hose_port, "HosePort")
@@ -460,30 +458,6 @@ func _on_died() -> void:
 	died.emit()
 
 
-## Lets the meshes under `root` (the suit, the weapon) mark where they're visible in the stencil
-## buffer, so the silhouette only shows where something else hides the player. Marks their
-## materials in place: the imported ones are only used by players (and weapons they hold).
-func _mark_visible(root: Node) -> void:
-	for node: Node in root.find_children("*", "MeshInstance3D", true, false):
-		var mesh: MeshInstance3D = node as MeshInstance3D
-		if mesh.material_override:  # e.g. the suit light's own material
-			write_stencil(mesh.material_override as BaseMaterial3D)
-			continue
-		for surface: int in mesh.mesh.get_surface_count():
-			write_stencil(mesh.mesh.surface_get_material(surface) as BaseMaterial3D)
-
-
-## Makes `material` mark where it's visible like the suit (see `_mark_visible`), e.g. for meshes a
-## weapon builds later.
-static func write_stencil(material: BaseMaterial3D) -> void:
-	if not material:
-		return
-	material.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
-	material.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
-	material.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
-	material.stencil_reference = STENCIL_VISIBLE
-
-
 ## Puts the armor's pips on the helmet, following the head's bone.
 func _add_armor_pips() -> void:
 	# The row runs from front to back.
@@ -496,7 +470,7 @@ func _add_armor_pips() -> void:
 	add_child(_armor_pips)
 	_follow(marker, _armor_pips)
 	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
-	_mark_visible(_armor_pips)
+	OccludedSilhouette.mark_visible(_armor_pips)
 
 
 ## Puts the spare magazine cells on the backpack, following the upper chest (like the armor's
@@ -530,7 +504,7 @@ func _add_dash_strip() -> void:
 		_bone_marker(POUCHES_BONE, Transform3D(Basis.IDENTITY, DASH_STRIP_POSITION)), _dash_strip
 	)
 	_dash_strip.visible = false
-	_mark_visible(_dash_strip)
+	OccludedSilhouette.mark_visible(_dash_strip)
 
 
 ## A marker following `bone`, at `in_model` (in the model's rest pose). The marker is placed from
@@ -656,7 +630,7 @@ func _equip(weapon_type: WeaponType) -> void:
 		ranged.reload_denied.connect(_on_reload_denied)
 		ranged.reload_timed.connect(_on_reload_timed.bind(ranged))
 	weapon.visible = weapon_allowed and not dead
-	_mark_visible(weapon)
+	OccludedSilhouette.mark_visible(weapon)
 	_weapon_mount.add_child(weapon)
 
 

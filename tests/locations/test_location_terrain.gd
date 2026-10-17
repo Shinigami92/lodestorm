@@ -65,10 +65,16 @@ func test_reachable_stops_at_cliffs() -> void:
 
 func test_mesh_and_shape_cover_the_grid() -> void:
 	var terrain: LocationTerrain = _ramp()
-	var mesh: ArrayMesh = terrain.build_mesh(
-		Vector2i.ZERO, Vector2i(2, 2), func(_p: Vector3, _n: Vector3) -> Color: return Color.WHITE
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(
+		Mesh.PRIMITIVE_TRIANGLES,
+		terrain.build_arrays(
+			Vector2i.ZERO,
+			Vector2i(2, 2),
+			func(_p: Vector3, _n: Vector3) -> Color: return Color.WHITE
+		)
 	)
 	var aabb: AABB = mesh.get_aabb()
 	assert_almost_eq(aabb.position, Vector3(-4.0, 0.0, -4.0), Vector3.ONE * 0.001)
 	assert_almost_eq(aabb.end, Vector3(0.0, 2.0, 0.0), Vector3.ONE * 0.001)
-	assert_eq(terrain.build_shape(Vector2i.ZERO, Vector2i(2, 2)).get_faces().size(), 2 * 2 * 6)
+	assert_eq(terrain.build_faces(Vector2i.ZERO, Vector2i(2, 2)).size(), 2 * 2 * 6)

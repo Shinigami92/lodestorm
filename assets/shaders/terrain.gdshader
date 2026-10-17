@@ -14,10 +14,6 @@
 // large-scale variation).
 // Textures: *_albedo (RGB base color, A height) and *_nra (RG normal X/Y with image up = +Y, B
 // roughness, A ambient occlusion).
-// Cut-away: ground between the camera and the player it follows (a cliff on the camera's side of a
-// narrow pass) is pressed down to just above the player's feet, so the player and what's around
-// them stay visible (cutting a hole would show the void under the heightfield). The camera rig sets
-// the globals every frame (`IsoCameraRig`); shadows keep the whole cliff.
 shader_type spatial;
 render_mode cull_back;
 
@@ -51,51 +47,12 @@ uniform float hex_contrast : hint_range(0.0, 1.0) = 0.6;
 uniform float macro_strength : hint_range(0.0, 0.3) = 0.08;
 uniform float macro_size = 24.0;
 
-// The followed player (xyz: where the cut-away aims, w: its radius in m; 0 turns it off) and the
-// camera that looks at them (other views, like a light's shadow pass, don't cut).
-global uniform vec4 cutaway_target;
-global uniform vec3 cutaway_camera;
-
-// Where the pressed-down ground ends, below where the cut-away aims (just above the target's
-// feet), and how far above that the ground is pressed down fully (gentle swells of the open ground
-// below it stay, so nothing standing on them floats). Same as `IsoCameraRig.cutaway_press`.
-const float CUTAWAY_FLOOR_BELOW = 0.8;
-const float CUTAWAY_FULL_ABOVE = 2.0;
-
 varying vec3 world_position;
 varying vec3 world_normal;
-
-// How much of the ground at `p` is cut away for the camera at `eye` (0: none, 1: all): within the
-// cut-away's radius of the line from the camera to the target and on the camera's side of it,
-// fading out towards the radius. Built-ins are passed in (helpers can't see them).
-float cutaway(vec3 p, vec3 eye) {
-	float radius = cutaway_target.w;
-	if (radius <= 0.0 || distance(eye, cutaway_camera) > 0.5) {
-		return 0.0;
-	}
-	vec3 target = cutaway_target.xyz;
-	vec3 to_eye = eye - target;
-	float along = dot(p - target, to_eye) / dot(to_eye, to_eye);
-	if (along <= 0.0) {
-		return 0.0;
-	}
-	float off_line = distance(p, target + to_eye * min(along, 1.0));
-	float inside = 1.0 - smoothstep(radius * 0.6, radius, off_line);
-	return inside;
-}
 
 void vertex() {
 	world_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
-	float floor_level = cutaway_target.y - CUTAWAY_FLOOR_BELOW;
-	float cut = cutaway(world_position, CAMERA_POSITION_WORLD);
-	cut *= smoothstep(floor_level + 0.5, floor_level + CUTAWAY_FULL_ABOVE, world_position.y);
-	if (cut > 0.0) {
-		world_position.y = mix(world_position.y, floor_level, cut);
-		world_normal = normalize(mix(world_normal, vec3(0.0, 1.0, 0.0), cut));
-		VERTEX = (inverse(MODEL_MATRIX) * vec4(world_position, 1.0)).xyz;
-		NORMAL = normalize((inverse(MODEL_MATRIX) * vec4(world_normal, 0.0)).xyz);
-	}
 }
 
 float hash(vec2 p) {

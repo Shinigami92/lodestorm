@@ -8,6 +8,8 @@ const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowt
 const AREAS: int = 6
 const SWEEP_AREAS: int = 9
 const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
+## Where the camera looks in the game when the ship's nose points along -x (isometric).
+const VIEW := Vector3(-0.577, -0.577, -0.577)
 
 
 ## A smaller world than in the game, so the tests stay quick.
@@ -23,12 +25,16 @@ func _generate(
 	return location
 
 
-## Only planned (no nodes): quicker, for sweeps over many seeds.
-func _plan(world_seed: int, biome: LocationBiome) -> GeneratedLocation:
+## Only planned (no nodes): quicker, for sweeps over many seeds. With the camera's view, like in
+## the game (`view`).
+func _plan(
+	world_seed: int, biome: LocationBiome, view: Vector3 = VIEW, areas: int = SWEEP_AREAS
+) -> GeneratedLocation:
 	var location := LOCATION.instantiate() as GeneratedLocation
 	location.world_seed = world_seed
 	location.biome = biome
-	location.area_count = SWEEP_AREAS
+	location.area_count = areas
+	location.view_direction = view
 	location.plan()
 	return location
 
@@ -252,6 +258,10 @@ func test_test_map_lands_ship_on_generated_world() -> void:
 	assert_not_null(location)
 	var length: float = mission.offers[0].length
 	assert_eq(location.area_count, roundi(mission.settings.location_areas * length))
+	# The camera's view, in the location's axes: down and to the side.
+	var rig := map.get_node("IsoCameraRig") as IsoCameraRig
+	var view: Vector3 = location.global_basis * location.view_direction
+	assert_almost_eq(view, rig.view_direction(), Vector3.ONE * 0.001)
 	assert_almost_eq(
 		location.global_transform.origin, ship.global_transform.origin, Vector3.ONE * 0.001
 	)
@@ -342,6 +352,31 @@ func test_ore_pockets_and_nest_hollows() -> void:
 				assert_eq(inside.size(), 0, "seed %d: ore in the hollow" % world_seed)
 				assert_gt(_nests_in(location, area), 0, "seed %d: nests in the hollow" % world_seed)
 		location.free()
+
+
+## The rock on the camera's side stays low enough to see over: it only ever gets lower than
+## without the camera's view, by a lot in places.
+func test_rock_stays_low_on_the_camera_side() -> void:
+	for biome: LocationBiome in [DUST, OVERGROWTH]:
+		var viewed: GeneratedLocation = _plan(3, biome, VIEW, AREAS)
+		var flat: GeneratedLocation = _plan(3, biome, Vector3.ZERO, AREAS)
+		var lower: int = 0
+		var higher: int = 0
+		var side: int = viewed.terrain.cells + 1
+		for i: int in viewed.terrain.heights.size():
+			# On the rock (the ore and nest sites, flattened on the open ground, lie elsewhere).
+			var at: Vector3 = viewed.terrain.point(i % side, floori(i / float(side)))
+			if viewed.is_reachable(at.x, at.z) or flat.is_reachable(at.x, at.z):
+				continue
+			var difference: float = viewed.terrain.heights[i] - flat.terrain.heights[i]
+			if difference > 0.01:
+				higher += 1
+			elif difference < -3.0:
+				lower += 1
+		assert_eq(higher, 0, biome.display_name)
+		assert_gt(lower, 100, biome.display_name)
+		viewed.free()
+		flat.free()
 
 
 ## Plants and rocks that block, ore nodes and nests keep a lane free along every pass.

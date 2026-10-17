@@ -51,7 +51,7 @@ func _build(slots: int) -> void:
 		var material := StandardMaterial3D.new()
 		material.emission_enabled = true
 		material.roughness = 0.6
-		Player.write_stencil(material)
+		OccludedSilhouette.write_stencil(material)
 		var box := BoxMesh.new()
 		box.size = size
 		var pouch := MeshInstance3D.new()

@@ -15,8 +15,9 @@ A 3D isometric mining/action game with a dark, realistic sci-fi look. You live o
 
 ## Documentation
 
-- [Game design](docs/GAME_DESIGN.md)
-- [Development plan / milestones](docs/PLAN.md)
+- [Game design](docs/GAME_DESIGN.md): the game as it is built, its vision and rules
+- [Planned designs](docs/planned/README.md): decided, not built yet, one file per topic
+- [Development plan / milestones](docs/PLAN.md): what's done and what's next
 - [Technical guidelines](docs/TECHNICAL.md): tooling, CI, licensing, platform services
 
 ## Contributing

@@ -2,14 +2,14 @@
 
 Dark, realistic sci-fi 3D isometric mining/action game (Godot, version in `.godot-version`; GDScript). Desktop first, VR (Steam Frame) support, solo with optional 4-player co-op.
 
-- Design: `docs/GAME_DESIGN.md`
-- Milestones: `docs/PLAN.md` — current: **M4 (progression & quests)**, in progress
+- Design: `docs/GAME_DESIGN.md` (the game as built); decided but not built: `docs/planned/` (one file per topic, moved into GAME_DESIGN once built)
+- Milestones: `docs/PLAN.md` (Done / Todo) — current: **M4 (progression & quests)**, in progress
 - Tooling, CI, licensing, Steam: `docs/TECHNICAL.md`
 - Godot editor: not on PATH, use env var `GODOT4_EDITOR` (e.g. `"$GODOT4_EDITOR" --headless ...`)
 
 ## Working agreements
 
-- Keep the docs up to date when decisions change; values marked **TBD (playtest)** are tuned later, don't invent final numbers.
+- Keep the docs up to date when decisions change: a design round's result goes to `docs/planned/`, a built PR moves its part into `GAME_DESIGN.md` and ticks its line in `PLAN.md`; values marked **TBD (playtest)** are tuned later, don't invent final numbers.
 - Static typing everywhere; every GDScript warning is an error (a script with one doesn't load); code must pass `tools/lint.sh` (`gdformat --check`, `gdlint`; `ruff` for the Python asset scripts) and `tools/test.sh` (GUT, headless). CI enforces both; no git hooks.
 - Must run on Windows (Git Bash), Linux and macOS: POSIX shell scripts, no machine-specific paths, LF line endings — see `docs/TECHNICAL.md` (Cross-platform development).
 - Versions have a single source of truth and are referenced, never repeated: Godot in `.godot-version`, godot-ai in `.mcp.json` (its `addons/godot_ai/plugin.cfg` must match), gdtoolkit and ruff in `requirements-dev.txt`, GUT in `addons/gut/plugin.cfg`.

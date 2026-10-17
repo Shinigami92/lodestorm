@@ -1,0 +1,13 @@
+# Reviving each other (planned)
+
+Decided 2026-10-17, built with co-op (M7, see [`PLAN.md`](../PLAN.md)); the downed state can be tested with local players before. All values **TBD (playtest)**. Today at 0 HP the body drops, everything carried is lost and the player respawns in the medical bay; in co-op the dead respawn only when the run ends (see [Death & persistence](../GAME_DESIGN.md#11-death--persistence)).
+
+- **Down before dead:** in co-op, at 0 HP a player goes **down** instead of dying: they drop to the ground, can crawl slowly (about 1 m/s) but not attack, and keep what they carry. After a **bleed-out** time (greybox 20 s) without help they die as today. Solo there's nobody to help, so solo stays as it is (the rescue drone aside, see [`skills.md`](skills.md)).
+- **Reviving by staying close:** no button: a teammate standing within 2 m of the downed player revives them in 3 s, and they get up with a third of their health. Free, anyone can do it, and the one reviving can keep fighting meanwhile (being hit doesn't stop it); stepping away stops it, and the progress drains back slowly. A green ring fills around the downed player meanwhile.
+- **Not forever:** each time the same player goes down again in a run, the bleed-out is shorter (20 s, then 12 s, then 6 s), so getting carried through a run by revives doesn't work. Back aboard it resets.
+- **Aliens and downed players:** aliens leave a downed player alone and turn to the nearest one standing (raiders to a working miner), so a revive is possible at all, but the teammate reviving them is the one in danger.
+- **Seeing it:** the downed player's collar band blinks red and their suit ring shows the bleed-out running down (see [`player-display.md`](player-display.md)). Teammates see them through cliffs (the player silhouette, blinking red) and get a red pointer on their suit ring's edge towards them.
+- **The rescue drone in co-op:** when a player with a ready drone goes down, the drone gets them up after its 3 s by itself; used once per run as decided.
+- **The mender** (Kith, see [`weapons.md`](weapons.md)) revives from range: its beam on a downed teammate (up to 5 m) revives them in the same 3 s, so the support player doesn't have to walk into the fight.
+- **Dead players don't sit out the rest of the run:** a player who dies in co-op respawns in the medical bay after 30 s with full health and empty pockets, and may walk out again; their miners are still out there. Aboard counts as aboard: the run ends as today once everyone alive is aboard. The wait and the long walk back are the price.
+- **Support skills** (M7) make reviving better, it stays open to everyone: faster revives, getting up with more health, a longer bleed-out.

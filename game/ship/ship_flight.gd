@@ -43,7 +43,7 @@ const STREAK_SPEED: float = 160.0
 ## Cloud speed past the ship, in m/s.
 const CLOUD_SPEED: float = 20.0
 ## Camera shake in the thick of the clouds, in m.
-const SHAKE: float = 0.12
+const SHAKE: float = 0.05
 
 @export var settings: FlightSettings
 @export var cloud_color := Color(0.5, 0.45, 0.42)

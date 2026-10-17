@@ -578,6 +578,7 @@ msgstr "Schlafen"
 
 #: game/stations/bed/bed_card.tscn
 #: game/stations/flight/flight_card.tscn
+#: game/stations/heat_shield/heat_shield_card.tscn
 #: game/stations/hold/hold_card.tscn
 #: game/stations/loadout/loadout_card.tscn
 #: game/stations/navigator/navigator_card.tscn
@@ -602,6 +603,7 @@ msgid "In flight: gear up and head for the ramp."
 msgstr "Im Flug: Ausrüsten und zur Rampe gehen."
 
 #: game/stations/flight/flight_card.gd
+#: game/stations/heat_shield/heat_shield_card.gd
 #: game/stations/loadout/loadout_card.gd
 #: game/stations/navigator/navigator_card.gd
 #: game/stations/skill_graph/skill_card.gd
@@ -645,6 +647,46 @@ msgstr "Erze"
 #: game/stations/flight/flight_card.tscn
 msgid "Set course"
 msgstr "Kurs setzen"
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Heat shield MK%d"
+msgstr "Hitzeschild MK%d"
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Opens %s"
+msgstr "Öffnet %s"
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Installed"
+msgstr "Eingebaut"
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Needs MK%d first."
+msgstr "Braucht zuerst MK%d."
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Only the host can change the ship's project."
+msgstr "Nur der Host kann das Schiffsprojekt ändern."
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "The ship's project: every run pays into it first."
+msgstr "Schiffsprojekt: Jede Mission zahlt zuerst hier ein."
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Pay the rest from the hold"
+msgstr "Rest aus dem Lager zahlen"
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Make it the ship's project"
+msgstr "Zum Schiffsprojekt machen"
+
+#: game/stations/heat_shield/heat_shield_card.tscn
+msgid "Paid"
+msgstr "Bezahlt"
+
+#: game/stations/heat_shield/heat_shield_card.tscn
+msgid "Hold"
+msgstr "Lager"
 
 #: game/stations/hold/hold_card.gd
 msgid "Unknown ore"
@@ -735,6 +777,10 @@ msgstr "Als Ziel setzen"
 #: game/stations/navigator/navigator_card.gd
 msgid "Destination set: set course at the cockpit."
 msgstr "Ziel gesetzt: Kurs im Cockpit setzen."
+
+#: game/stations/navigator/navigator_card.gd
+msgid "Needs heat shield MK%d (engine room)"
+msgstr "Braucht Hitzeschild MK%d (Maschinenraum)"
 
 #: game/stations/navigator/navigator_card.gd
 msgid "Tier %d"

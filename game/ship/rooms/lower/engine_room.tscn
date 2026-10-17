@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://ce4h8o3dea7nk"]
 
+[ext_resource type="PackedScene" uid="uid://c1173nrdfc7v8" path="res://game/stations/heat_shield/drive_core.tscn" id="1_drive_core"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_EngineRoom"]
 albedo_color = Color(0.42, 0.38, 0.34, 1)
@@ -7,24 +8,6 @@ albedo_color = Color(0.42, 0.38, 0.34, 1)
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor_EngineRoom"]
 material = SubResource("StandardMaterial3D_floor_EngineRoom")
 size = Vector2(22.5, 11.5)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_reactor"]
-albedo_color = Color(1, 0.55, 0.2, 1)
-emission_enabled = true
-emission = Color(1, 0.55, 0.2, 1)
-emission_energy_multiplier = 0.8
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_reactor"]
-material = SubResource("StandardMaterial3D_reactor")
-top_radius = 1.6
-bottom_radius = 1.6
-height = 2.2
-radial_segments = 24
-rings = 1
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_reactor"]
-height = 2.2
-radius = 1.6
 
 [node name="EngineRoom" type="Node3D"]
 
@@ -49,11 +32,5 @@ font_size = 96
 outline_size = 24
 uppercase = true
 
-[node name="Reactor" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.1, 1.5)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Reactor"]
-shape = SubResource("CylinderShape3D_reactor")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Reactor"]
-mesh = SubResource("CylinderMesh_reactor")
+[node name="DriveCore" parent="." instance=ExtResource("1_drive_core")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 0.5)

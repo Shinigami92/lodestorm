@@ -576,6 +576,7 @@ msgstr ""
 
 #: game/stations/bed/bed_card.tscn
 #: game/stations/flight/flight_card.tscn
+#: game/stations/heat_shield/heat_shield_card.tscn
 #: game/stations/hold/hold_card.tscn
 #: game/stations/loadout/loadout_card.tscn
 #: game/stations/navigator/navigator_card.tscn
@@ -600,6 +601,7 @@ msgid "In flight: gear up and head for the ramp."
 msgstr ""
 
 #: game/stations/flight/flight_card.gd
+#: game/stations/heat_shield/heat_shield_card.gd
 #: game/stations/loadout/loadout_card.gd
 #: game/stations/navigator/navigator_card.gd
 #: game/stations/skill_graph/skill_card.gd
@@ -642,6 +644,46 @@ msgstr ""
 
 #: game/stations/flight/flight_card.tscn
 msgid "Set course"
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Heat shield MK%d"
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Opens %s"
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Installed"
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Needs MK%d first."
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Only the host can change the ship's project."
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "The ship's project: every run pays into it first."
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Pay the rest from the hold"
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "Make it the ship's project"
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.tscn
+msgid "Paid"
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.tscn
+msgid "Hold"
 msgstr ""
 
 #: game/stations/hold/hold_card.gd
@@ -732,6 +774,10 @@ msgstr ""
 
 #: game/stations/navigator/navigator_card.gd
 msgid "Destination set: set course at the cockpit."
+msgstr ""
+
+#: game/stations/navigator/navigator_card.gd
+msgid "Needs heat shield MK%d (engine room)"
 msgstr ""
 
 #: game/stations/navigator/navigator_card.gd

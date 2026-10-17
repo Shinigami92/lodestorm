@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://c1173nrdfc7v8"]
+
+[ext_resource type="Script" uid="uid://dkctghi12etg0" path="res://game/stations/heat_shield/heat_shield_station.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://crhc7akrrdvju" path="res://game/stations/heat_shield/heat_shield_card.tscn" id="3_card"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="4_use"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+albedo_color = Color(0.2, 0.19, 0.19, 1)
+metallic = 0.4
+roughness = 0.5
+emission_enabled = true
+emission = Color(1, 0.45, 0.15, 1)
+emission_energy_multiplier = 0.25
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_base"]
+albedo_color = Color(0.17, 0.175, 0.185, 1)
+metallic = 0.3
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_core"]
+material = SubResource("StandardMaterial3D_core")
+top_radius = 0.95
+bottom_radius = 0.95
+height = 3.3
+radial_segments = 32
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_base"]
+material = SubResource("StandardMaterial3D_base")
+top_radius = 1.55
+bottom_radius = 1.6
+height = 0.25
+radial_segments = 32
+rings = 1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_core"]
+height = 3.3
+radius = 1.6
+
+[sub_resource type="TorusMesh" id="TorusMesh_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+inner_radius = 1.72
+outer_radius = 1.78
+
+[node name="DriveCore" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+script = ExtResource("1_script")
+user_spot = NodePath("UserSpot")
+view_height = 4.6
+view_focus = NodePath("Focus")
+
+[node name="Body" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+shape = SubResource("CylinderShape3D_core")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+mesh = SubResource("CylinderMesh_core")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, 0)
+mesh = SubResource("CylinderMesh_base")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 2)
+light_color = Color(1, 0.7, 0.45, 1)
+light_energy = 0.8
+omni_range = 5.0
+
+[node name="UserSpot" type="Marker3D" parent="."]
+rotation = Vector3(0, -0.785398, 0)
+position = Vector3(-2.3, 0, 2.3)
+
+[node name="Focus" type="Marker3D" parent="."]
+position = Vector3(1.2, 1.7, 0)
+
+[node name="Use" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.1)
+script = ExtResource("4_use")
+interact_range = 1.6
+
+[node name="Highlight" type="MeshInstance3D" parent="Use"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -2.1)
+visible = false
+mesh = SubResource("TorusMesh_highlight")
+
+[node name="Card" parent="." instance=ExtResource("2_panel")]
+size = Vector2(1.7, 1.95)
+pixels_per_meter = 300.0
+transparent = true
+menu = ExtResource("3_card")

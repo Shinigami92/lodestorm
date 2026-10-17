@@ -97,7 +97,7 @@ func test_planet_names_start_with_different_letters() -> void:
 func test_only_the_first_tier_is_open() -> void:
 	for body: CelestialBody in SYSTEM.bodies:
 		for region: Region in body.regions:
-			assert_eq(region.unlocked, body.tier == 1, region.display_name)
+			assert_eq(SYSTEM.is_open(region, 1), body.tier == 1, region.display_name)
 
 
 func _planets() -> Array[CelestialBody]:

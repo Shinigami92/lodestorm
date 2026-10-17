@@ -21,7 +21,7 @@ func before_each() -> void:
 
 func test_offers_a_mission_per_open_region() -> void:
 	var system: StarSystem = _mission.settings.system
-	var regions: Array[Region] = system.open_regions()
+	var regions: Array[Region] = system.open_regions(_ship.heat_shield.mk)
 	assert_gt(regions.size(), 1)
 	assert_eq(_mission.offers.size(), regions.size())
 	for i: int in regions.size():
@@ -47,34 +47,34 @@ func test_star_system_has_planets_moons_a_station_and_locked_planets() -> void:
 			assert_eq(system.body_of(region), body)
 			assert_not_null(region.biome)
 		if body.kind in [CelestialBody.Kind.STATION, CelestialBody.Kind.GAS_GIANT]:
-			assert_false(body.is_reachable(), "no docking yet, nowhere to land")
-		elif not body.is_reachable():
+			assert_false(body.is_reachable(99), "no docking yet, nowhere to land")
+		elif not body.is_reachable(_ship.heat_shield.mk):
 			locked.append(body)
 	for kind: CelestialBody.Kind in CelestialBody.Kind.values():
 		assert_has(kinds, kind)
 	assert_gt(locked.size(), 0, "planets still locked")
 	for body: CelestialBody in locked:
 		for region: Region in body.regions:
-			assert_false(region in system.open_regions(), "offers no missions")
+			assert_false(region in system.open_regions(_ship.heat_shield.mk), "offers no missions")
 			assert_null(_mission.offer_for(region))
 
 
-## Unlocking a region adds its offer and keeps the others (and the destination).
-func test_unlocked_region_gets_an_offer() -> void:
+## Another heat shield plate adds the next planet's offers and keeps the others (and the
+## destination).
+func test_next_shield_plate_adds_offers() -> void:
 	var system: StarSystem = _mission.settings.system
-	var locked: Region = null
+	var opened: Array[Region] = []
 	for body: CelestialBody in system.bodies:
-		for region: Region in body.regions:
-			if not locked and not region.unlocked:
-				locked = region
+		if body.tier == 2:
+			opened.append_array(body.regions)
+	assert_gt(opened.size(), 0)
 	var before: Array[MissionBrief] = _mission.offers.duplicate()
 	assert_true(_mission.choose(before[0]))
-	locked.unlocked = true
-	_mission.offer_open_regions()
-	locked.unlocked = false
-	assert_eq(_mission.offers.size(), before.size() + 1)
+	assert_true(_ship.heat_shield.install_next())
+	assert_eq(_mission.offers.size(), before.size() + opened.size())
 	assert_eq(_mission.offers.slice(0, before.size()), before, "keeps the others")
-	assert_eq(_mission.offer_for(locked).region, locked)
+	for region: Region in opened:
+		assert_eq(_mission.offer_for(region).region, region)
 	assert_eq(_mission.destination, before[0])
 
 
@@ -257,7 +257,7 @@ func test_star_shows_its_name() -> void:
 func test_stations_and_locked_planets_cannot_be_visited() -> void:
 	var navigator: NavigatorStation = await _use_navigator()
 	for body: CelestialBody in _mission.settings.system.bodies:
-		if not body.is_reachable():
+		if not navigator.is_reachable(body):
 			navigator.select(navigator.get_part(body))
 			assert_false(navigator.activate(), body.display_name)
 			assert_eq(navigator.level, NavigatorStation.Level.SYSTEM)
@@ -328,25 +328,22 @@ func test_camera_frames_the_navigator() -> void:
 	assert_eq(WorldMenu.used_by(get_tree(), _player), navigator)
 
 
-## Once regions were unlocked the hologram is built again, with the planet now reachable. Before
-## it was ever shown there's nothing to build again.
-func test_hologram_rebuilds_after_unlocking() -> void:
+## Once the heat shield got another plate the hologram is built again, with the planet now
+## reachable. Before it was ever shown there's nothing to build again.
+func test_hologram_rebuilds_after_a_new_plate() -> void:
 	var unshown := NavigatorStation.new()
 	unshown.rebuild_hologram()
 	unshown.free()
 	var navigator: NavigatorStation = await _use_navigator()
 	var locked: CelestialBody = null
 	for body: CelestialBody in _mission.settings.system.bodies:
-		if not locked and body.kind == CelestialBody.Kind.PLANET and not body.is_reachable():
+		if not locked and body.kind == CelestialBody.Kind.PLANET and body.tier == 2:
 			locked = body
+	assert_false(navigator.is_reachable(locked))
 	var before: StationPart = navigator.get_part(locked)
-	for region: Region in locked.regions:
-		region.unlocked = true
-	navigator.rebuild_hologram()
+	_ship.heat_shield.install_next()
 	var after: StationPart = navigator.get_part(locked)
 	var reachable: bool = navigator.is_reachable(locked)
-	for region: Region in locked.regions:
-		region.unlocked = false
 	assert_not_null(after)
 	assert_ne(after, before, "built again")
 	assert_true(reachable)

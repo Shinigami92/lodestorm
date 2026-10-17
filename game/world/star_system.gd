@@ -9,16 +9,28 @@ extends Resource
 @export var bodies: Array[CelestialBody] = []
 
 
-## Every region the ship can land in now, in order.
-func open_regions() -> Array[Region]:
+## Every region the ship can land in with heat shield MK `shield_mk`, in order: those of the
+## bodies it reaches (see `CelestialBody.is_reachable`).
+func open_regions(shield_mk: int) -> Array[Region]:
 	var open: Array[Region] = []
 	for body: CelestialBody in bodies:
-		if body.kind == CelestialBody.Kind.STATION:
-			continue
-		for region: Region in body.regions:
-			if region.unlocked:
-				open.append(region)
+		if body.is_reachable(shield_mk):
+			open.append_array(body.regions)
 	return open
+
+
+## Whether `region` can be landed in with heat shield MK `shield_mk`.
+func is_open(region: Region, shield_mk: int) -> bool:
+	var body: CelestialBody = body_of(region)
+	return body != null and body.is_reachable(shield_mk)
+
+
+## The body with `id`, or null.
+func body_by_id(id: StringName) -> CelestialBody:
+	for body: CelestialBody in bodies:
+		if body.id == id:
+			return body
+	return null
 
 
 ## The ores a visit to `region` finds (see `Region.ores_on`), commonest first.

@@ -31,6 +31,7 @@ const STATIONS: PackedStringArray = [
 	"Rooms/Upper/Cockpit/FlightConsole",
 	"Rooms/Upper/Cabin1/BedStation",
 	"Rooms/Lower/Armory/Quartermaster",
+	"Rooms/Lower/EngineRoom/DriveCore",
 ]
 ## Crew members aboard, by their profile.
 const NPCS: Dictionary[String, String] = {
@@ -89,6 +90,49 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 					await wait_process_frames(1)
 					_assert_fits(card, layout, label + " enabled")
 		viewport.queue_free()
+
+
+func test_every_heat_shield_card_fits_in_every_language() -> void:
+	var core := _ship.get_node("Rooms/Lower/EngineRoom/DriveCore") as HeatShieldStation
+	var card := core.card_menu as HeatShieldCard
+	var panel: WorldPanel = core.card
+	var layout := Vector2(panel.size * panel.pixels_per_meter)
+	var shield := HeatShield.new()
+	var hold: Dictionary[OreType, float] = {}
+	for plate: ShieldPlate in shield.plates:
+		for ore_type: OreType in plate.cost:
+			hold[ore_type] = 99999.0
+	# The longest list of bodies a plate opens.
+	var opens: PackedStringArray = []
+	for level: int in range(2, shield.max_mk() + 1):
+		if core.opened_by(level).size() > opens.size():
+			opens = core.opened_by(level)
+	for locale: String in SettingsMenu.languages():
+		TranslationServer.set_locale(locale)
+		var names: PackedStringArray = []
+		for body_name: String in opens:
+			names.append(tr(body_name))
+		for mk: int in range(1, shield.max_mk() + 1):
+			shield.restore(mk, false, {})
+			for level: int in range(2, shield.max_mk() + 1):
+				var label: String = "%s plate MK%d at MK%d" % [locale, level, mk]
+				card.visible = true
+				# The tallest it gets (locked by a mission, every ore short) and the widest
+				# buttons (enabled, the project's line shown).
+				card.show_plate(shield, level, names, {}, true, true)
+				await wait_process_frames(1)
+				_assert_fits(card, layout, label)
+				card.show_plate(shield, level, names, {}, false, false)
+				await wait_process_frames(1)
+				_assert_fits(card, layout, label + " guest")
+				card.show_plate(shield, level, names, hold, false, true)
+				await wait_process_frames(1)
+				_assert_fits(card, layout, label + " enabled")
+				shield.project = level == mk + 1
+				card.show_plate(shield, level, names, hold, false, true)
+				await wait_process_frames(1)
+				_assert_fits(card, layout, label + " project")
+				shield.project = false
 
 
 func test_every_skill_card_fits_in_every_language() -> void:

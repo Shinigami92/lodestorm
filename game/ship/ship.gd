@@ -21,8 +21,9 @@ extends Node3D
 ## table, "In flight" on the way) in its status color: green, amber after half the time, red in the
 ## warning time (the ship pointer outside blinks then), red in the storm, blue once everyone is back
 ## and grey when the mission is lost.
-## Returned cargo goes into the hold, shown as big canisters by the back wall. Dead players
-## respawn at `Respawn` in the medical bay.
+## Returned cargo goes into the hold (the silos in the cargo bay), after the heat shield's plate
+## took what it still needs while it's the ship's project (`store_haul`). Dead players respawn at
+## `Respawn` in the medical bay.
 
 ## Emitted when a player steps out of the ship.
 signal player_left(player: Player)
@@ -82,6 +83,8 @@ var hold: Dictionary[OreType, float] = {}
 var found_ores: Dictionary[OreType, bool] = {}
 ## What has happened in the story so far (e.g. what the crew told), saved with the ship.
 var story := Story.new()
+## The heat shield around the drive core: how far inwards the ship can fly, saved with the ship.
+var heat_shield := HeatShield.new()
 
 var _aboard: Array[Player] = []
 ## Players in the shooting range's weapon zone.
@@ -186,11 +189,36 @@ func add_to_hold(ore_type: OreType, amount: float) -> void:
 	_set_hold(ore_type, stored + amount)
 
 
-## Moves everything `player` carries into the hold.
-func store_cargo(player: Player) -> void:
-	var cargo: Dictionary[OreType, float] = player.take_cargo()
-	for ore_type: OreType in cargo:
-		add_to_hold(ore_type, cargo[ore_type])
+## Stores a run's `haul` (units per ore type, everything brought aboard): while the heat shield's
+## next plate is the ship's project, it takes what it still needs first, the rest goes into the
+## hold. Returns what the plate took.
+func store_haul(haul: Dictionary[OreType, float]) -> Dictionary[OreType, float]:
+	var taken: Dictionary[OreType, float] = {}
+	if heat_shield.project:
+		taken = heat_shield.take_from(haul)
+	for ore_type: OreType in haul:
+		var took: float = taken.get(ore_type, 0.0)
+		var left: float = haul[ore_type] - took
+		if left > 0.0:
+			add_to_hold(ore_type, left)
+		elif haul[ore_type] > 0.0:
+			# Brought aboard, even if the plate took all of it.
+			mark_found(ore_type)
+	return taken
+
+
+## Pays what the heat shield's next plate still needs from the hold, as far as the hold has it.
+## Returns whether it paid anything.
+func pay_shield() -> bool:
+	var available: Dictionary[OreType, float] = {}
+	for ore_type: OreType in heat_shield.missing():
+		var stored: float = hold.get(ore_type, 0.0)
+		available[ore_type] = maxf(stored, 0.0)
+	var taken: Dictionary[OreType, float] = heat_shield.take_from(available)
+	for ore_type: OreType in taken:
+		var stored: float = hold[ore_type]
+		_set_hold(ore_type, stored - taken[ore_type])
+	return not taken.is_empty()
 
 
 ## Shows `location` and where the ship stands in it (its floor) on the holo table; null clears it.

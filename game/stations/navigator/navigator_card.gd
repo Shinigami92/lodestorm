@@ -4,7 +4,8 @@ extends StationCard
 ## it. The star: its name; a body: its kind and tier, its signature ore ("?" while it can't be
 ## reached; "Zoom in"); a region: its biome and tier, danger, timer and ores ("Zoom in", "Set as
 ## destination"); the landing site: the mission's location name and where
-## things stand (destination set, scanning, in flight, landed).
+## things stand (destination set, scanning, in flight, landed). A body out of the heat shield's
+## reach, and its regions, say which MK level it needs, with the ores of that plate's cost.
 
 const DANGER_COLORS: Array[Color] = [
 	Color(0.45, 0.95, 0.55), Color(1.0, 0.75, 0.3), Color(1.0, 0.4, 0.35)
@@ -14,8 +15,9 @@ const STATUS_COLOR := Color(1.0, 0.75, 0.3)
 ## What's shown (a body or a region), or null.
 var item: Resource
 
-## The ores the badges show.
+## The ores the badges show, and the ores of the plate a locked body needs.
 var _shown_ores: Array[OreType] = []
+var _needed_ores: Array[OreType] = []
 
 @onready var _title: Label = %Title
 @onready var _subtitle: Label = %Subtitle
@@ -27,6 +29,7 @@ var _shown_ores: Array[OreType] = []
 @onready var _region_rows: Array[Control] = [%DangerLabel, %Danger, %TimerLabel, %Timer]
 @onready var _ore_rows: Array[Control] = [%OresLabel, %Ores]
 @onready var _status: Label = %Status
+@onready var _needs: HFlowContainer = %Needs
 @onready var _primary: Button = %Primary
 @onready var _choose: Button = %Choose
 @onready var _back: Button = %Back
@@ -53,6 +56,7 @@ func show_part(part: StationPart) -> void:
 	var offer: MissionBrief = navigator.get_offer(item)
 	_status.add_theme_color_override(&"font_color", STATUS_COLOR)
 	_choose.visible = shown_region != null
+	var needed: ShieldPlate = null
 	if star:
 		_title.text = tr(star.display_name)
 		_subtitle.text = tr("Star")
@@ -67,21 +71,22 @@ func show_part(part: StationPart) -> void:
 		_show_rows(_region_rows, false)
 		var signature: Array[OreType] = []
 		for ore_type: OreType in shown_body.signature_ores:
-			signature.append(ore_type if shown_body.is_reachable() else null)
+			signature.append(ore_type if navigator.is_reachable(shown_body) else null)
 		_info.visible = not signature.is_empty()
 		_show_rows(_ore_rows, not signature.is_empty())
 		_show_ores(signature)
 		_primary.visible = true
 		_primary.text = tr("Zoom in")
-		_primary.disabled = not shown_body.is_reachable()
-		if shown_body.is_reachable():
+		_primary.disabled = not navigator.is_reachable(shown_body)
+		if navigator.is_reachable(shown_body):
 			_status.text = ""
 		elif shown_body.kind == CelestialBody.Kind.STATION:
 			_status.text = tr("No docking yet.")
 		elif shown_body.kind == CelestialBody.Kind.GAS_GIANT:
 			_status.text = tr("Nowhere to land: its moons can be visited.")
 		else:
-			_status.text = tr("Locked")
+			needed = _needed_plate(navigator, shown_body)
+			_status.text = _needs_text(shown_body)
 	elif shown_region:
 		var at_landing_site: bool = navigator.level == NavigatorStation.Level.REGION
 		_title.text = (
@@ -103,14 +108,16 @@ func show_part(part: StationPart) -> void:
 		_show_ores(navigator.shown_ores(shown_region))
 		_primary.visible = not at_landing_site
 		_primary.text = tr("Zoom in")
-		_primary.disabled = not shown_region.unlocked
+		var reachable: bool = navigator.is_reachable(shown_region)
+		_primary.disabled = not reachable
 		_choose.text = tr("Set as destination")
 		var chosen: bool = offer != null and mission != null and offer == mission.destination
-		_choose.disabled = (
-			not shown_region.unlocked or not mission or not mission.can_select() or chosen
-		)
+		_choose.disabled = not reachable or not mission or not mission.can_select() or chosen
 		_status.text = _region_status(navigator, shown_region, offer)
+		if region_body and not navigator.is_reachable(shown_region):
+			needed = _needed_plate(navigator, region_body)
 	_status.visible = _status.text != ""
+	_show_needed(needed)
 	_back.visible = navigator.level != NavigatorStation.Level.SYSTEM
 
 
@@ -126,8 +133,10 @@ func _region_status(
 ) -> String:
 	var mission: Mission = navigator.mission
 	var text: String = ""
-	if not shown_region.unlocked:
-		text = tr("Locked")
+	var system: StarSystem = navigator.get_system()
+	if not navigator.is_reachable(shown_region):
+		var region_body: CelestialBody = system.body_of(shown_region) if system else null
+		text = _needs_text(region_body) if region_body else tr("Locked")
 	elif not mission or not offer:
 		text = ""
 	elif mission.flight.is_flying():
@@ -174,6 +183,33 @@ func _show_ores(ores: Array[OreType]) -> void:
 			unknown.text = "?"
 			unknown.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 			_ores.add_child(unknown)
+
+
+## What a body out of reach needs: the heat shield MK level of its tier.
+func _needs_text(of_body: CelestialBody) -> String:
+	return tr("Needs heat shield MK%d (engine room)") % of_body.tier
+
+
+## The heat shield plate that brings `of_body` in reach, or null.
+static func _needed_plate(navigator: NavigatorStation, of_body: CelestialBody) -> ShieldPlate:
+	var shield: HeatShield = navigator.get_heat_shield()
+	return shield.plate_for(of_body.tier) if shield else null
+
+
+## The ores of `plate`'s cost as badges (null: none).
+func _show_needed(plate: ShieldPlate) -> void:
+	var ores: Array[OreType] = []
+	if plate:
+		ores.assign(plate.cost.keys())
+	_needs.visible = not ores.is_empty()
+	if ores == _needed_ores:
+		return
+	_needed_ores = ores
+	for node: Node in _needs.get_children():
+		_needs.remove_child(node)
+		node.queue_free()
+	for ore_type: OreType in ores:
+		_needs.add_child(OreBadge.new(ore_type))
 
 
 ## `text` followed by `of_body`'s tier ("Dust flats · Tier 2").

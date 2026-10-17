@@ -1,8 +1,8 @@
 class_name Region
 extends Resource
 ## A fixed region of a planet or moon (like a country): its biome, how dangerous it is and how long
-## a run there lasts. Every visit generates a new section of it (a new seed, see `MissionBrief`);
-## later its handcrafted set pieces (landmarks, quest sites) are placed in that section.
+## a run there lasts. Every visit generates a new section of it (a new seed, see `MissionBrief`),
+## with its handcrafted set pieces (landmarks, later quest sites) placed in that section.
 
 ## Player-facing name.
 @export var display_name: String = ""
@@ -15,6 +15,8 @@ extends Resource
 @export var globe_position: Vector2 = Vector2.ZERO
 ## Whether it can be visited yet (later unlocked by the story or quests).
 @export var unlocked: bool = true
+## Map parts every visit places (see `LocationParts`).
+@export var set_pieces: Array[PartPlacement] = []
 ## Ores found here besides its biome's and its body's (e.g. for a quest site).
 @export var extra_ores: Array[OreType] = []
 ## Ores of its biome or body that aren't found here.

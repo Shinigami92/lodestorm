@@ -307,6 +307,15 @@ func refill_ammo() -> void:
 		ranged.fill(spare_magazines)
 
 
+## Fills the spare magazines of every ranged weapon in the loadout (a supply cache in a crate),
+## leaving the loaded rounds as they are.
+func refill_spares() -> void:
+	_spares.clear()
+	var ranged := weapon as RangedWeapon
+	if ranged:
+		ranged.spare_rounds = spare_magazines * ranged.capacity()
+
+
 ## Hands `teammate` a magazine for their equipped ranged weapon, paid from the carried ore (see
 ## `RangedWeapon.receive_ammo`). Returns whether it did.
 func give_ammo(teammate: Player) -> bool:

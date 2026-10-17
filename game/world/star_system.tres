@@ -8,6 +8,41 @@
 [ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="6_ore_type"]
 [ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
 [ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
+[ext_resource type="PackedScene" uid="uid://xwf5jkcqbffk" path="res://game/locations/parts/expedition_camp.tscn" id="part_camp"]
+[ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
+[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
+[ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
+[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
+
+[sub_resource type="Resource" id="SetPiece_Resource_redscar"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
+rule = 2
+
+[sub_resource type="Resource" id="SetPiece_Resource_mire"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_camp")
+rule = 3
+
+[sub_resource type="Resource" id="SetPiece_Resource_cinder"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+
+[sub_resource type="Resource" id="SetPiece_Resource_basin"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+
+[sub_resource type="Resource" id="SetPiece_Resource_glare"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+
+[sub_resource type="Resource" id="SetPiece_Resource_ember"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+rule = 2
 
 [sub_resource type="Resource" id="Resource_redscar"]
 script = ExtResource("3_region")
@@ -15,6 +50,7 @@ display_name = "Redscar Flats"
 biome = ExtResource("4_dust")
 danger = 0
 globe_position = Vector2(20, -30)
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_redscar")])
 
 [sub_resource type="Resource" id="Resource_mire"]
 script = ExtResource("3_region")
@@ -22,6 +58,7 @@ display_name = "Hollow Mire"
 biome = ExtResource("5_overgrowth")
 length = 1.5
 globe_position = Vector2(-15, 25)
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_mire")])
 
 [sub_resource type="Resource" id="Resource_cinder"]
 script = ExtResource("3_region")
@@ -30,6 +67,7 @@ biome = ExtResource("4_dust")
 danger = 2
 length = 2.0
 globe_position = Vector2(45, 60)
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_cinder")])
 
 [sub_resource type="Resource" id="Resource_torvane"]
 script = ExtResource("2_body")
@@ -44,6 +82,7 @@ script = ExtResource("3_region")
 display_name = "Pale Basin"
 biome = ExtResource("4_dust")
 globe_position = Vector2(10, 0)
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_basin")])
 
 [sub_resource type="Resource" id="Resource_lisk"]
 script = ExtResource("2_body")
@@ -64,6 +103,7 @@ danger = 2
 length = 2.0
 globe_position = Vector2(0, 10)
 unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_glare")])
 
 [sub_resource type="Resource" id="Resource_ember"]
 script = ExtResource("3_region")
@@ -73,6 +113,7 @@ danger = 2
 length = 1.5
 globe_position = Vector2(-30, -40)
 unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_ember")])
 
 [sub_resource type="Resource" id="Resource_vehra"]
 script = ExtResource("2_body")

@@ -7,10 +7,15 @@ extends Node3D
 ## beside it outside. Players stand around it to see where they're going.
 ## Every ore node shows as a beam in its ore's color (`Hologram/Markers`), so players see where
 ## the ores lie and plan their route; at the hologram's scale the deposits themselves are specks.
+## Parts of the location in `LANDMARK_GROUP` (points of interest) show in the landmark color too,
+## each with a thicker beam in it so it reads at the hologram's scale; the ones in `HIDDEN_GROUP`
+## (crates, so finding them stays a discovery) don't show.
 ## The location may still be outside the tree (a mission's location prepared before the flight).
 
 const LOCATION_COLOR := Color(0.3, 0.85, 1.0)
 const LANDMARK_COLOR := Color(1.0, 0.85, 0.35)
+const LANDMARK_GROUP: StringName = &"hologram_landmarks"
+const HIDDEN_GROUP: StringName = &"hidden_in_hologram"
 
 ## How far the hologram reaches from the table's center, in m.
 @export var radius: float = 2.4
@@ -18,6 +23,8 @@ const LANDMARK_COLOR := Color(1.0, 0.85, 0.35)
 @export var height_scale: float = 1.5
 ## Size of the ore beams (radius, height), in m of the hologram.
 @export var marker_size: Vector2 = Vector2(0.025, 0.3)
+## Size of the beams of the landmarks in the location (radius, height), in m of the hologram.
+@export var landmark_marker_size: Vector2 = Vector2(0.06, 0.4)
 
 var _location_material: ShaderMaterial = hologram_material(LOCATION_COLOR)
 var _landmark_material: ShaderMaterial = hologram_material(LANDMARK_COLOR)
@@ -82,8 +89,19 @@ func set_hologram_scale(value: float) -> void:
 
 ## The ore beams in the hologram (one per ore node, in its ore's color).
 func get_markers() -> Array[MeshInstance3D]:
+	return _beams(false)
+
+
+## The landmarks' beams in the hologram (one per point of interest, in the landmark color).
+func get_landmark_markers() -> Array[MeshInstance3D]:
+	return _beams(true)
+
+
+func _beams(landmarks: bool) -> Array[MeshInstance3D]:
 	var markers: Array[MeshInstance3D] = []
-	markers.assign(_markers.get_children())
+	for marker: MeshInstance3D in _markers.get_children():
+		if marker.has_meta(&"landmark") == landmarks:
+			markers.append(marker)
 	return markers
 
 
@@ -94,7 +112,23 @@ func _add_markers(location: Node3D) -> void:
 	mesh.height = marker_size.y
 	mesh.radial_segments = 8
 	mesh.rings = 1
+	var landmark_mesh := CylinderMesh.new()
+	landmark_mesh.top_radius = landmark_marker_size.x
+	landmark_mesh.bottom_radius = landmark_marker_size.x
+	landmark_mesh.height = landmark_marker_size.y
+	landmark_mesh.radial_segments = 12
+	landmark_mesh.rings = 1
 	for node: Node in location.find_children("*", "Node3D", true, false):
+		if node.is_in_group(LANDMARK_GROUP) and _is_shown(node as Node3D, location):
+			var beam := MeshInstance3D.new()
+			beam.mesh = landmark_mesh
+			beam.material_override = _landmark_material
+			beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			beam.set_meta(&"landmark", true)
+			var spot: Vector3 = _content.transform * _relative(node as Node3D, location).origin
+			beam.position = spot + Vector3.UP * landmark_marker_size.y * 0.5
+			_markers.add_child(beam)
+			continue
 		var ore := node as OreNode
 		if not ore or not ore.ore_type:
 			continue
@@ -127,7 +161,9 @@ func _copied(root: Node3D, space: Node3D, material: Material) -> Array[MeshInsta
 		var part := MeshInstance3D.new()
 		part.mesh = source.mesh
 		part.transform = _relative(source, space)
-		part.material_override = material
+		part.material_override = (
+			_landmark_material if _is_in(source, space, LANDMARK_GROUP) else material
+		)
 		part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parts.append(part)
 	return parts
@@ -145,17 +181,29 @@ static func _relative(node: Node3D, space: Node3D) -> Transform3D:
 	return result
 
 
-## Whether `node` and its parents up to `space` are visible.
+## Whether `node` and its parents up to `space` are visible (and not hidden from the hologram).
 static func _is_shown(node: Node3D, space: Node3D) -> bool:
 	var at: Node = node
 	while at:
 		var spatial := at as Node3D
-		if spatial and not spatial.visible:
+		if spatial and (not spatial.visible or spatial.is_in_group(HIDDEN_GROUP)):
 			return false
 		if at == space:
 			return true
 		at = at.get_parent()
 	return true
+
+
+## Whether `node` or one of its parents up to `space` is in `group`.
+static func _is_in(node: Node, space: Node3D, group: StringName) -> bool:
+	var at: Node = node
+	while at:
+		if at.is_in_group(group):
+			return true
+		if at == space:
+			return false
+		at = at.get_parent()
+	return false
 
 
 ## A hologram material in `color` (also for the navigator's hologram).

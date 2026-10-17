@@ -73,7 +73,7 @@ Order of the remaining work (each step builds on the ones before):
 7. More weapons (their own design round: in-game names for every weapon, like the ores and places; whether the blaster is the assault rifle). Until the quests hand out blueprints, the debug overlay unlocks them; their models come with the art pass
 8. Refinery and crafted miners together, in one design round: miners are what alloys are first needed for (the refinery's space is reserved at the cargo bay's far end)
 9. Destroyable nests
-10. Quest framework and the wrist display's quest log, with the quartermaster's chain ending in the shotgun blueprint
+10. Quest framework and the wrist display's quest log, with the quartermaster's chain ending in the shotgun blueprint; quest steps that put blueprint fragments into a region's crates. Before it, a design round on the wrist display: with cargo, quests and quest items it gets crowded and hard to read
 
 The rest (risk vs. reward, the voice spike, the remaining skills, the expedition log) fits in between where it helps.
 

@@ -1,8 +1,9 @@
 class_name NavigatorCard
 extends StationCard
 ## The holo card of the navigator (`NavigatorStation`): what's selected and what can be done with
-## it. The star: its name; a body: its kind ("Zoom in"); a region: its biome, danger, timer and
-## ores ("Zoom in", "Set as destination"); the landing site: the mission's location name and where
+## it. The star: its name; a body: its kind and tier, its signature ore ("?" while it can't be
+## reached; "Zoom in"); a region: its biome and tier, danger, timer and ores ("Zoom in", "Set as
+## destination"); the landing site: the mission's location name and where
 ## things stand (destination set, scanning, in flight, landed).
 
 const DANGER_COLORS: Array[Color] = [
@@ -22,6 +23,9 @@ var _shown_ores: Array[OreType] = []
 @onready var _danger: Label = %Danger
 @onready var _timer: Label = %Timer
 @onready var _ores: HFlowContainer = %Ores
+## Rows shown for a region only (the tier and ore rows show for bodies too).
+@onready var _region_rows: Array[Control] = [%DangerLabel, %Danger, %TimerLabel, %Timer]
+@onready var _ore_rows: Array[Control] = [%OresLabel, %Ores]
 @onready var _status: Label = %Status
 @onready var _primary: Button = %Primary
 @onready var _choose: Button = %Choose
@@ -58,7 +62,15 @@ func show_part(part: StationPart) -> void:
 	elif shown_body:
 		_title.text = tr(shown_body.display_name)
 		_subtitle.text = shown_body.kind_name()
-		_info.visible = false
+		if shown_body.kind != CelestialBody.Kind.STATION:
+			_subtitle.text = _with_tier(_subtitle.text, shown_body)
+		_show_rows(_region_rows, false)
+		var signature: Array[OreType] = []
+		for ore_type: OreType in shown_body.signature_ores:
+			signature.append(ore_type if shown_body.is_reachable() else null)
+		_info.visible = not signature.is_empty()
+		_show_rows(_ore_rows, not signature.is_empty())
+		_show_ores(signature)
 		_primary.visible = true
 		_primary.text = tr("Zoom in")
 		_primary.disabled = not shown_body.is_reachable()
@@ -76,16 +88,19 @@ func show_part(part: StationPart) -> void:
 			offer.location_name() if offer and at_landing_site else tr(shown_region.display_name)
 		)
 		_subtitle.text = tr(shown_region.biome.display_name) if shown_region.biome else ""
+		var region_body: CelestialBody = (
+			navigator.get_system().body_of(shown_region) if navigator.get_system() else null
+		)
+		if region_body:
+			_subtitle.text = _with_tier(_subtitle.text, region_body)
 		_info.visible = true
+		_show_rows(_region_rows, true)
+		_show_rows(_ore_rows, true)
 		_danger.text = MissionBrief.for_region(shown_region, 1).difficulty_name()
 		_danger.add_theme_color_override(&"font_color", DANGER_COLORS[shown_region.danger])
 		var minutes: float = (mission.settings.duration if mission else 900.0) * shown_region.length
 		_timer.text = tr("%d min") % roundi(minutes / 60.0)
-		var system: StarSystem = navigator.get_system()
-		var ores: Array[OreType] = []
-		if system:
-			ores = system.ores_of(shown_region)
-		_show_ores(ores)
+		_show_ores(navigator.shown_ores(shown_region))
 		_primary.visible = not at_landing_site
 		_primary.text = tr("Zoom in")
 		_primary.disabled = not shown_region.unlocked
@@ -142,7 +157,8 @@ func _on_choose_pressed() -> void:
 		navigator.choose_destination()
 
 
-## The region's ores as badges with their names (from common to rare).
+## The ores as badges with their names (from common to rare); null shows as "?" (an ore not known
+## yet).
 func _show_ores(ores: Array[OreType]) -> void:
 	if ores == _shown_ores:
 		return
@@ -151,7 +167,23 @@ func _show_ores(ores: Array[OreType]) -> void:
 		_ores.remove_child(node)
 		node.queue_free()
 	for ore_type: OreType in ores:
-		_ores.add_child(OreBadge.new(ore_type))
+		if ore_type:
+			_ores.add_child(OreBadge.new(ore_type))
+		else:
+			var unknown := Label.new()
+			unknown.text = "?"
+			unknown.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+			_ores.add_child(unknown)
+
+
+## `text` followed by `of_body`'s tier ("Dust flats · Tier 2").
+func _with_tier(text: String, of_body: CelestialBody) -> String:
+	return "%s · %s" % [text, tr("Tier %d") % of_body.tier]
+
+
+static func _show_rows(rows: Array[Control], shown: bool) -> void:
+	for row: Control in rows:
+		row.visible = shown
 
 
 func _on_back_pressed() -> void:

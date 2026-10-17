@@ -189,6 +189,7 @@ weight = 0.8
 [resource]
 script = ExtResource("1_biome")
 display_name = "Frost fields"
+map_color = Color(0.7, 0.84, 1, 1)
 pass_width = Vector2(10, 16)
 floor_relief = 1.5
 floor_relief_size = 80.0

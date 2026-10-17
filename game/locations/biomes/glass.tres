@@ -116,6 +116,7 @@ weight = 0.8
 [resource]
 script = ExtResource("1_biome")
 display_name = "Glass plains"
+map_color = Color(0.4, 0.8, 0.8, 1)
 area_radius = Vector2(20, 40)
 pass_width = Vector2(10, 17)
 area_spread = 95.0

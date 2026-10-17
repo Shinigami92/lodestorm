@@ -65,6 +65,8 @@ var previewed: MissionBrief
 var destination: MissionBrief
 ## The mission the ship flies to or stands at (one of `offers`), or null.
 var brief: MissionBrief
+## The planet or moon the ship is at (where it flew last), or null before its first flight.
+var at_body: CelestialBody
 ## Seconds until the storm hits, 0 afterwards.
 var time_left: float
 ## Seconds since the storm hit.
@@ -232,6 +234,8 @@ func confirm() -> bool:
 		return false
 	brief = destination
 	state = State.CLOSED
+	if settings.system and brief.region:
+		at_body = settings.system.body_of(brief.region)
 	time_left = duration()
 	_duration = duration()
 	storm_time = 0.0

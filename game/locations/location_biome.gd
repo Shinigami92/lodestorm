@@ -5,6 +5,9 @@ extends Resource
 ## mission picks it (from the region). All values are greybox, TBD (playtest).
 
 @export var display_name: String = ""
+## Its color on the navigator's globes: muted, like its ground, so the regions' danger borders
+## and the ores' badges stand out.
+@export var map_color: Color = Color(0.6, 0.6, 0.6)
 
 @export_group("Layout")
 ## Radius of an open area (smallest, largest), in m.

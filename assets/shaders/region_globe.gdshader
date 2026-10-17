@@ -1,17 +1,19 @@
 // A planet or moon in the navigator's hologram: a faint globe with its regions as bordered areas
 // on the surface. Each surface point belongs to the nearest region center (up to `max_angle`
 // away); borders run where two regions meet and along each region's outer edge. Regions keep
-// their danger color; the selected one is filled brighter with a wide white border, the hovered
-// one a little brighter.
+// their biome's color with a border in their danger color; the selected one is filled brighter
+// with a wide white border, the hovered one a little brighter.
 shader_type spatial;
 render_mode unshaded, blend_add, depth_draw_never, cull_back;
 
 const int MAX_REGIONS = 8;
 
 uniform vec4 globe_color : source_color = vec4(0.3, 0.85, 1.0, 1.0);
-// Region centers (unit directions in the globe's space) and colors (danger; alpha: locked dim).
+// Region centers (unit directions in the globe's space), fill colors (biome) and border colors
+// (danger); alpha: locked ones dim.
 uniform vec3 region_dirs[MAX_REGIONS];
 uniform vec4 region_colors[MAX_REGIONS] : source_color;
+uniform vec4 region_edges[MAX_REGIONS] : source_color;
 uniform int region_count = 0;
 uniform int selected = -1;
 uniform int hovered = -1;
@@ -51,12 +53,18 @@ void fragment() {
 	float alpha = 0.08 + 0.35 * rim * rim;
 	if (index >= 0 && nearest < max_angle) {
 		vec4 region = region_colors[index];
+		vec4 region_edge = region_edges[index];
 		bool picked = index == selected;
 		float width = picked ? border * 2.0 : border;
 		bool edge = (second - nearest) < width * 2.0 || (max_angle - nearest) < width;
-		float fill = picked ? 0.55 : (index == hovered ? 0.38 : 0.22);
-		color = picked ? mix(region.rgb, vec3(1.0), edge ? 0.8 : 0.25) : region.rgb;
-		alpha = edge ? 0.95 * region.a : fill * region.a + 0.2 * rim;
+		float fill = picked ? 0.55 : (index == hovered ? 0.4 : 0.28);
+		if (edge) {
+			color = picked ? mix(region_edge.rgb, vec3(1.0), 0.8) : region_edge.rgb;
+			alpha = 0.95 * region_edge.a;
+		} else {
+			color = picked ? mix(region.rgb, vec3(1.0), 0.2) : region.rgb;
+			alpha = fill * region.a + 0.2 * rim;
+		}
 	}
 	ALBEDO = color;
 	ALPHA = clamp(alpha * energy * fade, 0.0, 1.0);

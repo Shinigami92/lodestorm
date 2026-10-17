@@ -8,7 +8,6 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 
 | File | What | In `PLAN.md` |
 |---|---|---|
-| [`opening-planets.md`](opening-planets.md) | tiers scaling aliens and the storm, MK levels per planet, the ore-cost rule | M4, step 4 B |
 | [`player-display.md`](player-display.md) | the suit ring on the ground, removing the wrist display | M4, step 5 |
 | [`menu-pause.md`](menu-pause.md) | the title view instead of a main menu, the pause panel with the settings, quitting, credits | M4, step 5 A (co-op M7, VR M6) |
 | [`biomes.md`](biomes.md) | the six biomes' own geography: walls and gaps, passes, area kinds, hazards | M4, step 6 (assets M5) |

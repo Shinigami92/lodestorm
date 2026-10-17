@@ -15,7 +15,8 @@ extends Node
 ## the ship landed there: it resets the timer, heals the players, lowers the ramp and locks the
 ## mission. The mission starts when the first player steps out; the timer then counts down, and at
 ## zero the storm hits (`time_up`) and hurts everyone outside, more with every second. Players who
-## die drop what they carried.
+## die drop what they carried. Bodies farther in (a higher `tier`) have more and stronger aliens, an
+## earlier warning and a harsher storm.
 ## The mission is won (`returned`) once every living player is back aboard, in time or during the
 ## storm: their cargo is the haul (see `Ship.store_haul`), the dead respawn aboard and the ramp
 ## goes up.
@@ -312,9 +313,19 @@ func progress() -> float:
 	return 0.0
 
 
-## Storm damage per second right now.
+## Storm damage per second right now: its growth rises with the tier.
 func storm_damage_per_second() -> float:
-	return settings.storm_damage + settings.storm_damage_growth * storm_time
+	return settings.storm_damage + settings.storm_growth_at(tier()) * storm_time
+
+
+## The tier of the body the ship flies to or stands at (see `CelestialBody.tier`), 1 without one.
+func tier() -> int:
+	return _tier_of(brief)
+
+
+## Seconds before the storm when the warning starts: earlier with the tier.
+func warning_time() -> float:
+	return settings.warning_time_at(tier())
 
 
 ## A fresh location for `offer` (its biome, seed and difficulty if it's generated), not built yet.
@@ -326,7 +337,7 @@ func _instantiate(offer: MissionBrief) -> Node3D:
 		generated.biome = offer.biome
 		generated.ores = offer.ores
 		generated.world_seed = offer.world_seed
-		generated.nest_factor = settings.nest_factors[offer.difficulty]
+		generated.nest_factor = settings.nest_factor_at(offer.difficulty, _tier_of(offer))
 		generated.area_count = maxi(roundi(settings.location_areas * offer.length), 4)
 		if offer.region:
 			generated.set_pieces = offer.region.set_pieces
@@ -429,6 +440,14 @@ func _remove_location() -> void:
 	location.get_parent().remove_child(location)
 	location.queue_free()
 	location = null
+
+
+## The tier of the body `offer` goes to, 1 without one (a location of a biome anywhere).
+func _tier_of(offer: MissionBrief) -> int:
+	var body: CelestialBody = null
+	if offer and offer.region and settings.system:
+		body = settings.system.body_of(offer.region)
+	return body.tier if body else 1
 
 
 func _storm_damage(delta: float) -> void:

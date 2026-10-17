@@ -279,7 +279,7 @@ func _update_display() -> void:
 		var time_left: float = mission.time_left
 		var seconds: int = ceili(time_left)
 		countdown_text = "%d:%02d" % [floori(seconds / 60.0), seconds % 60]
-		if time_left <= mission.settings.warning_time:
+		if time_left <= mission.warning_time():
 			status_color = COLOR_WARNING
 			# Tied to the timer, so the blinking stays in step with the countdown.
 			status_brightness = 0.25 + 0.75 * absf(cos(time_left * PI * WARNING_BLINK_RATE))

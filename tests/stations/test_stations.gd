@@ -8,6 +8,7 @@ const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres
 const TANK: Upgrade = preload("res://game/progression/upgrades/miner_tank.tres")
 const HOSE: Upgrade = preload("res://game/progression/upgrades/miner_hose.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
+const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
 
 var _map: Node3D
 var _player: Player
@@ -63,6 +64,7 @@ func test_directions_move_the_highlight_between_parts() -> void:
 func test_interact_buys_the_selected_upgrade() -> void:
 	var station: UpgradeStation = await _use("Miners")
 	_ship.add_to_hold(KYRITE, 1000.0)
+	_ship.add_to_hold(VYREL, 1000.0)
 	_send(&"move_forward")
 	_send(&"interact")
 	assert_eq(_player.upgrades.mk(TANK), 2)
@@ -96,6 +98,7 @@ func test_card_floats_beside_the_selected_part_facing_the_camera() -> void:
 func test_mouse_picks_parts_and_uses_the_card() -> void:
 	var station: UpgradeStation = await _use("Miners")
 	_ship.add_to_hold(KYRITE, 1000.0)
+	_ship.add_to_hold(VYREL, 1000.0)
 	await wait_seconds(0.5)
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	var tank: StationPart = station.get_part(TANK)

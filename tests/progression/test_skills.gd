@@ -64,6 +64,30 @@ func test_every_skill_sits_in_one_cluster_with_its_requirement() -> void:
 	assert_eq(seen.size(), 8)
 
 
+func test_deeper_skills_cost_rarer_ores() -> void:
+	for cluster: SkillCluster in TREE.clusters:
+		for skill: Skill in cluster.skills:
+			var depth: int = skill.depth()
+			for rank: SkillRank in skill.ranks:
+				var bands: Array[OreType.Band] = []
+				for ore_type: OreType in rank.cost:
+					bands.append(ore_type.band)
+				var label: String = "%s (depth %d)" % [skill.display_name, depth]
+				if depth == 1:
+					for band: OreType.Band in bands:
+						assert_eq(band, OreType.Band.COMMON, label + ": commons only")
+				elif depth < 4:
+					assert_has(bands, OreType.Band.MID, label + ": a mid ore")
+					assert_does_not_have(bands, OreType.Band.SIGNATURE, label)
+				else:
+					assert_has(bands, OreType.Band.SIGNATURE, label + ": a signature ore")
+
+
+func test_depth_counts_the_skills_before() -> void:
+	assert_eq(DASH.depth(), 1)
+	assert_eq(RELOAD_ON_THE_MOVE.depth(), 2)
+
+
 func test_ranks_open_in_order_up_to_the_highest() -> void:
 	var skills := Skills.new()
 	assert_eq(skills.rank(SUIT), 0)

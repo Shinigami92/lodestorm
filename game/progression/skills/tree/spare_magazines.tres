@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://dn3kp4h0ew8sm" path="res://game/progression/skills/skill.gd" id="9_skill"]
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
 [ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="ore_olvane"]
-[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
+[ext_resource type="Resource" uid="uid://cgxpfq8uqcagh" path="res://game/ores/types/ore_pallin.tres" id="ore_pallin"]
 
 [sub_resource type="Resource" id="Rank_1"]
 script = ExtResource("1_rank")
@@ -25,7 +25,7 @@ value = 2
 script = ExtResource("1_rank")
 cost = Dictionary[ExtResource("2_ore_type"), int]({
 ExtResource("ore_olvane"): 180,
-ExtResource("ore_vyrel"): 90
+ExtResource("ore_pallin"): 90
 })
 value = 3
 

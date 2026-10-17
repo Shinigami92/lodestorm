@@ -4,8 +4,9 @@ extends Station
 ## (each `StationPart.item` an `Upgrade`), e.g. the fitting frame (the suit) or the miners'
 ## maintenance pad (drill, ore tank, hose reel). Its card (`UpgradeCard`) shows the selected
 ## upgrade and buys its next level for the player using the station, with ore from the ship's hold.
-## Upgrades of weapons the player doesn't own yet are locked, and nothing can be bought while a
-## mission is underway.
+## Upgrades of weapons the player doesn't own yet are locked, levels above the ship's reach wait for
+## the next heat shield plate (`upgrade_cap`), and nothing can be bought while a mission is
+## underway.
 
 ## The mission that locks it while underway; found in the scene tree when not set.
 var mission: Mission
@@ -58,12 +59,22 @@ func is_available(upgrade: Upgrade) -> bool:
 	return not weapon_type or (user != null and user.arsenal.owns(weapon_type))
 
 
+## The highest MK level that can be bought: the ship's heat shield decides (see
+## `HeatShield.upgrade_cap`).
+func upgrade_cap() -> int:
+	return ship.heat_shield.upgrade_cap() if ship else 1
+
+
 ## Whether the player using it can buy the next level of `upgrade` right now.
 func can_buy(upgrade: Upgrade) -> bool:
 	if is_locked() or not user or not ship or not upgrade or not is_available(upgrade):
 		return false
-	var level: UpgradeLevel = user.upgrades.next_level(upgrade)
-	return level != null and ship.can_pay(level.cost)
+	var mk: int = user.upgrades.mk(upgrade)
+	return (
+		user.upgrades.next_level(upgrade) != null
+		and mk < upgrade_cap()
+		and ship.can_pay(user.upgrades.next_cost(upgrade))
+	)
 
 
 ## Buys the next level of `upgrade` for the player using it, paid from the hold. Returns whether
@@ -71,7 +82,7 @@ func can_buy(upgrade: Upgrade) -> bool:
 func buy(upgrade: Upgrade) -> bool:
 	if not can_buy(upgrade):
 		return false
-	if not ship.pay(user.upgrades.next_level(upgrade).cost):
+	if not ship.pay(user.upgrades.next_cost(upgrade)):
 		return false
 	user.upgrades.raise(upgrade)
 	_bought(upgrade)

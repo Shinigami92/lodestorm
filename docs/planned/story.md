@@ -8,7 +8,7 @@ Grounded: working people in a hard place, dry humor among the crew, no chosen on
 
 ## What the colony builds
 
-**A flare shield, to leave.** The colony came on slow haulers and can't outrun the big flare; the only fast way out is a slingshot around Kesh itself, close enough to burn any hull. So the colony builds a flare shield for its convoy, from the six signature ores and their alloys. The players' heat shield is its small prototype: every plate they install (see [`opening-planets.md`](opening-planets.md)) teaches Okoro what the big one needs, which ties the campaign's only gate to the story's goal.
+**A flare shield, to leave.** The colony came on slow haulers and can't outrun the big flare; the only fast way out is a slingshot around Kesh itself, close enough to burn any hull. So the colony builds a flare shield for its convoy, from the six signature ores and their alloys. The players' heat shield is its small prototype: every plate they install (see Opening planets in [Missions](../GAME_DESIGN.md#6-missions)) teaches Okoro what the big one needs, which ties the campaign's only gate to the story's goal.
 
 ## The hive and the star
 

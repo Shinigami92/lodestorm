@@ -7,6 +7,9 @@ extends Resource
 ## Saved by number in resources: add new kinds at the end.
 enum Kind { PLANET, MOON, STATION, GAS_GIANT }
 
+## A body's highest MK level is its tier plus this (see `max_mk`).
+const MK_ABOVE_TIER: int = 2
+
 ## Stable name for saves (where the ship is), unique in its star system.
 @export var id: StringName = &""
 ## Player-facing name.
@@ -14,7 +17,7 @@ enum Kind { PLANET, MOON, STATION, GAS_GIANT }
 @export var kind: Kind = Kind.PLANET
 ## How dangerous it is, growing from the outermost planet (1) inwards; a moon has its planet's.
 ## The ship's heat shield needs this MK level to reach it (see `HeatShield`). Scales its aliens and
-## caps the MK levels in co-op (later, see GAME_DESIGN.md, Co-op progression).
+## its storm (see `Mission.tier`) and sets its highest MK level (`max_mk`).
 @export_range(1, 6, 1, "or_greater") var tier: int = 1
 ## Its color in the navigator's hologram.
 @export var color: Color = Color(0.5, 0.6, 0.7)
@@ -31,6 +34,12 @@ enum Kind { PLANET, MOON, STATION, GAS_GIANT }
 ## Its own rare ores (usually one), found in all its regions and nowhere else. A moon has its own
 ## or none.
 @export var signature_ores: Array[OreType] = []
+
+
+## The highest MK level of upgrades it brings: reaching it makes them buyable, and in co-op stronger
+## gear counts as this level here (the tier sync, later; see GAME_DESIGN.md, Co-op progression).
+func max_mk() -> int:
+	return tier + MK_ABOVE_TIER
 
 
 ## Its kind's name, translated.

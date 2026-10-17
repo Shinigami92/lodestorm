@@ -14,6 +14,7 @@ const HOSE: Upgrade = preload("res://game/progression/upgrades/miner_hose.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")
 const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
+const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
 
 var _map: Node3D
 var _player: Player
@@ -43,24 +44,19 @@ func test_every_upgrade_has_texts_and_rising_levels() -> void:
 	for upgrade: Upgrade in all:
 		assert_ne(upgrade.display_name, "")
 		assert_ne(upgrade.description, "")
-		assert_eq(upgrade.max_mk(), 3, "MK1 to MK3 for now")
+		assert_eq(upgrade.max_mk(), 8, "MK1 to MK8, one more per planet")
 		var previous: float = 1.0
 		for level: UpgradeLevel in upgrade.levels:
 			assert_gt(level.multiplier, previous)
 			previous = level.multiplier
-			assert_false(level.cost.is_empty())
-			for ore_type: OreType in level.cost:
-				assert_gt(level.cost[ore_type], 0)
-
-
-func test_higher_levels_ask_for_rarer_ores() -> void:
-	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
-		var levels: Array[UpgradeLevel] = weapon_type.upgrade.levels
-		assert_eq(levels[0].cost.keys(), [KYRITE])
-		assert_eq(levels[1].cost.keys(), [KYRITE, OLVANE])
-	for upgrade: Upgrade in [ARMOR, DRILL, TANK, HOSE] as Array[Upgrade]:
-		assert_eq(upgrade.levels[0].cost.keys(), [KYRITE])
-		assert_has(upgrade.levels[1].cost, VYREL, "%s's top level" % upgrade.display_name)
+		assert_true(upgrade.cost_of(1).is_empty(), "MK1 is free")
+		assert_true(upgrade.cost_of(upgrade.max_mk() + 1).is_empty())
+		for mk: int in range(2, upgrade.max_mk() + 1):
+			var cost: Dictionary[OreType, int] = upgrade.cost_of(mk)
+			assert_eq(cost.size(), 2 if mk == 2 else 3, "%s MK%d" % [upgrade.display_name, mk])
+			for ore_type: OreType in cost:
+				assert_gt(cost[ore_type], 0)
+				assert_eq(cost[ore_type] % 10, 0, "rounded to tens")
 
 
 func test_levels_start_at_mk1_and_rise_to_the_highest() -> void:
@@ -75,11 +71,15 @@ func test_levels_start_at_mk1_and_rise_to_the_highest() -> void:
 	assert_signal_emitted(upgrades, "changed")
 	assert_eq(upgrades.mk(ARMOR), 2)
 	assert_eq(upgrades.multiplier(ARMOR), ARMOR.levels[0].multiplier)
+	assert_eq(upgrades.next_cost(ARMOR), ARMOR.cost_of(3))
 	assert_true(upgrades.raise(ARMOR))
 	assert_eq(upgrades.multiplier(ARMOR), ARMOR.levels[1].multiplier)
+	while upgrades.raise(ARMOR):
+		pass
+	assert_eq(upgrades.mk(ARMOR), 8, "MK8 is the highest")
+	assert_eq(upgrades.multiplier(ARMOR), ARMOR.levels[-1].multiplier)
 	assert_null(upgrades.next_level(ARMOR))
-	assert_false(upgrades.raise(ARMOR), "MK3 is the highest")
-	assert_eq(upgrades.mk(ARMOR), 3)
+	assert_true(upgrades.next_cost(ARMOR).is_empty())
 
 
 func test_hold_pays_only_what_it_has() -> void:
@@ -104,7 +104,7 @@ func test_weapon_upgrade_raises_its_damage_and_lights_its_pips() -> void:
 	assert_eq(_player.weapon.damage_multiplier, 1.0)
 	var pips := _player.weapon.get_node("MkPips") as MkPips
 	assert_eq(pips.lit_count(), 1)
-	assert_eq(pips.max_mk, 3)
+	assert_eq(pips.max_mk, 8)
 	_player.upgrades.raise(BLASTER.upgrade)
 	assert_eq(_player.weapon.damage_multiplier, BLASTER.upgrade.levels[0].multiplier)
 	assert_eq(pips.lit_count(), 2)
@@ -122,7 +122,7 @@ func test_every_weapon_shows_pips() -> void:
 		var pips := weapon.get_node_or_null("MkPips") as MkPips
 		assert_not_null(pips, weapon_type.display_name)
 		if pips:
-			assert_eq(pips.get_child_count(), 3)
+			assert_eq(pips.get_child_count(), weapon_type.upgrade.max_mk())
 		weapon.free()
 
 
@@ -151,7 +151,7 @@ func test_armor_upgrade_adds_health_and_lights_its_pips() -> void:
 	var base: float = _player.settings.max_health
 	_player.take_damage(30.0)
 	assert_eq(_player.get_armor_pips().lit_count(), 1)
-	assert_eq(_player.get_armor_pips().max_mk, 3)
+	assert_eq(_player.get_armor_pips().max_mk, 8)
 	_player.upgrades.raise(ARMOR)
 	assert_eq(_player.max_health(), base * ARMOR.levels[0].multiplier)
 	assert_eq(_player.health, _player.max_health() - 30.0, "the extra health is added")
@@ -240,26 +240,53 @@ func test_station_buys_with_ore_from_the_hold() -> void:
 	var button: Button = card.get_buy_button()
 	assert_true(button.disabled, "the hold is empty")
 	_ship.add_to_hold(KYRITE, 1000.0)
+	_ship.add_to_hold(VYREL, 1000.0)
 	await wait_process_frames(1)
 	assert_false(button.disabled)
 	button.pressed.emit()
 	assert_eq(_player.upgrades.mk(ARMOR), 2)
-	assert_eq(_ship.hold[KYRITE], 1000.0 - ARMOR.levels[0].cost[KYRITE])
+	assert_eq(_ship.hold[KYRITE], 1000.0 - ARMOR.cost_of(2)[KYRITE])
 	await wait_process_frames(1)
-	assert_true(button.disabled, "MK3 needs olvane and vyrel")
+	assert_true(button.disabled, "MK3 needs olvane and meridine")
 	_ship.add_to_hold(OLVANE, 1000.0)
-	_ship.add_to_hold(VYREL, 1000.0)
+	_ship.add_to_hold(MERIDINE, 1000.0)
 	await wait_process_frames(1)
 	assert_true(card.press_primary(), "interact buys too")
 	assert_eq(_player.upgrades.mk(ARMOR), 3)
 	await wait_process_frames(1)
-	assert_true(button.disabled, "at the highest level")
-	assert_eq(button.text, "Max")
+	assert_true(button.disabled, "MK4 waits for the next planet")
+	assert_true(card.get_status().visible)
+	assert_string_contains(card.get_status().text, "heat shield MK2")
+
+
+func test_station_sells_higher_levels_once_the_ship_reaches_further() -> void:
+	var station: UpgradeStation = await _open_station("Armor")
+	_player.upgrades.levels[ARMOR] = 3
+	for ore_type: OreType in OreCatalog.all().ores:
+		_ship.add_to_hold(ore_type, 10000.0)
+	await wait_process_frames(1)
+	assert_false(station.can_buy(ARMOR), "MK3 is the highest with the bare core")
+	assert_false(station.buy(ARMOR))
+	_ship.heat_shield.install_next()
+	assert_eq(station.upgrade_cap(), 4)
+	assert_true(station.buy(ARMOR))
+	assert_eq(_player.upgrades.mk(ARMOR), 4)
+	assert_false(station.can_buy(ARMOR))
+	while _ship.heat_shield.install_next():
+		pass
+	while station.buy(ARMOR):
+		pass
+	assert_eq(_player.upgrades.mk(ARMOR), 8)
+	var card := station.card_menu as UpgradeCard
+	await wait_process_frames(1)
+	assert_eq(card.get_buy_button().text, "Max")
+	assert_false(card.get_status().visible)
 
 
 func test_station_locks_weapons_the_player_does_not_own() -> void:
 	var station := await _open_station("Weapons") as WeaponStation
 	_ship.add_to_hold(KYRITE, 1000.0)
+	_ship.add_to_hold(VYREL, 1000.0)
 	await wait_process_frames(1)
 	assert_false(station.can_buy(SHOTGUN.upgrade), "no shotgun yet")
 	assert_false(station.buy(SHOTGUN.upgrade))

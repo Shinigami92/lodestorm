@@ -7,7 +7,8 @@ extends Node3D
 ## more often and more of them are out at once. After a hunter dies, the next one hatches a full
 ## interval later. Raiders go for miners and escalate the same way with their own values; they
 ## only hatch while a miner works, the first one a full interval after that. The glow in the nest's
-## mouth pulses faster as the hive escalates.
+## mouth pulses faster as the hive escalates. Aliens hatch stronger on bodies farther in (see
+## `MissionSettings.alien_health_at`).
 
 ## Emitted when an alien hatches.
 signal hatched(alien: Alien)
@@ -85,6 +86,9 @@ func _process(_delta: float) -> void:
 func hatch(role: Alien.Role) -> Alien:
 	var alien := alien_scene.instantiate() as Alien
 	alien.role = role
+	if _find_mission():
+		alien.health_factor = _mission.settings.alien_health_at(_mission.tier())
+		alien.damage_factor = _mission.settings.alien_damage_at(_mission.tier())
 	var angle: float = randf() * TAU
 	var direction := Vector3(sin(angle), 0.0, cos(angle))
 	alien.position = direction * settings.hatch_radius

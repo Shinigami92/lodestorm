@@ -1,28 +1,39 @@
 [gd_resource type="Resource" script_class="Upgrade" format=3 uid="uid://nkbawto3e28v"]
 
 [ext_resource type="Script" uid="uid://c8jhtshxvf4c1" path="res://game/progression/upgrades/upgrade_level.gd" id="1_level"]
-[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="2_ore"]
-[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="3_kyrite"]
-[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="4_green"]
-[ext_resource type="Script" uid="uid://4n5uapxvab0b" path="res://game/progression/upgrades/upgrade.gd" id="5_upgrade"]
+[ext_resource type="Script" uid="uid://4n5uapxvab0b" path="res://game/progression/upgrades/upgrade.gd" id="2_upgrade"]
 
-[sub_resource type="Resource" id="Resource_mk2"]
+[sub_resource type="Resource" id="Mk2"]
 script = ExtResource("1_level")
-cost = Dictionary[ExtResource("2_ore"), int]({
-ExtResource("3_kyrite"): 180
-})
 multiplier = 1.5
 
-[sub_resource type="Resource" id="Resource_mk3"]
+[sub_resource type="Resource" id="Mk3"]
 script = ExtResource("1_level")
-cost = Dictionary[ExtResource("2_ore"), int]({
-ExtResource("3_kyrite"): 270,
-ExtResource("4_green"): 180
-})
 multiplier = 2.0
 
+[sub_resource type="Resource" id="Mk4"]
+script = ExtResource("1_level")
+multiplier = 2.25
+
+[sub_resource type="Resource" id="Mk5"]
+script = ExtResource("1_level")
+multiplier = 2.5
+
+[sub_resource type="Resource" id="Mk6"]
+script = ExtResource("1_level")
+multiplier = 2.75
+
+[sub_resource type="Resource" id="Mk7"]
+script = ExtResource("1_level")
+multiplier = 3.0
+
+[sub_resource type="Resource" id="Mk8"]
+script = ExtResource("1_level")
+multiplier = 3.25
+
 [resource]
-script = ExtResource("5_upgrade")
+script = ExtResource("2_upgrade")
 display_name = "Blaster magazine"
 description = "More rounds per magazine"
-levels = Array[ExtResource("1_level")]([SubResource("Resource_mk2"), SubResource("Resource_mk3")])
+levels = Array[ExtResource("1_level")]([SubResource("Mk2"), SubResource("Mk3"), SubResource("Mk4"), SubResource("Mk5"), SubResource("Mk6"), SubResource("Mk7"), SubResource("Mk8")])
+cost_scale = 0.75

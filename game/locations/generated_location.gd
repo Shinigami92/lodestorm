@@ -124,6 +124,8 @@ var _chunk_faces: Array[PackedVector3Array] = []
 var _scatter_types: Array[ScatterType] = []
 var _scatter_names: PackedStringArray = []
 var _scatter_placements: Array[Array] = []
+## Whether each planned scatter chunk lies on the rock (hidden where the cut-away presses it down).
+var _scatter_on_rock: Array[bool] = []
 var _planned: bool = false
 var _built: bool = false
 
@@ -794,30 +796,48 @@ func _add_scatter() -> void:
 	var scatter := Node3D.new()
 	scatter.name = "Scatter"
 	add_child(scatter)
+	var cutaway := ScatterCutaway.new()
+	cutaway.name = "Cutaway"
+	scatter.add_child(cutaway)
 	for i: int in _scatter_types.size():
-		_add_scatter_chunk(scatter, _scatter_types[i], _scatter_names[i], _scatter_placements[i])
+		var placements: Array = _scatter_placements[i]
+		var mesh: MultiMesh = _add_scatter_chunk(
+			scatter, _scatter_types[i], _scatter_names[i], placements
+		)
+		if mesh and _scatter_on_rock[i]:
+			cutaway.watch(mesh, placements)
 	_scatter_placements.clear()
 
 
-## Where the plants and rocks grow, by type and chunk.
+## Where the plants and rocks grow, by type and chunk (the ones on the rock in their own chunks).
 func _plan_scatter() -> void:
 	var chunk_size: float = CHUNK_CELLS * cell
 	var blockers: Array[Vector3] = []
 	for type: ScatterType in biome.scatter:
-		var by_chunk: Dictionary[Vector2i, Array] = {}
+		var by_chunk: Dictionary[Vector3i, Array] = {}
 		for placed: Transform3D in _scatter_transforms(type, blockers):
-			var chunk: Vector2i = Vector2i(
-				((Vector2(placed.origin.x, placed.origin.z) - terrain.origin) / chunk_size).floor()
-			)
+			var at := Vector2(placed.origin.x, placed.origin.z)
+			var grid: Vector2i = Vector2i(((at - terrain.origin) / chunk_size).floor())
+			var chunk := Vector3i(grid.x, grid.y, 0 if is_reachable(at.x, at.y) else 1)
 			if not by_chunk.has(chunk):
 				by_chunk[chunk] = []
 			by_chunk[chunk].append(placed)
-		for chunk: Vector2i in by_chunk:
+		for chunk: Vector3i in by_chunk:
+			var on_rock: bool = chunk.z == 1
 			_scatter_types.append(type)
 			_scatter_names.append(
-				"%s%d_%d" % [type.display_name.to_pascal_case(), chunk.x, chunk.y]
+				(
+					"%s%d_%d%s"
+					% [
+						type.display_name.to_pascal_case(),
+						chunk.x,
+						chunk.y,
+						"Rock" if on_rock else ""
+					]
+				)
 			)
 			_scatter_placements.append(by_chunk[chunk])
+			_scatter_on_rock.append(on_rock)
 
 
 ## Where `type` grows: on a jittered grid, thinned out by patches, steep ground and clearings.
@@ -872,11 +892,12 @@ func _can_scatter(at: Vector2, max_slope: float, radius: float, blockers: Array[
 	return true
 
 
+## Adds a chunk of `type` at `transforms`; returns its multimesh (null without a mesh).
 func _add_scatter_chunk(
 	parent: Node3D, type: ScatterType, chunk_name: String, transforms: Array
-) -> void:
+) -> MultiMesh:
 	if not type.get_mesh():
-		return
+		return null
 	var multimesh := MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	multimesh.mesh = type.get_mesh()
@@ -895,7 +916,7 @@ func _add_scatter_chunk(
 		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(instance)
 	if type.blocking_radius <= 0.0:
-		return
+		return multimesh
 	var body := StaticBody3D.new()
 	body.name = instance.name + "Body"
 	for placed: Transform3D in transforms:
@@ -910,6 +931,7 @@ func _add_scatter_chunk(
 		shape.position = Vector3(placed.origin.x, ground + cylinder.height * 0.5, placed.origin.z)
 		body.add_child(shape)
 	parent.add_child(body)
+	return multimesh
 
 
 func _add_ore_nodes() -> void:

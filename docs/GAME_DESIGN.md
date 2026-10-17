@@ -55,6 +55,7 @@ A 3D isometric action/mining game with a dark, realistic sci-fi look. The player
 - **Target lock:** an alien under the mouse cursor (within 4% of the screen height, let go beyond 7%), or the nearest one within 12° of the right stick and 25 m, gets locked on: a ring in the player's color lies under it, the player turns to it and shots fly straight at it, so aliens up or down a slope can be hit too (`game/player/player_settings.tres`, **TBD (playtest)**). Without a lock, shots fly level. The mouse aims at the ground under the cursor, also on hills.
 - Readability over detail: ore types, aliens and miners must be recognizable at a glance from the isometric distance (and in the VR diorama).
 - Players stay visible behind cliffs, trees and walls: the hidden part of their body shows as a see-through silhouette in their color (`assets/shaders/occluded_silhouette.gdshader`).
+- **Cut-away outside:** the ground between the camera and the player it follows (the cliff on the camera's side of a narrow pass) is pressed down to just above the player's feet, in a notch about 7 m wide along the line to the camera, so the player, the pass and the aliens around them stay in view; the plants and rocks on the rock in that notch hide. Its shadow stays, so the notch reads as a cut, not as missing ground. Values **TBD (playtest)** (`IsoCameraSettings.cutaway_radius`).
 
 ### Art direction
 

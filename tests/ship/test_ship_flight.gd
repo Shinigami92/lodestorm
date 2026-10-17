@@ -7,6 +7,8 @@ const LOCATION: PackedScene = preload("res://game/locations/test_location.tscn")
 const GENERATED: PackedScene = preload("res://game/locations/generated_location.tscn")
 ## Seconds every flight phase takes in these tests.
 const PHASE_TIME: float = 0.2
+## Areas of a standard generated location in these tests (the game's are bigger).
+const SMALL_LOCATION_AREAS: int = 5
 
 var _map: Node3D
 var _player: Player
@@ -154,7 +156,7 @@ func test_descent_waits_for_the_location() -> void:
 func test_generated_location_is_prepared_in_the_background() -> void:
 	_map = MAP.instantiate() as Node3D
 	var mission := _map.get_node("Mission") as Mission
-	mission.location_scene = _small_generated_location()
+	_use_small_locations(mission)
 	await _start()
 	var offer: MissionBrief = _mission.offers[0]
 	assert_true(_mission.preview(offer))
@@ -176,12 +178,13 @@ func test_generated_location_is_prepared_in_the_background() -> void:
 	assert_eq(location.biome, offer.biome)
 	assert_eq(location.world_seed, offer.world_seed)
 	assert_eq(location.nest_factor, _mission.settings.nest_factors[offer.difficulty])
+	assert_eq(location.area_count, maxi(roundi(SMALL_LOCATION_AREAS * offer.length), 4))
 
 
 func test_freed_while_preparing() -> void:
 	_map = MAP.instantiate() as Node3D
 	var mission := _map.get_node("Mission") as Mission
-	mission.location_scene = _small_generated_location()
+	_use_small_locations(mission)
 	await _start()
 	_mission.preview(_mission.offers[0])
 	_mission.preview(_mission.offers[1])
@@ -237,15 +240,12 @@ func test_streaks_in_space() -> void:
 	assert_true((_flight.get_node("Streaks") as GPUParticles3D).emitting)
 
 
-## A generated location smaller than the game's, so the tests stay quick.
-func _small_generated_location() -> PackedScene:
-	var location := GENERATED.instantiate() as GeneratedLocation
-	location.size = 240.0
-	location.landing_offset = 0.0
-	var scene := PackedScene.new()
-	scene.pack(location)
-	location.free()
-	return scene
+## Generated locations smaller than the game's, so the tests stay quick.
+func _use_small_locations(mission: Mission) -> void:
+	mission.location_scene = GENERATED
+	var settings := mission.settings.duplicate() as MissionSettings
+	settings.location_areas = SMALL_LOCATION_AREAS
+	mission.settings = settings
 
 
 func _wait_for_phase(phase: ShipFlight.Phase) -> void:

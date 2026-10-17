@@ -297,6 +297,7 @@ func _instantiate(offer: MissionBrief) -> Node3D:
 		generated.ores = offer.ores
 		generated.world_seed = offer.world_seed
 		generated.nest_factor = settings.nest_factors[offer.difficulty]
+		generated.area_count = maxi(roundi(settings.location_areas * offer.length), 4)
 	return fresh
 
 

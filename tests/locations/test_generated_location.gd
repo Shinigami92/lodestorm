@@ -5,6 +5,9 @@ const TEST_MAP: PackedScene = preload("res://game/maps/main.tscn")
 const REAL_TIME := preload("res://tests/support/real_time.gd")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowth.tres")
+const AREAS: int = 6
+const SWEEP_AREAS: int = 9
+const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
 
 
 ## A smaller world than in the game, so the tests stay quick.
@@ -15,9 +18,18 @@ func _generate(
 	location.world_seed = world_seed
 	location.biome = biome
 	location.nest_factor = nest_factor
-	location.size = 320.0
-	location.landing_offset = 0.0
+	location.area_count = AREAS
 	add_child_autofree(location)
+	return location
+
+
+## Only planned (no nodes): quicker, for sweeps over many seeds.
+func _plan(world_seed: int, biome: LocationBiome) -> GeneratedLocation:
+	var location := LOCATION.instantiate() as GeneratedLocation
+	location.world_seed = world_seed
+	location.biome = biome
+	location.area_count = SWEEP_AREAS
+	location.plan()
 	return location
 
 
@@ -40,8 +52,7 @@ func test_without_seed_every_world_is_new() -> void:
 
 func test_picks_a_biome_when_none_is_set() -> void:
 	var location := LOCATION.instantiate() as GeneratedLocation
-	location.size = 320.0
-	location.landing_offset = 0.0
+	location.area_count = AREAS
 	add_child_autofree(location)
 	assert_has([DUST, OVERGROWTH], location.biome)
 
@@ -97,7 +108,8 @@ func test_ores_and_nests_are_reachable_and_on_the_ground() -> void:
 
 func test_has_ore_fields_and_nests() -> void:
 	var location: GeneratedLocation = _generate(5)
-	assert_gt(location.get_node("OreNodes").get_child_count(), location.biome.ore_fields / 2.0)
+	var fields: float = location.layout.areas.size() * location.biome.ore_fields_per_area
+	assert_gt(location.get_node("OreNodes").get_child_count(), fields / 2.0)
 	assert_gt(location.get_node("AlienNests").get_child_count(), 0)
 
 
@@ -107,7 +119,7 @@ func test_nest_factor_scales_the_nests() -> void:
 	var normal: GeneratedLocation = _generate(5)
 	var nests: int = few.get_node("AlienNests").get_child_count()
 	assert_gt(nests, 0)
-	assert_lte(nests, roundi(DUST.nests * 0.3))
+	assert_lte(nests, roundi(few.layout.areas.size() * DUST.nests_per_area * 0.3))
 	assert_gt(normal.get_node("AlienNests").get_child_count(), nests)
 
 
@@ -124,7 +136,10 @@ func test_common_ore_close_to_ship_and_nests_far() -> void:
 					close += 1
 		assert_gt(close, 1, "seed %d" % world_seed)
 		for nest: Node3D in location.get_node("AlienNests").get_children():
-			assert_gte(_to_landing_site(location, nest.position), location.biome.nest_min_distance)
+			assert_gte(
+				_to_landing_site(location, nest.position),
+				location.biome.nest_min_distance * GeneratedLocation.NEST_STRAIGHT_SHARE
+			)
 
 
 ## Plants and rocks grow, but not on the landing site; blocking ones have colliders.
@@ -235,7 +250,8 @@ func test_test_map_lands_ship_on_generated_world() -> void:
 	var location := map.get_node("Location") as GeneratedLocation
 	var ship := map.get_node("Ship") as Ship
 	assert_not_null(location)
-	assert_eq(location.size, 500.0)
+	var length: float = mission.offers[0].length
+	assert_eq(location.area_count, roundi(mission.settings.location_areas * length))
 	assert_almost_eq(
 		location.global_transform.origin, ship.global_transform.origin, Vector3.ONE * 0.001
 	)
@@ -251,8 +267,7 @@ func test_planned_in_the_background_same_world() -> void:
 	var planned := LOCATION.instantiate() as GeneratedLocation
 	planned.world_seed = 5
 	planned.biome = DUST
-	planned.size = 320.0
-	planned.landing_offset = 0.0
+	planned.area_count = AREAS
 	var task: int = WorkerThreadPool.add_task(planned.plan)
 	WorkerThreadPool.wait_for_task_completion(task)
 	assert_false(planned.is_built())
@@ -269,6 +284,113 @@ func test_planned_in_the_background_same_world() -> void:
 	assert_eq(
 		planned.get_node("Ground").get_child_count(), direct.get_node("Ground").get_child_count()
 	)
+
+
+## Every spot players can walk to leads back to the ship: nothing to fall into for good. Every
+## area can be reached, a plateau's top too.
+func test_every_walkable_spot_leads_back() -> void:
+	for biome: LocationBiome in [DUST, OVERGROWTH]:
+		for world_seed: int in SWEEP_SEEDS:
+			var location: GeneratedLocation = _plan(world_seed, biome)
+			var label: String = "%s seed %d" % [biome.display_name, world_seed]
+			assert_eq(location.stuck_spots(), PackedVector2Array(), label)
+			for area: LocationLayout.Area in location.layout.areas:
+				assert_true(location.is_reachable(area.center.x, area.center.y), label)
+				if area.kind == LocationLayout.Kind.PLATEAU:
+					assert_true(location.is_reachable(area.mesa.x, area.mesa.y), label + " mesa")
+					var top: float = location.terrain.height_at(area.mesa.x, area.mesa.y)
+					var foot: float = location.terrain.height_at(area.center.x, area.center.y)
+					assert_gt(top - foot, 3.0, label + " mesa stands out")
+			for site: Vector3 in location.planned_ore_sites() + location.planned_nest_sites():
+				assert_true(location.is_reachable(site.x, site.z), label)
+			location.free()
+
+
+## Nobody gets onto the rock: walkable ground is only in the areas, the passes and around the
+## landing site (and at the foot of their cliffs).
+func test_rock_cannot_be_climbed() -> void:
+	for biome: LocationBiome in [DUST, OVERGROWTH]:
+		for world_seed: int in SWEEP_SEEDS:
+			var location: GeneratedLocation = _plan(world_seed, biome)
+			var terrain: LocationTerrain = location.terrain
+			var stray: int = 0
+			for z: int in range(0, terrain.cells + 1, 3):
+				for x: int in range(0, terrain.cells + 1, 3):
+					var at: Vector3 = terrain.point(x, z)
+					if location.is_reachable(at.x, at.z) and not _near_open(location, at):
+						stray += 1
+			assert_eq(stray, 0, "%s seed %d" % [biome.display_name, world_seed])
+			location.free()
+
+
+## The rarest ore waits in the ore pockets; nest hollows hold nests, not ore.
+func test_ore_pockets_and_nest_hollows() -> void:
+	var found: Array[OreType] = OreCatalog.sorted(DUST.ores)
+	var rarest: OreType = found[found.size() - 1]
+	for world_seed: int in SWEEP_SEEDS:
+		var location: GeneratedLocation = _plan(world_seed, DUST)
+		var sites: Array[Vector3] = location.planned_ore_sites()
+		var types: Array[OreType] = location.planned_ore_types()
+		for area: LocationLayout.Area in location.layout.areas:
+			var inside: Array[OreType] = []
+			for i: int in sites.size():
+				if Vector2(sites[i].x, sites[i].z).distance_to(area.center) < area.radius * 1.3:
+					inside.append(types[i])
+			if area.kind == LocationLayout.Kind.ORE_POCKET:
+				assert_has(inside, rarest, "seed %d" % world_seed)
+			elif area.kind == LocationLayout.Kind.NEST_HOLLOW:
+				assert_eq(inside.size(), 0, "seed %d: ore in the hollow" % world_seed)
+				assert_gt(_nests_in(location, area), 0, "seed %d: nests in the hollow" % world_seed)
+		location.free()
+
+
+## Plants and rocks that block, ore nodes and nests keep a lane free along every pass.
+func test_lanes_stay_free() -> void:
+	var location: GeneratedLocation = _generate(4, OVERGROWTH)
+	var blockers: int = 0
+	for child: Node in location.get_node("Scatter").get_children():
+		if child is StaticBody3D:
+			for shape: CollisionShape3D in child.get_children():
+				blockers += 1
+				var at: Vector3 = shape.position
+				assert_false(location.is_on_lane(at.x, at.z), str(at))
+	assert_gt(blockers, 0)
+	var sites: Array[Node] = (
+		location.get_node("OreNodes").get_children()
+		+ location.get_node("AlienNests").get_children()
+	)
+	for site: Node3D in sites:
+		assert_false(location.is_on_lane(site.position.x, site.position.z), site.name)
+
+
+func _nests_in(location: GeneratedLocation, area: LocationLayout.Area) -> int:
+	var nests: int = 0
+	for nest: Vector3 in location.planned_nest_sites():
+		if Vector2(nest.x, nest.z).distance_to(area.center) < area.radius * 1.3:
+			nests += 1
+	return nests
+
+
+## Whether `at` lies in an area, a pass or the landing site, or at the foot of their cliffs.
+func _near_open(location: GeneratedLocation, at: Vector3) -> bool:
+	var point := Vector2(at.x, at.z)
+	var slack: float = location.biome.cliff_width + location.cell * 2.0
+	var site: Rect2 = location.landing_site.grow(GeneratedLocation.LANDING_MARGIN + slack)
+	if site.has_point(point):
+		return true
+	for area: LocationLayout.Area in location.layout.areas:
+		var reach: float = area.radius * (1.0 + 2.0 * GeneratedLocation.AREA_WOBBLE) + slack
+		if point.distance_to(area.center) < reach:
+			return true
+	for way: LocationLayout.Pass in location.layout.passes:
+		var reach: float = way.width * 0.5 * (1.0 + 2.0 * GeneratedLocation.PASS_WOBBLE) + slack
+		for i: int in range(1, way.points.size()):
+			var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
+				point, way.points[i - 1], way.points[i]
+			)
+			if point.distance_to(closest) < reach:
+				return true
+	return false
 
 
 func _positions(location: GeneratedLocation, group: String) -> Array[Vector3]:

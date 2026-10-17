@@ -5,9 +5,20 @@ const TEST_MAP: PackedScene = preload("res://game/maps/main.tscn")
 const REAL_TIME := preload("res://tests/support/real_time.gd")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowth.tres")
+## Every biome: what holds for one holds for all.
+const BIOMES: Array[LocationBiome] = [
+	DUST,
+	OVERGROWTH,
+	preload("res://game/locations/biomes/frost.tres"),
+	preload("res://game/locations/biomes/salt.tres"),
+	preload("res://game/locations/biomes/ash.tres"),
+	preload("res://game/locations/biomes/glass.tres"),
+]
 const AREAS: int = 6
 const SWEEP_AREAS: int = 9
 const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
+## Seeds per biome in the sweeps over every biome.
+const BIOME_SEEDS: int = 2
 ## Where the camera looks in the game when the ship's nose points along -x (isometric).
 const VIEW := Vector3(-0.577, -0.577, -0.577)
 
@@ -65,7 +76,7 @@ func test_picks_a_biome_when_none_is_set() -> void:
 
 ## The ship stands at the origin on flat ground at height 0, with room in front of the ramp.
 func test_landing_site_is_flat() -> void:
-	for biome: LocationBiome in [DUST, OVERGROWTH]:
+	for biome: LocationBiome in BIOMES:
 		var location: GeneratedLocation = _generate(3, biome)
 		var site: Rect2 = location.landing_site
 		for x: float in range(int(site.position.x), int(site.end.x), 4):
@@ -299,8 +310,8 @@ func test_planned_in_the_background_same_world() -> void:
 ## Every spot players can walk to leads back to the ship: nothing to fall into for good. Every
 ## area can be reached, a plateau's top too.
 func test_every_walkable_spot_leads_back() -> void:
-	for biome: LocationBiome in [DUST, OVERGROWTH]:
-		for world_seed: int in SWEEP_SEEDS:
+	for biome: LocationBiome in BIOMES:
+		for world_seed: int in _seeds(biome):
 			var location: GeneratedLocation = _plan(world_seed, biome)
 			var label: String = "%s seed %d" % [biome.display_name, world_seed]
 			assert_eq(location.stuck_spots(), PackedVector2Array(), label)
@@ -319,8 +330,8 @@ func test_every_walkable_spot_leads_back() -> void:
 ## Nobody gets onto the rock: walkable ground is only in the areas, the passes and around the
 ## landing site (and at the foot of their cliffs).
 func test_rock_cannot_be_climbed() -> void:
-	for biome: LocationBiome in [DUST, OVERGROWTH]:
-		for world_seed: int in SWEEP_SEEDS:
+	for biome: LocationBiome in BIOMES:
+		for world_seed: int in _seeds(biome):
 			var location: GeneratedLocation = _plan(world_seed, biome)
 			var terrain: LocationTerrain = location.terrain
 			var stray: int = 0
@@ -357,7 +368,7 @@ func test_ore_pockets_and_nest_hollows() -> void:
 ## The rock on the camera's side stays low enough to see over: it only ever gets lower than
 ## without the camera's view, by a lot in places.
 func test_rock_stays_low_on_the_camera_side() -> void:
-	for biome: LocationBiome in [DUST, OVERGROWTH]:
+	for biome: LocationBiome in BIOMES:
 		var viewed: GeneratedLocation = _plan(3, biome, VIEW, AREAS)
 		var flat: GeneratedLocation = _plan(3, biome, Vector3.ZERO, AREAS)
 		var lower: int = 0
@@ -468,3 +479,13 @@ func _scatter_bodies(location: GeneratedLocation) -> Array[RID]:
 		if child is StaticBody3D:
 			bodies.append((child as StaticBody3D).get_rid())
 	return bodies
+
+
+## The seeds a sweep plans `biome` with: `count` of them, different for every biome, so the sweeps
+## over all biomes cover as many seeds as they plan locations.
+static func _seeds(biome: LocationBiome, count: int = BIOME_SEEDS) -> Array[int]:
+	var first: int = 1 + BIOMES.find(biome) * count
+	var seeds: Array[int] = []
+	for world_seed: int in range(first, first + count):
+		seeds.append(world_seed)
+	return seeds

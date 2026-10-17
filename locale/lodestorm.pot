@@ -2,12 +2,28 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+#: game/locations/biomes/ash.tres
+msgid "Ash fields"
+msgstr ""
+
 #: game/locations/biomes/dust.tres
 msgid "Dust flats"
 msgstr ""
 
+#: game/locations/biomes/frost.tres
+msgid "Frost fields"
+msgstr ""
+
+#: game/locations/biomes/glass.tres
+msgid "Glass plains"
+msgstr ""
+
 #: game/locations/biomes/overgrowth.tres
 msgid "Overgrowth"
+msgstr ""
+
+#: game/locations/biomes/salt.tres
+msgid "Salt pans"
 msgstr ""
 
 #: game/mission/mission_brief.gd
@@ -707,6 +723,10 @@ msgid "No docking yet."
 msgstr ""
 
 #: game/stations/navigator/navigator_card.gd
+msgid "Nowhere to land: its moons can be visited."
+msgstr ""
+
+#: game/stations/navigator/navigator_card.gd
 msgid "Set as destination"
 msgstr ""
 
@@ -820,6 +840,10 @@ msgid "Station"
 msgstr ""
 
 #: game/world/celestial_body.gd
+msgid "Gas giant"
+msgstr ""
+
+#: game/world/celestial_body.gd
 msgid "Planet"
 msgstr ""
 
@@ -852,7 +876,19 @@ msgid "Pale Basin"
 msgstr ""
 
 #: game/world/star_system.tres
+msgid "Rimeback"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Waypost Ostra"
+msgstr ""
+
+#: game/world/star_system.tres
 msgid "Vehra"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Hoarfrost Ridge"
 msgstr ""
 
 #: game/world/star_system.tres
@@ -864,5 +900,97 @@ msgid "Ember Reach"
 msgstr ""
 
 #: game/world/star_system.tres
-msgid "Waypost Ostra"
+msgid "Cassor"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Sunken Verge"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Brine Terraces"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Whiteshelf"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Mossgrave"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Mirr"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Quiet Scar"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Gaulm"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Orrel"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Drift Basin"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Lantern Hollow"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Iska"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Coldwake"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Splitrock Steps"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Skelde"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Rustwind Plain"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Black Tide"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Brimstone Cut"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Slag Terraces"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Zairen"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Sunward Scar"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Glassmere"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Mirror Flats"
+msgstr ""
+
+#: game/world/star_system.tres
+msgid "Fused Expanse"
 msgstr ""

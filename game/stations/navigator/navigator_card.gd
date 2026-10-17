@@ -66,6 +66,8 @@ func show_part(part: StationPart) -> void:
 			_status.text = ""
 		elif shown_body.kind == CelestialBody.Kind.STATION:
 			_status.text = tr("No docking yet.")
+		elif shown_body.kind == CelestialBody.Kind.GAS_GIANT:
+			_status.text = tr("Nowhere to land: its moons can be visited.")
 		else:
 			_status.text = tr("Locked")
 	elif shown_region:

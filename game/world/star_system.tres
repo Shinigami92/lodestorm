@@ -3,138 +3,492 @@
 [ext_resource type="Script" uid="uid://2evkrl3ge8de" path="res://game/world/star_system.gd" id="1_system"]
 [ext_resource type="Script" uid="uid://b6huhxdwk744g" path="res://game/world/celestial_body.gd" id="2_body"]
 [ext_resource type="Script" uid="uid://c3c4hiep58pra" path="res://game/world/region.gd" id="3_region"]
-[ext_resource type="Resource" uid="uid://dc5iplqjbh04" path="res://game/locations/biomes/dust.tres" id="4_dust"]
-[ext_resource type="Resource" uid="uid://caubseewpqqlm" path="res://game/locations/biomes/overgrowth.tres" id="5_overgrowth"]
 [ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="6_ore_type"]
-[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
-[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
 [ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
+[ext_resource type="Resource" uid="uid://dc5iplqjbh04" path="res://game/locations/biomes/dust.tres" id="biome_dust"]
+[ext_resource type="Resource" uid="uid://caubseewpqqlm" path="res://game/locations/biomes/overgrowth.tres" id="biome_overgrowth"]
+[ext_resource type="Resource" uid="uid://dwg0aqwrvn0kw" path="res://game/locations/biomes/frost.tres" id="biome_frost"]
+[ext_resource type="Resource" uid="uid://ulap8g7ne47t" path="res://game/locations/biomes/salt.tres" id="biome_salt"]
+[ext_resource type="Resource" uid="uid://bu060ey10pkem" path="res://game/locations/biomes/ash.tres" id="biome_ash"]
+[ext_resource type="Resource" uid="uid://dliboajrm4wqt" path="res://game/locations/biomes/glass.tres" id="biome_glass"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
+[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
+[ext_resource type="Resource" uid="uid://dsspev82ieiuo" path="res://game/ores/types/ore_indral.tres" id="ore_indral"]
+[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
+[ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="ore_noctile"]
+[ext_resource type="Resource" uid="uid://1v26qj8f1fdi" path="res://game/ores/types/ore_aethrine.tres" id="ore_aethrine"]
 [ext_resource type="PackedScene" uid="uid://xwf5jkcqbffk" path="res://game/locations/parts/expedition_camp.tscn" id="part_camp"]
 [ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
 [ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
 
-[sub_resource type="Resource" id="SetPiece_Resource_redscar"]
+[sub_resource type="Resource" id="SetPiece_redscar"]
 script = ExtResource("part_placement")
 scene = ExtResource("part_outpost")
 rule = 2
 
-[sub_resource type="Resource" id="SetPiece_Resource_mire"]
+[sub_resource type="Resource" id="Region_redscar"]
+script = ExtResource("3_region")
+display_name = "Redscar Flats"
+biome = ExtResource("biome_dust")
+danger = 0
+globe_position = Vector2(20, -30)
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_redscar")])
+
+[sub_resource type="Resource" id="SetPiece_mire"]
 script = ExtResource("part_placement")
 scene = ExtResource("part_camp")
 rule = 3
 
-[sub_resource type="Resource" id="SetPiece_Resource_cinder"]
+[sub_resource type="Resource" id="Region_mire"]
+script = ExtResource("3_region")
+display_name = "Hollow Mire"
+biome = ExtResource("biome_overgrowth")
+length = 1.5
+globe_position = Vector2(-15, 25)
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_mire")])
+
+[sub_resource type="Resource" id="SetPiece_cinder"]
 script = ExtResource("part_placement")
 scene = ExtResource("part_crater")
 rule = 3
 
-[sub_resource type="Resource" id="SetPiece_Resource_basin"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_wreck")
-
-[sub_resource type="Resource" id="SetPiece_Resource_glare"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_vein")
-rule = 4
-
-[sub_resource type="Resource" id="SetPiece_Resource_ember"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_wreck")
-rule = 2
-
-[sub_resource type="Resource" id="Resource_redscar"]
-script = ExtResource("3_region")
-display_name = "Redscar Flats"
-biome = ExtResource("4_dust")
-danger = 0
-globe_position = Vector2(20, -30)
-set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_redscar")])
-
-[sub_resource type="Resource" id="Resource_mire"]
-script = ExtResource("3_region")
-display_name = "Hollow Mire"
-biome = ExtResource("5_overgrowth")
-length = 1.5
-globe_position = Vector2(-15, 25)
-set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_mire")])
-
-[sub_resource type="Resource" id="Resource_cinder"]
+[sub_resource type="Resource" id="Region_cinder"]
 script = ExtResource("3_region")
 display_name = "Cinder Steps"
-biome = ExtResource("4_dust")
+biome = ExtResource("biome_dust")
 danger = 2
 length = 2.0
 globe_position = Vector2(45, 60)
-set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_cinder")])
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_cinder")])
 
-[sub_resource type="Resource" id="Resource_torvane"]
+[sub_resource type="Resource" id="Body_torvane"]
 script = ExtResource("2_body")
 display_name = "Torvane"
 color = Color(0.75, 0.5, 0.35, 1)
 orbit_angle = 200.0
-regions = Array[ExtResource("3_region")]([SubResource("Resource_redscar"), SubResource("Resource_mire"), SubResource("Resource_cinder")])
+regions = Array[ExtResource("3_region")]([SubResource("Region_redscar"), SubResource("Region_mire"), SubResource("Region_cinder")])
 signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_meridine")])
 
-[sub_resource type="Resource" id="Resource_basin"]
+[sub_resource type="Resource" id="SetPiece_basin"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+
+[sub_resource type="Resource" id="Region_basin"]
 script = ExtResource("3_region")
 display_name = "Pale Basin"
-biome = ExtResource("4_dust")
+biome = ExtResource("biome_frost")
+danger = 0
 globe_position = Vector2(10, 0)
-set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_basin")])
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_basin")])
 
-[sub_resource type="Resource" id="Resource_lisk"]
+[sub_resource type="Resource" id="SetPiece_rimeback"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+
+[sub_resource type="Resource" id="Region_rimeback"]
+script = ExtResource("3_region")
+display_name = "Rimeback"
+biome = ExtResource("biome_frost")
+globe_position = Vector2(-35, 70)
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_rimeback")])
+
+[sub_resource type="Resource" id="Body_lisk"]
 script = ExtResource("2_body")
 display_name = "Lisk"
 kind = 1
 color = Color(0.7, 0.72, 0.78, 1)
-size = 0.45
-orbit_radius = 0.35
+size = 0.4
+orbit_radius = 0.2
 orbit_angle = 40.0
-orbits = SubResource("Resource_torvane")
-regions = Array[ExtResource("3_region")]([SubResource("Resource_basin")])
+orbits = SubResource("Body_torvane")
+regions = Array[ExtResource("3_region")]([SubResource("Region_basin"), SubResource("Region_rimeback")])
 
-[sub_resource type="Resource" id="Resource_glare"]
-script = ExtResource("3_region")
-display_name = "Glare Fields"
-biome = ExtResource("4_dust")
-danger = 2
-length = 2.0
-globe_position = Vector2(0, 10)
-unlocked = false
-set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_glare")])
-
-[sub_resource type="Resource" id="Resource_ember"]
-script = ExtResource("3_region")
-display_name = "Ember Reach"
-biome = ExtResource("4_dust")
-danger = 2
-length = 1.5
-globe_position = Vector2(-30, -40)
-unlocked = false
-set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_Resource_ember")])
-
-[sub_resource type="Resource" id="Resource_vehra"]
-script = ExtResource("2_body")
-display_name = "Vehra"
-color = Color(0.95, 0.6, 0.3, 1)
-size = 0.8
-orbit_radius = 0.55
-orbit_angle = 120.0
-regions = Array[ExtResource("3_region")]([SubResource("Resource_glare"), SubResource("Resource_ember")])
-signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_emerin")])
-
-[sub_resource type="Resource" id="Resource_ostra"]
+[sub_resource type="Resource" id="Body_ostra"]
 script = ExtResource("2_body")
 display_name = "Waypost Ostra"
 kind = 2
-color = Color(0.55, 0.85, 1, 1)
+color = Color(0.55, 0.85, 1.0, 1)
 size = 0.7
-orbit_radius = 0.6
+orbit_radius = 0.93
 orbit_angle = 330.0
+
+[sub_resource type="Resource" id="SetPiece_hoarfrost"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
+rule = 2
+
+[sub_resource type="Resource" id="Region_hoarfrost"]
+script = ExtResource("3_region")
+display_name = "Hoarfrost Ridge"
+biome = ExtResource("biome_frost")
+danger = 0
+globe_position = Vector2(35, -50)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_hoarfrost")])
+
+[sub_resource type="Resource" id="SetPiece_glare"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+
+[sub_resource type="Resource" id="Region_glare"]
+script = ExtResource("3_region")
+display_name = "Glare Fields"
+biome = ExtResource("biome_salt")
+length = 1.5
+globe_position = Vector2(0, 10)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_glare")])
+
+[sub_resource type="Resource" id="SetPiece_ember"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+rule = 2
+
+[sub_resource type="Resource" id="Region_ember"]
+script = ExtResource("3_region")
+display_name = "Ember Reach"
+biome = ExtResource("biome_dust")
+danger = 2
+length = 2.0
+globe_position = Vector2(-30, -40)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_ember")])
+
+[sub_resource type="Resource" id="Body_vehra"]
+script = ExtResource("2_body")
+display_name = "Vehra"
+tier = 2
+color = Color(0.95, 0.6, 0.3, 1)
+size = 0.8
+orbit_radius = 0.82
+orbit_angle = 120.0
+regions = Array[ExtResource("3_region")]([SubResource("Region_hoarfrost"), SubResource("Region_glare"), SubResource("Region_ember")])
+signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_emerin")])
+
+[sub_resource type="Resource" id="SetPiece_verge"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+rule = 1
+
+[sub_resource type="Resource" id="Region_verge"]
+script = ExtResource("3_region")
+display_name = "Sunken Verge"
+biome = ExtResource("biome_overgrowth")
+danger = 0
+globe_position = Vector2(15, -35)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_verge")])
+
+[sub_resource type="Resource" id="SetPiece_brine"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
+rule = 2
+
+[sub_resource type="Resource" id="Region_brine"]
+script = ExtResource("3_region")
+display_name = "Brine Terraces"
+biome = ExtResource("biome_salt")
+length = 1.5
+globe_position = Vector2(-25, 10)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_brine")])
+
+[sub_resource type="Resource" id="SetPiece_whiteshelf"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+
+[sub_resource type="Resource" id="Region_whiteshelf"]
+script = ExtResource("3_region")
+display_name = "Whiteshelf"
+biome = ExtResource("biome_salt")
+length = 1.5
+globe_position = Vector2(40, 45)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_whiteshelf")])
+
+[sub_resource type="Resource" id="SetPiece_mossgrave"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_camp")
+rule = 3
+
+[sub_resource type="Resource" id="Region_mossgrave"]
+script = ExtResource("3_region")
+display_name = "Mossgrave"
+biome = ExtResource("biome_overgrowth")
+danger = 2
+length = 2.0
+globe_position = Vector2(-45, -60)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_mossgrave")])
+
+[sub_resource type="Resource" id="Body_cassor"]
+script = ExtResource("2_body")
+display_name = "Cassor"
+tier = 3
+color = Color(0.62, 0.7, 0.58, 1)
+size = 0.85
+orbit_radius = 0.68
+orbit_angle = 260.0
+regions = Array[ExtResource("3_region")]([SubResource("Region_verge"), SubResource("Region_brine"), SubResource("Region_whiteshelf"), SubResource("Region_mossgrave")])
+signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_indral")])
+
+[sub_resource type="Resource" id="SetPiece_quiet"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+
+[sub_resource type="Resource" id="Region_quiet"]
+script = ExtResource("3_region")
+display_name = "Quiet Scar"
+biome = ExtResource("biome_dust")
+globe_position = Vector2(5, 5)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_quiet")])
+
+[sub_resource type="Resource" id="Body_mirr"]
+script = ExtResource("2_body")
+display_name = "Mirr"
+kind = 1
+tier = 3
+color = Color(0.6, 0.58, 0.55, 1)
+size = 0.35
+orbit_radius = 0.2
+orbit_angle = 300.0
+orbits = SubResource("Body_cassor")
+regions = Array[ExtResource("3_region")]([SubResource("Region_quiet")])
+
+[sub_resource type="Resource" id="Body_gaulm"]
+script = ExtResource("2_body")
+display_name = "Gaulm"
+kind = 3
+tier = 4
+color = Color(0.78, 0.66, 0.5, 1)
+size = 1.4
+orbit_radius = 0.54
+orbit_angle = 20.0
+
+[sub_resource type="Resource" id="SetPiece_drift"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+
+[sub_resource type="Resource" id="Region_drift"]
+script = ExtResource("3_region")
+display_name = "Drift Basin"
+biome = ExtResource("biome_salt")
+globe_position = Vector2(20, -20)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_drift")])
+
+[sub_resource type="Resource" id="SetPiece_lantern"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_camp")
+rule = 3
+
+[sub_resource type="Resource" id="Region_lantern"]
+script = ExtResource("3_region")
+display_name = "Lantern Hollow"
+biome = ExtResource("biome_overgrowth")
+danger = 2
+globe_position = Vector2(-25, 40)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_lantern")])
+
+[sub_resource type="Resource" id="Body_orrel"]
+script = ExtResource("2_body")
+display_name = "Orrel"
+kind = 1
+tier = 4
+color = Color(0.82, 0.82, 0.78, 1)
+size = 0.4
+orbit_radius = 0.22
+orbit_angle = 90.0
+orbits = SubResource("Body_gaulm")
+regions = Array[ExtResource("3_region")]([SubResource("Region_drift"), SubResource("Region_lantern")])
+signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_selyx")])
+
+[sub_resource type="Resource" id="SetPiece_coldwake"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
+rule = 2
+
+[sub_resource type="Resource" id="Region_coldwake"]
+script = ExtResource("3_region")
+display_name = "Coldwake"
+biome = ExtResource("biome_frost")
+globe_position = Vector2(-10, -25)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_coldwake")])
+
+[sub_resource type="Resource" id="SetPiece_splitrock"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+
+[sub_resource type="Resource" id="Region_splitrock"]
+script = ExtResource("3_region")
+display_name = "Splitrock Steps"
+biome = ExtResource("biome_dust")
+danger = 2
+globe_position = Vector2(30, 35)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_splitrock")])
+
+[sub_resource type="Resource" id="Body_iska"]
+script = ExtResource("2_body")
+display_name = "Iska"
+kind = 1
+tier = 4
+color = Color(0.7, 0.78, 0.85, 1)
+size = 0.35
+orbit_radius = 0.3
+orbit_angle = 230.0
+orbits = SubResource("Body_gaulm")
+regions = Array[ExtResource("3_region")]([SubResource("Region_coldwake"), SubResource("Region_splitrock")])
+signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_selyx")])
+
+[sub_resource type="Resource" id="SetPiece_rustwind"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
+rule = 2
+
+[sub_resource type="Resource" id="Region_rustwind"]
+script = ExtResource("3_region")
+display_name = "Rustwind Plain"
+biome = ExtResource("biome_dust")
+danger = 0
+globe_position = Vector2(25, -40)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_rustwind")])
+
+[sub_resource type="Resource" id="SetPiece_blacktide"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+rule = 2
+
+[sub_resource type="Resource" id="Region_blacktide"]
+script = ExtResource("3_region")
+display_name = "Black Tide"
+biome = ExtResource("biome_ash")
+length = 1.5
+globe_position = Vector2(-20, -5)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_blacktide")])
+
+[sub_resource type="Resource" id="SetPiece_brimstone"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+
+[sub_resource type="Resource" id="Region_brimstone"]
+script = ExtResource("3_region")
+display_name = "Brimstone Cut"
+biome = ExtResource("biome_ash")
+length = 1.5
+globe_position = Vector2(40, 50)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_brimstone")])
+
+[sub_resource type="Resource" id="SetPiece_slag"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+
+[sub_resource type="Resource" id="Region_slag"]
+script = ExtResource("3_region")
+display_name = "Slag Terraces"
+biome = ExtResource("biome_ash")
+danger = 2
+length = 2.0
+globe_position = Vector2(-40, 60)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_slag")])
+
+[sub_resource type="Resource" id="Body_skelde"]
+script = ExtResource("2_body")
+display_name = "Skelde"
+tier = 5
+color = Color(0.45, 0.42, 0.4, 1)
+size = 0.85
+orbit_radius = 0.41
+orbit_angle = 160.0
+regions = Array[ExtResource("3_region")]([SubResource("Region_rustwind"), SubResource("Region_blacktide"), SubResource("Region_brimstone"), SubResource("Region_slag")])
+signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_noctile")])
+
+[sub_resource type="Resource" id="SetPiece_sunward"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+rule = 2
+
+[sub_resource type="Resource" id="Region_sunward"]
+script = ExtResource("3_region")
+display_name = "Sunward Scar"
+biome = ExtResource("biome_ash")
+length = 1.5
+globe_position = Vector2(20, -35)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_sunward")])
+
+[sub_resource type="Resource" id="SetPiece_glassmere"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_camp")
+rule = 3
+
+[sub_resource type="Resource" id="Region_glassmere"]
+script = ExtResource("3_region")
+display_name = "Glassmere"
+biome = ExtResource("biome_glass")
+length = 1.5
+globe_position = Vector2(-25, 15)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_glassmere")])
+
+[sub_resource type="Resource" id="SetPiece_mirror"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+
+[sub_resource type="Resource" id="Region_mirror"]
+script = ExtResource("3_region")
+display_name = "Mirror Flats"
+biome = ExtResource("biome_glass")
+danger = 2
+length = 2.0
+globe_position = Vector2(40, 45)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_mirror")])
+
+[sub_resource type="Resource" id="SetPiece_fused"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+
+[sub_resource type="Resource" id="Region_fused"]
+script = ExtResource("3_region")
+display_name = "Fused Expanse"
+biome = ExtResource("biome_glass")
+danger = 2
+length = 2.0
+globe_position = Vector2(-45, -55)
+unlocked = false
+set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_fused")])
+
+[sub_resource type="Resource" id="Body_zairen"]
+script = ExtResource("2_body")
+display_name = "Zairen"
+tier = 6
+color = Color(0.7, 0.85, 0.88, 1)
+size = 0.75
+orbit_radius = 0.29
+orbit_angle = 300.0
+regions = Array[ExtResource("3_region")]([SubResource("Region_sunward"), SubResource("Region_glassmere"), SubResource("Region_mirror"), SubResource("Region_fused")])
+signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_aethrine")])
 
 [resource]
 script = ExtResource("1_system")
 display_name = "Kesh"
-bodies = Array[ExtResource("2_body")]([SubResource("Resource_torvane"), SubResource("Resource_lisk"), SubResource("Resource_vehra"), SubResource("Resource_ostra")])
+bodies = Array[ExtResource("2_body")]([SubResource("Body_torvane"), SubResource("Body_lisk"), SubResource("Body_ostra"), SubResource("Body_vehra"), SubResource("Body_cassor"), SubResource("Body_mirr"), SubResource("Body_gaulm"), SubResource("Body_orrel"), SubResource("Body_iska"), SubResource("Body_skelde"), SubResource("Body_zairen")])

@@ -19,6 +19,10 @@ const LOCATION: PackedScene = preload("res://game/locations/generated_location.t
 const BIOMES: Array[LocationBiome] = [
 	preload("res://game/locations/biomes/dust.tres"),
 	preload("res://game/locations/biomes/overgrowth.tres"),
+	preload("res://game/locations/biomes/frost.tres"),
+	preload("res://game/locations/biomes/salt.tres"),
+	preload("res://game/locations/biomes/ash.tres"),
+	preload("res://game/locations/biomes/glass.tres"),
 ]
 const STAR_SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
 const PART_COLOR := Color(1.0, 0.75, 0.3)

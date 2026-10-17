@@ -37,7 +37,7 @@ func test_offers_a_mission_per_open_region() -> void:
 	assert_null(_mission.brief, "none is picked at the start")
 
 
-func test_star_system_has_planets_moons_a_station_and_a_locked_planet() -> void:
+func test_star_system_has_planets_moons_a_station_and_locked_planets() -> void:
 	var system: StarSystem = _mission.settings.system
 	var kinds: Array = []
 	var locked: Array[CelestialBody] = []
@@ -46,16 +46,36 @@ func test_star_system_has_planets_moons_a_station_and_a_locked_planet() -> void:
 		for region: Region in body.regions:
 			assert_eq(system.body_of(region), body)
 			assert_not_null(region.biome)
-		if body.kind == CelestialBody.Kind.STATION:
-			assert_false(body.is_reachable(), "no docking yet")
+		if body.kind in [CelestialBody.Kind.STATION, CelestialBody.Kind.GAS_GIANT]:
+			assert_false(body.is_reachable(), "no docking yet, nowhere to land")
 		elif not body.is_reachable():
 			locked.append(body)
-	assert_has(kinds, CelestialBody.Kind.PLANET)
-	assert_has(kinds, CelestialBody.Kind.MOON)
-	assert_has(kinds, CelestialBody.Kind.STATION)
-	assert_eq(locked.size(), 1, "one planet still locked")
-	for region: Region in locked[0].regions:
-		assert_false(region in system.open_regions(), "offers no missions")
+	for kind: CelestialBody.Kind in CelestialBody.Kind.values():
+		assert_has(kinds, kind)
+	assert_gt(locked.size(), 0, "planets still locked")
+	for body: CelestialBody in locked:
+		for region: Region in body.regions:
+			assert_false(region in system.open_regions(), "offers no missions")
+			assert_null(_mission.offer_for(region))
+
+
+## Unlocking a region adds its offer and keeps the others (and the destination).
+func test_unlocked_region_gets_an_offer() -> void:
+	var system: StarSystem = _mission.settings.system
+	var locked: Region = null
+	for body: CelestialBody in system.bodies:
+		for region: Region in body.regions:
+			if not locked and not region.unlocked:
+				locked = region
+	var before: Array[MissionBrief] = _mission.offers.duplicate()
+	assert_true(_mission.choose(before[0]))
+	locked.unlocked = true
+	_mission.offer_open_regions()
+	locked.unlocked = false
+	assert_eq(_mission.offers.size(), before.size() + 1)
+	assert_eq(_mission.offers.slice(0, before.size()), before, "keeps the others")
+	assert_eq(_mission.offer_for(locked).region, locked)
+	assert_eq(_mission.destination, before[0])
 
 
 func test_ramp_needs_a_picked_mission() -> void:
@@ -306,6 +326,30 @@ func test_camera_frames_the_navigator() -> void:
 	var settings: Terminal = _ship.get_node("Rooms/Upper/Cabin1/Terminal") as Terminal
 	assert_gt(navigator.view_height, settings.panel.view_height, "room for the hologram")
 	assert_eq(WorldMenu.used_by(get_tree(), _player), navigator)
+
+
+## Once regions were unlocked the hologram is built again, with the planet now reachable. Before
+## it was ever shown there's nothing to build again.
+func test_hologram_rebuilds_after_unlocking() -> void:
+	var unshown := NavigatorStation.new()
+	unshown.rebuild_hologram()
+	unshown.free()
+	var navigator: NavigatorStation = await _use_navigator()
+	var locked: CelestialBody = null
+	for body: CelestialBody in _mission.settings.system.bodies:
+		if not locked and body.kind == CelestialBody.Kind.PLANET and not body.is_reachable():
+			locked = body
+	var before: StationPart = navigator.get_part(locked)
+	for region: Region in locked.regions:
+		region.unlocked = true
+	navigator.rebuild_hologram()
+	var after: StationPart = navigator.get_part(locked)
+	var reachable: bool = navigator.is_reachable(locked)
+	for region: Region in locked.regions:
+		region.unlocked = false
+	assert_not_null(after)
+	assert_ne(after, before, "built again")
+	assert_true(reachable)
 
 
 func _use_navigator() -> NavigatorStation:

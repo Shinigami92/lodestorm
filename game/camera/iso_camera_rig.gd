@@ -4,7 +4,8 @@ extends Node3D
 ## `CameraZone`, it looks at the zone's focus instead. While the target uses a 3D menu (a
 ## `WorldMenu`: a screen or a station), it moves in to frame it, keeping the angle.
 ## The VR diorama will be a separate rig; gameplay only uses the viewport's active camera.
-## `shake` jiggles the view (e.g. the ship's hull in the clouds).
+## `shake` jiggles the view (e.g. the ship's hull in the clouds); scaled with the zoom, so a
+## framed menu shakes no more than the whole view and stays readable.
 
 const GROUP: StringName = &"camera_rigs"
 
@@ -13,7 +14,7 @@ const GROUP: StringName = &"camera_rigs"
 
 ## How close the camera is: 1 normally, smaller while it frames a menu.
 var zoom: float = 1.0
-## How far the view shakes, in m (0: still).
+## How far the view shakes at zoom 1, in m (0: still).
 var shake: float = 0.0
 
 var _shake_time: float = 0.0
@@ -66,8 +67,9 @@ func apply_settings() -> void:
 func _shake(delta: float) -> void:
 	_shake_time += delta
 	var t: float = _shake_time
-	_camera.h_offset = shake * (sin(t * 37.0) + 0.6 * sin(t * 23.0 + 1.3)) / 1.6
-	_camera.v_offset = shake * (sin(t * 29.0 + 0.7) + 0.6 * sin(t * 41.0)) / 1.6
+	var amount: float = shake * zoom
+	_camera.h_offset = amount * (sin(t * 37.0) + 0.6 * sin(t * 23.0 + 1.3)) / 1.6
+	_camera.v_offset = amount * (sin(t * 29.0 + 0.7) + 0.6 * sin(t * 41.0)) / 1.6
 
 
 ## Where the camera looks (its forward direction, global).

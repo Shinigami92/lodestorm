@@ -159,6 +159,21 @@ func _process(_delta: float) -> void:
 		if mission.state == Mission.State.STORM:
 			lines.append("Storm: %.1f HP/s" % mission.storm_damage_per_second())
 		lines.append("Escalation: %d%%" % roundi(mission.progress() * 100.0))
+		(
+			lines
+			. append(
+				(
+					"Tier %d: aliens x%.2f health, x%.2f damage; warning %.0f s; upgrades up to MK%d"
+					% [
+						mission.tier(),
+						mission.settings.alien_health_at(mission.tier()),
+						mission.settings.alien_damage_at(mission.tier()),
+						mission.warning_time(),
+						mission.ship.heat_shield.upgrade_cap(),
+					]
+				)
+			)
+		)
 	else:
 		lines.append("No mission in this scene")
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -196,7 +211,7 @@ func toggle() -> void:
 func skip_to_warning() -> void:
 	var mission: Mission = _mission()
 	if mission and mission.state == Mission.State.RUNNING:
-		mission.time_left = minf(mission.time_left, mission.settings.warning_time)
+		mission.time_left = minf(mission.time_left, mission.warning_time())
 
 
 ## Lets the storm hit right away (only while the timer runs).

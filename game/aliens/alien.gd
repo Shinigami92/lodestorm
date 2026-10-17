@@ -53,7 +53,11 @@ static var _rim: ShaderMaterial
 ## Hunters and raiders go for their target however far away and never let it get away by distance.
 @export var role := Role.GUARD
 
-## Current health, from 0 to `settings.max_health`.
+## How much stronger than its settings it is (more health, more damage): bodies farther in have
+## stronger aliens (see `MissionSettings.alien_health_at`). Set before it enters the tree.
+var health_factor: float = 1.0
+var damage_factor: float = 1.0
+## Current health, from 0 to `max_health()`.
 var health: float
 ## Dead aliens don't move or attack; they disappear after `DEATH_DURATION`.
 var dead: bool = false
@@ -78,7 +82,7 @@ var _legs := AlienLegs.new()
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	health = settings.max_health
+	health = max_health()
 	_animator.run_speed = settings.move_speed
 	_animator.setup(_model)
 	(_model.find_child("Skeleton3D", true, false) as Skeleton3D).add_child(_legs)
@@ -160,11 +164,21 @@ func _process(delta: float) -> void:
 ## attack.
 func attack(victim: Node3D) -> void:
 	if victim is Player:
-		(victim as Player).take_damage(settings.attack_damage)
+		(victim as Player).take_damage(attack_damage())
 	elif victim is Miner:
-		(victim as Miner).take_damage(settings.attack_damage)
+		(victim as Miner).take_damage(attack_damage())
 	_cooldown = 1.0 / settings.attack_rate
 	_animator.attack()
+
+
+## Health of the unhurt alien.
+func max_health() -> float:
+	return settings.max_health * health_factor
+
+
+## Damage per attack.
+func attack_damage() -> float:
+	return settings.attack_damage * damage_factor
 
 
 ## Where shots aim at: the middle of its body.

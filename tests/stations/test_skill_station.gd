@@ -11,6 +11,7 @@ const SPARES: Skill = preload("res://game/progression/skills/tree/spare_magazine
 const SCANNER: Skill = preload("res://game/progression/skills/tree/ore_scanner.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")
+const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
 
 var _map: Node3D
 var _player: Player
@@ -50,6 +51,7 @@ func test_learning_pays_from_the_hold() -> void:
 func test_a_skill_opens_once_the_one_before_is_learned() -> void:
 	_ship.add_to_hold(KYRITE, 5000.0)
 	_ship.add_to_hold(OLVANE, 5000.0)
+	_ship.add_to_hold(VYREL, 5000.0)
 	await _open()
 	assert_false(_station.can_learn(RELOAD_ON_THE_MOVE))
 	assert_true(_station.learn(DASH))
@@ -63,7 +65,7 @@ func test_ranked_skills_learn_rank_by_rank() -> void:
 	assert_true(_station.learn(SUIT))
 	assert_true(_station.learn(SUIT))
 	assert_eq(_player.skills.rank(SUIT), 2)
-	assert_false(_station.can_learn(SUIT), "rank 3 needs vyrel")
+	assert_false(_station.can_learn(SUIT), "rank 3 needs pallin")
 
 
 func test_nothing_can_be_learned_during_a_mission() -> void:

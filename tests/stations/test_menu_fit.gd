@@ -61,8 +61,8 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 		upgrades.append_array(weapon_type.get_upgrades())
 	var hold: Dictionary[OreType, float] = {}
 	for upgrade: Upgrade in upgrades:
-		for level: UpgradeLevel in upgrade.levels:
-			for ore_type: OreType in level.cost:
+		for mk: int in range(2, upgrade.max_mk() + 1):
+			for ore_type: OreType in upgrade.cost_of(mk):
 				hold[ore_type] = 99999.0
 	for path: String in STATIONS:
 		if not _ship.get_node(path) is UpgradeStation:
@@ -89,6 +89,10 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 					card.show_upgrade(upgrade, mk, hold, true, false, true)
 					await wait_process_frames(1)
 					_assert_fits(card, layout, label + " enabled")
+					# The next level waits for the next planet.
+					card.show_upgrade(upgrade, mk, hold, true, false, false, mk)
+					await wait_process_frames(1)
+					_assert_fits(card, layout, label + " at the ship's reach")
 		viewport.queue_free()
 
 

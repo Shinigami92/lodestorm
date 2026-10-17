@@ -3,14 +3,17 @@ extends StationCard
 ## The holo card of an `UpgradeStation`: the selected upgrade's name and what it improves, its MK
 ## level as pips (like the pips on the weapons and the helmet), how much the next level improves
 ## (compared to MK1), the next level's cost per ore next to what the hold has of it (red where it's
-## short), and "Upgrade". A weapon's upgrade the player can't buy yet says "Locked", and while a
-## mission is underway it says why nothing can be bought.
+## short), and "Upgrade". A weapon's upgrade the player can't buy yet says "Locked", levels beyond
+## the ship's reach show as faint pips and the card says which heat shield plate brings the next
+## one, and while a mission is underway it says why nothing can be bought.
 
 ## Dims what a locked upgrade would bring (the card itself and "Locked" stay readable).
 const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
 const PIP_LIT := Color(0.3, 0.85, 1.0)
 const PIP_DARK := Color(0.12, 0.18, 0.22)
-const PIP_SIZE := Vector2(30.0, 14.0)
+## Levels beyond the ship's reach (they come with the next planets).
+const PIP_OUT_OF_REACH := Color(0.12, 0.18, 0.22, 0.35)
+const PIP_SIZE := Vector2(20.0, 14.0)
 
 ## The upgrade shown, or null.
 var upgrade: Upgrade
@@ -46,20 +49,22 @@ func show_part(part: StationPart) -> void:
 		hold,
 		upgrade_station.is_available(shown),
 		upgrade_station.is_locked(),
-		upgrade_station.can_buy(shown)
+		upgrade_station.can_buy(shown),
+		upgrade_station.upgrade_cap()
 	)
 
 
 ## Shows `shown` at MK `mk` (null: nothing). `hold`: what the hold has; `available`: whether the
 ## player has its weapon; `locked`: whether a mission is underway; `can_buy`: whether its next
-## level can be bought right now.
+## level can be bought right now; `cap`: the highest MK level the ship's heat shield allows.
 func show_upgrade(
 	shown: Upgrade,
 	mk: int = 1,
 	hold: Dictionary[OreType, float] = {},
 	available: bool = true,
 	locked: bool = false,
-	can_buy: bool = false
+	can_buy: bool = false,
+	cap: int = 99
 ) -> void:
 	upgrade = shown
 	visible = shown != null
@@ -67,7 +72,7 @@ func show_upgrade(
 		return
 	_title.text = tr(shown.display_name)
 	_description.text = tr(shown.description)
-	show_pips(_pips, mk if available else 0, shown.max_mk())
+	show_pips(_pips, mk if available else 0, shown.max_mk(), cap)
 	var next: UpgradeLevel = shown.level_after(mk)
 	if not available:
 		_effect.text = tr("Locked")
@@ -75,12 +80,16 @@ func show_upgrade(
 		_effect.text = tr("next: +%d %%") % _bonus(shown, mk + 1)
 	else:
 		_effect.text = "+%d %%" % _bonus(shown, mk)
-	var cost: Dictionary[OreType, int] = {}
-	if next:
-		cost = next.cost
-	_cost.show_cost(cost, hold)
-	_status.visible = locked
-	_status.text = tr("Locked until everyone is back aboard.")
+	_cost.show_cost(shown.cost_of(mk + 1), hold)
+	var beyond_reach: bool = next != null and available and mk >= cap
+	_status.visible = locked or beyond_reach
+	if locked:
+		_status.text = tr("Locked until everyone is back aboard.")
+	elif beyond_reach:
+		_status.text = (
+			tr("MK%d comes with heat shield MK%d (engine room).")
+			% [mk + 1, mk + 1 - CelestialBody.MK_ABOVE_TIER]
+		)
 	_buy.text = tr("Upgrade") if next else tr("Max")
 	_buy.disabled = not can_buy
 	for dimmed: CanvasItem in [_title, _description, _pips, _cost_row]:
@@ -97,8 +106,14 @@ func get_buy_button() -> Button:
 	return _buy
 
 
-## Shows level `mk` of `max_mk` as pips in `row` (also a skill's ranks).
-static func show_pips(row: HBoxContainer, mk: int, max_mk: int) -> void:
+## The line saying why nothing can be bought (for tests).
+func get_status() -> Label:
+	return _status
+
+
+## Shows level `mk` of `max_mk` as pips in `row` (also a skill's ranks); those above `cap` are
+## faint.
+static func show_pips(row: HBoxContainer, mk: int, max_mk: int, cap: int = 99) -> void:
 	while row.get_child_count() < max_mk:
 		var pip := ColorRect.new()
 		pip.custom_minimum_size = PIP_SIZE
@@ -109,7 +124,8 @@ static func show_pips(row: HBoxContainer, mk: int, max_mk: int) -> void:
 		row.remove_child(last)
 		last.queue_free()
 	for i: int in max_mk:
-		(row.get_child(i) as ColorRect).color = PIP_LIT if i < mk else PIP_DARK
+		var color: Color = PIP_DARK if i < cap else PIP_OUT_OF_REACH
+		(row.get_child(i) as ColorRect).color = PIP_LIT if i < mk else color
 
 
 func _on_close_pressed() -> void:

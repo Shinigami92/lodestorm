@@ -816,6 +816,10 @@ msgid "next: +%d %%"
 msgstr "nächste: +%d %%"
 
 #: game/stations/upgrade/upgrade_card.gd
+msgid "MK%d comes with heat shield MK%d (engine room)."
+msgstr "MK%d kommt mit Hitzeschild MK%d (Maschinenraum)."
+
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Upgrade"
 msgstr "Aufrüsten"
 

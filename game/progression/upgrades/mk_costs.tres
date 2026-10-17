@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="MkCosts" format=3 uid="uid://lucgprdd7m02"]
+
+[ext_resource type="Script" uid="uid://cww77e5jo5tg1" path="res://game/progression/upgrades/mk_costs.gd" id="1_costs"]
+[ext_resource type="Script" uid="uid://meco6ynxkxs4" path="res://game/progression/upgrades/mk_cost.gd" id="2_cost"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="ore_olvane"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
+[ext_resource type="Resource" uid="uid://cgxpfq8uqcagh" path="res://game/ores/types/ore_pallin.tres" id="ore_pallin"]
+[ext_resource type="Resource" uid="uid://dfy3xlckv7gf7" path="res://game/ores/types/ore_duskine.tres" id="ore_duskine"]
+[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
+[ext_resource type="Resource" uid="uid://dymgaqh26njgt" path="res://game/ores/types/ore_tessar.tres" id="ore_tessar"]
+[ext_resource type="Resource" uid="uid://1uonnxu85sni" path="res://game/ores/types/ore_halcyne.tres" id="ore_halcyne"]
+[ext_resource type="Resource" uid="uid://dsspev82ieiuo" path="res://game/ores/types/ore_indral.tres" id="ore_indral"]
+[ext_resource type="Resource" uid="uid://cad77sebiwhrt" path="res://game/ores/types/ore_ressa.tres" id="ore_ressa"]
+[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
+[ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="ore_noctile"]
+[ext_resource type="Resource" uid="uid://1v26qj8f1fdi" path="res://game/ores/types/ore_aethrine.tres" id="ore_aethrine"]
+
+[sub_resource type="Resource" id="Mk2"]
+script = ExtResource("2_cost")
+common = ExtResource("ore_kyrite")
+common_amount = 270
+mid = ExtResource("ore_vyrel")
+mid_amount = 90
+
+[sub_resource type="Resource" id="Mk3"]
+script = ExtResource("2_cost")
+common = ExtResource("ore_olvane")
+common_amount = 360
+mid = ExtResource("ore_vyrel")
+mid_amount = 180
+signature = ExtResource("ore_meridine")
+signature_amount = 60
+
+[sub_resource type="Resource" id="Mk4"]
+script = ExtResource("2_cost")
+common = ExtResource("ore_pallin")
+common_amount = 450
+mid = ExtResource("ore_duskine")
+mid_amount = 240
+signature = ExtResource("ore_emerin")
+signature_amount = 90
+
+[sub_resource type="Resource" id="Mk5"]
+script = ExtResource("2_cost")
+common = ExtResource("ore_tessar")
+common_amount = 540
+mid = ExtResource("ore_halcyne")
+mid_amount = 300
+signature = ExtResource("ore_indral")
+signature_amount = 120
+
+[sub_resource type="Resource" id="Mk6"]
+script = ExtResource("2_cost")
+common = ExtResource("ore_tessar")
+common_amount = 630
+mid = ExtResource("ore_ressa")
+mid_amount = 360
+signature = ExtResource("ore_selyx")
+signature_amount = 150
+
+[sub_resource type="Resource" id="Mk7"]
+script = ExtResource("2_cost")
+common = ExtResource("ore_tessar")
+common_amount = 720
+mid = ExtResource("ore_ressa")
+mid_amount = 420
+signature = ExtResource("ore_noctile")
+signature_amount = 180
+
+[sub_resource type="Resource" id="Mk8"]
+script = ExtResource("2_cost")
+common = ExtResource("ore_tessar")
+common_amount = 810
+mid = ExtResource("ore_ressa")
+mid_amount = 480
+signature = ExtResource("ore_aethrine")
+signature_amount = 210
+
+[resource]
+script = ExtResource("1_costs")
+levels = Array[ExtResource("2_cost")]([SubResource("Mk2"), SubResource("Mk3"), SubResource("Mk4"), SubResource("Mk5"), SubResource("Mk6"), SubResource("Mk7"), SubResource("Mk8")])

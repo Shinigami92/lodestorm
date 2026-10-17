@@ -5,8 +5,9 @@ extends Resource
 ## the ship reaches every body whose tier is at most its MK level (`reaches`). The next plate is
 ## paid in ore, bit by bit: while it's the ship's `project`, every haul pays into it first (see
 ## `Ship.store_haul`), and the host can pay what's missing from the hold any time
-## (`Ship.pay_shield`). It's installed as soon as it's paid (at once, not timed). It's the host's
-## (the ship's), saved with the ship.
+## (`Ship.pay_shield`). It's installed as soon as it's paid (at once, not timed). Every plate also
+## raises the highest MK level of the upgrades (`upgrade_cap`). It's the host's (the ship's), saved
+## with the ship.
 
 ## Emitted when the MK level changes (a plate installed, a save loaded): other bodies are in reach.
 signal level_changed(mk: int)
@@ -38,6 +39,12 @@ func plate_for(level: int) -> ShieldPlate:
 ## The plate to install next, or null when every plate is installed.
 func next_plate() -> ShieldPlate:
 	return plate_for(mk + 1)
+
+
+## The highest MK level upgrades can be bought up to: that of the bodies it reaches (their tier is
+## at most `mk`, see `CelestialBody.max_mk`), MK3 with the bare core, MK8 with every plate.
+func upgrade_cap() -> int:
+	return mk + CelestialBody.MK_ABOVE_TIER
 
 
 ## Whether the ship can fly to `body` with the installed plates (its tier is at most `mk`).

@@ -4,7 +4,7 @@ Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All value
 
 ## Where the graph is heading
 
-Six clusters of about ten skills each (about 60 over the campaign): **Mobility**, **Survival**, **Ammo**, **Scanning**, and later **Mining** (with the crafted miners, see [`refinery.md`](refinery.md)) and **Support** (with co-op, M7). Each cluster branches into 2–3 paths, so a deep skill isn't one long chain. No planet gates: the ore costs (signature ores deeper in, see [`opening-planets.md`](opening-planets.md)) pace it by themselves, and each skill takes its time to learn (see [`refinery.md`](refinery.md)).
+Six clusters of about ten skills each (about 60 over the campaign): **Mobility**, **Survival**, **Ammo**, **Scanning**, and later **Mining** (with the crafted miners, see [`refinery.md`](refinery.md)) and **Support** (with co-op, M7). Each cluster branches into 2–3 paths, so a deep skill isn't one long chain. No planet gates: the ore costs (signature ores deeper in, see [Progression](../GAME_DESIGN.md#12-progression--upgrades)) pace it by themselves, and each skill takes its time to learn (see [`refinery.md`](refinery.md)).
 
 ## The next four
 

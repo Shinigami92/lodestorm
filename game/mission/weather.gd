@@ -81,7 +81,7 @@ func _process(delta: float) -> void:
 		Mission.State.CLOSED, Mission.State.OPEN:
 			target = 0.0
 		Mission.State.RUNNING:
-			var warning: float = mission.settings.warning_time
+			var warning: float = mission.warning_time()
 			target = BUILD_UP * clampf(1.0 - mission.time_left / warning, 0.0, 1.0)
 		Mission.State.STORM, Mission.State.LOST:
 			target = 1.0

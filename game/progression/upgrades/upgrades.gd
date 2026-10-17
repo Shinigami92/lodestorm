@@ -25,6 +25,11 @@ func next_level(upgrade: Upgrade) -> UpgradeLevel:
 	return upgrade.level_after(mk(upgrade)) if upgrade else null
 
 
+## What the next level of `upgrade` costs (empty when it's at its highest or null).
+func next_cost(upgrade: Upgrade) -> Dictionary[OreType, int]:
+	return upgrade.cost_of(mk(upgrade) + 1) if upgrade else {}
+
+
 ## Raises `upgrade` by one MK level unless it's at its highest. Returns whether it rose.
 ## Paying for it is up to the caller (see `Ship.pay`).
 func raise(upgrade: Upgrade) -> bool:

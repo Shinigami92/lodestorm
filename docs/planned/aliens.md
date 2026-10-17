@@ -41,7 +41,7 @@ The swarmer runs 5.2 m/s (still slower than the player's 6, so running away work
 - **Biome leanings:** each biome favors some strains (burrowers in the Dust flats and Salt pans, stalkers in the Overgrowth, darters around the cliffs of the Ash fields and Glass plains, mites everywhere), never exclusively, so no biome needs a particular weapon (see [`biomes.md`](biomes.md)).
 - **Hard regions preview** one strain of the next tier, so the next planet isn't a wall.
 - **Packs:** hunters come in packs, not one by one, from a recipe per tier (e.g. tier 3: four swarmers and a Brute, or two spitters and a Shrieker).
-- **Tiers** also scale health, damage and nests (see [`opening-planets.md`](opening-planets.md)).
+- **Tiers** also scale health, damage and nests (built, see Tiers in [Missions](../GAME_DESIGN.md#6-missions)).
 
 ## Pressure over a run
 

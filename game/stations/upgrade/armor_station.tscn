@@ -125,7 +125,7 @@ visible = false
 mesh = SubResource("TorusMesh_highlight")
 
 [node name="Card" parent="." instance=ExtResource("2_panel")]
-size = Vector2(1, 1.02)
+size = Vector2(1, 1.16)
 pixels_per_meter = 500.0
 transparent = true
 menu = ExtResource("3_card")

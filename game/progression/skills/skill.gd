@@ -40,6 +40,13 @@ enum Effect {
 @export var graph_position: Vector2 = Vector2.ZERO
 
 
+## How deep in its cluster's tree it sits: 1 for a root, one more per skill before it. Deeper skills
+## cost rarer ores: commons at depth 1, a mid ore from depth 2, a signature ore from depth 4 (see
+## GAME_DESIGN.md, Progression).
+func depth() -> int:
+	return requires.depth() + 1 if requires else 1
+
+
 ## The highest rank.
 func max_rank() -> int:
 	return ranks.size()

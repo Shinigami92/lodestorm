@@ -7,11 +7,15 @@ extends NavigationRegion3D
 ## Emitted once the walkable area is baked.
 signal baked
 
+const NO_TASK: int = -1
+
 ## Bakes on a worker thread instead of right away (a generated world takes a moment to bake, and
 ## the ship lands it during the flight); the region stays empty until it's done.
 @export var bake_in_background: bool = false
 
 var _baked: bool = false
+## The worker thread task baking in the background, until it's done.
+var _task: int = NO_TASK
 
 
 func _ready() -> void:
@@ -23,7 +27,16 @@ func _ready() -> void:
 		NavigationServer3D.bake_from_source_geometry_data(mesh, source)
 		_finish(mesh)
 		return
-	_bake_in_background(weakref(self) as WeakRef, mesh, source)
+	_task = WorkerThreadPool.add_task(
+		_bake.bind(weakref(self) as WeakRef, mesh, source), false, "Bake walkable area"
+	)
+
+
+func _notification(what: int) -> void:
+	# Quitting while a bake still runs crashes the engine on exit: a region freed mid-bake waits for
+	# it (rarely: the bake is done long before the ship lands).
+	if what == NOTIFICATION_PREDELETE and _task != NO_TASK:
+		WorkerThreadPool.wait_for_task_completion(_task)
 
 
 ## Whether the walkable area is baked.
@@ -31,21 +44,20 @@ func is_baked() -> bool:
 	return _baked
 
 
-## Static, so the callback holds no reference to a region that's gone when the bake finishes.
-static func _bake_in_background(
+## Static, so the task holds no reference to a region that's gone when the bake finishes.
+static func _bake(
 	region: WeakRef, mesh: NavigationMesh, source: NavigationMeshSourceGeometryData3D
 ) -> void:
-	NavigationServer3D.bake_from_source_geometry_data_async(
-		mesh,
-		source,
-		func() -> void:
-			var alive := region.get_ref() as LocationNavigation
-			if alive:
-				alive._finish.call_deferred(mesh)
-	)
+	NavigationServer3D.bake_from_source_geometry_data(mesh, source)
+	var alive := region.get_ref() as LocationNavigation
+	if alive:
+		alive._finish.call_deferred(mesh)
 
 
 func _finish(mesh: NavigationMesh) -> void:
+	if _task != NO_TASK:
+		WorkerThreadPool.wait_for_task_completion(_task)
+		_task = NO_TASK
 	if not is_inside_tree():
 		return
 	navigation_mesh = mesh

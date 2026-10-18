@@ -3,24 +3,10 @@ extends GutTest
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 const TEST_MAP: PackedScene = preload("res://game/maps/main.tscn")
 const REAL_TIME := preload("res://tests/support/real_time.gd")
+const SWEEP := preload("res://tests/support/location_sweep.gd")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowth.tres")
-## Every biome: what holds for one holds for all.
-const BIOMES: Array[LocationBiome] = [
-	DUST,
-	OVERGROWTH,
-	preload("res://game/locations/biomes/frost.tres"),
-	preload("res://game/locations/biomes/salt.tres"),
-	preload("res://game/locations/biomes/ash.tres"),
-	preload("res://game/locations/biomes/glass.tres"),
-]
 const AREAS: int = 6
-const SWEEP_AREAS: int = 9
-const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
-## Seeds per biome in the sweeps over every biome.
-const BIOME_SEEDS: int = 2
-## Where the camera looks in the game when the ship's nose points along -x (isometric).
-const VIEW := Vector3(-0.577, -0.577, -0.577)
 
 
 ## A smaller world than in the game, so the tests stay quick.
@@ -33,20 +19,6 @@ func _generate(
 	location.nest_factor = nest_factor
 	location.area_count = AREAS
 	add_child_autofree(location)
-	return location
-
-
-## Only planned (no nodes): quicker, for sweeps over many seeds. With the camera's view, like in
-## the game (`view`).
-func _plan(
-	world_seed: int, biome: LocationBiome, view: Vector3 = VIEW, areas: int = SWEEP_AREAS
-) -> GeneratedLocation:
-	var location := LOCATION.instantiate() as GeneratedLocation
-	location.world_seed = world_seed
-	location.biome = biome
-	location.area_count = areas
-	location.view_direction = view
-	location.plan()
 	return location
 
 
@@ -76,7 +48,7 @@ func test_picks_a_biome_when_none_is_set() -> void:
 
 ## The ship stands at the origin on flat ground at height 0, with room in front of the ramp.
 func test_landing_site_is_flat() -> void:
-	for biome: LocationBiome in BIOMES:
+	for biome: LocationBiome in SWEEP.BIOMES:
 		var location: GeneratedLocation = _generate(3, biome)
 		var site: Rect2 = location.landing_site
 		for x: float in range(int(site.position.x), int(site.end.x), 4):
@@ -307,93 +279,6 @@ func test_planned_in_the_background_same_world() -> void:
 	)
 
 
-## Every spot players can walk to leads back to the ship: nothing to fall into for good. Every
-## area can be reached, a plateau's top too.
-func test_every_walkable_spot_leads_back() -> void:
-	for biome: LocationBiome in BIOMES:
-		for world_seed: int in _seeds(biome):
-			var location: GeneratedLocation = _plan(world_seed, biome)
-			var label: String = "%s seed %d" % [biome.display_name, world_seed]
-			assert_eq(location.stuck_spots(), PackedVector2Array(), label)
-			for area: LocationLayout.Area in location.layout.areas:
-				assert_true(location.is_reachable(area.center.x, area.center.y), label)
-				if area.kind == LocationLayout.Kind.PLATEAU:
-					assert_true(location.is_reachable(area.mesa.x, area.mesa.y), label + " mesa")
-					var top: float = location.terrain.height_at(area.mesa.x, area.mesa.y)
-					var foot: float = location.terrain.height_at(area.center.x, area.center.y)
-					assert_gt(top - foot, 3.0, label + " mesa stands out")
-			for site: Vector3 in location.planned_ore_sites() + location.planned_nest_sites():
-				assert_true(location.is_reachable(site.x, site.z), label)
-			location.free()
-
-
-## Nobody gets onto the rock: walkable ground is only in the areas, the passes and around the
-## landing site (and at the foot of their cliffs).
-func test_rock_cannot_be_climbed() -> void:
-	for biome: LocationBiome in BIOMES:
-		for world_seed: int in _seeds(biome):
-			var location: GeneratedLocation = _plan(world_seed, biome)
-			var terrain: LocationTerrain = location.terrain
-			var stray: int = 0
-			for z: int in range(0, terrain.cells + 1, 3):
-				for x: int in range(0, terrain.cells + 1, 3):
-					var at: Vector3 = terrain.point(x, z)
-					if location.is_reachable(at.x, at.z) and not _near_open(location, at):
-						stray += 1
-			assert_eq(stray, 0, "%s seed %d" % [biome.display_name, world_seed])
-			location.free()
-
-
-## The rarest ore waits in the ore pockets; nest hollows hold nests, not ore.
-func test_ore_pockets_and_nest_hollows() -> void:
-	var found: Array[OreType] = OreCatalog.sorted(DUST.ores)
-	var rarest: OreType = found[found.size() - 1]
-	for world_seed: int in SWEEP_SEEDS:
-		var location: GeneratedLocation = _plan(world_seed, DUST)
-		var sites: Array[Vector3] = location.planned_ore_sites()
-		var types: Array[OreType] = location.planned_ore_types()
-		for area: LocationLayout.Area in location.layout.areas:
-			var inside: Array[OreType] = []
-			for i: int in sites.size():
-				if Vector2(sites[i].x, sites[i].z).distance_to(area.center) < area.radius * 1.3:
-					inside.append(types[i])
-			if area.kind == LocationLayout.Kind.ORE_POCKET:
-				assert_has(inside, rarest, "seed %d" % world_seed)
-			elif area.kind == LocationLayout.Kind.NEST_HOLLOW:
-				assert_eq(inside.size(), 0, "seed %d: ore in the hollow" % world_seed)
-				assert_gt(_nests_in(location, area), 0, "seed %d: nests in the hollow" % world_seed)
-		location.free()
-
-
-## The rock on the camera's side stays low enough to see over: it only ever gets lower than
-## without the camera's view, by a lot in places.
-func test_rock_stays_low_on_the_camera_side() -> void:
-	for biome: LocationBiome in BIOMES:
-		var viewed: GeneratedLocation = _plan(3, biome, VIEW, AREAS)
-		var flat: GeneratedLocation = _plan(3, biome, Vector3.ZERO, AREAS)
-		var lower: int = 0
-		var higher: int = 0
-		var side: int = viewed.terrain.cells + 1
-		for i: int in viewed.terrain.heights.size():
-			# On the rock.
-			var at: Vector3 = viewed.terrain.point(i % side, floori(i / float(side)))
-			if viewed.is_reachable(at.x, at.z) or flat.is_reachable(at.x, at.z):
-				continue
-			# Nor where the ground flattened under a site or a map part blends back (they lie a bit
-			# differently with the view).
-			if _near_site(viewed, at) or _near_site(flat, at):
-				continue
-			var difference: float = viewed.terrain.heights[i] - flat.terrain.heights[i]
-			if difference > 0.01:
-				higher += 1
-			elif difference < -3.0:
-				lower += 1
-		assert_eq(higher, 0, biome.display_name)
-		assert_gt(lower, 100, biome.display_name)
-		viewed.free()
-		flat.free()
-
-
 ## Plants and rocks that block, ore nodes and nests keep a lane free along every pass.
 func test_lanes_stay_free() -> void:
 	var location: GeneratedLocation = _generate(4, OVERGROWTH)
@@ -411,53 +296,6 @@ func test_lanes_stay_free() -> void:
 	)
 	for site: Node3D in sites:
 		assert_false(location.is_on_lane(site.position.x, site.position.z), site.name)
-
-
-func _near_site(location: GeneratedLocation, at: Vector3) -> bool:
-	var point := Vector2(at.x, at.z)
-	var reach: float = LocationParts.FALLOFFS.max() + location.cell
-	for part: LocationParts.Placed in location.parts.placed:
-		var center := Vector2(part.origin.x, part.origin.z)
-		if center.distance_to(point) < part.info.footprint + reach:
-			return true
-	reach = GeneratedLocation.SITE_FALLOFF + location.cell
-	for nest: Vector3 in location.planned_nest_sites():
-		if Vector2(nest.x, nest.z).distance_to(point) < GeneratedLocation.NEST_SITE_RADIUS + reach:
-			return true
-	for ore: Vector3 in location.planned_ore_sites():
-		if Vector2(ore.x, ore.z).distance_to(point) < GeneratedLocation.ORE_SITE_RADIUS + reach:
-			return true
-	return false
-
-
-func _nests_in(location: GeneratedLocation, area: LocationLayout.Area) -> int:
-	var nests: int = 0
-	for nest: Vector3 in location.planned_nest_sites():
-		if Vector2(nest.x, nest.z).distance_to(area.center) < area.radius * 1.3:
-			nests += 1
-	return nests
-
-
-## Whether `at` lies in an area, a pass or the landing site, or at the foot of their cliffs.
-func _near_open(location: GeneratedLocation, at: Vector3) -> bool:
-	var point := Vector2(at.x, at.z)
-	var slack: float = location.biome.cliff_width + location.cell * 2.0
-	var site: Rect2 = location.landing_site.grow(GeneratedLocation.LANDING_MARGIN + slack)
-	if site.has_point(point):
-		return true
-	for area: LocationLayout.Area in location.layout.areas:
-		var reach: float = area.radius * (1.0 + 2.0 * GeneratedLocation.AREA_WOBBLE) + slack
-		if point.distance_to(area.center) < reach:
-			return true
-	for way: LocationLayout.Pass in location.layout.passes:
-		var reach: float = way.width * 0.5 * (1.0 + 2.0 * GeneratedLocation.PASS_WOBBLE) + slack
-		for i: int in range(1, way.points.size()):
-			var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
-				point, way.points[i - 1], way.points[i]
-			)
-			if point.distance_to(closest) < reach:
-				return true
-	return false
 
 
 func _positions(location: GeneratedLocation, group: String) -> Array[Vector3]:
@@ -479,13 +317,3 @@ func _scatter_bodies(location: GeneratedLocation) -> Array[RID]:
 		if child is StaticBody3D:
 			bodies.append((child as StaticBody3D).get_rid())
 	return bodies
-
-
-## The seeds a sweep plans `biome` with: `count` of them, different for every biome, so the sweeps
-## over all biomes cover as many seeds as they plan locations.
-static func _seeds(biome: LocationBiome, count: int = BIOME_SEEDS) -> Array[int]:
-	var first: int = 1 + BIOMES.find(biome) * count
-	var seeds: Array[int] = []
-	for world_seed: int in range(first, first + count):
-		seeds.append(world_seed)
-	return seeds

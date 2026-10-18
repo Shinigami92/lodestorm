@@ -54,9 +54,14 @@ jobs:
       - name: Check formatting and lint
         run: tools/lint.sh python
 
-  test:
-    name: Test
+  # The tests in shares on parallel runners (balanced by tests/timings.txt), four processes each
+  test-shard:
+    name: Test ${{ matrix.shard }}/4
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -69,3 +74,17 @@ jobs:
 
       - name: Import and run tests
         run: tools/test.sh
+        env:
+          TEST_SHARD: ${{ matrix.shard }}/4
+
+  # The required status check: passes only when every share passed
+  test:
+    name: Test
+    needs: test-shard
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the shards
+        env:
+          RESULT: ${{ needs.test-shard.result }}
+        run: test "$RESULT" = success

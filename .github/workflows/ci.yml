@@ -76,6 +76,16 @@ jobs:
         run: tools/test.sh
         env:
           TEST_SHARD: ${{ matrix.shard }}/4
+          TEST_REPORTS: test-reports
+
+      # The scripts' durations, for tools/timings.sh
+      - name: Upload test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-reports-${{ matrix.shard }}
+          path: test-reports/
+          retention-days: 30
 
   # The required status check: passes only when every share passed
   test:

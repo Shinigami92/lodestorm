@@ -5,7 +5,8 @@
 # Without arguments, the test scripts are spread over TEST_JOBS Godot processes (default 4)
 # running in parallel; each one's output is printed once all are done. TEST_SHARD=k/n runs only
 # the k-th of n shares (CI runs the shares on separate runners). The scripts are balanced by their
-# durations in tests/timings.txt, longest first; TEST_TIMINGS=1 rewrites that file from the run.
+# durations in tests/timings.txt, longest first (tools/timings.sh rewrites it). TEST_REPORTS=<dir>
+# keeps each process's GUT JUnit report there (relative to the project).
 # Extra arguments go to GUT in a single process instead, e.g. -gselect=test_foo.gd
 set -eu
 cd "$(dirname "$0")/.."
@@ -36,10 +37,6 @@ if [ "$shard_index" -lt 1 ] || [ "$shard_index" -gt "$shard_count" ] || [ "$jobs
 	exit 2
 fi
 timings=tests/timings.txt
-if [ -n "${TEST_TIMINGS:-}" ] && [ "$shard_count" -ne 1 ]; then
-	echo "TEST_TIMINGS needs the whole suite (no TEST_SHARD)" >&2
-	exit 2
-fi
 
 tools/import.sh
 
@@ -103,13 +100,10 @@ for entry in $processes; do
 	fi
 done
 
-if [ -n "${TEST_TIMINGS:-}" ] && [ "$status" -eq 0 ]; then
-	{
-		echo "# Seconds each test script takes in a run of tools/test.sh, written by"
-		echo "# TEST_TIMINGS=1 tools/test.sh; balances the scripts over the test processes."
-		cat "$logs"/*.xml | sed -n 's/.*<testsuite name="\([^"]*\)".* time="\([0-9.]*\)".*/\2 \1/p' |
-			awk '{ printf "%.1f %s\n", $1, $2 }' | sort -k1,1nr -k2,2
-	} >"$timings"
-	echo "Wrote $timings"
+if [ -n "${TEST_REPORTS:-}" ]; then
+	mkdir -p "$TEST_REPORTS"
+	for report in "$logs"/*.xml; do
+		if [ -f "$report" ]; then cp "$report" "$TEST_REPORTS/shard$shard_index-$(basename "$report")"; fi
+	done
 fi
 exit $status

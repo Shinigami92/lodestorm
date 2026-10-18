@@ -1,5 +1,5 @@
-# Seconds each test script takes in a run of tools/test.sh, written by
-# TEST_TIMINGS=1 tools/test.sh; balances the scripts over the test processes.
+# Seconds each test script takes in a run of tools/test.sh, which balances the scripts by
+# them. Written by tools/timings.sh.
 59.6 tests/locations/test_generated_location.gd
 51.1 tests/locations/test_map_parts.gd
 50.9 tests/stations/test_menu_fit.gd

@@ -2,7 +2,7 @@ extends GutTest
 ## Players, aliens, miners and nearby ore show as silhouettes behind cliffs (an overlay in their
 ## color, and their materials mark where they're visible).
 
-const ALIEN: PackedScene = preload("res://game/aliens/alien.tscn")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const MINER: PackedScene = preload("res://game/mining/miner.tscn")
 const ORE_NODE: PackedScene = preload("res://game/mining/ore_node.tscn")
 const PLAYER: PackedScene = preload("res://game/player/player.tscn")
@@ -10,7 +10,7 @@ const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 
 
 func test_aliens_show_red_behind_cliffs() -> void:
-	var alien := ALIEN.instantiate() as Alien
+	var alien := SWARMER.spawn()
 	add_child_autofree(alien)
 	var creature := alien.find_child("Creature", true, false) as GeometryInstance3D
 	_assert_silhouette(creature.material_overlay, OccludedSilhouette.ALIEN_COLOR)

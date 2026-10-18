@@ -8,14 +8,15 @@ extends Node3D
 ## interval later. Raiders go for miners and escalate the same way with their own values; they
 ## only hatch while a miner works, the first one a full interval after that. The glow in the nest's
 ## mouth pulses faster as the hive escalates. Aliens hatch stronger on bodies farther in (see
-## `MissionSettings.alien_health_at`).
+## `MissionSettings.alien_health_at`). Nests wait while the living aliens reach the cap
+## (`AlienNestSettings.alien_cap`).
 
 ## Emitted when an alien hatches.
 signal hatched(alien: Alien)
 
 const GROUP: StringName = &"alien_nests"
 
-const COLOR_GLOW := Color(0.9, 1.0, 0.2)
+const COLOR_GLOW := Alien.COLOR_GLOW
 ## Glow pulses per second at escalation 0 and 1.
 const PULSE_RATE_CALM: float = 0.4
 const PULSE_RATE_FRENZY: float = 2.0
@@ -24,7 +25,8 @@ const GLOW_ENERGY_MIN: float = 0.5
 const GLOW_ENERGY_MAX: float = 4.0
 
 @export var settings: AlienNestSettings
-@export var alien_scene: PackedScene
+## What hatches from it.
+@export var strain: AlienStrain
 
 ## Seconds until the next hunter hatches; only counts down while fewer hunters than allowed are out.
 var hunter_cooldown: float
@@ -60,7 +62,8 @@ func _ready() -> void:
 	hunter_cooldown = settings.hunter_interval_start
 	raider_cooldown = settings.raider_interval_start
 	for i: int in settings.guards:
-		hatch(Alien.Role.GUARD)
+		if not is_full():
+			hatch(Alien.Role.GUARD)
 
 
 func _physics_process(delta: float) -> void:
@@ -84,8 +87,7 @@ func _process(_delta: float) -> void:
 
 ## Hatches an alien with `role` at a random spot around the nest, facing away from it.
 func hatch(role: Alien.Role) -> Alien:
-	var alien := alien_scene.instantiate() as Alien
-	alien.role = role
+	var alien: Alien = strain.spawn(role)
 	if _find_mission():
 		alien.health_factor = _mission.settings.alien_health_at(_mission.tier())
 		alien.damage_factor = _mission.settings.alien_damage_at(_mission.tier())
@@ -105,6 +107,11 @@ func hatch(role: Alien.Role) -> Alien:
 ## How far the hive has escalated, from 0 to 1 (the mission's progress; 0 without a mission).
 func escalation() -> float:
 	return _mission.progress() if _find_mission() else 0.0
+
+
+## Whether the living aliens reach the cap: nests wait.
+func is_full() -> bool:
+	return Alien.living_load(get_tree()) + strain.cap_share > settings.alien_cap()
 
 
 ## Seconds between hunters at escalation `level`.
@@ -138,7 +145,7 @@ func get_raiders() -> Array[Alien]:
 
 
 ## Counts `cooldown` down while fewer than `limit` aliens with `role` are out, hatches one at zero
-## and returns the new cooldown. At the limit it holds a full `interval`.
+## and returns the new cooldown. At the limit it holds a full `interval`; at the cap it waits.
 func _count_down(
 	role: Alien.Role, cooldown: float, interval: float, limit: int, delta: float
 ) -> float:
@@ -146,7 +153,7 @@ func _count_down(
 	if out >= limit:
 		return interval
 	cooldown = maxf(cooldown - delta, 0.0)
-	if cooldown > 0.0:
+	if cooldown > 0.0 or is_full():
 		return cooldown
 	hatch(role)
 	return interval

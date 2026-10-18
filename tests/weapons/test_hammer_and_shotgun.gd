@@ -1,6 +1,6 @@
 extends GutTest
 
-const ALIEN_SCENE: PackedScene = preload("res://game/aliens/alien.tscn")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
 const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
@@ -39,21 +39,21 @@ func test_hammer_hits_every_alien_in_front_within_reach() -> void:
 	assert_has(hits, side)
 	assert_does_not_have(hits, behind)
 	assert_does_not_have(hits, far)
-	assert_lt(front.health, front.settings.max_health)
-	assert_eq(behind.health, behind.settings.max_health)
+	assert_lt(front.health, front.max_health())
+	assert_eq(behind.health, behind.max_health())
 
 
 func test_upgraded_hammer_hits_harder() -> void:
 	var hammer: MeleeWeapon = _equip(HAMMER) as MeleeWeapon
 	_player.upgrades.raise(HAMMER.upgrade)
-	var alien := ALIEN_SCENE.instantiate() as Alien
-	alien.settings = alien.settings.duplicate() as AlienSettings
-	alien.settings.max_health = 1000.0
+	var alien := SWARMER.spawn()
+	alien.strain = alien.strain.duplicate() as AlienStrain
+	alien.strain.max_health = 1000.0
 	alien.position = Vector3(0.0, 0.0, -1.5)
 	_arena.add_child(alien)
 	await _attack_once()
 	var damage: float = hammer.settings.damage * HAMMER.upgrade.levels[0].multiplier
-	assert_eq(alien.health, alien.settings.max_health - damage)
+	assert_eq(alien.health, alien.strain.max_health - damage)
 
 
 func test_hammer_does_not_hit_through_walls() -> void:
@@ -63,7 +63,7 @@ func test_hammer_does_not_hit_through_walls() -> void:
 	watch_signals(hammer)
 	await _attack_once()
 	assert_signal_emit_count(hammer, "swung", 1)
-	assert_eq(alien.health, alien.settings.max_health)
+	assert_eq(alien.health, alien.strain.max_health)
 
 
 func test_hammer_swings_at_attack_rate() -> void:
@@ -108,7 +108,7 @@ func _attack_once() -> void:
 
 
 func _add_alien(at: Vector3) -> Alien:
-	var alien := ALIEN_SCENE.instantiate() as Alien
+	var alien := SWARMER.spawn()
 	alien.position = at
 	_arena.add_child(alien)
 	return alien

@@ -4,3 +4,4 @@
 
 [resource]
 script = ExtResource("1_script")
+attack_rate = 8.0

@@ -16,6 +16,7 @@ const SOURCE_DIRS: Array[String] = ["res://game"]
 const TEXT_PROPERTIES: Array[StringName] = [&"text", &"placeholder_text", &"tooltip_text"]
 ## Resource types (script class names) with player-facing texts, and their text properties.
 const RESOURCE_TEXTS: Dictionary[String, Array] = {
+	"AlienStrain": [&"display_name"],
 	"CelestialBody": [&"display_name"],
 	"Dialogue": [&"prompt"],
 	"LocationBiome": [&"display_name"],

@@ -1,7 +1,7 @@
 extends GutTest
 ## What the skills do for the player (see GAME_DESIGN.md, Progression).
 
-const ALIEN_SCENE: PackedScene = preload("res://game/aliens/alien.tscn")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const ORE_NODE: PackedScene = preload("res://game/mining/ore_node.tscn")
 const MINER_SCENE: PackedScene = preload("res://game/mining/miner.tscn")
@@ -257,9 +257,9 @@ func test_ore_scanner_points_to_the_nearest_node_in_range() -> void:
 
 
 func test_damage_readout_shows_hits_and_adds_up_pellets() -> void:
-	var alien := ALIEN_SCENE.instantiate() as Alien
-	alien.settings = alien.settings.duplicate() as AlienSettings
-	alien.settings.max_health = 1000.0
+	var alien := SWARMER.spawn()
+	alien.strain = alien.strain.duplicate() as AlienStrain
+	alien.strain.max_health = 1000.0
 	alien.position = Vector3(0.0, 0.0, -5.0)
 	_arena.add_child(alien)
 	await wait_physics_frames(1)
@@ -284,9 +284,9 @@ func test_hits_with_the_hammer_show_their_damage() -> void:
 	_player.loadout.assign(0, HAMMER)
 	_player.skills.raise(SCANNER)
 	_player.skills.raise(READOUT)
-	var alien := ALIEN_SCENE.instantiate() as Alien
-	alien.settings = alien.settings.duplicate() as AlienSettings
-	alien.settings.max_health = 1000.0
+	var alien := SWARMER.spawn()
+	alien.strain = alien.strain.duplicate() as AlienStrain
+	alien.strain.max_health = 1000.0
 	alien.position = Vector3(0.0, 0.0, -1.5)
 	_arena.add_child(alien)
 	await wait_physics_frames(1)

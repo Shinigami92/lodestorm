@@ -47,8 +47,7 @@ layout_mode = 2
 toggle_mode = true
 text = "Large"
 
-[node name="AlwaysShow" type="Button" parent="RingOptions"]
+[node name="AlwaysShow" type="CheckBox" parent="RingOptions"]
 unique_name_in_owner = true
 layout_mode = 2
-toggle_mode = true
 text = "Always show"

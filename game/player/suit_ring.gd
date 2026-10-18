@@ -13,7 +13,9 @@ extends MeshInstance3D
 ## Quiet when nothing goes on: an arc dims to a faint outline `lit_time` after its last change,
 ## unless its value is low (health below half, a nearly empty magazine) or the player set "Always
 ## show"; the spare ticks show on a reload and when a spare is used. Aboard (weapon holstered) the
-## outline hides too. Its size is a setting (`GameSettings.ring_scale`). A teammate's ring (a
+## outline hides too. Its size is a setting (`GameSettings.ring_scale`); while the player's pause
+## panel is open it stays shown and lit (also while the world is paused), so a change of size shows
+## right away. A teammate's ring (a
 ## player that isn't `local`) shows only the health arc inside an outline in their player color.
 ## Tilts with the ground under the player; drawn over the ground and low plants, hidden by cliffs
 ## and props.
@@ -88,6 +90,8 @@ var _up := Vector3.UP
 
 func _ready() -> void:
 	top_level = true
+	# Runs while the pause panel stops the world, so the panel previews the ring's settings.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	var outer: float = radius + SHIP_ARROW.x + 0.04
 	var plane := PlaneMesh.new()
 	plane.size = Vector2.ONE * outer * 2.0
@@ -133,7 +137,7 @@ func pointer_reach() -> float:
 
 
 func _process(delta: float) -> void:
-	visible = not _player.dead and not _player.menu
+	visible = not _player.dead and (not _player.menu or previewing())
 	if not visible:
 		_flash_left = 0.0
 		_hit_directions.clear()
@@ -149,7 +153,7 @@ func _process(delta: float) -> void:
 	_update_give()
 	_update_hits(delta)
 	_update_pointers()
-	var outside: float = 1.0 if _player.weapon_allowed else 0.0
+	var outside: float = 1.0 if _player.weapon_allowed or previewing() else 0.0
 	_material.set_shader_parameter(&"outline_alpha", outside)
 	_material.set_shader_parameter(&"team_alpha", 0.0 if _player.local else outside)
 	_material.set_shader_parameter(&"team_color", Color(_player.color(), FILL_ALPHA))
@@ -392,9 +396,14 @@ static func tilt_towards(up: Vector3, normal: Vector3, weight: float) -> Vector3
 	return up.lerp(normal, weight).normalized()
 
 
-## Whether the arcs stay lit (the "Always show" setting).
-static func _always() -> bool:
-	return GameSettings.ring_always_show
+## Whether its player's pause panel is open: the ring stays shown and lit meanwhile.
+func previewing() -> bool:
+	return _player.menu != null and _player.menu == _player.pause_panel
+
+
+## Whether the arcs stay lit (the "Always show" setting, or the pause panel's preview).
+func _always() -> bool:
+	return GameSettings.ring_always_show or previewing()
 
 
 ## Moves `glow` towards 1 while `lit`, else towards 0, over `FADE_TIME`.

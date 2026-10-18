@@ -10,7 +10,7 @@ const LANGUAGE_NAMES: Dictionary[String, String] = {"en": "English", "de": "Deut
 
 @onready var _languages: HBoxContainer = %Languages
 @onready var _ring_sizes: HBoxContainer = %RingSizes
-@onready var _always_show: Button = %AlwaysShow
+@onready var _always_show: CheckBox = %AlwaysShow
 
 
 func _ready() -> void:

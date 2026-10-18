@@ -17,6 +17,8 @@ func before_each() -> void:
 
 
 func after_each() -> void:
+	get_tree().paused = false
+	process_mode = Node.PROCESS_MODE_INHERIT
 	GameSettings.ring_size = GameSettings.RING_MEDIUM
 	GameSettings.ring_always_show = false
 
@@ -112,6 +114,20 @@ func test_always_show_keeps_the_arcs_lit() -> void:
 	await wait_seconds(0.2 + SuitRing.FADE_TIME + 0.2)
 	assert_eq(_ring.health_glow, 1.0)
 	assert_eq(_ring.ammo_glow, 1.0)
+
+
+func test_shown_and_lit_while_the_pause_panel_is_open() -> void:
+	# GUT waits on while the game is paused.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_player.weapon_allowed = false
+	await wait_seconds(0.2 + SuitRing.FADE_TIME + 0.2)
+	assert_eq(_ring.health_glow, 0.0)
+	_player.pause_panel.open(_player)
+	await wait_seconds(SuitRing.FADE_TIME + 0.1)
+	assert_true(_ring.visible, "a size change shows right away")
+	assert_eq(_ring.health_glow, 1.0)
+	assert_eq(_number(&"outline_alpha"), 1.0)
+	_player.pause_panel.close()
 
 
 func test_size_setting_scales_the_ring() -> void:

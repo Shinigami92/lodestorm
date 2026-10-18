@@ -1,6 +1,6 @@
 # Light and player colors (planned)
 
-Decided 2026-10-17. Built in parts (see [`PLAN.md`](../PLAN.md)): the palette probe in M4 step 5, the light per body and the storm's steps with the art pass (M5), the player colors with co-op (M7). All values **TBD (playtest)**. Today: a dim warm sun, a faint cool back light, low ambient light, bloom only on emissive parts, the storm dimming the light in its last minute, players' silhouettes orange (see [Art direction](../GAME_DESIGN.md#art-direction)).
+Decided 2026-10-17. Built in parts (see [`PLAN.md`](../PLAN.md)): the palette check in M4 step 5 D (built: the palette viewer, see [`TECHNICAL.md`](../TECHNICAL.md#engine-settings)), the light per body and the storm's steps with the art pass (M5), the player colors with co-op (M7). All values **TBD (playtest)**. Today: a dim warm sun, a faint cool back light, low ambient light, bloom only on emissive parts, the storm dimming the light in its last minute, players' silhouettes orange (see [Art direction](../GAME_DESIGN.md#art-direction)).
 
 ## Light
 
@@ -14,7 +14,3 @@ Decided 2026-10-17. Built in parts (see [`PLAN.md`](../PLAN.md)): the palette pr
 - **Four colors from a colorblind-safe set,** each always paired with the player's **number** (1–4), so color is never the only cue: **1 orange, 2 sky blue, 3 yellow, 4 reddish purple**. Solo is always player 1, orange (as today).
 - **Only on what belongs to a player:** the suit's stripes, the silhouette, the suit ring's outline in co-op, the target lock brackets, the locker's strip, the name plate, their crafted miners' number plates; never on ground objects, so they don't compete with the ores (some share a hue family, but the player's shape and number tell them apart).
 - **On the suit:** a wide stripe in the player color on the pauldrons and the number on the back of the helmet (the camera sees both from every side); the collar band stays the health light, the chest light stays blue for everyone. The crew keep their darker suit with their own collar color.
-
-## The palette check
-
-A developer probe that renders every color the game uses (the ores, the hive, the players, the menus, the ammo, health, the silhouettes) side by side, normal and simulated for the three common color blindnesses, so new colors are checked against the old ones before they're used (the next steps add alien strains, weapons and alloys). Run when colors change, not in CI.

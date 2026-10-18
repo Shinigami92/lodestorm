@@ -8,7 +8,7 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 
 | File | What | In `PLAN.md` |
 |---|---|---|
-| [`player-display.md`](player-display.md) | the suit ring on the ground | M4, step 5 B, C |
+| [`player-display.md`](player-display.md) | the suit ring on the ground | with the weapons, crafted miners and quests (M4) |
 | [`menu-pause.md`](menu-pause.md) | what's left of the title view and the pause panel: co-op sessions, the Steam overlay, more settings, VR | M6, M7, M8 |
 | [`biomes.md`](biomes.md) | the six biomes' own geography: walls and gaps, passes, area kinds, hazards | M4, step 6 (assets M5) |
 | [`aliens.md`](aliens.md) | ten strains and the Ravager, roles, armor and stagger, hatch tables, hit feedback | M4, step 7 |
@@ -24,6 +24,6 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 | [`story.md`](story.md) | the flare shield, the six acts, the expedition (Calder, Pell), the people's threads, after the ending | M4, step 15 D and on |
 | [`coop-ore.md`](coop-ore.md) | every player's own hold, the whole haul for everyone, ship and quest costs taken from the haul | M4, steps 4, 11, 15; M7 |
 | [`voice.md`](voice.md) | the voice-over spike, voices without cloning real people, the pipeline, playback and the radio filter | M5, after the models |
-| [`art.md`](art.md) | each body's light, how dark, the storm's light, four player colors with numbers, the palette probe | M4 step 5 D, M5, M7 |
+| [`art.md`](art.md) | each body's light, how dark, the storm's light, four player colors with numbers | M5, M7 |
 | [`vr-view.md`](vr-view.md) | the VR head on the desktop camera's line, the haze, the sky per body, the land beyond the map | M5 (sky, far ring), M6 |
 | [`coop-revive.md`](coop-revive.md) | going down before dying in co-op, reviving by standing close, respawning after 30 s | M7 |

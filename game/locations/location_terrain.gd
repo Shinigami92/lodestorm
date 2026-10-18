@@ -286,11 +286,31 @@ func neighbors(x: int, z: int) -> Array[Vector2i]:
 ## How far each grid point lies from the grid points where `openness` is above 0 (chamfer
 ## distance, row by row like `heights`), in m: 0 on them.
 func distance_outside(openness: PackedFloat32Array) -> PackedFloat32Array:
-	var side: int = cells + 1
 	var distance := PackedFloat32Array()
 	distance.resize(openness.size())
 	for i: int in openness.size():
 		distance[i] = 0.0 if openness[i] > 0.0 else INF
+	_sweep(distance, PackedFloat32Array())
+	for i: int in distance.size():
+		distance[i] *= cell
+	return distance
+
+
+## Gives every grid point that isn't `known` the value in `values` of the nearest one that is (by
+## the same distance as `distance_outside`).
+func spread(values: PackedFloat32Array, known: PackedByteArray) -> void:
+	var distance := PackedFloat32Array()
+	distance.resize(known.size())
+	for i: int in known.size():
+		distance[i] = 0.0 if known[i] else INF
+	_sweep(distance, values)
+
+
+## Lowers each grid point's `distance` (in grid squares) to its nearest point at 0, carrying that
+## point's value in `values` along (unless empty).
+func _sweep(distance: PackedFloat32Array, values: PackedFloat32Array) -> void:
+	var side: int = cells + 1
+	var carry: bool = not values.is_empty()
 	# Two sweeps (chamfer distance: straight steps 1, diagonal ones √2 grid squares).
 	var steps: Array[Vector3i] = [
 		Vector3i(-1, 0, 10), Vector3i(0, -1, 10), Vector3i(-1, -1, 14), Vector3i(1, -1, 14)
@@ -310,6 +330,5 @@ func distance_outside(openness: PackedFloat32Array) -> PackedFloat32Array:
 					var through: float = distance[nz * side + nx] + step.z * 0.1
 					if through < distance[here]:
 						distance[here] = through
-	for i: int in distance.size():
-		distance[i] *= cell
-	return distance
+						if carry:
+							values[here] = values[nz * side + nx]

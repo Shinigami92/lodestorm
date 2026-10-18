@@ -75,6 +75,8 @@ func _transforms(
 			var tall: bool = type.blocking_height * grown > CAMERA_SIDE_SCATTER
 			if not _fits(location, at, type.max_slope, radius, blockers, tall):
 				continue
+			if not type.area_kinds.is_empty() and not location.is_in_area_of(at, type.area_kinds):
+				continue
 			if radius > 0.0:
 				blockers.append(Vector3(at.x, at.y, radius))
 			var tilt: float = deg_to_rad(rng.randf_range(-type.max_tilt, type.max_tilt))

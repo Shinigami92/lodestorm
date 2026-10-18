@@ -1,11 +1,13 @@
 extends GutTest
-## How generated locations are shaped: the rock towards the camera, ore pockets and nest hollows.
-## Swept over many seeds.
+## How generated locations are shaped: the rock towards the camera, ore pockets and nest hollows,
+## the biomes' own shapes (causeways, ridges, slot canyons, buttes, dry washes, terraces). Swept
+## over many seeds.
 
 const SWEEP := preload("res://tests/support/location_sweep.gd")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const SALT: LocationBiome = preload("res://game/locations/biomes/salt.tres")
 const ASH: LocationBiome = preload("res://game/locations/biomes/ash.tres")
+const GLASS: LocationBiome = preload("res://game/locations/biomes/glass.tres")
 const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
 ## Areas of the locations compared with and without the camera's view.
 const VIEW_AREAS: int = 6
@@ -98,6 +100,99 @@ func test_ash_rock_has_ridges() -> void:
 	assert_gt(tall, 100, "spines")
 	assert_gt(low, tall, "low between them")
 	location.free()
+
+
+## The Dust flats' slot canyons are deep: the same world without their depth has lower rock
+## beside them (never higher), by the depth at most.
+func test_slot_canyons_are_deep() -> void:
+	var shallow_dust := DUST.duplicate() as LocationBiome
+	shallow_dust.canyon_depth = 0.0
+	var deep: GeneratedLocation = SWEEP.plan(2, DUST, [], Vector3.ZERO, VIEW_AREAS)
+	var shallow: GeneratedLocation = SWEEP.plan(2, shallow_dust, [], Vector3.ZERO, VIEW_AREAS)
+	var deeper: int = 0
+	for i: int in deep.terrain.heights.size():
+		var difference: float = deep.terrain.heights[i] - shallow.terrain.heights[i]
+		assert_gt(difference, -0.01)
+		assert_lt(difference, DUST.canyon_depth + 0.01)
+		if difference > DUST.canyon_depth * 0.9:
+			deeper += 1
+	assert_gt(deeper, 100)
+	deep.free()
+	shallow.free()
+
+
+## A butte field's buttes rise as rock with a flat top above the open ground around them, which
+## stays walkable; a dry wash's bed lies below its banks.
+func test_buttes_and_dry_washes() -> void:
+	var buttes: int = 0
+	var beds: int = 0
+	for world_seed: int in SWEEP_SEEDS:
+		var location: GeneratedLocation = SWEEP.plan(world_seed, DUST)
+		var terrain: LocationTerrain = location.terrain
+		var label: String = "seed %d" % world_seed
+		for area: LocationLayout.Area in location.layout.areas:
+			for butte: Vector3 in area.buttes:
+				buttes += 1
+				var center := Vector2(butte.x, butte.y)
+				var foot: Vector2 = center + (area.center - center).normalized() * (butte.z + 3.0)
+				assert_false(location.is_reachable(center.x, center.y), label)
+				assert_true(location.is_reachable(foot.x, foot.y), label)
+				var rise: float = (
+					terrain.height_at(center.x, center.y) - terrain.height_at(foot.x, foot.y)
+				)
+				assert_almost_eq(rise, LocationFeatures.BUTTE_HEIGHT, 1.5, label)
+			if area.kind != LocationLayout.Kind.DRY_WASH:
+				continue
+			var middle: int = area.bed.size() >> 1
+			var at: Vector2 = area.bed[middle]
+			var across: Vector2 = (
+				(area.bed[middle + 1] - area.bed[middle - 1]).normalized().orthogonal()
+			)
+			var bank: Vector2 = (
+				at + across * (LocationFeatures.BED_HALF_WIDTH + LocationFeatures.BED_BANK + 1.0)
+			)
+			if not location.is_reachable(bank.x, bank.y):
+				bank = at * 2.0 - bank
+			if location.is_reachable(at.x, at.y) and location.is_reachable(bank.x, bank.y):
+				beds += 1
+				var below: float = terrain.height_at(bank.x, bank.y) - terrain.height_at(at.x, at.y)
+				assert_gt(below, LocationFeatures.BED_DEPTH * 0.5, label)
+		location.free()
+	assert_gt(buttes, 3)
+	assert_gt(beds, 0)
+
+
+## The Glass plains' areas lie on slabs of their own levels, a step apart at most along a pass and
+## never below the landing yard next to it; the ramps between them can be walked (see
+## `test_location_walkable`). Terrace stairs climb two steps above their area.
+func test_terraces() -> void:
+	var levels: Dictionary[float, bool] = {}
+	var stairs: int = 0
+	for world_seed: int in SWEEP_SEEDS:
+		var location: GeneratedLocation = SWEEP.plan(world_seed, GLASS)
+		var terrain: LocationTerrain = location.terrain
+		var areas: Array[LocationLayout.Area] = location.layout.areas
+		var label: String = "seed %d" % world_seed
+		for way: LocationLayout.Pass in location.layout.passes:
+			var step: float = absf(areas[way.from].level - areas[way.to].level)
+			assert_lte(step, GLASS.terrace_step + 0.01, label)
+			if way.from == 0 or way.to == 0:
+				assert_gte(areas[way.to if way.from == 0 else way.from].level, 0.0, label)
+		for area: LocationLayout.Area in areas:
+			levels[area.level] = true
+			var height: float = terrain.height_at(area.center.x, area.center.y)
+			if area.kind in [LocationLayout.Kind.BASIN, LocationLayout.Kind.CROSSROADS]:
+				assert_almost_eq(height, area.level, GLASS.floor_relief + 0.5, label)
+			if area.kind != LocationLayout.Kind.TERRACE_STAIRS:
+				continue
+			stairs += 1
+			var top: Vector2 = area.slabs[1].center
+			assert_true(location.is_reachable(top.x, top.y), label + " stairs' top")
+			var climb: float = terrain.height_at(top.x, top.y) - height
+			assert_almost_eq(climb, GLASS.terrace_step * 2.0, GLASS.floor_relief + 0.5, label)
+		location.free()
+	assert_gt(levels.size(), 2, "areas on several levels")
+	assert_gt(stairs, 0)
 
 
 func _near_site(location: GeneratedLocation, at: Vector3) -> bool:

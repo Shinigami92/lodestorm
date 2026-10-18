@@ -4,8 +4,9 @@ extends RefCounted
 ## sinkholes, lava channels): ground lowered below the floor beside the open ground, in bands or
 ## round pits, a raised lip along their edges, and invisible walls behind the lips that stop
 ## players and aliens but not shots or sight, so nobody falls in. What fills them (lava, brine) is
-## a flat surface over the gaps' grid squares. Planned with the location (plain data, safe on a
-## worker thread); `build` adds the walls and the fill.
+## a flat surface over the gaps' grid squares; what stands along their edges (shard fences) a mesh
+## drawn many times on the walls. Planned with the location (plain data, safe on a worker thread);
+## `build` adds the walls, the fill and the fence.
 
 ## How high the walls along a gap's edge reach above the ground, in m.
 const EDGE_WALL_HEIGHT: float = 4.0
@@ -13,6 +14,11 @@ const EDGE_WALL_HEIGHT: float = 4.0
 const PIT_REACH: float = 1.5
 ## How far apart the pits lie, relative to the widest one.
 const PIT_SPACING: float = 2.6
+## How far apart the fence's spikes stand along the walls, in m, how much they vary in size
+## (smallest, largest) and lean (in degrees).
+const FENCE_SPACING: float = 0.9
+const FENCE_SCALE: Vector2 = Vector2(0.7, 1.4)
+const FENCE_TILT: float = 18.0
 
 ## Grid points of a gap (1 = lowered), and the ones behind the walls (1 = a gap or its lip).
 var gaps: PackedByteArray
@@ -34,6 +40,8 @@ var _pits: FastNoiseLite
 ## The least width of a gap at each grid point (see `widen`); empty while there's none.
 var _least: PackedFloat32Array
 var _edge_faces: PackedVector3Array = []
+## The fence's spikes (their transforms, standing on their base), by chunk.
+var _fence: Dictionary[Vector2i, Array] = {}
 
 
 func _init(
@@ -115,16 +123,21 @@ func raise_lips() -> void:
 						_terrain.heights[index] += _biome.lip_height
 
 
-## Plans the walls along the edges, once the walkable ground (`reachable`) is known, and the fill.
-func plan(reachable: PackedByteArray) -> void:
+## Plans the walls along the edges, once the walkable ground (`reachable`) is known, the fill and
+## the fence (drawing from `rng`).
+func plan(reachable: PackedByteArray, rng: RandomNumberGenerator) -> void:
 	_plan_edges(reachable)
 	if _biome.gap_fill:
 		_plan_fill()
+	if _biome.fence:
+		_plan_fence(rng)
 
 
-## Adds the walls to `location` (a `GapEdges` body on `PhysicsLayers.WALKING_ONLY`) and the fill
-## (`GapFill`).
+## Adds the walls to `location` (a `GapEdges` body on `PhysicsLayers.WALKING_ONLY`), the fill
+## (`GapFill`) and the fence (`Fence`, in chunks).
 func build(location: Node3D) -> void:
+	if not _fence.is_empty():
+		_add_fence(location)
 	if not _fill_vertices.is_empty():
 		var arrays: Array = []
 		arrays.resize(Mesh.ARRAY_MAX)
@@ -184,6 +197,52 @@ func _plan_fill() -> void:
 					corner + along_z
 				]
 			)
+
+
+## The fence's spikes along the walls, about `FENCE_SPACING` apart, each of its own size and lean,
+## in chunks so the ones out of view are culled.
+func _plan_fence(rng: RandomNumberGenerator) -> void:
+	var chunk_size: float = GeneratedLocation.CHUNK_CELLS * _terrain.cell
+	for i: int in range(0, edge_lines.size(), 2):
+		var from: Vector2 = edge_lines[i]
+		var to: Vector2 = edge_lines[i + 1]
+		var count: int = maxi(1, roundi(from.distance_to(to) / FENCE_SPACING))
+		for k: int in count:
+			var at: Vector2 = from.lerp(to, (k + rng.randf_range(0.2, 0.8)) / count)
+			var grown: float = rng.randf_range(FENCE_SCALE.x, FENCE_SCALE.y)
+			var tilt: float = deg_to_rad(rng.randf_range(-FENCE_TILT, FENCE_TILT))
+			var turn := Basis(Vector3.UP, rng.randf() * TAU) * Basis(Vector3.RIGHT, tilt)
+			var size := Vector3(grown, grown * rng.randf_range(0.8, 1.3), grown)
+			var placed := Transform3D(
+				turn.scaled(size), Vector3(at.x, _terrain.height_at(at.x, at.y) - 0.1, at.y)
+			)
+			var chunk := Vector2i(((at - _terrain.origin) / chunk_size).floor())
+			if not _fence.has(chunk):
+				_fence[chunk] = []
+			_fence[chunk].append(placed)
+
+
+## Adds the fence's chunks under a `Fence` node of `location`, each spike standing on its base.
+func _add_fence(location: Node3D) -> void:
+	var fence := Node3D.new()
+	fence.name = "Fence"
+	location.add_child(fence)
+	var base: float = -_biome.fence.get_aabb().position.y
+	for chunk: Vector2i in _fence:
+		var spikes: Array = _fence[chunk]
+		var multimesh := MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.mesh = _biome.fence
+		multimesh.instance_count = spikes.size()
+		for i: int in spikes.size():
+			var placed: Transform3D = spikes[i]
+			placed.origin += placed.basis.y * base
+			multimesh.set_instance_transform(i, placed)
+		var instance := MultiMeshInstance3D.new()
+		instance.name = "Fence%d_%d" % [chunk.x, chunk.y]
+		instance.multimesh = multimesh
+		fence.add_child(instance)
+	_fence.clear()
 
 
 ## The walls, where walkable ground (`reachable`) meets a lip: in every grid square with a reachable

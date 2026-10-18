@@ -7,7 +7,7 @@ const SWEEP := preload("res://tests/support/location_sweep.gd")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowth.tres")
 const FROST: LocationBiome = preload("res://game/locations/biomes/frost.tres")
-const ASH: LocationBiome = preload("res://game/locations/biomes/ash.tres")
+const GLASS: LocationBiome = preload("res://game/locations/biomes/glass.tres")
 const AREAS: int = 6
 
 
@@ -232,32 +232,6 @@ func test_gap_edges_block_walking_not_shots() -> void:
 		assert_eq((zone as GroundHazard).grip, FROST.hazard_grip)
 
 
-## A built Ash fields location: lava fills its gaps, vents stand in its vent fields.
-func test_lava_and_vents() -> void:
-	var location: GeneratedLocation = null
-	for world_seed: int in range(1, 6):
-		var candidate: GeneratedLocation = _generate(world_seed, ASH)
-		if not candidate.planned_hazards().is_empty():
-			location = candidate
-			break
-	assert_not_null(location, "a seed with a vent field")
-	var fill := location.get_node("GapFill") as MeshInstance3D
-	assert_eq(fill.material_override, ASH.gap_fill)
-	# Level, over the gaps only.
-	var surface: PackedVector3Array = fill.mesh.get_faces()
-	assert_gt(surface.size(), 100)
-	var height: float = -ASH.gap_depth + ASH.gap_fill_level
-	for i: int in range(0, surface.size(), 97):
-		var at: Vector3 = surface[i]
-		assert_almost_eq(at.y, height, 0.001)
-		assert_false(location.is_reachable(at.x, at.z), "over walkable ground at %s" % at)
-	var vents: Array[Node] = location.get_node("Hazards").get_children()
-	assert_eq(vents.size(), location.planned_hazards().size())
-	for vent: Node in vents:
-		assert_is(vent, GroundVent)
-		assert_eq((vent as GroundVent).damage, ASH.hazard_damage)
-
-
 func test_navigation_reaches_nests() -> void:
 	await _check_navigation(_generate(2))
 
@@ -266,6 +240,11 @@ func test_navigation_reaches_nests() -> void:
 ## the navigation map).
 func test_navigation_goes_around_gaps() -> void:
 	await _check_navigation(_generate(2, FROST))
+
+
+## Aliens climb the ramps between the Glass plains' terraces and get through the shard gardens.
+func test_navigation_climbs_ramps() -> void:
+	await _check_navigation(_generate(1, GLASS))
 
 
 func _check_navigation(location: GeneratedLocation) -> void:

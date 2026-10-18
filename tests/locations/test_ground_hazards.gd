@@ -1,6 +1,6 @@
 extends GutTest
 ## Ground hazards (`GroundHazard`): slick ice makes players and aliens slide a little, vents burst
-## after a warning and hurt whoever stands on them.
+## after a warning and hurt whoever stands on them, shards hurt a little every moment.
 
 const ALIEN_SCENE: PackedScene = preload("res://game/aliens/alien.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
@@ -126,6 +126,23 @@ func test_vent_hurts_aliens() -> void:
 	assert_eq(beside.health, beside.max_health())
 
 
+## Shards hurt the player standing on them a little all the time, and stop once they step off.
+func test_shards_hurt_while_standing_on_them() -> void:
+	var shards: GroundShards = _add_shards(_player.global_position)
+	await wait_physics_frames(3)
+	var health: float = _player.health
+	await wait_physics_frames(Engine.physics_ticks_per_second * 2)
+	var hurt: float = health - _player.health
+	assert_almost_eq(
+		hurt, shards.damage_per_second * 2.0, shards.damage_per_second * GroundShards.TICK
+	)
+	_player.global_position += Vector3(20.0, 0.0, 0.0)
+	await wait_physics_frames(3)
+	health = _player.health
+	await wait_physics_frames(Engine.physics_ticks_per_second)
+	assert_eq(_player.health, health, "off the shards")
+
+
 ## How fast the player runs after moving right for a few physics frames from standing.
 func _speed_after_starting() -> float:
 	Input.action_press(&"move_right")
@@ -147,6 +164,21 @@ func _add_ice(at: Vector3) -> GroundHazard:
 	_arena.add_child(ice)
 	ice.global_position = at
 	return ice
+
+
+func _add_shards(at: Vector3) -> GroundShards:
+	var shards := GroundShards.new()
+	shards.collision_layer = 0
+	shards.collision_mask = PhysicsLayers.WORLD
+	var cylinder := CylinderShape3D.new()
+	cylinder.radius = shards.radius
+	cylinder.height = 3.0
+	var shape := CollisionShape3D.new()
+	shape.shape = cylinder
+	shards.add_child(shape)
+	_arena.add_child(shards)
+	shards.global_position = at
+	return shards
 
 
 func _add_vent(at: Vector3) -> GroundVent:

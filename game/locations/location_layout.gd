@@ -28,6 +28,15 @@ enum Kind {
 	LAVA_ISLAND,
 	## Ash fields: an area with vents (the biome's hazard).
 	VENT_FIELD,
+	## Dust flats: an area with rock pillars (buttes) standing in the open, cover.
+	BUTTE_FIELD,
+	## Dust flats: a long area with a dry, sandy riverbed winding along it.
+	DRY_WASH,
+	## Glass plains: an area climbing over two slabs by ramps, at the back of it.
+	TERRACE_STAIRS,
+	## Glass plains: an area with glass spike clusters (cover) and shards on the ground (the
+	## biome's hazard).
+	SHARD_GARDEN,
 }
 
 ## Distance between a pass's points, in m.
@@ -78,6 +87,49 @@ const PITS_PER_RADIUS: float = 0.3
 const MIN_ISLAND_BRIDGE: float = 16.0
 ## Smallest area that holds a vent field, in m (radius).
 const MIN_VENT_FIELD_RADIUS: float = 20.0
+## A butte field's buttes: their radius (smallest, largest), the walkable ground kept between them
+## and around the area's middle, in m, how far out they lie (relative to the area's radius, the
+## butte's edge inside it), how many (fewest, most) and the smallest area that holds them.
+const BUTTE_RADIUS: Vector2 = Vector2(3.0, 6.0)
+const BUTTE_SPACING: float = 8.0
+const BUTTE_MIDDLE: float = 6.0
+const BUTTE_REACH: float = 0.7
+const BUTTES: Vector2i = Vector2i(2, 4)
+const MIN_BUTTE_FIELD_RADIUS: float = 22.0
+## A dry wash: how wide it is, relative to its length (its radius is half the length), and the
+## smallest area that holds one, in m (radius). Its bed winds along it.
+const WASH_WIDTH: float = 0.55
+const MIN_WASH_RADIUS: float = 26.0
+## How far the bed strays sideways, relative to the wash's half width, and how many half waves it
+## makes along the wash.
+const BED_MEANDER: float = 0.45
+const BED_WAVES: float = 3.0
+## Terrace stairs: two square slabs at the back of the area (where no pass comes in), the lower one
+## a step above the area, the upper one on it; their half sides and how far out the lower one
+## stands (relative to the area's radius), the smallest area and the widest gap between its passes
+## it needs.
+const STAIRS_LOWER: float = 0.3
+const STAIRS_UPPER: float = 0.16
+const STAIRS_OFFSET: float = 0.5
+const MIN_STAIRS_RADIUS: float = 28.0
+const STAIRS_GAP: float = deg_to_rad(160.0)
+## Smallest area that holds a shard garden, in m (radius).
+const MIN_GARDEN_RADIUS: float = 20.0
+## The levels of terraces (`LocationBiome.terrace_step`), in steps from the landing yard's
+## (lowest, highest).
+const LEVELS: Vector2i = Vector2i(-1, 2)
+
+
+## A slab of terrace stairs: a square at `steps` steps above its area, its sides along the area's
+## `facing`, and the ramp up to it.
+class Slab:
+	var center: Vector2
+	var half: float
+	var steps: int
+	## Where the ramp starts (at the ground below), the way up and its length.
+	var ramp_start: Vector2
+	var ramp_direction: Vector2
+	var ramp_length: float
 
 
 ## Open ground: a round area (its outline wobbles when carved).
@@ -101,6 +153,16 @@ class Area:
 	var cracks: Array[PackedVector2Array] = []
 	## A sinkhole field's pits (x, z, radius).
 	var pits: Array[Vector3] = []
+	## A butte field's buttes (x, z, radius).
+	var buttes: Array[Vector3] = []
+	## The way a dry wash runs along (its length), or terrace stairs climb (out from the middle).
+	var facing: Vector2 = Vector2.ZERO
+	## A dry wash's bed: points along its middle, `LocationLayout.PASS_STEP` apart.
+	var bed: PackedVector2Array = []
+	## Terrace stairs' slabs, the lower one first.
+	var slabs: Array[LocationLayout.Slab] = []
+	## The height of its slab (`LocationBiome.terrace_step`), in m.
+	var level: float = 0.0
 
 	func _init(p_center: Vector2, p_radius: float) -> void:
 		center = p_center
@@ -239,6 +301,8 @@ func _connect(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 					best = Vector2i(a, b)
 		joined[best.y] = true
 		_add_pass(rng, biome, best.x, best.y, true)
+	if biome.terrace_step > 0.0:
+		_assign_levels(rng, biome)
 
 	var wanted: int = roundi(areas.size() * biome.loops_per_area)
 	var kept: Array[int] = _kept_dead_ends()
@@ -274,6 +338,11 @@ func _add_loops(
 	for a: int in areas.size():
 		for b: int in range(a + 1, areas.size()):
 			if a in kept or b in kept:
+				continue
+			# A ramp climbs one step at most, and never down from the landing yard.
+			if absf(areas[a].level - areas[b].level) > biome.terrace_step + 0.01:
+				continue
+			if a == 0 and areas[b].level < 0.0:
 				continue
 			var gap: float = areas[a].center.distance_to(areas[b].center)
 			if _span(biome, a, b) > longest or _joined(a, b):
@@ -325,6 +394,8 @@ func _add_pass(
 		bend = 0.0
 	var width: float = rng.randf_range(biome.pass_width.x, biome.pass_width.y)
 	var points: PackedVector2Array = _curve(areas[a].center, areas[b].center, bend)
+	if biome.pass_style == LocationBiome.PassStyle.SLOT_CANYONS:
+		points = _wind(areas[a].center, areas[b].center, bend)
 	if not _fits(points, a, b, width):
 		points = _curve(areas[a].center, areas[b].center, 0.0)
 		if not needed and not _fits(points, a, b, width):
@@ -349,6 +420,26 @@ static func _curve(from: Vector2, to: Vector2, bend: float) -> PackedVector2Arra
 	for i: int in steps + 1:
 		var t: float = float(i) / steps
 		points.append(from.lerp(middle, t).lerp(middle.lerp(to, t), t))
+	return points
+
+
+## An S-shaped curve from `from` to `to` (a slot canyon): it bends to one side, then the other,
+## by `bend` (relative to its length) at most.
+static func _wind(from: Vector2, to: Vector2, bend: float) -> PackedVector2Array:
+	var length: float = from.distance_to(to)
+	var along: Vector2 = to - from
+	# A cubic curve strays about 0.29 times as far as its control points stand off the line.
+	var off: Vector2 = along.normalized().orthogonal() * bend * length / 0.29
+	var first: Vector2 = from + along / 3.0 + off
+	var second: Vector2 = from + along * 2.0 / 3.0 - off
+	var steps: int = maxi(2, ceili(length * (1.0 + absf(bend) * 2.0) / PASS_STEP))
+	var points := PackedVector2Array()
+	for i: int in steps + 1:
+		var t: float = float(i) / steps
+		var s: float = 1.0 - t
+		points.append(
+			from * s * s * s + first * 3.0 * s * s * t + second * 3.0 * s * t * t + to * t * t * t
+		)
 	return points
 
 
@@ -389,6 +480,31 @@ func _joined(a: int, b: int) -> bool:
 		if other.from == b or other.to == b:
 			return true
 	return false
+
+
+## Gives every area its level (terraces), along the tree's passes from the landing yard (level 0):
+## each a step below, at or above the one its pass comes from, within `LEVELS`; never below the
+## landing yard next to it (the landing site's flat ground would cut the ramp's top off).
+func _assign_levels(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
+	var steps: PackedInt32Array = []
+	steps.resize(areas.size())
+	var reached: Array[bool] = []
+	reached.resize(areas.size())
+	reached.fill(false)
+	reached[0] = true
+	var queue: Array[int] = [0]
+	while not queue.is_empty():
+		var current: int = queue.pop_front()
+		for index: int in areas[current].passes:
+			var way: Pass = passes[index]
+			var next: int = way.to if way.from == current else way.from
+			if reached[next]:
+				continue
+			reached[next] = true
+			var lowest: int = 0 if current == 0 else LEVELS.x
+			steps[next] = clampi(steps[current] + rng.randi_range(-1, 1), lowest, LEVELS.y)
+			areas[next].level = steps[next] * biome.terrace_step
+			queue.append(next)
 
 
 ## Walking distance from area `from` to every area along the passes (INF where there's no way).
@@ -461,7 +577,8 @@ func _assign_kinds(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 		if areas[i].kind == Kind.BASIN and areas[i].passes.size() >= 3:
 			areas[i].kind = Kind.CROSSROADS
 	for kind: Kind in biome.area_kinds:
-		_assign_own_kind(rng, kind, maxi(1, roundi(areas.size() * biome.area_kinds_per_area)))
+		var count: int = maxi(1, roundi(areas.size() * biome.area_kinds_per_area))
+		_assign_own_kind(rng, biome, kind, count)
 	if Kind.LAVA_ISLAND in biome.area_kinds:
 		for area: Area in areas:
 			if area.kind == Kind.ORE_POCKET:
@@ -523,10 +640,11 @@ func _has_room(biome: LocationBiome, index: int, at: Vector2) -> bool:
 	return true
 
 
-## Gives `count` of the basins the biome's own `kind`: ice shelves and brine flats the biggest
-## ones, frozen lakes, sinkhole fields and vent fields any big enough (lava islands are the ore
-## pockets, see `_assign_kinds`).
-func _assign_own_kind(rng: RandomNumberGenerator, kind: Kind, count: int) -> void:
+## Gives `count` of the basins the biome's own `kind`: ice shelves, brine flats and dry washes the
+## biggest ones, the others any big enough (lava islands are the ore pockets, see `_assign_kinds`).
+func _assign_own_kind(
+	rng: RandomNumberGenerator, biome: LocationBiome, kind: Kind, count: int
+) -> void:
 	if kind == Kind.LAVA_ISLAND:
 		return
 	var basins: Array[int] = []
@@ -538,7 +656,7 @@ func _assign_own_kind(rng: RandomNumberGenerator, kind: Kind, count: int) -> voi
 		var swap: int = basins[i]
 		basins[i] = basins[j]
 		basins[j] = swap
-	if kind in [Kind.ICE_SHELF, Kind.BRINE_FLAT]:
+	if kind in [Kind.ICE_SHELF, Kind.BRINE_FLAT, Kind.DRY_WASH]:
 		basins.sort_custom(func(x: int, y: int) -> bool: return areas[x].radius > areas[y].radius)
 	for i: int in basins:
 		if count <= 0:
@@ -558,6 +676,27 @@ func _assign_own_kind(rng: RandomNumberGenerator, kind: Kind, count: int) -> voi
 			Kind.VENT_FIELD:
 				if area.radius < MIN_VENT_FIELD_RADIUS:
 					continue
+			Kind.SHARD_GARDEN:
+				if area.radius < MIN_GARDEN_RADIUS:
+					continue
+			Kind.BUTTE_FIELD:
+				if area.radius < MIN_BUTTE_FIELD_RADIUS:
+					continue
+				var wanted: int = rng.randi_range(BUTTES.x, BUTTES.y)
+				area.buttes = _spread_circles(
+					rng, area, BUTTE_RADIUS, BUTTE_SPACING, BUTTE_MIDDLE, BUTTE_REACH, wanted
+				)
+				if area.buttes.size() < BUTTES.x:
+					area.buttes.clear()
+					continue
+			Kind.DRY_WASH:
+				if area.radius < MIN_WASH_RADIUS:
+					continue
+				_shape_wash(rng, area)
+			Kind.TERRACE_STAIRS:
+				if area.radius < MIN_STAIRS_RADIUS or _widest_gap(area).y < STAIRS_GAP:
+					continue
+				_shape_stairs(biome, area)
 		area.kind = kind
 		count -= 1
 
@@ -575,8 +714,9 @@ func _pass_angles(area: Area) -> Array[float]:
 	return angles
 
 
-## The direction (an angle) in the middle of the widest gap between the passes coming into `area`.
-func _widest_gap(area: Area) -> float:
+## The direction (an angle) in the middle of the widest gap between the passes coming into `area`,
+## and how wide that gap is (an angle).
+func _widest_gap(area: Area) -> Vector2:
 	var angles: Array[float] = _pass_angles(area)
 	var widest: float = 0.0
 	var facing: float = 0.0
@@ -585,13 +725,13 @@ func _widest_gap(area: Area) -> float:
 		if next - angles[i] > widest:
 			widest = next - angles[i]
 			facing = angles[i] + widest * 0.5
-	return facing
+	return Vector2(facing, widest)
 
 
 ## Puts the frozen lake where no pass comes in (in the widest gap between them).
 func _shape_lake(area: Area) -> void:
 	var at: Vector2 = (
-		area.center + Vector2.from_angle(_widest_gap(area)) * area.radius * LAKE_OFFSET
+		area.center + Vector2.from_angle(_widest_gap(area).x) * area.radius * LAKE_OFFSET
 	)
 	area.lake = Vector3(at.x, at.y, area.radius * LAKE_RADIUS)
 
@@ -629,32 +769,90 @@ func _shape_shelf(rng: RandomNumberGenerator, area: Area) -> void:
 ## Dots the sinkhole field with round pits, apart from each other and off its middle (where the
 ## ways through it meet).
 func _shape_pits(rng: RandomNumberGenerator, area: Area) -> void:
-	area.pits.clear()
 	var wanted: int = roundi(area.radius * PITS_PER_RADIUS)
+	area.pits = _spread_circles(rng, area, PIT_RADIUS, PIT_SPACING, PIT_MIDDLE, PIT_REACH, wanted)
+
+
+## Up to `wanted` circles (x, z, radius) in `area`: their radius between `radii`, at least
+## `spacing` m apart and `middle` m off its middle, inside `reach` times its radius.
+static func _spread_circles(
+	rng: RandomNumberGenerator,
+	area: Area,
+	radii: Vector2,
+	spacing: float,
+	middle: float,
+	reach: float,
+	wanted: int
+) -> Array[Vector3]:
+	var circles: Array[Vector3] = []
 	for attempt: int in wanted * 20:
-		if area.pits.size() >= wanted:
+		if circles.size() >= wanted:
 			break
-		var radius: float = rng.randf_range(PIT_RADIUS.x, PIT_RADIUS.y)
-		var reach: float = area.radius * PIT_REACH - radius
-		var low: float = radius + PIT_MIDDLE
-		if reach <= low:
+		var radius: float = rng.randf_range(radii.x, radii.y)
+		var outer: float = area.radius * reach - radius
+		var low: float = radius + middle
+		if outer <= low:
 			continue
 		var at: Vector2 = (
-			area.center + Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(low, reach)
+			area.center + Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(low, outer)
 		)
 		var free: bool = true
-		for pit: Vector3 in area.pits:
-			if at.distance_to(Vector2(pit.x, pit.y)) < pit.z + radius + PIT_SPACING:
+		for circle: Vector3 in circles:
+			if at.distance_to(Vector2(circle.x, circle.y)) < circle.z + radius + spacing:
 				free = false
 				break
 		if free:
-			area.pits.append(Vector3(at.x, at.y, radius))
+			circles.append(Vector3(at.x, at.y, radius))
+	return circles
+
+
+## Lays the dry wash along the passes coming in (so they meet its ends) and winds its bed along it.
+func _shape_wash(rng: RandomNumberGenerator, area: Area) -> void:
+	# The mean of the passes' directions, each counted both ways (a line, not an arrow).
+	var mean := Vector2.ZERO
+	for angle: float in _pass_angles(area):
+		mean += Vector2.from_angle(angle * 2.0)
+	var axis: float = mean.angle() * 0.5 if mean.length() > 0.01 else rng.randf() * TAU
+	area.facing = Vector2.from_angle(axis)
+	var side: Vector2 = area.facing.orthogonal()
+	var phase: float = rng.randf() * TAU
+	var stray: float = area.radius * WASH_WIDTH * BED_MEANDER
+	area.bed.clear()
+	var steps: int = ceili(area.radius * 2.0 / PASS_STEP)
+	for i: int in steps + 1:
+		var along: float = -area.radius + area.radius * 2.0 * i / steps
+		var wave: float = sin(phase + along / area.radius * PI * BED_WAVES * 0.5)
+		area.bed.append(area.center + area.facing * along + side * wave * stray)
+
+
+## Puts the terrace stairs' two slabs at the back of the area (in the widest gap between the passes
+## coming in), the upper one on the lower one's far side; the ramp onto the lower slab leads up
+## beside it, the one onto the upper slab up across the lower slab's front.
+func _shape_stairs(biome: LocationBiome, area: Area) -> void:
+	area.facing = Vector2.from_angle(_widest_gap(area).x)
+	var side: Vector2 = area.facing.orthogonal()
+	var length: float = biome.terrace_step / RAMP_SLOPE
+	var lower := Slab.new()
+	lower.half = area.radius * STAIRS_LOWER
+	lower.center = area.center + area.facing * area.radius * STAIRS_OFFSET
+	lower.steps = 1
+	lower.ramp_length = length
+	lower.ramp_direction = -side
+	lower.ramp_start = lower.center + side * (lower.half + length)
+	var upper := Slab.new()
+	upper.half = area.radius * STAIRS_UPPER
+	upper.center = lower.center + area.facing * (lower.half - upper.half)
+	upper.steps = 2
+	upper.ramp_length = length
+	upper.ramp_direction = area.facing
+	upper.ramp_start = upper.center - area.facing * (upper.half + length)
+	area.slabs = [lower, upper]
 
 
 ## Puts the plateau's mesa where no pass comes in (in the widest gap between them), with its ramp
 ## leading up along its side.
 func _shape_plateau(area: Area) -> void:
-	var out := Vector2.from_angle(_widest_gap(area))
+	var out := Vector2.from_angle(_widest_gap(area).x)
 	var mesa_radius: float = area.radius * MESA_RADIUS
 	var mesa_center: Vector2 = area.center + out * area.radius * MESA_OFFSET
 	area.mesa = Vector3(mesa_center.x, mesa_center.y, mesa_radius)

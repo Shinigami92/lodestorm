@@ -159,9 +159,9 @@ func test_pointer_shows_way_back_from_far_away() -> void:
 	var to_ship: Vector3 = _ship.get_boarding_position() - pointer.global_position
 	to_ship.y = 0.0
 	assert_almost_eq((-pointer.global_basis.z).dot(to_ship.normalized()), 1.0, 0.001)
-	var arrow: MeshInstance3D = pointer.get_node("Arrow")
-	var material: StandardMaterial3D = arrow.material_override
-	assert_eq(Color(material.albedo_color, 1.0), Ship.COLOR_WARNING)
+	assert_eq(Color(pointer.color, 1.0), Ship.COLOR_WARNING)
+	var ring := _player.get_node("SuitRing") as SuitRing
+	assert_eq(ring.pointers.size(), 1, "the ring draws the arrow on its edge")
 	var countdown: Label3D = pointer.get_node("Countdown")
 	assert_eq(countdown.text, (_ship.get_node("Countdown") as Label3D).text)
 	assert_eq(countdown.text, "0:30")

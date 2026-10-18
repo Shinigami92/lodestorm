@@ -894,6 +894,26 @@ msgstr "Dieses Spiel verwendet die Godot Engine, verfügbar unter der folgenden 
 msgid "Language"
 msgstr "Sprache"
 
+#: game/ui/settings_list.tscn
+msgid "Suit ring"
+msgstr "Anzugring"
+
+#: game/ui/settings_list.tscn
+msgid "Small"
+msgstr "Klein"
+
+#: game/ui/settings_list.tscn
+msgid "Medium"
+msgstr "Mittel"
+
+#: game/ui/settings_list.tscn
+msgid "Large"
+msgstr "Groß"
+
+#: game/ui/settings_list.tscn
+msgid "Always show"
+msgstr "Immer zeigen"
+
 #: game/ui/settings_menu.gd
 msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
 msgstr "Das löscht deinen gesamten Fortschritt: Frachtraum, Waffen, Upgrades. Das lässt sich nicht rückgängig machen."

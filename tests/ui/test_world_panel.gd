@@ -55,6 +55,12 @@ func test_movement_and_interact_steer_the_menu() -> void:
 	assert_eq(TranslationServer.get_locale(), "de")
 	assert_eq(SettingsList.current_language(), "de")
 	_send(&"move_back")
+	assert_eq(_focused().get_parent().name, &"RingSizes", "the suit ring's sizes")
+	for step: int in 3:
+		if _focused().name != &"AlwaysShow":
+			_send(&"move_right")
+	assert_eq(_focused().name, &"AlwaysShow", "right along the row")
+	_send(&"move_back")
 	assert_eq(_focused().name, &"ResetProgress")
 	_send(&"move_back")
 	assert_eq(_focused().name, &"ShowCredits")

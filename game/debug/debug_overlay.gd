@@ -1,11 +1,13 @@
 extends CanvasLayer
 ## Developer tool (autoload `DebugOverlay`): a 2D panel to tune values while playing, toggled with
-## `debug_overlay` (F3). It only exists when the game runs from the editor; in exported builds
-## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
-## every scene using them sees the new values right away; they last until the game stops and
-## aren't written to the files. Also shows the mission and flight state and has shortcuts for
-## testing the flight, storm, death, fights, weapons, ammo, upgrades and the heat shield. Integer
-## settings get whole-number sliders.
+## `debug_overlay` (F3). Two tabs: "State" (live values and the shortcuts, grouped) and "Tuning" (a
+## folded section of sliders per settings file). It only exists when the game runs from the editor;
+## in exported builds (debug ones too) it removes itself at start. Tuning changes the settings
+## resources live, so every scene using them sees the new values right away; they last until the
+## game stops and aren't written to the files. Also shows the mission and flight state and has
+## shortcuts for testing the flight, storm, death, fights, weapons, ammo, upgrades and the heat
+## shield, and teammates standing still (to see their rings before co-op). Integer settings get
+## whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -103,7 +105,7 @@ const TUNING: Dictionary[String, Array] = {
 		["max_raiders_end", 0.0, 20.0, 1.0],
 	],
 }
-const PANEL_WIDTH: float = 420.0
+const PANEL_WIDTH: float = 460.0
 ## Every weapon of the game, for `unlock_weapons`.
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
 ## Every skill of the game, for `learn_skills`.
@@ -113,6 +115,7 @@ const ALL_ORES: OreCatalog = preload("res://game/ores/all_ores.tres")
 ## How much `fill_hold` adds of each ore.
 const HOLD_FILL: float = 900.0
 const CARGO_FILL: float = 60.0
+const PLAYER_SCENE_PATH: String = "res://game/player/player.tscn"
 
 ## Values from the files, for `reset_tuning`, keyed by "path:property".
 var _defaults: Dictionary[String, float] = {}
@@ -292,6 +295,38 @@ func give_ore() -> void:
 			player.add_cargo(ore_type, CARGO_FILL)
 
 
+## Adds a teammate beside the local player: a player this machine doesn't play (it stands still),
+## with the lowest free number. Returns it, or null when all four are there.
+func _add_teammate() -> Player:
+	var local: Player = null
+	var numbers: Array[int] = []
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		numbers.append(player.number)
+		if player.local and not local:
+			local = player
+	if not local:
+		return null
+	for number: int in range(1, Player.COLORS.size() + 1):
+		if number in numbers:
+			continue
+		# Loaded here, not preloaded: the player's scripts are heavy for an autoload.
+		var teammate := (load(PLAYER_SCENE_PATH) as PackedScene).instantiate() as Player
+		teammate.local = false
+		teammate.number = number
+		local.get_parent().add_child(teammate)
+		teammate.global_position = local.global_position + local.global_basis.x * 2.5
+		teammate.reset_physics_interpolation()
+		return teammate
+	return null
+
+
+## Removes the teammates `_add_teammate` added (every player this machine doesn't play).
+func _remove_teammates() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if not player.local:
+			player.queue_free()
+
+
 ## Adds `HOLD_FILL` units of every ore type to each ship's hold, to test the upgrade stations.
 func fill_hold() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
@@ -331,6 +366,8 @@ func _mission() -> Mission:
 
 func _build() -> void:
 	var panel := PanelContainer.new()
+	# A developer tool: stays English (else e.g. "Progress" shows a game text's translation).
+	panel.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	panel.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
 	panel.offset_left = -PANEL_WIDTH
 	var style := StyleBoxFlat.new()
@@ -339,42 +376,76 @@ func _build() -> void:
 	panel.add_theme_stylebox_override(&"panel", style)
 	add_child(panel)
 
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	panel.add_child(scroll)
-	var box := VBoxContainer.new()
-	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(box)
+	var tabs := TabContainer.new()
+	# Keyboard focus would let the movement keys switch tabs while playing.
+	tabs.focus_mode = Control.FOCUS_NONE
+	tabs.get_tab_bar().focus_mode = Control.FOCUS_NONE
+	panel.add_child(tabs)
 
-	box.add_child(_heading("Debug (F3)"))
+	var state: VBoxContainer = _tab(tabs, "State (F3)")
 	_live = Label.new()
-	box.add_child(_live)
+	# Wraps instead of widening the panel (long lines pushed the buttons off the screen).
+	_live.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_live.custom_minimum_size.x = 1.0
+	state.add_child(_live)
+	var mission: GridContainer = _group(state, "Mission")
+	_time_buttons.append(_button(mission, "Skip to warning", skip_to_warning))
+	_time_buttons.append(_button(mission, "Storm now", start_storm))
+	_skip_flight_button = _button(mission, "Skip flight", skip_flight)
+	var players: GridContainer = _group(state, "Players")
+	_button(players, "Kill players", kill_players)
+	_button(players, "Heal players", heal_players)
+	_button(players, "Give ore", give_ore)
+	_button(players, "Add teammate", _add_teammate)
+	_button(players, "Remove teammates", _remove_teammates)
+	var world: GridContainer = _group(state, "Aliens and miners")
+	_button(world, "Kill aliens", kill_aliens)
+	_button(world, "Hatch hunters", hatch_hunters)
+	_button(world, "Hatch raiders", hatch_raiders)
+	_button(world, "Break miners", break_miners)
+	var progress: GridContainer = _group(state, "Progress")
+	_button(progress, "Unlock weapons", unlock_weapons)
+	_button(progress, "Learn skills", learn_skills)
+	_button(progress, "Fill hold", fill_hold)
+	_button(progress, "Install shield", install_shield)
+	_button(progress, "Open all", open_all_bodies)
+	_button(progress, "Reset save", reset_save)
 
-	var actions := HFlowContainer.new()
-	box.add_child(actions)
-	_time_buttons.append(_button(actions, "Skip to warning", skip_to_warning))
-	_time_buttons.append(_button(actions, "Storm now", start_storm))
-	_skip_flight_button = _button(actions, "Skip flight", skip_flight)
-	_button(actions, "Kill players", kill_players)
-	_button(actions, "Heal players", heal_players)
-	_button(actions, "Kill aliens", kill_aliens)
-	_button(actions, "Hatch hunters", hatch_hunters)
-	_button(actions, "Hatch raiders", hatch_raiders)
-	_button(actions, "Break miners", break_miners)
-	_button(actions, "Unlock weapons", unlock_weapons)
-	_button(actions, "Install shield", install_shield)
-	_button(actions, "Open all", open_all_bodies)
-	_button(actions, "Learn skills", learn_skills)
-	_button(actions, "Fill hold", fill_hold)
-	_button(actions, "Give ore", give_ore)
-	_button(actions, "Reset save", reset_save)
-	_button(actions, "Reset tuning", reset_tuning)
-
+	var tuning: VBoxContainer = _tab(tabs, "Tuning")
+	_button(tuning, "Reset tuning", reset_tuning)
 	for path: String in TUNING:
 		var resource: Resource = load(path)
-		box.add_child(_heading(path.get_file().get_basename().capitalize()))
+		var section := FoldableContainer.new()
+		section.title = path.get_file().get_basename().capitalize()
+		section.folded = true
+		section.focus_mode = Control.FOCUS_NONE
+		tuning.add_child(section)
+		var rows := VBoxContainer.new()
+		section.add_child(rows)
 		for row: Array in TUNING[path]:
-			_add_slider(box, resource, path, row)
+			_add_slider(rows, resource, path, row)
+
+
+## A tab of `tabs` named `title`, scrolling vertically; returns its content box.
+func _tab(tabs: TabContainer, title: String) -> VBoxContainer:
+	var scroll := ScrollContainer.new()
+	scroll.name = title
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	tabs.add_child(scroll)
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_theme_constant_override(&"separation", 8)
+	scroll.add_child(box)
+	return box
+
+
+## A heading and a grid of buttons below it in `box`, two equal columns; returns the grid.
+func _group(box: VBoxContainer, title: String) -> GridContainer:
+	box.add_child(_heading(title))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	box.add_child(grid)
+	return grid
 
 
 func _add_slider(box: VBoxContainer, resource: Resource, path: String, row: Array) -> void:
@@ -385,6 +456,10 @@ func _add_slider(box: VBoxContainer, resource: Resource, path: String, row: Arra
 	var name_label := Label.new()
 	name_label.text = property.capitalize()
 	name_label.custom_minimum_size.x = 170.0
+	# Long names end in "…" instead of pushing the slider and its value off the panel.
+	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	name_label.tooltip_text = name_label.text
+	name_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	line.add_child(name_label)
 	var slider := HSlider.new()
 	slider.min_value = row[1]
@@ -426,6 +501,8 @@ func _heading(text: String) -> Label:
 func _button(parent: Control, text: String, action: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.clip_text = true
 	button.focus_mode = Control.FOCUS_NONE
 	button.pressed.connect(action)
 	parent.add_child(button)

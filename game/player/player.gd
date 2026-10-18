@@ -4,7 +4,8 @@ extends CharacterBody3D
 ## cursor on the ground, the right stick or else the movement direction; aliens there get locked
 ## on), and attacks there with the equipped weapon while `attack` is held. Places miners on the
 ## nearest free ore node in range with `place_miner`, and carries the ore that miners' hoses move
-## to it, shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
+## to it, shown in canisters on its back and as a badge rising above it (`OreArrival`). An arrow
+## on the suit ring's edge points back to the ship (`ShipPointer`). Uses the
 ## nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
 ## the suit ring around its feet (`SuitRing`, with the ammo, the spare magazines and the dash) and
@@ -25,15 +26,24 @@ extends CharacterBody3D
 ## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
 ## `pause` with no menu open shows its pause panel (`pause_panel`).
+## Each player has a `number` (1–4) and its color; only the `local` one (the one this machine plays
+## and its camera follows) reads the input, teammates' rings show only their health.
 
 ## Emitted when the carried amount of an ore type changes.
 signal cargo_changed(ore_type: OreType, amount: float)
+## Emitted when ore arrives (`amount` more units of `ore_type`, e.g. from a hose).
+signal cargo_added(ore_type: OreType, amount: float)
 ## Emitted when health changes (damage, healing).
 signal health_changed(health: float)
 ## Emitted when health reaches zero.
 signal died
 
 const GROUP: StringName = &"players"
+## The players' colors by number (1 orange, 2 sky blue, 3 yellow, 4 reddish purple), always shown
+## with the number, so color is never the only cue (see GAME_DESIGN.md, Art direction).
+const COLORS: Array[Color] = [
+	Color(0.95, 0.55, 0.15), Color(0.35, 0.7, 0.95), Color(0.95, 0.85, 0.25), Color(0.8, 0.4, 0.65)
+]
 const PAUSE_PANEL_PATH: String = "res://game/player/pause/pause_panel.tscn"
 
 ## Actions that make the player act; ones still held when a menu closes wait for their release.
@@ -62,6 +72,11 @@ const ARMOR_PIPS_BONE: StringName = &"Head"
 @export var miner_scene: PackedScene
 ## Drawn over the suit: its silhouette behind walls and the rim light.
 @export var body_overlay: Material
+## The player's number (1–4; solo always 1), which picks its color.
+@export_range(1, 4) var number: int = 1
+## Whether this machine plays it: only the local player reads the input and sees its full suit
+## ring; the others are teammates (remote with co-op, M7).
+@export var local: bool = true
 
 ## Where the player aims and the alien it locked on.
 var aim := PlayerAim.new()
@@ -136,7 +151,6 @@ var _scanner := OreScanner.new()
 @onready var _model: Node3D = $Body/Model
 @onready var _animator: PlayerAnimator = $Animator
 @onready var _ship_pointer: Node3D = $ShipPointer
-@onready var _target_marker: Node3D = $TargetMarker
 @onready var _ring: SuitRing = $SuitRing
 
 
@@ -171,7 +185,6 @@ func _ready() -> void:
 	add_child(pause_panel)
 	aim.name = "Aim"
 	aim.holder = self
-	aim.marker = _target_marker
 	add_child(aim)
 	vitals.name = "Vitals"
 	vitals.holder = self
@@ -196,7 +209,7 @@ func _physics_process(delta: float) -> void:
 	var camera_basis: Basis = camera.global_basis if camera else Basis.IDENTITY
 
 	_held_since_menu.assign(_held_since_menu.filter(Input.is_action_pressed))
-	var acting: bool = menu == null
+	var acting: bool = menu == null and local
 	var move_input: Vector2 = Vector2.ZERO
 	if acting:
 		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
@@ -220,11 +233,11 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= _gravity * delta
 	move_and_slide()
 
-	if acting:
-		aim.update(camera, camera_basis, move)
-	else:
+	if menu:
 		aim.target = null
 		aim.towards(menu.get_look_target())
+	elif local:
+		aim.update(camera, camera_basis, move)
 	var target_yaw: float = atan2(-aim.direction.x, -aim.direction.z)
 	var yaw: float = lerp_angle(rotation.y, target_yaw, 1.0 - exp(-settings.turn_speed * delta))
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.
@@ -349,6 +362,7 @@ func add_cargo(ore_type: OreType, amount: float) -> void:
 	carried += amount
 	cargo[ore_type] = carried
 	cargo_changed.emit(ore_type, carried)
+	cargo_added.emit(ore_type, amount)
 
 
 ## Removes up to `amount` units of `ore_type` from the cargo (e.g. made into ammo).
@@ -400,6 +414,11 @@ func get_hose_port_position() -> Vector3:
 	return _hose_port.get_global_transform_interpolated().origin
 
 
+## The player's color (see `COLORS`).
+func color() -> Color:
+	return COLORS[clampi(number, 1, COLORS.size()) - 1]
+
+
 ## The living player closest to `from` within `max_distance` (horizontally), or null.
 static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Player:
 	var nearest_player: Player = null
@@ -422,7 +441,7 @@ func _is_reloading() -> bool:
 
 ## Whether `action` is held for the player to act (not while using a menu, nor a press from it).
 func _action_held(action: StringName) -> bool:
-	return not menu and action not in _held_since_menu and Input.is_action_pressed(action)
+	return local and not menu and action not in _held_since_menu and Input.is_action_pressed(action)
 
 
 func _action_just_pressed(action: StringName) -> bool:

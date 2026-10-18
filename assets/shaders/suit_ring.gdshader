@@ -1,11 +1,15 @@
 // The suit ring on the ground around the player (on a PlaneMesh, see SuitRing): the health arc on
 // the screen's left, the ammo arc on its right (both filling from the bottom up), the spare
 // magazine ticks inside the ammo arc, the dash's thin inner ring, the green outer band while
-// handing over ammo, and short red marks on the outer edge where hits came from. A dimmed arc
-// shows as a faint outline. Lines keep `min_line` pixels on screen. Pulled `depth_bias` m towards
-// the camera, so the ground, grass and low plants don't hide it, but cliffs and props do.
+// handing over ammo, short red marks on the outer edge where hits came from, and the pointers'
+// arrows beyond them. A dimmed arc shows as a faint outline. A teammate's ring shows only the
+// health arc inside an outline in their color. Lines keep `min_line` pixels on screen. Pulled
+// `depth_bias` m towards the camera, so the ground, grass and low plants don't hide it, but
+// cliffs and props do.
 shader_type spatial;
 render_mode unshaded, cull_disabled, shadows_disabled, depth_draw_never, skip_vertex_transform;
+
+#include "res://assets/shaders/ground_marking.gdshaderinc"
 
 // Half the plane's size, in m.
 uniform float radius = 1.62;
@@ -21,6 +25,7 @@ uniform vec2 spare_band = vec2(1.03, 1.11);
 uniform vec2 dash_band = vec2(0.92, 0.96);
 uniform vec2 give_band = vec2(1.42, 1.5);
 uniform vec2 hit_band = vec2(1.42, 1.6);
+uniform vec2 team_band = vec2(1.39, 1.43);
 // Dark, so the ring reads on light ground too.
 uniform vec4 track_color : source_color = vec4(0.0, 0.0, 0.0, 0.4);
 // How much of a dimmed arc's outline shows (0 aboard, where the ring stays quiet).
@@ -63,16 +68,21 @@ uniform vec4 hit_color : source_color = vec4(1.0, 0.12, 0.08, 1.0);
 // Share of the circle (where the hit came from) and strength of each mark.
 uniform vec2 hits[4];
 
+// Where the pointers' arrows start (m from the center).
+uniform float pointer_base = 1.68;
+// Per pointer: share of the circle it points to, alpha (0: none), its tip's radius and half its
+// width at the base (m).
+uniform vec4 pointers[3];
+uniform vec4 pointer_colors[3] : source_color;
+// Dark rim around the arrows, so they read on light ground (m).
+uniform float pointer_rim = 0.05;
+
+// A teammate's outline in their player color (0: the local player's ring, none).
+uniform float team_alpha = 0.0;
+uniform vec4 team_color : source_color = vec4(1.0);
+
 void vertex() {
-	vec3 view = (MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	if (PROJECTION_MATRIX[3][3] > 0.5) {
-		// Orthographic: the camera looks along -Z.
-		view.z += depth_bias;
-	} else {
-		// Along the ray to the camera, so it stays in the same spot on screen.
-		view *= max(1.0 - depth_bias / length(view), 0.05);
-	}
-	VERTEX = view;
+	VERTEX = ground_marking_view(VERTEX, MODELVIEW_MATRIX, PROJECTION_MATRIX, depth_bias);
 	NORMAL = normalize((MODELVIEW_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
 
@@ -90,6 +100,20 @@ float band(float r, vec2 b, float fw, out float edge) {
 float span(float s, float from, float to, float r, float fw) {
 	float d = max(from - s, s - to) * TAU * r;
 	return clamp(0.5 - d / fw, 0.0, 1.0);
+}
+
+// Signed distance (m, negative inside) from `p` to an arrow pointing to `share` from `base` to
+// `tip`, `half_width` wide at its notched back.
+float arrow_distance(vec2 p, float share, float base, float tip, float half_width) {
+	float angle = share * TAU;
+	vec2 dir = vec2(sin(angle), -cos(angle));
+	float along = dot(p, dir);
+	float across = abs(dot(p, vec2(-dir.y, dir.x)));
+	float length_m = tip - base;
+	float slope = half_width / length_m;
+	float to_side = (across - (tip - along) * slope) / sqrt(1.0 + slope * slope);
+	float to_back = base + 0.3 * length_m * (1.0 - across / half_width) - along;
+	return max(to_side, to_back);
 }
 
 vec4 over(vec4 below, vec4 above) {
@@ -200,6 +224,32 @@ void fragment() {
 			float mark = clamp(0.5 - (d - width) * TAU * r / fw, 0.0, 1.0);
 			vec4 c = hit_color;
 			c.a *= in_hits * mark * strength;
+			color = over(color, c);
+		}
+	}
+
+	float in_team = band(r, team_band, fw, edge) * team_alpha;
+	if (in_team > 0.0) {
+		vec4 c = team_color;
+		c.a *= in_team;
+		color = over(color, c);
+	}
+
+	if (r > pointer_base - pointer_rim - fw) {
+		for (int i = 0; i < 3; i++) {
+			vec4 pointer = pointers[i];
+			if (pointer.y <= 0.0) {
+				continue;
+			}
+			float d = arrow_distance(p, pointer.x, pointer_base, pointer.z, pointer.w);
+			// At least `min_line` pixels of rim too.
+			float rim = max(pointer_rim, min_line * fw);
+			float dark = clamp(0.5 - (d - rim) / fw, 0.0, 1.0);
+			float lit = clamp(0.5 - d / fw, 0.0, 1.0);
+			vec4 c = pointer_colors[i];
+			vec4 shade = vec4(track_color.rgb, track_color.a * c.a * dark);
+			color = over(color, shade);
+			c.a *= lit * pointer.y;
 			color = over(color, c);
 		}
 	}

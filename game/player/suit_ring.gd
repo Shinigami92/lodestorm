@@ -6,12 +6,19 @@ extends MeshInstance3D
 ## damage, a red mark on the outer edge towards where a hit came from), the equipped ranged
 ## weapon's ammo arc on the right in its ammo color (reloads with their timing window, a red flash
 ## when a reload can't start, a white one when a timed press finishes it), the spare magazines as
-## ticks inside the ammo arc, the dash as a thin inner ring while it recharges, and a green outer
-## band while the player hands a teammate ammo. Both arcs fill from the bottom up.
+## ticks inside the ammo arc, the dash as a thin inner ring while it recharges, a green outer
+## band while the player hands a teammate ammo, and the pointers as arrows on its edge (the way
+## back to the ship from `ShipPointer`, the nearest ore from `OreScanner`). Both arcs fill from the
+## bottom up.
 ## Quiet when nothing goes on: an arc dims to a faint outline `lit_time` after its last change,
-## unless its value is low (health below half, a nearly empty magazine); the spare ticks show on a
-## reload and when a spare is used. Aboard (weapon holstered) the outline hides too. Tilts with
-## the ground under the player; drawn over the ground and low plants, hidden by cliffs and props.
+## unless its value is low (health below half, a nearly empty magazine) or the player set "Always
+## show"; the spare ticks show on a reload and when a spare is used. Aboard (weapon holstered) the
+## outline hides too. Its size is a setting (`GameSettings.ring_scale`); while the player's pause
+## panel is open it stays shown and lit (also while the world is paused), so a change of size shows
+## right away. A teammate's ring (a
+## player that isn't `local`) shows only the health arc inside an outline in their player color.
+## Tilts with the ground under the player; drawn over the ground and low plants, hidden by cliffs
+## and props.
 
 ## Seconds it takes an arc to dim or light up.
 const FADE_TIME: float = 0.4
@@ -31,6 +38,15 @@ const DASH_COLOR := Color(1.0, 0.93, 0.8, FILL_ALPHA)
 const GIVE_COLOR := Color(0.35, 1.0, 0.45, FILL_ALPHA)
 const FUMBLE_COLOR := Color(1.0, 0.12, 0.08, FILL_ALPHA)
 const HIT_MARKS: int = 4
+## Pointers on the edge at most (the ship, the ore scanner, later the tracked quest).
+const POINTERS: int = 3
+## Where the pointers' arrows start beyond `radius` (m), and per kind how far beyond it their tip
+## reaches and half their width at the base (m). TBD (playtest).
+const POINTER_BASE: float = 0.32
+const SHIP_ARROW := Vector2(1.04, 0.38)
+const SCANNER_ARROW := Vector2(0.84, 0.26)
+## Distance from the ship arrow's tip to the countdown's center (m).
+const COUNTDOWN_GAP: float = 0.25
 
 ## Outer radius of the arcs (m); the plane reaches a little farther for the marks. TBD (playtest).
 @export var radius: float = 1.36
@@ -46,6 +62,9 @@ var dash_alpha: float = 0.0
 ## Where the hits' marks point (shares of the circle clockwise from the screen's top) and how
 ## strong they still are.
 var hits: PackedVector2Array = []
+## The pointers shown: where each points (share of the circle), its alpha, its tip's radius and
+## half its width, in the ring's own meters (before its size setting).
+var pointers: PackedVector4Array = []
 
 var _material := ShaderMaterial.new()
 var _health_lit: float = 0.0
@@ -71,7 +90,9 @@ var _up := Vector3.UP
 
 func _ready() -> void:
 	top_level = true
-	var outer: float = radius + 0.26
+	# Runs while the pause panel stops the world, so the panel previews the ring's settings.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	var outer: float = radius + SHIP_ARROW.x + 0.04
 	var plane := PlaneMesh.new()
 	plane.size = Vector2.ONE * outer * 2.0
 	mesh = plane
@@ -81,7 +102,9 @@ func _ready() -> void:
 	_material.set_shader_parameter(&"spare_band", Vector2(radius - 0.35, radius - 0.24))
 	_material.set_shader_parameter(&"dash_band", Vector2(radius - 0.44, radius - 0.4))
 	_material.set_shader_parameter(&"give_band", Vector2(radius + 0.06, radius + 0.14))
-	_material.set_shader_parameter(&"hit_band", Vector2(radius + 0.06, outer - 0.02))
+	_material.set_shader_parameter(&"hit_band", Vector2(radius + 0.06, radius + 0.24))
+	_material.set_shader_parameter(&"team_band", Vector2(radius + 0.03, radius + 0.1))
+	_material.set_shader_parameter(&"pointer_base", radius + POINTER_BASE)
 	_material.set_shader_parameter(&"dash_color", DASH_COLOR)
 	_material.set_shader_parameter(&"give_color", GIVE_COLOR)
 	material_override = _material
@@ -102,14 +125,19 @@ func shown(parameter: StringName) -> Variant:
 	return _material.get_shader_parameter(parameter)
 
 
-## Whether the ammo arc shows (a ranged weapon is drawn).
+## Whether the ammo arc shows (a ranged weapon is drawn, on the local player's ring).
 func shows_ammo() -> bool:
 	var ranged := _player.weapon as RangedWeapon
-	return ranged != null and ranged.visible
+	return ranged != null and ranged.visible and _player.local
+
+
+## How far the ship arrow's tip reaches from the player (m, with the size setting).
+func pointer_reach() -> float:
+	return (radius + SHIP_ARROW.x) * GameSettings.ring_scale()
 
 
 func _process(delta: float) -> void:
-	visible = not _player.dead and not _player.menu
+	visible = not _player.dead and (not _player.menu or previewing())
 	if not visible:
 		_flash_left = 0.0
 		_hit_directions.clear()
@@ -124,7 +152,11 @@ func _process(delta: float) -> void:
 	_update_dash(delta)
 	_update_give()
 	_update_hits(delta)
-	_material.set_shader_parameter(&"outline_alpha", 1.0 if _player.weapon_allowed else 0.0)
+	_update_pointers()
+	var outside: float = 1.0 if _player.weapon_allowed or previewing() else 0.0
+	_material.set_shader_parameter(&"outline_alpha", outside)
+	_material.set_shader_parameter(&"team_alpha", 0.0 if _player.local else outside)
+	_material.set_shader_parameter(&"team_color", Color(_player.color(), FILL_ALPHA))
 	_place(delta)
 
 
@@ -144,7 +176,7 @@ func _update_health(delta: float, blink_on: bool) -> void:
 	if _damage_flash_left > 0.0:
 		color = SuitLight.COLOR_FLASH
 	color.a = FILL_ALPHA
-	health_glow = _fade(health_glow, _health_lit > 0.0 or share < 0.5, delta)
+	health_glow = _fade(health_glow, _health_lit > 0.0 or share < 0.5 or _always(), delta)
 	_material.set_shader_parameter(&"health_fill", share)
 	_material.set_shader_parameter(&"health_color", color)
 	_material.set_shader_parameter(&"health_glow", health_glow)
@@ -224,8 +256,8 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 		window = Vector2(1.0, 0.0)
 		color = _flash_color
 		color.a = FILL_ALPHA * _flash_left / FLASH_TIME
-	ammo_glow = _fade(ammo_glow, _ammo_lit > 0.0 or low, delta)
-	spares_alpha = _fade(spares_alpha, _spares_lit > 0.0, delta)
+	ammo_glow = _fade(ammo_glow, _ammo_lit > 0.0 or low or _always(), delta)
+	spares_alpha = _fade(spares_alpha, _spares_lit > 0.0 or _always(), delta)
 	var spare_color: Color = gauge.color if gauge else Color.WHITE
 	spare_color.a = FILL_ALPHA
 	_material.set_shader_parameter(&"ammo_fill", fill)
@@ -243,7 +275,7 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 
 func _update_dash(delta: float) -> void:
 	var ratio: float = _player.suit_dash.ready_ratio()
-	var learned: bool = _player.skills.has(Skill.Effect.DASH)
+	var learned: bool = _player.skills.has(Skill.Effect.DASH) and _player.local
 	if learned and ratio < 1.0:
 		_dash_lit = DASH_READY_TIME
 	else:
@@ -254,7 +286,7 @@ func _update_dash(delta: float) -> void:
 
 
 func _update_give() -> void:
-	var giving: bool = _player.give_ammo_target != null
+	var giving: bool = _player.give_ammo_target != null and _player.local
 	_material.set_shader_parameter(&"give_alpha", 1.0 if giving else 0.0)
 	if giving:
 		_material.set_shader_parameter(
@@ -280,6 +312,33 @@ func _update_hits(delta: float) -> void:
 	_material.set_shader_parameter(&"hits", marks)
 
 
+## The arrows on the edge: the way back to the ship, then the ore scanner's.
+func _update_pointers() -> void:
+	pointers.clear()
+	var colors := PackedColorArray()
+	colors.resize(POINTERS)
+	var slots := PackedVector4Array()
+	slots.resize(POINTERS)
+	if _player.local:
+		var ship := _player.get_node_or_null(^"ShipPointer") as ShipPointer
+		if ship and ship.is_visible_in_tree():
+			colors[pointers.size()] = ship.color
+			pointers.append(_pointer(-ship.global_basis.z, SHIP_ARROW))
+		var scanner := _player.get_node_or_null(^"OreScanner") as OreScanner
+		if scanner and scanner.is_visible_in_tree():
+			colors[pointers.size()] = scanner.color
+			pointers.append(_pointer(-scanner.global_basis.z, SCANNER_ARROW))
+	for index: int in pointers.size():
+		slots[index] = pointers[index]
+	_material.set_shader_parameter(&"pointers", slots)
+	_material.set_shader_parameter(&"pointer_colors", colors)
+
+
+## A pointer towards `direction` with the shape `arrow` (see `SHIP_ARROW`).
+func _pointer(direction: Vector3, arrow: Vector2) -> Vector4:
+	return Vector4(_share_towards(direction), 1.0, radius + arrow.x, arrow.y)
+
+
 ## Follows the player's feet, tilted with the ground; its top stays at the top of the screen.
 func _place(delta: float) -> void:
 	if _player.is_on_floor():
@@ -288,7 +347,10 @@ func _place(delta: float) -> void:
 	var forward: Vector3 = _screen_up()
 	forward = (forward - _up * forward.dot(_up)).normalized()
 	if forward.length() > 0.001:
-		global_basis = Basis.looking_at(forward, _up)
+		global_basis = (
+			Basis.looking_at(forward, _up)
+			* Basis.from_scale(Vector3.ONE * GameSettings.ring_scale())
+		)
 
 
 ## The ground direction towards the screen's top (away from the camera).
@@ -315,7 +377,7 @@ func _on_hurt(_amount: float, from: Vector3) -> void:
 	if _next_damage_flash <= 0.0:
 		_damage_flash_left = SuitLight.FLASH_DURATION
 		_next_damage_flash = SuitLight.FLASH_INTERVAL
-	if not from.is_finite():
+	if not from.is_finite() or not _player.local:
 		return
 	var direction: Vector3 = from - _player.global_position
 	direction.y = 0.0
@@ -332,6 +394,16 @@ func _on_hurt(_amount: float, from: Vector3) -> void:
 ## slerp: slerp errors on vectors a hair apart (the floor normal settling on flat ground).
 static func tilt_towards(up: Vector3, normal: Vector3, weight: float) -> Vector3:
 	return up.lerp(normal, weight).normalized()
+
+
+## Whether its player's pause panel is open: the ring stays shown and lit meanwhile.
+func previewing() -> bool:
+	return _player.menu != null and _player.menu == _player.pause_panel
+
+
+## Whether the arcs stay lit (the "Always show" setting, or the pause panel's preview).
+func _always() -> bool:
+	return GameSettings.ring_always_show or previewing()
 
 
 ## Moves `glow` towards 1 while `lit`, else towards 0, over `FADE_TIME`.

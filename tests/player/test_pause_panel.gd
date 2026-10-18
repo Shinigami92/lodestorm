@@ -74,6 +74,33 @@ func test_pause_steps_back_through_the_pages() -> void:
 	assert_false(_panel.is_shown())
 
 
+func test_stepping_back_focuses_the_button_that_opened_the_page() -> void:
+	_panel.open(_player)
+	var card: PauseCard = _panel.get_card()
+	(card.find_child("Settings", true, false) as Button).pressed.emit()
+	(card.find_child("SettingsBack", true, false) as Button).pressed.emit()
+	await wait_process_frames(2)
+	var focused: Control = card.get_viewport().gui_get_focus_owner()
+	assert_eq(focused, card.find_child("Settings", true, false), "not Quit")
+
+
+func test_a_click_after_a_page_change_waits_for_the_pointer_to_move() -> void:
+	_panel.open(_player)
+	var card: PauseCard = _panel.get_card()
+	await wait_process_frames(2)
+	var settings := card.find_child("Settings", true, false) as Button
+	var at: Vector2 = settings.get_global_rect().get_center()
+	_mouse(card, at)
+	_click(card, at)
+	await wait_process_frames(1)
+	assert_eq(card.page, PauseCard.Page.MAIN, "the pointer hasn't moved since the page showed")
+	_mouse(card, at + Vector2(PauseCard.CLICK_GUARD * 2.0, 0.0))
+	_mouse(card, at)
+	_click(card, at)
+	await wait_process_frames(1)
+	assert_eq(card.page, PauseCard.Page.SETTINGS, "it moved: the click counts")
+
+
 func test_the_camera_frames_it_while_paused() -> void:
 	var rig: IsoCameraRig = _map.get_node("IsoCameraRig")
 	_panel.open(_player)
@@ -202,3 +229,20 @@ func _press(action: StringName) -> void:
 		event.pressed = pressed
 		Input.parse_input_event(event)
 		await wait_process_frames(2)
+
+
+func _mouse(card: PauseCard, at: Vector2) -> void:
+	var motion := InputEventMouseMotion.new()
+	motion.position = at
+	motion.global_position = at
+	card.get_viewport().push_input(motion, true)
+
+
+func _click(card: PauseCard, at: Vector2) -> void:
+	for pressed: bool in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = pressed
+		click.position = at
+		click.global_position = at
+		card.get_viewport().push_input(click, true)

@@ -124,6 +124,19 @@ func test_language_is_saved_apart_from_progress() -> void:
 	assert_eq(GameSettings.saved_language(), "de", "resetting keeps the settings")
 
 
+func test_ring_settings_are_saved() -> void:
+	GameSettings.set_ring_size(0)
+	GameSettings.set_ring_always_show(true)
+	GameSettings.ring_size = GameSettings.RING_MEDIUM
+	GameSettings.ring_always_show = false
+	GameSettings.load_settings()
+	assert_eq(GameSettings.ring_size, 0)
+	assert_true(GameSettings.ring_always_show)
+	assert_eq(GameSettings.ring_scale(), GameSettings.RING_SCALES[0])
+	GameSettings.set_ring_size(GameSettings.RING_MEDIUM)
+	GameSettings.set_ring_always_show(false)
+
+
 func test_reset_asks_three_times() -> void:
 	_player.upgrades.raise(ARMOR)
 	await wait_process_frames(1)

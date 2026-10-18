@@ -56,7 +56,7 @@ func test_hunters_go_for_players_far_away() -> void:
 	var hunter: Alien = _nest.hatch(Alien.Role.HUNTER)
 	await wait_physics_frames(2)
 	var offset: Vector3 = _player.global_position - hunter.global_position
-	assert_gt(Vector2(offset.x, offset.z).length(), hunter.settings.chase_range)
+	assert_gt(Vector2(offset.x, offset.z).length(), hunter.strain.chase_range)
 	assert_eq(hunter.target, _player)
 	for alien: Alien in _aliens():
 		if alien.role == Alien.Role.GUARD:
@@ -92,6 +92,19 @@ func test_hunters_are_capped_and_replaced_an_interval_after_a_kill() -> void:
 	assert_eq(_nest.get_hunters().size(), 1, "not right away")
 	await _wait_physics(0.2)
 	assert_eq(_nest.get_hunters().size(), 2)
+
+
+func test_nests_wait_while_the_living_aliens_reach_the_cap() -> void:
+	_set_interval(0.1)
+	_nest.settings.max_hunters_start = 4
+	_nest.settings.max_aliens = Alien.living_load(get_tree()) + 1.0
+	await _start_mission()
+	await _wait_physics(0.6)
+	assert_eq(_nest.get_hunters().size(), 1, "up to the cap")
+	assert_true(_nest.is_full())
+	_nest.settings.max_aliens += 1.0
+	await _wait_physics(0.3)
+	assert_eq(_nest.get_hunters().size(), 2, "goes on below it")
 
 
 func test_raiders_only_hatch_while_a_miner_works() -> void:

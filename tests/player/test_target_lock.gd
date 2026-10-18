@@ -1,7 +1,7 @@
 extends GutTest
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
-const ALIEN: PackedScene = preload("res://game/aliens/alien.tscn")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 
 var _map: Node3D
 var _player: Player
@@ -109,9 +109,9 @@ func test_marker_shows_under_locked_alien() -> void:
 
 ## An alien that stays where it is (doesn't notice the player).
 func _alien_at(offset: Vector3) -> Alien:
-	var alien := ALIEN.instantiate() as Alien
-	alien.settings = alien.settings.duplicate() as AlienSettings
-	alien.settings.detection_range = 0.0
+	var alien := SWARMER.spawn()
+	alien.strain = alien.strain.duplicate() as AlienStrain
+	alien.strain.detection_range = 0.0
 	_map.add_child(alien)
 	alien.global_position = _player.global_position + offset
 	alien.reset_physics_interpolation()

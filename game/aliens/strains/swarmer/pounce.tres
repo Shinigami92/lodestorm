@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AlienPounce" format=3 uid="uid://bxrh5uecwwpep"]
+
+[ext_resource type="Script" uid="uid://bgkwpebf4727d" path="res://game/aliens/attacks/alien_pounce.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage = 15.0
+cooldown = 4.0
+wind_up = 0.4
+recovery = 0.8
+against_miners = false

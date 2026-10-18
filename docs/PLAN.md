@@ -49,15 +49,15 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 6 B: the *Salt pans* (low walls with sinkholes, raised causeways, sinkhole fields, brine flats) and the *Ash fields* (lava channels before sharp ridges, crust crossings, lava islands, vent fields with bursting vents); gaps with the rock behind them, round pits, filled gaps
 - Step 6 C: the *Dust flats* (slot canyons between the mesas, butte fields, dry washes) and the *Glass plains* (terraces on their own levels with ramps between them, shard fences along the drops, slabs beyond, terrace stairs, shard gardens with spires and shards that hurt); plants and rocks limited to some kinds of areas
 - Step 6 D: the *Overgrowth* (growth walls: a band of giant stalks and roots before low rock that stops walking and shots; trails with a trodden path and many loops; mires with mud pools that slow walking, not the dash; fungal groves with giant stalks as cover)
+- Step 7 A: alien strains and their attacks as data (the role stays on the alien), armor (front-only possible) and stagger, hits that push, jolt and spray ichor or sparks, telegraphs (the wind-up), the swarmer faster and pouncing, the blaster at 8 shots a second, the cap on living aliens
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–6 are done).
+Each step builds on the ones before it (steps 1–6 and 7 A are done).
 
 - [ ] **Step 7 — more aliens, the feel of combat, sound effects** ([`planned/aliens.md`](planned/aliens.md), [`planned/sfx.md`](planned/sfx.md))
-  - [ ] **A** strains and roles as data, armor and stagger, hit feedback, telegraphs, the swarmer's pounce and speed, the blaster at 8 shots a second, the cap on living aliens
   - [ ] **B** tiers 1–2 (mite, spitter, burrower), hatch tables, packs, biome leanings
   - [ ] **C** tiers 3–4 (Brute, Shrieker, bloater, Tender), miners drawing raiders, the end-of-run frenzy
   - [ ] **D** tier 5 (darter, stalker) and the Ravager (greybox bodies from primitives; models with the art pass)

@@ -77,13 +77,13 @@ func test_aliens_hatch_stronger_farther_in() -> void:
 	assert_eq(alien.health_factor, _settings.alien_health_at(3))
 	assert_eq(alien.damage_factor, _settings.alien_damage_at(3))
 	assert_gt(alien.health_factor, 1.0)
-	assert_almost_eq(alien.max_health(), alien.settings.max_health * alien.health_factor, 1e-4)
+	assert_almost_eq(alien.max_health(), alien.strain.max_health * alien.health_factor, 1e-4)
 	assert_eq(alien.health, alien.max_health(), "hatches unhurt")
-	var expected: float = alien.settings.attack_damage * alien.damage_factor
-	assert_almost_eq(alien.attack_damage(), expected, 1e-4)
+	var bite: AlienAttack = alien.strain.attacks.back()
+	var expected: float = bite.damage * alien.damage_factor
 	var player := _map.get_node("Player") as Player
 	var before: float = player.health
-	alien.attack(player)
+	alien.strike(player, bite.damage)
 	assert_almost_eq(player.health, before - expected, 1e-4)
 
 

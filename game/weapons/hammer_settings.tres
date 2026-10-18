@@ -5,3 +5,5 @@
 [resource]
 script = ExtResource("1_script")
 attack_rate = 1.5
+stagger = 40.0
+push = 6.0

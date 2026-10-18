@@ -1,6 +1,0 @@
-[gd_resource type="Resource" script_class="AlienSettings" format=3 uid="uid://bpm5khy2phwpi"]
-
-[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_settings.gd" id="1_script"]
-
-[resource]
-script = ExtResource("1_script")

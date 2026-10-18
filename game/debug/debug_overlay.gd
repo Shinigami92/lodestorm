@@ -49,6 +49,8 @@ const TUNING: Dictionary[String, Array] = {
 	[
 		["damage", 1.0, 100.0, 1.0],
 		["attack_rate", 0.5, 20.0, 0.5],
+		["stagger", 0.0, 100.0, 1.0],
+		["push", 0.0, 10.0, 0.1],
 		["projectile_speed", 5.0, 100.0, 1.0],
 		["projectile_range", 5.0, 60.0, 1.0],
 		["magazine", 1.0, 200.0, 1.0],
@@ -62,6 +64,8 @@ const TUNING: Dictionary[String, Array] = {
 	[
 		["damage", 1.0, 100.0, 1.0],
 		["attack_rate", 0.5, 20.0, 0.5],
+		["stagger", 0.0, 100.0, 1.0],
+		["push", 0.0, 10.0, 0.1],
 		["pellets", 1.0, 20.0, 1.0],
 		["spread", 0.0, 90.0, 1.0],
 		["projectile_speed", 5.0, 100.0, 1.0],
@@ -79,18 +83,37 @@ const TUNING: Dictionary[String, Array] = {
 	[
 		["damage", 1.0, 200.0, 1.0],
 		["attack_rate", 0.2, 5.0, 0.1],
+		["stagger", 0.0, 100.0, 1.0],
+		["push", 0.0, 10.0, 0.1],
 		["reach", 0.5, 6.0, 0.1],
 		["arc", 10.0, 360.0, 5.0],
 	],
-	"res://game/aliens/alien_settings.tres":
+	"res://game/aliens/strains/swarmer/swarmer.tres":
 	[
 		["max_health", 1.0, 300.0, 1.0],
-		["move_speed", 0.5, 15.0, 0.5],
+		["armor", 0.0, 50.0, 1.0],
+		["stagger_threshold", 1.0, 200.0, 1.0],
+		["stagger_time", 0.0, 3.0, 0.05],
+		["knockback", 0.0, 3.0, 0.1],
+		["move_speed", 0.5, 15.0, 0.1],
 		["detection_range", 1.0, 40.0, 1.0],
 		["chase_range", 1.0, 60.0, 1.0],
-		["attack_range", 0.5, 5.0, 0.1],
-		["attack_damage", 0.0, 100.0, 1.0],
-		["attack_rate", 0.1, 5.0, 0.1],
+	],
+	"res://game/aliens/strains/swarmer/bite.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["reach", 0.5, 5.0, 0.1],
+		["cooldown", 0.1, 5.0, 0.1],
+	],
+	"res://game/aliens/strains/swarmer/pounce.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["cooldown", 0.5, 20.0, 0.5],
+		["wind_up", 0.0, 2.0, 0.05],
+		["recovery", 0.0, 3.0, 0.05],
+		["max_range", 1.0, 15.0, 0.5],
+		["leap_distance", 1.0, 10.0, 0.5],
+		["leap_speed", 2.0, 30.0, 1.0],
 	],
 	"res://game/aliens/nest/alien_nest_settings.tres":
 	[

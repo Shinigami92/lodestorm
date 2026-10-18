@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://1fsdvrpgexi6"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cjnidqnk0kco1" path="res://game/aliens/strains/swarmer/swarmer.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://bxrh5uecwwpep" path="res://game/aliens/strains/swarmer/pounce.tres" id="4_pounce"]
+[ext_resource type="Resource" uid="uid://jdmlmsena2fj" path="res://game/aliens/strains/swarmer/bite.tres" id="5_bite"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Swarmer"
+scene = ExtResource("2_scene")
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_pounce"), ExtResource("5_bite")])

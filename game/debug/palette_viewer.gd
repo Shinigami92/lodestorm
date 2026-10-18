@@ -114,7 +114,15 @@ static func groups() -> Array[Group]:
 	for ore_type: OreType in OreCatalog.all().ores:
 		ores.add(ore_type.display_name, ore_type.color)
 	result.append(ores)
-	result.append(Group.new("The hive", true).add("Eyes, nest glow", AlienNest.COLOR_GLOW))
+	result.append(
+		(
+			Group
+			. new("The hive", true)
+			. add("Eyes, nest glow, ichor", AlienNest.COLOR_GLOW)
+			. add("Sparks off armor", HitSpray.COLOR_SPARK)
+			. add("Armor chips", HitSpray.COLOR_CHIP)
+		)
+	)
 	result.append(
 		(
 			Group

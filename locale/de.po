@@ -4,6 +4,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: game/aliens/strains/swarmer/swarmer.tres
+msgid "Swarmer"
+msgstr "Schwärmer"
+
 #: game/locations/biomes/ash.tres
 msgid "Ash fields"
 msgstr "Aschefeld"

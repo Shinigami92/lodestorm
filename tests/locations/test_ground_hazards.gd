@@ -3,7 +3,7 @@ extends GutTest
 ## after a warning and hurt whoever stands on them, shards hurt a little every moment, mud slows
 ## walking (not the dash).
 
-const ALIEN_SCENE: PackedScene = preload("res://game/aliens/alien.tscn")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const REAL_TIME := preload("res://tests/support/real_time.gd")
 const DASH: Skill = preload("res://game/progression/skills/tree/dash.tres")
@@ -57,7 +57,7 @@ func test_player_slides_on_slick_ice() -> void:
 
 
 func test_aliens_slide_too() -> void:
-	var alien := ALIEN_SCENE.instantiate() as Alien
+	var alien := SWARMER.spawn()
 	alien.position = Vector3(20.0, 0.0, 0.0)
 	_arena.add_child(alien)
 	_add_ice(alien.global_position)
@@ -117,10 +117,10 @@ func test_vent_warns_then_bursts() -> void:
 func test_vent_hurts_aliens() -> void:
 	var at := Vector3(30.0, 0.0, 0.0)
 	var vent: GroundVent = _add_vent(at)
-	var alien := ALIEN_SCENE.instantiate() as Alien
+	var alien := SWARMER.spawn()
 	alien.position = at
 	_arena.add_child(alien)
-	var beside := ALIEN_SCENE.instantiate() as Alien
+	var beside := SWARMER.spawn()
 	beside.position = at + Vector3(8.0, 0.0, 0.0)
 	_arena.add_child(beside)
 	await wait_physics_frames(3)
@@ -174,7 +174,7 @@ func test_dash_is_not_slowed_by_mud() -> void:
 
 
 func test_mud_slows_aliens() -> void:
-	var alien := ALIEN_SCENE.instantiate() as Alien
+	var alien := SWARMER.spawn()
 	alien.position = Vector3(20.0, 0.0, 0.0)
 	_arena.add_child(alien)
 	_add_mud(alien.global_position)

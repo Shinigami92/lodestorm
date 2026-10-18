@@ -1,6 +1,6 @@
 extends GutTest
 
-const ALIEN_SCENE: PackedScene = preload("res://game/aliens/alien.tscn")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 
 var _alien: Alien
 var _legs: AlienLegs
@@ -17,7 +17,7 @@ func before_each() -> void:
 	floor_shape.position.y = -0.5
 	floor_body.add_child(floor_shape)
 	arena.add_child(floor_body)
-	_alien = ALIEN_SCENE.instantiate() as Alien
+	_alien = SWARMER.spawn()
 	arena.add_child(_alien)
 	var skeleton: Skeleton3D = _alien.find_child("Skeleton3D", true, false)
 	for child: Node in skeleton.get_children():
@@ -81,7 +81,7 @@ func test_feet_step_after_the_moving_body_in_diagonal_pairs() -> void:
 
 
 func test_legs_let_go_when_the_alien_dies() -> void:
-	_alien.take_damage(_alien.settings.max_health)
+	_alien.take_damage(_alien.strain.max_health)
 	assert_false(_legs.active)
 
 

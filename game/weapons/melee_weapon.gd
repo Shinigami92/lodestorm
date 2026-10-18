@@ -37,8 +37,17 @@ func _attack() -> void:
 		if _in_swing(alien, direction, exclude):
 			hits.append(alien)
 	for alien: Alien in hits:
-		alien.take_damage(settings.damage * damage_multiplier)
-		DamageNumber.show_hit(holder, alien, settings.damage * damage_multiplier)
+		var away: Vector3 = alien.global_position - holder.global_position
+		var point: Vector3 = alien.get_aim_point() - Vector3(away.x, 0.0, away.z).normalized() * 0.4
+		var hit := Hit.new(
+			settings.damage * damage_multiplier,
+			settings.stagger,
+			settings.push,
+			away if away.length() > 0.01 else direction,
+			point,
+			holder
+		)
+		DamageNumber.show_hit(holder, alien, alien.take_hit(hit))
 	_play_sweep()
 	swung.emit(hits)
 

@@ -1,11 +1,14 @@
 extends GutTest
 ## Ground hazards (`GroundHazard`): slick ice makes players and aliens slide a little, vents burst
-## after a warning and hurt whoever stands on them, shards hurt a little every moment.
+## after a warning and hurt whoever stands on them, shards hurt a little every moment, mud slows
+## walking (not the dash).
 
 const ALIEN_SCENE: PackedScene = preload("res://game/aliens/alien.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const REAL_TIME := preload("res://tests/support/real_time.gd")
+const DASH: Skill = preload("res://game/progression/skills/tree/dash.tres")
 const GRIP: float = 0.15
+const MUD_SPEED: float = 0.6
 
 var _arena: Node3D
 var _player: Player
@@ -143,6 +146,43 @@ func test_shards_hurt_while_standing_on_them() -> void:
 	assert_eq(_player.health, health, "off the shards")
 
 
+## In mud the player walks at its share of their speed, and walks as usual again once out.
+func test_mud_slows_walking() -> void:
+	var mud: GroundMud = _add_mud(_player.global_position)
+	await wait_physics_frames(3)
+	assert_eq(_player.ground_contact.speed(), MUD_SPEED, "stands in the mud")
+	Input.action_press(&"move_right")
+	await wait_physics_frames(20)
+	var slowed: float = Vector2(_player.velocity.x, _player.velocity.z).length()
+	assert_almost_eq(slowed, _player.settings.move_speed * MUD_SPEED, 0.05)
+	mud.global_position += Vector3(40.0, 0.0, 0.0)
+	await wait_physics_frames(20)
+	var walking: float = Vector2(_player.velocity.x, _player.velocity.z).length()
+	assert_almost_eq(walking, _player.settings.move_speed, 0.05, "out of the mud")
+
+
+## The dash isn't slowed by the mud: it's the way out.
+func test_dash_is_not_slowed_by_mud() -> void:
+	_player.skills.raise(DASH)
+	_add_mud(_player.global_position)
+	await wait_physics_frames(3)
+	assert_true(_player.suit_dash.dash(Vector3.RIGHT))
+	await wait_physics_frames(1)
+	var dashing: float = Vector2(_player.velocity.x, _player.velocity.z).length()
+	var settings: PlayerSettings = _player.settings
+	assert_almost_eq(dashing, settings.dash_distance / settings.dash_time, 0.05)
+
+
+func test_mud_slows_aliens() -> void:
+	var alien := ALIEN_SCENE.instantiate() as Alien
+	alien.position = Vector3(20.0, 0.0, 0.0)
+	_arena.add_child(alien)
+	_add_mud(alien.global_position)
+	await wait_physics_frames(3)
+	assert_eq(alien.ground_contact.speed(), MUD_SPEED)
+	assert_eq(_player.ground_contact.speed(), 1.0, "not the player beside it")
+
+
 ## How fast the player runs after moving right for a few physics frames from standing.
 func _speed_after_starting() -> float:
 	Input.action_press(&"move_right")
@@ -179,6 +219,22 @@ func _add_shards(at: Vector3) -> GroundShards:
 	_arena.add_child(shards)
 	shards.global_position = at
 	return shards
+
+
+func _add_mud(at: Vector3) -> GroundMud:
+	var mud := GroundMud.new()
+	mud.speed = MUD_SPEED
+	mud.collision_layer = 0
+	mud.collision_mask = PhysicsLayers.WORLD
+	var cylinder := CylinderShape3D.new()
+	cylinder.radius = mud.radius
+	cylinder.height = 3.0
+	var shape := CollisionShape3D.new()
+	shape.shape = cylinder
+	mud.add_child(shape)
+	_arena.add_child(mud)
+	mud.global_position = at
+	return mud
 
 
 func _add_vent(at: Vector3) -> GroundVent:

@@ -16,6 +16,87 @@
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
 
+[sub_resource type="Resource" id="Resource_growth_stalk"]
+script = ExtResource("2_scatter")
+display_name = "Growth stalk"
+model = ExtResource("4_plants")
+model_part = &"Overgrowth_Tube_a"
+density = 9.0
+clustering = 0.0
+min_scale = 1.8
+max_scale = 2.8
+max_slope = 2.0
+sink = 0.1
+max_tilt = 8.0
+blocking_height = 2.9
+on_barrier = true
+
+[sub_resource type="Resource" id="Resource_growth_cap"]
+script = ExtResource("2_scatter")
+display_name = "Growth cap"
+model = ExtResource("4_plants")
+model_part = &"Overgrowth_Fungus_b"
+density = 2.0
+clustering = 0.5
+patch_size = 20.0
+min_scale = 1.8
+max_scale = 2.6
+max_slope = 2.0
+sink = 0.1
+max_tilt = 6.0
+blocking_height = 2.3
+on_barrier = true
+
+[sub_resource type="Resource" id="Resource_growth_root"]
+script = ExtResource("2_scatter")
+display_name = "Growth root"
+model = ExtResource("4_plants")
+model_part = &"Overgrowth_Fungus_a"
+density = 10.0
+clustering = 0.0
+min_scale = 0.7
+max_scale = 0.95
+max_slope = 2.0
+sink = 0.05
+max_tilt = 10.0
+blocking_height = 1.0
+cast_shadow = false
+on_barrier = true
+
+[sub_resource type="Resource" id="Resource_grove_stalk"]
+script = ExtResource("2_scatter")
+display_name = "Grove stalk"
+model = ExtResource("4_plants")
+model_part = &"Overgrowth_Fungus_b"
+density = 1.2
+clustering = 0.0
+min_scale = 2.2
+max_scale = 3.2
+max_slope = 0.5
+sink = 0.1
+max_tilt = 4.0
+blocking_radius = 0.45
+blocking_height = 2.3
+spacing = 4.0
+area_kinds = Array[int]([18])
+
+[sub_resource type="Resource" id="Resource_grove_tube"]
+script = ExtResource("2_scatter")
+display_name = "Grove tube"
+model = ExtResource("4_plants")
+model_part = &"Overgrowth_Tube_a"
+density = 1.2
+clustering = 0.0
+min_scale = 1.6
+max_scale = 2.4
+max_slope = 0.5
+sink = 0.1
+max_tilt = 6.0
+blocking_radius = 0.5
+blocking_height = 2.7
+spacing = 4.0
+area_kinds = Array[int]([18])
+
 [sub_resource type="Resource" id="Resource_overgrowth_tube_a"]
 script = ExtResource("2_scatter")
 display_name = "Overgrowth tube"
@@ -223,21 +304,33 @@ weight = 0.8
 script = ExtResource("1_biome")
 display_name = "Overgrowth"
 map_color = Color(0.45, 0.62, 0.35, 1)
-area_radius = Vector2(16, 34)
-pass_width = Vector2(8, 14)
+area_radius = Vector2(18, 36)
+pass_width = Vector2(13, 15)
 area_spacing = 14.0
-loops_per_area = 0.3
+loops_per_area = 0.6
+pass_style = 3
+pass_wobble = 0.12
+barrier = 3
+gap_width = Vector2(5, 8)
+gap_depth = 0.0
+lip_height = 0.5
+gap_tint = Color(0.42, 0.37, 0.3, 1)
+lip_tint = Color(0.48, 0.4, 0.3, 1)
+area_kinds = Array[int]([17, 18])
+hazard = 4
+hazard_tint = Color(0.3, 0.24, 0.17, 1)
+hazard_speed = 0.6
 floor_relief = 3.0
 floor_relief_size = 50.0
-wall_height = 7.0
-cliff_width = 5.0
-rock_relief = 8.0
-plateau_step = 3.5
+wall_height = 4.0
+cliff_width = 3.5
+rock_relief = 6.0
+plateau_step = 3.0
 bump_height = 0.7
 ground_material = ExtResource("9_terrain")
 low_ground_tint = Color(0.85, 0.85, 0.85, 1)
 scree = 0.35
-scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_overgrowth_tube_a"), SubResource("Resource_overgrowth_fungus_b"), SubResource("Resource_overgrowth_fungus_a"), SubResource("Resource_overgrowth_frond_a"), SubResource("Resource_overgrowth_frond_b"), SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_boulder_c"), SubResource("Resource_boulder_d"), SubResource("Resource_stones_a"), SubResource("Resource_stones_b"), SubResource("Resource_rubble_a")])
+scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_grove_stalk"), SubResource("Resource_grove_tube"), SubResource("Resource_growth_stalk"), SubResource("Resource_growth_cap"), SubResource("Resource_growth_root"), SubResource("Resource_overgrowth_tube_a"), SubResource("Resource_overgrowth_fungus_b"), SubResource("Resource_overgrowth_fungus_a"), SubResource("Resource_overgrowth_frond_a"), SubResource("Resource_overgrowth_frond_b"), SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_boulder_c"), SubResource("Resource_boulder_d"), SubResource("Resource_stones_a"), SubResource("Resource_stones_b"), SubResource("Resource_rubble_a")])
 ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_tessar"), ExtResource("ore_duskine"), ExtResource("ore_ressa")])
 nests_per_area = 0.9
 part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])

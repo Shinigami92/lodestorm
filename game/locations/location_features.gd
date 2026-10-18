@@ -3,7 +3,8 @@ extends RefCounted
 ## The ground of a generated location's special areas (see `LocationLayout.Kind`): nest hollows
 ## sink, craters are bowls with a rim, plateaus have a mesa with a ramp up its side, ice shelves
 ## and brine flats are flat, frozen lakes lie a bit lower than their shore, a dry wash's bed winds
-## along it below its banks, terrace stairs climb over two slabs by ramps. An ice shelf's cracks
+## along it below its banks, terrace stairs climb over two slabs by ramps, a mire's mud pools lie a
+## bit lower than their shore. An ice shelf's cracks
 ## and a sinkhole field's pits are closed ground, so they become gaps, a butte field's buttes
 ## rise as rock; a lava island has lava all around. Plain data, planned with the location. All
 ## values greybox, TBD (playtest).
@@ -38,6 +39,12 @@ const BED_HALF_WIDTH: float = 4.0
 const BED_DEPTH: float = 1.5
 const BED_BANK: float = 3.0
 const BED_TINT := Color(1.0, 0.96, 0.88)
+## A mire's mud pools: how far their mud lies below the shore and over how many m the shore rises,
+## in m, and the room between a pool's mud and a lane (closer pools are left out; a mire left with
+## fewer than `LocationLayout.POOLS.x` is a basin).
+const POOL_DEPTH: float = 0.4
+const POOL_SHORE: float = 2.0
+const POOL_CLEARANCE: float = 0.5
 ## Kinds of areas whose open ground has its own shape.
 const SHAPED_KINDS: Array[LocationLayout.Kind] = [
 	LocationLayout.Kind.NEST_HOLLOW,
@@ -48,6 +55,7 @@ const SHAPED_KINDS: Array[LocationLayout.Kind] = [
 	LocationLayout.Kind.BRINE_FLAT,
 	LocationLayout.Kind.DRY_WASH,
 	LocationLayout.Kind.TERRACE_STAIRS,
+	LocationLayout.Kind.MIRE,
 ]
 
 var _location: GeneratedLocation
@@ -98,6 +106,29 @@ func fit_lakes(lanes: PackedByteArray) -> Array[Vector3]:
 		area.lake.z = radius
 		lakes.append(area.lake)
 	return lakes
+
+
+## Keeps up to `LocationLayout.POOLS.y` of the mires' mud pools, leaving out the ones that come
+## close to the `lanes`; a mire left with too few is a basin. Returns the pools (x, z, radius).
+func fit_pools(lanes: PackedByteArray) -> Array[Vector3]:
+	var pools: Array[Vector3] = []
+	for area: LocationLayout.Area in _location.layout.areas:
+		if area.kind != LocationLayout.Kind.MIRE:
+			continue
+		var kept: Array[Vector3] = []
+		for pool: Vector3 in area.pools:
+			var reach: float = pool.z + POOL_CLEARANCE + _location.cell
+			if (
+				kept.size() < LocationLayout.POOLS.y
+				and not _near_lane(lanes, Vector2(pool.x, pool.y), reach)
+			):
+				kept.append(pool)
+		if kept.size() < LocationLayout.POOLS.x:
+			area.kind = LocationLayout.Kind.BASIN
+			kept.clear()
+		area.pools = kept
+		pools.append_array(kept)
+	return pools
 
 
 ## Makes the gaps reach where these areas want them: all of a sinkhole field's pits, the lava all
@@ -183,6 +214,16 @@ func height(at: Vector2, swells: FastNoiseLite) -> float:
 				ground = lerpf(ground, top, _mesa(area, at))
 			LocationLayout.Kind.DRY_WASH:
 				offset -= BED_DEPTH * _bed(area, at)
+			LocationLayout.Kind.MIRE:
+				# Each pool level, a bit below its shore.
+				for pool: Vector3 in area.pools:
+					var center := Vector2(pool.x, pool.y)
+					var mud: float = _pool(pool, at)
+					if mud > 0.0:
+						ground = lerpf(
+							ground, swells.get_noise_2dv(center) * biome.floor_relief, mud
+						)
+						offset -= POOL_DEPTH * mud
 			LocationLayout.Kind.TERRACE_STAIRS:
 				# Level slabs, a step apart, above the swells at the area's center.
 				var level: float = swells.get_noise_2dv(area.center) * biome.floor_relief
@@ -205,8 +246,8 @@ func height(at: Vector2, swells: FastNoiseLite) -> float:
 	return ground + offset
 
 
-## How smooth the ground at location-local `at` stays (no bumps): 1 on a frozen lake's ice (fading
-## out over its shore), on a brine flat and on a dry wash's bed.
+## How smooth the ground at location-local `at` stays (no bumps): 1 on a frozen lake's ice and in a
+## mud pool (fading out over their shores), on a brine flat and on a dry wash's bed.
 func smoothness(at: Vector2) -> float:
 	var share: float = 0.0
 	for area: LocationLayout.Area in _shaped:
@@ -221,7 +262,17 @@ func smoothness(at: Vector2) -> float:
 				share = maxf(share, flat)
 			LocationLayout.Kind.DRY_WASH:
 				share = maxf(share, _bed(area, at))
+			LocationLayout.Kind.MIRE:
+				for pool: Vector3 in area.pools:
+					share = maxf(share, _pool(pool, at))
 	return share
+
+
+## How much location-local `at` lies in the mud `pool` (x, z, radius): 1 in it, fading out over its
+## shore.
+func _pool(pool: Vector3, at: Vector2) -> float:
+	var distance: float = at.distance_to(Vector2(pool.x, pool.y))
+	return 1.0 - smoothstep(pool.z, pool.z + POOL_SHORE, distance)
 
 
 ## How far up a plateau's mesa location-local `at` is: 1 on its top, 0 off it, rising along the

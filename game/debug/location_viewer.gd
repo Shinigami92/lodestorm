@@ -2,8 +2,9 @@ extends Control
 ## Developer tool (2D): plans generated locations and draws them from above, to check layouts
 ## faster than in the game. Light ground is walkable from the ship (darker the lower it lies, with
 ## terraces); the barrier is brown where it's rock (walls) and in the biome's gap tint where it's a
-## gap (dark blue crevasses, teal sinkholes, red lava channels, grey-green drops), with white lines
-## for the walls along a gap's edge; bridges are lighter, the hazard in its tint with a ring and
+## gap (dark blue crevasses, teal sinkholes, red lava channels, grey-green drops, dark brown
+## growth), with white lines for the walls along a gap's edge; bridges are lighter, trails' paths
+## darker, the hazard in its tint with a ring and
 ## its name. Buttes are brown rings, a dry wash's bed a sandy line, terrace stairs' slabs squares.
 ## Magenta marks spots a player could fall to without a way back (should be none). Yellow lines
 ## are the passes, rings the areas (with their kind and the walking distance from the ship), dots
@@ -52,12 +53,15 @@ const KIND_COLORS: Dictionary[LocationLayout.Kind, Color] = {
 	LocationLayout.Kind.DRY_WASH: Color(1.0, 0.9, 0.6),
 	LocationLayout.Kind.TERRACE_STAIRS: Color(0.6, 0.95, 1.0),
 	LocationLayout.Kind.SHARD_GARDEN: Color(0.7, 0.85, 1.0),
+	LocationLayout.Kind.MIRE: Color(0.75, 0.6, 0.4),
+	LocationLayout.Kind.FUNGAL_GROVE: Color(0.7, 1.0, 0.55),
 }
 const HAZARD_NAMES: Dictionary[LocationBiome.Hazard, String] = {
 	LocationBiome.Hazard.NONE: "",
 	LocationBiome.Hazard.SLICK_ICE: "Slick ice",
 	LocationBiome.Hazard.VENTS: "Vent",
 	LocationBiome.Hazard.SHARDS: "Shards",
+	LocationBiome.Hazard.MUD: "Mud",
 }
 
 var world_seed: int = 1
@@ -212,6 +216,9 @@ func _draw_ground() -> Image:
 					color = color.lerp(Color(0.95, 0.85, 0.55), 0.25)
 				if _location.is_on_bridge(at.x, at.z):
 					color = color.lerp(Color.WHITE, 0.45)
+				color = color.lerp(
+					LocationPasses.PATH_TINT, _location.passes.path_at(Vector2(at.x, at.z))
+				)
 				if _location.near_hazard(Vector2(at.x, at.z), -GeneratedLocation.HAZARD_MARGIN):
 					color = color.lerp(biome.hazard_tint, 0.7)
 			elif _location.is_gap(at.x, at.z):

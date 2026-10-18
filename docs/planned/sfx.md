@@ -32,7 +32,7 @@ About 30:
 - **Aliens:** the swarmer's chitter (idle), attack, hit (flesh), death; the nest's pulse growing with the escalation, a hatch.
 - **Mining:** placing a miner, its drill loop, the full chime, the hose's flow, the breakdown alarm, repairing.
 - **Mission:** the ramp, the countdown's last-minute beeps, the storm building (ambience) and hitting.
-- **Biomes:** the vents' rumble (1.5 s, rising) and burst (the Ash fields' hazard), the shards' crunch underfoot (the Glass plains' hazard).
+- **Biomes:** the vents' rumble (1.5 s, rising) and burst (the Ash fields' hazard), the shards' crunch underfoot (the Glass plains' hazard), the mud's squelch underfoot (the Overgrowth's hazard).
 - **Interface:** a station opening and closing, highlight, confirm, deny.
 
 Footsteps, the ship's ambience, doors and lifts, and the sounds of the new strains and weapons come with their own steps or the art pass. Music gets its own round later.

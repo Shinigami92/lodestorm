@@ -1,9 +1,10 @@
 class_name LocationHazards
 extends RefCounted
 ## The biome's hazard in a generated location (see `LocationBiome.Hazard`): slick ice on the frozen
-## lakes, vents in the vent fields, patches of shards in the shard gardens; never on a lane or in
-## the landing yard. Planned with the location (plain data, safe on a worker thread); `build` adds
-## the zones (`GroundHazard`). All values greybox, TBD (playtest).
+## lakes, vents in the vent fields, patches of shards in the shard gardens, mud in the mires' pools;
+## never on a lane or in the landing yard (the lakes and pools come with their areas, see
+## `LocationFeatures`). Planned with the location (plain data, safe on a worker thread); `build`
+## adds the zones (`GroundHazard`). All values greybox, TBD (playtest).
 
 ## A vent's reach (its burst's circle), in m, and how many a vent field has (fewest, most).
 const VENT_RADIUS: float = 3.0
@@ -55,7 +56,7 @@ func place(rng: RandomNumberGenerator) -> void:
 				spots.append(Vector3(site.x, site.z, radius))
 
 
-## Adds its zones to `location` (under `Hazards`): slick ice, vents or shards.
+## Adds its zones to `location` (under `Hazards`): slick ice, vents, shards or mud.
 func build(location: GeneratedLocation) -> void:
 	if spots.is_empty():
 		return
@@ -79,6 +80,13 @@ func build(location: GeneratedLocation) -> void:
 				shards.damage_per_second = biome.hazard_damage
 				shards.radius = at.z
 				zone = shards
+			LocationBiome.Hazard.MUD:
+				var mud := GroundMud.new()
+				mud.name = "Mud%d" % (i + 1)
+				mud.speed = biome.hazard_speed
+				mud.radius = at.z
+				mud.color = biome.hazard_tint
+				zone = mud
 			_:
 				zone = GroundHazard.new()
 				zone.name = "SlickIce%d" % (i + 1)

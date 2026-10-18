@@ -17,6 +17,10 @@ enum Barrier {
 	GAPS,
 	## Gaps beside the open ground (lava channels, sinkholes) with the rock rising behind them.
 	GAPS_AND_WALLS,
+	## A band of growth beside the open ground (giant fungal stalks and roots, see
+	## `ScatterType.on_barrier`) at its level, with low rock rising behind it: the walls along its
+	## edge stop walking, shots and sight. Laid out like the gaps (`gap_width`, no `gap_depth`).
+	GROWTH_AND_WALLS,
 }
 
 ## The shape of the gaps beside the open ground.
@@ -48,6 +52,9 @@ enum PassStyle {
 	## Slot canyons: narrow, S-shaped ways, the rock beside them `canyon_depth` higher than beside
 	## the areas.
 	SLOT_CANYONS,
+	## Trails through the growth: S-shaped like slot canyons (without the deeper rock), with a
+	## trodden path down the middle that nothing grows on.
+	TRAILS,
 }
 
 ## The one hazard of the biome's ground: mild, readable and avoidable, never in the landing yard or
@@ -63,6 +70,9 @@ enum Hazard {
 	## Glass shards on the ground in the shard gardens: they hurt whoever walks over them
 	## (`hazard_damage` per second).
 	SHARDS,
+	## Mud in the mire's pools: players and aliens walk slower in it (`hazard_speed`); the dash
+	## isn't slowed.
+	MUD,
 }
 
 @export var display_name: String = ""
@@ -106,7 +116,7 @@ enum Hazard {
 ## the ground comes back up to the floor's level (land nobody reaches), up to the rim at the edges,
 ## or the rock rises (`Barrier.GAPS_AND_WALLS`).
 @export var gap_width: Vector2 = Vector2(10.0, 16.0)
-## How deep a gap is below the floor, in m.
+## How deep a gap is below the floor, in m (0: at its level, a band of growth).
 @export var gap_depth: float = 9.0
 ## How high the lip along a gap's edge rises, in m.
 @export var lip_height: float = 0.4
@@ -135,6 +145,8 @@ enum Hazard {
 @export var hazard_tint: Color = Color(0.75, 0.9, 1.0)
 ## Damage the hazard deals to whoever stands in it: a vent's burst, the shards' per second.
 @export var hazard_damage: float = 0.0
+## How fast players and aliens walk on the hazard's ground: the share of their usual speed.
+@export_range(0.0, 1.0) var hazard_speed: float = 1.0
 
 @export_group("Ground")
 ## Height of the gentle swells on the open ground, in m.
@@ -191,9 +203,14 @@ enum Hazard {
 @export var nest_min_distance: float = 80.0
 
 
-## Whether its barrier has gaps.
+## Whether its barrier has gaps, or a band of growth laid out like them.
 func has_gaps() -> bool:
 	return barrier != Barrier.WALLS
+
+
+## Whether the walls along its gaps' edges stop shots and sight too (growth), not only walking.
+func walls_block_shots() -> bool:
+	return barrier == Barrier.GROWTH_AND_WALLS
 
 
 ## Whether rock rises beyond the open ground (walls, or rock behind the gaps).

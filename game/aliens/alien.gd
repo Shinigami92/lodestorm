@@ -63,6 +63,8 @@ var health: float
 var dead: bool = false
 ## The player or miner being chased, or null.
 var target: Node3D
+## The ground hazards it stands in (slick ice).
+var ground_contact := GroundContact.new()
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Seconds until the next attack is possible.
@@ -137,7 +139,7 @@ func _physics_process(delta: float) -> void:
 			global_basis = Basis(Vector3.UP, yaw)
 
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(
-		move * settings.move_speed, settings.acceleration * delta
+		move * settings.move_speed, settings.acceleration * ground_contact.grip() * delta
 	)
 	if is_on_floor():
 		velocity.y = 0.0

@@ -27,6 +27,7 @@ next_pass = ExtResource("9_rim")
 shader = ExtResource("8_silhouette")
 
 [node name="Player" type="CharacterBody3D"]
+collision_mask = 5
 script = ExtResource("1_script")
 settings = ExtResource("2_settings")
 arsenal = ExtResource("11_arsenal")

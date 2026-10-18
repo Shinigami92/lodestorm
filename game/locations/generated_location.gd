@@ -1,13 +1,15 @@
 class_name GeneratedLocation
 extends Node3D
 ## An outside world generated from a seed and a biome when it appears (every run gets a fresh
-## one): open areas joined by winding passes (a `LocationLayout`), carved into high rock nobody can
-## climb, with plants and rocks, ore fields and alien nests. The ship stands at the location's
-## origin, on a flat landing site; the location's axes are the ship's (nose to -x, ramp to +x).
-## Ores and nests only lie where players can walk to from the ship; rarer ores lie farther along
-## the passes, the rarest in dead ends. Every walkable spot leads back to the ship: there are no
-## pits to fall into. Some areas hold a point of interest or one of the region's set pieces (see
-## `LocationParts`); their markers place ore, nests and crates first.
+## one): open areas joined by passes (a `LocationLayout`), carved into the biome's barrier (high
+## rock nobody can climb, or gaps lowered below the floor with walls along their edges), with
+## plants and rocks (`LocationScatter`), ore fields, alien nests and the biome's hazard. The ship
+## stands at the location's origin, on a flat landing site; the location's axes are the ship's
+## (nose to -x, ramp to +x). Ores and nests only lie where players can walk to from the ship; rarer
+## ores lie farther along the passes, the rarest in dead ends. Every walkable spot leads back to the
+## ship: there are no pits to fall into (a gap's edge is walled off, see `LocationGaps`). Some areas
+## hold a point of interest or one of the region's set pieces (see `LocationParts`); their markers
+## place ore, nests and crates first.
 ## Everything the generator places is greybox; the values are TBD (playtest).
 ## Generating takes a while, so it runs in two steps: `plan` does the heavy work without touching
 ## nodes or servers, so it can run on a worker thread while the location is outside the tree (the
@@ -38,26 +40,13 @@ const SCREE_REACH: int = 2
 const LANE_HALF_WIDTH: float = 5.0
 ## How far into an area (relative to its radius) a lane leads; the middle is open enough.
 const LANE_FREE_MIDDLE: float = 0.6
-## How much an area's or a pass's outline wobbles, relative to its radius or half width.
+## How much an area's outline wobbles, relative to its radius (a pass's: `LocationBiome`).
 const AREA_WOBBLE: float = 0.2
-const PASS_WOBBLE: float = 0.3
 ## Open ground around the landing site, in m: more than `landing_falloff`, so the flat site never
 ## pulls the rock down into a ramp.
 const LANDING_MARGIN: float = 10.0
 ## Distance over which the ground flattened under an ore node or nest blends back, in m.
 const SITE_FALLOFF: float = 3.0
-## Share of the wall's height the cliff rises on its first grid square: much more than players
-## can step up (`MAX_WALK_SLOPE`).
-const FIRST_STEP: float = 0.6
-## The least the cliff rises on its first grid square, in m (low walls on the camera's side too):
-## more than players step up even where bumps and swells of the ground lean towards it.
-const MIN_CLIFF_STEP: float = 3.0
-## Tallest plant or rock that grows on the rock on the camera's side, in m (taller ones would hide
-## the open ground behind the low ledge there).
-const CAMERA_SIDE_SCATTER: float = 1.0
-## Share of the view's drop the rock on the camera's side rises at most, so the camera also sees
-## a bit of the open ground beyond the cliff's foot.
-const VIEW_MARGIN: float = 0.85
 ## How close a nest may be to the landing site in a straight line, relative to
 ## `LocationBiome.nest_min_distance` (which counts along the passes).
 const NEST_STRAIGHT_SHARE: float = 0.6
@@ -65,11 +54,23 @@ const NEST_STRAIGHT_SHARE: float = 0.6
 const HOLLOW_DEPTH: float = 2.5
 const CRATER_DEPTH: float = 3.0
 const CRATER_RIM: float = 2.0
+## A frozen lake: how far its ice lies below the shore, over how many m the shore rises, and its
+## smallest radius (an area without room for it stays a basin), in m.
+const LAKE_DEPTH: float = 0.5
+const LAKE_SHORE: float = 3.0
+const MIN_LAKE_RADIUS: float = 7.0
+## Half the width of an ice shelf's crack where it comes in and at its inner end, in m.
+const CRACK_WIDTH: Vector2 = Vector2(2.8, 1.6)
+## Room between a crack's edge and a lane, in m: a crack ends before it comes closer.
+const CRACK_CLEARANCE: float = 4.0
 ## Kinds of areas whose open ground has its own shape.
 const SHAPED_KINDS: Array[LocationLayout.Kind] = [
-	LocationLayout.Kind.NEST_HOLLOW, LocationLayout.Kind.CRATER, LocationLayout.Kind.PLATEAU
+	LocationLayout.Kind.NEST_HOLLOW,
+	LocationLayout.Kind.CRATER,
+	LocationLayout.Kind.PLATEAU,
+	LocationLayout.Kind.ICE_SHELF,
+	LocationLayout.Kind.FROZEN_LAKE,
 ]
-
 ## The kind of place; when not set, one of `biomes` is picked by the seed.
 @export var biome: LocationBiome
 @export var biomes: Array[LocationBiome] = []
@@ -132,6 +133,14 @@ var _reachable: PackedByteArray
 var _lanes: PackedByteArray
 ## Grid points on the rock on the camera's side of the open ground (1 = only low scatter).
 var _camera_side: PackedByteArray
+## Its gaps (null without them), and the grid points behind the walls along their edges (1 = a gap
+## or its lip; empty without gaps).
+var _gaps: LocationGaps
+var _blocked: PackedByteArray
+## Grid points on a bridge: on a pass, outside the areas (1); empty without bridges.
+var _bridges: PackedByteArray
+## Where the biome's hazard lies (x, z, radius), location-local.
+var _hazards: Array[Vector3] = []
 ## Areas whose open ground has its own shape (hollows, craters, plateaus).
 var _shaped_areas: Array[LocationLayout.Area] = []
 ## Places scatter keeps away from (x, z, radius), location-local.
@@ -144,10 +153,8 @@ var _nest_sites: Array[Vector3] = []
 var _chunk_names: PackedStringArray = []
 var _chunk_arrays: Array[Array] = []
 var _chunk_faces: Array[PackedVector3Array] = []
-## Planned scatter chunks: type, name and placements (`Transform3D`s) of each.
-var _scatter_types: Array[ScatterType] = []
-var _scatter_names: PackedStringArray = []
-var _scatter_placements: Array[Array] = []
+## Its plants and rocks.
+var _scatter := LocationScatter.new()
 var _planned: bool = false
 var _built: bool = false
 
@@ -171,15 +178,17 @@ func plan() -> void:
 	)
 	parts.choose(_rng, layout, set_pieces, biome.part_pool, biome.parts_per_area)
 	_generate_ground()
-	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE)
+	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	parts.settle(_rng, self)
-	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE)
+	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	_pick_ore_sites()
 	_pick_nest_sites()
 	# Flattening the sites changed the ground a little.
-	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE)
+	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
+	if _gaps:
+		_gaps.plan_edges(_reachable)
 	_plan_ground()
-	_plan_scatter()
+	_scatter.plan(_rng, self)
 	_planned = true
 
 
@@ -192,7 +201,10 @@ func build() -> void:
 	_built = true
 	_add_ground()
 	_add_bounds()
-	_add_scatter()
+	if _gaps:
+		_gaps.build(self)
+	_add_hazards()
+	_scatter.build(self)
 	parts.build(self, crate_contents)
 	_add_ore_nodes()
 	_add_nests()
@@ -225,6 +237,43 @@ func is_on_lane(x: float, z: float) -> bool:
 	return _lanes[terrain.index(grid.x, grid.y)] == 1
 
 
+## Whether location-local `x`, `z` lies in a gap (lowered, behind the walls along its edge).
+func is_gap(x: float, z: float) -> bool:
+	return _gaps != null and _flag(_gaps.gaps, x, z)
+
+
+## Whether location-local `x`, `z` lies on a bridge (on a pass, outside the areas).
+func is_on_bridge(x: float, z: float) -> bool:
+	return _flag(_bridges, x, z)
+
+
+## Where the biome's hazard lies (x, z, radius), location-local: known once planned.
+func planned_hazards() -> Array[Vector3]:
+	return _hazards
+
+
+## Whether location-local `at` lies within `reach` m of the biome's hazard or the shore around it.
+func near_hazard(at: Vector2, reach: float) -> bool:
+	for hazard: Vector3 in _hazards:
+		if at.distance_to(Vector2(hazard.x, hazard.y)) < hazard.z + LAKE_SHORE + reach:
+			return true
+	return false
+
+
+## The walls along the gaps' edges: from, to (location-local x, z) of each, one after the other.
+func planned_edges() -> PackedVector2Array:
+	return _gaps.edge_lines if _gaps else PackedVector2Array()
+
+
+func _flag(flags: PackedByteArray, x: float, z: float) -> bool:
+	if flags.is_empty():
+		return false
+	var grid: Vector2i = Vector2i(terrain.to_grid(Vector2(x, z)).round())
+	if not Rect2i(0, 0, terrain.cells + 1, terrain.cells + 1).has_point(grid):
+		return false
+	return flags[terrain.index(grid.x, grid.y)] == 1
+
+
 ## Where the ore nodes go (location-local), and their ores: known once planned.
 func planned_ore_sites() -> Array[Vector3]:
 	return _ore_sites
@@ -242,7 +291,7 @@ func planned_nest_sites() -> Array[Vector3]:
 ## Spots (location-local x, z) a player could fall to from walkable ground without a way back to
 ## the ship: should be none (see `LocationTerrain.stuck_spots`).
 func stuck_spots() -> PackedVector2Array:
-	return terrain.stuck_spots(_reachable, MAX_WALK_SLOPE)
+	return terrain.stuck_spots(_reachable, MAX_WALK_SLOPE, _blocked)
 
 
 func _generate_ground() -> void:
@@ -260,65 +309,75 @@ func _generate_ground() -> void:
 	var rock: FastNoiseLite = _noise(1.0 / 90.0, 3)
 	var bumps: FastNoiseLite = _noise(1.0 / 12.0, 2)
 	var outside: PackedFloat32Array = terrain.distance_outside(_carve(wobble))
-	_camera_side = PackedByteArray()
-	_camera_side.resize(terrain.heights.size())
+	var walls := LocationWalls.new(terrain, biome, rock, view_direction)
+	if biome.barrier == LocationBiome.Barrier.GAPS:
+		# Only gap biomes draw this, so the other biomes' worlds stay as they were for their seeds.
+		_gaps = LocationGaps.new(terrain, biome, _noise(1.0 / 40.0, 2))
+	_fit_lakes()
 	for area: LocationLayout.Area in layout.areas:
 		if area.kind in SHAPED_KINDS:
 			_shaped_areas.append(area)
 	for z: int in cells + 1:
 		for x: int in cells + 1:
 			var at := Vector2(terrain.origin.x + x * cell, terrain.origin.y + z * cell)
-			var walls: float = _walls(outside[terrain.index(x, z)])
-			var ground: float = _shape_of_areas(at, swells)
-			var high: float = maxf(rock.get_noise_2dv(at) + 0.2, 0.0) * biome.rock_relief
-			var rock_height: float = biome.wall_height + _terrace(high)
-			var cap: Vector2 = _view_cap(x, z, outside)
-			rock_height = lerpf(rock_height, minf(rock_height, cap.x), cap.y)
-			if walls > 0.0 and cap.y > 0.1:
-				_camera_side[terrain.index(x, z)] = 1
-			var lift: float = walls * rock_height
-			if walls > 0.0:
-				# However bumpy the ground, the first step onto the rock is too high to climb.
-				lift = maxf(lift, minf(rock_height, MIN_CLIFF_STEP))
-			var height: float = ground + lift
+			var height: float = _shape_of_areas(at, swells)
+			var distance: float = outside[terrain.index(x, z)]
+			if _gaps:
+				height -= _gaps.depth(x, z, distance, walls.share(distance))
+			else:
+				height += walls.rise(x, z, outside)
 			height += bumps.get_noise_2dv(at) * biome.bump_height
 			var to_edge: float = minf(minf(x, cells - x), minf(z, cells - z)) * cell
 			var rim: float = 1.0 - smoothstep(0.0, rim_width, to_edge)
 			height += rim * rim * rim_height
 			terrain.set_height(x, z, height)
+	if _gaps:
+		_gaps.raise_lips()
+		_blocked = _gaps.blocked
+	else:
+		_camera_side = walls.camera_side
 	# One grid square more, so the ground between the grid points inside is flat too.
 	terrain.flatten_rect(landing_site.grow(cell), landing_falloff, 0.0)
 
 
-## How high the rock at grid point `x`, `z` may rise so the camera sees over it to the open ground
-## (`outside`: the distance from it), and how much that applies (by how much the rock lies on the
-## camera's side): (height, weight); weight 0 without a view direction.
-func _view_cap(x: int, z: int, outside: PackedFloat32Array) -> Vector2:
-	var forward := Vector2(view_direction.x, view_direction.z)
-	var distance: float = outside[terrain.index(x, z)]
-	if forward.length() < 0.01 or distance <= 0.0:
-		return Vector2(INF, 0.0)
-	# How much the view drops per m it goes forward.
-	var drop: float = -view_direction.y / forward.length()
-	var toward: Vector2 = Vector2(
-		(
-			outside[terrain.index(maxi(x - 1, 0), z)]
-			- outside[terrain.index(mini(x + 1, terrain.cells), z)]
-		),
-		(
-			outside[terrain.index(x, maxi(z - 1, 0))]
-			- outside[terrain.index(x, mini(z + 1, terrain.cells))]
-		)
+## Shrinks each frozen lake until it keeps off the lanes and inside its area, with its shore; one
+## too small for that stays a basin. The lakes are the slick ice.
+func _fit_lakes() -> void:
+	for area: LocationLayout.Area in layout.areas:
+		if area.kind != LocationLayout.Kind.FROZEN_LAKE:
+			continue
+		var center := Vector2(area.lake.x, area.lake.y)
+		var inside: float = area.radius * (1.0 - AREA_WOBBLE) - center.distance_to(area.center)
+		var radius: float = minf(area.lake.z, inside - LAKE_SHORE)
+		while radius >= MIN_LAKE_RADIUS and _near_lane(center, radius + LAKE_SHORE + cell):
+			radius -= 1.0
+		if radius < MIN_LAKE_RADIUS:
+			area.kind = LocationLayout.Kind.BASIN
+			area.lake = Vector3.ZERO
+			continue
+		area.lake.z = radius
+		if biome.hazard == LocationBiome.Hazard.SLICK_ICE:
+			_hazards.append(area.lake)
+		_clearings.append(Vector3(center.x, center.y, radius + 1.0))
+
+
+## Whether a grid point on a lane lies within `reach` of `at`.
+func _near_lane(at: Vector2, reach: float) -> bool:
+	var low: Vector2i = Vector2i(terrain.to_grid(at - Vector2.ONE * reach).floor()).maxi(0)
+	var high: Vector2i = Vector2i(terrain.to_grid(at + Vector2.ONE * reach).ceil()).mini(
+		terrain.cells
 	)
-	if toward.length() < 0.001:
-		return Vector2(INF, 0.0)
-	var facing: float = toward.normalized().dot(forward.normalized())
-	var weight: float = smoothstep(0.1, 0.5, facing)
-	if weight <= 0.0:
-		return Vector2(INF, 0.0)
-	# Along the view, the open ground is this far ahead.
-	var ahead: float = distance / maxf(facing, 0.3)
-	return Vector2(biome.near_wall_height + _terrace(drop * VIEW_MARGIN * ahead), weight)
+	for z: int in range(low.y, high.y + 1):
+		for x: int in range(low.x, high.x + 1):
+			var index: int = terrain.index(x, z)
+			if _lanes[index] and at.distance_to(_grid_xz(x, z)) <= reach:
+				return true
+	return false
+
+
+## Location-local x, z of grid point `x`, `z`.
+func _grid_xz(x: int, z: int) -> Vector2:
+	return terrain.origin + Vector2(x, z) * cell
 
 
 ## How open each grid point is: positive inside an area, a pass or around the landing site (how
@@ -349,24 +408,56 @@ func _carve(wobble: FastNoiseLite) -> PackedFloat32Array:
 		# top the rock would be a small step).
 		var outward: bool = area.kind == LocationLayout.Kind.PLATEAU
 		_stamp(openness, bends, area.center, area.radius, AREA_WOBBLE, outward)
+	var in_areas: PackedFloat32Array = openness.duplicate()
 	_mark_lane(ramp_exit, Vector2(landing_yard.x, landing_yard.y))
 	for way: LocationLayout.Pass in layout.passes:
 		var ends: Array[LocationLayout.Area] = [layout.areas[way.from], layout.areas[way.to]]
 		for i: int in way.points.size():
-			_stamp(openness, bends, way.points[i], way.width * 0.5, PASS_WOBBLE)
+			_stamp(openness, bends, way.points[i], way.width * 0.5, biome.pass_wobble)
 			if i > 0 and not _in_middle(way.points[i], ends):
 				_mark_lane(way.points[i - 1], way.points[i])
+	if biome.pass_style == LocationBiome.PassStyle.BRIDGES:
+		_bridges.resize(openness.size())
+		for i: int in openness.size():
+			if openness[i] > 0.0 and in_areas[i] <= 0.0:
+				_bridges[i] = 1
+	for area: LocationLayout.Area in layout.areas:
+		if area.kind == LocationLayout.Kind.ICE_SHELF:
+			_carve_cracks(openness, area)
 	return openness
 
 
-## How much of the wall stands at `distance` m from the open ground: 0 on it, 1 on the rock. The
-## first grid point off the open ground already has `FIRST_STEP` of it, so no step from the open
-## ground onto the rock is walkable, however the grid lies along the cliff.
-func _walls(distance: float) -> float:
-	if distance <= 0.0:
-		return 0.0
-	var full: float = maxf(biome.cliff_width, cell * 1.5)
-	return lerpf(FIRST_STEP, 1.0, smoothstep(cell, full, distance))
+## Closes the ice shelf's cracks in `openness`, each up to where it would come close to a lane
+## (dropping the ones that wouldn't reach into the shelf), narrowing towards their inner ends.
+func _carve_cracks(openness: PackedFloat32Array, area: LocationLayout.Area) -> void:
+	var kept: Array[PackedVector2Array] = []
+	for crack: PackedVector2Array in area.cracks:
+		var points := PackedVector2Array()
+		for i: int in crack.size():
+			var half: float = lerpf(CRACK_WIDTH.x, CRACK_WIDTH.y, float(i) / (crack.size() - 1))
+			if _near_lane(crack[i], half + CRACK_CLEARANCE + cell):
+				break
+			points.append(crack[i])
+		var inner: Vector2 = points[points.size() - 1] if points.size() > 1 else area.center
+		if points.size() < 2 or inner.distance_to(area.center) > area.radius * 0.8:
+			continue
+		kept.append(points)
+		for i: int in points.size():
+			var half: float = lerpf(CRACK_WIDTH.x, CRACK_WIDTH.y, float(i) / (crack.size() - 1))
+			_close(openness, points[i], half)
+	area.cracks = kept
+
+
+## Lowers `openness` within `radius` of `center` below 0 (closed ground).
+func _close(openness: PackedFloat32Array, center: Vector2, radius: float) -> void:
+	var low: Vector2i = Vector2i(terrain.to_grid(center - Vector2.ONE * radius).floor()).maxi(0)
+	var high: Vector2i = Vector2i(terrain.to_grid(center + Vector2.ONE * radius).ceil()).mini(
+		terrain.cells
+	)
+	for z: int in range(low.y, high.y + 1):
+		for x: int in range(low.x, high.x + 1):
+			var index: int = terrain.index(x, z)
+			openness[index] = minf(openness[index], _grid_xz(x, z).distance_to(center) - radius)
 
 
 ## Raises `openness` around `center` to a round outline of `radius`, wobbling by `wobble` (a share
@@ -415,8 +506,8 @@ func _mark_lane(from: Vector2, to: Vector2) -> void:
 
 
 ## The open ground's height at location-local `at`, in m: gentle swells (`swells`), and their own
-## shape in special areas: nest hollows sink, craters
-## are bowls with a rim, plateaus have a mesa with a ramp up its side.
+## shape in special areas: nest hollows sink, craters are bowls with a rim, plateaus have a mesa
+## with a ramp up its side, ice shelves are flat, frozen lakes too, with the lake a bit lower.
 func _shape_of_areas(at: Vector2, swells: FastNoiseLite) -> float:
 	var ground: float = swells.get_noise_2dv(at) * biome.floor_relief
 	var offset: float = 0.0
@@ -442,6 +533,17 @@ func _shape_of_areas(at: Vector2, swells: FastNoiseLite) -> float:
 					+ LocationLayout.MESA_HEIGHT
 				)
 				ground = lerpf(ground, top, _mesa(area, at))
+			LocationLayout.Kind.ICE_SHELF, LocationLayout.Kind.FROZEN_LAKE:
+				# The swells pulled to their height at the center.
+				var level: float = swells.get_noise_2dv(area.center) * biome.floor_relief
+				var flat: float = 1.0 - smoothstep(area.radius * 0.8, area.radius, distance)
+				ground = lerpf(ground, level, flat)
+				if area.kind == LocationLayout.Kind.FROZEN_LAKE:
+					var shore: float = at.distance_to(Vector2(area.lake.x, area.lake.y))
+					offset -= (
+						LAKE_DEPTH
+						* (1.0 - smoothstep(area.lake.z, area.lake.z + LAKE_SHORE, shore))
+					)
 	return ground + offset
 
 
@@ -461,17 +563,15 @@ func _mesa(area: LocationLayout.Area, at: Vector2) -> float:
 	return up
 
 
-## Flat steps of `biome.plateau_step`, with a steep rise between them.
-func _terrace(height: float) -> float:
-	var steps: float = height / biome.plateau_step
-	var base: float = floorf(steps)
-	return (base + smoothstep(0.8, 1.0, steps - base)) * biome.plateau_step
-
-
 func _noise(frequency: float, octaves: int) -> FastNoiseLite:
+	return make_noise(_rng, frequency, octaves)
+
+
+## Smooth noise for the generator, its seed drawn from `rng`.
+static func make_noise(rng: RandomNumberGenerator, frequency: float, octaves: int) -> FastNoiseLite:
 	var noise := FastNoiseLite.new()
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
-	noise.seed = _rng.randi()
+	noise.seed = rng.randi()
 	noise.frequency = frequency
 	noise.fractal_octaves = octaves
 	return noise
@@ -629,10 +729,10 @@ func _find_site(radius: float, fits: Callable, around: Vector2, spread: float) -
 	return Vector3.INF
 
 
-## Whether the ground within `radius` of `at` is reachable, off the lanes and even enough to build
-## on, and flattening it changes no step from walkable to too steep or back.
+## Whether the ground within `radius` of `at` is reachable, off the lanes and the hazard and even
+## enough to build on, and flattening it changes no step from walkable to too steep or back.
 func _is_gentle(at: Vector2, radius: float) -> bool:
-	if parts.covers(at, radius):
+	if parts.covers(at, radius) or near_hazard(at, radius + SITE_FALLOFF):
 		return false
 	var points: Array[Vector2i] = _grid_within(at, radius)
 	if points.is_empty():
@@ -757,7 +857,8 @@ func _add_ground() -> void:
 
 
 ## Vertex color of the ground at `point`: RGB a tint (lighter on the rock, varying over large
-## areas), A the share of scree (at the foot of steep ground and in patches).
+## areas, a gap's bottom darker, its lip and the bridges, and the hazard, in their own tints), A the
+## share of scree (at the foot of steep ground and in patches).
 ## `highest`: the highest ground around each grid point (`LocationTerrain.highest_around`).
 func _ground_paint(
 	point: Vector3, shades: FastNoiseLite, patches: FastNoiseLite, highest: PackedFloat32Array
@@ -765,10 +866,18 @@ func _ground_paint(
 	var high: float = smoothstep(0.0, biome.wall_height, point.y)
 	var tint: Color = biome.low_ground_tint.lerp(Color.WHITE, high)
 	var at := Vector2(point.x, point.z)
+	var grid := Vector2i(terrain.to_grid(at).round())
+	var index: int = terrain.index(grid.x, grid.y)
+	if _gaps:
+		tint = tint.lerp(biome.gap_tint, smoothstep(0.0, biome.gap_depth, -point.y))
+		var lip: bool = _blocked[index] and not _gaps.gaps[index]
+		if lip or (not _bridges.is_empty() and _bridges[index]):
+			tint = biome.lip_tint
+	if near_hazard(at, -LAKE_SHORE):
+		tint = biome.hazard_tint
 	tint *= 1.0 + shades.get_noise_2dv(at) * 2.0 * biome.tint_variation
 	# Scree collects where the ground rises steeply close by.
-	var grid := Vector2i(terrain.to_grid(at).round())
-	var rise: float = highest[terrain.index(grid.x, grid.y)] - point.y
+	var rise: float = highest[index] - point.y
 	var foot: float = smoothstep(1.5, 3.5, rise)
 	var patch: float = smoothstep(0.3, 0.5, patches.get_noise_2dv(at))
 	patch *= smoothstep(5.0, 20.0, _distance_to_landing_site(at))
@@ -798,134 +907,50 @@ func _add_bounds() -> void:
 		bounds.add_child(shape)
 
 
-func _add_scatter() -> void:
-	var scatter := Node3D.new()
-	scatter.name = "Scatter"
-	add_child(scatter)
-	for i: int in _scatter_types.size():
-		_add_scatter_chunk(scatter, _scatter_types[i], _scatter_names[i], _scatter_placements[i])
-	_scatter_placements.clear()
+## The biome's hazard: slick ice on the frozen lakes.
+func _add_hazards() -> void:
+	if _hazards.is_empty():
+		return
+	var holder := Node3D.new()
+	holder.name = "Hazards"
+	add_child(holder)
+	for i: int in _hazards.size():
+		var lake: Vector3 = _hazards[i]
+		var zone := GroundHazard.new()
+		zone.name = "SlickIce%d" % (i + 1)
+		zone.grip = biome.hazard_grip
+		zone.collision_layer = 0
+		zone.collision_mask = PhysicsLayers.WORLD
+		var cylinder := CylinderShape3D.new()
+		cylinder.radius = lake.z
+		cylinder.height = 3.0
+		var shape := CollisionShape3D.new()
+		shape.shape = cylinder
+		zone.add_child(shape)
+		zone.position = Vector3(lake.x, terrain.height_at(lake.x, lake.y) + 0.5, lake.y)
+		holder.add_child(zone)
 
 
-## Where the plants and rocks grow, by type and chunk.
-func _plan_scatter() -> void:
-	var chunk_size: float = CHUNK_CELLS * cell
-	var blockers: Array[Vector3] = []
-	for type: ScatterType in biome.scatter:
-		var by_chunk: Dictionary[Vector2i, Array] = {}
-		for placed: Transform3D in _scatter_transforms(type, blockers):
-			var chunk: Vector2i = Vector2i(
-				((Vector2(placed.origin.x, placed.origin.z) - terrain.origin) / chunk_size).floor()
-			)
-			if not by_chunk.has(chunk):
-				by_chunk[chunk] = []
-			by_chunk[chunk].append(placed)
-		for chunk: Vector2i in by_chunk:
-			_scatter_types.append(type)
-			_scatter_names.append(
-				"%s%d_%d" % [type.display_name.to_pascal_case(), chunk.x, chunk.y]
-			)
-			_scatter_placements.append(by_chunk[chunk])
-
-
-## Where `type` grows: on a jittered grid, thinned out by patches, steep ground and clearings.
-## Blocking ones keep their distance from each other (`blockers`: x, z, radius) and off the lanes.
-func _scatter_transforms(type: ScatterType, blockers: Array[Vector3]) -> Array[Transform3D]:
-	var placed: Array[Transform3D] = []
-	if type.density <= 0.0 or not type.has_mesh():
-		return placed
-	var spacing: float = sqrt(100.0 / type.density)
-	var patches: FastNoiseLite = _noise(1.0 / type.patch_size, 2)
-	var steps: int = floori(terrain.size() / spacing)
-	for row: int in steps:
-		for column: int in steps:
-			var at: Vector2 = (
-				terrain.origin
-				+ (Vector2(column, row) + Vector2(_rng.randf(), _rng.randf())) * spacing
-			)
-			var patch: float = smoothstep(-0.05, 0.15, patches.get_noise_2dv(at))
-			if _rng.randf() > lerpf(1.0, patch, type.clustering):
-				continue
-			var grown: float = _rng.randf_range(type.min_scale, type.max_scale)
-			var radius: float = type.blocking_radius * grown
-			var tall: bool = type.blocking_height * grown > CAMERA_SIDE_SCATTER
-			if not _can_scatter(at, type.max_slope, radius, blockers, tall):
-				continue
-			if radius > 0.0:
-				blockers.append(Vector3(at.x, at.y, radius))
-			var tilt: float = deg_to_rad(_rng.randf_range(-type.max_tilt, type.max_tilt))
-			var turn := Basis(Vector3.UP, _rng.randf() * TAU) * Basis(Vector3.RIGHT, tilt)
-			var height: float = terrain.height_at(at.x, at.y) - type.sink * grown
-			placed.append(
-				Transform3D(turn.scaled(Vector3.ONE * grown), Vector3(at.x, height, at.y))
-			)
-	return placed
-
-
-## Whether something of `radius` (0: not blocking) can grow at `at`: not on lanes, clearings or
-## ground steeper than `max_slope`, away from other `blockers`, and not `tall` on the camera's side.
-func _can_scatter(
-	at: Vector2, max_slope: float, radius: float, blockers: Array[Vector3], tall: bool
-) -> bool:
+## Whether a plant or rock of `radius` (0: not blocking) may grow at location-local `at`: on the
+## ground, off the landing site, the gaps, the clearings and (blocking ones) the lanes, and not
+## `tall` on the rock on the camera's side (see `LocationScatter`).
+func lets_grow(at: Vector2, radius: float, tall: bool) -> bool:
 	if not terrain.rect().grow(-cell).has_point(at):
 		return false
 	if _distance_to_landing_site(at) < 4.0 + radius:
 		return false
 	var grid: Vector2i = Vector2i(terrain.to_grid(at).round())
 	var index: int = terrain.index(grid.x, grid.y)
-	var kept_free: bool = (
-		(radius > 0.0 and _lanes[index] == 1) or (tall and _camera_side[index] == 1)
-	)
-	if kept_free or terrain.slope(grid.x, grid.y) > max_slope:
+	if (
+		(radius > 0.0 and _lanes[index] == 1)
+		or (tall and not _camera_side.is_empty() and _camera_side[index] == 1)
+		or (not _blocked.is_empty() and _blocked[index] == 1)
+	):
 		return false
 	for clearing: Vector3 in _clearings:
 		if at.distance_to(Vector2(clearing.x, clearing.y)) < clearing.z + radius:
 			return false
-	if radius > 0.0:
-		for blocker: Vector3 in blockers:
-			if at.distance_squared_to(Vector2(blocker.x, blocker.y)) < pow(blocker.z + radius, 2):
-				return false
 	return true
-
-
-func _add_scatter_chunk(
-	parent: Node3D, type: ScatterType, chunk_name: String, transforms: Array
-) -> void:
-	if not type.get_mesh():
-		return
-	var multimesh := MultiMesh.new()
-	multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	multimesh.mesh = type.get_mesh()
-	multimesh.instance_count = transforms.size()
-	for i: int in transforms.size():
-		var placed: Transform3D = transforms[i]
-		multimesh.set_instance_transform(i, placed)
-	var instance := MultiMeshInstance3D.new()
-	instance.name = chunk_name
-	instance.multimesh = multimesh
-	instance.visibility_range_end = type.visibility_range
-	# Fade in and out instead of popping, a whole chunk at a time.
-	instance.visibility_range_end_margin = type.visibility_range * 0.25
-	instance.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-	if not type.cast_shadow:
-		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	parent.add_child(instance)
-	if type.blocking_radius <= 0.0:
-		return
-	var body := StaticBody3D.new()
-	body.name = instance.name + "Body"
-	for placed: Transform3D in transforms:
-		var grown: float = placed.basis.get_scale().x
-		var cylinder := CylinderShape3D.new()
-		cylinder.radius = type.blocking_radius * grown
-		cylinder.height = type.blocking_height * grown
-		var shape := CollisionShape3D.new()
-		shape.shape = cylinder
-		# The collider stands on the ground, wherever the mesh's origin is.
-		var ground: float = placed.origin.y + type.sink * grown
-		shape.position = Vector3(placed.origin.x, ground + cylinder.height * 0.5, placed.origin.z)
-		body.add_child(shape)
-	parent.add_child(body)
 
 
 func _add_ore_nodes() -> void:

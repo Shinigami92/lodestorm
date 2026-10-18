@@ -114,8 +114,11 @@ func highest_around(reach: int) -> PackedFloat32Array:
 
 
 ## Grid squares that can be walked from `start` (location-local x, z) without climbing a slope
-## steeper than `max_slope` (rise per m) between neighboring grid points. 1 = reachable.
-func reachable_from(start: Vector2, max_slope: float) -> PackedByteArray:
+## steeper than `max_slope` (rise per m) between neighboring grid points, nor onto the `blocked`
+## ones (1 = behind a wall; empty: none). 1 = reachable.
+func reachable_from(
+	start: Vector2, max_slope: float, blocked: PackedByteArray = PackedByteArray()
+) -> PackedByteArray:
 	var reached := PackedByteArray()
 	reached.resize(heights.size())
 	var grid: Vector2 = to_grid(start).round()
@@ -137,6 +140,8 @@ func reachable_from(start: Vector2, max_slope: float) -> PackedByteArray:
 				continue
 			var next: int = index(nx, nz)
 			if reached[next] or absf(heights[next] - heights[current]) > max_rise:
+				continue
+			if not blocked.is_empty() and blocked[next]:
 				continue
 			reached[next] = 1
 			queue.append(next)
@@ -222,8 +227,11 @@ func _flatten_area(
 
 ## Spots (location-local x, z) something could fall to from the `reachable` grid points (see
 ## `reachable_from`) without a way back: where the ground stops dropping steeper than `max_slope`
-## and it isn't reachable. A fall ends where the ground stops dropping steeply.
-func stuck_spots(reachable: PackedByteArray, max_slope: float) -> PackedVector2Array:
+## and it isn't reachable. A fall ends where the ground stops dropping steeply. Nothing falls onto
+## the `blocked` grid points (behind a wall).
+func stuck_spots(
+	reachable: PackedByteArray, max_slope: float, blocked: PackedByteArray = PackedByteArray()
+) -> PackedVector2Array:
 	var stuck := PackedVector2Array()
 	var max_rise: float = max_slope * cell
 	var side: int = cells + 1
@@ -236,6 +244,8 @@ func stuck_spots(reachable: PackedByteArray, max_slope: float) -> PackedVector2A
 		for next: Vector2i in neighbors(x, z):
 			var below: int = index(next.x, next.y)
 			if reachable[below] or heights[current] - heights[below] <= max_rise:
+				continue
+			if not blocked.is_empty() and blocked[below]:
 				continue
 			var landed: Vector2i = _slide_down(next, reachable, max_slope)
 			if not reachable[index(landed.x, landed.y)]:

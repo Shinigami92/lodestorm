@@ -6,6 +6,7 @@ const REAL_TIME := preload("res://tests/support/real_time.gd")
 const SWEEP := preload("res://tests/support/location_sweep.gd")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowth.tres")
+const FROST: LocationBiome = preload("res://game/locations/biomes/frost.tres")
 const AREAS: int = 6
 
 
@@ -202,8 +203,45 @@ func test_collision_matches_heights() -> void:
 
 
 ## Aliens find a way from their nests to the ship.
+## Walls along the gaps' edges stop players and aliens but not shots; the slick ice is there.
+func test_gap_edges_block_walking_not_shots() -> void:
+	var location: GeneratedLocation = _generate(2, FROST)
+	await wait_physics_frames(2)
+	var edges := location.get_node("GapEdges") as StaticBody3D
+	assert_eq(edges.collision_layer, PhysicsLayers.WALKING_ONLY)
+	assert_eq(edges.collision_mask, 0)
+	var lines: PackedVector2Array = location.planned_edges()
+	var space: PhysicsDirectSpaceState3D = location.get_world_3d().direct_space_state
+	for i: int in range(0, lines.size(), 2 * 97):
+		var middle: Vector2 = (lines[i] + lines[i + 1]) * 0.5
+		var across: Vector2 = (lines[i + 1] - lines[i]).orthogonal().normalized()
+		var height: float = location.terrain.height_at(middle.x, middle.y) + 1.5
+		var from: Vector3 = location.to_global(Vector3(middle.x, height, middle.y))
+		var to: Vector3 = from + location.global_basis * Vector3(across.x, 0.0, across.y)
+		from -= to - from
+		var walking := PhysicsRayQueryParameters3D.create(from, to, PhysicsLayers.WALKING_ONLY)
+		var stopped: Object = space.intersect_ray(walking).get(&"collider")
+		assert_eq(stopped, edges, "walls stop walking")
+		var shot := PhysicsRayQueryParameters3D.create(from, to, PhysicsLayers.SHOTS)
+		var hit: Object = space.intersect_ray(shot).get(&"collider")
+		assert_ne(hit, edges, "shots fly over")
+	var zones: Array[Node] = location.get_node("Hazards").get_children()
+	assert_eq(zones.size(), location.planned_hazards().size())
+	for zone: Node in zones:
+		assert_eq((zone as GroundHazard).grip, FROST.hazard_grip)
+
+
 func test_navigation_reaches_nests() -> void:
-	var location: GeneratedLocation = _generate(2)
+	await _check_navigation(_generate(2))
+
+
+## Aliens walk around the gaps to the next bridge (a test of its own: locations in one test share
+## the navigation map).
+func test_navigation_goes_around_gaps() -> void:
+	await _check_navigation(_generate(2, FROST))
+
+
+func _check_navigation(location: GeneratedLocation) -> void:
 	var map: RID = location.get_world_3d().navigation_map
 	var navigation := location.get_node("Navigation") as LocationNavigation
 	# The walkable area is baked on a worker thread; the map takes it over at its next sync (and
@@ -227,6 +265,10 @@ func test_navigation_reaches_nests() -> void:
 		assert_gt(path.size(), 1, nest.name)
 		if path.size() > 1:
 			assert_lt(path[path.size() - 1].distance_to(nest.global_position), 9.0, nest.name)
+		# Around the gaps, never through them.
+		for point: Vector3 in path:
+			var local: Vector3 = location.to_local(point)
+			assert_false(location.is_gap(local.x, local.z), "%s: through a gap" % nest.name)
 
 
 ## The game's map lands the ship on the generated world's landing site.

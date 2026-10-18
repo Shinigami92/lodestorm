@@ -10,7 +10,7 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 |---|---|---|
 | [`player-display.md`](player-display.md) | the suit ring on the ground | with the weapons, crafted miners and quests (M4) |
 | [`menu-pause.md`](menu-pause.md) | what's left of the title view and the pause panel: co-op sessions, the Steam overlay, more settings, VR | M6, M7, M8 |
-| [`biomes.md`](biomes.md) | the six biomes' own geography: walls and gaps, passes, area kinds, hazards | M4, step 6 (assets M5) |
+| [`biomes.md`](biomes.md) | the other five biomes' own geography (barriers, passes, area kinds, hazards) and the biomes' assets | M4, step 6 B–D (assets M5) |
 | [`aliens.md`](aliens.md) | ten strains and the Ravager, roles, armor and stagger, hatch tables, hit feedback | M4, step 7 |
 | [`sfx.md`](sfx.md) | sound effects synthesized by our own scripts (CC0 recordings where needed), the audio setup, the first 30 sounds | M4, step 7 |
 | [`station.md`](station.md) | Waypost Ostra: docking, the map, the ore exchange, its NPCs | M4, step 8 |

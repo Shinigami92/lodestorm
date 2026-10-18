@@ -60,7 +60,7 @@ func _in_swing(alien: Alien, direction: Vector3, exclude: Array[RID]) -> bool:
 	if distance > 0.01 and offset.angle_to(direction) > deg_to_rad(settings.arc) * 0.5:
 		return false
 	var query := PhysicsRayQueryParameters3D.create(
-		holder.global_position + Vector3.UP, alien.get_aim_point()
+		holder.global_position + Vector3.UP, alien.get_aim_point(), PhysicsLayers.SHOTS
 	)
 	query.exclude = exclude
 	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()

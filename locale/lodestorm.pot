@@ -892,6 +892,26 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
+#: game/ui/settings_list.tscn
+msgid "Suit ring"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Small"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Medium"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Large"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Always show"
+msgstr ""
+
 #: game/ui/settings_menu.gd
 msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
 msgstr ""

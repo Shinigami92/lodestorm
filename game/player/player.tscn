@@ -14,6 +14,8 @@
 [ext_resource type="Script" uid="uid://dqnkf5jxxct5w" path="res://game/player/player_animator.gd" id="11_animator"]
 [ext_resource type="Resource" uid="uid://ggx6tlfvpyaw" path="res://game/progression/upgrades/armor.tres" id="12_armor"]
 [ext_resource type="Script" uid="uid://deeyxoo5wte0w" path="res://game/player/suit_ring.gd" id="13_suit_ring"]
+[ext_resource type="Script" uid="uid://bnwehkhg05fkb" path="res://game/player/target_marker.gd" id="14_target_marker"]
+[ext_resource type="Script" uid="uid://bprh6h24j2r2n" path="res://game/player/ore_arrival.gd" id="15_ore_arrival"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -23,21 +25,6 @@ height = 1.8
 render_priority = 1
 next_pass = ExtResource("9_rim")
 shader = ExtResource("8_silhouette")
-
-[sub_resource type="PrismMesh" id="PrismMesh_arrow"]
-size = Vector3(0.8, 0.9, 0.04)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_target_marker"]
-no_depth_test = true
-shading_mode = 0
-albedo_color = Color(1, 0.7, 0.3, 1)
-
-[sub_resource type="TorusMesh" id="TorusMesh_target_marker"]
-material = SubResource("StandardMaterial3D_target_marker")
-inner_radius = 0.8
-outer_radius = 0.95
-rings = 24
-ring_segments = 4
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_script")
@@ -77,14 +64,9 @@ script = ExtResource("5_cargo_rack")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 script = ExtResource("6_ship_pointer")
 
-[node name="Arrow" type="MeshInstance3D" parent="ShipPointer"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -2.8)
-cast_shadow = 0
-mesh = SubResource("PrismMesh_arrow")
-
 [node name="Countdown" type="Label3D" parent="ShipPointer"]
 auto_translate_mode = 2
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -2.8)
 billboard = 1
 no_depth_test = true
 pixel_size = 0.009
@@ -96,7 +78,11 @@ uppercase = true
 top_level = true
 visible = false
 cast_shadow = 0
-mesh = SubResource("TorusMesh_target_marker")
+script = ExtResource("14_target_marker")
 
 [node name="SuitRing" type="MeshInstance3D" parent="."]
 script = ExtResource("13_suit_ring")
+
+[node name="OreArrival" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.35, 0)
+script = ExtResource("15_ore_arrival")

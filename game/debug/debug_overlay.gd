@@ -4,8 +4,9 @@ extends CanvasLayer
 ## (debug ones too) it removes itself at start. Tuning changes the settings resources live, so
 ## every scene using them sees the new values right away; they last until the game stops and
 ## aren't written to the files. Also shows the mission and flight state and has shortcuts for
-## testing the flight, storm, death, fights, weapons, ammo, upgrades and the heat shield. Integer
-## settings get whole-number sliders.
+## testing the flight, storm, death, fights, weapons, ammo, upgrades and the heat shield, and
+## teammates standing still (to see their rings before co-op). Integer settings get whole-number
+## sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -113,6 +114,7 @@ const ALL_ORES: OreCatalog = preload("res://game/ores/all_ores.tres")
 ## How much `fill_hold` adds of each ore.
 const HOLD_FILL: float = 900.0
 const CARGO_FILL: float = 60.0
+const PLAYER_SCENE_PATH: String = "res://game/player/player.tscn"
 
 ## Values from the files, for `reset_tuning`, keyed by "path:property".
 var _defaults: Dictionary[String, float] = {}
@@ -292,6 +294,38 @@ func give_ore() -> void:
 			player.add_cargo(ore_type, CARGO_FILL)
 
 
+## Adds a teammate beside the local player: a player this machine doesn't play (it stands still),
+## with the lowest free number. Returns it, or null when all four are there.
+func _add_teammate() -> Player:
+	var local: Player = null
+	var numbers: Array[int] = []
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		numbers.append(player.number)
+		if player.local and not local:
+			local = player
+	if not local:
+		return null
+	for number: int in range(1, Player.COLORS.size() + 1):
+		if number in numbers:
+			continue
+		# Loaded here, not preloaded: the player's scripts are heavy for an autoload.
+		var teammate := (load(PLAYER_SCENE_PATH) as PackedScene).instantiate() as Player
+		teammate.local = false
+		teammate.number = number
+		local.get_parent().add_child(teammate)
+		teammate.global_position = local.global_position + local.global_basis.x * 2.5
+		teammate.reset_physics_interpolation()
+		return teammate
+	return null
+
+
+## Removes the teammates `_add_teammate` added (every player this machine doesn't play).
+func _remove_teammates() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if not player.local:
+			player.queue_free()
+
+
 ## Adds `HOLD_FILL` units of every ore type to each ship's hold, to test the upgrade stations.
 func fill_hold() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
@@ -367,6 +401,8 @@ func _build() -> void:
 	_button(actions, "Learn skills", learn_skills)
 	_button(actions, "Fill hold", fill_hold)
 	_button(actions, "Give ore", give_ore)
+	_button(actions, "Add teammate", _add_teammate)
+	_button(actions, "Remove teammates", _remove_teammates)
 	_button(actions, "Reset save", reset_save)
 	_button(actions, "Reset tuning", reset_tuning)
 

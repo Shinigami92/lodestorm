@@ -16,6 +16,11 @@ func before_each() -> void:
 	await wait_process_frames(1)
 
 
+func after_each() -> void:
+	GameSettings.ring_size = GameSettings.RING_MEDIUM
+	GameSettings.ring_always_show = false
+
+
 func test_health_arc_shows_the_share_in_its_color() -> void:
 	assert_true(_ring.visible)
 	assert_eq(_number(&"health_fill"), 1.0)
@@ -100,6 +105,57 @@ func test_quiet_aboard_and_hidden_when_dead() -> void:
 	_player.take_damage(_player.max_health())
 	await wait_process_frames(1)
 	assert_false(_ring.visible)
+
+
+func test_always_show_keeps_the_arcs_lit() -> void:
+	GameSettings.ring_always_show = true
+	await wait_seconds(0.2 + SuitRing.FADE_TIME + 0.2)
+	assert_eq(_ring.health_glow, 1.0)
+	assert_eq(_ring.ammo_glow, 1.0)
+
+
+func test_size_setting_scales_the_ring() -> void:
+	await wait_process_frames(1)
+	assert_almost_eq(_ring.global_basis.get_scale().x, 1.0, 0.001)
+	var reach: float = _ring.pointer_reach()
+	GameSettings.ring_size = 2
+	await wait_process_frames(1)
+	var large: float = GameSettings.RING_SCALES[2]
+	assert_almost_eq(_ring.global_basis.get_scale().x, large, 0.001)
+	assert_almost_eq(_ring.pointer_reach(), reach * large, 0.001)
+
+
+func test_teammates_ring_shows_only_health_and_their_color() -> void:
+	var teammate := PLAYER_SCENE.instantiate() as Player
+	teammate.local = false
+	teammate.number = 2
+	add_child_autofree(teammate)
+	var ring := teammate.get_node("SuitRing") as SuitRing
+	await wait_process_frames(1)
+	teammate.take_damage(5.0, teammate.global_position + Vector3(4.0, 0.0, 0.0))
+	await wait_process_frames(1)
+	assert_true(ring.visible)
+	assert_false(ring.shows_ammo())
+	var ammo_alpha: float = ring.shown(&"ammo_alpha")
+	assert_eq(ammo_alpha, 0.0)
+	assert_eq(ring.hits.size(), 0, "no hit marks")
+	var team_alpha: float = ring.shown(&"team_alpha")
+	assert_eq(team_alpha, 1.0)
+	assert_eq(Color(ring.shown(&"team_color") as Color, 1.0), Player.COLORS[1])
+	assert_eq(_number(&"team_alpha"), 0.0, "the local player's ring has no outline")
+
+
+func test_teammates_dont_take_the_input() -> void:
+	var teammate := PLAYER_SCENE.instantiate() as Player
+	teammate.local = false
+	add_child_autofree(teammate)
+	await wait_physics_frames(1)
+	Input.action_press(&"move_left")
+	await wait_physics_frames(10)
+	Input.action_release(&"move_left")
+	assert_almost_eq(Vector2(teammate.velocity.x, teammate.velocity.z).length(), 0.0, 0.001)
+	assert_gt(Vector2(_player.velocity.x, _player.velocity.z).length(), 0.0)
+	assert_false(teammate.pause_panel.can_open())
 
 
 func _shown_rgb(parameter: StringName) -> Color:

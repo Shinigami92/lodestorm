@@ -1,0 +1,170 @@
+class_name OreArrival
+extends Node3D
+## Ore arriving (a child of the player, above its head; see GAME_DESIGN.md, UI): while a hose
+## delivers, a line with each arriving ore's badge and its amount ("+180") shows above the player,
+## counting up; once the ore stops coming (slower than `SETTLE_RATE`), it rises and fades over
+## `RISE_TIME`. A slow trickle (a miner filling while the player stands by) shows once it adds up
+## to `MIN_AMOUNT`. Several ores share one line. The line is a card (`OreBadge`s and labels)
+## rendered in a SubViewport onto a sprite facing the camera, drawn over everything like the
+## damage numbers.
+
+## A delivery shows once it reaches this many units. TBD (playtest).
+const MIN_AMOUNT: float = 10.0
+## Units per second below which a delivery counts as done and rises. TBD (playtest).
+const SETTLE_RATE: float = 5.0
+## Seconds over which the arrival rate is averaged.
+const RATE_TIME: float = 0.4
+## How long a finished delivery rises (s) and how far (m).
+const RISE_TIME: float = 2.0
+const RISE: float = 0.7
+## The card's height in pixels and the sprite's size of a pixel (m): about as tall as the ship's
+## countdown.
+const LINE_HEIGHT: int = 64
+const PIXEL_SIZE: float = 0.008
+const FONT_SIZE: int = 52
+const OUTLINE_SIZE: int = 14
+
+## The delivery shown (or still forming), per ore.
+var amounts: Dictionary[OreType, float] = {}
+## Whether the shown delivery is done and rises.
+var rising: bool = false
+
+## Ore arriving while the last delivery rises: the next one.
+var _next: Dictionary[OreType, float] = {}
+var _age: float = 0.0
+## Units per second arriving lately, and what arrived since the last frame.
+var _rate: float = 0.0
+var _arrived: float = 0.0
+var _viewport := SubViewport.new()
+var _row := HBoxContainer.new()
+var _sprite := Sprite3D.new()
+## The amount label per ore shown.
+var _labels: Dictionary[OreType, Label] = {}
+var _start: Vector3
+
+@onready var _player: Player = get_parent() as Player
+
+
+func _ready() -> void:
+	_start = position
+	_viewport.transparent_bg = true
+	_viewport.disable_3d = true
+	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	_row.add_theme_constant_override(&"separation", 18)
+	_row.resized.connect(_fit)
+	_viewport.add_child(_row)
+	add_child(_viewport)
+	_sprite.texture = _viewport.get_texture()
+	_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	_sprite.no_depth_test = true
+	_sprite.shaded = false
+	_sprite.pixel_size = PIXEL_SIZE
+	_sprite.render_priority = WorldPanel.ON_TOP_PRIORITY
+	_sprite.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_sprite)
+	_player.cargo_added.connect(_on_cargo_added)
+	_player.died.connect(clear)
+	_show(false)
+
+
+func _process(delta: float) -> void:
+	_rate = lerpf(_arrived / maxf(delta, 0.0001), _rate, exp(-delta / RATE_TIME))
+	_arrived = 0.0
+	if rising:
+		_age += delta
+		if _age >= RISE_TIME or _total(_next) >= MIN_AMOUNT:
+			_begin(_next)
+	elif _total(amounts) >= MIN_AMOUNT and _rate < SETTLE_RATE:
+		rising = true
+		_age = 0.0
+	var shown: bool = rising or _total(amounts) >= MIN_AMOUNT
+	_show(shown)
+	if not shown:
+		return
+	_update_labels()
+	var t: float = clampf(_age / RISE_TIME, 0.0, 1.0) if rising else 0.0
+	position = _start + Vector3.UP * RISE * (1.0 - (1.0 - t) * (1.0 - t))
+	_sprite.modulate.a = 1.0 - t * t
+
+
+## Forgets what arrived (the player died and dropped it).
+func clear() -> void:
+	_begin({})
+	_next.clear()
+	_rate = 0.0
+	_arrived = 0.0
+
+
+## The text shown for `ore_type`, or "" when it isn't in the line.
+func shown_text(ore_type: OreType) -> String:
+	return _labels[ore_type].text if ore_type in _labels and _sprite.visible else ""
+
+
+func _on_cargo_added(ore_type: OreType, amount: float) -> void:
+	var batch: Dictionary[OreType, float] = _next if rising else amounts
+	batch[ore_type] = batch.get(ore_type, 0.0) + amount
+	_arrived += amount
+
+
+## Starts showing `batch` as the delivery (empty: nothing).
+func _begin(batch: Dictionary[OreType, float]) -> void:
+	amounts = batch.duplicate()
+	_next = {}
+	rising = false
+	_age = 0.0
+	position = _start
+	for node: Node in _row.get_children():
+		_row.remove_child(node)
+		node.queue_free()
+	_labels.clear()
+
+
+func _update_labels() -> void:
+	for ore_type: OreType in amounts:
+		if ore_type not in _labels:
+			_add_item(ore_type)
+		_labels[ore_type].text = "+%d" % floori(amounts[ore_type])
+
+
+func _add_item(ore_type: OreType) -> void:
+	var item := HBoxContainer.new()
+	item.add_theme_constant_override(&"separation", 6)
+	var badge := OreBadge.new(ore_type, false)
+	item.add_child(badge)
+	var label := Label.new()
+	# Numbers only: nothing to translate.
+	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	label.add_theme_font_size_override(&"font_size", FONT_SIZE)
+	label.add_theme_constant_override(&"outline_size", OUTLINE_SIZE)
+	label.add_theme_color_override(&"font_outline_color", Color(0.0, 0.0, 0.0, 0.85))
+	label.add_theme_color_override(&"font_color", ore_type.color.lerp(Color.WHITE, 0.35))
+	item.add_child(label)
+	_row.add_child(item)
+	# The badge's icon as tall as the digits.
+	for child: Node in badge.get_children():
+		var icon := child as TextureRect
+		if icon:
+			icon.custom_minimum_size = Vector2.ONE * LINE_HEIGHT * 0.8
+	_labels[ore_type] = label
+
+
+## Sizes the viewport to the line.
+func _fit() -> void:
+	var size := Vector2i(ceili(_row.size.x), LINE_HEIGHT)
+	_row.position = Vector2.ZERO
+	_row.size = Vector2(_row.size.x, LINE_HEIGHT)
+	_viewport.size = Vector2i(maxi(size.x, 1), size.y)
+
+
+func _show(shown: bool) -> void:
+	_sprite.visible = shown
+	_viewport.render_target_update_mode = (
+		SubViewport.UPDATE_ALWAYS if shown else SubViewport.UPDATE_DISABLED
+	)
+
+
+static func _total(batch: Dictionary[OreType, float]) -> float:
+	var total: float = 0.0
+	for ore_type: OreType in batch:
+		total += batch[ore_type]
+	return total

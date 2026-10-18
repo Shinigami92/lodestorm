@@ -43,17 +43,18 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 4 B: each opened planet raising the highest MK level (MK3 to MK8, a body's tier + 2), aliens (health, damage, nests) and the storm (warning, growth) scaling per tier, the ore-cost rule for every upgrade (a common and a mid ore, from MK3 the signature ore of the level's planet) and for the skills by their depth
 - Step 5 A: the title view in the world instead of a main menu (the ship from outside, the name, "Press any button", the credits after a while), the pause panel beside the player in the wrist display's frame (resume, settings, quit; the world stops solo, also on focus loss; the wrist display and its `wrist` action removed), the settings in one component (pause panel and settings terminal), quitting from the panel like the bed, the credits page
 - Step 5 B: the suit ring on the ground (health with the hit directions, ammo with reloads and the timing window, spare magazine ticks, the dash, the green band for handing ammo; fixed to the screen, dimming when quiet, tilting with the ground, hidden by cliffs and props), replacing the reload ring, the backpack's spare cells and the dash strip; a probe with shots of crowded moments
+- Step 5 C: ore arriving as badges with amounts above the player, the ship's and the ore scanner's arrows on the ring's edge, the target lock as corner brackets in the player's color, players' numbers and colors with teammates' reduced rings (only the local player takes input; debug teammates), the ring's size and "Always show" in the settings
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–4 and 5 A–B are done).
+Each step builds on the ones before it (steps 1–4 and 5 A–C are done).
 
 - [ ] **Step 5 — the player during a mission** ([`planned/player-display.md`](planned/player-display.md)); early, because the aliens, weapons, crafted miners and skills all show on the suit ring
   - [x] **A** the title view and the pause panel (done, see above)
   - [x] **B** the suit ring (done, see above)
-  - [ ] **C** ore arriving, the ground markings' own shapes, teammates' reduced rings, the ring settings (in the new settings)
+  - [x] **C** ore arriving, the ground markings' own shapes, teammates' reduced rings, the ring settings (done, see above)
   - [ ] **D** the palette probe ([`planned/art.md`](planned/art.md)): every color the game uses side by side, normal and for the three common color blindnesses
 - [ ] **Step 6 — the biomes' own geography** ([`planned/biomes.md`](planned/biomes.md)), in greybox (their textures and meshes come with the art pass, M5)
   - [ ] **A** the framework (barrier, pass style, own area kinds and hazard as data on the biome; gaps with blocked edges and the navigation mesh around them; the location viewer and seed sweep) with the *Frost fields* first (on Lisk, open now; crevasses, snow bridges, ice shelf, frozen lake)

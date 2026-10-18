@@ -2,7 +2,7 @@ class_name PlayerAim
 extends Node
 ## Where the `holder` aims: at the mouse cursor on the ground, with the right stick, or else in the
 ## movement direction. An alien under the cursor, or close to where the stick points, gets locked
-## on (`marker`, a ring under it): the holder turns to it and shots fly straight at it, also up or
+## on (shown by `TargetMarker`): the holder turns to it and shots fly straight at it, also up or
 ## down a slope. Other aim sources (VR controllers, remote players) set `direction` and `target`
 ## through `towards`, `at_screen_position` or `with_stick` the same way.
 
@@ -14,8 +14,6 @@ const CURSOR_CEILING: float = 3.0
 
 ## The player aiming.
 var holder: Player
-## Shown under the locked-on alien.
-var marker: Node3D
 ## Horizontal unit vector the holder faces and attacks in.
 var direction: Vector3 = Vector3.FORWARD
 ## The alien locked on, or null.
@@ -28,15 +26,6 @@ var _with_mouse: bool = false
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_with_mouse = true
-
-
-func _process(_delta: float) -> void:
-	if not marker:
-		return
-	var locked: bool = is_lockable(target)
-	marker.visible = locked
-	if locked:
-		marker.global_position = target.global_position + Vector3.UP * 0.05
 
 
 ## Aims with the player's input this physics step: the right stick, else the mouse, else the

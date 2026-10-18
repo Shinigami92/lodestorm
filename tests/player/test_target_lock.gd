@@ -86,11 +86,16 @@ func test_locked_shots_hit_alien_above() -> void:
 
 
 func test_marker_shows_under_locked_alien() -> void:
-	var marker: Node3D = _player.get_node("TargetMarker")
+	var marker := _player.get_node("TargetMarker") as TargetMarker
 	var alien: Alien = await _alien_at(_screen_right() * 6.0)
 	Input.action_press(&"aim_right")
 	await wait_frames(3)
 	assert_true(marker.visible)
+	var material := marker.material_override as ShaderMaterial
+	var color: Color = material.get_shader_parameter(&"color")
+	assert_eq(Color(color, 1.0), _player.color(), "brackets in the player's color")
+	var half_size: float = material.get_shader_parameter(&"half_size")
+	assert_gt(half_size, TargetMarker.body_radius(alien), "around the alien's body")
 	assert_almost_eq(
 		Vector2(marker.global_position.x, marker.global_position.z),
 		Vector2(alien.global_position.x, alien.global_position.z),

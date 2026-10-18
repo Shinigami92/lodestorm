@@ -97,7 +97,7 @@ msgid "Every ranged weapon you take along starts each mission with two spare mag
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up."
+msgid "Out there, they show up as short marks in the ring around your feet, inside its right half, whenever you reload. A mark that's only an outline is a magazine you've used up."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -125,7 +125,7 @@ msgid "Timing reload"
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Here's a trick: press reload a second time while you're reloading. The ring on the ground around you shows how far the reload is, and it has a white mark."
+msgid "Here's a trick: press reload a second time while you're reloading. The right half of the ring around your feet fills up while you reload, and it has a white mark."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres

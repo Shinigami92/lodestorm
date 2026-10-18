@@ -260,6 +260,17 @@ func near_hazard(at: Vector2, reach: float) -> bool:
 	return false
 
 
+## How much location-local `at` lies on a frozen lake: 1 on its ice, fading out over its shore
+## (where the ground stays flat, without bumps).
+func _on_lake(at: Vector2) -> float:
+	var share: float = 0.0
+	for area: LocationLayout.Area in _shaped_areas:
+		if area.kind == LocationLayout.Kind.FROZEN_LAKE:
+			var distance: float = at.distance_to(Vector2(area.lake.x, area.lake.y))
+			share = maxf(share, 1.0 - smoothstep(area.lake.z, area.lake.z + LAKE_SHORE, distance))
+	return share
+
+
 ## The walls along the gaps' edges: from, to (location-local x, z) of each, one after the other.
 func planned_edges() -> PackedVector2Array:
 	return _gaps.edge_lines if _gaps else PackedVector2Array()
@@ -326,7 +337,7 @@ func _generate_ground() -> void:
 				height -= _gaps.depth(x, z, distance, walls.share(distance))
 			else:
 				height += walls.rise(x, z, outside)
-			height += bumps.get_noise_2dv(at) * biome.bump_height
+			height += bumps.get_noise_2dv(at) * biome.bump_height * (1.0 - _on_lake(at))
 			var to_edge: float = minf(minf(x, cells - x), minf(z, cells - z)) * cell
 			var rim: float = 1.0 - smoothstep(0.0, rim_width, to_edge)
 			height += rim * rim * rim_height
@@ -868,20 +879,24 @@ func _ground_paint(
 	var at := Vector2(point.x, point.z)
 	var grid := Vector2i(terrain.to_grid(at).round())
 	var index: int = terrain.index(grid.x, grid.y)
+	# Lips, bridges and the hazard keep their own tint, without scree, so they read from afar.
+	var plain: bool = false
 	if _gaps:
 		tint = tint.lerp(biome.gap_tint, smoothstep(0.0, biome.gap_depth, -point.y))
 		var lip: bool = _blocked[index] and not _gaps.gaps[index]
 		if lip or (not _bridges.is_empty() and _bridges[index]):
 			tint = biome.lip_tint
+			plain = true
 	if near_hazard(at, -LAKE_SHORE):
 		tint = biome.hazard_tint
+		plain = true
 	tint *= 1.0 + shades.get_noise_2dv(at) * 2.0 * biome.tint_variation
 	# Scree collects where the ground rises steeply close by.
 	var rise: float = highest[index] - point.y
 	var foot: float = smoothstep(1.5, 3.5, rise)
 	var patch: float = smoothstep(0.3, 0.5, patches.get_noise_2dv(at))
 	patch *= smoothstep(5.0, 20.0, _distance_to_landing_site(at))
-	tint.a = clampf((foot + patch) * biome.scree * 2.0, 0.0, 1.0)
+	tint.a = 0.0 if plain else clampf((foot + patch) * biome.scree * 2.0, 0.0, 1.0)
 	return tint
 
 

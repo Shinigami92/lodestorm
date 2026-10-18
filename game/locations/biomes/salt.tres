@@ -117,6 +117,10 @@ max_tilt = 5.0
 visibility_range = 100.0
 cast_shadow = false
 
+[sub_resource type="StandardMaterial3D" id="Material_brine"]
+albedo_color = Color(0.1, 0.17, 0.18, 1)
+roughness = 0.08
+
 [sub_resource type="Resource" id="Placement_wreck"]
 script = ExtResource("part_placement")
 scene = ExtResource("part_wreck")
@@ -142,14 +146,29 @@ script = ExtResource("1_biome")
 display_name = "Salt pans"
 map_color = Color(0.92, 0.9, 0.82, 1)
 area_radius = Vector2(22, 42)
-pass_width = Vector2(11, 18)
+pass_width = Vector2(10, 13)
+area_spacing = 12.0
 area_spread = 95.0
+pass_style = 1
+pass_wobble = 0.08
+longest_bridge = 34.0
+bridge_rise = 1.0
+barrier = 2
+gap_shape = 1
+gap_width = Vector2(5, 9)
+gap_depth = 7.0
+gap_tint = Color(0.2, 0.32, 0.34, 1)
+lip_tint = Color(1, 0.97, 0.9, 1)
+gap_fill = SubResource("Material_brine")
+gap_fill_level = 2.0
+area_kinds = Array[int]([9, 10])
 floor_relief = 0.8
 floor_relief_size = 90.0
-wall_height = 7.0
-cliff_width = 3.5
-rock_relief = 8.0
-plateau_step = 3.5
+wall_height = 4.0
+cliff_width = 3.0
+near_wall_height = 3.0
+rock_relief = 2.5
+plateau_step = 2.0
 bump_height = 0.3
 ground_material = ExtResource("9_terrain")
 low_ground_tint = Color(0.9, 0.9, 0.9, 1)

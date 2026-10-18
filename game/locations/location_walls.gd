@@ -1,9 +1,10 @@
 class_name LocationWalls
 extends RefCounted
-## The walls of a generated location (`LocationBiome.Barrier.WALLS`): rock beside the open ground,
-## rising in a cliff nobody can climb and higher in flat layers behind it. On the camera's side it
-## starts as a ledge and rises no steeper than the camera looks down, so the camera sees over it.
-## Plain data, planned with the location.
+## The walls of a generated location (`LocationBiome.Barrier.WALLS`, or behind the gaps): rock
+## beside the open ground, rising in a cliff nobody can climb and higher behind it, in flat layers
+## or sharp ridges (`LocationBiome.RockShape`). On the camera's side it starts as a ledge and rises
+## no steeper than the camera looks down, so the camera sees over it. Plain data, planned with the
+## location.
 
 ## Share of the wall's height the cliff rises on its first grid square: much more than players
 ## can step up (`MAX_WALK_SLOPE`).
@@ -14,6 +15,8 @@ const MIN_CLIFF_STEP: float = 3.0
 ## Share of the view's drop the rock on the camera's side rises at most, so the camera also sees
 ## a bit of the open ground beyond the cliff's foot.
 const VIEW_MARGIN: float = 0.85
+## How narrow the ridges are: their rock rises where the noise is within 1 / this of zero.
+const RIDGE_SHARPNESS: float = 5.0
 
 ## Grid points on the rock on the camera's side of the open ground (1 = only low scatter).
 var camera_side: PackedByteArray
@@ -42,8 +45,7 @@ func _init(
 func rise(x: int, z: int, outside: PackedFloat32Array) -> float:
 	var at: Vector3 = _terrain.point(x, z)
 	var walls: float = share(outside[_terrain.index(x, z)])
-	var high: float = maxf(_rock.get_noise_2dv(Vector2(at.x, at.z)) + 0.2, 0.0) * _biome.rock_relief
-	var rock_height: float = _biome.wall_height + _terrace(high)
+	var rock_height: float = _biome.wall_height + _relief(_rock.get_noise_2dv(Vector2(at.x, at.z)))
 	var cap: Vector2 = _view_cap(x, z, outside)
 	rock_height = lerpf(rock_height, minf(rock_height, cap.x), cap.y)
 	if walls > 0.0 and cap.y > 0.1:
@@ -94,6 +96,14 @@ func _view_cap(x: int, z: int, outside: PackedFloat32Array) -> Vector2:
 	# Along the view, the open ground is this far ahead.
 	var ahead: float = distance / maxf(facing, 0.3)
 	return Vector2(_biome.near_wall_height + _terrace(drop * VIEW_MARGIN * ahead), weight)
+
+
+## How much higher the rock rises where the rock noise is `noise`: in flat layers, or in long,
+## sharp spines along the noise's zero line.
+func _relief(noise: float) -> float:
+	if _biome.rock_shape == LocationBiome.RockShape.RIDGES:
+		return pow(maxf(1.0 - absf(noise) * RIDGE_SHARPNESS, 0.0), 1.5) * _biome.rock_relief
+	return _terrace(maxf(noise + 0.2, 0.0) * _biome.rock_relief)
 
 
 ## Flat steps of `_biome.plateau_step`, with a steep rise between them.

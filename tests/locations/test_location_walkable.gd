@@ -98,7 +98,7 @@ func test_gaps_are_walled_off() -> void:
 	_plan()
 	for i: int in _locations.size():
 		var location: GeneratedLocation = _locations[i]
-		if location.biome.barrier != LocationBiome.Barrier.GAPS:
+		if not location.biome.has_gaps():
 			assert_eq(location.planned_edges().size(), 0, _labels[i])
 			continue
 		var terrain: LocationTerrain = location.terrain
@@ -133,6 +133,33 @@ func test_biomes_have_their_own_areas() -> void:
 				found.append(area.kind)
 		for kind: LocationLayout.Kind in biome.area_kinds:
 			assert_has(found, kind, biome.display_name)
+
+
+## A sinkhole field's pits are gaps; a lava island is a dead end with lava all around it, but for
+## its one crossing.
+func test_pits_and_islands() -> void:
+	_plan()
+	for i: int in _locations.size():
+		var location: GeneratedLocation = _locations[i]
+		var label: String = _labels[i]
+		for area: LocationLayout.Area in location.layout.areas:
+			for pit: Vector3 in area.pits:
+				assert_true(location.is_gap(pit.x, pit.y), label + ": pit")
+			if area.kind != LocationLayout.Kind.LAVA_ISLAND:
+				continue
+			assert_eq(area.passes.size(), 1, label + ": one crossing")
+			var way: LocationLayout.Pass = location.layout.passes[area.passes[0]]
+			var around: float = area.radius * (1.0 + GeneratedLocation.AREA_WOBBLE) + 6.0
+			for step: int in 36:
+				var at: Vector2 = area.center + Vector2.from_angle(step * TAU / 36.0) * around
+				var crossing: float = INF
+				for k: int in range(1, way.points.size()):
+					var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
+						at, way.points[k - 1], way.points[k]
+					)
+					crossing = minf(crossing, at.distance_to(closest))
+				if crossing > way.width:
+					assert_true(location.is_gap(at.x, at.y), "%s: lava at %s" % [label, at])
 
 
 func _plan() -> void:

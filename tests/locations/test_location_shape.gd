@@ -4,6 +4,8 @@ extends GutTest
 
 const SWEEP := preload("res://tests/support/location_sweep.gd")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
+const SALT: LocationBiome = preload("res://game/locations/biomes/salt.tres")
+const ASH: LocationBiome = preload("res://game/locations/biomes/ash.tres")
 const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
 ## Areas of the locations compared with and without the camera's view.
 const VIEW_AREAS: int = 6
@@ -59,6 +61,43 @@ func test_rock_stays_low_on_the_camera_side() -> void:
 		assert_gt(lower, 100, biome.display_name)
 		viewed.free()
 		flat.free()
+
+
+## The Salt pans' causeways rise above the pans: the same world with flat bridges lies lower on
+## them, by the rise in their middle.
+func test_causeways_are_raised() -> void:
+	var flat_salt := SALT.duplicate() as LocationBiome
+	flat_salt.bridge_rise = 0.0
+	var raised: GeneratedLocation = SWEEP.plan(4, SALT, [], SWEEP.VIEW, VIEW_AREAS)
+	var flat: GeneratedLocation = SWEEP.plan(4, flat_salt, [], SWEEP.VIEW, VIEW_AREAS)
+	var highest: float = 0.0
+	for i: int in raised.terrain.heights.size():
+		var difference: float = raised.terrain.heights[i] - flat.terrain.heights[i]
+		assert_gt(difference, -0.01)
+		highest = maxf(highest, difference)
+	assert_almost_eq(highest, SALT.bridge_rise, 0.05)
+	raised.free()
+	flat.free()
+
+
+## The Ash fields' rock rises in long, sharp ridges: much higher in places than the cliffs, with
+## low ground between the spines.
+func test_ash_rock_has_ridges() -> void:
+	var location: GeneratedLocation = SWEEP.plan(2, ASH, [], Vector3.ZERO, VIEW_AREAS)
+	var tall: int = 0
+	var low: int = 0
+	var side: int = location.terrain.cells + 1
+	for i: int in location.terrain.heights.size():
+		var at: Vector3 = location.terrain.point(i % side, floori(i / float(side)))
+		if location.is_reachable(at.x, at.z) or location.is_gap(at.x, at.z):
+			continue
+		if at.y > ASH.wall_height + ASH.rock_relief * 0.8:
+			tall += 1
+		elif at.y < ASH.wall_height + ASH.rock_relief * 0.2:
+			low += 1
+	assert_gt(tall, 100, "spines")
+	assert_gt(low, tall, "low between them")
+	location.free()
 
 
 func _near_site(location: GeneratedLocation, at: Vector3) -> bool:

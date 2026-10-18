@@ -50,27 +50,13 @@ const SITE_FALLOFF: float = 3.0
 ## How close a nest may be to the landing site in a straight line, relative to
 ## `LocationBiome.nest_min_distance` (which counts along the passes).
 const NEST_STRAIGHT_SHARE: float = 0.6
-## A nest hollow's depth and a crater's (its rim rises around it), in m.
-const HOLLOW_DEPTH: float = 2.5
-const CRATER_DEPTH: float = 3.0
-const CRATER_RIM: float = 2.0
-## A frozen lake: how far its ice lies below the shore, over how many m the shore rises, and its
-## smallest radius (an area without room for it stays a basin), in m.
-const LAKE_DEPTH: float = 0.5
-const LAKE_SHORE: float = 3.0
-const MIN_LAKE_RADIUS: float = 7.0
-## Half the width of an ice shelf's crack where it comes in and at its inner end, in m.
-const CRACK_WIDTH: Vector2 = Vector2(2.8, 1.6)
-## Room between a crack's edge and a lane, in m: a crack ends before it comes closer.
-const CRACK_CLEARANCE: float = 4.0
-## Kinds of areas whose open ground has its own shape.
-const SHAPED_KINDS: Array[LocationLayout.Kind] = [
-	LocationLayout.Kind.NEST_HOLLOW,
-	LocationLayout.Kind.CRATER,
-	LocationLayout.Kind.PLATEAU,
-	LocationLayout.Kind.ICE_SHELF,
-	LocationLayout.Kind.FROZEN_LAKE,
-]
+## Ground around the biome's hazard that ore, nests and map parts keep off as well, in m.
+const HAZARD_MARGIN: float = 3.0
+## Over how many m a raised bridge (`LocationBiome.bridge_rise`) rises from the areas it joins.
+const BRIDGE_RAMP: float = 5.0
+## A vent's reach (its burst's circle), in m, and how many a vent field has (fewest, most).
+const VENT_RADIUS: float = 3.0
+const VENTS_PER_FIELD: Vector2i = Vector2i(5, 8)
 ## The kind of place; when not set, one of `biomes` is picked by the seed.
 @export var biome: LocationBiome
 @export var biomes: Array[LocationBiome] = []
@@ -137,12 +123,14 @@ var _camera_side: PackedByteArray
 ## or its lip; empty without gaps).
 var _gaps: LocationGaps
 var _blocked: PackedByteArray
-## Grid points on a bridge: on a pass, outside the areas (1); empty without bridges.
+## Grid points on a bridge: on a pass, outside the areas (1); empty without bridges. How much a
+## raised bridge lifts them, in m (empty unless raised).
 var _bridges: PackedByteArray
+var _bridge_lift: PackedFloat32Array
 ## Where the biome's hazard lies (x, z, radius), location-local.
 var _hazards: Array[Vector3] = []
-## Areas whose open ground has its own shape (hollows, craters, plateaus).
-var _shaped_areas: Array[LocationLayout.Area] = []
+## The ground of its special areas.
+var _features := LocationFeatures.new(self)
 ## Places scatter keeps away from (x, z, radius), location-local.
 var _clearings: Array[Vector3] = []
 ## Location-local positions of the ore nodes, and of the nests, to be placed.
@@ -181,12 +169,13 @@ func plan() -> void:
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	parts.settle(_rng, self)
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
+	_place_vents()
 	_pick_ore_sites()
 	_pick_nest_sites()
 	# Flattening the sites changed the ground a little.
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	if _gaps:
-		_gaps.plan_edges(_reachable)
+		_gaps.plan(_reachable)
 	_plan_ground()
 	_scatter.plan(_rng, self)
 	_planned = true
@@ -252,23 +241,13 @@ func planned_hazards() -> Array[Vector3]:
 	return _hazards
 
 
-## Whether location-local `at` lies within `reach` m of the biome's hazard or the shore around it.
+## Whether location-local `at` lies within `reach` m of the biome's hazard or the ground around
+## it (`HAZARD_MARGIN`; a negative `reach` of as much: on the hazard).
 func near_hazard(at: Vector2, reach: float) -> bool:
 	for hazard: Vector3 in _hazards:
-		if at.distance_to(Vector2(hazard.x, hazard.y)) < hazard.z + LAKE_SHORE + reach:
+		if at.distance_to(Vector2(hazard.x, hazard.y)) < hazard.z + HAZARD_MARGIN + reach:
 			return true
 	return false
-
-
-## How much location-local `at` lies on a frozen lake: 1 on its ice, fading out over its shore
-## (where the ground stays flat, without bumps).
-func _on_lake(at: Vector2) -> float:
-	var share: float = 0.0
-	for area: LocationLayout.Area in _shaped_areas:
-		if area.kind == LocationLayout.Kind.FROZEN_LAKE:
-			var distance: float = at.distance_to(Vector2(area.lake.x, area.lake.y))
-			share = maxf(share, 1.0 - smoothstep(area.lake.z, area.lake.z + LAKE_SHORE, distance))
-	return share
 
 
 ## The walls along the gaps' edges: from, to (location-local x, z) of each, one after the other.
@@ -321,23 +300,38 @@ func _generate_ground() -> void:
 	var bumps: FastNoiseLite = _noise(1.0 / 12.0, 2)
 	var outside: PackedFloat32Array = terrain.distance_outside(_carve(wobble))
 	var walls := LocationWalls.new(terrain, biome, rock, view_direction)
-	if biome.barrier == LocationBiome.Barrier.GAPS:
-		# Only gap biomes draw this, so the other biomes' worlds stay as they were for their seeds.
-		_gaps = LocationGaps.new(terrain, biome, _noise(1.0 / 40.0, 2))
-	_fit_lakes()
-	for area: LocationLayout.Area in layout.areas:
-		if area.kind in SHAPED_KINDS:
-			_shaped_areas.append(area)
+	if biome.has_gaps():
+		# Only gap biomes draw these, so the other biomes' worlds stay as they were for their seeds.
+		var widths: FastNoiseLite = _noise(1.0 / 40.0, 2)
+		var pits: FastNoiseLite = (
+			_noise(1.0, 1) if biome.gap_shape == LocationBiome.GapShape.PITS else null
+		)
+		_gaps = LocationGaps.new(terrain, biome, widths, pits)
+		_widen_gaps()
+	for lake: Vector3 in _features.fit_lakes(_lanes):
+		if biome.hazard == LocationBiome.Hazard.SLICK_ICE:
+			_hazards.append(lake)
+		_clearings.append(Vector3(lake.x, lake.y, lake.z + 1.0))
+	_clearings.append_array(_features.clearings())
+	_features.collect()
 	for z: int in cells + 1:
 		for x: int in cells + 1:
 			var at := Vector2(terrain.origin.x + x * cell, terrain.origin.y + z * cell)
-			var height: float = _shape_of_areas(at, swells)
-			var distance: float = outside[terrain.index(x, z)]
+			var index: int = terrain.index(x, z)
+			var ground: float = _features.height(at, swells)
+			var distance: float = outside[index]
+			var height: float = ground
 			if _gaps:
-				height -= _gaps.depth(x, z, distance, walls.share(distance))
+				# Lowered into the gap, from the open ground or from the rock behind it.
+				var gap: float = _gaps.share(x, z, distance) * walls.share(distance)
+				var rise: float = walls.rise(x, z, outside) if biome.has_walls() else 0.0
+				var bottom: float = -biome.gap_depth if biome.gap_fill else ground - biome.gap_depth
+				height = lerpf(ground + rise, bottom, gap)
 			else:
 				height += walls.rise(x, z, outside)
-			height += bumps.get_noise_2dv(at) * biome.bump_height * (1.0 - _on_lake(at))
+			if not _bridge_lift.is_empty():
+				height += _bridge_lift[index]
+			height += bumps.get_noise_2dv(at) * biome.bump_height * (1.0 - _features.smoothness(at))
 			var to_edge: float = minf(minf(x, cells - x), minf(z, cells - z)) * cell
 			var rim: float = 1.0 - smoothstep(0.0, rim_width, to_edge)
 			height += rim * rim * rim_height
@@ -345,50 +339,28 @@ func _generate_ground() -> void:
 	if _gaps:
 		_gaps.raise_lips()
 		_blocked = _gaps.blocked
-	else:
+	if biome.has_walls():
 		_camera_side = walls.camera_side
 	# One grid square more, so the ground between the grid points inside is flat too.
 	terrain.flatten_rect(landing_site.grow(cell), landing_falloff, 0.0)
 
 
-## Shrinks each frozen lake until it keeps off the lanes and inside its area, with its shore; one
-## too small for that stays a basin. The lakes are the slick ice.
-func _fit_lakes() -> void:
-	for area: LocationLayout.Area in layout.areas:
-		if area.kind != LocationLayout.Kind.FROZEN_LAKE:
-			continue
-		var center := Vector2(area.lake.x, area.lake.y)
-		var inside: float = area.radius * (1.0 - AREA_WOBBLE) - center.distance_to(area.center)
-		var radius: float = minf(area.lake.z, inside - LAKE_SHORE)
-		while radius >= MIN_LAKE_RADIUS and _near_lane(center, radius + LAKE_SHORE + cell):
-			radius -= 1.0
-		if radius < MIN_LAKE_RADIUS:
-			area.kind = LocationLayout.Kind.BASIN
-			area.lake = Vector3.ZERO
-			continue
-		area.lake.z = radius
-		if biome.hazard == LocationBiome.Hazard.SLICK_ICE:
-			_hazards.append(area.lake)
-		_clearings.append(Vector3(center.x, center.y, radius + 1.0))
-
-
-## Whether a grid point on a lane lies within `reach` of `at`.
-func _near_lane(at: Vector2, reach: float) -> bool:
-	var low: Vector2i = Vector2i(terrain.to_grid(at - Vector2.ONE * reach).floor()).maxi(0)
-	var high: Vector2i = Vector2i(terrain.to_grid(at + Vector2.ONE * reach).ceil()).mini(
-		terrain.cells
-	)
-	for z: int in range(low.y, high.y + 1):
-		for x: int in range(low.x, high.x + 1):
-			var index: int = terrain.index(x, z)
-			if _lanes[index] and at.distance_to(_grid_xz(x, z)) <= reach:
-				return true
-	return false
-
-
-## Location-local x, z of grid point `x`, `z`.
-func _grid_xz(x: int, z: int) -> Vector2:
-	return terrain.origin + Vector2(x, z) * cell
+## Widens the gaps where they must be: beside the bridges, so they cross a gap and not the rock
+## behind it, around lava islands and in pits (see `LocationFeatures.widen_gaps`).
+func _widen_gaps() -> void:
+	if biome.has_walls() and biome.pass_style == LocationBiome.PassStyle.BRIDGES:
+		var width: float = biome.gap_width.y
+		for way: LocationLayout.Pass in layout.passes:
+			var ends: Array[LocationLayout.Area] = [layout.areas[way.from], layout.areas[way.to]]
+			var reach: float = way.width * 0.5 * (1.0 + biome.pass_wobble) + width
+			for point: Vector2 in way.points:
+				var outside_ends: bool = true
+				for area: LocationLayout.Area in ends:
+					if point.distance_to(area.center) < area.radius:
+						outside_ends = false
+				if outside_ends:
+					_gaps.widen(point, reach, width)
+	_features.widen_gaps(_gaps)
 
 
 ## How open each grid point is: positive inside an area, a pass or around the landing site (how
@@ -429,46 +401,16 @@ func _carve(wobble: FastNoiseLite) -> PackedFloat32Array:
 				_mark_lane(way.points[i - 1], way.points[i])
 	if biome.pass_style == LocationBiome.PassStyle.BRIDGES:
 		_bridges.resize(openness.size())
+		if biome.bridge_rise > 0.0:
+			_bridge_lift.resize(openness.size())
 		for i: int in openness.size():
 			if openness[i] > 0.0 and in_areas[i] <= 0.0:
 				_bridges[i] = 1
-	for area: LocationLayout.Area in layout.areas:
-		if area.kind == LocationLayout.Kind.ICE_SHELF:
-			_carve_cracks(openness, area)
+				if biome.bridge_rise > 0.0:
+					var ramp: float = smoothstep(0.0, BRIDGE_RAMP, -in_areas[i])
+					_bridge_lift[i] = ramp * biome.bridge_rise
+	_features.carve(openness, _lanes)
 	return openness
-
-
-## Closes the ice shelf's cracks in `openness`, each up to where it would come close to a lane
-## (dropping the ones that wouldn't reach into the shelf), narrowing towards their inner ends.
-func _carve_cracks(openness: PackedFloat32Array, area: LocationLayout.Area) -> void:
-	var kept: Array[PackedVector2Array] = []
-	for crack: PackedVector2Array in area.cracks:
-		var points := PackedVector2Array()
-		for i: int in crack.size():
-			var half: float = lerpf(CRACK_WIDTH.x, CRACK_WIDTH.y, float(i) / (crack.size() - 1))
-			if _near_lane(crack[i], half + CRACK_CLEARANCE + cell):
-				break
-			points.append(crack[i])
-		var inner: Vector2 = points[points.size() - 1] if points.size() > 1 else area.center
-		if points.size() < 2 or inner.distance_to(area.center) > area.radius * 0.8:
-			continue
-		kept.append(points)
-		for i: int in points.size():
-			var half: float = lerpf(CRACK_WIDTH.x, CRACK_WIDTH.y, float(i) / (crack.size() - 1))
-			_close(openness, points[i], half)
-	area.cracks = kept
-
-
-## Lowers `openness` within `radius` of `center` below 0 (closed ground).
-func _close(openness: PackedFloat32Array, center: Vector2, radius: float) -> void:
-	var low: Vector2i = Vector2i(terrain.to_grid(center - Vector2.ONE * radius).floor()).maxi(0)
-	var high: Vector2i = Vector2i(terrain.to_grid(center + Vector2.ONE * radius).ceil()).mini(
-		terrain.cells
-	)
-	for z: int in range(low.y, high.y + 1):
-		for x: int in range(low.x, high.x + 1):
-			var index: int = terrain.index(x, z)
-			openness[index] = minf(openness[index], _grid_xz(x, z).distance_to(center) - radius)
 
 
 ## Raises `openness` around `center` to a round outline of `radius`, wobbling by `wobble` (a share
@@ -516,64 +458,6 @@ func _mark_lane(from: Vector2, to: Vector2) -> void:
 				_lanes[terrain.index(x, z)] = 1
 
 
-## The open ground's height at location-local `at`, in m: gentle swells (`swells`), and their own
-## shape in special areas: nest hollows sink, craters are bowls with a rim, plateaus have a mesa
-## with a ramp up its side, ice shelves are flat, frozen lakes too, with the lake a bit lower.
-func _shape_of_areas(at: Vector2, swells: FastNoiseLite) -> float:
-	var ground: float = swells.get_noise_2dv(at) * biome.floor_relief
-	var offset: float = 0.0
-	for area: LocationLayout.Area in _shaped_areas:
-		var distance: float = at.distance_to(area.center)
-		if distance > area.radius * (1.0 + AREA_WOBBLE):
-			continue
-		match area.kind:
-			LocationLayout.Kind.NEST_HOLLOW:
-				offset -= (
-					HOLLOW_DEPTH
-					* (1.0 - smoothstep(area.radius * 0.3, area.radius * 0.9, distance))
-				)
-			LocationLayout.Kind.CRATER:
-				var bowl: float = 1.0 - smoothstep(0.0, area.radius * 0.5, distance)
-				var rim: float = exp(-pow(distance - area.radius * 0.55, 2.0) / 18.0)
-				offset += rim * CRATER_RIM - bowl * CRATER_DEPTH
-			LocationLayout.Kind.PLATEAU:
-				# A level top, `MESA_HEIGHT` above the open ground at the mesa's center.
-				var mesa_center := Vector2(area.mesa.x, area.mesa.y)
-				var top: float = (
-					swells.get_noise_2dv(mesa_center) * biome.floor_relief
-					+ LocationLayout.MESA_HEIGHT
-				)
-				ground = lerpf(ground, top, _mesa(area, at))
-			LocationLayout.Kind.ICE_SHELF, LocationLayout.Kind.FROZEN_LAKE:
-				# The swells pulled to their height at the center.
-				var level: float = swells.get_noise_2dv(area.center) * biome.floor_relief
-				var flat: float = 1.0 - smoothstep(area.radius * 0.8, area.radius, distance)
-				ground = lerpf(ground, level, flat)
-				if area.kind == LocationLayout.Kind.FROZEN_LAKE:
-					var shore: float = at.distance_to(Vector2(area.lake.x, area.lake.y))
-					offset -= (
-						LAKE_DEPTH
-						* (1.0 - smoothstep(area.lake.z, area.lake.z + LAKE_SHORE, shore))
-					)
-	return ground + offset
-
-
-## How far up a plateau's mesa location-local `at` is: 1 on its top, 0 off it, rising along the
-## ramp.
-func _mesa(area: LocationLayout.Area, at: Vector2) -> float:
-	var mesa_center := Vector2(area.mesa.x, area.mesa.y)
-	var up: float = 1.0 - smoothstep(area.mesa.z - cell, area.mesa.z, at.distance_to(mesa_center))
-	var along: float = (at - area.ramp_start).dot(area.ramp_direction)
-	var across: float = absf((at - area.ramp_start).cross(area.ramp_direction))
-	if (
-		along >= 0.0
-		and along <= area.ramp_length + cell
-		and across <= LocationLayout.RAMP_WIDTH * 0.5
-	):
-		up = maxf(up, minf(along / area.ramp_length, 1.0))
-	return up
-
-
 func _noise(frequency: float, octaves: int) -> FastNoiseLite:
 	return make_noise(_rng, frequency, octaves)
 
@@ -611,7 +495,7 @@ func _pick_ore_sites() -> void:
 		var part: LocationParts.Placed = parts.part_in(area)
 		if part and part.info.count(PartMarker.Kind.ORE) > 0:
 			continue
-		if area.kind == LocationLayout.Kind.ORE_POCKET:
+		if area.holds_rich_ore():
 			_add_ore_field(found[found.size() - 1], area, false)
 		elif area.kind not in [LocationLayout.Kind.LANDING, LocationLayout.Kind.NEST_HOLLOW]:
 			others.append(area)
@@ -663,6 +547,25 @@ func _add_ore_field(ore_type: OreType, area: LocationLayout.Area, near: bool) ->
 		_ore_sites.append(Vector3(site.x, terrain.height_at(site.x, site.z), site.z))
 		_ore_site_types.append(ore_type)
 	return true
+
+
+## Vents in every vent field (the biome's hazard): on gentle ground off the lanes, apart.
+func _place_vents() -> void:
+	if biome.hazard != LocationBiome.Hazard.VENTS:
+		return
+	for area: LocationLayout.Area in layout.areas:
+		if area.kind != LocationLayout.Kind.VENT_FIELD:
+			continue
+		for vent: int in _rng.randi_range(VENTS_PER_FIELD.x, VENTS_PER_FIELD.y):
+			var site: Vector3 = _find_site(
+				VENT_RADIUS,
+				func(at: Vector2) -> bool: return _distance_to_landing_site(at) >= 10.0,
+				area.center,
+				area.radius * 0.8
+			)
+			if site != Vector3.INF:
+				add_site(site, VENT_RADIUS, 0.5)
+				_hazards.append(Vector3(site.x, site.z, VENT_RADIUS))
 
 
 ## Nests in the areas far enough from the ship: two in every nest hollow first, then spread over
@@ -887,7 +790,7 @@ func _ground_paint(
 		if lip or (not _bridges.is_empty() and _bridges[index]):
 			tint = biome.lip_tint
 			plain = true
-	if near_hazard(at, -LAKE_SHORE):
+	if near_hazard(at, -HAZARD_MARGIN):
 		tint = biome.hazard_tint
 		plain = true
 	tint *= 1.0 + shades.get_noise_2dv(at) * 2.0 * biome.tint_variation
@@ -922,7 +825,7 @@ func _add_bounds() -> void:
 		bounds.add_child(shape)
 
 
-## The biome's hazard: slick ice on the frozen lakes.
+## The biome's hazard: slick ice on the frozen lakes, the vents in the vent fields.
 func _add_hazards() -> void:
 	if _hazards.is_empty():
 		return
@@ -930,19 +833,28 @@ func _add_hazards() -> void:
 	holder.name = "Hazards"
 	add_child(holder)
 	for i: int in _hazards.size():
-		var lake: Vector3 = _hazards[i]
-		var zone := GroundHazard.new()
-		zone.name = "SlickIce%d" % (i + 1)
-		zone.grip = biome.hazard_grip
+		var at: Vector3 = _hazards[i]
+		var zone: GroundHazard
+		if biome.hazard == LocationBiome.Hazard.VENTS:
+			var vent := GroundVent.new()
+			vent.name = "Vent%d" % (i + 1)
+			vent.damage = biome.hazard_damage
+			vent.radius = at.z
+			zone = vent
+		else:
+			zone = GroundHazard.new()
+			zone.name = "SlickIce%d" % (i + 1)
+			zone.grip = biome.hazard_grip
 		zone.collision_layer = 0
 		zone.collision_mask = PhysicsLayers.WORLD
 		var cylinder := CylinderShape3D.new()
-		cylinder.radius = lake.z
+		cylinder.radius = at.z
 		cylinder.height = 3.0
 		var shape := CollisionShape3D.new()
 		shape.shape = cylinder
+		shape.position.y = 0.5
 		zone.add_child(shape)
-		zone.position = Vector3(lake.x, terrain.height_at(lake.x, lake.y) + 0.5, lake.y)
+		zone.position = Vector3(at.x, terrain.height_at(at.x, at.y), at.y)
 		holder.add_child(zone)
 
 

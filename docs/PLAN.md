@@ -45,16 +45,16 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 5 B: the suit ring on the ground (health with the hit directions, ammo with reloads and the timing window, spare magazine ticks, the dash, the green band for handing ammo; fixed to the screen, dimming when quiet, tilting with the ground, hidden by cliffs and props), replacing the reload ring, the backpack's spare cells and the dash strip; a probe with shots of crowded moments
 - Step 5 C: ore arriving as badges with amounts above the player, the ship's and the ore scanner's arrows on the ring's edge, the target lock as corner brackets in the player's color, players' numbers and colors with teammates' reduced rings (only the local player takes input; debug teammates), the ring's size and "Always show" in the settings
 - Step 5 D: the palette viewer (every color the game uses, read from where the game keeps it, normal and for the three common color blindnesses, with the pairs that look closest)
+- Step 6 A: the biome framework (barrier, pass style, own area kinds and hazard as data on the biome; gaps with blocked edges and the navigation mesh around them; the location viewer and seed sweeps) with the *Frost fields* (crevasses, snow bridges, ice shelf, frozen lake, slick ice)
+- Step 6 B: the *Salt pans* (low walls with sinkholes, raised causeways, sinkhole fields, brine flats) and the *Ash fields* (lava channels before sharp ridges, crust crossings, lava islands, vent fields with bursting vents); gaps with the rock behind them, round pits, filled gaps
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–5 are done).
+Each step builds on the ones before it (steps 1–5 and 6 A–B are done).
 
 - [ ] **Step 6 — the biomes' own geography** ([`planned/biomes.md`](planned/biomes.md)), in greybox (their textures and meshes come with the art pass, M5)
-  - [x] **A** the framework (barrier, pass style, own area kinds and hazard as data on the biome; gaps with blocked edges and the navigation mesh around them; the location viewer and seed sweep) with the *Frost fields* first (on Lisk, open now; crevasses, snow bridges, ice shelf, frozen lake)
-  - [ ] **B** *Salt pans* and *Ash fields* (sinkholes, causeways, lava channels, ridges, vents)
   - [ ] **C** *Glass plains* and *Dust flats* (terraces, shard fences, slot canyons, buttes, dry washes)
   - [ ] **D** *Overgrowth* (growth walls, trails, mire)
 - [ ] **Step 7 — more aliens, the feel of combat, sound effects** ([`planned/aliens.md`](planned/aliens.md), [`planned/sfx.md`](planned/sfx.md))
@@ -63,7 +63,7 @@ Each step builds on the ones before it (steps 1–5 are done).
   - [ ] **C** tiers 3–4 (Brute, Shrieker, bloater, Tender), miners drawing raiders, the end-of-run frenzy
   - [ ] **D** tier 5 (darter, stalker) and the Ravager (greybox bodies from primitives; models with the art pass)
   - [ ] **E1** the audio setup (buses, the listener at the player, volumes on the settings terminal, randomizers, the synthesis scripts and build, the manifest and its license test) with the weapons, player and interface sounds
-  - [ ] **E2** the aliens', mining, mission and storm sounds
+  - [ ] **E2** the aliens', mining, mission, storm and vent sounds
 - [ ] **Step 8 — the station** ([`planned/station.md`](planned/station.md)); concept images first
   - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs
   - [ ] **B** the named NPCs with their first topics, ambient colonists

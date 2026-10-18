@@ -33,6 +33,9 @@ enum RockShape {
 	LAYERS,
 	## Long, sharp spines.
 	RIDGES,
+	## Broken into slabs (`plateau_step` apart), one step below, at or above the open ground
+	## nearest to them.
+	SLABS,
 }
 
 ## What the ways between the areas look like.
@@ -40,8 +43,11 @@ enum PassStyle {
 	## Long, winding ways through the barrier.
 	WINDING,
 	## Short, straight crossings (snow bridges): the areas lie close together, at most
-	## `longest_bridge` apart.
+	## `longest_bridge` apart. Between areas at different levels (`terrace_step`) they ramp up.
 	BRIDGES,
+	## Slot canyons: narrow, S-shaped ways, the rock beside them `canyon_depth` higher than beside
+	## the areas.
+	SLOT_CANYONS,
 }
 
 ## The one hazard of the biome's ground: mild, readable and avoidable, never in the landing yard or
@@ -54,6 +60,9 @@ enum Hazard {
 	## Vents in the vent fields: they glow and rumble for a moment, then burst, hurting whoever
 	## stands on them (`hazard_damage`).
 	VENTS,
+	## Glass shards on the ground in the shard gardens: they hurt whoever walks over them
+	## (`hazard_damage` per second).
+	SHARDS,
 }
 
 @export var display_name: String = ""
@@ -82,6 +91,13 @@ enum Hazard {
 ## How high a bridge's middle rises above the areas it joins, in m (raised causeways), with a ramp
 ## at each end.
 @export var bridge_rise: float = 0.0
+## How much higher the rock beside a slot canyon rises than beside the areas, in m
+## (`PassStyle.SLOT_CANYONS`).
+@export var canyon_depth: float = 0.0
+## Terraces: every area lies on a slab of its own level, this many m apart (a level between one
+## step below and two above the landing yard, at most one step from the areas its passes lead
+## to), and the passes ramp between them. 0: no levels.
+@export var terrace_step: float = 0.0
 
 @export_group("Barrier")
 @export var barrier: Barrier = Barrier.WALLS
@@ -101,6 +117,9 @@ enum Hazard {
 ## only looks (null: nothing). The gaps' bottom is level then.
 @export var gap_fill: Material
 @export var gap_fill_level: float = 1.0
+## What stands along the gaps' edges, on the walls there (shard fences): only looks, drawn many
+## times (null: nothing).
+@export var fence: Mesh
 
 @export_group("Areas")
 ## Kinds of areas only this biome has (`LocationLayout.Kind`), on top of the shared ones.
@@ -114,7 +133,7 @@ enum Hazard {
 @export_range(0.0, 1.0) var hazard_grip: float = 0.15
 ## Tint of the hazard's ground, so it reads from afar.
 @export var hazard_tint: Color = Color(0.75, 0.9, 1.0)
-## Damage the hazard deals to whoever stands in it (a vent's burst).
+## Damage the hazard deals to whoever stands in it: a vent's burst, the shards' per second.
 @export var hazard_damage: float = 0.0
 
 @export_group("Ground")

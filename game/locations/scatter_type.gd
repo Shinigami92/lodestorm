@@ -29,6 +29,8 @@ extends Resource
 @export var blocking_radius: float = 0.0
 ## Collider height at scale 1, in m.
 @export var blocking_height: float = 2.0
+## Grows only in these kinds of areas (garden spikes, a grove's stalks); empty: everywhere.
+@export var area_kinds: Array[LocationLayout.Kind] = []
 ## Hidden beyond this distance from the camera, in m; 0: always drawn.
 @export var visibility_range: float = 0.0
 @export var cast_shadow: bool = true

@@ -2,8 +2,9 @@ class_name GeneratedLocation
 extends Node3D
 ## An outside world generated from a seed and a biome when it appears (every run gets a fresh
 ## one): open areas joined by passes (a `LocationLayout`), carved into the biome's barrier (high
-## rock nobody can climb, or gaps lowered below the floor with walls along their edges), with
-## plants and rocks (`LocationScatter`), ore fields, alien nests and the biome's hazard. The ship
+## rock nobody can climb, or gaps lowered below the floor with walls along their edges; with
+## terraces, every area on a slab of its own level), with plants and rocks (`LocationScatter`),
+## ore fields, alien nests and the biome's hazard. The ship
 ## stands at the location's origin, on a flat landing site; the location's axes are the ship's
 ## (nose to -x, ramp to +x). Ores and nests only lie where players can walk to from the ship; rarer
 ## ores lie farther along the passes, the rarest in dead ends. Every walkable spot leads back to the
@@ -54,9 +55,12 @@ const NEST_STRAIGHT_SHARE: float = 0.6
 const HAZARD_MARGIN: float = 3.0
 ## Over how many m a raised bridge (`LocationBiome.bridge_rise`) rises from the areas it joins.
 const BRIDGE_RAMP: float = 5.0
-## A vent's reach (its burst's circle), in m, and how many a vent field has (fewest, most).
-const VENT_RADIUS: float = 3.0
-const VENTS_PER_FIELD: Vector2i = Vector2i(5, 8)
+## How steep the ramps between terraces are (rise per m).
+const TERRACE_RAMP_SLOPE: float = 0.3
+## Over how many m beyond the areas the rock beside a slot canyon rises to its full depth
+## (`LocationBiome.canyon_depth`): from where it starts to where it's full, measured from how much
+## farther the areas are than the canyon.
+const CANYON_FADE: Vector2 = Vector2(4.0, 16.0)
 ## The kind of place; when not set, one of `biomes` is picked by the seed.
 @export var biome: LocationBiome
 @export var biomes: Array[LocationBiome] = []
@@ -127,8 +131,13 @@ var _blocked: PackedByteArray
 ## raised bridge lifts them, in m (empty unless raised).
 var _bridges: PackedByteArray
 var _bridge_lift: PackedFloat32Array
-## Where the biome's hazard lies (x, z, radius), location-local.
-var _hazards: Array[Vector3] = []
+## The level of the open ground at each grid point (terraces), in m: its area's, rising along the
+## ramps between them; elsewhere the nearest open ground's. Empty without terraces.
+var _levels: PackedFloat32Array
+## How far each grid point lies from the areas (not the passes), in m: for slot canyons only.
+var _from_areas: PackedFloat32Array
+## The biome's hazard.
+var _hazards := LocationHazards.new(self)
 ## The ground of its special areas.
 var _features := LocationFeatures.new(self)
 ## Places scatter keeps away from (x, z, radius), location-local.
@@ -169,13 +178,16 @@ func plan() -> void:
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	parts.settle(_rng, self)
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
-	_place_vents()
+	_hazards.place(_rng)
 	_pick_ore_sites()
 	_pick_nest_sites()
-	# Flattening the sites changed the ground a little.
+	# Flattening the sites changed the ground a little, also under sites placed before.
+	for sites: Array[Vector3] in [_ore_sites, _nest_sites]:
+		for i: int in sites.size():
+			sites[i].y = terrain.height_at(sites[i].x, sites[i].z)
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	if _gaps:
-		_gaps.plan(_reachable)
+		_gaps.plan(_reachable, _rng)
 	_plan_ground()
 	_scatter.plan(_rng, self)
 	_planned = true
@@ -192,7 +204,7 @@ func build() -> void:
 	_add_bounds()
 	if _gaps:
 		_gaps.build(self)
-	_add_hazards()
+	_hazards.build(self)
 	_scatter.build(self)
 	parts.build(self, crate_contents)
 	_add_ore_nodes()
@@ -236,15 +248,23 @@ func is_on_bridge(x: float, z: float) -> bool:
 	return _flag(_bridges, x, z)
 
 
+## Whether location-local `at` lies in an area of one of `kinds`.
+func is_in_area_of(at: Vector2, kinds: Array[LocationLayout.Kind]) -> bool:
+	for area: LocationLayout.Area in layout.areas:
+		if area.kind in kinds and at.distance_to(area.center) < area.radius * (1.0 + AREA_WOBBLE):
+			return true
+	return false
+
+
 ## Where the biome's hazard lies (x, z, radius), location-local: known once planned.
 func planned_hazards() -> Array[Vector3]:
-	return _hazards
+	return _hazards.spots
 
 
 ## Whether location-local `at` lies within `reach` m of the biome's hazard or the ground around
 ## it (`HAZARD_MARGIN`; a negative `reach` of as much: on the hazard).
 func near_hazard(at: Vector2, reach: float) -> bool:
-	for hazard: Vector3 in _hazards:
+	for hazard: Vector3 in _hazards.spots:
 		if at.distance_to(Vector2(hazard.x, hazard.y)) < hazard.z + HAZARD_MARGIN + reach:
 			return true
 	return false
@@ -300,6 +320,11 @@ func _generate_ground() -> void:
 	var bumps: FastNoiseLite = _noise(1.0 / 12.0, 2)
 	var outside: PackedFloat32Array = terrain.distance_outside(_carve(wobble))
 	var walls := LocationWalls.new(terrain, biome, rock, view_direction)
+	if not _from_areas.is_empty():
+		walls.deeper.resize(outside.size())
+		for i: int in outside.size():
+			var farther: float = _from_areas[i] - outside[i]
+			walls.deeper[i] = smoothstep(CANYON_FADE.x, CANYON_FADE.y, farther) * biome.canyon_depth
 	if biome.has_gaps():
 		# Only gap biomes draw these, so the other biomes' worlds stay as they were for their seeds.
 		var widths: FastNoiseLite = _noise(1.0 / 40.0, 2)
@@ -310,7 +335,7 @@ func _generate_ground() -> void:
 		_widen_gaps()
 	for lake: Vector3 in _features.fit_lakes(_lanes):
 		if biome.hazard == LocationBiome.Hazard.SLICK_ICE:
-			_hazards.append(lake)
+			_hazards.spots.append(lake)
 		_clearings.append(Vector3(lake.x, lake.y, lake.z + 1.0))
 	_clearings.append_array(_features.clearings())
 	_features.collect()
@@ -319,16 +344,19 @@ func _generate_ground() -> void:
 			var at := Vector2(terrain.origin.x + x * cell, terrain.origin.y + z * cell)
 			var index: int = terrain.index(x, z)
 			var ground: float = _features.height(at, swells)
+			if not _levels.is_empty():
+				ground += _levels[index]
 			var distance: float = outside[index]
 			var height: float = ground
+			var top: float = _features.rock_top(at)
 			if _gaps:
 				# Lowered into the gap, from the open ground or from the rock behind it.
 				var gap: float = _gaps.share(x, z, distance) * walls.share(distance)
-				var rise: float = walls.rise(x, z, outside) if biome.has_walls() else 0.0
+				var rise: float = walls.rise(x, z, outside, top) if biome.has_walls() else 0.0
 				var bottom: float = -biome.gap_depth if biome.gap_fill else ground - biome.gap_depth
 				height = lerpf(ground + rise, bottom, gap)
 			else:
-				height += walls.rise(x, z, outside)
+				height += walls.rise(x, z, outside, top)
 			if not _bridge_lift.is_empty():
 				height += _bridge_lift[index]
 			height += bumps.get_noise_2dv(at) * biome.bump_height * (1.0 - _features.smoothness(at))
@@ -364,11 +392,14 @@ func _widen_gaps() -> void:
 
 
 ## How open each grid point is: positive inside an area, a pass or around the landing site (how
-## far inside, in m), negative outside. Also marks the lanes along the passes.
+## far inside, in m), negative outside. Also marks the lanes along the passes, and notes the levels
+## (terraces) and how far the areas are (slot canyons).
 func _carve(wobble: FastNoiseLite) -> PackedFloat32Array:
 	var openness := PackedFloat32Array()
 	openness.resize(terrain.heights.size())
 	openness.fill(-INF)
+	if biome.terrace_step > 0.0:
+		_levels.resize(openness.size())
 	_lanes = PackedByteArray()
 	_lanes.resize(terrain.heights.size())
 	# The outlines wobble by noise (about -1 to 1), so no area is a circle and no pass a tube.
@@ -385,20 +416,38 @@ func _carve(wobble: FastNoiseLite) -> PackedFloat32Array:
 	for z: int in range(low.y, high.y + 1):
 		for x: int in range(low.x, high.x + 1):
 			var at := Vector2(terrain.origin.x + x * cell, terrain.origin.y + z * cell)
-			openness[terrain.index(x, z)] = LANDING_MARGIN - _distance_to_landing_site(at)
+			openness[terrain.index(x, z)] = LANDING_MARGIN - landing_distance(at)
 	for area: LocationLayout.Area in layout.areas:
 		# A plateau's outline only wobbles outwards, so its cliff never closes in on the mesa (from its
 		# top the rock would be a small step).
 		var outward: bool = area.kind == LocationLayout.Kind.PLATEAU
-		_stamp(openness, bends, area.center, area.radius, AREA_WOBBLE, outward)
+		# A dry wash is long and narrow, across the way it runs.
+		var narrow: Vector2 = Vector2.ZERO
+		if area.kind == LocationLayout.Kind.DRY_WASH:
+			narrow = area.facing.orthogonal() / LocationLayout.WASH_WIDTH
+		_stamp(openness, bends, area.center, area.radius, AREA_WOBBLE, outward, narrow, area.level)
 	var in_areas: PackedFloat32Array = openness.duplicate()
 	_mark_lane(ramp_exit, Vector2(landing_yard.x, landing_yard.y))
 	for way: LocationLayout.Pass in layout.passes:
 		var ends: Array[LocationLayout.Area] = [layout.areas[way.from], layout.areas[way.to]]
+		var level: float = minf(ends[0].level, ends[1].level)
 		for i: int in way.points.size():
-			_stamp(openness, bends, way.points[i], way.width * 0.5, biome.pass_wobble)
+			var at: Vector2 = way.points[i]
+			_stamp(
+				openness, bends, at, way.width * 0.5, biome.pass_wobble, false, Vector2.ZERO, level
+			)
 			if i > 0 and not _in_middle(way.points[i], ends):
 				_mark_lane(way.points[i - 1], way.points[i])
+	if not _levels.is_empty():
+		for way: LocationLayout.Pass in layout.passes:
+			_lay_ramp(way, bends, in_areas)
+		var known := PackedByteArray()
+		known.resize(openness.size())
+		for i: int in openness.size():
+			known[i] = 1 if openness[i] > -INF else 0
+		terrain.spread(_levels, known)
+	if biome.pass_style == LocationBiome.PassStyle.SLOT_CANYONS:
+		_from_areas = terrain.distance_outside(in_areas)
 	if biome.pass_style == LocationBiome.PassStyle.BRIDGES:
 		_bridges.resize(openness.size())
 		if biome.bridge_rise > 0.0:
@@ -414,14 +463,18 @@ func _carve(wobble: FastNoiseLite) -> PackedFloat32Array:
 
 
 ## Raises `openness` around `center` to a round outline of `radius`, wobbling by `wobble` (a share
-## of the radius) with `bends` (only outwards with `outward_only`).
+## of the radius) with `bends` (only outwards with `outward_only`), squeezed along `narrow` (its
+## length: how many times; zero: round). Its level (terraces) is `level`; where open ground
+## overlaps, the higher one's.
 func _stamp(
 	openness: PackedFloat32Array,
 	bends: PackedFloat32Array,
 	center: Vector2,
 	radius: float,
 	wobble: float,
-	outward_only: bool = false
+	outward_only: bool = false,
+	narrow: Vector2 = Vector2.ZERO,
+	level: float = 0.0
 ) -> void:
 	var reach: float = radius * (1.0 + wobble) + biome.cliff_width + cell
 	var low: Vector2i = Vector2i(terrain.to_grid(center - Vector2.ONE * reach).floor()).maxi(0)
@@ -433,8 +486,90 @@ func _stamp(
 			var index: int = terrain.index(x, z)
 			var at := Vector2(terrain.origin.x + x * cell, terrain.origin.y + z * cell)
 			var bend: float = maxf(bends[index], 0.0) if outward_only else bends[index]
-			var inside: float = radius * (1.0 + bend * wobble) - at.distance_to(center)
+			var offset: Vector2 = at - center
+			if narrow != Vector2.ZERO:
+				var along: float = narrow.dot(offset) / narrow.length_squared()
+				offset += narrow * along * (narrow.length() - 1.0)
+			var inside: float = radius * (1.0 + bend * wobble) - offset.length()
+			if not _levels.is_empty():
+				if inside > 0.0 and openness[index] > 0.0:
+					# Where open ground overlaps, the higher level: a ramp's foot reaches into the lower
+					# area.
+					_levels[index] = maxf(_levels[index], level)
+				elif inside > openness[index]:
+					_levels[index] = level
 			openness[index] = maxf(openness[index], inside)
+
+
+## Lays the ramp along `way` between areas at different levels (terraces): the higher area's
+## level up to where the pass leaves its outline, then down (`TERRACE_RAMP_SLOPE`) to the lower
+## area's, which it reaches into when the two are close (`in_areas`: the areas' openness). Measured
+## along the pass, so the ramp keeps its slope however the outlines wobble.
+func _lay_ramp(
+	way: LocationLayout.Pass, bends: PackedFloat32Array, in_areas: PackedFloat32Array
+) -> void:
+	var from: LocationLayout.Area = layout.areas[way.from]
+	var to: LocationLayout.Area = layout.areas[way.to]
+	var drop: float = absf(from.level - to.level)
+	if drop <= 0.0:
+		return
+	var high: LocationLayout.Area = from if from.level > to.level else to
+	# How far along the pass each point lies, from the higher end.
+	var count: int = way.points.size()
+	var arcs := PackedFloat32Array()
+	arcs.resize(count)
+	for i: int in range(1, count):
+		arcs[i] = arcs[i - 1] + way.points[i].distance_to(way.points[i - 1])
+	var total: float = arcs[count - 1]
+	if high == to:
+		for i: int in count:
+			arcs[i] = total - arcs[i]
+	var leaves: float = total
+	for i: int in count:
+		var at: Vector2 = way.points[i]
+		var grid: Vector2i = Vector2i(terrain.to_grid(at).round()).clamp(
+			Vector2i.ZERO, Vector2i.ONE * terrain.cells
+		)
+		var bend: float = bends[terrain.index(grid.x, grid.y)]
+		if at.distance_to(high.center) > high.radius * (1.0 + bend * AREA_WOBBLE):
+			leaves = minf(leaves, arcs[i])
+	var length: float = drop / TERRACE_RAMP_SLOPE
+	var half: float = way.width * 0.5 * (1.0 + biome.pass_wobble)
+	var low_corner: Vector2 = Vector2.INF
+	var high_corner: Vector2 = -Vector2.INF
+	for at: Vector2 in way.points:
+		low_corner = low_corner.min(at)
+		high_corner = high_corner.max(at)
+	var low: Vector2i = Vector2i(terrain.to_grid(low_corner - Vector2.ONE * half).floor()).maxi(0)
+	var top: Vector2i = Vector2i(terrain.to_grid(high_corner + Vector2.ONE * half).ceil()).mini(
+		terrain.cells
+	)
+	for z: int in range(low.y, top.y + 1):
+		for x: int in range(low.x, top.x + 1):
+			var at := Vector2(terrain.origin.x + x * cell, terrain.origin.y + z * cell)
+			var nearest: float = INF
+			var along: float = 0.0
+			for i: int in range(1, count):
+				var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
+					at, way.points[i - 1], way.points[i]
+				)
+				var distance: float = at.distance_to(closest)
+				if distance < nearest:
+					nearest = distance
+					var part: float = closest.distance_to(way.points[i - 1])
+					along = (
+						arcs[i - 1]
+						+ (
+							(arcs[i] - arcs[i - 1])
+							* part
+							/ maxf(way.points[i].distance_to(way.points[i - 1]), 0.001)
+						)
+					)
+			if nearest > half:
+				continue
+			var index: int = terrain.index(x, z)
+			var level: float = high.level - drop * clampf((along - leaves) / length, 0.0, 1.0)
+			_levels[index] = maxf(_levels[index], level) if in_areas[index] > 0.0 else level
 
 
 ## Whether `at` lies in the middle of one of `areas`: open enough to walk around anything there,
@@ -472,7 +607,8 @@ static func make_noise(rng: RandomNumberGenerator, frequency: float, octaves: in
 	return noise
 
 
-func _distance_to_landing_site(at: Vector2) -> float:
+## How far location-local `at` lies from the landing site, in m (0 on it).
+func landing_distance(at: Vector2) -> float:
 	var offset: Vector2 = (at - landing_site.get_center()).abs() - landing_site.size * 0.5
 	return offset.max(Vector2.ZERO).length()
 
@@ -517,14 +653,12 @@ func _add_ore_field(ore_type: OreType, area: LocationLayout.Area, near: bool) ->
 	var fields: Array[Vector3] = []
 	for site: Vector3 in _ore_sites:
 		fields.append(site)
-	var center: Vector3 = _find_site(
+	var center: Vector3 = find_site(
 		ORE_SITE_RADIUS,
 		func(at: Vector2) -> bool:
 			if near and at.distance_to(ramp_exit) < near_ore_distance.x:
 				return false
-			return (
-				_distance_to_landing_site(at) >= 10.0 and _far_from(at, fields, ore_field_spacing)
-			),
+			return landing_distance(at) >= 10.0 and _far_from(at, fields, ore_field_spacing),
 		ramp_exit if near else area.center,
 		near_ore_distance.y if near else area.radius * 0.8
 	)
@@ -534,10 +668,10 @@ func _add_ore_field(ore_type: OreType, area: LocationLayout.Area, near: bool) ->
 	for node: int in count:
 		var site: Vector3 = Vector3(center.x, 0.0, center.z)
 		if node > 0:
-			site = _find_site(
+			site = find_site(
 				ORE_SITE_RADIUS,
 				func(at: Vector2) -> bool:
-					return _distance_to_landing_site(at) >= 10.0 and _far_from(at, _ore_sites, 7.0),
+					return landing_distance(at) >= 10.0 and _far_from(at, _ore_sites, 7.0),
 				Vector2(center.x, center.z),
 				12.0
 			)
@@ -547,25 +681,6 @@ func _add_ore_field(ore_type: OreType, area: LocationLayout.Area, near: bool) ->
 		_ore_sites.append(Vector3(site.x, terrain.height_at(site.x, site.z), site.z))
 		_ore_site_types.append(ore_type)
 	return true
-
-
-## Vents in every vent field (the biome's hazard): on gentle ground off the lanes, apart.
-func _place_vents() -> void:
-	if biome.hazard != LocationBiome.Hazard.VENTS:
-		return
-	for area: LocationLayout.Area in layout.areas:
-		if area.kind != LocationLayout.Kind.VENT_FIELD:
-			continue
-		for vent: int in _rng.randi_range(VENTS_PER_FIELD.x, VENTS_PER_FIELD.y):
-			var site: Vector3 = _find_site(
-				VENT_RADIUS,
-				func(at: Vector2) -> bool: return _distance_to_landing_site(at) >= 10.0,
-				area.center,
-				area.radius * 0.8
-			)
-			if site != Vector3.INF:
-				add_site(site, VENT_RADIUS, 0.5)
-				_hazards.append(Vector3(site.x, site.z, VENT_RADIUS))
 
 
 ## Nests in the areas far enough from the ship: two in every nest hollow first, then spread over
@@ -603,11 +718,11 @@ func _pick_nest_sites() -> void:
 		if _nest_sites.size() >= wanted:
 			break
 		var area: LocationLayout.Area = order[attempt % order.size()]
-		var site: Vector3 = _find_site(
+		var site: Vector3 = find_site(
 			NEST_SITE_RADIUS,
 			func(at: Vector2) -> bool:
 				return (
-					_distance_to_landing_site(at) >= biome.nest_min_distance * NEST_STRAIGHT_SHARE
+					landing_distance(at) >= biome.nest_min_distance * NEST_STRAIGHT_SHARE
 					and _far_from(at, _nest_sites, nest_spacing)
 					and _far_from(at, _ore_sites, nest_ore_spacing)
 				),
@@ -632,7 +747,7 @@ func _shuffled(areas: Array[LocationLayout.Area]) -> Array[LocationLayout.Area]:
 
 ## A reachable, gentle spot off the lanes where `fits` agrees, within `spread` of `around`;
 ## `Vector3.INF` when there is none.
-func _find_site(radius: float, fits: Callable, around: Vector2, spread: float) -> Vector3:
+func find_site(radius: float, fits: Callable, around: Vector2, spread: float) -> Vector3:
 	var area: Rect2 = terrain.rect().grow(-rim_width - radius)
 	for attempt: int in PLACEMENT_TRIES:
 		var at: Vector2 = (
@@ -793,12 +908,17 @@ func _ground_paint(
 	if near_hazard(at, -HAZARD_MARGIN):
 		tint = biome.hazard_tint
 		plain = true
+	# A dry wash's bed: lighter sand, without scree.
+	var bed: float = _features.bed(at)
+	if bed > 0.0:
+		tint = tint.lerp(LocationFeatures.BED_TINT, bed)
+		plain = plain or bed > 0.5
 	tint *= 1.0 + shades.get_noise_2dv(at) * 2.0 * biome.tint_variation
 	# Scree collects where the ground rises steeply close by.
 	var rise: float = highest[index] - point.y
 	var foot: float = smoothstep(1.5, 3.5, rise)
 	var patch: float = smoothstep(0.3, 0.5, patches.get_noise_2dv(at))
-	patch *= smoothstep(5.0, 20.0, _distance_to_landing_site(at))
+	patch *= smoothstep(5.0, 20.0, landing_distance(at))
 	tint.a = 0.0 if plain else clampf((foot + patch) * biome.scree * 2.0, 0.0, 1.0)
 	return tint
 
@@ -825,46 +945,13 @@ func _add_bounds() -> void:
 		bounds.add_child(shape)
 
 
-## The biome's hazard: slick ice on the frozen lakes, the vents in the vent fields.
-func _add_hazards() -> void:
-	if _hazards.is_empty():
-		return
-	var holder := Node3D.new()
-	holder.name = "Hazards"
-	add_child(holder)
-	for i: int in _hazards.size():
-		var at: Vector3 = _hazards[i]
-		var zone: GroundHazard
-		if biome.hazard == LocationBiome.Hazard.VENTS:
-			var vent := GroundVent.new()
-			vent.name = "Vent%d" % (i + 1)
-			vent.damage = biome.hazard_damage
-			vent.radius = at.z
-			zone = vent
-		else:
-			zone = GroundHazard.new()
-			zone.name = "SlickIce%d" % (i + 1)
-			zone.grip = biome.hazard_grip
-		zone.collision_layer = 0
-		zone.collision_mask = PhysicsLayers.WORLD
-		var cylinder := CylinderShape3D.new()
-		cylinder.radius = at.z
-		cylinder.height = 3.0
-		var shape := CollisionShape3D.new()
-		shape.shape = cylinder
-		shape.position.y = 0.5
-		zone.add_child(shape)
-		zone.position = Vector3(at.x, terrain.height_at(at.x, at.y), at.y)
-		holder.add_child(zone)
-
-
 ## Whether a plant or rock of `radius` (0: not blocking) may grow at location-local `at`: on the
 ## ground, off the landing site, the gaps, the clearings and (blocking ones) the lanes, and not
 ## `tall` on the rock on the camera's side (see `LocationScatter`).
 func lets_grow(at: Vector2, radius: float, tall: bool) -> bool:
 	if not terrain.rect().grow(-cell).has_point(at):
 		return false
-	if _distance_to_landing_site(at) < 4.0 + radius:
+	if landing_distance(at) < 4.0 + radius:
 		return false
 	var grid: Vector2i = Vector2i(terrain.to_grid(at).round())
 	var index: int = terrain.index(grid.x, grid.y)

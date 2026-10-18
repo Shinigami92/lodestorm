@@ -3,7 +3,9 @@ extends RefCounted
 ## The gaps of a generated location (`LocationBiome.Barrier.GAPS`, `GAPS_AND_WALLS`: crevasses,
 ## sinkholes, lava channels): ground lowered below the floor beside the open ground, in bands or
 ## round pits, a raised lip along their edges, and invisible walls behind the lips that stop
-## players and aliens but not shots or sight, so nobody falls in. What fills them (lava, brine) is
+## players and aliens but not shots or sight, so nobody falls in. A band of growth
+## (`GROWTH_AND_WALLS`) is laid out the same way, at the floor's level, and its walls stop shots and
+## sight too. What fills them (lava, brine) is
 ## a flat surface over the gaps' grid squares; what stands along their edges (shard fences) a mesh
 ## drawn many times on the walls. Planned with the location (plain data, safe on a worker thread);
 ## `build` adds the walls, the fill and the fence.
@@ -133,8 +135,8 @@ func plan(reachable: PackedByteArray, rng: RandomNumberGenerator) -> void:
 		_plan_fence(rng)
 
 
-## Adds the walls to `location` (a `GapEdges` body on `PhysicsLayers.WALKING_ONLY`), the fill
-## (`GapFill`) and the fence (`Fence`, in chunks).
+## Adds the walls to `location` (a `GapEdges` body on `PhysicsLayers.WALKING_ONLY`, on
+## `PhysicsLayers.WORLD` for growth), the fill (`GapFill`) and the fence (`Fence`, in chunks).
 func build(location: Node3D) -> void:
 	if not _fence.is_empty():
 		_add_fence(location)
@@ -159,7 +161,9 @@ func build(location: Node3D) -> void:
 		return
 	var edges := StaticBody3D.new()
 	edges.name = "GapEdges"
-	edges.collision_layer = PhysicsLayers.WALKING_ONLY
+	edges.collision_layer = (
+		PhysicsLayers.WORLD if _biome.walls_block_shots() else PhysicsLayers.WALKING_ONLY
+	)
 	edges.collision_mask = 0
 	var faces := ConcavePolygonShape3D.new()
 	faces.backface_collision = true

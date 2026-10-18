@@ -1,18 +1,8 @@
 # Biome geography (planned)
 
-Decided 2026-10-17, built in M4 step 6 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The framework is built (step 6 A): a biome's barrier (walls, gaps, or gaps with the rock behind them), its passes (winding, bridges or slot canyons; ramps between terraces), its own kinds of areas and its hazard are data on `LocationBiome`. The *Frost fields* (step 6 A), *Salt pans* and *Ash fields* (step 6 B), *Dust flats* and *Glass plains* (step 6 C) use it (see [Generated outside world](../GAME_DESIGN.md#6-missions)). The *Overgrowth* still has walls and winding passes, with its own numbers, scatter and tint.
+Decided 2026-10-17. All values **TBD (playtest)**. Every biome's own geography is built in greybox (M4 step 6, see [Generated outside world](../GAME_DESIGN.md#6-missions)); what's left comes around it, mostly with the art pass (M5).
 
-## The Overgrowth
-
-It picks a barrier, a pass style, its two area kinds and its hazard; the new ones (growth walls, trails, mud) are added to the framework. Its fungal grove's stalks can grow only there like the shard gardens' spires (`ScatterType.area_kinds`).
-
-| Biome | Barrier | Passes | Own area kinds | Hazard | Plays like |
-|---|---|---|---|---|---|
-| *Overgrowth* | low walls plus **growth walls** (giant fungal stalks and roots that block walking and shots, low on the camera's side like the rock) | **trails** through the growth, many loops | **mire** (shallow mud pools), **fungal grove** (stalks as cover, short sightlines) | **mud** slows players and aliens (to about 60 %) | a maze, ambushes |
-
-- Hazards stay mild, readable and avoidable, never instant death, never in the landing yard or on a pass's lane; they slow or hurt aliens too.
-
-## Around it
+## Around the biomes
 
 - **Biomes and aliens:** the strains' biome leanings (see [`aliens.md`](aliens.md)) fit the barriers: burrowers on the open ground of the Dust flats and Salt pans, stalkers in the Overgrowth's cover, darters over the gaps and terraces of the Frost fields, Ash fields and Glass plains. Gaps make aliens walk around to the next bridge, which slows them.
 - **Weather per biome** (art pass): particles and fog, cheap enough for VR: drifting sand, spores and mist in the hollows, snow flurries, heat shimmer, falling ash and the lava's glow, glare off the glass. The storm takes over at the end; the light stays muted so ores and aliens stand out.

@@ -19,7 +19,7 @@ var _placements: Array[Array] = []
 func plan(rng: RandomNumberGenerator, location: GeneratedLocation) -> void:
 	var terrain: LocationTerrain = location.terrain
 	var chunk_size: float = GeneratedLocation.CHUNK_CELLS * location.cell
-	var blockers: Array[Vector3] = []
+	var blockers: Array[Vector4] = []
 	for type: ScatterType in location.biome.scatter:
 		var by_chunk: Dictionary[Vector2i, Array] = {}
 		for placed: Transform3D in _transforms(rng, location, type, blockers):
@@ -47,12 +47,12 @@ func build(location: Node3D) -> void:
 
 ## Where `type` grows: on a jittered grid, thinned out by patches, steep ground and the places
 ## `location` keeps free. Blocking ones keep their distance from each other (`blockers`: x, z,
-## radius).
+## radius, spacing).
 func _transforms(
 	rng: RandomNumberGenerator,
 	location: GeneratedLocation,
 	type: ScatterType,
-	blockers: Array[Vector3]
+	blockers: Array[Vector4]
 ) -> Array[Transform3D]:
 	var placed: Array[Transform3D] = []
 	if type.density <= 0.0 or not type.has_mesh():
@@ -73,12 +73,12 @@ func _transforms(
 			var grown: float = rng.randf_range(type.min_scale, type.max_scale)
 			var radius: float = type.blocking_radius * grown
 			var tall: bool = type.blocking_height * grown > CAMERA_SIDE_SCATTER
-			if not _fits(location, at, type.max_slope, radius, blockers, tall):
+			if not _fits(location, at, type, radius, blockers, tall):
 				continue
 			if not type.area_kinds.is_empty() and not location.is_in_area_of(at, type.area_kinds):
 				continue
 			if radius > 0.0:
-				blockers.append(Vector3(at.x, at.y, radius))
+				blockers.append(Vector4(at.x, at.y, radius, type.spacing))
 			var tilt: float = deg_to_rad(rng.randf_range(-type.max_tilt, type.max_tilt))
 			var turn := Basis(Vector3.UP, rng.randf() * TAU) * Basis(Vector3.RIGHT, tilt)
 			var height: float = terrain.height_at(at.x, at.y) - type.sink * grown
@@ -88,25 +88,26 @@ func _transforms(
 	return placed
 
 
-## Whether something of `radius` (0: not blocking) can grow at `at`: where `location` lets it (see
-## `GeneratedLocation.lets_grow`), on ground no steeper than `max_slope`, away from other
-## `blockers`.
+## Whether a `type` of `radius` (0: not blocking) can grow at `at`: where `location` lets it (see
+## `GeneratedLocation.lets_grow`), on ground no steeper than its `max_slope`, away from other
+## `blockers` (by the larger spacing of the two).
 func _fits(
 	location: GeneratedLocation,
 	at: Vector2,
-	max_slope: float,
+	type: ScatterType,
 	radius: float,
-	blockers: Array[Vector3],
+	blockers: Array[Vector4],
 	tall: bool
 ) -> bool:
-	if not location.lets_grow(at, radius, tall):
+	if not location.lets_grow(at, radius, tall, type.on_barrier):
 		return false
 	var grid: Vector2i = Vector2i(location.terrain.to_grid(at).round())
-	if location.terrain.slope(grid.x, grid.y) > max_slope:
+	if location.terrain.slope(grid.x, grid.y) > type.max_slope:
 		return false
 	if radius > 0.0:
-		for blocker: Vector3 in blockers:
-			if at.distance_squared_to(Vector2(blocker.x, blocker.y)) < pow(blocker.z + radius, 2):
+		for blocker: Vector4 in blockers:
+			var apart: float = blocker.z + radius + maxf(blocker.w, type.spacing)
+			if at.distance_squared_to(Vector2(blocker.x, blocker.y)) < apart * apart:
 				return false
 	return true
 

@@ -216,7 +216,7 @@ func _physics_process(delta: float) -> void:
 	if acting:
 		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
 	var move: Vector3 = IsoInput.camera_relative(move_input, camera_basis)
-	var speed: float = settings.move_speed
+	var speed: float = settings.move_speed * ground_contact.speed()
 	if _is_reloading() and not skills.has(Skill.Effect.RELOAD_ON_THE_MOVE):
 		speed *= settings.reload_move_speed
 	if acting and _action_just_pressed(&"dash"):

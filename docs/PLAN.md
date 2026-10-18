@@ -48,22 +48,21 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 6 A: the biome framework (barrier, pass style, own area kinds and hazard as data on the biome; gaps with blocked edges and the navigation mesh around them; the location viewer and seed sweeps) with the *Frost fields* (crevasses, snow bridges, ice shelf, frozen lake, slick ice)
 - Step 6 B: the *Salt pans* (low walls with sinkholes, raised causeways, sinkhole fields, brine flats) and the *Ash fields* (lava channels before sharp ridges, crust crossings, lava islands, vent fields with bursting vents); gaps with the rock behind them, round pits, filled gaps
 - Step 6 C: the *Dust flats* (slot canyons between the mesas, butte fields, dry washes) and the *Glass plains* (terraces on their own levels with ramps between them, shard fences along the drops, slabs beyond, terrace stairs, shard gardens with spires and shards that hurt); plants and rocks limited to some kinds of areas
+- Step 6 D: the *Overgrowth* (growth walls: a band of giant stalks and roots before low rock that stops walking and shots; trails with a trodden path and many loops; mires with mud pools that slow walking, not the dash; fungal groves with giant stalks as cover)
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–5 and 6 A–C are done).
+Each step builds on the ones before it (steps 1–6 are done).
 
-- [ ] **Step 6 — the biomes' own geography** ([`planned/biomes.md`](planned/biomes.md)), in greybox (their textures and meshes come with the art pass, M5)
-  - [ ] **D** *Overgrowth* (growth walls, trails, mire)
 - [ ] **Step 7 — more aliens, the feel of combat, sound effects** ([`planned/aliens.md`](planned/aliens.md), [`planned/sfx.md`](planned/sfx.md))
   - [ ] **A** strains and roles as data, armor and stagger, hit feedback, telegraphs, the swarmer's pounce and speed, the blaster at 8 shots a second, the cap on living aliens
   - [ ] **B** tiers 1–2 (mite, spitter, burrower), hatch tables, packs, biome leanings
   - [ ] **C** tiers 3–4 (Brute, Shrieker, bloater, Tender), miners drawing raiders, the end-of-run frenzy
   - [ ] **D** tier 5 (darter, stalker) and the Ravager (greybox bodies from primitives; models with the art pass)
   - [ ] **E1** the audio setup (buses, the listener at the player, volumes on the settings terminal, randomizers, the synthesis scripts and build, the manifest and its license test) with the weapons, player and interface sounds
-  - [ ] **E2** the aliens', mining, mission, storm, vent and shard sounds
+  - [ ] **E2** the aliens', mining, mission, storm, vent, shard and mud sounds
 - [ ] **Step 8 — the station** ([`planned/station.md`](planned/station.md)); concept images first
   - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs
   - [ ] **B** the named NPCs with their first topics, ambient colonists

@@ -27,3 +27,12 @@ func grip() -> float:
 	for hazard: GroundHazard in _hazards:
 		least = minf(least, hazard.grip)
 	return least
+
+
+## The share of the usual walking speed: the slowest of the hazards it stands in, 1 on ordinary
+## ground.
+func speed() -> float:
+	var least: float = 1.0
+	for hazard: GroundHazard in _hazards:
+		least = minf(least, hazard.speed)
+	return least

@@ -139,7 +139,8 @@ func _physics_process(delta: float) -> void:
 			global_basis = Basis(Vector3.UP, yaw)
 
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(
-		move * settings.move_speed, settings.acceleration * ground_contact.grip() * delta
+		move * settings.move_speed * ground_contact.speed(),
+		settings.acceleration * ground_contact.grip() * delta
 	)
 	if is_on_floor():
 		velocity.y = 0.0

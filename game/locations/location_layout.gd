@@ -37,6 +37,10 @@ enum Kind {
 	## Glass plains: an area with glass spike clusters (cover) and shards on the ground (the
 	## biome's hazard).
 	SHARD_GARDEN,
+	## Overgrowth: an area with shallow mud pools (the biome's hazard).
+	MIRE,
+	## Overgrowth: an area with giant fungal stalks standing in it (cover, short sightlines).
+	FUNGAL_GROVE,
 }
 
 ## Distance between a pass's points, in m.
@@ -115,6 +119,20 @@ const MIN_STAIRS_RADIUS: float = 28.0
 const STAIRS_GAP: float = deg_to_rad(160.0)
 ## Smallest area that holds a shard garden, in m (radius).
 const MIN_GARDEN_RADIUS: float = 20.0
+## A mire's mud pools: their radius (smallest, largest), the walkable ground kept between them and
+## around the area's middle, in m, how far out they lie (relative to the area's radius, the pool's
+## edge inside it), how many (fewest, most; off the passes' lanes) and the smallest area that holds
+## them.
+const POOL_RADIUS: Vector2 = Vector2(3.5, 7.0)
+const POOL_SPACING: float = 4.0
+const POOL_MIDDLE: float = 4.0
+const POOL_REACH: float = 0.85
+const POOLS: Vector2i = Vector2i(3, 5)
+const MIN_MIRE_RADIUS: float = 24.0
+## Room between a pool and a lane, in m (the location drops pools closer than its own clearance).
+const POOL_LANE_CLEARANCE: float = 3.0
+## Smallest area that holds a fungal grove, in m (radius).
+const MIN_GROVE_RADIUS: float = 20.0
 ## The levels of terraces (`LocationBiome.terrace_step`), in steps from the landing yard's
 ## (lowest, highest).
 const LEVELS: Vector2i = Vector2i(-1, 2)
@@ -155,6 +173,8 @@ class Area:
 	var pits: Array[Vector3] = []
 	## A butte field's buttes (x, z, radius).
 	var buttes: Array[Vector3] = []
+	## A mire's mud pools (x, z, radius).
+	var pools: Array[Vector3] = []
 	## The way a dry wash runs along (its length), or terrace stairs climb (out from the middle).
 	var facing: Vector2 = Vector2.ZERO
 	## A dry wash's bed: points along its middle, `LocationLayout.PASS_STEP` apart.
@@ -394,7 +414,7 @@ func _add_pass(
 		bend = 0.0
 	var width: float = rng.randf_range(biome.pass_width.x, biome.pass_width.y)
 	var points: PackedVector2Array = _curve(areas[a].center, areas[b].center, bend)
-	if biome.pass_style == LocationBiome.PassStyle.SLOT_CANYONS:
+	if biome.pass_style in [LocationBiome.PassStyle.SLOT_CANYONS, LocationBiome.PassStyle.TRAILS]:
 		points = _wind(areas[a].center, areas[b].center, bend)
 	if not _fits(points, a, b, width):
 		points = _curve(areas[a].center, areas[b].center, 0.0)
@@ -423,8 +443,8 @@ static func _curve(from: Vector2, to: Vector2, bend: float) -> PackedVector2Arra
 	return points
 
 
-## An S-shaped curve from `from` to `to` (a slot canyon): it bends to one side, then the other,
-## by `bend` (relative to its length) at most.
+## An S-shaped curve from `from` to `to` (a slot canyon, a trail): it bends to one side, then the
+## other, by `bend` (relative to its length) at most.
 static func _wind(from: Vector2, to: Vector2, bend: float) -> PackedVector2Array:
 	var length: float = from.distance_to(to)
 	var along: Vector2 = to - from
@@ -642,6 +662,8 @@ func _has_room(biome: LocationBiome, index: int, at: Vector2) -> bool:
 
 ## Gives `count` of the basins the biome's own `kind`: ice shelves, brine flats and dry washes the
 ## biggest ones, the others any big enough (lava islands are the ore pockets, see `_assign_kinds`).
+## With too few basins (many loops make crossroads of most areas), crossroads too, the ones with the
+## fewest passes first.
 func _assign_own_kind(
 	rng: RandomNumberGenerator, biome: LocationBiome, kind: Kind, count: int
 ) -> void:
@@ -658,6 +680,15 @@ func _assign_own_kind(
 		basins[j] = swap
 	if kind in [Kind.ICE_SHELF, Kind.BRINE_FLAT, Kind.DRY_WASH]:
 		basins.sort_custom(func(x: int, y: int) -> bool: return areas[x].radius > areas[y].radius)
+	var crossroads: Array[int] = []
+	for i: int in areas.size():
+		if areas[i].kind == Kind.CROSSROADS:
+			crossroads.append(i)
+	# The fewest passes first: their lanes leave the most room.
+	crossroads.sort_custom(
+		func(x: int, y: int) -> bool: return areas[x].passes.size() < areas[y].passes.size()
+	)
+	basins.append_array(crossroads)
 	for i: int in basins:
 		if count <= 0:
 			break
@@ -678,6 +709,25 @@ func _assign_own_kind(
 					continue
 			Kind.SHARD_GARDEN:
 				if area.radius < MIN_GARDEN_RADIUS:
+					continue
+			Kind.FUNGAL_GROVE:
+				if area.radius < MIN_GROVE_RADIUS:
+					continue
+			Kind.MIRE:
+				if area.radius < MIN_MIRE_RADIUS:
+					continue
+				area.pools = _spread_circles(
+					rng,
+					area,
+					POOL_RADIUS,
+					POOL_SPACING,
+					POOL_MIDDLE,
+					POOL_REACH,
+					POOLS.y,
+					func(at: Vector2, radius: float) -> bool: return _fits_pool(area, at, radius)
+				)
+				if area.pools.size() < POOLS.x:
+					area.pools.clear()
 					continue
 			Kind.BUTTE_FIELD:
 				if area.radius < MIN_BUTTE_FIELD_RADIUS:
@@ -774,7 +824,8 @@ func _shape_pits(rng: RandomNumberGenerator, area: Area) -> void:
 
 
 ## Up to `wanted` circles (x, z, radius) in `area`: their radius between `radii`, at least
-## `spacing` m apart and `middle` m off its middle, inside `reach` times its radius.
+## `spacing` m apart and `middle` m off its middle, inside `reach` times its radius, where `fits`
+## (at, radius) agrees, if given.
 static func _spread_circles(
 	rng: RandomNumberGenerator,
 	area: Area,
@@ -782,7 +833,8 @@ static func _spread_circles(
 	spacing: float,
 	middle: float,
 	reach: float,
-	wanted: int
+	wanted: int,
+	fits: Callable = Callable()
 ) -> Array[Vector3]:
 	var circles: Array[Vector3] = []
 	for attempt: int in wanted * 20:
@@ -801,9 +853,28 @@ static func _spread_circles(
 			if at.distance_to(Vector2(circle.x, circle.y)) < circle.z + radius + spacing:
 				free = false
 				break
-		if free:
+		if free and (not fits.is_valid() or fits.call(at, radius)):
 			circles.append(Vector3(at.x, at.y, radius))
 	return circles
+
+
+## Whether a mud pool of `radius` at `at` fits in `area`: with its shore inside the area's outline
+## however it wobbles, off the lanes of the passes coming in (see `LocationPasses`; they end in the
+## area's middle).
+func _fits_pool(area: Area, at: Vector2, radius: float) -> bool:
+	var innermost: float = area.radius * (1.0 - GeneratedLocation.AREA_WOBBLE)
+	if at.distance_to(area.center) + radius + LocationFeatures.POOL_SHORE > innermost:
+		return false
+	var keep: float = radius + LocationPasses.LANE_HALF_WIDTH + POOL_LANE_CLEARANCE
+	for index: int in area.passes:
+		for point: Vector2 in passes[index].points:
+			var inside: float = point.distance_to(area.center)
+			if (
+				inside >= area.radius * LocationPasses.LANE_FREE_MIDDLE
+				and point.distance_to(at) < keep
+			):
+				return false
+	return true
 
 
 ## Lays the dry wash along the passes coming in (so they meet its ends) and winds its bed along it.

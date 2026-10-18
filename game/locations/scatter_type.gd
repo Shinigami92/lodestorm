@@ -27,10 +27,16 @@ extends Resource
 @export var max_tilt: float = 0.0
 ## Collider radius at scale 1, in m; 0: no collider, players and aliens walk through.
 @export var blocking_radius: float = 0.0
-## Collider height at scale 1, in m.
+## Collider height at scale 1, in m (also how tall it counts as without a collider).
 @export var blocking_height: float = 2.0
+## Room it keeps free between itself and other blocking things, in m (so aliens find their way
+## between a grove's stalks).
+@export var spacing: float = 0.0
 ## Grows only in these kinds of areas (garden spikes, a grove's stalks); empty: everywhere.
 @export var area_kinds: Array[LocationLayout.Kind] = []
+## Grows only on the barrier's band beside the open ground, where nobody walks (the growth walls,
+## `LocationBiome.Barrier.GROWTH_AND_WALLS`), and nowhere else.
+@export var on_barrier: bool = false
 ## Hidden beyond this distance from the camera, in m; 0: always drawn.
 @export var visibility_range: float = 0.0
 @export var cast_shadow: bool = true

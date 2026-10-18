@@ -35,12 +35,6 @@ const BOUNDS_HEIGHT: float = 60.0
 const PLACEMENT_TRIES: int = 300
 ## How far (in grid points) the ground is checked for higher ground nearby when painting scree.
 const SCREE_REACH: int = 2
-## Half the width of the lane along every pass (up to the middle of the areas it joins) that
-## blocking plants and rocks, ore nodes and nests keep free, plus the room the widest of them
-## needs, in m.
-const LANE_HALF_WIDTH: float = 5.0
-## How far into an area (relative to its radius) a lane leads; the middle is open enough.
-const LANE_FREE_MIDDLE: float = 0.6
 ## How much an area's outline wobbles, relative to its radius (a pass's: `LocationBiome`).
 const AREA_WOBBLE: float = 0.2
 ## Open ground around the landing site, in m: more than `landing_falloff`, so the flat site never
@@ -55,8 +49,6 @@ const NEST_STRAIGHT_SHARE: float = 0.6
 const HAZARD_MARGIN: float = 3.0
 ## Over how many m a raised bridge (`LocationBiome.bridge_rise`) rises from the areas it joins.
 const BRIDGE_RAMP: float = 5.0
-## How steep the ramps between terraces are (rise per m).
-const TERRACE_RAMP_SLOPE: float = 0.3
 ## Over how many m beyond the areas the rock beside a slot canyon rises to its full depth
 ## (`LocationBiome.canyon_depth`): from where it starts to where it's full, measured from how much
 ## farther the areas are than the canyon.
@@ -115,11 +107,13 @@ var layout: LocationLayout
 var size: float = 0.0
 ## Its points of interest and set pieces.
 var parts := LocationParts.new()
+## The ground along its passes: their lanes, the ramps between terraces and the trails' paths.
+var passes: LocationPasses
 
 var _rng := RandomNumberGenerator.new()
 ## Grid points players can walk to from the ship (1 = reachable).
 var _reachable: PackedByteArray
-## Grid points on a lane along a pass (1 = keep free).
+## Grid points on a lane along a pass (1 = keep free; `passes.lanes`).
 var _lanes: PackedByteArray
 ## Grid points on the rock on the camera's side of the open ground (1 = only low scatter).
 var _camera_side: PackedByteArray
@@ -333,10 +327,11 @@ func _generate_ground() -> void:
 		)
 		_gaps = LocationGaps.new(terrain, biome, widths, pits)
 		_widen_gaps()
-	for lake: Vector3 in _features.fit_lakes(_lanes):
-		if biome.hazard == LocationBiome.Hazard.SLICK_ICE:
-			_hazards.spots.append(lake)
-		_clearings.append(Vector3(lake.x, lake.y, lake.z + 1.0))
+	# Frozen lakes and mud pools: the slick ice or the mud.
+	for pool: Vector3 in _features.fit_lakes(_lanes) + _features.fit_pools(_lanes):
+		if biome.hazard in [LocationBiome.Hazard.SLICK_ICE, LocationBiome.Hazard.MUD]:
+			_hazards.spots.append(pool)
+		_clearings.append(Vector3(pool.x, pool.y, pool.z + 1.0))
 	_clearings.append_array(_features.clearings())
 	_features.collect()
 	for z: int in cells + 1:
@@ -400,8 +395,9 @@ func _carve(wobble: FastNoiseLite) -> PackedFloat32Array:
 	openness.fill(-INF)
 	if biome.terrace_step > 0.0:
 		_levels.resize(openness.size())
-	_lanes = PackedByteArray()
-	_lanes.resize(terrain.heights.size())
+	passes = LocationPasses.new(terrain, biome, layout)
+	passes.mark(ramp_exit, Vector2(landing_yard.x, landing_yard.y))
+	_lanes = passes.lanes
 	# The outlines wobble by noise (about -1 to 1), so no area is a circle and no pass a tube.
 	var bends := PackedFloat32Array()
 	bends.resize(terrain.heights.size())
@@ -427,20 +423,15 @@ func _carve(wobble: FastNoiseLite) -> PackedFloat32Array:
 			narrow = area.facing.orthogonal() / LocationLayout.WASH_WIDTH
 		_stamp(openness, bends, area.center, area.radius, AREA_WOBBLE, outward, narrow, area.level)
 	var in_areas: PackedFloat32Array = openness.duplicate()
-	_mark_lane(ramp_exit, Vector2(landing_yard.x, landing_yard.y))
 	for way: LocationLayout.Pass in layout.passes:
-		var ends: Array[LocationLayout.Area] = [layout.areas[way.from], layout.areas[way.to]]
-		var level: float = minf(ends[0].level, ends[1].level)
-		for i: int in way.points.size():
-			var at: Vector2 = way.points[i]
+		var level: float = minf(layout.areas[way.from].level, layout.areas[way.to].level)
+		for at: Vector2 in way.points:
 			_stamp(
 				openness, bends, at, way.width * 0.5, biome.pass_wobble, false, Vector2.ZERO, level
 			)
-			if i > 0 and not _in_middle(way.points[i], ends):
-				_mark_lane(way.points[i - 1], way.points[i])
 	if not _levels.is_empty():
 		for way: LocationLayout.Pass in layout.passes:
-			_lay_ramp(way, bends, in_areas)
+			passes.lay_ramp(_levels, way, bends, in_areas)
 		var known := PackedByteArray()
 		known.resize(openness.size())
 		for i: int in openness.size():
@@ -499,98 +490,6 @@ func _stamp(
 				elif inside > openness[index]:
 					_levels[index] = level
 			openness[index] = maxf(openness[index], inside)
-
-
-## Lays the ramp along `way` between areas at different levels (terraces): the higher area's
-## level up to where the pass leaves its outline, then down (`TERRACE_RAMP_SLOPE`) to the lower
-## area's, which it reaches into when the two are close (`in_areas`: the areas' openness). Measured
-## along the pass, so the ramp keeps its slope however the outlines wobble.
-func _lay_ramp(
-	way: LocationLayout.Pass, bends: PackedFloat32Array, in_areas: PackedFloat32Array
-) -> void:
-	var from: LocationLayout.Area = layout.areas[way.from]
-	var to: LocationLayout.Area = layout.areas[way.to]
-	var drop: float = absf(from.level - to.level)
-	if drop <= 0.0:
-		return
-	var high: LocationLayout.Area = from if from.level > to.level else to
-	# How far along the pass each point lies, from the higher end.
-	var count: int = way.points.size()
-	var arcs := PackedFloat32Array()
-	arcs.resize(count)
-	for i: int in range(1, count):
-		arcs[i] = arcs[i - 1] + way.points[i].distance_to(way.points[i - 1])
-	var total: float = arcs[count - 1]
-	if high == to:
-		for i: int in count:
-			arcs[i] = total - arcs[i]
-	var leaves: float = total
-	for i: int in count:
-		var at: Vector2 = way.points[i]
-		var grid: Vector2i = Vector2i(terrain.to_grid(at).round()).clamp(
-			Vector2i.ZERO, Vector2i.ONE * terrain.cells
-		)
-		var bend: float = bends[terrain.index(grid.x, grid.y)]
-		if at.distance_to(high.center) > high.radius * (1.0 + bend * AREA_WOBBLE):
-			leaves = minf(leaves, arcs[i])
-	var length: float = drop / TERRACE_RAMP_SLOPE
-	var half: float = way.width * 0.5 * (1.0 + biome.pass_wobble)
-	var low_corner: Vector2 = Vector2.INF
-	var high_corner: Vector2 = -Vector2.INF
-	for at: Vector2 in way.points:
-		low_corner = low_corner.min(at)
-		high_corner = high_corner.max(at)
-	var low: Vector2i = Vector2i(terrain.to_grid(low_corner - Vector2.ONE * half).floor()).maxi(0)
-	var top: Vector2i = Vector2i(terrain.to_grid(high_corner + Vector2.ONE * half).ceil()).mini(
-		terrain.cells
-	)
-	for z: int in range(low.y, top.y + 1):
-		for x: int in range(low.x, top.x + 1):
-			var at := Vector2(terrain.origin.x + x * cell, terrain.origin.y + z * cell)
-			var nearest: float = INF
-			var along: float = 0.0
-			for i: int in range(1, count):
-				var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
-					at, way.points[i - 1], way.points[i]
-				)
-				var distance: float = at.distance_to(closest)
-				if distance < nearest:
-					nearest = distance
-					var part: float = closest.distance_to(way.points[i - 1])
-					along = (
-						arcs[i - 1]
-						+ (
-							(arcs[i] - arcs[i - 1])
-							* part
-							/ maxf(way.points[i].distance_to(way.points[i - 1]), 0.001)
-						)
-					)
-			if nearest > half:
-				continue
-			var index: int = terrain.index(x, z)
-			var level: float = high.level - drop * clampf((along - leaves) / length, 0.0, 1.0)
-			_levels[index] = maxf(_levels[index], level) if in_areas[index] > 0.0 else level
-
-
-## Whether `at` lies in the middle of one of `areas`: open enough to walk around anything there,
-## so the lanes end before it.
-func _in_middle(at: Vector2, areas: Array[LocationLayout.Area]) -> bool:
-	for area: LocationLayout.Area in areas:
-		if at.distance_to(area.center) < area.radius * LANE_FREE_MIDDLE:
-			return true
-	return false
-
-
-## Marks the grid points within `LANE_HALF_WIDTH` of the line from `from` to `to`.
-func _mark_lane(from: Vector2, to: Vector2) -> void:
-	var low: Vector2 = terrain.to_grid(from.min(to) - Vector2.ONE * LANE_HALF_WIDTH).floor()
-	var high: Vector2 = terrain.to_grid(from.max(to) + Vector2.ONE * LANE_HALF_WIDTH).ceil()
-	for z: int in range(maxi(int(low.y), 0), mini(int(high.y), terrain.cells) + 1):
-		for x: int in range(maxi(int(low.x), 0), mini(int(high.x), terrain.cells) + 1):
-			var at := Vector2(terrain.origin.x + x * cell, terrain.origin.y + z * cell)
-			var closest: Vector2 = Geometry2D.get_closest_point_to_segment(at, from, to)
-			if at.distance_to(closest) <= LANE_HALF_WIDTH:
-				_lanes[terrain.index(x, z)] = 1
 
 
 func _noise(frequency: float, octaves: int) -> FastNoiseLite:
@@ -780,7 +679,8 @@ func _is_gentle(at: Vector2, radius: float) -> bool:
 
 
 ## Whether flattening a site of `radius` at `at` (see `add_site`) leaves every step between
-## neighboring grid points as it was: walkable ones walkable, too steep ones too steep.
+## neighboring grid points as it was: walkable ones walkable, too steep ones too steep (but for
+## steps onto ground behind a gap's walls, which nobody walks on either way).
 func flattening_keeps_steps(at: Vector2, radius: float, falloff: float = SITE_FALLOFF) -> bool:
 	var level: float = terrain.height_at(at.x, at.y)
 	var max_rise: float = MAX_WALK_SLOPE * cell
@@ -798,6 +698,8 @@ func flattening_keeps_steps(at: Vector2, radius: float, falloff: float = SITE_FA
 		var index: int = terrain.index(point.x, point.y)
 		for next: Vector2i in terrain.neighbors(point.x, point.y):
 			var other: int = terrain.index(next.x, next.y)
+			if not _blocked.is_empty() and (_blocked[index] or _blocked[other]):
+				continue
 			var before: float = absf(terrain.heights[index] - terrain.heights[other])
 			var next_height: float = (
 				changed[other] if changed.has(other) else terrain.heights[other]
@@ -900,7 +802,11 @@ func _ground_paint(
 	# Lips, bridges and the hazard keep their own tint, without scree, so they read from afar.
 	var plain: bool = false
 	if _gaps:
-		tint = tint.lerp(biome.gap_tint, smoothstep(0.0, biome.gap_depth, -point.y))
+		# Deeper ground fades towards the gap's bottom; a band at the floor's level has its tint.
+		var low: float = float(_gaps.gaps[index])
+		if biome.gap_depth > 0.0:
+			low = smoothstep(0.0, biome.gap_depth, -point.y)
+		tint = tint.lerp(biome.gap_tint, low)
 		var lip: bool = _blocked[index] and not _gaps.gaps[index]
 		if lip or (not _bridges.is_empty() and _bridges[index]):
 			tint = biome.lip_tint
@@ -908,11 +814,15 @@ func _ground_paint(
 	if near_hazard(at, -HAZARD_MARGIN):
 		tint = biome.hazard_tint
 		plain = true
-	# A dry wash's bed: lighter sand, without scree.
+	# A dry wash's bed (lighter sand) and a trail's path (packed soil), without scree.
 	var bed: float = _features.bed(at)
 	if bed > 0.0:
 		tint = tint.lerp(LocationFeatures.BED_TINT, bed)
 		plain = plain or bed > 0.5
+	var path: float = passes.path_at(at)
+	if path > 0.0:
+		tint = tint.lerp(LocationPasses.PATH_TINT, path)
+		plain = plain or path > 0.5
 	tint *= 1.0 + shades.get_noise_2dv(at) * 2.0 * biome.tint_variation
 	# Scree collects where the ground rises steeply close by.
 	var rise: float = highest[index] - point.y
@@ -946,19 +856,22 @@ func _add_bounds() -> void:
 
 
 ## Whether a plant or rock of `radius` (0: not blocking) may grow at location-local `at`: on the
-## ground, off the landing site, the gaps, the clearings and (blocking ones) the lanes, and not
-## `tall` on the rock on the camera's side (see `LocationScatter`).
-func lets_grow(at: Vector2, radius: float, tall: bool) -> bool:
+## ground, off the landing site, the gaps (or only on them, `on_barrier`: a band of growth), the
+## clearings, the trails' paths and (blocking ones) the lanes, and not `tall` on the rock on the
+## camera's side (see `LocationScatter`).
+func lets_grow(at: Vector2, radius: float, tall: bool, on_barrier: bool = false) -> bool:
 	if not terrain.rect().grow(-cell).has_point(at):
 		return false
 	if landing_distance(at) < 4.0 + radius:
 		return false
 	var grid: Vector2i = Vector2i(terrain.to_grid(at).round())
 	var index: int = terrain.index(grid.x, grid.y)
+	var barrier: bool = not _blocked.is_empty() and _blocked[index] == 1
 	if (
 		(radius > 0.0 and _lanes[index] == 1)
 		or (tall and not _camera_side.is_empty() and _camera_side[index] == 1)
-		or (not _blocked.is_empty() and _blocked[index] == 1)
+		or barrier != on_barrier
+		or passes.path_at(at) > 0.3
 	):
 		return false
 	for clearing: Vector3 in _clearings:

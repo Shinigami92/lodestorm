@@ -1,11 +1,14 @@
 class_name GroundHazard
 extends Area3D
 ## Ground that hinders whoever walks on it, players and aliens alike (see `LocationBiome.Hazard`):
-## slick ice, vents (`GroundVent`). Bodies with a `ground_contact` (`GroundContact`) are told when
-## they step in and out. All values greybox, TBD (playtest).
+## slick ice, vents (`GroundVent`), shards (`GroundShards`), mud (`GroundMud`). Bodies with a
+## `ground_contact` (`GroundContact`) are told when they step in and out. All values greybox, TBD
+## (playtest).
 
 ## How well feet grip here: the share of the usual acceleration (1: as usual).
 @export_range(0.0, 1.0) var grip: float = 1.0
+## How fast bodies walk here: the share of their usual speed (1: as usual).
+@export_range(0.0, 1.0) var speed: float = 1.0
 
 ## The bodies standing in it, and their contacts.
 var _bodies: Array[Node3D] = []

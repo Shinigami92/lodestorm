@@ -163,10 +163,9 @@ func test_dash_needs_the_skill_and_its_cooldown() -> void:
 
 func test_dash_action_dashes_where_the_player_moves() -> void:
 	_player.skills.raise(DASH)
-	var strip := _player.get_node("DashStrip") as DashStrip
+	var ring := _player.get_node("SuitRing") as SuitRing
 	await wait_process_frames(1)
-	assert_true(strip.visible, "the strip shows with the skill")
-	assert_eq(strip.fill, 1.0)
+	assert_eq(ring.dash_alpha, 0.0, "the dash ring hides while the dash is ready")
 	Input.action_press(&"move_right")
 	await wait_physics_frames(2)
 	Input.action_press(&"dash")
@@ -174,7 +173,9 @@ func test_dash_action_dashes_where_the_player_moves() -> void:
 	assert_true(_player.suit_dash.is_dashing())
 	Input.action_release(&"dash")
 	await wait_process_frames(2)
-	assert_lt(strip.fill, 1.0, "the strip fills up again")
+	assert_eq(ring.dash_alpha, 1.0, "the dash ring shows while it recharges")
+	var fill: float = ring.shown(&"dash_fill")
+	assert_lt(fill, 1.0, "and fills up again")
 	assert_gt(_player.velocity.length(), _player.settings.move_speed * 2.0)
 
 

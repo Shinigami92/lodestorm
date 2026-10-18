@@ -8,6 +8,9 @@ extends Node
 
 ## Emitted when health changes (damage, healing).
 signal changed(health: float)
+## Emitted on damage, with where it came from (`Vector3.INF`: nowhere in particular, e.g. the
+## storm).
+signal hurt(amount: float, from: Vector3)
 ## Emitted when health reaches zero.
 signal died
 
@@ -38,12 +41,13 @@ func maximum() -> float:
 	)
 
 
-## Loses `amount` health; dies at zero.
-func damage(amount: float) -> void:
+## Loses `amount` health (from an attacker at `from`, if it has one); dies at zero.
+func damage(amount: float, from: Vector3 = Vector3.INF) -> void:
 	if dead or amount <= 0.0:
 		return
 	_since_damage = 0.0
 	_set_health(health - amount)
+	hurt.emit(amount, from)
 	if health > 0.0:
 		light.flash()
 		return

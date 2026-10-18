@@ -1,0 +1,333 @@
+class_name SuitRing
+extends MeshInstance3D
+## The ring the suit projects on the ground around the player (a child of it; see GAME_DESIGN.md,
+## UI): everything a player reads in a fight. Its halves stay fixed to the screen: the health arc
+## on the left (green, amber below half, red and blinking below a quarter, flashing white on
+## damage, a red mark on the outer edge towards where a hit came from), the equipped ranged
+## weapon's ammo arc on the right in its ammo color (reloads with their timing window, a red flash
+## when a reload can't start, a white one when a timed press finishes it), the spare magazines as
+## ticks inside the ammo arc, the dash as a thin inner ring while it recharges, and a green outer
+## band while the player hands a teammate ammo. Both arcs fill from the bottom up.
+## Quiet when nothing goes on: an arc dims to a faint outline `lit_time` after its last change,
+## unless its value is low (health below half, a nearly empty magazine); the spare ticks show on a
+## reload and when a spare is used. Aboard (weapon holstered) the outline hides too. Tilts with
+## the ground under the player; drawn over the ground and low plants, hidden by cliffs and props.
+
+## Seconds it takes an arc to dim or light up.
+const FADE_TIME: float = 0.4
+## Seconds a hit's mark and a flash last.
+const HIT_TIME: float = 1.0
+const FLASH_TIME: float = 0.35
+## Seconds the dash ring stays after it's ready again.
+const DASH_READY_TIME: float = 0.3
+## A magazine is nearly empty at this share or less (like the last of the weapon's six segments).
+const NEARLY_EMPTY: float = 1.0 / 6.0
+## Rounds shown as segments up to this many, as one bar beyond.
+const MAX_SEGMENTS: int = 16
+## Brightness of a blinking arc between its blinks (it never goes dark: its length still reads).
+const BLINK_DIM: float = 0.55
+const FILL_ALPHA: float = 0.9
+const DASH_COLOR := Color(1.0, 0.93, 0.8, FILL_ALPHA)
+const GIVE_COLOR := Color(0.35, 1.0, 0.45, FILL_ALPHA)
+const FUMBLE_COLOR := Color(1.0, 0.12, 0.08, FILL_ALPHA)
+const HIT_MARKS: int = 4
+
+## Outer radius of the arcs (m); the plane reaches a little farther for the marks. TBD (playtest).
+@export var radius: float = 1.36
+## Seconds an arc stays lit after a change. TBD (playtest).
+@export var lit_time: float = 3.0
+
+## The health arc's and the ammo arc's light (0: dimmed to the outline, 1: lit).
+var health_glow: float = 1.0
+var ammo_glow: float = 1.0
+## How much the spare ticks and the dash ring show (0: hidden).
+var spares_alpha: float = 0.0
+var dash_alpha: float = 0.0
+## Where the hits' marks point (shares of the circle clockwise from the screen's top) and how
+## strong they still are.
+var hits: PackedVector2Array = []
+
+var _material := ShaderMaterial.new()
+var _health_lit: float = 0.0
+var _ammo_lit: float = 0.0
+var _spares_lit: float = 0.0
+var _dash_lit: float = 0.0
+var _last_health: float = -1.0
+var _last_weapon: RangedWeapon
+var _last_rounds: int = -1
+var _last_spares: int = -1
+var _was_reloading: bool = false
+var _flash_color := Color.WHITE
+var _flash_left: float = 0.0
+var _damage_flash_left: float = 0.0
+var _next_damage_flash: float = 0.0
+## World directions the hits came from, with the seconds each mark has left.
+var _hit_directions: Array[Vector3] = []
+var _hit_left: PackedFloat32Array = []
+var _up := Vector3.UP
+
+@onready var _player: Player = get_parent() as Player
+
+
+func _ready() -> void:
+	top_level = true
+	var outer: float = radius + 0.26
+	var plane := PlaneMesh.new()
+	plane.size = Vector2.ONE * outer * 2.0
+	mesh = plane
+	_material.shader = preload("res://assets/shaders/suit_ring.gdshader")
+	_material.set_shader_parameter(&"radius", outer)
+	_material.set_shader_parameter(&"arc_band", Vector2(radius - 0.2, radius))
+	_material.set_shader_parameter(&"spare_band", Vector2(radius - 0.35, radius - 0.24))
+	_material.set_shader_parameter(&"dash_band", Vector2(radius - 0.44, radius - 0.4))
+	_material.set_shader_parameter(&"give_band", Vector2(radius + 0.06, radius + 0.14))
+	_material.set_shader_parameter(&"hit_band", Vector2(radius + 0.06, outer - 0.02))
+	_material.set_shader_parameter(&"dash_color", DASH_COLOR)
+	_material.set_shader_parameter(&"give_color", GIVE_COLOR)
+	material_override = _material
+	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_player.vitals.hurt.connect(_on_hurt)
+	visible = false
+
+
+## Flashes the ammo arc in `color` for a moment (a reload that can't start, a timed finish).
+func flash(color: Color) -> void:
+	_flash_color = color
+	_flash_left = FLASH_TIME
+	_ammo_lit = lit_time
+
+
+## The value of one of its shader's parameters (what it shows, for tests and probes).
+func shown(parameter: StringName) -> Variant:
+	return _material.get_shader_parameter(parameter)
+
+
+## Whether the ammo arc shows (a ranged weapon is drawn).
+func shows_ammo() -> bool:
+	var ranged := _player.weapon as RangedWeapon
+	return ranged != null and ranged.visible
+
+
+func _process(delta: float) -> void:
+	visible = not _player.dead and not _player.menu
+	if not visible:
+		_flash_left = 0.0
+		_hit_directions.clear()
+		_hit_left.clear()
+		return
+	_flash_left = maxf(_flash_left - delta, 0.0)
+	_damage_flash_left = maxf(_damage_flash_left - delta, 0.0)
+	_next_damage_flash = maxf(_next_damage_flash - delta, 0.0)
+	var blink_on: bool = fmod(Time.get_ticks_msec() * 0.001 * SuitLight.BLINK_RATE, 1.0) < 0.5
+	_update_health(delta, blink_on)
+	_update_ammo(delta, blink_on)
+	_update_dash(delta)
+	_update_give()
+	_update_hits(delta)
+	_material.set_shader_parameter(&"outline_alpha", 1.0 if _player.weapon_allowed else 0.0)
+	_place(delta)
+
+
+func _update_health(delta: float, blink_on: bool) -> void:
+	var share: float = _player.health / _player.max_health()
+	if not is_equal_approx(_player.health, _last_health):
+		_last_health = _player.health
+		_health_lit = lit_time
+	_health_lit = maxf(_health_lit - delta, 0.0)
+	var color: Color = SuitLight.COLOR_HEALTHY
+	if share < 0.25:
+		color = SuitLight.COLOR_CRITICAL
+		if not blink_on:
+			color = color.darkened(1.0 - BLINK_DIM)
+	elif share < 0.5:
+		color = SuitLight.COLOR_HURT
+	if _damage_flash_left > 0.0:
+		color = SuitLight.COLOR_FLASH
+	color.a = FILL_ALPHA
+	health_glow = _fade(health_glow, _health_lit > 0.0 or share < 0.5, delta)
+	_material.set_shader_parameter(&"health_fill", share)
+	_material.set_shader_parameter(&"health_color", color)
+	_material.set_shader_parameter(&"health_glow", health_glow)
+
+
+func _update_ammo(delta: float, blink_on: bool) -> void:
+	var ranged := _player.weapon as RangedWeapon
+	var drawn: bool = shows_ammo()
+	_material.set_shader_parameter(&"ammo_alpha", 1.0 if drawn else 0.0)
+	if not drawn:
+		_last_weapon = null
+		ammo_glow = 0.0
+		spares_alpha = 0.0
+		_material.set_shader_parameter(&"spare_alpha", 0.0)
+		return
+	var capacity: int = ranged.capacity()
+	if ranged != _last_weapon or ranged.rounds != _last_rounds or ranged.reloading:
+		_ammo_lit = lit_time
+	var started: bool = ranged.reloading and not _was_reloading
+	if ranged != _last_weapon or ranged.spare_rounds != _last_spares or started:
+		_spares_lit = lit_time
+	if ranged.reloading:
+		_spares_lit = maxf(_spares_lit, FADE_TIME)
+	_last_weapon = ranged
+	_last_rounds = ranged.rounds
+	_last_spares = ranged.spare_rounds
+	_was_reloading = ranged.reloading
+	_ammo_lit = maxf(_ammo_lit - delta, 0.0)
+	_spares_lit = maxf(_spares_lit - delta, 0.0)
+
+	var share: float = float(ranged.rounds) / capacity
+	var low: bool = share <= NEARLY_EMPTY
+	var gauge := ranged.get_node_or_null(^"AmmoGauge") as AmmoGauge
+	var color: Color = gauge.color if gauge else Color.WHITE
+	color.a = FILL_ALPHA
+	var settings: RangedWeaponSettings = ranged.settings
+	var single: bool = settings.reload_mode == RangedWeaponSettings.ReloadMode.SINGLE
+	var segments: int = capacity if capacity <= MAX_SEGMENTS else 0
+	var fill: float = share
+	var window := Vector2(1.0, 0.0)
+	var loading: int = -1
+	var loading_color := color
+	if ranged.reloading and not single:
+		fill = ranged.reload_share()
+		segments = 0
+		if ranged.fumbled:
+			color = FUMBLE_COLOR
+		else:
+			window = Vector2(
+				settings.sweet_spot_start, settings.sweet_spot_start + settings.sweet_spot_width
+			)
+	elif ranged.reloading and ranged.rounds < capacity:
+		var reload_share: float = ranged.reload_share()
+		var in_window: bool = (
+			reload_share >= settings.sweet_spot_start
+			and reload_share <= settings.sweet_spot_start + settings.sweet_spot_width
+		)
+		loading = ranged.rounds
+		loading_color = (
+			FUMBLE_COLOR if ranged.fumbled else (AmmoGauge.TIMING if in_window else color)
+		)
+		loading_color.a = FILL_ALPHA * clampf(reload_share, 0.15, 1.0)
+		if segments == 0:
+			# One bar: the round being loaded grows it.
+			fill = (ranged.rounds + clampf(reload_share, 0.0, 1.0)) / capacity
+			color = color.lerp(loading_color, 0.5)
+	elif ranged.rounds == 0 and not ranged.can_reload():
+		fill = 1.0
+		color = AmmoGauge.EMPTY if blink_on else AmmoGauge.EMPTY.darkened(1.0 - BLINK_DIM)
+		color.a = FILL_ALPHA * 0.6
+	elif low and ranged.rounds > 0:
+		color = AmmoGauge.WARNING if blink_on else AmmoGauge.WARNING.darkened(1.0 - BLINK_DIM)
+		color.a = FILL_ALPHA
+	if _flash_left > 0.0:
+		fill = 1.0
+		segments = 0
+		window = Vector2(1.0, 0.0)
+		color = _flash_color
+		color.a = FILL_ALPHA * _flash_left / FLASH_TIME
+	ammo_glow = _fade(ammo_glow, _ammo_lit > 0.0 or low, delta)
+	spares_alpha = _fade(spares_alpha, _spares_lit > 0.0, delta)
+	var spare_color: Color = gauge.color if gauge else Color.WHITE
+	spare_color.a = FILL_ALPHA
+	_material.set_shader_parameter(&"ammo_fill", fill)
+	_material.set_shader_parameter(&"ammo_color", color)
+	_material.set_shader_parameter(&"ammo_glow", ammo_glow)
+	_material.set_shader_parameter(&"ammo_segments", segments)
+	_material.set_shader_parameter(&"ammo_window", window)
+	_material.set_shader_parameter(&"loading_segment", loading)
+	_material.set_shader_parameter(&"loading_color", loading_color)
+	_material.set_shader_parameter(&"spare_alpha", spares_alpha)
+	_material.set_shader_parameter(&"spare_slots", _player.spare_magazines)
+	_material.set_shader_parameter(&"spare_fill", float(ranged.spare_rounds) / capacity)
+	_material.set_shader_parameter(&"spare_color", spare_color)
+
+
+func _update_dash(delta: float) -> void:
+	var ratio: float = _player.suit_dash.ready_ratio()
+	var learned: bool = _player.skills.has(Skill.Effect.DASH)
+	if learned and ratio < 1.0:
+		_dash_lit = DASH_READY_TIME
+	else:
+		_dash_lit = maxf(_dash_lit - delta, 0.0)
+	dash_alpha = 1.0 if _dash_lit > 0.0 else 0.0
+	_material.set_shader_parameter(&"dash_alpha", dash_alpha)
+	_material.set_shader_parameter(&"dash_fill", ratio)
+
+
+func _update_give() -> void:
+	var giving: bool = _player.give_ammo_target != null
+	_material.set_shader_parameter(&"give_alpha", 1.0 if giving else 0.0)
+	if giving:
+		_material.set_shader_parameter(
+			&"give_fill", _player.give_ammo_time / _player.settings.give_ammo_time
+		)
+
+
+func _update_hits(delta: float) -> void:
+	var marks := PackedVector2Array()
+	marks.resize(HIT_MARKS)
+	hits.clear()
+	var i: int = _hit_left.size() - 1
+	while i >= 0:
+		_hit_left[i] -= delta
+		if _hit_left[i] <= 0.0:
+			_hit_left.remove_at(i)
+			_hit_directions.remove_at(i)
+		i -= 1
+	for index: int in _hit_left.size():
+		var mark := Vector2(_share_towards(_hit_directions[index]), _hit_left[index] / HIT_TIME)
+		marks[index] = mark
+		hits.append(mark)
+	_material.set_shader_parameter(&"hits", marks)
+
+
+## Follows the player's feet, tilted with the ground; its top stays at the top of the screen.
+func _place(delta: float) -> void:
+	if _player.is_on_floor():
+		_up = _up.slerp(_player.get_floor_normal(), 1.0 - exp(-10.0 * delta)).normalized()
+	global_position = _player.global_position + _up * 0.05
+	var forward: Vector3 = _screen_up()
+	forward = (forward - _up * forward.dot(_up)).normalized()
+	if forward.length() > 0.001:
+		global_basis = Basis.looking_at(forward, _up)
+
+
+## The ground direction towards the screen's top (away from the camera).
+func _screen_up() -> Vector3:
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	var forward := Vector3.FORWARD
+	if camera:
+		forward = -camera.global_basis.z
+		forward.y = 0.0
+	return forward.normalized() if forward.length() > 0.001 else Vector3.FORWARD
+
+
+## The share of the circle (clockwise from the screen's top, seen from above) towards `direction`.
+func _share_towards(direction: Vector3) -> float:
+	var up: Vector3 = _screen_up()
+	var right: Vector3 = up.cross(Vector3.UP)
+	return fposmod(atan2(direction.dot(right), direction.dot(up)) / TAU, 1.0)
+
+
+## A hit (damage) lights up the health arc and flashes it white (under steady damage, like the
+## storm's, a pulse every `SuitLight.FLASH_INTERVAL`); one from `from` marks where it came from.
+func _on_hurt(_amount: float, from: Vector3) -> void:
+	_health_lit = lit_time
+	if _next_damage_flash <= 0.0:
+		_damage_flash_left = SuitLight.FLASH_DURATION
+		_next_damage_flash = SuitLight.FLASH_INTERVAL
+	if not from.is_finite():
+		return
+	var direction: Vector3 = from - _player.global_position
+	direction.y = 0.0
+	if direction.length() < 0.01:
+		return
+	if _hit_left.size() >= HIT_MARKS:
+		_hit_left.remove_at(0)
+		_hit_directions.remove_at(0)
+	_hit_directions.append(direction.normalized())
+	_hit_left.append(HIT_TIME)
+
+
+## Moves `glow` towards 1 while `lit`, else towards 0, over `FADE_TIME`.
+static func _fade(glow: float, lit: bool, delta: float) -> float:
+	return move_toward(glow, 1.0 if lit else 0.0, delta / FADE_TIME)

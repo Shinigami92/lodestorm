@@ -233,10 +233,6 @@ func _blaster() -> RangedWeapon:
 	return _player.weapon as RangedWeapon
 
 
-func _ring() -> ReloadRing:
-	return _player.get_node("ReloadRing") as ReloadRing
-
-
 func _equip(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
 	return _player.weapon

@@ -43,7 +43,7 @@ func test_sleeping_saves_and_fades_out() -> void:
 	assert_true(bed.asleep)
 	assert_false(bed.card.visible, "the card goes")
 	assert_eq(bed.user, _player, "the camera stays on the bed while it fades out")
-	await wait_seconds(BedStation.FADE_TIME + 0.3)
+	await wait_seconds(ScreenFade.QUIT_TIME + 0.3)
 	assert_null(bed.user, "then it's over")
 	assert_null(_player.menu)
 	assert_false(bed.can_use(_player), "once is enough")

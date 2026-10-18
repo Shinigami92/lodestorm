@@ -23,6 +23,7 @@ extends CharacterBody3D
 ## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
 ## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
+## `pause` with no menu open shows its pause panel (`pause_panel`).
 
 ## Emitted when the carried amount of an ore type changes.
 signal cargo_changed(ore_type: OreType, amount: float)
@@ -32,6 +33,7 @@ signal health_changed(health: float)
 signal died
 
 const GROUP: StringName = &"players"
+const PAUSE_PANEL_PATH: String = "res://game/player/pause/pause_panel.tscn"
 
 ## Actions that make the player act; ones still held when a menu closes wait for their release.
 const ACTIONS: Array[StringName] = [
@@ -107,8 +109,8 @@ var spare_magazines: int:
 		return settings.spare_magazines + roundi(skills.value(Skill.Effect.SPARE_MAGAZINES))
 ## The dash (a skill).
 var suit_dash := SuitDash.new()
-## The wrist display (`wrist` shows the cargo).
-var wrist := WristDisplay.new()
+## The pause panel beside it (`pause`: resume, settings, quit).
+var pause_panel: PausePanel
 ## The 3D menu (a screen or a station) the player is using, or null. Meanwhile it doesn't move or
 ## act.
 var menu: WorldMenu:
@@ -174,9 +176,11 @@ func _ready() -> void:
 	suit_dash.name = "SuitDash"
 	suit_dash.holder = self
 	add_child(suit_dash)
-	wrist.name = "WristDisplay"
-	wrist.holder = self
-	add_child(wrist)
+	# Loaded here, not preloaded: its scripts refer back to the player's.
+	pause_panel = (load(PAUSE_PANEL_PATH) as PackedScene).instantiate() as PausePanel
+	pause_panel.name = "PausePanel"
+	pause_panel.holder = self
+	add_child(pause_panel)
 	aim.name = "Aim"
 	aim.holder = self
 	aim.marker = _target_marker

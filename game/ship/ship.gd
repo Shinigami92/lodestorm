@@ -11,10 +11,10 @@ extends Node3D
 ## button on the inner wall next to the door lowers it (see `Mission` for the flow). The ship tracks
 ## who is aboard and holsters their weapons inside, except in the shooting range's weapon zone (a
 ## barrier in its doorway keeps the shots inside).
-## While the `viewer` is aboard, the camera sees inside: on the lower deck, the walls facing the
-## camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`, `Rooms/Upper`, the lifts'
-## upper gates) only cast shadows; on the upper deck, its walls facing the camera and the roof
-## (`Hull/Upper/Cut`) do.
+## While the `viewer` is aboard (and `show_outside` is off), the camera sees inside: on the lower
+## deck, the walls facing the camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`,
+## `Rooms/Upper`, the lifts' upper gates) only cast shadows; on the upper deck, its walls facing
+## the camera and the roof (`Hull/Upper/Cut`) do.
 ## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
 ## Windows in the outer walls look out from every room along them (and in from outside).
 ## A countdown above the door shows the mission time ("No mission" until one is picked at the holo
@@ -74,6 +74,8 @@ var countdown_text: String = ""
 ## Hides the countdown (it draws over everything): e.g. while the hold's silos by the ramp are
 ## looked at up close.
 var countdown_hidden: bool = false
+## Shows the closed hull whoever is aboard (e.g. the title view).
+var show_outside: bool = false
 ## Whether the ramp is going down (or is down); it moves there over `ramp_duration`.
 var ramp_open: bool = false
 ## Ore brought back over all runs and not spent yet, in units per ore type. Upgrades are paid from
@@ -330,6 +332,8 @@ func _on_weapon_zone_exited(body: Node3D) -> void:
 ## Where the viewer is: outside, or on which deck.
 func _current_view() -> View:
 	var who: Node3D = viewer
+	if show_outside:
+		return View.OUTSIDE
 	if not who and not _aboard.is_empty():
 		who = _aboard[0]
 	if not who or who not in _aboard:

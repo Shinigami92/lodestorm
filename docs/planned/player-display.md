@@ -1,6 +1,6 @@
 # The player during a mission (planned)
 
-Decided 2026-10-17, built in M4 step 5 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today the player shows their state through lights on the suit and the weapon, a reload ring and the wrist display (see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen) and [Ammo and reloading](../GAME_DESIGN.md#ammo-and-reloading)).
+Decided 2026-10-17, built in M4 step 5 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today the player shows their state through lights on the suit and the weapon, and a reload ring (see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen) and [Ammo and reloading](../GAME_DESIGN.md#ammo-and-reloading)).
 
 ## Why
 
@@ -41,7 +41,3 @@ The suit projects one ring on the ground around the player's feet (about 1.4 m r
 - **Teammates** (co-op): other players' rings show only their health arc and an outline in their player color, so four players don't cover the ground.
 - **Settings** (in the pause panel and on the settings terminal, see [`menu-pause.md`](menu-pause.md)): ring size (small, medium, large) and "Always show" (no fading). Health never relies on color alone: it blinks below a quarter, and the arc's length shows the share.
 - **VR:** the same ring (see [`vr-view.md`](vr-view.md)).
-
-## No wrist display
-
-The wrist display (`wrist`: J, the gamepad's View button; today with the carried cargo) slipped in by mistake; its frame becomes the pause panel (see [`menu-pause.md`](menu-pause.md)), built just before the suit ring. Nothing needs to be looked up during a run: the suit ring, the ore stack on the back and the "+ore" badge show what matters. The details are aboard: exact amounts at the silos, and the quests, the expedition's logs and the running jobs on the quest board on the bridge (see [`quests.md`](quests.md)).

@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://khm8tyaekg2n"]
+
+[ext_resource type="Script" uid="uid://ccv5c4by55ial" path="res://game/ui/title/title_view.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://dk6blwo3y5a60" path="res://game/ui/title/title_credits.tscn" id="3_credits"]
+
+[node name="TitleView" type="Node3D" node_paths=PackedStringArray("view_focus")]
+script = ExtResource("1_script")
+view_height = 70.0
+view_focus = NodePath("Focus")
+
+[node name="Focus" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
+
+[node name="Name" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 26, 0)
+auto_translate_mode = 2
+pixel_size = 0.05
+modulate = Color(0.45, 1.1, 1.4, 1)
+outline_modulate = Color(0.02, 0.15, 0.22, 0.8)
+text = "LODESTORM"
+font_size = 160
+outline_size = 24
+
+[node name="Prompt" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 19, 0)
+pixel_size = 0.04
+modulate = Color(1, 0.8, 0.4, 1)
+outline_modulate = Color(0.1, 0.06, 0, 0.8)
+text = "Press any button"
+font_size = 64
+outline_size = 16
+
+[node name="Credits" parent="." instance=ExtResource("2_panel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+visible = false
+menu = ExtResource("3_credits")
+size = Vector2(36, 30)
+pixels_per_meter = 16.0

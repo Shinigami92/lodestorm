@@ -37,19 +37,20 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - The skill graph with the first eight skills in four clusters (dash, reload on the move, reinforced suit, regeneration, spare magazines, careful reload, ore scanner, damage readout)
 - In-world menus instead of flat terminals: holo cards beside selectable parts, `tab_prev`/`tab_next`, the minimum text size and the fit test in every language; the weapons rack and workbench, the fitting frame, the miners' maintenance pad, the lockers, the bed to quit
 - Step 1: the NPC template, with the quartermaster (Brannik) explaining ammo, spare magazines and the timing reload
-- Step 2: 14 ores in three bands (color, crystal shape, glow pattern), spread over biomes and planets; the cargo on the back as layered tubes; the hold as silo clusters in the cargo bay; the wrist display with the cargo (to be removed, see Todo)
+- Step 2: 14 ores in three bands (color, crystal shape, glow pattern), spread over biomes and planets; the cargo on the back as layered tubes; the hold as silo clusters in the cargo bay
 - Step 3: mission locations from map parts (areas and passes, points of interest, set pieces, crates with supply caches; the low rock on the camera's side, silhouettes behind cliffs); **A** the star system's data (six planets with a gas giant, four moons, 25 regions, tiers, four new biomes as greybox); **B** the navigator as a campaign map, and setting course at the cockpit's flight console
 - Step 4 A: the drive core's heat shield station in the engine room (one plate per planet inwards, the ship's project paid from the hauls or from the hold, host only), the shield's level and where the ship is in the save (replacing `Region.unlocked`), the locked body's card, longer flights to another body, debug actions (install the next plate, open all)
 - Step 4 B: each opened planet raising the highest MK level (MK3 to MK8, a body's tier + 2), aliens (health, damage, nests) and the storm (warning, growth) scaling per tier, the ore-cost rule for every upgrade (a common and a mid ore, from MK3 the signature ore of the level's planet) and for the skills by their depth
+- Step 5 A: the title view in the world instead of a main menu (the ship from outside, the name, "Press any button", the credits after a while), the pause panel beside the player in the wrist display's frame (resume, settings, quit; the world stops solo, also on focus loss; the wrist display and its `wrist` action removed), the settings in one component (pause panel and settings terminal), quitting from the panel like the bed, the credits page
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–4 are done).
+Each step builds on the ones before it (steps 1–4 and 5 A are done).
 
 - [ ] **Step 5 — the player during a mission** ([`planned/player-display.md`](planned/player-display.md)); early, because the aliens, weapons, crafted miners and skills all show on the suit ring
-  - [ ] **A** the title view and the pause panel ([`planned/menu-pause.md`](planned/menu-pause.md)): the wrist display's frame becomes the pause panel (the `wrist` action and its cargo menu go), pausing solo (also on focus loss), the settings in one component (pause panel and cabin terminal), quitting, credits
+  - [x] **A** the title view and the pause panel (done, see above)
   - [ ] **B** the suit ring (health, ammo, spare magazines, dash, hit direction, fading), replacing the reload ring, the backpack's spare cells and the dash strip, with a probe that takes shots of crowded moments (reloading under fire, a big haul, low health) to compare
   - [ ] **C** ore arriving, the ground markings' own shapes, teammates' reduced rings, the ring settings (in the new settings)
   - [ ] **D** the palette probe ([`planned/art.md`](planned/art.md)): every color the game uses side by side, normal and for the three common color blindnesses

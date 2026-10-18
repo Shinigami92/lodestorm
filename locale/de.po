@@ -182,7 +182,9 @@ msgid "Continue"
 msgstr "Weiter"
 
 #: game/npcs/talk_card.gd
+#: game/player/pause/pause_card.tscn
 #: game/stations/navigator/navigator_card.tscn
+#: game/ui/settings_menu.tscn
 msgid "Back"
 msgstr "Zurück"
 
@@ -246,17 +248,54 @@ msgstr "Tessar"
 msgid "Vyrel"
 msgstr "Vyrel"
 
-#: game/player/wrist/wrist_card.gd
-msgid "Total: %d"
-msgstr "Gesamt: %d"
+#: game/player/pause/pause_card.gd
+msgid "Paused"
+msgstr "Pausiert"
 
-#: game/player/wrist/wrist_card.tscn
-msgid "Cargo"
-msgstr "Fracht"
+#: game/player/pause/pause_card.gd
+msgid "Menu"
+msgstr "Menü"
 
-#: game/player/wrist/wrist_card.tscn
-msgid "No ore carried."
-msgstr "Kein Erz dabei."
+#: game/player/pause/pause_card.gd
+#: game/player/pause/pause_card.tscn
+#: game/ui/settings_menu.tscn
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: game/player/pause/pause_card.gd
+#: game/player/pause/pause_card.tscn
+#: game/ui/settings_menu.tscn
+msgid "Credits"
+msgstr "Mitwirkende"
+
+#: game/player/pause/pause_card.gd
+msgid "Quit the game?"
+msgstr "Spiel beenden?"
+
+#: game/player/pause/pause_card.gd
+msgid "The game goes on."
+msgstr "Das Spiel läuft weiter."
+
+#: game/player/pause/pause_card.tscn
+msgid "Resume"
+msgstr "Weiterspielen"
+
+#: game/player/pause/pause_card.tscn
+msgid "Quit"
+msgstr "Beenden"
+
+#: game/player/pause/pause_card.tscn
+msgid "A run is underway: quitting now loses it."
+msgstr "Eine Mission läuft: Wer jetzt beendet, verliert sie."
+
+#: game/player/pause/pause_card.tscn
+msgid "Quit anyway"
+msgstr "Trotzdem beenden"
+
+#: game/player/pause/pause_card.tscn
+#: game/ui/settings_menu.tscn
+msgid "Cancel"
+msgstr "Abbrechen"
 
 #: game/progression/skills/tree/careful_reload.tres
 msgid "Careful reload"
@@ -827,6 +866,34 @@ msgstr "Aufrüsten"
 msgid "Max"
 msgstr "Max"
 
+#: game/ui/credits.tscn
+msgid "Design and direction"
+msgstr "Design und Leitung"
+
+#: game/ui/credits.tscn
+msgid "Code, art and texts"
+msgstr "Code, Grafik und Texte"
+
+#: game/ui/credits.tscn
+msgid "Written with AI, using Claude Code."
+msgstr "Mit KI geschrieben, mithilfe von Claude Code."
+
+#: game/ui/credits.tscn
+msgid "Tools"
+msgstr "Werkzeuge"
+
+#: game/ui/credits.tscn
+msgid "Third-party licenses"
+msgstr "Lizenzen von Drittanbietern"
+
+#: game/ui/credits.tscn
+msgid "This game uses Godot Engine, available under the following license:"
+msgstr "Dieses Spiel verwendet die Godot Engine, verfügbar unter der folgenden Lizenz:"
+
+#: game/ui/settings_list.tscn
+msgid "Language"
+msgstr "Sprache"
+
 #: game/ui/settings_menu.gd
 msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
 msgstr "Das löscht deinen gesamten Fortschritt: Frachtraum, Waffen, Upgrades. Das lässt sich nicht rückgängig machen."
@@ -852,14 +919,6 @@ msgid "Reset everything (3/3)"
 msgstr "Alles zurücksetzen (3/3)"
 
 #: game/ui/settings_menu.tscn
-msgid "Settings"
-msgstr "Einstellungen"
-
-#: game/ui/settings_menu.tscn
-msgid "Language"
-msgstr "Sprache"
-
-#: game/ui/settings_menu.tscn
 msgid "Progress"
 msgstr "Fortschritt"
 
@@ -871,9 +930,9 @@ msgstr "Fortschritt zurücksetzen"
 msgid "Only while you're alone. With others in your session, everyone keeps their progress."
 msgstr "Nur, solange du allein bist. Mit anderen in deiner Sitzung behalten alle ihren Fortschritt."
 
-#: game/ui/settings_menu.tscn
-msgid "Cancel"
-msgstr "Abbrechen"
+#: game/ui/title/title_view.tscn
+msgid "Press any button"
+msgstr "Beliebige Taste drücken"
 
 #: game/weapons/types/blaster.tres
 msgid "Rapid shots that reach far."

@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bur5woov5rtm"]
+
+[ext_resource type="Script" uid="uid://c3kfvivciynrx" path="res://game/ui/settings_list.gd" id="1_script"]
+
+[node name="SettingsList" type="VBoxContainer"]
+theme_override_constants/separation = 12
+script = ExtResource("1_script")
+
+[node name="Language" type="Label" parent="."]
+layout_mode = 2
+text = "Language"
+
+[node name="Languages" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20

@@ -6,7 +6,7 @@ extends Node3D
 ## big haul makes the silhouette bulkier. Ammo is paid with the commonest ore first, so it takes
 ## from the top of the stack and rare ore stays safe at the bottom. There's no carry limit, but at
 ## most `max_canisters` strap on (alternating sides, stacking up); beyond that they all show full.
-## Exact amounts are on the wrist display.
+## Exact amounts show at the silos once it's in the hold.
 
 ## Tubes on the backpack.
 const TUBES: int = 2

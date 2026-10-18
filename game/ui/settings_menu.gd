@@ -1,15 +1,12 @@
 class_name SettingsMenu
 extends PanelContainer
-## The game's settings, shown on a terminal's screen: the language (picking one switches the
-## game's texts right away and saves it, see `GameSettings`) and "Reset progress", which wipes the
-## progress (`SaveGame.reset_progress`). Wiping can't be undone, so it asks three times, each time
-## saying so; each confirm button only works after `confirm_delay`, so quick repeated presses
-## can't get through, and cancel has the focus. Leaving the terminal drops the question.
-## Resetting only works while the player is alone (`SaveGame.is_solo`): with others in the session
-## the button is disabled with a hint, and everyone keeps their progress.
-
-## Each language's name, written in that language.
-const LANGUAGE_NAMES: Dictionary[String, String] = {"en": "English", "de": "Deutsch"}
+## The settings terminal's screen in cabin 1: the settings (`SettingsList`, the same as in the
+## pause panel), the credits (a page of their own, `back` or "Back" returns) and "Reset progress",
+## which wipes the progress (`SaveGame.reset_progress`). Wiping can't be undone, so it asks three
+## times, each time saying so; each confirm button only works after `confirm_delay`, so quick
+## repeated presses can't get through, and cancel has the focus. Leaving the terminal drops the
+## question. Resetting only works while the player is alone (`SaveGame.is_solo`): with others in
+## the session the button is disabled with a hint, and everyone keeps their progress.
 
 ## Seconds before each confirm button of "Reset progress" can be pressed. TBD (playtest).
 @export var confirm_delay: float = 1.0
@@ -19,8 +16,8 @@ var wipe_step: int = 0
 
 var _confirm_left: float = 0.0
 
-@onready var _language_label: Label = %Language
-@onready var _languages: HBoxContainer = %Languages
+@onready var _settings: SettingsList = %Settings
+@onready var _progress: Label = %Progress
 @onready var _reset: Button = %ResetProgress
 @onready var _reset_hint: Label = %ResetHint
 @onready var _wipe: VBoxContainer = %Wipe
@@ -28,33 +25,25 @@ var _confirm_left: float = 0.0
 @onready var _wipe_confirm: Button = %WipeConfirm
 @onready var _wipe_cancel: Button = %WipeCancel
 @onready var _close: Button = %Close
+@onready var _credits: Credits = %Credits
+@onready var _show_credits: Button = %ShowCredits
+@onready var _back: Button = %Back
 
 
 func _ready() -> void:
-	var group := ButtonGroup.new()
-	var current: String = current_language()
-	for code: String in languages():
-		var button := Button.new()
-		button.name = code
-		button.text = LANGUAGE_NAMES.get(code, TranslationServer.get_locale_name(code))
-		# The names stay in their own language.
-		button.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-		button.toggle_mode = true
-		button.button_group = group
-		button.button_pressed = code == current
-		button.pressed.connect(GameSettings.set_language.bind(code))
-		_languages.add_child(button)
 	_reset.pressed.connect(_on_reset_pressed)
 	_wipe_confirm.pressed.connect(_on_wipe_confirm_pressed)
 	_wipe_cancel.pressed.connect(cancel_wipe)
 	_close.pressed.connect(_on_close_pressed)
-	_show_wipe_step()
+	_show_credits.pressed.connect(show_credits.bind(true))
+	_back.pressed.connect(show_credits.bind(false))
+	show_credits(false)
 
 
 func _process(delta: float) -> void:
 	var solo: bool = SaveGame.is_solo(get_tree())
 	_reset.disabled = not solo
-	_reset_hint.visible = not solo and wipe_step == 0
+	_reset_hint.visible = not solo and _reset.visible
 	# Leaving the terminal (closing it any way) or someone joining drops the question.
 	if wipe_step > 0:
 		var panel: WorldPanel = WorldPanel.showing(self)
@@ -68,26 +57,6 @@ func _process(delta: float) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
 		_show_wipe_step()
-
-
-## The game's languages: English (the texts' originals) and every translation in the project
-## settings.
-static func languages() -> PackedStringArray:
-	var codes := PackedStringArray(["en"])
-	var paths: PackedStringArray = ProjectSettings.get_setting(
-		"internationalization/locale/translations"
-	)
-	for path: String in paths:
-		var code: String = (load(path) as Translation).locale
-		if code not in codes:
-			codes.append(code)
-	return codes
-
-
-## The language the game shows right now (English for languages it doesn't have).
-static func current_language() -> String:
-	var code: String = TranslationServer.get_locale().get_slice("_", 0)
-	return code if code in languages() else "en"
 
 
 ## Stops asking about "Reset progress"; nothing is wiped.
@@ -122,12 +91,34 @@ func _on_wipe_confirm_pressed() -> void:
 	_show_wipe_step()
 
 
+## Shows the credits instead of the settings, or the settings again.
+func show_credits(shown: bool) -> void:
+	if shown:
+		cancel_wipe()
+		_credits.restart()
+	_credits.visible = shown
+	_back.visible = shown
+	_show_wipe_step()
+	if is_inside_tree() and WorldPanel.showing(self):
+		(_back if shown else _show_credits).grab_focus.call_deferred()
+
+
+## Steps back from the credits (`pause` on the terminal). Returns whether it did.
+func back() -> bool:
+	if not _credits.visible:
+		return false
+	show_credits(false)
+	return true
+
+
 func _show_wipe_step() -> void:
-	# While asking, only the question shows.
-	_languages.visible = wipe_step == 0
-	_language_label.visible = wipe_step == 0
-	_reset.visible = wipe_step == 0
-	_reset_hint.visible = wipe_step == 0 and not SaveGame.is_solo(get_tree())
+	# While asking or showing the credits, only the question or the credits show.
+	var settings_shown: bool = wipe_step == 0 and not _credits.visible
+	_settings.visible = settings_shown
+	_progress.visible = settings_shown
+	_reset.visible = settings_shown
+	_reset_hint.visible = settings_shown and not SaveGame.is_solo(get_tree())
+	_show_credits.visible = settings_shown
 	_wipe.visible = wipe_step > 0
 	match wipe_step:
 		1:

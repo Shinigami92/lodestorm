@@ -1,0 +1,153 @@
+[gd_scene format=3 uid="uid://dkp1jlh41sojy"]
+
+[ext_resource type="Script" uid="uid://ed36mcxrb500" path="res://game/player/pause/pause_card.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" uid="uid://bur5woov5rtm" path="res://game/ui/settings_list.tscn" id="3_settings"]
+[ext_resource type="PackedScene" uid="uid://dox0qtjp3jjkp" path="res://game/ui/credits.tscn" id="4_credits"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 28.0
+content_margin_top = 20.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+bg_color = Color(0.025, 0.04, 0.055, 0.92)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.3, 0.85, 1, 0.6)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="PauseCard" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="Panel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Layout" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Panel/Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_type_variation = &"Title"
+uppercase = true
+
+[node name="Note" type="Label" parent="Panel/Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+autowrap_mode = 3
+
+[node name="Main" type="VBoxContainer" parent="Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Resume" type="Button" parent="Panel/Layout/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Resume"
+
+[node name="Settings" type="Button" parent="Panel/Layout/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Settings"
+
+[node name="Quit" type="Button" parent="Panel/Layout/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Quit"
+
+[node name="SettingsPage" type="VBoxContainer" parent="Panel/Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Settings" parent="Panel/Layout/SettingsPage" instance=ExtResource("3_settings")]
+layout_mode = 2
+
+[node name="Buttons" type="HFlowContainer" parent="Panel/Layout/SettingsPage"]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 14
+
+[node name="ShowCredits" type="Button" parent="Panel/Layout/SettingsPage/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Credits"
+
+[node name="SettingsBack" type="Button" parent="Panel/Layout/SettingsPage/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back"
+
+[node name="CreditsPage" type="VBoxContainer" parent="Panel/Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Credits" parent="Panel/Layout/CreditsPage" instance=ExtResource("4_credits")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+
+[node name="CreditsBack" type="Button" parent="Panel/Layout/CreditsPage"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Back"
+
+[node name="QuitPage" type="VBoxContainer" parent="Panel/Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="QuitWarning" type="Label" parent="Panel/Layout/QuitPage"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+text = "A run is underway: quitting now loses it."
+autowrap_mode = 3
+
+[node name="Buttons" type="HFlowContainer" parent="Panel/Layout/QuitPage"]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 14
+
+[node name="QuitConfirm" type="Button" parent="Panel/Layout/QuitPage/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+text = "Quit anyway"
+
+[node name="QuitCancel" type="Button" parent="Panel/Layout/QuitPage/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cancel"

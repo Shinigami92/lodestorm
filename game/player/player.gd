@@ -118,6 +118,8 @@ var spare_magazines: int:
 		return settings.spare_magazines + roundi(skills.value(Skill.Effect.SPARE_MAGAZINES))
 ## The dash (a skill).
 var suit_dash := SuitDash.new()
+## The ground hazards it stands in (slick ice).
+var ground_contact := GroundContact.new()
 ## The pause panel beside it (`pause`: resume, settings, quit).
 var pause_panel: PausePanel
 ## The 3D menu (a screen or a station) the player is using, or null. Meanwhile it doesn't move or
@@ -221,7 +223,7 @@ func _physics_process(delta: float) -> void:
 		suit_dash.dash(move)
 	var horizontal: Vector3 = suit_dash.step(
 		Vector3(velocity.x, 0.0, velocity.z).move_toward(
-			move * speed, settings.acceleration * delta
+			move * speed, settings.acceleration * ground_contact.grip() * delta
 		),
 		speed,
 		delta

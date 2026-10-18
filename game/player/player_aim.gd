@@ -63,7 +63,9 @@ func at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
 	var ceiling: Variant = Plane(Vector3.UP, from.y + CURSOR_CEILING).intersects_ray(origin, normal)
 	if ceiling != null:
 		var start: Vector3 = ceiling
-		var query := PhysicsRayQueryParameters3D.create(start, origin + normal * 1000.0)
+		var query := PhysicsRayQueryParameters3D.create(
+			start, origin + normal * 1000.0, PhysicsLayers.SHOTS
+		)
 		query.exclude = [holder.get_rid()]
 		var ground: Dictionary = holder.get_world_3d().direct_space_state.intersect_ray(query)
 		if not ground.is_empty():

@@ -1,6 +1,6 @@
 # Seconds each test script takes in a run of tools/test.sh, which balances the scripts by
 # them. Written by tools/timings.sh.
-59.6 tests/locations/test_generated_location.gd
+64.4 tests/locations/test_generated_location.gd
 51.1 tests/locations/test_map_parts.gd
 50.9 tests/stations/test_menu_fit.gd
 41.6 tests/mission/test_mission_selection.gd
@@ -52,6 +52,7 @@
 3.6 tests/player/test_player_health.gd
 3.5 tests/project/test_translations.gd
 3.0 tests/player/test_cargo_rack.gd
+2.6 tests/locations/test_ground_hazards.gd
 2.4 tests/weapons/test_hammer_and_shotgun.gd
 2.1 tests/player/test_ore_arrival.gd
 2.0 tests/project/test_scripts_parse.gd

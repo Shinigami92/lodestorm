@@ -1,11 +1,13 @@
 extends Control
 ## Developer tool (2D): plans generated locations and draws them from above, to check layouts
-## faster than in the game. Light ground is walkable from the ship, dark ground isn't; magenta
-## marks spots a player could fall to without a way back (should be none). Yellow lines are the
-## passes, rings the areas (with their kind and the walking distance from the ship), dots the ore
-## nodes in their ore's color, red rings the nests, faint stripes the lanes kept free. Amber
-## rings are map parts (their footprint, the props' circle and their name; a set piece's name in
-## capitals), amber squares their crates, amber diamonds their quest sites.
+## faster than in the game. Light ground is walkable from the ship; the barrier is brown where it's
+## rock (walls) and in the biome's gap tint where it's a gap (dark blue crevasses), with white lines
+## for the walls along a gap's edge; bridges are lighter, the hazard in its tint with a ring and its
+## name. Magenta marks spots a player could fall to without a way back (should be none). Yellow
+## lines are the passes, rings the areas (with their kind and the walking distance from the ship),
+## dots the ore nodes in their ore's color, red rings the nests, faint stripes the lanes kept free.
+## Amber rings are map parts (their footprint, the props' circle and their name; a set piece's
+## name in capitals), amber squares their crates, amber diamonds their quest sites.
 ## The white arrow shows where the camera looks (the rock on its side stays low to see over).
 ## Keys: Left/Right seed, Up/Down number of areas, B next biome, G next region (its biome and set
 ## pieces; none: only the biome's points of interest), V camera view on and off, R random seed,
@@ -38,6 +40,12 @@ const KIND_COLORS: Dictionary[LocationLayout.Kind, Color] = {
 	LocationLayout.Kind.NEST_HOLLOW: Color(1.0, 0.3, 0.3),
 	LocationLayout.Kind.PLATEAU: Color(0.45, 0.95, 0.8),
 	LocationLayout.Kind.CRATER: Color(1.0, 0.6, 0.25),
+	LocationLayout.Kind.ICE_SHELF: Color(0.8, 0.92, 1.0),
+	LocationLayout.Kind.FROZEN_LAKE: Color(0.45, 0.8, 1.0),
+}
+const HAZARD_NAMES: Dictionary[LocationBiome.Hazard, String] = {
+	LocationBiome.Hazard.NONE: "",
+	LocationBiome.Hazard.SLICK_ICE: "Slick ice",
 }
 
 var world_seed: int = 1
@@ -139,9 +147,9 @@ func _generate() -> void:
 	var layout: LocationLayout = _location.layout
 	_info.text = (
 		(
-			"Seed %d · %s · %s · %d areas (%d asked) · %d passes, %d loops · %d m wide\n"
-			+ "Farthest %d m along the passes (%d s on foot) · %d ore nodes · %d nests · "
-			+ "%d parts · %d stuck spots · planned in %d ms\n"
+			"Seed %d · %s · %s (%s, %s) · %d areas (%d asked) · %d passes, %d loops · "
+			+ "%d m wide\nFarthest %d m along the passes (%d s on foot) · %d ore nodes · "
+			+ "%d nests · %d parts · %d hazards · %d stuck spots · planned in %d ms\n"
 			+ "Left/Right seed · Up/Down areas · B biome · G region · V view (%s) · R random · "
 			+ "S save"
 		)
@@ -149,6 +157,8 @@ func _generate() -> void:
 			world_seed,
 			region.display_name if region else "No region",
 			_location.biome.display_name,
+			str(LocationBiome.Barrier.keys()[_location.biome.barrier]).capitalize(),
+			str(LocationBiome.PassStyle.keys()[_location.biome.pass_style]).capitalize(),
 			layout.areas.size(),
 			area_count,
 			layout.passes.size(),
@@ -159,6 +169,7 @@ func _generate() -> void:
 			_location.planned_ore_sites().size(),
 			_location.planned_nest_sites().size(),
 			_location.parts.placed.size(),
+			_location.planned_hazards().size(),
 			_stuck.size(),
 			_took,
 			"on" if with_view else "off",
@@ -167,13 +178,15 @@ func _generate() -> void:
 	queue_redraw()
 
 
-## The ground from above: shaded by its slope, light where it's walkable from the ship.
+## The ground from above: shaded by its slope, light where it's walkable from the ship, the barrier
+## brown (rock) or in the gap tint (gaps).
 func _draw_ground() -> Image:
 	var terrain: LocationTerrain = _location.terrain
+	var biome: LocationBiome = _location.biome
 	var side: int = terrain.cells + 1
 	var image := Image.create(side, side, false, Image.FORMAT_RGB8)
 	var light := Vector3(-0.6, 0.55, -0.6).normalized()
-	var top: float = _location.biome.wall_height + _location.biome.rock_relief
+	var top: float = biome.wall_height + biome.rock_relief
 	for z: int in side:
 		for x: int in side:
 			var at: Vector3 = terrain.point(x, z)
@@ -183,9 +196,16 @@ func _draw_ground() -> Image:
 				color = Color(0.78, 0.68, 0.52)
 				if _location.is_on_lane(at.x, at.z):
 					color = color.lerp(Color(0.95, 0.85, 0.55), 0.25)
+				if _location.is_on_bridge(at.x, at.z):
+					color = color.lerp(Color.WHITE, 0.45)
+				if _location.near_hazard(Vector2(at.x, at.z), -GeneratedLocation.LAKE_SHORE):
+					color = color.lerp(biome.hazard_tint, 0.7)
+			elif _location.is_gap(at.x, at.z):
+				color = biome.gap_tint * 0.7
+				shade = 0.8
 			else:
-				color = Color(0.3, 0.3, 0.33).lerp(
-					Color(0.55, 0.55, 0.6), clampf(at.y / top, 0.0, 1.0)
+				color = Color(0.36, 0.27, 0.2).lerp(
+					Color(0.6, 0.5, 0.4), clampf(at.y / top, 0.0, 1.0)
 				)
 			image.set_pixel(x, z, color * (0.45 + 0.7 * shade))
 	return image
@@ -248,6 +268,17 @@ func _draw() -> void:
 	for nest: Vector3 in _location.planned_nest_sites():
 		draw_arc(_to_screen(Vector2(nest.x, nest.z)), 6.0, 0.0, TAU, 16, Color(1.0, 0.2, 0.2), 2.5)
 	_draw_parts(font)
+	var edges: PackedVector2Array = _location.planned_edges()
+	for i: int in range(0, edges.size(), 2):
+		draw_line(_to_screen(edges[i]), _to_screen(edges[i + 1]), Color(1.0, 1.0, 1.0, 0.8), 1.0)
+	var biome: LocationBiome = _location.biome
+	for zone: Vector3 in _location.planned_hazards():
+		var center: Vector2 = _to_screen(Vector2(zone.x, zone.y))
+		draw_arc(center, zone.z * _zoom, 0.0, TAU, 48, biome.hazard_tint, 2.0)
+		var label: String = HAZARD_NAMES[biome.hazard]
+		var text_at: Vector2 = center + Vector2(-20, 4)
+		draw_string_outline(font, text_at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, 4, Color.BLACK)
+		draw_string(font, text_at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, biome.hazard_tint)
 	for spot: Vector2 in _stuck:
 		draw_circle(_to_screen(spot), 3.0, Color(1.0, 0.0, 1.0))
 	if with_view:

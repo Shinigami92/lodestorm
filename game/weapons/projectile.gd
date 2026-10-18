@@ -29,7 +29,7 @@ func _physics_process(delta: float) -> void:
 ## Moves to `target` unless a collider is in the way; then it hits that and disappears.
 ## Returns whether it arrived. Only call during physics processing.
 func move_to(target: Vector3) -> bool:
-	var query := PhysicsRayQueryParameters3D.create(global_position, target)
+	var query := PhysicsRayQueryParameters3D.create(global_position, target, PhysicsLayers.SHOTS)
 	query.exclude = exclude
 	var result: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
 	if not result.is_empty():

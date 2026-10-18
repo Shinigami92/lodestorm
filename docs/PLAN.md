@@ -53,7 +53,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 Each step builds on the ones before it (steps 1–5 are done).
 
 - [ ] **Step 6 — the biomes' own geography** ([`planned/biomes.md`](planned/biomes.md)), in greybox (their textures and meshes come with the art pass, M5)
-  - [ ] **A** the framework (barrier, pass style, own area kinds and hazard as data on the biome; gaps with blocked edges and the navigation mesh around them; the location viewer and seed sweep) with the *Frost fields* first (on Lisk, open now; crevasses, snow bridges, ice shelf, frozen lake)
+  - [x] **A** the framework (barrier, pass style, own area kinds and hazard as data on the biome; gaps with blocked edges and the navigation mesh around them; the location viewer and seed sweep) with the *Frost fields* first (on Lisk, open now; crevasses, snow bridges, ice shelf, frozen lake)
   - [ ] **B** *Salt pans* and *Ash fields* (sinkholes, causeways, lava channels, ridges, vents)
   - [ ] **C** *Glass plains* and *Dust flats* (terraces, shard fences, slot canyons, buttes, dry washes)
   - [ ] **D** *Overgrowth* (growth walls, trails, mire)

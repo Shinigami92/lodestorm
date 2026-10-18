@@ -31,9 +31,11 @@ func test_ore_pockets_and_nest_hollows() -> void:
 
 
 ## The rock on the camera's side stays low enough to see over: it only ever gets lower than
-## without the camera's view, by a lot in places.
+## without the camera's view, by a lot in places. (Gaps never hide anything.)
 func test_rock_stays_low_on_the_camera_side() -> void:
 	for biome: LocationBiome in SWEEP.BIOMES:
+		if biome.barrier != LocationBiome.Barrier.WALLS:
+			continue
 		var viewed: GeneratedLocation = SWEEP.plan(3, biome, [], SWEEP.VIEW, VIEW_AREAS)
 		var flat: GeneratedLocation = SWEEP.plan(3, biome, [], Vector3.ZERO, VIEW_AREAS)
 		var lower: int = 0

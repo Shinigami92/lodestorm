@@ -10,6 +10,7 @@ radius = 0.5
 height = 1.4
 
 [node name="Alien" type="CharacterBody3D"]
+collision_mask = 5
 script = ExtResource("1_script")
 settings = ExtResource("2_settings")
 

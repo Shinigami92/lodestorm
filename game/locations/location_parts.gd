@@ -331,9 +331,13 @@ func _room_in(
 
 
 ## How many lane points lie under the part's props at `at` (location-local), or `NO_ROOM` when it
-## doesn't fit there: its footprint must be reachable open ground, out of other parts' footprints.
+## doesn't fit there: its footprint must be reachable open ground, out of other parts' footprints
+## and off the hazard (with the ground blending back around it).
 func _lanes_under(location: GeneratedLocation, info: MapPart.Info, at: Vector2) -> int:
-	if covers(at, info.footprint):
+	if (
+		covers(at, info.footprint)
+		or location.near_hazard(at, info.footprint + FALLOFFS[FALLOFFS.size() - 1])
+	):
 		return NO_ROOM
 	var lanes: int = 0
 	var terrain: LocationTerrain = location.terrain

@@ -2,7 +2,38 @@ class_name LocationBiome
 extends Resource
 ## What kind of place a generated location is: how its areas and passes are laid out, the shape
 ## and look of its ground, what grows and lies on it, which ores it has and how many nests. The
-## mission picks it (from the region). All values are greybox, TBD (playtest).
+## mission picks it (from the region). Besides its numbers, a biome is made by four things: its
+## barrier (what keeps players out between the areas), its passes, its own kinds of areas and at
+## most one hazard; the same layout generator serves every biome. All values are greybox, TBD
+## (playtest).
+
+## What keeps players out between the open areas.
+enum Barrier {
+	## High rock nobody can climb (`wall_height`).
+	WALLS,
+	## Ground lowered below the floor nobody can enter (crevasses, later lava channels and
+	## sinkholes): players and aliens see and shoot across but walk around to the next pass. Its
+	## edge is blocked by invisible walls behind a visible lip, so nobody falls in.
+	GAPS,
+}
+
+## What the ways between the areas look like.
+enum PassStyle {
+	## Long, winding ways through the barrier.
+	WINDING,
+	## Short, straight crossings (snow bridges): the areas lie close together, at most
+	## `longest_bridge` apart.
+	BRIDGES,
+}
+
+## The one hazard of the biome's ground: mild, readable and avoidable, never in the landing yard or
+## on a pass's lane, and it hinders aliens too.
+enum Hazard {
+	NONE,
+	## Slick ice on the frozen lakes: feet grip less (`hazard_grip`), so players and aliens slide a
+	## little when they start, turn and stop.
+	SLICK_ICE,
+}
 
 @export var display_name: String = ""
 ## Its color on the navigator's globes: muted, like its ground, so the regions' danger borders
@@ -21,6 +52,38 @@ extends Resource
 @export var area_spread: float = 85.0
 ## Loops per area (a share of the areas): passes that lead around instead of to a dead end.
 @export var loops_per_area: float = 0.2
+@export var pass_style: PassStyle = PassStyle.WINDING
+## How much a pass's outline wobbles, relative to its half width.
+@export_range(0.0, 0.5) var pass_wobble: float = 0.3
+## Longest bridge (`PassStyle.BRIDGES`): the most open ground between two areas a pass crosses,
+## in m.
+@export var longest_bridge: float = 24.0
+
+@export_group("Barrier")
+@export var barrier: Barrier = Barrier.WALLS
+## How wide a gap is beside the open ground (narrowest, widest), in m. Farther out the ground
+## comes back up to the floor's level (land nobody reaches), up to the rim at the edges.
+@export var gap_width: Vector2 = Vector2(10.0, 16.0)
+## How deep a gap is below the floor, in m.
+@export var gap_depth: float = 9.0
+## How high the lip along a gap's edge rises, in m.
+@export var lip_height: float = 0.4
+## Tint of a gap's bottom (deeper ground fades towards it) and of the lips and bridges.
+@export var gap_tint: Color = Color(0.3, 0.38, 0.5)
+@export var lip_tint: Color = Color(1.0, 1.0, 1.0)
+
+@export_group("Areas")
+## Kinds of areas only this biome has (`LocationLayout.Kind`), on top of the shared ones.
+@export var area_kinds: Array[LocationLayout.Kind] = []
+## How many of each of them a layout has, per area.
+@export var area_kinds_per_area: float = 0.1
+
+@export_group("Hazard")
+@export var hazard: Hazard = Hazard.NONE
+## How well feet grip on the hazard's ground: the share of the usual acceleration.
+@export_range(0.0, 1.0) var hazard_grip: float = 0.15
+## Tint of the hazard's ground, so it reads from afar.
+@export var hazard_tint: Color = Color(0.75, 0.9, 1.0)
 
 @export_group("Ground")
 ## Height of the gentle swells on the open ground, in m.

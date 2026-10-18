@@ -1,13 +1,26 @@
 class_name LocationLayout
 extends RefCounted
 ## The plan of a generated location as a graph: open areas (basins, crossroads, dead ends with rich
-## ore, nest hollows, plateaus, craters) joined by winding passes, with high rock nobody can climb
-## everywhere else. The first area is the landing yard in front of the ship's ramp. Every visit
-## lays out a new graph from the seed; `GeneratedLocation` carves it into the ground. The passes
-## form a tree plus a few loops, and never cross each other. Plain data, so it can be made on a
-## worker thread. All values are greybox, TBD (playtest).
+## ore, nest hollows, plateaus, craters, and the biome's own kinds) joined by passes (winding ways
+## or short bridges, by the biome), with the biome's barrier everywhere else. The first area is the
+## landing yard in front of the ship's ramp. Every visit lays out a new graph from the seed;
+## `GeneratedLocation` carves it into the ground. The passes form a tree plus a few loops, and never
+## cross each other. Plain data, so it can be made on a worker thread. All values are greybox, TBD
+## (playtest).
 
-enum Kind { LANDING, BASIN, CROSSROADS, ORE_POCKET, NEST_HOLLOW, PLATEAU, CRATER }
+enum Kind {
+	LANDING,
+	BASIN,
+	CROSSROADS,
+	ORE_POCKET,
+	NEST_HOLLOW,
+	PLATEAU,
+	CRATER,
+	## Frost fields: a huge flat area with cracks running in from its edge.
+	ICE_SHELF,
+	## Frost fields: an area with a round, flat lake of slick ice beside the ways through it.
+	FROZEN_LAKE,
+}
 
 ## Distance between a pass's points, in m.
 const PASS_STEP: float = 2.0
@@ -30,6 +43,20 @@ const MESA_RADIUS: float = 0.28
 const MESA_OFFSET: float = 0.35
 const RAMP_SLOPE: float = 0.45
 const RAMP_WIDTH: float = 6.0
+## Smallest area that can hold a frozen lake, in m (radius); the lake's radius and how far it lies
+## from the area's center, relative to the area's radius (the location shrinks it to keep it off
+## the lanes).
+const MIN_LAKE_AREA_RADIUS: float = 22.0
+const LAKE_RADIUS: float = 0.6
+const LAKE_OFFSET: float = 0.25
+## An ice shelf's cracks: at most this many, each in a gap of at least `CRACK_GAP` between the
+## passes coming in, from beyond its edge to this far from its center (relative to its radius).
+const MAX_CRACKS: int = 3
+const CRACK_GAP: float = deg_to_rad(70.0)
+const CRACK_OUTER: float = 1.35
+const CRACK_INNER: float = 0.35
+## How far a crack's points stray sideways, in m.
+const CRACK_JAG: float = 1.5
 
 
 ## Open ground: a round area (its outline wobbles when carved).
@@ -47,6 +74,10 @@ class Area:
 	var ramp_start: Vector2 = Vector2.ZERO
 	var ramp_direction: Vector2 = Vector2.ZERO
 	var ramp_length: float = 0.0
+	## A frozen lake's lake (x, z, radius).
+	var lake: Vector3 = Vector3.ZERO
+	## An ice shelf's cracks: from beyond its edge inwards, `LocationLayout.PASS_STEP` apart.
+	var cracks: Array[PackedVector2Array] = []
 
 	func _init(p_center: Vector2, p_radius: float) -> void:
 		center = p_center
@@ -85,7 +116,7 @@ static func generate(
 	layout._place_areas(rng, maxi(count, 2), biome, landing, keep_clear)
 	layout._connect(rng, biome)
 	layout._measure()
-	layout._assign_kinds(rng)
+	layout._assign_kinds(rng, biome)
 	return layout
 
 
@@ -129,6 +160,7 @@ func _place_areas(
 		+ Vector2(rng.randf_range(-0.3, 0.3) * side, rng.randf_range(-0.3, 0.3) * side)
 	)
 	var square := Rect2(center - Vector2.ONE * side * 0.5, Vector2.ONE * side)
+	var bridges: bool = biome.pass_style == LocationBiome.PassStyle.BRIDGES
 	for attempt: int in count * PLACEMENT_TRIES:
 		if areas.size() >= count:
 			break
@@ -137,6 +169,16 @@ func _place_areas(
 			rng.randf_range(square.position.x, square.end.x),
 			rng.randf_range(square.position.y, square.end.y)
 		)
+		if bridges:
+			# Next to an area already there, a bridge's length away.
+			var beside: Area = areas[rng.randi() % areas.size()]
+			var gap: float = rng.randf_range(biome.area_spacing, biome.longest_bridge)
+			at = (
+				beside.center
+				+ Vector2.from_angle(rng.randf() * TAU) * (beside.radius + radius + gap)
+			)
+			if not square.has_point(at):
+				continue
 		if keep_clear.grow(radius + biome.area_spacing).has_point(at):
 			continue
 		var free: bool = true
@@ -164,7 +206,7 @@ func _connect(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 			for b: int in areas.size():
 				if joined[b]:
 					continue
-				var gap: float = areas[a].center.distance_to(areas[b].center)
+				var gap: float = _span(biome, a, b)
 				if gap < shortest:
 					shortest = gap
 					best = Vector2i(a, b)
@@ -173,9 +215,21 @@ func _connect(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 
 	var wanted: int = roundi(areas.size() * biome.loops_per_area)
 	var kept: Array[int] = _kept_dead_ends()
-	_add_loops(rng, biome, wanted, kept, MIN_LOOP_DETOUR, MAX_LOOP_PASS)
+	var longest: Vector2 = Vector2(MAX_LOOP_PASS, MAX_LOOP_PASS * 1.5)
+	if biome.pass_style == LocationBiome.PassStyle.BRIDGES:
+		longest = Vector2(1.0, 1.4) * biome.longest_bridge
+	_add_loops(rng, biome, wanted, kept, MIN_LOOP_DETOUR, longest.x)
 	# Where none of those fit, shorter detours and longer passes still make a loop.
-	_add_loops(rng, biome, wanted, kept, MIN_LOOP_DETOUR * 0.7, MAX_LOOP_PASS * 1.5)
+	_add_loops(rng, biome, wanted, kept, MIN_LOOP_DETOUR * 0.7, longest.y)
+
+
+## How far a pass from area `a` to `b` reaches, for the tree and the loops, in m: from center to
+## center, or for bridges from edge to edge (what the bridge crosses).
+func _span(biome: LocationBiome, a: int, b: int) -> float:
+	var span: float = areas[a].center.distance_to(areas[b].center)
+	if biome.pass_style == LocationBiome.PassStyle.BRIDGES:
+		span -= areas[a].radius + areas[b].radius
+	return span
 
 
 ## Adds loop passes until there are `wanted` loops: between areas (not the `kept` dead ends) at
@@ -195,7 +249,7 @@ func _add_loops(
 			if a in kept or b in kept:
 				continue
 			var gap: float = areas[a].center.distance_to(areas[b].center)
-			if gap > longest or _joined(a, b):
+			if _span(biome, a, b) > longest or _joined(a, b):
 				continue
 			var around: float = _walk(a)[b]
 			if around >= gap * detour:
@@ -240,6 +294,8 @@ func _add_pass(
 	rng: RandomNumberGenerator, biome: LocationBiome, a: int, b: int, needed: bool
 ) -> void:
 	var bend: float = rng.randf_range(-MAX_BEND, MAX_BEND)
+	if biome.pass_style == LocationBiome.PassStyle.BRIDGES:
+		bend = 0.0
 	var width: float = rng.randf_range(biome.pass_width.x, biome.pass_width.y)
 	var points: PackedVector2Array = _curve(areas[a].center, areas[b].center, bend)
 	if not _fits(points, a, b, width):
@@ -349,10 +405,10 @@ func _measure() -> void:
 
 
 ## What each area is, by where it lies in the graph: the farthest dead ends hold the rich ore, the
-## next ones are nest hollows, areas where three or more passes meet are crossroads; plateaus and
-## craters stand out in the far half. Their numbers grow with the layout (about one each per eight
-## or ten areas).
-func _assign_kinds(rng: RandomNumberGenerator) -> void:
+## next ones are nest hollows, areas where three or more passes meet are crossroads; the biome's
+## own kinds come next, then plateaus and craters stand out in the far half. Their numbers grow
+## with the layout (about one each per eight or ten areas).
+func _assign_kinds(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 	areas[0].kind = Kind.LANDING
 	var by_distance: Array[int] = []
 	for i: int in range(1, areas.size()):
@@ -377,6 +433,8 @@ func _assign_kinds(rng: RandomNumberGenerator) -> void:
 	for i: int in by_distance:
 		if areas[i].kind == Kind.BASIN and areas[i].passes.size() >= 3:
 			areas[i].kind = Kind.CROSSROADS
+	for kind: Kind in biome.area_kinds:
+		_assign_own_kind(rng, kind, maxi(1, roundi(areas.size() * biome.area_kinds_per_area)))
 	var far_half: Array[int] = []
 	for k: int in range(floori(by_distance.size() / 2.0), by_distance.size()):
 		if areas[by_distance[k]].kind == Kind.BASIN:
@@ -399,12 +457,56 @@ func _assign_kinds(rng: RandomNumberGenerator) -> void:
 			craters -= 1
 	for i: int in by_distance:
 		if areas[i].kind == Kind.ORE_POCKET:
-			areas[i].radius = minf(areas[i].radius, MAX_POCKET_RADIUS)
+			_shrink_pocket(biome, i)
 
 
-## Puts the plateau's mesa where no pass comes in (in the widest gap between them), with its ramp
-## leading up along its side.
-func _shape_plateau(area: Area) -> void:
+## Shrinks the ore pocket `index` to `MAX_POCKET_RADIUS`; with bridges it moves towards the area
+## its pass comes from by as much, so the bridge stays as short (inside its old outline, so it keeps
+## clear of the others).
+func _shrink_pocket(biome: LocationBiome, index: int) -> void:
+	var pocket: Area = areas[index]
+	var shrink: float = maxf(pocket.radius - MAX_POCKET_RADIUS, 0.0)
+	pocket.radius -= shrink
+	if shrink <= 0.0 or biome.pass_style != LocationBiome.PassStyle.BRIDGES:
+		return
+	for pass_index: int in pocket.passes:
+		var way: Pass = passes[pass_index]
+		var other: Area = areas[way.to if way.from == index else way.from]
+		pocket.center = pocket.center.move_toward(other.center, shrink)
+		way.points = _curve(areas[way.from].center, areas[way.to].center, 0.0)
+
+
+## Gives `count` of the basins the biome's own `kind`: ice shelves the biggest ones, frozen lakes
+## any big enough.
+func _assign_own_kind(rng: RandomNumberGenerator, kind: Kind, count: int) -> void:
+	var basins: Array[int] = []
+	for i: int in areas.size():
+		if areas[i].kind == Kind.BASIN:
+			basins.append(i)
+	for i: int in range(basins.size() - 1, 0, -1):
+		var j: int = rng.randi_range(0, i)
+		var swap: int = basins[i]
+		basins[i] = basins[j]
+		basins[j] = swap
+	if kind == Kind.ICE_SHELF:
+		basins.sort_custom(func(x: int, y: int) -> bool: return areas[x].radius > areas[y].radius)
+	for i: int in basins:
+		if count <= 0:
+			break
+		var area: Area = areas[i]
+		match kind:
+			Kind.FROZEN_LAKE:
+				if area.radius < MIN_LAKE_AREA_RADIUS:
+					continue
+				_shape_lake(area)
+			Kind.ICE_SHELF:
+				_shape_shelf(rng, area)
+		area.kind = kind
+		count -= 1
+
+
+## The directions the passes come into `area` from, as angles, sorted.
+func _pass_angles(area: Area) -> Array[float]:
 	var angles: Array[float] = []
 	for index: int in area.passes:
 		var way: Pass = passes[index]
@@ -413,18 +515,64 @@ func _shape_plateau(area: Area) -> void:
 		)
 		angles.append((toward - area.center).angle())
 	angles.sort()
-	var widest: float = TAU
+	return angles
+
+
+## The direction (an angle) in the middle of the widest gap between the passes coming into `area`.
+func _widest_gap(area: Area) -> float:
+	var angles: Array[float] = _pass_angles(area)
+	var widest: float = 0.0
 	var facing: float = 0.0
-	if not angles.is_empty():
-		widest = 0.0
+	for i: int in angles.size():
+		var next: float = angles[(i + 1) % angles.size()] + (TAU if i == angles.size() - 1 else 0.0)
+		if next - angles[i] > widest:
+			widest = next - angles[i]
+			facing = angles[i] + widest * 0.5
+	return facing
+
+
+## Puts the frozen lake where no pass comes in (in the widest gap between them).
+func _shape_lake(area: Area) -> void:
+	var at: Vector2 = (
+		area.center + Vector2.from_angle(_widest_gap(area)) * area.radius * LAKE_OFFSET
+	)
+	area.lake = Vector3(at.x, at.y, area.radius * LAKE_RADIUS)
+
+
+## Runs jagged cracks into the ice shelf from beyond its edge, each in the middle of a wide gap
+## between the passes coming in.
+func _shape_shelf(rng: RandomNumberGenerator, area: Area) -> void:
+	var angles: Array[float] = _pass_angles(area)
+	var directions: Array[float] = []
+	if angles.size() <= 1:
+		var away: float = angles[0] + PI if angles.size() == 1 else rng.randf() * TAU
+		directions = [away - 1.2, away + 1.2]
+	else:
 		for i: int in angles.size():
 			var next: float = (
 				angles[(i + 1) % angles.size()] + (TAU if i == angles.size() - 1 else 0.0)
 			)
-			if next - angles[i] > widest:
-				widest = next - angles[i]
-				facing = angles[i] + widest * 0.5
-	var out := Vector2.from_angle(facing)
+			if next - angles[i] >= CRACK_GAP:
+				directions.append((angles[i] + next) * 0.5)
+	area.cracks.clear()
+	for direction: float in directions.slice(0, MAX_CRACKS):
+		var out := Vector2.from_angle(direction)
+		var side: Vector2 = out.orthogonal()
+		var length: float = area.radius * (CRACK_OUTER - CRACK_INNER)
+		var steps: int = maxi(2, ceili(length / PASS_STEP))
+		var crack := PackedVector2Array()
+		var stray: float = 0.0
+		for i: int in steps + 1:
+			var along: float = area.radius * CRACK_OUTER - length * i / steps
+			stray = clampf(stray + rng.randf_range(-0.5, 0.5), -CRACK_JAG, CRACK_JAG)
+			crack.append(area.center + out * along + side * stray)
+		area.cracks.append(crack)
+
+
+## Puts the plateau's mesa where no pass comes in (in the widest gap between them), with its ramp
+## leading up along its side.
+func _shape_plateau(area: Area) -> void:
+	var out := Vector2.from_angle(_widest_gap(area))
 	var mesa_radius: float = area.radius * MESA_RADIUS
 	var mesa_center: Vector2 = area.center + out * area.radius * MESA_OFFSET
 	area.mesa = Vector3(mesa_center.x, mesa_center.y, mesa_radius)

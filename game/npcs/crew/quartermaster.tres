@@ -22,7 +22,7 @@ requires = Array[StringName]([&"quartermaster.greeting"])
 script = ExtResource("3_topic")
 id = &"quartermaster.spares"
 title = "Spare magazines"
-lines = Array[String](["Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore.", "Out there, you'll see them as glowing cells on top of your backpack. When a cell goes dark, that magazine is used up.", "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."])
+lines = Array[String](["Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore.", "Out there, they show up as short marks in the ring around your feet, inside its right half, whenever you reload. A mark that's only an outline is a magazine you've used up.", "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."])
 requires = Array[StringName]([&"quartermaster.greeting"])
 
 [sub_resource type="Resource" id="Resource_reload"]
@@ -36,7 +36,7 @@ requires = Array[StringName]([&"quartermaster.greeting"])
 script = ExtResource("3_topic")
 id = &"quartermaster.timing"
 title = "Timing reload"
-lines = Array[String](["Here's a trick: press reload a second time while you're reloading. The ring on the ground around you shows how far the reload is, and it has a white mark.", "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead.", "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."])
+lines = Array[String](["Here's a trick: press reload a second time while you're reloading. The right half of the ring around your feet fills up while you reload, and it has a white mark.", "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead.", "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."])
 requires = Array[StringName]([&"quartermaster.reload"])
 
 [sub_resource type="Resource" id="Resource_shotgun"]

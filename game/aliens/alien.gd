@@ -164,7 +164,7 @@ func _process(delta: float) -> void:
 ## attack.
 func attack(victim: Node3D) -> void:
 	if victim is Player:
-		(victim as Player).take_damage(attack_damage())
+		(victim as Player).take_damage(attack_damage(), global_position)
 	elif victim is Miner:
 		(victim as Miner).take_damage(attack_damage())
 	_cooldown = 1.0 / settings.attack_rate

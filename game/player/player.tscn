@@ -13,7 +13,7 @@
 [ext_resource type="Resource" uid="uid://uxhufyc1cck0" path="res://game/player/default_arsenal.tres" id="11_arsenal"]
 [ext_resource type="Script" uid="uid://dqnkf5jxxct5w" path="res://game/player/player_animator.gd" id="11_animator"]
 [ext_resource type="Resource" uid="uid://ggx6tlfvpyaw" path="res://game/progression/upgrades/armor.tres" id="12_armor"]
-[ext_resource type="Script" uid="uid://dmnhh3cutop4g" path="res://game/player/reload_ring.gd" id="13_reload_ring"]
+[ext_resource type="Script" uid="uid://deeyxoo5wte0w" path="res://game/player/suit_ring.gd" id="13_suit_ring"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -98,5 +98,5 @@ visible = false
 cast_shadow = 0
 mesh = SubResource("TorusMesh_target_marker")
 
-[node name="ReloadRing" type="MeshInstance3D" parent="."]
-script = ExtResource("13_reload_ring")
+[node name="SuitRing" type="MeshInstance3D" parent="."]
+script = ExtResource("13_suit_ring")

@@ -46,22 +46,25 @@ func test_empty_weapon_without_ore_neither_fires_nor_reloads() -> void:
 	assert_eq(_fired.size(), 0)
 	assert_false(blaster.reloading)
 	assert_signal_emitted(blaster, "reload_denied")
-	assert_true(_ring().visible, "the ring flashes red")
+	await wait_process_frames(1)
+	var color: Color = _ring().shown(&"ammo_color")
+	assert_eq(Color(color, 1.0), Color(SuitRing.FUMBLE_COLOR, 1.0), "the ring flashes red")
 	assert_false(_player.reload(), "nothing pays a reload")
 
 
-func test_spare_magazines_show_on_the_belt_and_refill_for_new_runs() -> void:
+func test_spare_magazines_show_on_the_ring_and_refill_for_new_runs() -> void:
 	_give_spares(2)
-	var pouches := _player.get_node("SparePouches") as SparePouches
-	await wait_process_frames(1)
-	assert_true(pouches.visible)
-	assert_eq(pouches.lit_count(), 2)
+	await wait_process_frames(2)
+	assert_eq(_number(&"spare_slots"), 2.0)
+	assert_eq(_number(&"spare_fill"), 2.0)
 	_blaster().spare_rounds = 0
 	await wait_process_frames(1)
-	assert_eq(pouches.lit_count(), 0)
+	assert_eq(_number(&"spare_fill"), 0.0)
+	assert_gt(_ring().spares_alpha, 0.0, "a used spare shows the ticks")
 	_player.switch_weapon()
 	await wait_process_frames(1)
-	assert_false(pouches.visible, "nothing to show with the hammer")
+	assert_false(_ring().shows_ammo(), "nothing to show with the hammer")
+	assert_eq(_number(&"spare_alpha"), 0.0)
 	_player.switch_weapon()
 	assert_eq(_blaster().spare_rounds, 0, "kept while holstered")
 	_player.refill_ammo()
@@ -89,7 +92,8 @@ func test_holding_interact_next_to_a_teammate_hands_them_a_magazine() -> void:
 	Input.action_press(&"interact")
 	await wait_physics_frames(2)
 	assert_eq(_player.give_ammo_target, teammate)
-	assert_true(_ring().visible, "the ring fills while handing it over")
+	await wait_process_frames(1)
+	assert_eq(_number(&"give_alpha"), 1.0, "the ring fills while handing it over")
 	await wait_seconds(_player.settings.give_ammo_time + 0.1)
 	assert_eq(their_blaster.rounds, their_blaster.capacity())
 	assert_almost_eq(_player.cargo[KYRITE], 20.0 - 6.0, 0.001)
@@ -157,6 +161,10 @@ func test_ring_shows_a_reload() -> void:
 	_player.reload()
 	await wait_process_frames(2)
 	assert_true(_ring().visible)
+	assert_eq(_number(&"ammo_alpha"), 1.0)
+	var window: Vector2 = _ring().shown(&"ammo_window")
+	assert_almost_eq(window.x, _blaster().settings.sweet_spot_start, 0.001, "the timing window")
+	assert_lt(_number(&"ammo_fill"), 1.0, "fills up during the reload")
 
 
 func _lit_segments(gauge: AmmoGauge, weapon: RangedWeapon) -> int:
@@ -172,8 +180,8 @@ func _blaster() -> RangedWeapon:
 	return _player.weapon as RangedWeapon
 
 
-func _ring() -> ReloadRing:
-	return _player.get_node("ReloadRing") as ReloadRing
+func _ring() -> SuitRing:
+	return _player.get_node("SuitRing") as SuitRing
 
 
 func _equip(weapon_type: WeaponType) -> Weapon:
@@ -230,3 +238,8 @@ func _on_child_entered(node: Node) -> void:
 	var projectile := node as Projectile
 	if projectile:
 		_fired.append(projectile)
+
+
+func _number(parameter: StringName) -> float:
+	var value: float = _ring().shown(parameter)
+	return value

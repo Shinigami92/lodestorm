@@ -7,6 +7,7 @@ extends CharacterBody3D
 ## to it, shown in canisters on its back. An arrow on the ground points back to the ship. Uses the
 ## nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
+## the suit ring around its feet (`SuitRing`, with the ammo, the spare magazines and the dash) and
 ## the suit light; at zero health the player dies, drops everything carried and lies still until
 ## `respawn`.
 ## Owns the weapons in its `arsenal` and carries the ones in its `loadout` (picked in the armory);
@@ -17,7 +18,7 @@ extends CharacterBody3D
 ## (bought at the upgrade stations) raise its weapons' damage and magazines, its armor
 ## (`armor_upgrade`: more health, shown by pips on the helmet) and the miners it places. Its
 ## `skills` (learned at the skill graph) add health, regeneration, the dash (`suit_dash`, its
-## cooldown shown by a strip on the backpack), more spare magazines, reloading at full speed,
+## cooldown shown on the suit ring), more spare magazines, reloading at full speed,
 ## careful reloads, the ore scanner's arrow (`OreScanner`) and the damage readout
 ## (`DamageNumber`).
 ## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
@@ -43,13 +44,6 @@ const ACTIONS: Array[StringName] = [
 ## (the isometric camera always sees it), following this bone.
 const ARMOR_PIPS_POSITION := Vector3(0.075, 1.805, 0.0)
 const ARMOR_PIPS_BONE: StringName = &"Head"
-## Where the spare magazine cells sit, in the model's rest pose: on top of the backpack (the
-## isometric camera sees it from every side), following this bone.
-const POUCHES_POSITION := Vector3(0.0, 1.57, -0.25)
-const POUCHES_BONE: StringName = &"UpperChest"
-## Where the dash's cooldown strip sits, in the model's rest pose: across the back of the
-## backpack, following the same bone as the spare magazine cells.
-const DASH_STRIP_POSITION := Vector3(0.0, 1.22, -0.312)
 
 @export var settings: PlayerSettings
 ## The weapons the player owns; a new player starts with these. Each player gets its own copy.
@@ -132,10 +126,6 @@ var _rounds: Dictionary[WeaponType, int] = {}
 var _spares: Dictionary[WeaponType, int] = {}
 ## Shows the armor's MK level.
 var _armor_pips := MkPips.new()
-## Shows the equipped weapon's spare magazines.
-var _pouches := SparePouches.new()
-## Shows the dash's cooldown.
-var _dash_strip := DashStrip.new()
 ## Points to the nearest free ore node.
 var _scanner := OreScanner.new()
 
@@ -147,7 +137,7 @@ var _scanner := OreScanner.new()
 @onready var _animator: PlayerAnimator = $Animator
 @onready var _ship_pointer: Node3D = $ShipPointer
 @onready var _target_marker: Node3D = $TargetMarker
-@onready var _reload_ring: ReloadRing = $ReloadRing
+@onready var _ring: SuitRing = $SuitRing
 
 
 func _ready() -> void:
@@ -167,8 +157,6 @@ func _ready() -> void:
 	skills.ranks = skills.ranks.duplicate()
 	skills.changed.connect(_on_skills_changed)
 	_add_armor_pips()
-	_add_pouches()
-	_add_dash_strip()
 	_scanner.name = "OreScanner"
 	_scanner.position = Vector3.UP * 0.05
 	_scanner.min_distance = settings.miner_place_range
@@ -270,9 +258,6 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(_delta: float) -> void:
-	_update_pouches()
-	_dash_strip.visible = skills.has(Skill.Effect.DASH)
-	_dash_strip.show_fill(suit_dash.ready_ratio())
 	_scanner.reach = skills.value(Skill.Effect.ORE_SCANNER)
 
 
@@ -387,9 +372,10 @@ func take_cargo() -> Dictionary[OreType, float]:
 	return taken
 
 
-## Loses `amount` health; dies at zero.
-func take_damage(amount: float) -> void:
-	vitals.damage(amount)
+## Loses `amount` health (from an attacker at `from`, if it has one: the suit ring marks where
+## the hit came from); dies at zero.
+func take_damage(amount: float, from: Vector3 = Vector3.INF) -> void:
+	vitals.damage(amount, from)
 
 
 ## Restores full health.
@@ -484,40 +470,6 @@ func _add_armor_pips() -> void:
 	_follow(marker, _armor_pips)
 	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
 	OccludedSilhouette.mark_visible(_armor_pips)
-
-
-## Puts the spare magazine cells on the backpack, following the upper chest (like the armor's
-## pips).
-func _add_pouches() -> void:
-	_pouches.name = "SparePouches"
-	add_child(_pouches)
-	_follow(_bone_marker(POUCHES_BONE, Transform3D(Basis.IDENTITY, POUCHES_POSITION)), _pouches)
-	_pouches.visible = false
-
-
-## Shows the equipped ranged weapon's spare magazines while it's drawn.
-func _update_pouches() -> void:
-	var ranged := weapon as RangedWeapon
-	_pouches.visible = ranged != null and ranged.visible
-	if not _pouches.visible:
-		return
-	var gauge := ranged.get_node_or_null(^"AmmoGauge") as AmmoGauge
-	_pouches.show_spares(
-		float(ranged.spare_rounds) / ranged.capacity(),
-		spare_magazines,
-		gauge.color if gauge else Color.WHITE
-	)
-
-
-## Puts the dash's cooldown strip across the back of the backpack, following the upper chest.
-func _add_dash_strip() -> void:
-	_dash_strip.name = "DashStrip"
-	add_child(_dash_strip)
-	_follow(
-		_bone_marker(POUCHES_BONE, Transform3D(Basis.IDENTITY, DASH_STRIP_POSITION)), _dash_strip
-	)
-	_dash_strip.visible = false
-	OccludedSilhouette.mark_visible(_dash_strip)
 
 
 ## A marker following `bone`, at `in_model` (in the model's rest pose). The marker is placed from
@@ -647,17 +599,18 @@ func _equip(weapon_type: WeaponType) -> void:
 	_weapon_mount.add_child(weapon)
 
 
-## Applies new MK levels: to the equipped weapon, and a stronger armor adds its extra health.
+## A reload that can't start (no ore) flashes the ring's ammo arc red.
 func _on_reload_denied() -> void:
-	_reload_ring.flash(ReloadRing.FUMBLE_COLOR)
+	_ring.flash(SuitRing.FUMBLE_COLOR)
 
 
 ## A hit that finished the reload flashes the ring (single rounds go on loading meanwhile).
 func _on_reload_timed(hit: bool, ranged: RangedWeapon) -> void:
 	if hit and not ranged.reloading:
-		_reload_ring.flash(AmmoGauge.TIMING)
+		_ring.flash(AmmoGauge.TIMING)
 
 
+## Applies new MK levels to the equipped weapon (a stronger armor adds its extra health).
 ## Upgrades are bought aboard, so the magazines are filled to their new size.
 func _on_upgrades_changed() -> void:
 	if weapon:

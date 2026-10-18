@@ -1,20 +1,12 @@
 # The player during a mission (planned)
 
-Decided 2026-10-17, built in M4 step 5 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today the player shows their state through lights on the suit and the weapon, and a reload ring (see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen) and [Ammo and reloading](../GAME_DESIGN.md#ammo-and-reloading)).
+Decided 2026-10-17, built in M4 step 5 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The suit ring with its health and ammo arcs, the spare magazine ticks, the dash and the hit marks is built (see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)); this file keeps what's still to come.
 
 ## Why
 
 The camera shows about 21 m of height, so the player (1.86 m) is about 100 px tall at 1080p and a 5 cm light on the suit only a few pixels. Lights on the suit and the weapon can't carry what a player has to read in a fight, and more is coming (new weapons' heat and charge, miners left, quest items, hit directions, alien telegraphs, teammates).
 
-## Three layers
-
-- **Critical** (low health, an empty or reloading weapon, the storm countdown, a hit) is always readable and big.
-- **Situational** (spare magazines, the dash, miners left, ore arriving) shows when it changes or matters, then fades after about 3 s.
-- **Details** (exact amounts, MK levels, cargo by type) are never needed in a fight and stay aboard (the silos, the stations, the quest board).
-
-## The suit ring
-
-The suit projects one ring on the ground around the player's feet (about 1.4 m radius, wider than the body; its lines keep a minimum thickness on screen). It replaces the separate reload ring, the spare magazine cells on the backpack and the dash strip. Its halves stay fixed to the screen, not to where the player faces:
+## The suit ring, still to come
 
 ```text
           ship ▲ 12:40          (pointers on the outer edge)
@@ -25,13 +17,9 @@ The suit projects one ring on the ground around the player's feet (about 1.4 m r
        '-~~~~~~~~-'
 ```
 
-- **Left arc, health:** green, amber below half, red and blinking below a quarter, flashing white on damage; a short red mark on its outer edge points to where a hit came from.
-- **Right arc, ammo:** the equipped weapon's fill in its ammo color; reloading and its timing window, and the heat, charge or belt of the other feeds (see [`weapons.md`](weapons.md)), show the way the reload ring shows them today.
-- **Ticks under the ammo arc:** the spare magazines.
-- **Inner thin ring:** the dash, only while it's recharging.
-- **Outer edge:** the pointers: the arrow to the ship with the countdown (as today), the ore scanner's arrow, later the tracked quest (see [`quests.md`](quests.md)).
-- **Fading:** at full health and with a full magazine the arcs dim to a faint outline, so the ring is quiet when nothing's going on; they light up fully when something changes (a hit, firing, reloading, low values) and dim again after 3 s. Critical states (below a quarter of health, empty) never dim. The spare magazine ticks show on a reload and when a spare is used; the miners left show as ticks for 3 s when one is placed or picked up (see [`refinery.md`](refinery.md)).
-- **Drawn over** the ground, grass and low plants, following slopes; only cliffs and props hide it, like the body (the silhouette shows the player then).
+- **Right arc, other feeds:** the heat, charge or belt of the planned weapons (see [`weapons.md`](weapons.md)) show on the ammo arc the way a reload does.
+- **Outer edge:** the pointers: the arrow to the ship with the countdown, the ore scanner's arrow, later the tracked quest (see [`quests.md`](quests.md)), as arrows on the ring's edge.
+- **Miners left:** show as ticks for 3 s when one is placed or picked up (see [`refinery.md`](refinery.md)).
 
 ## Around the ring
 

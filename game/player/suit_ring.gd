@@ -283,7 +283,7 @@ func _update_hits(delta: float) -> void:
 ## Follows the player's feet, tilted with the ground; its top stays at the top of the screen.
 func _place(delta: float) -> void:
 	if _player.is_on_floor():
-		_up = _up.slerp(_player.get_floor_normal(), 1.0 - exp(-10.0 * delta)).normalized()
+		_up = tilt_towards(_up, _player.get_floor_normal(), 1.0 - exp(-10.0 * delta))
 	global_position = _player.global_position + _up * 0.05
 	var forward: Vector3 = _screen_up()
 	forward = (forward - _up * forward.dot(_up)).normalized()
@@ -326,6 +326,12 @@ func _on_hurt(_amount: float, from: Vector3) -> void:
 		_hit_directions.remove_at(0)
 	_hit_directions.append(direction.normalized())
 	_hit_left.append(HIT_TIME)
+
+
+## The ring's up direction `up` turned by `weight` towards the ground's `normal`. A lerp, not a
+## slerp: slerp errors on vectors a hair apart (the floor normal settling on flat ground).
+static func tilt_towards(up: Vector3, normal: Vector3, weight: float) -> Vector3:
+	return up.lerp(normal, weight).normalized()
 
 
 ## Moves `glow` towards 1 while `lit`, else towards 0, over `FADE_TIME`.

@@ -67,6 +67,31 @@ func test_shotgun_shows_its_rounds_as_segments() -> void:
 	assert_eq(_number(&"ammo_segments"), float(shotgun.capacity()))
 
 
+func test_tilts_with_the_ground() -> void:
+	var slope := Basis(Vector3.RIGHT, deg_to_rad(15.0))
+	var body := StaticBody3D.new()
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(20.0, 1.0, 20.0)
+	shape.shape = box
+	body.add_child(shape)
+	body.transform = Transform3D(slope, slope * Vector3(0.0, -0.5, 0.0))
+	add_child_autofree(body)
+	_player.global_position = Vector3.UP * 0.2
+	await wait_physics_frames(30)
+	assert_true(_player.is_on_floor())
+	var normal: Vector3 = slope * Vector3.UP
+	assert_almost_eq(_ring.global_basis.y.normalized().dot(normal), 1.0, 0.01)
+
+
+func test_tilting_copes_with_a_normal_a_hair_away() -> void:
+	# A slerp errors here ("axis must be normalized"), which fails the test.
+	for exponent: int in range(10, 36):
+		var hair: float = pow(10.0, -exponent)
+		var up: Vector3 = SuitRing.tilt_towards(Vector3.UP, Vector3(hair, 1.0, hair), 0.5)
+		assert_almost_eq(up.dot(Vector3.UP), 1.0, 0.0001)
+
+
 func test_quiet_aboard_and_hidden_when_dead() -> void:
 	_player.weapon_allowed = false
 	await wait_process_frames(1)

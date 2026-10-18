@@ -28,7 +28,7 @@ static func saved_language() -> String:
 	if not path() or config.load(path()) != OK:
 		return ""
 	var language: Variant = config.get_value("general", "language", "")
-	return language if language is String and language in SettingsMenu.languages() else ""
+	return language if language is String and language in SettingsList.languages() else ""
 
 
 ## Switches the game's texts to `code` and saves it.

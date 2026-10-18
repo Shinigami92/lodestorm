@@ -8,6 +8,7 @@
 [ext_resource type="Resource" uid="uid://drdo54n6me45h" path="res://game/mission/mission_settings.tres" id="6_mission_settings"]
 [ext_resource type="Script" uid="uid://bk77ctab6xxa0" path="res://game/mission/weather.gd" id="7_weather"]
 [ext_resource type="Script" uid="uid://b4p7dojarbr0f" path="res://game/save/save_game.gd" id="8_save_game"]
+[ext_resource type="PackedScene" uid="uid://khm8tyaekg2n" path="res://game/ui/title/title_view.tscn" id="9_title"]
 
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1
@@ -64,3 +65,7 @@ script = ExtResource("8_save_game")
 ship = NodePath("../Ship")
 player = NodePath("../Player")
 mission = NodePath("../Mission")
+
+[node name="TitleView" parent="." node_paths=PackedStringArray("ship") instance=ExtResource("9_title")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.376, 7.45, 47.376)
+ship = NodePath("../Ship")

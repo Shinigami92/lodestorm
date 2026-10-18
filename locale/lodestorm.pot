@@ -180,7 +180,9 @@ msgid "Continue"
 msgstr ""
 
 #: game/npcs/talk_card.gd
+#: game/player/pause/pause_card.tscn
 #: game/stations/navigator/navigator_card.tscn
+#: game/ui/settings_menu.tscn
 msgid "Back"
 msgstr ""
 
@@ -244,16 +246,53 @@ msgstr ""
 msgid "Vyrel"
 msgstr ""
 
-#: game/player/wrist/wrist_card.gd
-msgid "Total: %d"
+#: game/player/pause/pause_card.gd
+msgid "Paused"
 msgstr ""
 
-#: game/player/wrist/wrist_card.tscn
-msgid "Cargo"
+#: game/player/pause/pause_card.gd
+msgid "Menu"
 msgstr ""
 
-#: game/player/wrist/wrist_card.tscn
-msgid "No ore carried."
+#: game/player/pause/pause_card.gd
+#: game/player/pause/pause_card.tscn
+#: game/ui/settings_menu.tscn
+msgid "Settings"
+msgstr ""
+
+#: game/player/pause/pause_card.gd
+#: game/player/pause/pause_card.tscn
+#: game/ui/settings_menu.tscn
+msgid "Credits"
+msgstr ""
+
+#: game/player/pause/pause_card.gd
+msgid "Quit the game?"
+msgstr ""
+
+#: game/player/pause/pause_card.gd
+msgid "The game goes on."
+msgstr ""
+
+#: game/player/pause/pause_card.tscn
+msgid "Resume"
+msgstr ""
+
+#: game/player/pause/pause_card.tscn
+msgid "Quit"
+msgstr ""
+
+#: game/player/pause/pause_card.tscn
+msgid "A run is underway: quitting now loses it."
+msgstr ""
+
+#: game/player/pause/pause_card.tscn
+msgid "Quit anyway"
+msgstr ""
+
+#: game/player/pause/pause_card.tscn
+#: game/ui/settings_menu.tscn
+msgid "Cancel"
 msgstr ""
 
 #: game/progression/skills/tree/careful_reload.tres
@@ -825,6 +864,34 @@ msgstr ""
 msgid "Max"
 msgstr ""
 
+#: game/ui/credits.tscn
+msgid "Design and direction"
+msgstr ""
+
+#: game/ui/credits.tscn
+msgid "Code, art and texts"
+msgstr ""
+
+#: game/ui/credits.tscn
+msgid "Written with AI, using Claude Code."
+msgstr ""
+
+#: game/ui/credits.tscn
+msgid "Tools"
+msgstr ""
+
+#: game/ui/credits.tscn
+msgid "Third-party licenses"
+msgstr ""
+
+#: game/ui/credits.tscn
+msgid "This game uses Godot Engine, available under the following license:"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Language"
+msgstr ""
+
 #: game/ui/settings_menu.gd
 msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
 msgstr ""
@@ -850,14 +917,6 @@ msgid "Reset everything (3/3)"
 msgstr ""
 
 #: game/ui/settings_menu.tscn
-msgid "Settings"
-msgstr ""
-
-#: game/ui/settings_menu.tscn
-msgid "Language"
-msgstr ""
-
-#: game/ui/settings_menu.tscn
 msgid "Progress"
 msgstr ""
 
@@ -869,8 +928,8 @@ msgstr ""
 msgid "Only while you're alone. With others in your session, everyone keeps their progress."
 msgstr ""
 
-#: game/ui/settings_menu.tscn
-msgid "Cancel"
+#: game/ui/title/title_view.tscn
+msgid "Press any button"
 msgstr ""
 
 #: game/weapons/types/blaster.tres

@@ -8,6 +8,9 @@ extends WorldMenu
 ##   controller will point the same way;
 ## - focus: `move_*` and the ui_* directions move the focus between controls, `interact` and
 ##   `ui_accept` press the focused one (keyboard, gamepad).
+## `pause` and `ui_cancel` close it, or step back a page in a menu with pages: one with a
+## `back() -> bool` method (e.g. from the credits to the settings) closes only when it returns
+## false.
 ## The screen faces local +Z and is unshaded, so it reads in dark rooms. Its texture is rendered
 ## at about the resolution it covers on screen (zoomed in: sharp text; from afar: no shimmer), the
 ## menu's layout keeps `pixels_per_meter`.
@@ -94,7 +97,8 @@ func _input(event: InputEvent) -> void:
 	for action: StringName in CLOSE_ACTIONS:
 		if event.is_action_pressed(action):
 			get_viewport().set_input_as_handled()
-			close()
+			if not (content and content.has_method(&"back") and content.call(&"back")):
+				close()
 			return
 	var handled: bool = false
 	var sent: Array[StringName] = []

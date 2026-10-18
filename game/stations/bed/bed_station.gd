@@ -3,12 +3,9 @@ extends Station
 ## A player's bed in their cabin, where they quit the game ("Sleep", see GAME_DESIGN.md, UI): the
 ## bed is its part, its card offers "Sleep". Sleeping saves the progress one last time (not during
 ## a run: what changes then is only saved once it's over, so the run underway is lost, and the card
-## says so), fades the screen to black (the camera stays on the bed) and quits to the desktop
-## (there's no main menu yet). Bed `number` belongs to the `number`th player; nobody else can use
-## it.
-
-## How long falling asleep takes (the fade to black), in s.
-const FADE_TIME: float = 1.2
+## says so), fades the screen to black (the camera stays on the bed) and quits to the desktop, the
+## same as "Quit" in the pause panel (`ScreenFade.quit_game`). Bed `number` belongs to the
+## `number`th player; nobody else can use it.
 
 ## Whose bed it is: the `number`th player (1: the first, the one playing solo).
 @export_range(1, 4) var number: int = 1
@@ -52,22 +49,6 @@ func sleep() -> bool:
 	if asleep or not user:
 		return false
 	asleep = true
-	if not loses_run():
-		var save_game := get_tree().get_first_node_in_group(SaveGame.GROUP) as SaveGame
-		if save_game:
-			save_game.save_progress()
 	show_card(false)
-	var fade := CanvasLayer.new()
-	fade.layer = 100
-	var black := ColorRect.new()
-	black.color = Color(0.0, 0.0, 0.0, 0.0)
-	black.set_anchors_preset(Control.PRESET_FULL_RECT)
-	black.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	fade.add_child(black)
-	add_child(fade)
-	var tween: Tween = create_tween()
-	tween.tween_property(black, ^"color:a", 1.0, FADE_TIME)
-	tween.tween_callback(close)
-	if quits:
-		tween.tween_callback(get_tree().quit)
+	ScreenFade.quit_game(self, quits, close)
 	return true

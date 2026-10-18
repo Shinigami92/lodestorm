@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://dox0qtjp3jjkp"]
+
+[ext_resource type="Script" uid="uid://bt3ucw7m4moqf" path="res://game/ui/credits.gd" id="1_script"]
+
+[node name="Credits" type="ScrollContainer"]
+custom_minimum_size = Vector2(0, 360)
+focus_mode = 0
+horizontal_scroll_mode = 0
+script = ExtResource("1_script")
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="DesignHeading" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.85, 1, 1)
+text = "Design and direction"
+
+[node name="Team" type="Label" parent="Content"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+
+[node name="WritingHeading" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.85, 1, 1)
+text = "Code, art and texts"
+
+[node name="Writing" type="Label" parent="Content"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+text = "Written with AI, using Claude Code."
+autowrap_mode = 3
+
+[node name="ToolsHeading" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.85, 1, 1)
+text = "Tools"
+
+[node name="Tools" type="Label" parent="Content"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+
+[node name="LicensesHeading" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.85, 1, 1)
+text = "Third-party licenses"
+
+[node name="LicensesNote" type="Label" parent="Content"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+text = "This game uses Godot Engine, available under the following license:"
+autowrap_mode = 3
+
+[node name="Licenses" type="VBoxContainer" parent="Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 24

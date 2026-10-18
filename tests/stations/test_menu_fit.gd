@@ -74,7 +74,7 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 		add_child_autofree(viewport)
 		var card := CARD_SCENE.instantiate() as UpgradeCard
 		viewport.add_child(card)
-		for locale: String in SettingsMenu.languages():
+		for locale: String in SettingsList.languages():
 			TranslationServer.set_locale(locale)
 			for upgrade: Upgrade in upgrades:
 				for mk: int in range(1, upgrade.max_mk() + 1):
@@ -111,7 +111,7 @@ func test_every_heat_shield_card_fits_in_every_language() -> void:
 	for level: int in range(2, shield.max_mk() + 1):
 		if core.opened_by(level).size() > opens.size():
 			opens = core.opened_by(level)
-	for locale: String in SettingsMenu.languages():
+	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		var names: PackedStringArray = []
 		for body_name: String in opens:
@@ -152,7 +152,7 @@ func test_every_skill_card_fits_in_every_language() -> void:
 		for rank: SkillRank in skill.ranks:
 			for ore_type: OreType in rank.cost:
 				hold[ore_type] = 99999.0
-	for locale: String in SettingsMenu.languages():
+	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		for skill: Skill in SKILL_TREE.get_skills():
 			for rank: int in range(0, skill.max_rank() + 1):
@@ -175,7 +175,7 @@ func test_every_locker_card_fits_in_every_language() -> void:
 	add_child_autofree(viewport)
 	var card := LOADOUT_CARD_SCENE.instantiate() as LoadoutCard
 	viewport.add_child(card)
-	for locale: String in SettingsMenu.languages():
+	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 			# Locked by a mission (buttons disabled) and usable (enabled buttons are wider), with
@@ -195,7 +195,7 @@ func test_navigator_and_flight_cards_fit_in_every_language() -> void:
 	var navigator := _ship.get_node("Rooms/Upper/Bridge/Navigator") as NavigatorStation
 	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
 	var mission := _map.get_node("Mission") as Mission
-	for locale: String in SettingsMenu.languages():
+	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		navigator.open(_player)
 		await wait_process_frames(1)
@@ -232,7 +232,7 @@ func test_navigator_and_flight_cards_fit_the_most_ores() -> void:
 		if not candidate.regions.is_empty():
 			body = candidate
 			break
-	for locale: String in SettingsMenu.languages():
+	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		# The most ores a place lists, with the longest names in this language.
 		var ores: Array[OreType] = OreCatalog.all().ores.duplicate()
@@ -260,7 +260,7 @@ func test_bed_card_fits_in_every_language() -> void:
 	var bed := _ship.get_node("Rooms/Upper/Cabin1/BedStation") as BedStation
 	var panel: WorldPanel = bed.card
 	var card := bed.card_menu as BedCard
-	for locale: String in SettingsMenu.languages():
+	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		for loses_run: bool in [false, true]:
 			card.visible = true
@@ -280,7 +280,7 @@ func test_every_crew_line_and_card_fits_in_every_language() -> void:
 		var dialogue: Dialogue = profile.dialogue
 		var topics: Array[Topic] = dialogue.topics.duplicate()
 		topics.push_front(dialogue.greeting)
-		for locale: String in SettingsMenu.languages():
+		for locale: String in SettingsList.languages():
 			TranslationServer.set_locale(locale)
 			# Every topic open and new (the most buttons, the widest with their dots).
 			_ship.story.flags.clear()
@@ -304,7 +304,7 @@ func test_every_crew_line_and_card_fits_in_every_language() -> void:
 
 
 func test_every_terminal_fits_in_every_language() -> void:
-	for locale: String in SettingsMenu.languages():
+	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		for path: String in TERMINALS:
 			var terminal := _ship.get_node(path) as Terminal

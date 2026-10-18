@@ -8,8 +8,8 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 
 | File | What | In `PLAN.md` |
 |---|---|---|
-| [`player-display.md`](player-display.md) | the suit ring on the ground, removing the wrist display | M4, step 5 |
-| [`menu-pause.md`](menu-pause.md) | the title view instead of a main menu, the pause panel with the settings, quitting, credits | M4, step 5 A (co-op M7, VR M6) |
+| [`player-display.md`](player-display.md) | the suit ring on the ground | M4, step 5 B, C |
+| [`menu-pause.md`](menu-pause.md) | what's left of the title view and the pause panel: co-op sessions, the Steam overlay, more settings, VR | M6, M7, M8 |
 | [`biomes.md`](biomes.md) | the six biomes' own geography: walls and gaps, passes, area kinds, hazards | M4, step 6 (assets M5) |
 | [`aliens.md`](aliens.md) | ten strains and the Ravager, roles, armor and stagger, hatch tables, hit feedback | M4, step 7 |
 | [`sfx.md`](sfx.md) | sound effects synthesized by our own scripts (CC0 recordings where needed), the audio setup, the first 30 sounds | M4, step 7 |

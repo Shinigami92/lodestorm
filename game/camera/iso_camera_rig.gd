@@ -6,6 +6,7 @@ extends Node3D
 ## The VR diorama will be a separate rig; gameplay only uses the viewport's active camera.
 ## `shake` jiggles the view (e.g. the ship's hull in the clouds); scaled with the zoom, so a
 ## framed menu shakes no more than the whole view and stays readable.
+## It runs on while the game is paused, so it can frame the pause panel (still, without shaking).
 
 const GROUP: StringName = &"camera_rigs"
 
@@ -18,12 +19,15 @@ var zoom: float = 1.0
 var shake: float = 0.0
 
 var _shake_time: float = 0.0
+## Whether the next frame jumps to the goal instead of gliding there.
+var _snap: bool = false
 
 @onready var _camera: Camera3D = $Camera3D
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	# Moved in _process, so it follows the target's interpolated position instead.
 	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	apply_settings()
@@ -45,13 +49,19 @@ func _process(delta: float) -> void:
 	if menu:
 		goal = menu.get_view_center()
 		goal_zoom = menu.view_height / view_height()
-	var weight: float = 1.0 - exp(-settings.follow_speed * delta)
+	var weight: float = 1.0 if _snap else 1.0 - exp(-settings.follow_speed * delta)
+	_snap = false
 	global_position = global_position.lerp(goal, weight)
 	if zoom != goal_zoom:
 		zoom = lerpf(zoom, goal_zoom, weight)
 		if absf(zoom - goal_zoom) < 0.001:
 			zoom = goal_zoom
 		apply_settings()
+
+
+## Jumps to where it's going next frame instead of gliding there (e.g. the title view at the start).
+func snap() -> void:
+	_snap = true
 
 
 func apply_settings() -> void:
@@ -67,7 +77,7 @@ func apply_settings() -> void:
 func _shake(delta: float) -> void:
 	_shake_time += delta
 	var t: float = _shake_time
-	var amount: float = shake * zoom
+	var amount: float = 0.0 if get_tree().paused else shake * zoom
 	_camera.h_offset = amount * (sin(t * 37.0) + 0.6 * sin(t * 23.0 + 1.3)) / 1.6
 	_camera.v_offset = amount * (sin(t * 29.0 + 0.7) + 0.6 * sin(t * 41.0)) / 1.6
 

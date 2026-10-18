@@ -53,10 +53,12 @@ func test_movement_and_interact_steer_the_menu() -> void:
 	assert_eq(_focused().name, &"de")
 	_send(&"interact")
 	assert_eq(TranslationServer.get_locale(), "de")
-	assert_eq(SettingsMenu.current_language(), "de")
+	assert_eq(SettingsList.current_language(), "de")
 	_send(&"move_back")
 	assert_eq(_focused().name, &"ResetProgress")
 	_send(&"move_back")
+	assert_eq(_focused().name, &"ShowCredits")
+	_send(&"move_right")
 	assert_eq(_focused().name, &"Close")
 	_send(&"interact")
 	assert_null(_panel.user, "Close closes the menu")
@@ -69,6 +71,21 @@ func test_pause_and_cancel_close_the_menu() -> void:
 		_player.interact()
 		_send(action)
 		assert_null(_player.menu, action)
+
+
+func test_pause_steps_back_from_the_credits() -> void:
+	_player.interact()
+	var menu := _panel.content as SettingsMenu
+	var credits := menu.find_child("Credits", true, false) as Credits
+	menu.show_credits(true)
+	await wait_process_frames(1)
+	assert_true(credits.visible)
+	assert_eq(_focused().name, &"Back")
+	_send(&"pause")
+	assert_false(credits.visible, "back to the settings")
+	assert_eq(_panel.user, _player, "still open")
+	_send(&"pause")
+	assert_null(_panel.user, "then it closes")
 
 
 func test_mouse_clicks_through_the_screen() -> void:
@@ -123,9 +140,9 @@ func test_rays_hit_the_front_of_the_screen() -> void:
 
 
 func test_languages_are_english_and_the_translations() -> void:
-	assert_eq(SettingsMenu.languages(), PackedStringArray(["en", "de"]))
-	for code: String in SettingsMenu.languages():
-		assert_has(SettingsMenu.LANGUAGE_NAMES, code, "own name of " + code)
+	assert_eq(SettingsList.languages(), PackedStringArray(["en", "de"]))
+	for code: String in SettingsList.languages():
+		assert_has(SettingsList.LANGUAGE_NAMES, code, "own name of " + code)
 
 
 func _focused() -> Control:

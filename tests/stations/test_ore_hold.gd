@@ -185,7 +185,7 @@ func test_card_fits_and_reads_in_every_language() -> void:
 	assert_true(_hold.open(_player))
 	var panel: WorldPanel = _hold.card
 	var layout := Vector2(panel.size * panel.pixels_per_meter)
-	for locale: String in SettingsMenu.languages():
+	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		for ore_type: OreType in CATALOG.ores:
 			_hold.select(_hold.get_tank(ore_type))

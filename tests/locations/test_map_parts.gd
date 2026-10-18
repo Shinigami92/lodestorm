@@ -1,26 +1,17 @@
 extends GutTest
 ## The map parts (points of interest and set pieces): their scenes, where generated locations put
-## them, their crates and how they show in the hologram.
+## them, their crates and how they show in the hologram. The sweep over every region's set pieces
+## is in `test_set_pieces_<part>.gd`.
 
 const PARTS_DIR: String = "res://game/locations/parts/"
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 const STAR_SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
-## Every biome: what holds for one holds for all.
-const BIOMES: Array[LocationBiome] = [
-	preload("res://game/locations/biomes/dust.tres"),
-	preload("res://game/locations/biomes/overgrowth.tres"),
-	preload("res://game/locations/biomes/frost.tres"),
-	preload("res://game/locations/biomes/salt.tres"),
-	preload("res://game/locations/biomes/ash.tres"),
-	preload("res://game/locations/biomes/glass.tres"),
-]
+const SWEEP := preload("res://tests/support/location_sweep.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const HOLO_TABLE: PackedScene = preload("res://game/ship/holo_table.tscn")
-const VIEW := Vector3(-0.577, -0.577, -0.577)
 const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
-## Seeds per biome (or region) in the sweeps over every biome (or region).
+## Seeds per biome in the sweep over every biome.
 const BIOME_SEEDS: int = 3
-const AREAS: int = 9
 ## Width of the ring around the props that stays walkable at least, in m.
 const RING: float = 2.5
 ## Room a player needs to pass, in m (about the capsule's radius).
@@ -116,45 +107,13 @@ func test_props_leave_a_walkable_ring() -> void:
 			assert_true(near, "%s: marker at %s" % [label, at])
 
 
-## Every region's set pieces are in every section of it; the parts stand on reachable ground that
-## kept every step, their markers (crates, ore, quest sites) too, and nobody gets stuck. Regions
-## with the same biome and set pieces plan the same, so each pair is swept once.
-func test_set_pieces_always_placed_and_parts_reachable() -> void:
-	var regions: Array[Region] = []
-	var swept: Array[String] = []
-	for body: CelestialBody in STAR_SYSTEM.bodies:
-		for region: Region in body.regions:
-			var key: String = region.biome.resource_path
-			for placement: PartPlacement in region.set_pieces:
-				key += " %s %d" % [placement.scene.resource_path, placement.rule]
-			if key not in swept:
-				swept.append(key)
-				regions.append(region)
-	for region: Region in regions:
-		for world_seed: int in _seeds(region.biome, 2):
-			var location: GeneratedLocation = _plan(world_seed, region.biome, region.set_pieces)
-			var label: String = "%s seed %d" % [region.display_name, world_seed]
-			var set_pieces: Array[PackedScene] = []
-			for part: LocationParts.Placed in location.parts.placed:
-				if part.set_piece:
-					set_pieces.append(part.placement.scene)
-				assert_ne(part.area.kind, LocationLayout.Kind.LANDING, label)
-				if not part.set_piece:
-					assert_ne(part.area.kind, LocationLayout.Kind.ORE_POCKET, label)
-				_assert_part_reachable(location, part, label)
-			for placement: PartPlacement in region.set_pieces:
-				assert_has(set_pieces, placement.scene, label)
-			assert_eq(location.stuck_spots(), PackedVector2Array(), label)
-			location.free()
-
-
 ## The biomes' points of interest come up about once per four areas, never two in one area, and
 ## their markers lead: ore nodes and nests on them.
 func test_points_of_interest_and_markers_lead() -> void:
-	for biome: LocationBiome in BIOMES:
+	for biome: LocationBiome in SWEEP.BIOMES:
 		var parts: int = 0
-		for world_seed: int in _seeds(biome):
-			var location: GeneratedLocation = _plan(world_seed, biome)
+		for world_seed: int in SWEEP.seeds(biome, BIOME_SEEDS):
+			var location: GeneratedLocation = SWEEP.plan(world_seed, biome)
 			var areas: Array[LocationLayout.Area] = []
 			for part: LocationParts.Placed in location.parts.placed:
 				assert_does_not_have(areas, part.area)
@@ -172,7 +131,7 @@ func test_ore_markers_get_their_band() -> void:
 	var glare: Region = _region("Glare Fields")
 	var found: Array[OreType] = OreCatalog.sorted(glare.biome.ores)
 	for world_seed: int in SWEEP_SEEDS:
-		var location: GeneratedLocation = _plan(world_seed, glare.biome, glare.set_pieces)
+		var location: GeneratedLocation = SWEEP.plan(world_seed, glare.biome, glare.set_pieces)
 		var sites: Array[Vector3] = location.planned_ore_sites()
 		var types: Array[OreType] = location.planned_ore_types()
 		for part: LocationParts.Placed in location.parts.placed:
@@ -192,7 +151,7 @@ func test_parts_and_crates_are_built() -> void:
 	var fragment := BlueprintFragment.new()
 	var location := LOCATION.instantiate() as GeneratedLocation
 	location.world_seed = 3
-	location.area_count = AREAS
+	location.area_count = SWEEP.AREAS
 	location.biome = outpost.biome
 	location.set_pieces = outpost.set_pieces
 	location.crate_contents = [fragment]
@@ -242,7 +201,7 @@ func test_hologram_shows_parts_not_crates() -> void:
 	var outpost: Region = _region("Redscar Flats")
 	var location := LOCATION.instantiate() as GeneratedLocation
 	location.world_seed = 3
-	location.area_count = AREAS
+	location.area_count = SWEEP.AREAS
 	location.biome = outpost.biome
 	location.set_pieces = outpost.set_pieces
 	add_child_autofree(location)
@@ -267,37 +226,6 @@ func test_hologram_shows_parts_not_crates() -> void:
 			landmarks += 1
 	assert_gt(landmarks, 0)
 	assert_eq(table.get_landmark_markers().size(), location.parts.placed.size(), "a beam per part")
-
-
-func _assert_part_reachable(
-	location: GeneratedLocation, part: LocationParts.Placed, label: String
-) -> void:
-	var part_label: String = "%s: %s" % [label, part.info.display_name]
-	var center := Vector2(part.origin.x, part.origin.z)
-	assert_almost_eq(
-		part.origin.y, location.terrain.height_at(center.x, center.y), 0.01, part_label
-	)
-	# The ring around the props, all the way round.
-	var ring: float = (part.info.prop_radius + part.info.footprint) * 0.5
-	for step: int in 16:
-		var at: Vector2 = center + Vector2.from_angle(step * TAU / 16.0) * ring
-		assert_true(location.is_reachable(at.x, at.y), part_label + " ring")
-	for i: int in part.info.marker_spots.size():
-		var at: Vector3 = part.marker_position(i)
-		assert_true(location.is_reachable(at.x, at.z), part_label + " marker")
-
-
-func _plan(
-	world_seed: int, biome: LocationBiome, set_pieces: Array[PartPlacement] = []
-) -> GeneratedLocation:
-	var location := LOCATION.instantiate() as GeneratedLocation
-	location.world_seed = world_seed
-	location.biome = biome
-	location.area_count = AREAS
-	location.view_direction = VIEW
-	location.set_pieces = set_pieces
-	location.plan()
-	return location
 
 
 func _part_scenes() -> Array[PackedScene]:
@@ -364,13 +292,3 @@ static func _relative(node: Node3D, root: Node3D) -> Transform3D:
 		result = (at as Node3D).transform * result
 		at = at.get_parent()
 	return result
-
-
-## The seeds a sweep plans `biome` with: `count` of them, different for every biome, so the sweeps
-## over all biomes cover as many seeds as they plan locations.
-static func _seeds(biome: LocationBiome, count: int = BIOME_SEEDS) -> Array[int]:
-	var first: int = 1 + BIOMES.find(biome) * count
-	var seeds: Array[int] = []
-	for world_seed: int in range(first, first + count):
-		seeds.append(world_seed)
-	return seeds

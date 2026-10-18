@@ -1,8 +1,10 @@
 extends GutTest
-## Ground hazards (`GroundHazard`): slick ice makes players and aliens slide a little.
+## Ground hazards (`GroundHazard`): slick ice makes players and aliens slide a little, vents burst
+## after a warning and hurt whoever stands on them.
 
 const ALIEN_SCENE: PackedScene = preload("res://game/aliens/alien.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
+const REAL_TIME := preload("res://tests/support/real_time.gd")
 const GRIP: float = 0.15
 
 var _arena: Node3D
@@ -91,6 +93,39 @@ func test_least_grip_counts() -> void:
 	slush.free()
 
 
+## A vent glows and rumbles first, then bursts, hurting the player standing on it, and rests again.
+func test_vent_warns_then_bursts() -> void:
+	var vent: GroundVent = _add_vent(_player.global_position)
+	await wait_physics_frames(3)
+	var health: float = _player.health
+	assert_false(vent.is_warning(), "rests first")
+	var warned: bool = await REAL_TIME.wait_until(vent.is_warning, 10.0)
+	assert_true(warned, "glows before it bursts")
+	assert_eq(_player.health, health, "no harm while it warns")
+	var burst: bool = await REAL_TIME.wait_until(
+		func() -> bool: return _player.health < health, 5.0
+	)
+	assert_true(burst, "bursts")
+	assert_almost_eq(_player.health, health - vent.damage, 0.01)
+	assert_false(vent.is_warning(), "rests again")
+
+
+## A burst hurts aliens on the vent too, not the ones beside it.
+func test_vent_hurts_aliens() -> void:
+	var at := Vector3(30.0, 0.0, 0.0)
+	var vent: GroundVent = _add_vent(at)
+	var alien := ALIEN_SCENE.instantiate() as Alien
+	alien.position = at
+	_arena.add_child(alien)
+	var beside := ALIEN_SCENE.instantiate() as Alien
+	beside.position = at + Vector3(8.0, 0.0, 0.0)
+	_arena.add_child(beside)
+	await wait_physics_frames(3)
+	vent.hurt(vent.damage)
+	assert_almost_eq(alien.health, alien.max_health() - vent.damage, 0.01)
+	assert_eq(beside.health, beside.max_health())
+
+
 ## How fast the player runs after moving right for a few physics frames from standing.
 func _speed_after_starting() -> float:
 	Input.action_press(&"move_right")
@@ -112,3 +147,20 @@ func _add_ice(at: Vector3) -> GroundHazard:
 	_arena.add_child(ice)
 	ice.global_position = at
 	return ice
+
+
+func _add_vent(at: Vector3) -> GroundVent:
+	var vent := GroundVent.new()
+	vent.rest = Vector2(0.5, 0.5)
+	vent.warning = 0.5
+	vent.collision_layer = 0
+	vent.collision_mask = PhysicsLayers.WORLD
+	var cylinder := CylinderShape3D.new()
+	cylinder.radius = vent.radius
+	cylinder.height = 3.0
+	var shape := CollisionShape3D.new()
+	shape.shape = cylinder
+	vent.add_child(shape)
+	_arena.add_child(vent)
+	vent.global_position = at
+	return vent

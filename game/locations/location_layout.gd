@@ -20,6 +20,14 @@ enum Kind {
 	ICE_SHELF,
 	## Frost fields: an area with a round, flat lake of slick ice beside the ways through it.
 	FROZEN_LAKE,
+	## Salt pans: an area dotted with round pits, a maze in the open.
+	SINKHOLE_FIELD,
+	## Salt pans: one of the biggest areas, flat and empty.
+	BRINE_FLAT,
+	## Ash fields: an ore pocket with lava all around, reached by its one crossing.
+	LAVA_ISLAND,
+	## Ash fields: an area with vents (the biome's hazard).
+	VENT_FIELD,
 }
 
 ## Distance between a pass's points, in m.
@@ -57,6 +65,19 @@ const CRACK_OUTER: float = 1.35
 const CRACK_INNER: float = 0.35
 ## How far a crack's points stray sideways, in m.
 const CRACK_JAG: float = 1.5
+## A sinkhole field's pits: their radius (smallest, largest), the walkable ground kept between
+## them and around the area's middle, in m, and how far out they lie (relative to the area's
+## radius, the pit's edge inside it).
+const PIT_RADIUS: Vector2 = Vector2(3.0, 5.5)
+const PIT_SPACING: float = 7.0
+const PIT_MIDDLE: float = 5.0
+const PIT_REACH: float = 0.75
+## Pits a sinkhole field tries to fit, per m of its radius (the location drops the ones on lanes).
+const PITS_PER_RADIUS: float = 0.3
+## Shortest crossing to a lava island, in m (between the outlines, before they wobble).
+const MIN_ISLAND_BRIDGE: float = 16.0
+## Smallest area that holds a vent field, in m (radius).
+const MIN_VENT_FIELD_RADIUS: float = 20.0
 
 
 ## Open ground: a round area (its outline wobbles when carved).
@@ -78,10 +99,16 @@ class Area:
 	var lake: Vector3 = Vector3.ZERO
 	## An ice shelf's cracks: from beyond its edge inwards, `LocationLayout.PASS_STEP` apart.
 	var cracks: Array[PackedVector2Array] = []
+	## A sinkhole field's pits (x, z, radius).
+	var pits: Array[Vector3] = []
 
 	func _init(p_center: Vector2, p_radius: float) -> void:
 		center = p_center
 		radius = p_radius
+
+	## Whether it holds the rarest ore: an ore pocket (a lava island is one too).
+	func holds_rich_ore() -> bool:
+		return kind in [LocationLayout.Kind.ORE_POCKET, LocationLayout.Kind.LAVA_ISLAND]
 
 
 ## A winding way between two areas.
@@ -435,6 +462,10 @@ func _assign_kinds(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 			areas[i].kind = Kind.CROSSROADS
 	for kind: Kind in biome.area_kinds:
 		_assign_own_kind(rng, kind, maxi(1, roundi(areas.size() * biome.area_kinds_per_area)))
+	if Kind.LAVA_ISLAND in biome.area_kinds:
+		for area: Area in areas:
+			if area.kind == Kind.ORE_POCKET:
+				area.kind = Kind.LAVA_ISLAND
 	var far_half: Array[int] = []
 	for k: int in range(floori(by_distance.size() / 2.0), by_distance.size()):
 		if areas[by_distance[k]].kind == Kind.BASIN:
@@ -456,29 +487,48 @@ func _assign_kinds(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 			areas[i].kind = Kind.CRATER
 			craters -= 1
 	for i: int in by_distance:
-		if areas[i].kind == Kind.ORE_POCKET:
+		if areas[i].holds_rich_ore():
 			_shrink_pocket(biome, i)
 
 
 ## Shrinks the ore pocket `index` to `MAX_POCKET_RADIUS`; with bridges it moves towards the area
 ## its pass comes from by as much, so the bridge stays as short (inside its old outline, so it keeps
-## clear of the others).
+## clear of the others). A lava island keeps a crossing of at least `MIN_ISLAND_BRIDGE` instead.
 func _shrink_pocket(biome: LocationBiome, index: int) -> void:
 	var pocket: Area = areas[index]
 	var shrink: float = maxf(pocket.radius - MAX_POCKET_RADIUS, 0.0)
 	pocket.radius -= shrink
-	if shrink <= 0.0 or biome.pass_style != LocationBiome.PassStyle.BRIDGES:
+	if biome.pass_style != LocationBiome.PassStyle.BRIDGES:
 		return
 	for pass_index: int in pocket.passes:
 		var way: Pass = passes[pass_index]
 		var other: Area = areas[way.to if way.from == index else way.from]
-		pocket.center = pocket.center.move_toward(other.center, shrink)
+		var gap: float = pocket.center.distance_to(other.center) - pocket.radius - other.radius
+		var toward: float = shrink
+		if pocket.kind == Kind.LAVA_ISLAND:
+			toward = minf(gap - MIN_ISLAND_BRIDGE, shrink)
+		# An island too close moves away, where there's room.
+		var moved: Vector2 = pocket.center.move_toward(other.center, toward)
+		if toward > 0.0 or (toward < 0.0 and _has_room(biome, index, moved)):
+			pocket.center = moved
 		way.points = _curve(areas[way.from].center, areas[way.to].center, 0.0)
 
 
-## Gives `count` of the basins the biome's own `kind`: ice shelves the biggest ones, frozen lakes
-## any big enough.
+## Whether area `index` keeps clear of the others at `at` (by `LocationBiome.area_spacing`).
+func _has_room(biome: LocationBiome, index: int, at: Vector2) -> bool:
+	for k: int in areas.size():
+		var spacing: float = areas[k].radius + areas[index].radius + biome.area_spacing
+		if k != index and at.distance_to(areas[k].center) < spacing:
+			return false
+	return true
+
+
+## Gives `count` of the basins the biome's own `kind`: ice shelves and brine flats the biggest
+## ones, frozen lakes, sinkhole fields and vent fields any big enough (lava islands are the ore
+## pockets, see `_assign_kinds`).
 func _assign_own_kind(rng: RandomNumberGenerator, kind: Kind, count: int) -> void:
+	if kind == Kind.LAVA_ISLAND:
+		return
 	var basins: Array[int] = []
 	for i: int in areas.size():
 		if areas[i].kind == Kind.BASIN:
@@ -488,7 +538,7 @@ func _assign_own_kind(rng: RandomNumberGenerator, kind: Kind, count: int) -> voi
 		var swap: int = basins[i]
 		basins[i] = basins[j]
 		basins[j] = swap
-	if kind == Kind.ICE_SHELF:
+	if kind in [Kind.ICE_SHELF, Kind.BRINE_FLAT]:
 		basins.sort_custom(func(x: int, y: int) -> bool: return areas[x].radius > areas[y].radius)
 	for i: int in basins:
 		if count <= 0:
@@ -501,6 +551,13 @@ func _assign_own_kind(rng: RandomNumberGenerator, kind: Kind, count: int) -> voi
 				_shape_lake(area)
 			Kind.ICE_SHELF:
 				_shape_shelf(rng, area)
+			Kind.SINKHOLE_FIELD:
+				_shape_pits(rng, area)
+				if area.pits.is_empty():
+					continue
+			Kind.VENT_FIELD:
+				if area.radius < MIN_VENT_FIELD_RADIUS:
+					continue
 		area.kind = kind
 		count -= 1
 
@@ -567,6 +624,31 @@ func _shape_shelf(rng: RandomNumberGenerator, area: Area) -> void:
 			stray = clampf(stray + rng.randf_range(-0.5, 0.5), -CRACK_JAG, CRACK_JAG)
 			crack.append(area.center + out * along + side * stray)
 		area.cracks.append(crack)
+
+
+## Dots the sinkhole field with round pits, apart from each other and off its middle (where the
+## ways through it meet).
+func _shape_pits(rng: RandomNumberGenerator, area: Area) -> void:
+	area.pits.clear()
+	var wanted: int = roundi(area.radius * PITS_PER_RADIUS)
+	for attempt: int in wanted * 20:
+		if area.pits.size() >= wanted:
+			break
+		var radius: float = rng.randf_range(PIT_RADIUS.x, PIT_RADIUS.y)
+		var reach: float = area.radius * PIT_REACH - radius
+		var low: float = radius + PIT_MIDDLE
+		if reach <= low:
+			continue
+		var at: Vector2 = (
+			area.center + Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(low, reach)
+		)
+		var free: bool = true
+		for pit: Vector3 in area.pits:
+			if at.distance_to(Vector2(pit.x, pit.y)) < pit.z + radius + PIT_SPACING:
+				free = false
+				break
+		if free:
+			area.pits.append(Vector3(at.x, at.y, radius))
 
 
 ## Puts the plateau's mesa where no pass comes in (in the widest gap between them), with its ramp

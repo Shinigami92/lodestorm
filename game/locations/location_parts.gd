@@ -215,7 +215,7 @@ func _add(
 
 
 ## The free areas a point of interest from the pool may go into: of its kinds, where its rule
-## wants it, never an ore pocket.
+## wants it, never an ore pocket (or lava island).
 func _pool_areas(
 	placement: PartPlacement, layout: LocationLayout, free: Array[LocationLayout.Area]
 ) -> Array[LocationLayout.Area]:
@@ -223,7 +223,7 @@ func _pool_areas(
 	var areas: Array[LocationLayout.Area] = []
 	for area: LocationLayout.Area in free:
 		if (
-			area.kind != LocationLayout.Kind.ORE_POCKET
+			not area.holds_rich_ore()
 			and area.kind in info.area_kinds
 			and info.fits(area.kind, area.radius, GeneratedLocation.AREA_WOBBLE)
 			and _follows(placement.rule, area, layout)

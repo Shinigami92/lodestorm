@@ -11,10 +11,28 @@ extends Resource
 enum Barrier {
 	## High rock nobody can climb (`wall_height`).
 	WALLS,
-	## Ground lowered below the floor nobody can enter (crevasses, later lava channels and
-	## sinkholes): players and aliens see and shoot across but walk around to the next pass. Its
-	## edge is blocked by invisible walls behind a visible lip, so nobody falls in.
+	## Ground lowered below the floor nobody can enter (crevasses): players and aliens see and
+	## shoot across but walk around to the next pass. Its edge is blocked by invisible walls behind
+	## a visible lip, so nobody falls in. Beyond it the ground comes back up to the floor's level.
 	GAPS,
+	## Gaps beside the open ground (lava channels, sinkholes) with the rock rising behind them.
+	GAPS_AND_WALLS,
+}
+
+## The shape of the gaps beside the open ground.
+enum GapShape {
+	## Bands along the open ground's edge, their width varying (crevasses, lava channels).
+	BANDS,
+	## Round pits bitten into the barrier along the edge (sinkholes), the rock between them.
+	PITS,
+}
+
+## The shape of the rock behind the cliffs.
+enum RockShape {
+	## Rising in flat layers (`plateau_step`): mesas.
+	LAYERS,
+	## Long, sharp spines.
+	RIDGES,
 }
 
 ## What the ways between the areas look like.
@@ -33,6 +51,9 @@ enum Hazard {
 	## Slick ice on the frozen lakes: feet grip less (`hazard_grip`), so players and aliens slide a
 	## little when they start, turn and stop.
 	SLICK_ICE,
+	## Vents in the vent fields: they glow and rumble for a moment, then burst, hurting whoever
+	## stands on them (`hazard_damage`).
+	VENTS,
 }
 
 @export var display_name: String = ""
@@ -58,11 +79,16 @@ enum Hazard {
 ## Longest bridge (`PassStyle.BRIDGES`): the most open ground between two areas a pass crosses,
 ## in m.
 @export var longest_bridge: float = 24.0
+## How high a bridge's middle rises above the areas it joins, in m (raised causeways), with a ramp
+## at each end.
+@export var bridge_rise: float = 0.0
 
 @export_group("Barrier")
 @export var barrier: Barrier = Barrier.WALLS
-## How wide a gap is beside the open ground (narrowest, widest), in m. Farther out the ground
-## comes back up to the floor's level (land nobody reaches), up to the rim at the edges.
+@export var gap_shape: GapShape = GapShape.BANDS
+## How wide a gap is beside the open ground (narrowest, widest), in m; a pit's radius. Farther out
+## the ground comes back up to the floor's level (land nobody reaches), up to the rim at the edges,
+## or the rock rises (`Barrier.GAPS_AND_WALLS`).
 @export var gap_width: Vector2 = Vector2(10.0, 16.0)
 ## How deep a gap is below the floor, in m.
 @export var gap_depth: float = 9.0
@@ -71,6 +97,10 @@ enum Hazard {
 ## Tint of a gap's bottom (deeper ground fades towards it) and of the lips and bridges.
 @export var gap_tint: Color = Color(0.3, 0.38, 0.5)
 @export var lip_tint: Color = Color(1.0, 1.0, 1.0)
+## What fills the gaps up to `gap_fill_level` above their bottom (lava, brine): a flat surface,
+## only looks (null: nothing). The gaps' bottom is level then.
+@export var gap_fill: Material
+@export var gap_fill_level: float = 1.0
 
 @export_group("Areas")
 ## Kinds of areas only this biome has (`LocationLayout.Kind`), on top of the shared ones.
@@ -84,6 +114,8 @@ enum Hazard {
 @export_range(0.0, 1.0) var hazard_grip: float = 0.15
 ## Tint of the hazard's ground, so it reads from afar.
 @export var hazard_tint: Color = Color(0.75, 0.9, 1.0)
+## Damage the hazard deals to whoever stands in it (a vent's burst).
+@export var hazard_damage: float = 0.0
 
 @export_group("Ground")
 ## Height of the gentle swells on the open ground, in m.
@@ -101,6 +133,7 @@ enum Hazard {
 @export var near_wall_height: float = 3.5
 ## How much higher the rock rises in places beyond the walls, in m.
 @export var rock_relief: float = 10.0
+@export var rock_shape: RockShape = RockShape.LAYERS
 ## Height of one step of the rock, in m: it rises in flat layers.
 @export var plateau_step: float = 4.0
 ## Height of the small bumps on top, in m.
@@ -137,3 +170,13 @@ enum Hazard {
 ## Closest a nest is to the landing site along the passes, in m (in a straight line, through the
 ## rock, it may be a bit closer: `GeneratedLocation.NEST_STRAIGHT_SHARE`).
 @export var nest_min_distance: float = 80.0
+
+
+## Whether its barrier has gaps.
+func has_gaps() -> bool:
+	return barrier != Barrier.WALLS
+
+
+## Whether rock rises beyond the open ground (walls, or rock behind the gaps).
+func has_walls() -> bool:
+	return barrier != Barrier.GAPS

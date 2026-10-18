@@ -1,11 +1,12 @@
 extends Control
 ## Developer tool (2D): plans generated locations and draws them from above, to check layouts
 ## faster than in the game. Light ground is walkable from the ship; the barrier is brown where it's
-## rock (walls) and in the biome's gap tint where it's a gap (dark blue crevasses), with white lines
-## for the walls along a gap's edge; bridges are lighter, the hazard in its tint with a ring and its
-## name. Magenta marks spots a player could fall to without a way back (should be none). Yellow
-## lines are the passes, rings the areas (with their kind and the walking distance from the ship),
-## dots the ore nodes in their ore's color, red rings the nests, faint stripes the lanes kept free.
+## rock (walls) and in the biome's gap tint where it's a gap (dark blue crevasses, teal sinkholes,
+## red lava channels), with white lines for the walls along a gap's edge; bridges are lighter, the
+## hazard in its tint with a ring and its name. Magenta marks spots a player could fall to without
+## a way back (should be none). Yellow lines are the passes, rings the areas (with their kind and
+## the walking distance from the ship), dots the ore nodes in their ore's color, red rings the
+## nests, faint stripes the lanes kept free.
 ## Amber rings are map parts (their footprint, the props' circle and their name; a set piece's
 ## name in capitals), amber squares their crates, amber diamonds their quest sites.
 ## The white arrow shows where the camera looks (the rock on its side stays low to see over).
@@ -42,10 +43,15 @@ const KIND_COLORS: Dictionary[LocationLayout.Kind, Color] = {
 	LocationLayout.Kind.CRATER: Color(1.0, 0.6, 0.25),
 	LocationLayout.Kind.ICE_SHELF: Color(0.8, 0.92, 1.0),
 	LocationLayout.Kind.FROZEN_LAKE: Color(0.45, 0.8, 1.0),
+	LocationLayout.Kind.SINKHOLE_FIELD: Color(0.5, 0.85, 0.8),
+	LocationLayout.Kind.BRINE_FLAT: Color(0.95, 0.95, 0.85),
+	LocationLayout.Kind.LAVA_ISLAND: Color(1.0, 0.45, 0.2),
+	LocationLayout.Kind.VENT_FIELD: Color(1.0, 0.7, 0.3),
 }
 const HAZARD_NAMES: Dictionary[LocationBiome.Hazard, String] = {
 	LocationBiome.Hazard.NONE: "",
 	LocationBiome.Hazard.SLICK_ICE: "Slick ice",
+	LocationBiome.Hazard.VENTS: "Vent",
 }
 
 var world_seed: int = 1
@@ -198,7 +204,7 @@ func _draw_ground() -> Image:
 					color = color.lerp(Color(0.95, 0.85, 0.55), 0.25)
 				if _location.is_on_bridge(at.x, at.z):
 					color = color.lerp(Color.WHITE, 0.45)
-				if _location.near_hazard(Vector2(at.x, at.z), -GeneratedLocation.LAKE_SHORE):
+				if _location.near_hazard(Vector2(at.x, at.z), -GeneratedLocation.HAZARD_MARGIN):
 					color = color.lerp(biome.hazard_tint, 0.7)
 			elif _location.is_gap(at.x, at.z):
 				color = biome.gap_tint * 0.7

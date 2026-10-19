@@ -20,6 +20,8 @@ func before_each() -> void:
 
 func after_each() -> void:
 	_overlay.call(&"reset_tuning")
+	PlayerVitals.god_mode = false
+	Alien.ai_on = true
 	_overlay.visible = false
 
 
@@ -67,6 +69,30 @@ func test_kill_and_heal_players() -> void:
 	assert_eq(_player.health, _player.settings.max_health)
 	_overlay.call(&"kill_players")
 	assert_true(_player.dead)
+
+
+func test_god_mode_keeps_players_unhurt_but_kill_still_works() -> void:
+	watch_signals(_player.vitals)
+	_switch("God mode").button_pressed = true
+	_player.take_damage(30.0)
+	assert_eq(_player.health, _player.settings.max_health)
+	assert_signal_emitted(_player.vitals, "hurt", "the hit still shows")
+	_overlay.call(&"kill_players")
+	assert_true(_player.dead)
+	assert_true(PlayerVitals.god_mode, "stays on")
+	_switch("God mode").button_pressed = false
+	_player.respawn(_player.global_position)
+	_player.take_damage(30.0)
+	assert_eq(_player.health, _player.settings.max_health - 30.0)
+
+
+func test_alien_ai_switch() -> void:
+	var switch: CheckButton = _switch("Alien AI")
+	assert_true(switch.button_pressed)
+	switch.button_pressed = false
+	assert_false(Alien.ai_on)
+	switch.button_pressed = true
+	assert_true(Alien.ai_on)
 
 
 func test_kill_aliens() -> void:
@@ -176,3 +202,11 @@ func test_strain_buttons_show_tier_and_role() -> void:
 	var sorted: Array[int] = tiers.duplicate()
 	sorted.sort()
 	assert_eq(tiers, sorted, "by tier")
+
+
+## The overlay's switch labeled `text`.
+func _switch(text: String) -> CheckButton:
+	for button: Node in _overlay.find_children("*", "CheckButton", true, false):
+		if (button as CheckButton).text == text:
+			return button
+	return null

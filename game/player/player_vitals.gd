@@ -14,6 +14,10 @@ signal hurt(amount: float, from: Vector3)
 ## Emitted when health reaches zero.
 signal died
 
+## The debug overlay's god mode: no player loses health (hits still flash the light and mark the
+## suit ring).
+static var god_mode: bool = false
+
 ## The player whose health it is.
 var holder: Player
 ## Shows the health and the regeneration.
@@ -44,6 +48,10 @@ func maximum() -> float:
 ## Loses `amount` health (from an attacker at `from`, if it has one); dies at zero.
 func damage(amount: float, from: Vector3 = Vector3.INF) -> void:
 	if dead or amount <= 0.0:
+		return
+	if god_mode:
+		hurt.emit(amount, from)
+		light.flash()
 		return
 	_since_damage = 0.0
 	_set_health(health - amount)

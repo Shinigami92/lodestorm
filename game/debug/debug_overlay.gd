@@ -6,7 +6,8 @@ extends CanvasLayer
 ## resources live, so every scene using them sees the new values right away; they last until the
 ## game stops and aren't written to the files. Also shows the mission and flight state and has
 ## shortcuts for testing the flight, storm, death, fights, weapons, ammo, upgrades and the heat
-## shield, and teammates standing still (to see their rings before co-op). Integer settings get
+## shield, and teammates standing still (to see their rings before co-op), and switches for god
+## mode (players take no damage) and the aliens' AI (off: they stand still). Integer settings get
 ## whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
@@ -388,6 +389,8 @@ func _process(_delta: float) -> void:
 		for amount: float in player.cargo.values():
 			carried += amount
 		var status: String = "dead" if player.dead else "%.0f HP" % player.health
+		if PlayerVitals.god_mode:
+			status += " (god mode)"
 		lines.append("%s: %s, carrying %.0f" % [player.name, status, carried])
 	var aliens: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP)
 	var chasing: int = aliens.filter(func(alien: Alien) -> bool: return alien.target != null).size()
@@ -396,8 +399,8 @@ func _process(_delta: float) -> void:
 	var nests: int = get_tree().get_nodes_in_group(AlienNest.GROUP).size()
 	lines.append(
 		(
-			"Aliens: %d (%d chasing, %d hunters, %d raiders), nests: %d"
-			% [aliens.size(), chasing, hunters, raiders, nests]
+			"Aliens: %d (%d chasing, %d hunters, %d raiders), nests: %d%s"
+			% [aliens.size(), chasing, hunters, raiders, nests, "" if Alien.ai_on else ", AI off"]
 		)
 	)
 	var miners: Array[Node] = get_tree().get_nodes_in_group(Miner.GROUP)
@@ -439,9 +442,13 @@ func skip_flight() -> void:
 		mission.skip_flight()
 
 
+## Kills every player, in god mode too.
 func kill_players() -> void:
+	var god_mode: bool = PlayerVitals.god_mode
+	PlayerVitals.god_mode = false
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.take_damage(player.health)
+	PlayerVitals.god_mode = god_mode
 
 
 func kill_aliens() -> void:
@@ -634,7 +641,14 @@ func _build() -> void:
 	_button(players, "Add teammate", _add_teammate)
 	_button(players, "Remove teammates", _remove_teammates)
 	_button(players, "Give ore", give_ore)
+	_switch(
+		players,
+		"God mode",
+		PlayerVitals.god_mode,
+		func(on: bool) -> void: PlayerVitals.god_mode = on
+	)
 	var aliens: GridContainer = _group(state, "Aliens")
+	_switch(aliens, "Alien AI", Alien.ai_on, func(on: bool) -> void: Alien.ai_on = on)
 	_nest_buttons.append(_button(aliens, "Hatch hunter packs", hatch_hunters))
 	_nest_buttons.append(_button(aliens, "Hatch raiders", hatch_raiders))
 	_kill_aliens_button = _button(aliens, "Kill aliens", kill_aliens)
@@ -770,6 +784,18 @@ func _button(parent: Control, text: String, action: Callable) -> Button:
 	button.clip_text = true
 	button.focus_mode = Control.FOCUS_NONE
 	button.pressed.connect(action)
+	parent.add_child(button)
+	return button
+
+
+## A switch in `parent`, starting `on`; `action` gets its new state.
+func _switch(parent: Control, text: String, on: bool, action: Callable) -> CheckButton:
+	var button := CheckButton.new()
+	button.text = text
+	button.button_pressed = on
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.focus_mode = Control.FOCUS_NONE
+	button.toggled.connect(action)
 	parent.add_child(button)
 	return button
 

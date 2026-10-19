@@ -3,18 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://de2m20e1o8k4n"
-path="res://.godot/imported/stalker_stalker_orm.png-30d7ebf5a0f5287967807cbce7c19893.ctex"
+path.s3tc="res://.godot/imported/stalker_stalker_orm.png-30d7ebf5a0f5287967807cbce7c19893.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
-"md5": "6e40362087b00a20af72ac73093d4d14"
+"md5": "73880e64c69114d9bf8aab9105e34919"
 }
 
 [deps]
 
 source_file="res://assets/aliens/stalker/stalker_stalker_orm.png"
-dest_files=["res://.godot/imported/stalker_stalker_orm.png-30d7ebf5a0f5287967807cbce7c19893.ctex"]
+dest_files=["res://.godot/imported/stalker_stalker_orm.png-30d7ebf5a0f5287967807cbce7c19893.s3tc.ctex"]
 
 [params]
 

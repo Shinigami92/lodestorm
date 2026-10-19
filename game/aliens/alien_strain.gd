@@ -53,6 +53,9 @@ extends Resource
 ## Seconds it backs off from its target after each attack before it comes in again (stalkers hit
 ## and run); 0: it doesn't.
 @export var retreat_time: float = 0.0
+## Whether it circles its target between `keep_away` and the reach of its attacks instead of
+## standing (skimmers); with attacks `AlienAttack.on_the_move` it never stops.
+@export var circles: bool = false
 ## Whether it wanders between the location's areas without a target (the Ravager, see
 ## `Alien.route`), instead of standing.
 @export var roams: bool = false

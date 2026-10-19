@@ -8,8 +8,9 @@ Writes the game asset assets/aliens/stalker/stalker.glb (textures, skeleton and 
 assets/aliens/stalker/source/stalker.blend; the separate PNGs and check renders go to tmp/assets/stalker/game/.
 
 The shared flow (tools/blender/bake.py) bakes "Creature" (Sinew, Chitin, Bone, Mouth) into one 1024 texture set with
-one "Stalker" PBR material (its Chitin is the stalker's own: darker, mottled small scales). "Eyes" and "Glands" keep
-constant emissive materials (the glands fainter than the eyes).
+one "Stalker" PBR material (its Chitin is the stalker's own: darker, mottled small scales). "Eyes" and "Glands" (the
+seams along the talons' inner edges and the slits on the back) keep constant emissive materials (the glands fainter
+than the eyes).
 The armature modifiers are taken off for the bake (the rest pose is baked) and put back before the export. Texture
 size 1024 per the asset budget (many aliens at once, small on screen), TBD (playtest).
 """
@@ -70,11 +71,11 @@ def checks(job: B.Job, meshes: list) -> None:
     print("CHECK actions", sorted(a.name for a in bpy.data.actions))
     for obj in [o for o in bpy.data.objects if o.name.startswith("Icosphere")]:  # the importer's bone shape
         bpy.data.objects.remove(obj)
-    C.preview_scene(crystals=False, figure_location=(1.4, 1.2, 0))
-    target = (0, 0.1, 0.32)
-    for view, zoom in (("iso", 0.34), ("hero", 0.38), ("back", 0.4)):
+    C.preview_scene(crystals=False, figure_location=(1.4, 1.0, 0))
+    target = (0, -0.1, 1.15)
+    for view, zoom in (("iso", 0.42), ("hero", 0.5), ("back", 0.5)):
         C.render(job.game / f"check_{view}.png", view=view, samples=64, size=1024, target=target, zoom=zoom)
-    C.render_from(job.game / "check_head.png", Vector((0.9, -2.0, 0.75)), (0, -0.7, 0.42), 50, 64, 768)
+    C.render_from(job.game / "check_head.png", Vector((0.9, -2.2, 2.2)), (0, -0.92, 1.92), 50, 64, 768)
 
 
 B.run(JOB, checks)

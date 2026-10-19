@@ -171,6 +171,8 @@ var _surfaced_for: float = 0.0
 var _retreat_left: float = 0.0
 ## The route's point it walks to, or -1.
 var _route_index: int = -1
+## Which way it circles its target (`strain.circles`): 1 or -1.
+var _circle_side: float = 1.0 if randf() < 0.5 else -1.0
 var _dig_tween: Tween
 var _ripple: BurrowRipple
 ## Laid over the model: the hit flash, and the rim light as its next pass.
@@ -271,6 +273,8 @@ func _physics_process(delta: float) -> void:
 			facing = attack_facing
 		else:
 			facing = _offset_to(target)
+		if _attack and _attack.on_the_move and is_instance_valid(target):
+			wanted = _chase(_offset_to(target).length())
 	elif target and _retreat_left > 0.0:
 		wanted = _direction_away_from(target)
 		facing = _offset_to(target)
@@ -284,12 +288,8 @@ func _physics_process(delta: float) -> void:
 	elif target:
 		var offset: Vector3 = _offset_to(target)
 		var distance: float = offset.length()
-		if _start_attack(distance):
-			pass
-		elif strain.keep_away > 0.0 and distance < strain.keep_away:
-			wanted = _direction_away_from(target)
-		elif distance > reach_to(target, strain.reach(underground)):
-			wanted = _direction_to(target.global_position)
+		if not _start_attack(distance):
+			wanted = _chase(distance)
 		facing = offset
 	# Face where it actually goes (avoidance and acceleration bend the path), or the target when
 	# it stands.
@@ -363,6 +363,9 @@ func _process(delta: float) -> void:
 func strike(victim: Node3D, amount: float) -> void:
 	if not is_instance_valid(victim):
 		return
+	if cloaking and cloaking.ambush:
+		amount = maxf(amount, strain.cloak.ambush_damage)
+		cloaking.ambush = false
 	hurt(victim, amount * damage_factor, global_position)
 	play_attack()
 
@@ -603,7 +606,7 @@ func _start_attack(distance: float) -> bool:
 		_phase = AttackPhase.WIND_UP
 		_phase_time = 0.0
 		if cloaking:
-			cloaking.reveal()
+			cloaking.reveal(true)
 		attack.prepare(self)
 		_process_attack(0.0)
 		return true
@@ -656,6 +659,8 @@ func _end_attack() -> void:
 		_attack.finish(self)
 		if not dead:
 			_retreat_left = strain.retreat_time
+	if cloaking:
+		cloaking.ambush = false
 	_attack = null
 	_phase = AttackPhase.NONE
 	_phase_time = 0.0
@@ -672,6 +677,19 @@ func _land() -> void:
 		velocity = Vector3(0.0, velocity.y, 0.0)
 		_legs.plant_all()
 		_legs.active = true
+
+
+## Horizontal direction it goes for its target, `distance` m away, when it doesn't attack: away
+## while closer than `strain.keep_away`, towards it out of reach of its attacks, around it in
+## between if it circles (`strain.circles`), otherwise nowhere.
+func _chase(distance: float) -> Vector3:
+	if strain.keep_away > 0.0 and distance < strain.keep_away:
+		return _direction_away_from(target)
+	if distance > reach_to(target, strain.reach(underground)):
+		return _direction_to(target.global_position)
+	if strain.circles and distance > 0.01:
+		return _offset_to(target).normalized().cross(Vector3.UP) * _circle_side
+	return Vector3.ZERO
 
 
 ## Horizontal direction along its route: to the point it walks to, and once there to another one,

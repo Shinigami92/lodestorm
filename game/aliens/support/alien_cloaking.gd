@@ -3,7 +3,8 @@ extends Node
 ## A stalker's see-through body (`AlienStrain.cloak`, a child of its `Alien`): while no player is
 ## within its cloak's `reveal_range` it can't be seen or locked on (only its silhouette behind
 ## cliffs shows), closer it's a shimmer bending what's behind it (`cloak.gdshader`), its eyes a
-## faint glint. Once it starts an attack or takes a hit it shows fully for `shown_time`. While it
+## faint glint. Once it starts an attack or takes a hit it shows fully for `shown_time`; an attack
+## started from hiding is an ambush (`ambush`: its strike hits harder). While it
 ## hides, its body casts no shadow and has no rim light. Shots and swings hit it all the same.
 ## Greybox look, TBD (playtest).
 
@@ -16,6 +17,9 @@ var cloak: AlienCloak
 var shown: float = 0.0
 ## 0: unseen, 1: a shimmer (fading between).
 var shimmer: float = 0.0
+## Whether the attack under way started from hiding (see `AlienCloak.ambush_damage`): cleared by
+## its strike or its end.
+var ambush: bool = false
 
 var _shown_left: float = 0.0
 var _alien: Alien
@@ -51,8 +55,10 @@ func _process(delta: float) -> void:
 	_update_look()
 
 
-## Shows it fully for its cloak's `shown_time` (it attacks, it's hit).
-func reveal() -> void:
+## Shows it fully for its cloak's `shown_time` (it's hit; `attacking`: it starts an attack, an
+## ambush if it was hiding).
+func reveal(attacking: bool = false) -> void:
+	ambush = attacking and is_cloaked() and _shown_left == 0.0
 	_shown_left = cloak.shown_time
 
 

@@ -34,6 +34,10 @@ msgstr ""
 msgid "Shrieker"
 msgstr ""
 
+#: game/aliens/strains/skimmer/skimmer.tres
+msgid "Skimmer"
+msgstr ""
+
 #: game/aliens/strains/spitter/spitter.tres
 msgid "Spitter"
 msgstr ""

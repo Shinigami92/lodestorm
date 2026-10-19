@@ -22,6 +22,9 @@ extends Resource
 @export var clip_lead: float = 0.0
 ## Whether it's used on miners (raiders) too, or only on players.
 @export var against_miners: bool = true
+## Whether the alien keeps moving as before during the wind-up and the recovery (a skimmer spits
+## while it circles); otherwise it stops.
+@export var on_the_move: bool = false
 ## Whether it starts from under the ground (burrowers, see `AlienStrain.burrows`); the others only
 ## start while the alien is up.
 @export var underground: bool = false

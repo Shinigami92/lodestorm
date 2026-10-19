@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AlienHook" format=3 uid="uid://d1watv85ppnpt"]
+
+[ext_resource type="Script" uid="uid://n6uwy2r858g6" path="res://game/aliens/attacks/alien_hook.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage = 4.0
+cooldown = 6.0
+wind_up = 0.5
+recovery = 0.4
+against_miners = false
+min_range = 6.0
+max_range = 10.0
+hook_speed = 24.0
+snare = 0.5
+snare_time = 1.5
+mouth = Vector3(0, 1.33, -0.84)

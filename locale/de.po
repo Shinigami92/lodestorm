@@ -36,6 +36,10 @@ msgstr "Verwüster"
 msgid "Shrieker"
 msgstr "Kreischer"
 
+#: game/aliens/strains/skimmer/skimmer.tres
+msgid "Skimmer"
+msgstr "Gleiter"
+
 #: game/aliens/strains/spitter/spitter.tres
 msgid "Spitter"
 msgstr "Spucker"

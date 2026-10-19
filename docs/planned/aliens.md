@@ -4,7 +4,7 @@ Decided 2026-10-17, built in M4 step 7 A–D (see [`PLAN.md`](../PLAN.md)): ever
 
 ## Strains and roles
 
-- **10 strains and one apex,** two new ones per tier, so every planet brings something new to learn. The count is data: nests, packs and tests work for any number. Names are descriptive and translated, the way the crew would call them.
+- **11 strains and one apex,** two new ones per tier up to tier 5 and one on tier 6, so every planet brings something new to learn. The count is data: nests, packs and tests work for any number. Names are descriptive and translated, the way the crew would call them.
 
 | Tier | Strain | Size | How it fights | Weak to | Look |
 |---|---|---|---|---|---|
@@ -17,12 +17,13 @@ Decided 2026-10-17, built in M4 step 7 A–D (see [`PLAN.md`](../PLAN.md)): ever
 | 4 | **Bloater** | big, slow | bursts next to a player or on death into an acid cloud that hurts aliens too; a hunter, never at miners | killing it at range, near other aliens | a fat grub on stubby legs, its back a swollen bladder |
 | 4 | **Tender** | medium | heals and hardens aliens near it (a pulsing link); stays back | focus fire | glowing gland clusters and tendrils |
 | 5 | **Darter** | small, flying | winged packs that fly low over cliffs and rock (no paths) and dive at players | arc caster, shotgun, the target lock | translucent wings, a sting |
-| 5 | **Stalker** | medium | see-through until it attacks (a shimmer, visible within 8 m and as a silhouette behind cliffs), ambushes from cover | arc caster, wide hits, sticking together | chameleon chitin |
+| 5 | **Stalker** | tall | see-through until it attacks (a shimmer, visible within 8 m and as a silhouette behind cliffs), its first strike from hiding hits hard; once seen, flesh hooks that slow; hit and run | arc caster, wide hits, sticking together | a hunched biped with scything talons and mouth tendrils, chameleon chitin |
+| 6 | **Skimmer** | medium, flying | circles high out of reach of flat shots and spits straight acid bolts on the move | the target lock, range | a winged ray with a whip tail and a glowing throat sac |
 | 3+ | **Ravager** (apex) | huge | at most one per region, roams or guards a rich site, announced by tremors; slams, charges, sheds swarmers | everything together; avoiding it is fine | the rare huge monster |
 
 Besides the hunters, the nests' **guards and raiders are their own strains** (built in step 7 B, so a role shows in the body, not in a tint): the **warden** guards every nest on every tier (big, front-armored, a slam; more guard strains may come with later tiers), the **gnawer** is the first raider (tier 1, crushing jaws); later raider strains may come with later tiers.
 
-Tier 6 brings no new strain: its danger comes from mixed packs of all of them, and the Ravager more often. The weapons named in the table are planned too (see [`weapons.md`](weapons.md)).
+Tier 6 brings one new strain, the skimmer; the rest of its danger comes from mixed packs of all of them, and the Ravager more often. The weapons named in the table are planned too (see [`weapons.md`](weapons.md)).
 
 ## Still open
 

@@ -261,7 +261,29 @@ const TUNING: Dictionary[String, Array] = {
 		["reveal_range", 0.0, 30.0, 0.5],
 		["shown_time", 0.0, 10.0, 0.25],
 		["fade_time", 0.05, 2.0, 0.05],
+		["ambush_damage", 0.0, 100.0, 1.0],
 		["bend", 0.0, 0.2, 0.005],
+	],
+	"res://game/aliens/strains/stalker/hook.tres":
+	[
+		["cooldown", 0.5, 30.0, 0.5],
+		["max_range", 2.0, 30.0, 0.5],
+		["snare", 0.0, 1.0, 0.05],
+		["snare_time", 0.0, 5.0, 0.1],
+	],
+	"res://game/aliens/strains/skimmer/skimmer.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["flight_height", 0.5, 10.0, 0.1],
+		["keep_away", 0.0, 25.0, 0.5],
+	],
+	"res://game/aliens/strains/skimmer/spit.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["reach", 2.0, 40.0, 0.5],
+		["cooldown", 0.5, 20.0, 0.5],
+		["glob_speed", 2.0, 40.0, 0.5],
 	],
 	"res://game/aliens/strains/ravager/ravager.tres":
 	[

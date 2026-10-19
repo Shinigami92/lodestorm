@@ -88,7 +88,8 @@ func test_a_burst_warns_then_spews_hunters_and_cracks_it() -> void:
 	_damage_share(1.0 / 3.0)
 	assert_true(_nest.is_warning(), "its mouth swells first")
 	assert_eq(_aliens().size(), guards, "nothing yet")
-	await _wait_physics(0.6)
+	# One after another.
+	await _wait_physics(0.6 + (_nest.settings.burst_aliens - 1) * _nest.settings.hatch_gap)
 	assert_false(_nest.is_warning())
 	assert_eq(_nest.get_hunters().size(), _nest.settings.burst_aliens, "then it spews hunters")
 	assert_eq(_nest.stage, 1)
@@ -124,7 +125,7 @@ func test_three_stages_then_it_collapses() -> void:
 func test_a_big_hit_through_both_bursts_still_bursts_twice() -> void:
 	_nest.settings.burst_warning = 0.1
 	_damage_share(0.7)
-	await _wait_physics(0.3)
+	await _wait_physics(0.3 + (2 * _nest.settings.burst_aliens - 1) * _nest.settings.hatch_gap)
 	assert_eq(_nest.stage, 2)
 	assert_eq(_nest.get_hunters().size(), 2 * _nest.settings.burst_aliens)
 

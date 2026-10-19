@@ -37,6 +37,8 @@ extends Resource
 ## Aliens hatch this far from the nest's center (horizontally, in m). Far enough out that waiting
 ## guards don't block the paths that hug the nest.
 @export var hatch_radius: float = 3.5
+## A pack (or a burst) hatches one alien after another, this many seconds apart.
+@export var hatch_gap: float = 0.25
 ## How many aliens may live at once, from all nests together (see `AlienStrain.cap_share`); nests
 ## wait while it's reached. Lower in VR.
 @export var max_aliens: float = 60.0

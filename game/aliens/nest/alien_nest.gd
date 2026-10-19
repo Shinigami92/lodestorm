@@ -15,7 +15,10 @@ extends Node3D
 ## (`Alien.called_for_help`) makes the nest nearest to the shrieker send its next pack right away,
 ## boosted like the shrieker's pack: its mouth flares and a ring sweeps out from it.
 ## Aliens hatch stronger on bodies farther in (see `MissionSettings.alien_health_at`). Nests wait
-## while the living aliens reach the cap (`AlienNestSettings.alien_cap`).
+## while the living aliens reach the cap (`AlienNestSettings.alien_cap`), looking again every
+## `CAP_RETRY`. A pack hatches one alien after another (`AlienNestSettings.hatch_gap` apart), and
+## the whole hive hatches at most one per physics frame: setting one up takes a moment, a pack at
+## once made the game stutter. Aliens waiting to hatch count towards the cap.
 ## Weapons wear it down (its `body`, a `Destructible`: health and armor, scaled like the aliens'
 ## and per player). A hit calls its guards to go for the attacker. On the way down it bursts
 ## (`AlienNestSettings.bursts`): its mouth swells and glows white for a warning, then it spews
@@ -40,6 +43,8 @@ const GLOW_ENERGY_MIN: float = 0.5
 const GLOW_ENERGY_MAX: float = 4.0
 ## Seconds between looks at which miners draw raiders to it.
 const DRAW_INTERVAL: float = 1.0
+## While the cap is reached (or no pack fits), it looks again this often (s).
+const CAP_RETRY: float = 0.25
 ## When it answers a scream: how much brighter its mouth flares, for how long (s), and how far its
 ## ring reaches (m).
 const ANSWER_FLARE: float = 3.0
@@ -66,6 +71,10 @@ const HUSK_GLOW := Color(0.05, 0.05, 0.04)
 const DRY_SLIME := Color(0.2, 0.19, 0.18)
 const DRY_ROUGHNESS: float = 0.95
 
+## The physics frame in which a nest last hatched an alien that waited: the hive hatches one per
+## frame.
+static var _hatch_frame: int = -1
+
 @export var settings: AlienNestSettings
 ## The strains and packs it hatches from (see `table`).
 @export var hive: AlienHive
@@ -85,6 +94,9 @@ var raider_draw_factor: float = 1.0
 var stage: int = 0
 
 var _hunters: Array[Alien] = []
+## The aliens waiting to hatch, in turn, and the seconds until the next one may.
+var _waiting: Array[Hatching] = []
+var _until_hatch: float = 0.0
 var _raiders: Array[Alien] = []
 var _mission: Mission
 var _rng := RandomNumberGenerator.new()
@@ -111,6 +123,15 @@ var _glow := StandardMaterial3D.new()
 ## with the glow.
 @onready var _model: Node3D = $Model
 @onready var _mouth: Node3D = _model.find_child("Mouth", true, false) as Node3D
+
+
+## An alien waiting to hatch: of `strain`, in `role`, `boost` times faster for `seconds` (an
+## answered scream).
+class Hatching:
+	var strain: AlienStrain
+	var role: Alien.Role
+	var boost: float = 1.0
+	var seconds: float = 0.0
 
 
 func _ready() -> void:
@@ -159,6 +180,8 @@ func _physics_process(delta: float) -> void:
 		_warning_left = maxf(_warning_left - delta, 0.0)
 		if _warning_left == 0.0:
 			_burst()
+	_until_hatch = maxf(_until_hatch - delta, 0.0)
+	_hatch_next()
 	if _destroyed or not (_find_mission() and _mission.is_running()):
 		return
 	# The frenzy sends hunters at their highest rate, from its start on.
@@ -202,16 +225,19 @@ func _process(delta: float) -> void:
 		_mouth.position = MOUTH_CENTER * (1.0 - swell)
 
 
-## Hatches a pack of hunters (see `HatchTable.pick_pack`) around the nest, unless the cap is
-## reached. Returns its aliens (none without a pack that fits).
-func hatch_pack() -> Array[Alien]:
-	var hatching: Array[Alien] = []
+## Lets a pack of hunters (see `HatchTable.pick_pack`) hatch around the nest, one after another
+## (the first right away if it may), unless the cap is reached; `boost` times faster for `seconds`
+## (an answered scream). Returns its strains (none without a pack that fits).
+func hatch_pack(boost: float = 1.0, seconds: float = 0.0) -> Array[AlienStrain]:
+	var strains: Array[AlienStrain] = []
 	var pack: AlienPack = table.pick_pack(_rng, escalation())
 	if not pack or is_full(pack.cap_load()):
-		return hatching
-	for strain: AlienStrain in pack.aliens():
-		hatching.append(hatch(Alien.Role.HUNTER, strain))
-	return hatching
+		return strains
+	strains = pack.aliens()
+	for strain: AlienStrain in strains:
+		_wait_to_hatch(strain, Alien.Role.HUNTER, boost, seconds)
+	_hatch_next()
+	return strains
 
 
 ## Hatches an alien of `strain` with `role` at a random spot around the nest, facing away from it.
@@ -239,18 +265,16 @@ func hatch(role: Alien.Role, strain: AlienStrain = null) -> Alien:
 
 ## Answers a scream: sends its next pack of hunters right away (unless the cap is reached), at most
 ## every `settings.call_cooldown`, each of them `boost` times faster for `seconds`; its mouth flares
-## and a ring sweeps out. Returns the pack (none while it waits).
-func answer_call(boost: float = 1.0, seconds: float = 0.0) -> Array[Alien]:
-	var pack: Array[Alien] = []
+## and a ring sweeps out. Returns the pack's strains (none while it waits).
+func answer_call(boost: float = 1.0, seconds: float = 0.0) -> Array[AlienStrain]:
+	var pack: Array[AlienStrain] = []
 	if _call_cooldown > 0.0:
 		return pack
-	pack = hatch_pack()
+	pack = hatch_pack(boost, seconds)
 	if pack.is_empty():
 		return pack
 	_call_cooldown = settings.call_cooldown
 	hunter_cooldown = hunter_interval(escalation())
-	for alien: Alien in pack:
-		alien.status.boost(boost, seconds)
 	_flare_left = ANSWER_FLARE_TIME
 	ScreamWave.spawn(get_parent(), global_position, ANSWER_RING)
 	return pack
@@ -271,8 +295,8 @@ func escalation() -> float:
 	return _mission.progress() if _find_mission() else 0.0
 
 
-## Whether `share` more (in cap shares) would go over the cap on living aliens: nests wait. For
-## `guards`, the guards' own share of it (`AlienNestSettings.guard_share`).
+## Whether `share` more (in cap shares) would go over the cap on living aliens and those waiting to
+## hatch: nests wait. For `guards`, the guards' own share of it (`AlienNestSettings.guard_share`).
 func is_full(share: float = 1.0, guards: bool = false) -> bool:
 	if guards:
 		var waiting: float = 0.0
@@ -280,7 +304,16 @@ func is_full(share: float = 1.0, guards: bool = false) -> bool:
 			if alien.role == Alien.Role.GUARD:
 				waiting += alien.strain.cap_share
 		return waiting + share > settings.alien_cap() * settings.guard_share
-	return Alien.living_load(get_tree()) + share > settings.alien_cap()
+	var taken: float = Alien.living_load(get_tree()) + waiting_load(get_tree())
+	return taken + share > settings.alien_cap()
+
+
+## How much the aliens waiting to hatch in every nest count towards the cap.
+static func waiting_load(tree: SceneTree) -> float:
+	var total: float = 0.0
+	for nest: AlienNest in tree.get_nodes_in_group(GROUP):
+		total += nest._waiting_load()
+	return total
 
 
 ## Seconds between packs of hunters at escalation `level`.
@@ -336,9 +369,9 @@ func is_warning() -> bool:
 
 
 ## The hive's surge after another nest was destroyed: sends its next pack of hunters right away
-## (while a mission runs, unless the cap is reached). Returns the pack.
-func surge() -> Array[Alien]:
-	var pack: Array[Alien] = []
+## (while a mission runs, unless the cap is reached). Returns the pack's strains.
+func surge() -> Array[AlienStrain]:
+	var pack: Array[AlienStrain] = []
 	if _destroyed or not (_find_mission() and _mission.is_running()):
 		return pack
 	pack = hatch_pack()
@@ -355,31 +388,70 @@ static func load_of(aliens: Array[Alien]) -> float:
 	return total
 
 
-## Counts `cooldown` down while the aliens with `role` out count less than `limit`, hatches (a pack
-## of hunters, a raider) at zero and returns the new cooldown. At the limit it holds a full
-## `interval`; at the cap it waits.
+## Counts `cooldown` down while the aliens with `role` out (and waiting to hatch) count less than
+## `limit`, hatches (a pack of hunters, a raider) at zero and returns the new cooldown. At the
+## limit it holds a full `interval`; at the cap it looks again after `CAP_RETRY`.
 func _count_down(
 	role: Alien.Role, cooldown: float, interval: float, limit: float, delta: float
 ) -> float:
 	var out: Array[Alien] = _hunters if role == Alien.Role.HUNTER else _raiders
-	if load_of(out) >= limit:
+	if load_of(out) + _waiting_load(role) >= limit:
 		return interval
 	cooldown = maxf(cooldown - delta, 0.0)
 	if cooldown > 0.0:
 		return cooldown
 	var hatching: bool = (
-		not hatch_pack().is_empty() if role == Alien.Role.HUNTER else _hatch_single(role) != null
+		not hatch_pack().is_empty() if role == Alien.Role.HUNTER else _hatch_single(role)
 	)
-	return interval if hatching else cooldown
+	return interval if hatching else minf(interval, CAP_RETRY)
 
 
-## Hatches one guard or raider (see `HatchTable.pick_single`) unless the cap (for guards, their
-## share of it) is reached. Returns it, or null.
-func _hatch_single(role: Alien.Role) -> Alien:
+## Lets one guard or raider (see `HatchTable.pick_single`) hatch unless the cap (for guards, their
+## share of it) is reached: guards right away, raiders in turn. Returns whether one does.
+func _hatch_single(role: Alien.Role) -> bool:
 	var strain: AlienStrain = table.pick_single(_rng, escalation(), role)
 	if not strain or is_full(strain.cap_share, role == Alien.Role.GUARD):
-		return null
-	return hatch(role, strain)
+		return false
+	if role == Alien.Role.GUARD:
+		hatch(role, strain)
+	else:
+		_wait_to_hatch(strain, role)
+		_hatch_next()
+	return true
+
+
+## Puts an alien of `strain` in `role` in line to hatch, `boost` times faster for `seconds`.
+func _wait_to_hatch(
+	strain: AlienStrain, role: Alien.Role, boost: float = 1.0, seconds: float = 0.0
+) -> void:
+	var waiting := Hatching.new()
+	waiting.strain = strain
+	waiting.role = role
+	waiting.boost = boost
+	waiting.seconds = seconds
+	_waiting.append(waiting)
+
+
+## Hatches the next alien waiting, once `settings.hatch_gap` passed since the last one and no
+## nest hatched one this physics frame yet.
+func _hatch_next() -> void:
+	if _waiting.is_empty() or _until_hatch > 0.0 or _hatch_frame == Engine.get_physics_frames():
+		return
+	_hatch_frame = Engine.get_physics_frames()
+	_until_hatch = settings.hatch_gap
+	var next: Hatching = _waiting.pop_front()
+	var alien: Alien = hatch(next.role, next.strain)
+	if next.seconds > 0.0:
+		alien.status.boost(next.boost, next.seconds)
+
+
+## How much the aliens waiting to hatch here count towards the cap; with `role`, only theirs.
+func _waiting_load(role: int = -1) -> float:
+	var total: float = 0.0
+	for waiting: Hatching in _waiting:
+		if role < 0 or waiting.role == role:
+			total += waiting.strain.cap_share
+	return total
 
 
 ## A strain for a single alien with `role`: one of that role's, or one from a pack.
@@ -447,13 +519,14 @@ func _on_damaged(_amount: float, by: Node) -> void:
 		_warning_left = settings.burst_warning
 
 
-## Spews `settings.burst_aliens` hunters of its packs' strains (unless the cap is reached) and opens
-## its next crack stage; another burst due starts its warning.
+## Spews `settings.burst_aliens` hunters of its packs' strains, one after another (unless the cap
+## is reached), and opens its next crack stage; another burst due starts its warning.
 func _burst() -> void:
 	for i: int in settings.burst_aliens:
 		var strain: AlienStrain = _any_strain(Alien.Role.HUNTER)
 		if not is_full(strain.cap_share):
-			hatch(Alien.Role.HUNTER, strain)
+			_wait_to_hatch(strain, Alien.Role.HUNTER)
+	_hatch_next()
 	stage += 1
 	var cracks: Array[GeometryInstance3D] = _cracks()
 	for i: int in cracks.size():
@@ -468,6 +541,7 @@ func _burst() -> void:
 func _on_destroyed() -> void:
 	_destroyed = true
 	_warning_left = 0.0
+	_waiting.clear()
 	remove_from_group(GROUP)
 	for child: Node in get_children():
 		if child is Alien:

@@ -62,8 +62,6 @@ const EYE_FLARE: float = 4.0
 const EYE_FLARE_FAST: float = 0.8
 ## A leap ends early when it moves slower than this share of its speed (it ran into something).
 const LUNGE_STALL: float = 0.3
-## How far ahead it looks for a spot to back off to (m), see `AlienStrain.keep_away`.
-const BACK_OFF_STEP: float = 5.0
 ## Burrowers dig in only for targets farther away than this (m); closer, they fight up top.
 const DIG_DISTANCE: float = 3.0
 ## How deep a burrower's body sinks under the ground (m).
@@ -91,8 +89,13 @@ const FLASH_DURATION: float = 0.1
 const HATCH_DURATION: float = 0.4
 ## Faster than this (m/s), it faces where it goes; slower, where it wants to go.
 const FACE_VELOCITY_MIN: float = 1.0
-## The path is only looked up again once the target moved this far (m).
-const REPATH_DISTANCE: float = 1.0
+## Under the ground it doesn't move on where the ground rises more than this (m): a rock or a cliff.
+const UNDERGROUND_CLIMB: float = 0.6
+## Slower than this (m/s) on the ground, it stands: it doesn't move at all.
+const STAND_SPEED: float = 0.01
+## Its model counts as on screen this far (m) beyond its body, so its shadow and legs reaching
+## into the view still move.
+const SCREEN_MARGIN: float = 1.5
 ## Seconds the body lies on the ground after dying (the "Die" clip takes 1 s).
 const COLLAPSE_DURATION: float = 1.2
 ## Seconds it then takes to sink into the ground.
@@ -106,6 +109,9 @@ const DEATH_DURATION: float = COLLAPSE_DURATION + SINK_DURATION
 ## without a target or an attack (one under way is broken off, burrowers come up), but can still be
 ## hit, pushed, staggered and killed.
 static var ai_on: bool = true
+## Whether aliens off screen stop their legs and clips (see `_on_screen_changed`). Without a display
+## (headless: tests, a server) nothing is ever on screen, so it's off there.
+static var culls_off_screen: bool = DisplayServer.get_name() != "headless"
 ## Shared by all aliens (see `RIM_STRENGTH`).
 static var _rim: ShaderMaterial
 static var _buffed_rim: ShaderMaterial
@@ -188,6 +194,8 @@ var _glow_energies: Array[float] = []
 var _hatch_tween: Tween
 var _legs := AlienLegs.new()
 var _pose := AlienPose.new()
+var _pathing: AlienPathing
+var _screen := VisibleOnScreenNotifier3D.new()
 
 @onready var _body: Node3D = $Body
 @onready var _model: Node3D = $Body/Model
@@ -245,12 +253,16 @@ func _ready() -> void:
 		tremor.strength = strain.tremor
 		add_child(tremor)
 		_legs.stepped.connect(tremor.thump)
+	if strain.flies():
+		add_to_group(AlienFlight.GROUP)
+	_watch_screen(creature)
 	_update_look()
 	_body.scale = Vector3.ONE * 0.01
 	_hatch_tween = create_tween()
 	_hatch_tween.tween_property(_body, ^"scale", Vector3.ONE, HATCH_DURATION)
 	# The feet spread out while it grows: put them where they belong at full size.
 	_hatch_tween.tween_callback(_legs.plant_all)
+	_pathing = AlienPathing.new(self, _agent)
 	_agent.velocity_computed.connect(_on_velocity_computed)
 
 
@@ -283,7 +295,7 @@ func _physics_process(delta: float) -> void:
 		if _attack and _attack.on_the_move and is_instance_valid(target):
 			wanted = _chase(_offset_to(target).length())
 	elif target and _retreat_left > 0.0:
-		wanted = _direction_away_from(target)
+		wanted = _pathing.direction_away_from(target)
 		facing = _offset_to(target)
 	elif not target and strain.roams and not route.is_empty():
 		wanted = _roam()
@@ -291,7 +303,7 @@ func _physics_process(delta: float) -> void:
 		# Back to where it hatched.
 		var back: Vector3 = home - global_position
 		if Vector2(back.x, back.z).length() > HOME_RADIUS:
-			wanted = _direction_to(home)
+			wanted = _pathing.direction_to(home)
 	elif target:
 		var offset: Vector3 = _offset_to(target)
 		var distance: float = offset.length()
@@ -334,7 +346,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= _gravity * delta
 	# Avoidance only runs with a navigation mesh while it walks; it answers with
 	# `velocity_computed`.
-	var avoiding: bool = _has_navigation() and not lunging
+	var avoiding: bool = AlienPathing.has_navigation(self) and not lunging
 	if _agent.avoidance_enabled != avoiding:
 		_agent.avoidance_enabled = avoiding
 	if avoiding:
@@ -354,9 +366,11 @@ func _process(delta: float) -> void:
 	var buffed: bool = status.is_buffed() and not dead
 	var size: float = BUFFED_SCALE if buffed else 1.0
 	_model.scale = _model.scale.lerp(Vector3.ONE * size, 1.0 - exp(-BUFFED_GROW_SPEED * delta))
-	_overlay.next_pass = _buffed_rim if buffed else _rim
+	var rim: ShaderMaterial = _buffed_rim if buffed else _rim
 	if cloaking and cloaking.is_cloaked():
-		_overlay.next_pass = null
+		rim = null
+	if _overlay.next_pass != rim:
+		_overlay.next_pass = rim
 	if not dead:
 		# Keeps the scale: it grows while hatching.
 		var pose: Transform3D = _pose.update(delta)
@@ -708,9 +722,9 @@ func _land() -> void:
 ## between if it circles (`strain.circles`), otherwise nowhere.
 func _chase(distance: float) -> Vector3:
 	if strain.keep_away > 0.0 and distance < strain.keep_away:
-		return _direction_away_from(target)
+		return _pathing.direction_away_from(target)
 	if distance > reach_to(target, strain.reach(underground)):
-		return _direction_to(target.global_position)
+		return _pathing.direction_to(target.global_position)
 	if strain.circles and distance > 0.01:
 		return _offset_to(target).normalized().cross(Vector3.UP) * _circle_side
 	return Vector3.ZERO
@@ -728,7 +742,7 @@ func _roam() -> Vector3:
 		if route.size() > 1 and next == _route_index:
 			next = (next + 1) % route.size()
 		_route_index = next
-	return _direction_to(route[_route_index])
+	return _pathing.direction_to(route[_route_index])
 
 
 ## Without its AI (`ai_on`): no target, the attack under way broken off, up from under the ground.
@@ -751,13 +765,17 @@ func _update_burrow() -> void:
 			dig_in()
 
 
-## Moves it under the ground at `horizontal` (m/s), on the navigation mesh's surface: nothing
-## blocks it there.
+## Moves it under the ground at `horizontal` (m/s), along the ground's surface: nothing blocks it
+## there, but it doesn't move on under rocks and cliffs.
 func _move_underground(horizontal: Vector3, delta: float) -> void:
 	velocity = horizontal
 	var next: Vector3 = global_position + horizontal * delta
-	if _has_navigation():
-		next = NavigationServer3D.map_get_closest_point(get_world_3d().navigation_map, next)
+	var ground: float = AlienFlight.ground_below(self, next, UNDERGROUND_CLIMB, BURROW_DEPTH * 2.0)
+	if ground == -INF:
+		# Under a rock or a cliff, or beyond the ground's edge: it stays.
+		velocity = Vector3.ZERO
+		return
+	next.y = ground
 	global_position = next
 
 
@@ -783,6 +801,7 @@ func _count_down(delta: float) -> void:
 		_cooldowns[attack] = maxf(_cooldowns[attack] - delta, 0.0)
 	_staggered = maxf(_staggered - delta, 0.0)
 	_retreat_left = maxf(_retreat_left - delta, 0.0)
+	_pathing.tick(delta)
 	status.tick(delta)
 	if not underground:
 		_surfaced_for += delta
@@ -825,60 +844,54 @@ func _offset_to(node: Node3D) -> Vector3:
 	return offset
 
 
-## Horizontal direction to back off from `node`: towards a spot farther away, on the navigation
-## mesh if there is one (cornered, it stays).
-func _direction_away_from(node: Node3D) -> Vector3:
-	var away: Vector3 = -_offset_to(node)
-	if away.length() < 0.01:
-		away = global_basis.z
-	var spot: Vector3 = global_position + away.normalized() * BACK_OFF_STEP
-	if _has_navigation():
-		spot = NavigationServer3D.map_get_closest_point(get_world_3d().navigation_map, spot)
-	return _direction_to(spot)
+## Off screen, its legs and clips stop (see `_on_screen_changed`): `creature` is its body's mesh,
+## whose box (grown by `SCREEN_MARGIN`) counts.
+func _watch_screen(creature: GeometryInstance3D) -> void:
+	var box: AABB = creature.get_aabb()
+	box = (global_transform.affine_inverse() * creature.global_transform) * box
+	_screen.aabb = box.grow(SCREEN_MARGIN)
+	_screen.screen_entered.connect(_on_screen_changed)
+	_screen.screen_exited.connect(_on_screen_changed)
+	add_child(_screen)
+	_on_screen_changed()
 
 
-## Horizontal direction towards `point`: along the navigation mesh if there is one and it has a
-## path, straight otherwise.
-func _direction_to(point: Vector3) -> Vector3:
-	var next: Vector3 = point
-	if _has_navigation():
-		if _agent.target_position.distance_to(point) > REPATH_DISTANCE:
-			_agent.target_position = point
-		next = _agent.get_next_path_position()
-	var offset: Vector3 = next - global_position
-	offset.y = 0.0
-	if offset.length() < 0.01:
-		offset = point - global_position
-		offset.y = 0.0
-	return offset.normalized()
-
-
-## Whether it walks along a navigation mesh: there is one, and it doesn't fly.
-func _has_navigation() -> bool:
-	if strain.flies():
-		return false
-	return not NavigationServer3D.map_get_regions(get_world_3d().navigation_map).is_empty()
+## Off screen nobody sees its legs step, its clips play or its pose and glow change (`_process`):
+## all of them stop, which saves much of an alien's cost. Not for the Ravager: its steps shake the
+## ground (see `AlienTremor`).
+func _on_screen_changed() -> void:
+	var shown: bool = _screen.is_on_screen() or tremor != null or not culls_off_screen
+	_animator.active = shown
+	_legs.culled = not shown
+	set_process(shown)
 
 
 func _update_look() -> void:
 	var shade := Color(0.0, 0.0, 0.0, 0.0)
 	if _flash_left > 0.0:
 		shade = COLOR_FLASH
-	_overlay.albedo_color = shade
+	# Only on a change: every change updates the material on the renderer.
+	if _overlay.albedo_color != shade:
+		_overlay.albedo_color = shade
 	var fast: float = EYE_FLARE_FAST if status.is_fast() else 0.0
 	# A clip that is the telegraph (rearing up, swelling) brightens them over its wind-up.
 	var winding: float = _pose.crouched()
 	if _phase == AttackPhase.WIND_UP and _attack.clip_lead > 0.0 and _attack.wind_up > 0.0:
 		winding = maxf(winding, _phase_time / _attack.wind_up)
+	var flare: float = 1.0 + fast + EYE_FLARE * winding
 	for i: int in _glows.size():
-		var flare: float = 1.0 + fast + EYE_FLARE * winding
-		_glows[i].emission_energy_multiplier = _glow_energies[i] * flare
+		if _glows[i].emission_energy_multiplier != _glow_energies[i] * flare:
+			_glows[i].emission_energy_multiplier = _glow_energies[i] * flare
 
 
 func _on_velocity_computed(safe_velocity: Vector3) -> void:
 	if dead:
 		return
 	velocity = Vector3(safe_velocity.x, velocity.y, safe_velocity.z)
+	# Standing on the ground there's nothing to move (it saves the physics engine's queries).
+	if is_on_floor() and velocity.length_squared() < STAND_SPEED * STAND_SPEED:
+		velocity = Vector3.ZERO
+		return
 	move_and_slide()
 
 
@@ -894,6 +907,7 @@ func _die() -> void:
 	_pose.sink = 0.0
 	_model.visible = true
 	remove_from_group(GROUP)
+	remove_from_group(AlienFlight.GROUP)
 	velocity = Vector3.ZERO
 	_agent.avoidance_enabled = false
 	_collision.set_deferred(&"disabled", true)

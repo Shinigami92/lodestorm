@@ -240,7 +240,8 @@ func test_hunters_hatch_as_packs_and_count_by_cap_share() -> void:
 	_set_interval(0.1)
 	_nest.settings.max_hunters_start = 2.0
 	await _start_mission()
-	await _wait_physics(0.6)
+	# Two packs, each hatching one mite after another.
+	await _wait_physics(0.6 + 7 * _nest.settings.hatch_gap)
 	assert_eq(_nest.get_hunters().size(), 8)
 	assert_almost_eq(AlienNest.load_of(_nest.get_hunters()), 2.0, 1e-4)
 	for hunter: Alien in _nest.get_hunters():

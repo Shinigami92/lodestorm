@@ -2,6 +2,8 @@ extends GutTest
 
 const NEST_SCENE: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")
 const TEST_MAP := preload("res://tests/support/test_map.gd")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
+const MITE: AlienStrain = preload("res://game/aliens/strains/mite/mite.tres")
 
 var _map: Node3D
 var _mission: Mission
@@ -21,6 +23,9 @@ func before_each() -> void:
 		nest.queue_free()
 	_nest = NEST_SCENE.instantiate() as AlienNest
 	_nest.settings = _nest.settings.duplicate() as AlienNestSettings
+	_nest.settings.guard_packs = 2
+	# Packs of one swarmer, so the counts below are aliens.
+	_nest.table = _one_swarmer_packs()
 	_nest.position = _ship.to_global(Vector3(55.0, 0.0, 0.0))
 	_map.add_child(_nest)
 	watch_signals(_nest)
@@ -29,7 +34,7 @@ func before_each() -> void:
 
 func test_guards_hatch_around_the_nest() -> void:
 	var aliens: Array[Alien] = _aliens()
-	assert_eq(aliens.size(), _nest.settings.guards)
+	assert_eq(aliens.size(), _nest.settings.guard_packs)
 	for alien: Alien in aliens:
 		assert_eq(alien.role, Alien.Role.GUARD)
 		var offset: Vector3 = alien.global_position - _nest.global_position
@@ -82,7 +87,7 @@ func test_hunters_find_their_way_around_the_nest() -> void:
 
 func test_hunters_are_capped_and_replaced_an_interval_after_a_kill() -> void:
 	_set_interval(0.1)
-	_nest.settings.max_hunters_start = 2
+	_nest.settings.max_hunters_start = 2.0
 	await _start_mission()
 	await _wait_physics(0.6)
 	assert_eq(_nest.get_hunters().size(), 2)
@@ -96,7 +101,7 @@ func test_hunters_are_capped_and_replaced_an_interval_after_a_kill() -> void:
 
 func test_nests_wait_while_the_living_aliens_reach_the_cap() -> void:
 	_set_interval(0.1)
-	_nest.settings.max_hunters_start = 4
+	_nest.settings.max_hunters_start = 4.0
 	_nest.settings.max_aliens = Alien.living_load(get_tree()) + 1.0
 	await _start_mission()
 	await _wait_physics(0.6)
@@ -194,6 +199,15 @@ func _place_miner() -> Miner:
 	return node.place_miner(_player.miner_scene)
 
 
+func _one_swarmer_packs() -> HatchTable:
+	var pack := AlienPack.new()
+	pack.members = {SWARMER: 1}
+	var hive := AlienHive.new()
+	hive.strains = [SWARMER]
+	hive.packs = [pack]
+	return hive.table(1)
+
+
 func _aliens() -> Array[Alien]:
 	var aliens: Array[Alien] = []
 	aliens.assign(get_tree().get_nodes_in_group(Alien.GROUP).filter(_nest.is_ancestor_of))
@@ -204,3 +218,44 @@ func _aliens() -> Array[Alien]:
 ## `wait_seconds` counts.
 func _wait_physics(seconds: float) -> void:
 	await wait_physics_frames(roundi(seconds * Engine.physics_ticks_per_second))
+
+
+func test_hunters_hatch_as_packs_and_count_by_cap_share() -> void:
+	var mite: AlienStrain = MITE
+	var pack := AlienPack.new()
+	pack.members = {mite: 4}
+	var hive := AlienHive.new()
+	hive.strains = [mite]
+	hive.packs = [pack]
+	_nest.table = hive.table(1)
+	# Four mites count as one swarmer: a second pack fits under a limit of 2.
+	_set_interval(0.1)
+	_nest.settings.max_hunters_start = 2.0
+	await _start_mission()
+	await _wait_physics(0.6)
+	assert_eq(_nest.get_hunters().size(), 8)
+	assert_almost_eq(AlienNest.load_of(_nest.get_hunters()), 2.0, 1e-4)
+	for hunter: Alien in _nest.get_hunters():
+		assert_eq(hunter.strain, mite)
+
+
+func test_raiders_hatch_by_raider_weight() -> void:
+	var mite: AlienStrain = MITE
+	var hive := AlienHive.new()
+	hive.strains = [mite, SWARMER]
+	_nest.table = hive.table(1)
+	assert_eq(mite.raider_weight, 0.0, "mites don't raid")
+	for i: int in 10:
+		assert_eq(_nest.hatch(Alien.Role.RAIDER).strain, SWARMER)
+
+
+func test_guards_take_only_their_share_of_the_cap() -> void:
+	var nest := NEST_SCENE.instantiate() as AlienNest
+	nest.settings = nest.settings.duplicate() as AlienNestSettings
+	nest.settings.guard_share = 0.0
+	nest.table = _one_swarmer_packs()
+	nest.position = _ship.to_global(Vector3(-55.0, 0.0, 0.0))
+	_map.add_child(nest)
+	await wait_physics_frames(2)
+	assert_eq(get_tree().get_nodes_in_group(Alien.GROUP).filter(nest.is_ancestor_of).size(), 0)
+	assert_eq(nest.hatch_pack(Alien.Role.HUNTER).size(), 1, "hunters still come")

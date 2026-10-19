@@ -1,17 +1,19 @@
 class_name AlienLegs
 extends SkeletonModifier3D
-## Procedural legs for four-legged aliens (a child of the model's Skeleton3D): each foot stays
-## planted on the ground until the body has moved too far from it, then steps to where the body
-## will be shortly, in a trot (the diagonal pairs step together). Two-bone IK bends each leg to
-## its planted foot after the animation played: the upper and lower leg reach the ankle (the
-## foot bone's head) and the foot keeps its animated angle. The ground under a new step is found
-## by a ray; without one the feet stay level with the alien's origin. It works with the
-## interpolated transform, so the feet stay put between physics ticks.
-## Leg bones are named `<Front|Hind><Left|Right><UpperLeg|LowerLeg|Foot>` (see
-## assets/aliens/swarmer/source/swarmer_build.py). Values TBD (playtest).
+## Procedural legs for four- and six-legged aliens (a child of the model's Skeleton3D): each foot
+## stays planted on the ground until the body has moved too far from it, then steps to where the
+## body will be shortly, the legs taking turns in two sets: four legs trot (the diagonal pairs step
+## together), six walk in tripods (front and hind of one side with the middle of the other).
+## Two-bone IK bends each leg to its planted foot after the animation played: the upper and lower
+## leg reach the ankle (the foot bone's head) and the foot keeps its animated angle. The ground
+## under a new step is found by a ray; without one the feet stay level with the alien's origin. It
+## works with the interpolated transform, so the feet stay put between physics ticks.
+## Leg bones are named `<Front|Mid|Hind><Left|Right><UpperLeg|LowerLeg|Foot>` (see
+## tools/blender/creature.py); a row without bones is left out. Values TBD (playtest).
 
-## The legs, in pairs that step together (the diagonals): the first two, then the last two.
-const LEGS: PackedStringArray = ["FrontLeft", "HindRight", "FrontRight", "HindLeft"]
+## The rows of legs from the front, and the sides.
+const ROWS: PackedStringArray = ["Front", "Mid", "Hind"]
+const SIDES: PackedStringArray = ["Left", "Right"]
 ## Rays for the ground start this high above the foot and reach this far below it (m).
 const RAY_UP: float = 1.0
 const RAY_DOWN: float = 1.5
@@ -33,7 +35,7 @@ const RAY_DOWN: float = 1.5
 var feet: Dictionary[String, Vector3] = {}
 
 var _legs: Array[Leg] = []
-## The legs per pair (see `LEGS`).
+## The legs of each set that steps together.
 var _groups: Array[Array] = [[], []]
 var _last_origin: Vector3
 var _velocity: Vector3 = Vector3.ZERO
@@ -43,7 +45,7 @@ var _started: bool = false
 ## One leg: its bones, rest measures (skeleton space) and step state (world space).
 class Leg:
 	var name: String
-	## 0 or 1: the pair it steps with.
+	## 0 or 1: the set it steps with.
 	var group: int
 	## The bone the leg hangs from (hips or chest).
 	var parent: int
@@ -94,31 +96,39 @@ func _setup() -> void:
 	_groups = [[], []]
 	_started = false
 	var skeleton: Skeleton3D = get_skeleton()
-	for index: int in LEGS.size():
-		var leg_name: String = LEGS[index]
-		var leg := Leg.new()
-		leg.name = leg_name
-		@warning_ignore("integer_division")
-		leg.group = index / 2
-		leg.upper = skeleton.find_bone(leg_name + "UpperLeg")
-		leg.lower = skeleton.find_bone(leg_name + "LowerLeg")
-		leg.foot = skeleton.find_bone(leg_name + "Foot")
-		if leg.upper < 0 or leg.lower < 0 or leg.foot < 0:
-			push_error("AlienLegs: missing bones for %s" % leg_name)
+	var row: int = 0
+	for row_name: String in ROWS:
+		if skeleton.find_bone(row_name + "LeftUpperLeg") < 0:
 			continue
-		leg.parent = skeleton.get_bone_parent(leg.upper)
-		var hip: Vector3 = skeleton.get_bone_global_rest(leg.upper).origin
-		var knee: Vector3 = skeleton.get_bone_global_rest(leg.lower).origin
-		var ankle: Vector3 = skeleton.get_bone_global_rest(leg.foot).origin
-		leg.upper_length = hip.distance_to(knee)
-		leg.lower_length = knee.distance_to(ankle)
-		leg.home = Vector3(ankle.x, 0.0, ankle.z)
-		leg.ankle_height = ankle.y
-		var axis: Vector3 = (ankle - hip).normalized()
-		var off: Vector3 = knee - hip
-		leg.pole = (off - axis * off.dot(axis)).normalized()
-		_legs.append(leg)
-		_groups[leg.group].append(leg)
+		for side: int in SIDES.size():
+			_add_leg(skeleton, row_name + SIDES[side], (row + side) % 2)
+		row += 1
+
+
+## Adds the leg `leg_name` stepping with set `group`.
+func _add_leg(skeleton: Skeleton3D, leg_name: String, group: int) -> void:
+	var leg := Leg.new()
+	leg.name = leg_name
+	leg.group = group
+	leg.upper = skeleton.find_bone(leg_name + "UpperLeg")
+	leg.lower = skeleton.find_bone(leg_name + "LowerLeg")
+	leg.foot = skeleton.find_bone(leg_name + "Foot")
+	if leg.upper < 0 or leg.lower < 0 or leg.foot < 0:
+		push_error("AlienLegs: missing bones for %s" % leg_name)
+		return
+	leg.parent = skeleton.get_bone_parent(leg.upper)
+	var hip: Vector3 = skeleton.get_bone_global_rest(leg.upper).origin
+	var knee: Vector3 = skeleton.get_bone_global_rest(leg.lower).origin
+	var ankle: Vector3 = skeleton.get_bone_global_rest(leg.foot).origin
+	leg.upper_length = hip.distance_to(knee)
+	leg.lower_length = knee.distance_to(ankle)
+	leg.home = Vector3(ankle.x, 0.0, ankle.z)
+	leg.ankle_height = ankle.y
+	var axis: Vector3 = (ankle - hip).normalized()
+	var off: Vector3 = knee - hip
+	leg.pole = (off - axis * off.dot(axis)).normalized()
+	_legs.append(leg)
+	_groups[leg.group].append(leg)
 
 
 func _process_modification_with_delta(delta: float) -> void:
@@ -139,7 +149,7 @@ func _process_modification_with_delta(delta: float) -> void:
 	var reach: float = (step_distance + step_distance_per_speed * speed) * size
 	var duration: float = clampf(step_duration - speed * 0.03, min_step_duration, step_duration)
 	for group: int in 2:
-		_update_pair(_groups[group], xform, reach, duration, _group_stepping(1 - group), delta)
+		_update_set(_groups[group], xform, reach, duration, _group_stepping(1 - group), delta)
 	var to_skeleton: Transform3D = xform.affine_inverse()
 	# Read every animated pose first: reading one after a write would update the whole skeleton.
 	var poses: Array[Transform3D] = []
@@ -152,9 +162,9 @@ func _process_modification_with_delta(delta: float) -> void:
 		_solve(skeleton, leg, to_skeleton * leg.planted, poses.slice(i * 4, i * 4 + 4))
 
 
-## Moves the feet of one pair: steps in progress go on; once a planted foot is too far from its
-## spot, the whole pair steps, so both feet lift and land together.
-func _update_pair(
+## Moves the feet of one set: steps in progress go on; once a planted foot is too far from its
+## spot, the whole set steps, so its feet lift and land together.
+func _update_set(
 	legs: Array, xform: Transform3D, reach: float, duration: float, others_up: bool, delta: float
 ) -> void:
 	var homes: Array[Vector3] = []
@@ -177,7 +187,7 @@ func _update_pair(
 		# Far behind (a teleport or a fall): plant it right away.
 		if distance > reach * 6.0:
 			leg.planted = _ground(home)
-		# Too far: step, once the other pair stands (or at once when it lags far behind).
+		# Too far: step, once the other set stands (or at once when it lags far behind).
 		elif distance > reach and (not others_up or distance > reach * 2.0):
 			step = true
 	if not step:

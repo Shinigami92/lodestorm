@@ -18,11 +18,21 @@ extends Resource
 @export var recovery: float = 0.0
 ## Whether it's used on miners (raiders) too, or only on players.
 @export var against_miners: bool = true
+## Whether it starts from under the ground (burrowers, see `AlienStrain.burrows`); the others only
+## start while the alien is up.
+@export var underground: bool = false
 
 
 ## Whether it can start on `target`, `distance` m away (horizontally).
 func can_start(alien: Alien, target: Node3D, distance: float) -> bool:
-	return (against_miners or target is Player) and _in_range(alien, target, distance)
+	if underground != alien.underground or not (against_miners or target is Player):
+		return false
+	return _in_range(alien, target, distance)
+
+
+## How close the alien comes to its target for this attack (horizontally, center to center, in m).
+func approach() -> float:
+	return reach
 
 
 ## Called once when the wind-up is over.

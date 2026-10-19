@@ -2,6 +2,18 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+#: game/aliens/strains/burrower/burrower.tres
+msgid "Burrower"
+msgstr ""
+
+#: game/aliens/strains/mite/mite.tres
+msgid "Mite"
+msgstr ""
+
+#: game/aliens/strains/spitter/spitter.tres
+msgid "Spitter"
+msgstr ""
+
 #: game/aliens/strains/swarmer/swarmer.tres
 msgid "Swarmer"
 msgstr ""

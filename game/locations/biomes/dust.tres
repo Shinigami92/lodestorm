@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
+[ext_resource type="Resource" uid="uid://b1qi3mgf8juj8" path="res://game/aliens/strains/burrower/burrower.tres" id="burrower"]
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="alien_strain"]
 
 [sub_resource type="Resource" id="Resource_boulder_a"]
 script = ExtResource("2_scatter")
@@ -280,3 +282,4 @@ scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder_a"), Su
 ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_kyrite"), ExtResource("ore_pallin"), ExtResource("ore_vyrel"), ExtResource("ore_halcyne")])
 nests_per_area = 0.9
 part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
+favored_strains = Array[ExtResource("alien_strain")]([ExtResource("burrower")])

@@ -338,6 +338,8 @@ func _instantiate(offer: MissionBrief) -> Node3D:
 		generated.ores = offer.ores
 		generated.world_seed = offer.world_seed
 		generated.nest_factor = settings.nest_factor_at(offer.difficulty, _tier_of(offer))
+		generated.alien_tier = _tier_of(offer)
+		generated.preview_strain = offer.difficulty == MissionBrief.Difficulty.HARD
 		generated.area_count = maxi(roundi(settings.location_areas * offer.length), 4)
 		if offer.region:
 			generated.set_pieces = offer.region.set_pieces

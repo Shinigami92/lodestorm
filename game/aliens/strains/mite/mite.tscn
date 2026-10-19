@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://1b1wu8h5bwro"]
+
+[ext_resource type="Script" uid="uid://c2behlnycgfcc" path="res://game/aliens/alien.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://btkisdu3b3rwe" path="res://assets/aliens/mite/mite.glb" id="3_model"]
+[ext_resource type="Script" uid="uid://05m4526f30dr" path="res://game/aliens/alien_animator.gd" id="4_animator"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.22
+height = 0.5
+
+[node name="Alien" type="CharacterBody3D"]
+collision_mask = 5
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Body" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Model" parent="Body" instance=ExtResource("3_model")]
+
+[node name="Animator" type="AnimationTree" parent="."]
+script = ExtResource("4_animator")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 1.0
+path_search_max_polygons = 0
+radius = 0.3
+neighbor_distance = 6.0
+time_horizon_agents = 0.5

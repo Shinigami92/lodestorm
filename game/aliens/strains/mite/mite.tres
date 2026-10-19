@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://ckm26nmpgwrkx"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://1b1wu8h5bwro" path="res://game/aliens/strains/mite/mite.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://dqcrdn6u7ssnp" path="res://game/aliens/strains/mite/bite.tres" id="4_bite"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Mite"
+scene = ExtResource("2_scene")
+cap_share = 0.25
+stride = 0.4
+raider_weight = 0.0
+max_health = 10.0
+stagger_threshold = 5.0
+knockback = 1.5
+move_speed = 5.6
+acceleration = 40.0
+turn_speed = 14.0
+detection_range = 16.0
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_bite")])

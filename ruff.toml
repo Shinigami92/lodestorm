@@ -18,4 +18,4 @@ ignore = [
 [lint.isort]
 # The shared helpers in tools/blender/ and the ore kit's geometry module, put on sys.path by the
 # scripts that import them
-known-first-party = ["bake", "common", "ore_geo"]
+known-first-party = ["bake", "common", "creature", "ore_geo"]

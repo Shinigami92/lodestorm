@@ -115,17 +115,58 @@ const TUNING: Dictionary[String, Array] = {
 		["leap_distance", 1.0, 10.0, 0.5],
 		["leap_speed", 2.0, 30.0, 1.0],
 	],
+	"res://game/aliens/strains/mite/mite.tres":
+	[
+		["max_health", 1.0, 100.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["cap_share", 0.05, 1.0, 0.05],
+	],
+	"res://game/aliens/strains/mite/bite.tres":
+	[
+		["damage", 0.0, 50.0, 1.0],
+		["cooldown", 0.1, 5.0, 0.1],
+	],
+	"res://game/aliens/strains/spitter/spitter.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["keep_away", 0.0, 20.0, 0.5],
+	],
+	"res://game/aliens/strains/spitter/spit.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["reach", 2.0, 30.0, 0.5],
+		["cooldown", 0.5, 20.0, 0.5],
+		["wind_up", 0.0, 2.0, 0.05],
+		["glob_speed", 2.0, 40.0, 1.0],
+		["puddle_radius", 0.2, 5.0, 0.1],
+		["puddle_time", 0.5, 20.0, 0.5],
+		["puddle_damage", 0.0, 50.0, 1.0],
+	],
+	"res://game/aliens/strains/burrower/burrower.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["surface_time", 0.0, 15.0, 0.5],
+	],
+	"res://game/aliens/strains/burrower/eruption.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["cooldown", 0.5, 20.0, 0.5],
+		["wind_up", 0.0, 3.0, 0.05],
+		["trigger_range", 0.2, 4.0, 0.1],
+	],
 	"res://game/aliens/nest/alien_nest_settings.tres":
 	[
-		["guards", 0.0, 10.0, 1.0],
+		["guard_packs", 0.0, 5.0, 1.0],
 		["hunter_interval_start", 1.0, 300.0, 1.0],
 		["hunter_interval_end", 1.0, 300.0, 1.0],
-		["max_hunters_start", 0.0, 20.0, 1.0],
-		["max_hunters_end", 0.0, 20.0, 1.0],
+		["max_hunters_start", 0.0, 20.0, 0.25],
+		["max_hunters_end", 0.0, 20.0, 0.25],
 		["raider_interval_start", 1.0, 300.0, 1.0],
 		["raider_interval_end", 1.0, 300.0, 1.0],
-		["max_raiders_start", 0.0, 20.0, 1.0],
-		["max_raiders_end", 0.0, 20.0, 1.0],
+		["max_raiders_start", 0.0, 20.0, 0.25],
+		["max_raiders_end", 0.0, 20.0, 0.25],
 	],
 }
 const PANEL_WIDTH: float = 460.0
@@ -139,6 +180,8 @@ const ALL_ORES: OreCatalog = preload("res://game/ores/all_ores.tres")
 const HOLD_FILL: float = 900.0
 const CARGO_FILL: float = 60.0
 const PLAYER_SCENE_PATH: String = "res://game/player/player.tscn"
+## Loaded when the panel is built: it refers to every strain's scene.
+const HIVE_PATH: String = "res://game/aliens/hive/hive.tres"
 
 ## Values from the files, for `reset_tuning`, keyed by "path:property".
 var _defaults: Dictionary[String, float] = {}
@@ -264,10 +307,16 @@ func kill_aliens() -> void:
 		alien.take_damage(alien.health)
 
 
-## Lets every nest hatch a hunter right away.
+## Lets every nest hatch a pack of hunters right away.
 func hatch_hunters() -> void:
 	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
-		nest.hatch(Alien.Role.HUNTER)
+		nest.hatch_pack(Alien.Role.HUNTER)
+
+
+## Lets every nest hatch a hunter of `strain` right away (also one that doesn't hatch there).
+func hatch_strain(strain: AlienStrain) -> void:
+	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+		nest.hatch(Alien.Role.HUNTER, strain)
 
 
 ## Lets every nest hatch a raider right away.
@@ -426,6 +475,9 @@ func _build() -> void:
 	_button(world, "Hatch hunters", hatch_hunters)
 	_button(world, "Hatch raiders", hatch_raiders)
 	_button(world, "Break miners", break_miners)
+	var hive: AlienHive = load(HIVE_PATH)
+	for strain: AlienStrain in hive.strains:
+		_button(world, "Hatch %s" % strain.display_name.to_lower(), hatch_strain.bind(strain))
 	var progress: GridContainer = _group(state, "Progress")
 	_button(progress, "Unlock weapons", unlock_weapons)
 	_button(progress, "Learn skills", learn_skills)
@@ -439,7 +491,7 @@ func _build() -> void:
 	for path: String in TUNING:
 		var resource: Resource = load(path)
 		var section := FoldableContainer.new()
-		section.title = path.get_file().get_basename().capitalize()
+		section.title = _tuning_title(path)
 		section.folded = true
 		section.focus_mode = Control.FOCUS_NONE
 		tuning.add_child(section)
@@ -519,6 +571,15 @@ func _heading(text: String) -> Label:
 	label.text = text
 	label.add_theme_font_size_override(&"font_size", 18)
 	return label
+
+
+## A tuning section's title: the file's name, with its strain's for an attack ("Mite bite").
+static func _tuning_title(path: String) -> String:
+	var title: String = path.get_file().get_basename()
+	var folder: String = path.get_base_dir().get_file()
+	if path.get_base_dir().get_base_dir().ends_with("strains") and folder != title:
+		title = "%s %s" % [folder, title]
+	return title.capitalize()
 
 
 func _button(parent: Control, text: String, action: Callable) -> Button:

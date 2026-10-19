@@ -11,6 +11,11 @@ extends Resource
 ## How much one alive counts towards the cap on living aliens (see `MissionSettings.alien_cap`):
 ## small ones that come in packs count as a share.
 @export var cap_share: float = 1.0
+## The tier of the bodies that bring it (see `HatchTable`): two new strains per tier.
+@export_range(1, 6, 1, "or_greater") var tier: int = 1
+## How likely a nest sends it out as a raider, against the other strains (0: never; hunters and
+## guards come in packs, see `AlienPack`).
+@export var raider_weight: float = 1.0
 
 @export_group("Body")
 ## Health of an unhurt alien.
@@ -25,6 +30,9 @@ extends Resource
 @export var stagger_time: float = 0.5
 ## How far hits push it, as a share of the weapon's push (heavy strains less).
 @export var knockback: float = 1.0
+## Its steps against the swarmer's (`AlienLegs`: how far and how high a foot steps): shorter legs,
+## smaller steps.
+@export var stride: float = 1.0
 
 @export_group("Movement")
 ## Top speed in m/s; below the player's, so running away works.
@@ -37,6 +45,19 @@ extends Resource
 @export var detection_range: float = 18.0
 ## A chased player farther away than this (horizontally, in m) gets away (not from hunters).
 @export var chase_range: float = 20.0
+## Keeps at least this far from its target (horizontally, in m): closer, it backs away (spitters);
+## 0: it doesn't.
+@export var keep_away: float = 0.0
+
+@export_group("Burrowing")
+## Whether it travels under the ground towards its target (burrowers): along the paths, out of
+## reach of shots and swings, only a ripple in the ground shows where it is. Attacks marked
+## `underground` start from there (`AlienEruption`); without a target it comes up.
+@export var burrows: bool = false
+## Seconds it stays up after coming up, before it digs in again.
+@export var surface_time: float = 3.0
+## Seconds digging in and coming up take.
+@export var dig_time: float = 0.4
 
 @export_group("Attacks")
 ## Tried in order: the first one that is ready and has the target in its range starts.
@@ -51,9 +72,11 @@ func spawn(role: Alien.Role = Alien.Role.GUARD) -> Alien:
 	return alien
 
 
-## How close the alien has to come for its closest attack (horizontally, center to center, in m).
-func reach() -> float:
+## How close the alien has to come for its closest attack (horizontally, center to center, in m):
+## of those that start from under the ground if `underground`, of the others if not.
+func reach(underground: bool = false) -> float:
 	var shortest: float = INF
 	for attack: AlienAttack in attacks:
-		shortest = minf(shortest, attack.reach)
+		if attack.underground == underground:
+			shortest = minf(shortest, attack.approach())
 	return shortest if shortest < INF else 1.0

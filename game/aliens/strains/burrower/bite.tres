@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="AlienBite" format=3 uid="uid://dn5uqssr25fj7"]
+
+[ext_resource type="Script" uid="uid://bxmahcx6r28k0" path="res://game/aliens/attacks/alien_bite.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage = 10.0
+reach = 1.5
+cooldown = 1.2

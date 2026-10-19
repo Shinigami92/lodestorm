@@ -4,6 +4,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: game/aliens/strains/burrower/burrower.tres
+msgid "Burrower"
+msgstr "Wühler"
+
+#: game/aliens/strains/mite/mite.tres
+msgid "Mite"
+msgstr "Milbe"
+
+#: game/aliens/strains/spitter/spitter.tres
+msgid "Spitter"
+msgstr "Spucker"
+
 #: game/aliens/strains/swarmer/swarmer.tres
 msgid "Swarmer"
 msgstr "Schwärmer"

@@ -162,14 +162,16 @@ func test_location_has_aliens_and_resets_them() -> void:
 	add_child_autofree(map)
 	_arena.queue_free()
 	await wait_physics_frames(2)
-	var location_aliens: int = _aliens_in(map.get_node("Location"))
-	assert_gt(location_aliens, 0)
+	assert_gt(_aliens_in(map.get_node("Location")), 0)
 	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
 		alien.take_damage(alien.health)
 	var mission: Mission = map.get_node("Mission") as Mission
 	mission.reset_location()
 	await wait_physics_frames(2)
-	assert_eq(_aliens_in(mission.location), location_aliens)
+	# Every nest's guards hatch again (packs picked anew, so not always as many).
+	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+		if mission.location.is_ancestor_of(nest):
+			assert_gt(_aliens_in(nest), 0, nest.name)
 
 
 func test_raider_goes_for_a_miner_far_away_and_ignores_players() -> void:

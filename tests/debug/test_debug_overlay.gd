@@ -78,10 +78,10 @@ func test_kill_aliens() -> void:
 func test_whole_number_slider_keeps_integer_setting() -> void:
 	var path: String = "res://game/aliens/nest/alien_nest_settings.tres"
 	var settings: AlienNestSettings = load(path)
-	var slider: HSlider = _overlay.call(&"get_slider", path, "max_hunters_end")
-	slider.value = 7.0
-	assert_eq(typeof(settings.get("max_hunters_end")), TYPE_INT)
-	assert_eq(settings.max_hunters_end, 7)
+	var slider: HSlider = _overlay.call(&"get_slider", path, "guard_packs")
+	slider.value = 3.0
+	assert_eq(typeof(settings.get("guard_packs")), TYPE_INT)
+	assert_eq(settings.guard_packs, 3)
 
 
 func test_hatch_hunters() -> void:
@@ -91,7 +91,7 @@ func test_hatch_hunters() -> void:
 	var hunters: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP).filter(
 		func(alien: Alien) -> bool: return alien.role == Alien.Role.HUNTER
 	)
-	assert_eq(hunters.size(), nests)
+	assert_gte(hunters.size(), nests * 2, "a pack each")
 
 
 func test_hatch_raiders() -> void:

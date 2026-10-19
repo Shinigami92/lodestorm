@@ -87,20 +87,33 @@ func test_whole_number_slider_keeps_integer_setting() -> void:
 func test_hatch_hunters() -> void:
 	var nests: int = get_tree().get_nodes_in_group(AlienNest.GROUP).size()
 	assert_gt(nests, 0, "the test map has nests")
+	var nest: AlienNest = _overlay.call(&"_nearest_nest")
 	_overlay.call(&"hatch_hunters")
 	var hunters: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP).filter(
 		func(alien: Alien) -> bool: return alien.role == Alien.Role.HUNTER
 	)
-	assert_gte(hunters.size(), nests * 2, "a pack each")
+	assert_gte(hunters.size(), 2, "a pack")
+	for hunter: Node in hunters:
+		assert_true(nest.is_ancestor_of(hunter), "only at the nearest nest")
 
 
 func test_hatch_raiders() -> void:
-	var nests: int = get_tree().get_nodes_in_group(AlienNest.GROUP).size()
+	var nest: AlienNest = _overlay.call(&"_nearest_nest")
 	_overlay.call(&"hatch_raiders")
 	var raiders: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP).filter(
 		func(alien: Alien) -> bool: return alien.role == Alien.Role.RAIDER
 	)
-	assert_eq(raiders.size(), nests)
+	assert_eq(raiders.size(), 1, "one, at the nearest nest")
+	assert_true(nest.is_ancestor_of(raiders[0]))
+
+
+func test_nearest_nest_is_the_one_closest_to_the_player() -> void:
+	var player := get_tree().get_first_node_in_group(Player.GROUP) as Player
+	var nest: AlienNest = _overlay.call(&"_nearest_nest")
+	assert_not_null(nest)
+	var closest: float = nest.global_position.distance_to(player.global_position)
+	for other: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+		assert_gte(other.global_position.distance_to(player.global_position), closest)
 
 
 func test_break_miners() -> void:
@@ -127,3 +140,39 @@ func test_open_all_offers_every_region() -> void:
 	_overlay.call(&"open_all_bodies")
 	assert_eq(_mission.ship.heat_shield.mk, _mission.ship.heat_shield.max_mk())
 	assert_eq(_mission.offers.size(), regions)
+
+
+func test_buttons_that_would_do_nothing_are_off() -> void:
+	_overlay.call(&"toggle")
+	await wait_process_frames(2)
+	var nest_buttons: Array[Button] = _overlay.get(&"_nest_buttons")
+	assert_false(nest_buttons.is_empty())
+	assert_false(nest_buttons[0].disabled, "nests to hatch from")
+	assert_true((_overlay.get(&"_break_miners_button") as Button).disabled, "no miner")
+	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+		nest.free()
+	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
+		alien.free()
+	await wait_process_frames(2)
+	for button: Button in nest_buttons:
+		assert_true(button.disabled, button.text)
+	assert_true((_overlay.get(&"_kill_aliens_button") as Button).disabled, "no aliens")
+	_overlay.call(&"toggle")
+
+
+func test_strain_buttons_show_tier_and_role() -> void:
+	var labels: Array[String] = []
+	for button: Button in _overlay.get(&"_nest_buttons") as Array[Button]:
+		labels.append(button.text)
+	assert_has(labels, "Swarmer (T1, Hunter)")
+	assert_has(labels, "Spitter (T2, Hunter)")
+	assert_has(labels, "Warden (T1, Guard)")
+	assert_has(labels, "Gnawer (T1, Raider)")
+	var tiers: Array[int] = []
+	for label: String in labels:
+		var at: int = label.find("(T")
+		if at >= 0:
+			tiers.append(label.substr(at + 2, 1).to_int())
+	var sorted: Array[int] = tiers.duplicate()
+	sorted.sort()
+	assert_eq(tiers, sorted, "by tier")

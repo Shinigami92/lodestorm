@@ -189,6 +189,11 @@ var _sliders: Dictionary[String, HSlider] = {}
 var _live: Label
 var _time_buttons: Array[Button] = []
 var _skip_flight_button: Button
+## Buttons that need a nest (the hatches), aliens or a working miner; off without one (aboard
+## in space, in flight).
+var _nest_buttons: Array[Button] = []
+var _kill_aliens_button: Button
+var _break_miners_button: Button
 
 
 func _ready() -> void:
@@ -270,6 +275,10 @@ func _process(_delta: float) -> void:
 	for button: Button in _time_buttons:
 		button.disabled = not running
 	_skip_flight_button.disabled = mission == null or not mission.flight.is_flying()
+	for button: Button in _nest_buttons:
+		button.disabled = nests == 0
+	_kill_aliens_button.disabled = aliens.is_empty()
+	_break_miners_button.disabled = miners.size() == broken
 
 
 func toggle() -> void:
@@ -307,23 +316,44 @@ func kill_aliens() -> void:
 		alien.take_damage(alien.health)
 
 
-## Lets every nest hatch a pack of hunters right away.
+## Lets the nest nearest to the local player hatch a pack of hunters right away.
 func hatch_hunters() -> void:
-	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+	var nest: AlienNest = _nearest_nest()
+	if nest:
 		nest.hatch_pack()
 
 
-## Lets every nest hatch an alien of `strain` in its role right away (also one that doesn't hatch
-## there).
+## Lets the nest nearest to the local player hatch an alien of `strain` in its role right away
+## (also one that doesn't hatch there).
 func hatch_strain(strain: AlienStrain) -> void:
-	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+	var nest: AlienNest = _nearest_nest()
+	if nest:
 		nest.hatch(strain.role, strain)
 
 
-## Lets every nest hatch a raider right away.
+## Lets the nest nearest to the local player hatch a raider right away.
 func hatch_raiders() -> void:
-	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+	var nest: AlienNest = _nearest_nest()
+	if nest:
 		nest.hatch(Alien.Role.RAIDER)
+
+
+## The nest nearest to the local player (any player without a local one), or null.
+func _nearest_nest() -> AlienNest:
+	var from: Player = null
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if not from or (player.local and not from.local):
+			from = player
+	var nearest: AlienNest = null
+	var nearest_distance: float = INF
+	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+		var distance: float = (
+			nest.global_position.distance_to(from.global_position) if from else 0.0
+		)
+		if distance < nearest_distance:
+			nearest = nest
+			nearest_distance = distance
+	return nearest
 
 
 func break_miners() -> void:
@@ -466,19 +496,32 @@ func _build() -> void:
 	_time_buttons.append(_button(mission, "Storm now", start_storm))
 	_skip_flight_button = _button(mission, "Skip flight", skip_flight)
 	var players: GridContainer = _group(state, "Players")
-	_button(players, "Kill players", kill_players)
 	_button(players, "Heal players", heal_players)
-	_button(players, "Give ore", give_ore)
+	_button(players, "Kill players", kill_players)
 	_button(players, "Add teammate", _add_teammate)
 	_button(players, "Remove teammates", _remove_teammates)
-	var world: GridContainer = _group(state, "Aliens and miners")
-	_button(world, "Kill aliens", kill_aliens)
-	_button(world, "Hatch hunters", hatch_hunters)
-	_button(world, "Hatch raiders", hatch_raiders)
-	_button(world, "Break miners", break_miners)
+	_button(players, "Give ore", give_ore)
+	var aliens: GridContainer = _group(state, "Aliens")
+	_nest_buttons.append(_button(aliens, "Hatch hunter packs", hatch_hunters))
+	_nest_buttons.append(_button(aliens, "Hatch raiders", hatch_raiders))
+	_kill_aliens_button = _button(aliens, "Kill aliens", kill_aliens)
+	var strains: GridContainer = _group(state, "Hatch a strain")
 	var hive: AlienHive = load(HIVE_PATH)
-	for strain: AlienStrain in hive.strains:
-		_button(world, "Hatch %s" % strain.display_name.to_lower(), hatch_strain.bind(strain))
+	# By tier, in the hive's order within one.
+	var by_tier: Array[AlienStrain] = hive.strains.duplicate()
+	by_tier.sort_custom(
+		func(a: AlienStrain, b: AlienStrain) -> bool:
+			return (
+				a.tier < b.tier
+				or (a.tier == b.tier and hive.strains.find(a) < hive.strains.find(b))
+			)
+	)
+	for strain: AlienStrain in by_tier:
+		var role: String = (Alien.Role.keys()[strain.role] as String).capitalize()
+		var label: String = "%s (T%d, %s)" % [strain.display_name, strain.tier, role]
+		_nest_buttons.append(_button(strains, label, hatch_strain.bind(strain)))
+	var miners: GridContainer = _group(state, "Miners")
+	_break_miners_button = _button(miners, "Break miners", break_miners)
 	var progress: GridContainer = _group(state, "Progress")
 	_button(progress, "Unlock weapons", unlock_weapons)
 	_button(progress, "Learn skills", learn_skills)

@@ -12,7 +12,8 @@ extends Node3D
 ## in the nest's mouth pulses faster as the hive escalates. Each working miner draws raiders: its
 ## nearest nest sends them more often (`AlienNestSettings.raider_draw`). From the storm's warning on
 ## the hive frenzies: its aliens are faster and hunters hatch at their highest rate. A scream
-## (`Alien.called_for_help`) makes the nest nearest to the shrieker send its next pack right away.
+## (`Alien.called_for_help`) makes the nest nearest to the shrieker send its next pack right away,
+## boosted like the shrieker's pack: its mouth flares and a ring sweeps out from it.
 ## Aliens hatch stronger on bodies farther in (see `MissionSettings.alien_health_at`). Nests wait
 ## while the living aliens reach the cap (`AlienNestSettings.alien_cap`).
 
@@ -30,6 +31,11 @@ const GLOW_ENERGY_MIN: float = 0.5
 const GLOW_ENERGY_MAX: float = 4.0
 ## Seconds between looks at which miners draw raiders to it.
 const DRAW_INTERVAL: float = 1.0
+## When it answers a scream: how much brighter its mouth flares, for how long (s), and how far its
+## ring reaches (m).
+const ANSWER_FLARE: float = 3.0
+const ANSWER_FLARE_TIME: float = 1.5
+const ANSWER_RING: float = 8.0
 
 @export var settings: AlienNestSettings
 ## The strains and packs it hatches from (see `table`).
@@ -54,8 +60,9 @@ var _rng := RandomNumberGenerator.new()
 ## Pulse phase in turns.
 var _pulse: float = 0.0
 var _until_draw: float = 0.0
-## Seconds until it answers a scream again.
+## Seconds until it answers a scream again, and of its mouth's flare left.
 var _call_cooldown: float = 0.0
+var _flare_left: float = 0.0
 var _glow := StandardMaterial3D.new()
 
 ## The look lives in the `Model` child; its `Mouth` and `Glands` meshes pulse with the glow.
@@ -118,9 +125,11 @@ func _physics_process(delta: float) -> void:
 	)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var wave: float = 0.5 - 0.5 * cos(TAU * _pulse)
-	_glow.emission_energy_multiplier = lerpf(GLOW_ENERGY_MIN, GLOW_ENERGY_MAX, wave)
+	_flare_left = maxf(_flare_left - delta, 0.0)
+	var flare: float = 1.0 + ANSWER_FLARE * _flare_left / ANSWER_FLARE_TIME
+	_glow.emission_energy_multiplier = lerpf(GLOW_ENERGY_MIN, GLOW_ENERGY_MAX, wave) * flare
 
 
 ## Hatches a pack of hunters (see `HatchTable.pick_pack`) around the nest, unless the cap is
@@ -159,15 +168,21 @@ func hatch(role: Alien.Role, strain: AlienStrain = null) -> Alien:
 
 
 ## Answers a scream: sends its next pack of hunters right away (unless the cap is reached), at most
-## every `settings.call_cooldown`. Returns the pack (none while it waits).
-func answer_call() -> Array[Alien]:
+## every `settings.call_cooldown`, each of them `boost` times faster for `seconds`; its mouth flares
+## and a ring sweeps out. Returns the pack (none while it waits).
+func answer_call(boost: float = 1.0, seconds: float = 0.0) -> Array[Alien]:
 	var pack: Array[Alien] = []
 	if _call_cooldown > 0.0:
 		return pack
 	pack = hatch_pack()
-	if not pack.is_empty():
-		_call_cooldown = settings.call_cooldown
-		hunter_cooldown = hunter_interval(escalation())
+	if pack.is_empty():
+		return pack
+	_call_cooldown = settings.call_cooldown
+	hunter_cooldown = hunter_interval(escalation())
+	for alien: Alien in pack:
+		alien.status.boost(boost, seconds)
+	_flare_left = ANSWER_FLARE_TIME
+	ScreamWave.spawn(get_parent(), global_position, ANSWER_RING)
 	return pack
 
 
@@ -306,10 +321,10 @@ static func _nearest_nest(nests: Array[Node], point: Vector3) -> AlienNest:
 
 
 ## The nest nearest to a scream answers it.
-func _on_called_for_help(at: Vector3) -> void:
+func _on_called_for_help(at: Vector3, boost: float, seconds: float) -> void:
 	var nearest: AlienNest = _nearest_nest(get_tree().get_nodes_in_group(GROUP), at)
 	if nearest:
-		nearest.answer_call()
+		nearest.answer_call(boost, seconds)
 
 
 ## Looks the mission up until it's found (it may be set up after the nest).

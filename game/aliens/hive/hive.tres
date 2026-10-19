@@ -104,7 +104,22 @@ script = ExtResource("2_pack")
 members = Dictionary[ExtResource("3_strain"), int]({ExtResource("13_tender"): 1, ExtResource("11_shrieker"): 1, ExtResource("6_spitter"): 2})
 weight = 0.5
 
+[sub_resource type="Resource" id="Pack_19"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("12_bloater"): 1, ExtResource("4_swarmer"): 3})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_20"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("12_bloater"): 2, ExtResource("5_mite"): 6})
+weight = 0.75
+
+[sub_resource type="Resource" id="Pack_21"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("12_bloater"): 1, ExtResource("13_tender"): 1, ExtResource("4_swarmer"): 2})
+weight = 0.5
+
 [resource]
 script = ExtResource("1_script")
 strains = Array[ExtResource("3_strain")]([ExtResource("4_swarmer"), ExtResource("5_mite"), ExtResource("6_spitter"), ExtResource("7_burrower"), ExtResource("8_warden"), ExtResource("9_gnawer"), ExtResource("10_brute"), ExtResource("11_shrieker"), ExtResource("12_bloater"), ExtResource("13_tender")])
-packs = Array[ExtResource("2_pack")]([SubResource("Pack_1"), SubResource("Pack_2"), SubResource("Pack_3"), SubResource("Pack_4"), SubResource("Pack_5"), SubResource("Pack_6"), SubResource("Pack_7"), SubResource("Pack_8"), SubResource("Pack_9"), SubResource("Pack_10"), SubResource("Pack_11"), SubResource("Pack_12"), SubResource("Pack_13"), SubResource("Pack_14"), SubResource("Pack_15"), SubResource("Pack_16"), SubResource("Pack_17"), SubResource("Pack_18")])
+packs = Array[ExtResource("2_pack")]([SubResource("Pack_1"), SubResource("Pack_2"), SubResource("Pack_3"), SubResource("Pack_4"), SubResource("Pack_5"), SubResource("Pack_6"), SubResource("Pack_7"), SubResource("Pack_8"), SubResource("Pack_9"), SubResource("Pack_10"), SubResource("Pack_11"), SubResource("Pack_12"), SubResource("Pack_13"), SubResource("Pack_14"), SubResource("Pack_15"), SubResource("Pack_16"), SubResource("Pack_17"), SubResource("Pack_18"), SubResource("Pack_19"), SubResource("Pack_20"), SubResource("Pack_21")])

@@ -3,9 +3,9 @@ extends AlienAttack
 ## A shrieker's scream: during the wind-up it rears its neck and its throat swells (the clip is the
 ## telegraph, see `clip_lead`), then it screams. Every alien within `radius` (itself too) is
 ## `boost` times faster for `boost_time`, and it calls for help (`Alien.called_for_help`): the nest
-## nearest to it sends its next pack right away. A ring of sound sweeps over the ground
-## (`ScreamWave`). Breaking off the wind-up (a stagger: focus fire) stops it. It screams while its
-## target is within `reach`, from a distance.
+## nearest to it sends its next pack right away, boosted the same. A ring of sound sweeps over the
+## ground (`ScreamWave`). Breaking off the wind-up (a stagger: focus fire) stops it. It screams
+## while its target is within `reach`, from a distance.
 
 ## How far around it the scream reaches (m).
 @export var radius: float = 15.0
@@ -21,7 +21,7 @@ func act(alien: Alien, _elapsed: float) -> bool:
 		var offset: Vector3 = other.global_position - alien.global_position
 		if Vector2(offset.x, offset.z).length() <= radius:
 			other.status.boost(boost, boost_time)
-	alien.called_for_help.emit(alien.global_position)
+	alien.called_for_help.emit(alien.global_position, boost, boost_time)
 	if alien.is_inside_tree():
 		ScreamWave.spawn(alien.get_parent(), alien.global_position, radius)
 	return true

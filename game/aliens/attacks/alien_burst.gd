@@ -1,7 +1,7 @@
 class_name AlienBurst
 extends AlienAttack
-## A bloater's burst: next to its miner (or a player in its way) its sac swells and shudders for the
-## wind-up (the clip is the telegraph, see `clip_lead`), then it bursts. It also bursts when it's
+## A bloater's burst: next to its target (a player) its sac swells and shudders for the wind-up (the
+## clip is the telegraph, see `clip_lead`), then it bursts. It also bursts when it's
 ## killed, without a wind-up, so killing it at range (ideally next to other aliens) is the answer.
 ## The burst splashes `damage` on whoever is within `radius` and leaves an acid cloud
 ## (`AcidCloud`) that hurts players, miners and aliens alike.

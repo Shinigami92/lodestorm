@@ -1,32 +1,35 @@
-"""Bloater: a tier 4 raider of the hive that bursts. A huge, taut, veined bladder slung between six long, thin, spidery
-legs with high knees, a small armored head hanging low at its front; the bladder glows through its veins and patches
-(see docs/GAME_DESIGN.md, Alien look), rigged and animated.
+"""Bloater: a tier 4 raider of the hive that bursts. A fat, swollen grub on six short, stubby legs: a soft, ringed
+sinew body low over the ground, its whole upper back one taut, veined bladder that glows through its veins and
+patches, a small blunt armored head low at its front (see docs/GAME_DESIGN.md, Alien look), rigged and animated.
 
 Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
-    tools/blender.sh assets/aliens/bloater/source/bloater_build.py wip r1     # quick renders of the poses
+    tools/blender.sh assets/aliens/bloater/source/bloater_build.py wip v2r1   # quick renders of the poses
     tools/blender.sh assets/aliens/bloater/source/bloater_build.py final      # renders + bloater_procedural.blend
 
 Everything it writes goes to tmp/assets/bloater/; bloater_bake.py turns bloater_procedural.blend into the game asset.
 
 Layout (Blender Z-up meters; the bloater faces -Y, its left is +X; the game turns the model by 180 degrees). Feet on
-the ground at the origin, the origin under the middle of the body. The bladder is 1.4 m across, its top at 1.7 m and
-its belly at 0.5 m; the knees stand above its middle (about 1.6 m), the feet reach far out (about 2.9 m across).
+the ground at the origin, the origin under the middle of the body. The body is about 1.75 m long (rump to the
+mandibles) and 1.0 m wide, its belly about 0.15 m above the ground; the bladder's top is at about 0.96 m. Ten ring
+segments from the neck to the rump; the legs hang under the first, third and fifth, three pairs of soft prolegs under
+the rear ones.
 
-Skeleton "Skeleton": Root, Body (center of the trunk: moves the whole body), Hips with the hind legs, Spine with the
-mid legs and Sac (the bladder: clips scale it to throb, swell and burst), Chest with the front legs, Neck, Head, Jaw
-(the mandibles' base) with LeftMandible and RightMandible. The trunk is a short sinewy core inside the bladder that
-carries the legs; it only shows once the bladder has burst. Legs (<Front|Mid|Hind><Side>UpperLeg, LowerLeg, Foot):
-the game moves them by IK (the femur rising out of the bladder to a high knee, the long tibia down to the ankle, the
-Foot is the short tarsus with its claws), so the clips leave them at rest; only "Die" folds them. Meshes: "Creature"
-(one skinned object: the core weighted to the nearest bones; the bladder, its plates, the head, mandibles and leg
-segments rigid), "Eyes" (constant emissive, two pairs of small beads) and "Glands" (constant emissive: the veins and
-patches on the bladder, skinned to Sac; the game flares it with the eyes).
+Skeleton "Skeleton": Root, Body (center of the trunk: moves the whole body), Hips (the rear half) with the hind legs
+and Tail (the last segments), Spine (the front half) with the mid legs and Sac (the bladder: clips scale it to throb,
+swell and burst), Chest (the first segments) with the front legs, Neck, Head, Jaw (the mandibles' base) with
+LeftMandible and RightMandible. Legs (<Front|Mid|Hind><Side>UpperLeg, LowerLeg, Foot): short and thick, tucked under
+the belly; the game moves them by IK (the fleshy femur out to a low knee, the chitin tibia down to the ankle, the Foot
+is the pad with its claw), so the clips leave them at rest; only "Die" splays them. Meshes: "Creature" (one skinned
+object: the ringed body and the prolegs weighted to the nearest trunk bones; the bladder rigid to Sac; the head, its
+plates, the mandibles and leg segments rigid), "Eyes" (constant emissive, three small beads a side) and "Glands"
+(constant emissive: the dorsal vessel, veins and patches on the bladder, skinned to Sac; the game flares it with the
+eyes).
 
-Animations (one action per clip, each in its own NLA track, 30 fps): "Idle" (loop: a slow double throb of the
-bladder, the head swaying), "Run" (loop: a slow wobbling lumber, the bladder sloshing behind the trunk; the legs come
-from the game), "Attack" (once, 0.5 s: the pre-burst, the bladder swells to x1.3 and shudders while the body sinks and
-the legs brace; it ends at its biggest) and "Die" (once: the bladder pops to x1.25 and bursts into a wrinkled husk of
-about x0.35 by 0.15 s, then the legs buckle and fold, it drops to the ground and the husk sags over the core).
+Animations (one action per clip, each in its own NLA track, 30 fps): "Idle" (loop: a slow throb of the bladder over
+the segments' breathing, the head swaying), "Run" (loop: a slow, heavy waddle, the segments rippling from front to
+back, the bladder sloshing; the legs come from the game), "Attack" (once, 0.5 s: the pre-burst, the bladder swells to
+x1.3 and shudders while the body braces; it ends at its biggest) and "Die" (once: the bladder pops to x1.15 and
+collapses into a flat husk by 0.15 s, then the body sags flat, the legs splaying and the head dropping).
 The clips key every bone's rotation, the Body's location and the Sac's scale (own bake, the kit's keys no scale).
 """
 
@@ -41,7 +44,7 @@ OUT = ROOT / "tmp" / "assets" / "bloater"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
 import bpy
-from mathutils import Matrix, Vector, noise
+from mathutils import Vector, noise
 
 import common as C
 import creature as K
@@ -49,60 +52,76 @@ from common import rx, ry, rz
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
-TAG = ARGV[1] if len(ARGV) > 1 else "r0"
+TAG = ARGV[1] if len(ARGV) > 1 else "v2r0"
 
 ASSET = "Bloater"
 FPS = 30
-GLAND_GLOW = 2.0  # the bladder's veins and patches (eyes 8 in the previews)
+GLAND_GLOW = 2.0  # the bladder's vessel, veins and patches (eyes 8 in the previews)
 
-# --- skeleton -------------------------------------------------------------------------------------
+# --- layout ---------------------------------------------------------------------------------------
 
-BODY = Vector((0, 0.0, 0.95))
-CHEST = Vector((0, -0.3, 0.93))
-NECK = Vector((0, -0.6, 0.84))
-SKULL = Vector((0, -0.8, 0.68))
-SNOUT = Vector((0, -1.05, 0.575))
-JAW = Vector((0, -0.98, 0.56))
-# The bladder: an egg-shaped sac around the core, fuller toward the rear; Sac scales it from the core's middle.
-SAC_BASE = Vector((0, 0.05, 0.97))
-SAC_C = Vector((0, 0.05, 1.05))
-SAC_R = (0.7, 0.74, 0.65, 0.55)  # half-width, half-length, top, bottom
-LUMPS = 0.02  # how far the taut skin bulges in and out
-# Leg joints per side (x for the left side): hip, knee, ankle, pad (the claws' base on the ground).
+# The ring segments from the neck (SEG_Y0) to the rump, each SEG long.
+SEG_Y0, SEG, SEGS = -0.6, 0.144, 10
+RUMP_Y = SEG_Y0 + SEG * SEGS  # 0.84
+
+
+def seg_mid(k: int) -> float:
+    return SEG_Y0 + SEG * (k + 0.5)
+
+
+BODY = Vector((0, 0.0, 0.46))
+CHEST = Vector((0, -0.3, 0.455))
+NECK = Vector((0, -0.56, 0.41))
+SKULL = Vector((0, -0.64, 0.375))
+SNOUT = Vector((0, -0.87, 0.3))
+JAW = Vector((0, -0.82, 0.255))
+TAIL = Vector((0, 0.42, 0.44))
+# The bladder: a long dome over the whole back, its lower half sunk into the body; Sac scales it from inside.
+SAC_BASE = Vector((0, 0.14, 0.46))
+SAC_C = Vector((0, 0.14, 0.56))
+SAC_R = (0.53, 0.64, 0.4, 0.24)  # half-width, half-length, top, bottom
+LUMPS = 0.012  # how far the taut skin bulges in and out
+CREASE = 0.14  # how deep the segments' rings pinch the bladder (the body: TRUNK_CREASE)
+TRUNK_CREASE = 0.085
+# Leg joints per side (x for the left side): hip, knee, ankle, pad (the claw's base on the ground). The legs hang under
+# the first, third and fifth segments, the knees just out from under the belly.
+LEG_Y = {"Front": seg_mid(0), "Mid": seg_mid(2), "Hind": seg_mid(4)}
 LEGS = {
     "Front": [
-        Vector((0.17, -0.42, 0.9)),
-        Vector((0.7, -0.98, 1.55)),
-        Vector((0.98, -1.42, 0.09)),
-        Vector((1.02, -1.52, 0.03)),
+        Vector((0.2, LEG_Y["Front"], 0.27)),
+        Vector((0.37, LEG_Y["Front"] - 0.03, 0.225)),
+        Vector((0.4, LEG_Y["Front"] - 0.07, 0.075)),
+        Vector((0.42, LEG_Y["Front"] - 0.11, 0.034)),
     ],
     "Mid": [
-        Vector((0.21, -0.08, 0.93)),
-        Vector((0.98, -0.14, 1.62)),
-        Vector((1.38, -0.2, 0.09)),
-        Vector((1.47, -0.22, 0.03)),
+        Vector((0.25, LEG_Y["Mid"], 0.25)),
+        Vector((0.43, LEG_Y["Mid"] - 0.01, 0.21)),
+        Vector((0.46, LEG_Y["Mid"] - 0.03, 0.075)),
+        Vector((0.49, LEG_Y["Mid"] - 0.07, 0.034)),
     ],
     "Hind": [
-        Vector((0.19, 0.26, 0.93)),
-        Vector((0.8, 0.76, 1.56)),
-        Vector((1.08, 1.16, 0.09)),
-        Vector((1.14, 1.25, 0.03)),
+        Vector((0.26, LEG_Y["Hind"], 0.24)),
+        Vector((0.44, LEG_Y["Hind"] + 0.01, 0.2)),
+        Vector((0.47, LEG_Y["Hind"] + 0.02, 0.075)),
+        Vector((0.5, LEG_Y["Hind"] - 0.02, 0.034)),
     ],
 }
 LEG_PARENT = {"Front": "Chest", "Mid": "Spine", "Hind": "Hips"}
-MANDIBLE = [Vector((0.07, -1.0, 0.55)), Vector((0.1, -1.07, 0.53)), Vector((0.075, -1.14, 0.51))]
-MANDIBLE_TIP = Vector((0.03, -1.17, 0.505))
+PROLEGS = (6, 7, 8)  # the segments with a pair of prolegs
+MANDIBLE = [Vector((0.075, -0.83, 0.25)), Vector((0.095, -0.88, 0.235)), Vector((0.065, -0.925, 0.225))]
+MANDIBLE_TIP = Vector((0.022, -0.945, 0.22))
 
 BONES = [  # name, head, tail, parent
     ("Root", (0, 0, 0), (0, -0.3, 0), None),
     ("Body", BODY, BODY + Vector((0, -0.15, 0)), "Root"),
-    ("Hips", BODY, Vector((0, 0.42, 0.95)), "Body"),
+    ("Hips", BODY, TAIL, "Body"),
+    ("Tail", TAIL, Vector((0, RUMP_Y, 0.34)), "Hips"),
     ("Spine", BODY, CHEST, "Body"),
     ("Chest", CHEST, NECK, "Spine"),
     ("Neck", NECK, SKULL, "Chest"),
     ("Head", SKULL, SNOUT, "Neck"),
-    ("Jaw", JAW, Vector((0, -1.1, 0.52)), "Head"),
-    ("Sac", SAC_BASE, SAC_BASE + Vector((0, 0, 0.6)), "Spine"),
+    ("Jaw", JAW, Vector((0, -0.92, 0.23)), "Head"),
+    ("Sac", SAC_BASE, SAC_BASE + Vector((0, 0, 0.5)), "Spine"),
 ]
 for _side, _s in K.SIDES:
     BONES.append((f"{_side}Mandible", K.mirror(MANDIBLE[0], _s), K.mirror(MANDIBLE[2], _s), "Jaw"))
@@ -113,10 +132,10 @@ for _side, _s in K.SIDES:
             (f"{_leg}{_side}Foot", K.mirror(_pts[2], _s), K.mirror(_pts[3], _s), f"{_leg}{_side}LowerLeg"),
         ]
 RIG = K.Rig(BONES)
-TRUNK_BONES = ["Hips", "Spine", "Chest", "Neck"]
+TRUNK_BONES = ["Tail", "Hips", "Spine", "Chest", "Neck"]
 
 
-# --- mesh -------------------------------------------------------------------------------------------
+# --- shapes -------------------------------------------------------------------------------------------
 
 
 def even_rows(y0: float, y1: float, rows: list) -> list:
@@ -125,71 +144,90 @@ def even_rows(y0: float, y1: float, rows: list) -> list:
     return [(y0 + (y1 - y0) * i / n, *r) for i, r in enumerate(rows)]
 
 
-# The core inside the bladder from the rump forward: center z, half-width, top, bottom.
-CORE = K.Profile(
+# The body's envelope from the rump forward to the neck (before the rings pinch it): center z, half-width, top, bottom.
+ENVELOPE = K.Profile(
     even_rows(
-        0.4,
-        -0.64,
+        RUMP_Y,
+        SEG_Y0,
         [
-            (0.95, 0.06, 0.05, 0.05),
-            (0.95, 0.16, 0.11, 0.1),
-            (0.95, 0.21, 0.14, 0.12),
-            (0.95, 0.22, 0.14, 0.12),
-            (0.945, 0.21, 0.135, 0.12),
-            (0.93, 0.19, 0.12, 0.11),
-            (0.91, 0.16, 0.11, 0.1),
-            (0.875, 0.12, 0.09, 0.09),
+            (0.33, 0.17, 0.14, 0.13),
+            (0.37, 0.34, 0.22, 0.22),
+            (0.42, 0.44, 0.24, 0.27),
+            (0.45, 0.5, 0.24, 0.31),
+            (0.46, 0.51, 0.23, 0.32),
+            (0.46, 0.5, 0.23, 0.32),
+            (0.455, 0.46, 0.22, 0.31),
+            (0.44, 0.38, 0.2, 0.27),
+            (0.41, 0.25, 0.155, 0.19),
         ],
     )
 )
-# Skull from the back of the head to its blunt front, sloping down: center z, half-width, top, bottom.
-SKULL_SHAPE = K.Profile(
+# The head capsule from its back (inside the first segment) to its blunt front: center z, half-width, top, bottom.
+HEAD_SHAPE = K.Profile(
     even_rows(
-        -0.76,
-        -1.06,
+        -0.56,
+        -0.88,
         [
-            (0.69, 0.09, 0.07, 0.06),
-            (0.675, 0.14, 0.088, 0.075),
-            (0.655, 0.165, 0.096, 0.08),
-            (0.635, 0.17, 0.094, 0.08),
-            (0.612, 0.16, 0.084, 0.075),
-            (0.59, 0.13, 0.07, 0.065),
-            (0.568, 0.075, 0.045, 0.045),
+            (0.4, 0.19, 0.15, 0.135),
+            (0.39, 0.23, 0.175, 0.155),
+            (0.375, 0.245, 0.18, 0.16),
+            (0.355, 0.24, 0.172, 0.155),
+            (0.333, 0.215, 0.15, 0.138),
+            (0.312, 0.172, 0.115, 0.108),
+            (0.292, 0.095, 0.068, 0.062),
         ],
     )
 )
+
+
+def ring_u(y: float) -> float:
+    """Where y lies within its segment (0 at the ring between two segments, 0.5 in its middle)."""
+    x = (y - SEG_Y0) / SEG
+    return x - math.floor(x)
+
+
+def bulge(y: float) -> float:
+    """1 in a segment's middle, 0 in the ring between two."""
+    return math.sin(math.pi * ring_u(y)) ** 0.6
+
+
+def trunk_shape(y: float) -> tuple:
+    """Center, half-width, top and bottom of the body's cross-section at y, pinched by the segments' rings."""
+    t = (RUMP_Y - y) / (RUMP_Y - SEG_Y0)
+    c, w, top, bot = ENVELOPE.at(t)
+    k = 1.0 - TRUNK_CREASE * (1.0 - bulge(y))
+    return c, w * k, top * k, bot * k
+
+
+def trunk_point(y: float, a: float, out: float = 0.0) -> Vector:
+    """Point on the body at y and angle a (0 = left side, 90 = top, 270 = belly), pushed out by `out`."""
+    c, w, top, bot = trunk_shape(y)
+    ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
+    x = math.copysign(abs(ca) ** 0.85, ca) * (w + out)
+    z = math.copysign(abs(sa) ** 0.9, sa) * ((top if sa > 0 else bot) + out)
+    return c + Vector((x, 0, z))
 
 
 def sac_shape(y: float) -> tuple:
-    """Center, half-width, top and bottom of the bladder's cross-section at y: an egg, fuller and lower at the rear."""
+    """Center, half-width, top and bottom of the bladder's cross-section at y: a long dome, a little fuller at the
+    rear, pinched lightly where the body's rings run under it."""
     cx, cy, cz = SAC_C
     w, ry_, top, bot = SAC_R
     u = min(max((y - cy) / ry_, -1.0), 1.0)
-    e = math.sqrt(max(1.0 - u * u, 0.0)) ** 0.8
-    swell = 1.0 + 0.06 * u
-    return Vector((cx, y, cz - 0.03 * u)), w * e * swell, top * e * swell, bot * e * swell
+    e = math.sqrt(max(1.0 - u * u, 0.0)) ** 0.7
+    k = (1.0 + 0.05 * u) * (1.0 - CREASE * (1.0 - bulge(y)))
+    return Vector((cx, y, cz - 0.02 * u)), w * e * k, top * e * k, bot * e * k
 
 
 def sac_point(y: float, a: float, out: float = 0.0) -> Vector:
     """Point on the bladder at y and angle a (0 = left side, 90 = top, 270 = belly), pushed out by `out`."""
     c, w, top, bot = sac_shape(y)
     ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
-    k = crease(a)
-    x = math.copysign(abs(ca) ** 0.92, ca)
-    z = math.copysign(abs(sa) ** 0.92, sa)
-    h = top if sa > 0 else bot
-    skin = c + Vector((x * w * k, 0, z * h * k))
+    x = math.copysign(abs(ca) ** 0.9, ca)
+    z = math.copysign(abs(sa) ** 0.9, sa)
+    skin = c + Vector((x * w, 0, z * (top if sa > 0 else bot)))
     lump = (skin - SAC_C).normalized() * LUMPS * noise.noise(skin * 3.5 + Vector((4.1, 2.3, 7.7)))
     return skin + lump + Vector((x * out, 0, z * out))
-
-
-def crease(a: float) -> float:
-    """The bladder's two lobes: a crease down the top (under the scales) and a shallower one along the belly."""
-
-    def near(c: float, w: float) -> float:
-        return math.exp(-((((a - c + 180) % 360 - 180) / w) ** 2))
-
-    return 1.0 - 0.07 * near(90, 13) - 0.04 * near(270, 20)
 
 
 def side_angle(a: float, s: float) -> float:
@@ -197,37 +235,38 @@ def side_angle(a: float, s: float) -> float:
     return a if s > 0 else 180.0 - a
 
 
-def sac_slab(sk: K.Skin, y0, y1, a0, a1, out: float, thick: float, mi: int, nu: int, nv: int, lift: float = 0.0):
-    """Slab hugging the bladder between y0..y1 and angles a0(v)..a1(v) (functions of v = 0..1 along y); its rear edge
-    lifts off by `lift` like a scale."""
+def slab(sk: K.Skin, point, y0: float, y1: float, a0, a1, out: float, thick: float, mi: int, nu: int, nv: int,
+         lift: float = 0.0) -> list:  # fmt: skip
+    """Slab hugging a surface `point(y, a, out)` between y0..y1 and angles a0..a1 (numbers or functions of v = 0..1
+    along y); its rear edge lifts off by `lift` like a scale."""
+    lo_f = a0 if callable(a0) else (lambda _v: a0)
+    hi_f = a1 if callable(a1) else (lambda _v: a1)
     top_rows, bot_rows = [], []
     for i in range(nv + 1):
         v = i / nv
         y = y0 + (y1 - y0) * v
-        lo, hi = a0(v), a1(v)
+        lo, hi = lo_f(v), hi_f(v)
         row_t, row_b = [], []
         for k in range(nu + 1):
             u = k / nu
             a = lo + (hi - lo) * u
             edge = math.sin(math.pi * u) ** 0.5
             o = out + lift * v * v * edge
-            row_t.append(sk.bm.verts.new(sac_point(y, a, o + thick * edge * (0.5 + 0.5 * math.sin(math.pi * v)))))
-            row_b.append(sk.bm.verts.new(sac_point(y, a, o)))
+            row_t.append(sk.bm.verts.new(point(y, a, o + thick * edge * (0.5 + 0.5 * math.sin(math.pi * v)))))
+            row_b.append(sk.bm.verts.new(point(y, a, o)))
         top_rows.append(row_t)
         bot_rows.append(row_b)
     return K.close_grid(sk, top_rows, bot_rows, mi)
 
 
-def patch(sk: K.Skin, y: float, a: float, ly: float, la: float, out: float, thick: float, mi: int) -> list:
-    """Oval slab on the bladder centered at y, a (half-length ly in y, half-width la in degrees)."""
+def oval(point, sk: K.Skin, y: float, a: float, ly: float, la: float, out: float, thick: float, mi: int,
+         n: int = 3) -> list:  # fmt: skip
+    """Oval slab on a surface centered at y, a (half-length ly in y, half-width la in degrees)."""
 
-    def lo(v: float) -> float:
-        return a - la * math.sin(math.pi * (0.06 + 0.88 * v)) ** 0.6
+    def width(v: float) -> float:
+        return la * math.sin(math.pi * (0.08 + 0.84 * v)) ** 0.6
 
-    def hi(v: float) -> float:
-        return a + la * math.sin(math.pi * (0.06 + 0.88 * v)) ** 0.6
-
-    return sac_slab(sk, y - ly, y + ly, lo, hi, out, thick, mi, 4, 4)
+    return slab(sk, point, y - ly, y + ly, lambda v: a - width(v), lambda v: a + width(v), out, thick, mi, n, n)
 
 
 def cap(sk: K.Skin, ring: list, pole: Vector, mi: int) -> list:
@@ -242,59 +281,60 @@ def cap(sk: K.Skin, ring: list, pole: Vector, mi: int) -> list:
 # --- parts ------------------------------------------------------------------------------------------
 
 
-def build_core(sk: K.Skin) -> None:
-    """The short trunk inside the bladder carrying the legs: sinew under a ventral plate and plates around the leg
-    sockets (they only show once the bladder has burst)."""
-    n = 12
+def build_trunk(sk: K.Skin) -> None:
+    """The ringed body: ten fat segments, each pinched at its rings, the front tucked in around the head; a shield
+    over the first segment, small plates along the flanks, soft prolegs under the rear."""
+    seg = 22
+    ys = [SEG_Y0 + SEG * (k + u) for k in range(SEGS) for u in (0.0, 0.14, 0.38, 0.62, 0.86)] + [RUMP_Y]
     rings = []
-    for i in range(n + 1):
-        c, w, top, bot = CORE.at(i / n)
-        rings.append(K.section(c, Vector((0, -1, 0)), w, top, bot, 12, 0.004, i * 0.9))
+    # The front folds in around the neck.
+    for y, f in ((SEG_Y0 - 0.018, 0.6), (SEG_Y0 - 0.012, 0.86)):
+        c, w, top, bot = trunk_shape(SEG_Y0)
+        rings.append(K.section(c, Vector((0, -1, 0)), w * f, top * f, bot * f, seg))
+        for p in rings[-1]:
+            p.y = y
+    for i, y in enumerate(ys):
+        c, w, top, bot = trunk_shape(y)
+        rings.append(K.section(c, Vector((0, -1, 0)), w, top, bot, seg, 0.004, i * 0.9))
+    # The rump closes in a round dome.
+    for dy, f in ((0.03, 0.78), (0.05, 0.42)):
+        c, w, top, bot = trunk_shape(RUMP_Y)
+        rings.append(K.section(c + Vector((0, dy, 0)), Vector((0, -1, 0)), w * f, top * f, bot * f, seg))
     sk.auto(sk.loft(rings, K.SINEW), TRUNK_BONES)
-    sk.auto(K.shell(sk, CORE, -0.6, 0.36, 235, 305, 0.005, 0.022, K.CHITIN, 4, 5, 0.0), TRUNK_BONES, 8.0)
-    for y0, y1 in ((-0.52, -0.24), (-0.22, 0.08), (0.1, 0.36)):
+    # Shield over the first segment, in front of the bladder.
+    sk.auto(slab(sk, trunk_point, SEG_Y0 - 0.005, SEG_Y0 + SEG * 0.92, 28, 152, 0.006, 0.032, K.CHITIN, 8, 4, 0.02),
+            TRUNK_BONES, 8.0)  # fmt: skip
+    # Small plates down each flank, under the bladder's edge (one per segment), and over the leg sockets.
+    for k in range(1, SEGS - 1):
+        ym = seg_mid(k)
         for _side, s in K.SIDES:
-            a0, a1 = (-25, 35) if s > 0 else (145, 205)
-            sk.auto(K.shell(sk, CORE, y0, y1, a0, a1, 0.006, 0.02, K.CHITIN, 3, 3, 0.01), TRUNK_BONES, 8.0)
-
-
-def sac_coords(p: Vector) -> tuple:
-    """(y, angle) of the point on the bladder nearest p (inverse of sac_point, ignoring the lumps and crease)."""
-    c, w, top, bot = sac_shape(p.y)
-    h = top if p.z > c.z else bot
-    return p.y, math.degrees(math.atan2((p.z - c.z) / max(h, 1e-3), p.x / max(w, 1e-3)))
-
-
-def vein_tree(rnd, glands: K.Skin, s: float, y: float, a: float, heading: float, length: float, r: float, depth: int):
-    """A glowing vein on side s from (y, angle a) heading `heading` degrees off straight up the flank (positive
-    toward the rear), forking `depth` more times into two thinner, shorter veins; stops at the top crease."""
-    n = max(2, round(length / 0.09))
-    step = length / n
-    pts = [(y, a)]
-    for _i in range(n):
-        heading += rnd.uniform(-12, 12)
-        _c, w, _t, _b = sac_shape(y)
-        h = math.radians(heading)
-        y = min(max(y + step * math.sin(h), SAC_C.y - SAC_R[1] + 0.07), SAC_C.y + SAC_R[1] - 0.07)
-        a += math.degrees(step * math.cos(h) / max(w, 0.15))
-        pts.append((y, a))
-        if a > 80:
-            depth = 0
-            break
-    path = [sac_point(py, side_angle(pa, s), 0.002) for py, pa in pts]
-    tip = 0.75 if depth == 0 or a > 80 else 0.9
-    glands.rigid(K.tube_path(glands, path, [r, r * (1 + tip) / 2, r * tip], 4, len(pts) + 1, 0), "Sac")
-    if depth > 0:
-        if a > 25 and rnd.random() < 0.35:
-            glands.rigid(patch(glands, y, side_angle(a, s), 0.045, 6.5, 0.002, 0.012, 0), "Sac")
-        spread = rnd.uniform(24, 36)
-        for turn in (-spread, spread):
-            vein_tree(rnd, glands, s, y, a, heading + turn, length * 0.68, max(r * 0.8, 0.012), depth - 1)
+            a0, a1 = side_angle(-12, s), side_angle(12, s)
+            lo, hi = min(a0, a1), max(a0, a1)
+            plate = oval(trunk_point, sk, ym, (lo + hi) / 2, SEG * 0.3, 12, 0.004, 0.018, K.CHITIN)
+            sk.auto(plate, TRUNK_BONES, 8.0)
+    for leg in LEGS:
+        for _side, s in K.SIDES:
+            a = side_angle(-38, s)
+            plate = oval(trunk_point, sk, LEG_Y[leg], a, SEG * 0.32, 13, 0.004, 0.02, K.CHITIN)
+            sk.auto(plate, TRUNK_BONES, 8.0)
+    # Prolegs: soft stumps under the rear segments with a dark ring of hooks at the sole.
+    for k in PROLEGS:
+        ym = seg_mid(k)
+        for _side, s in K.SIDES:
+            p = trunk_point(ym, side_angle(-62, s), -0.02)
+            foot = Vector((p.x * 1.05, ym, 0.115))
+            stump = K.tube_path(sk, [p, p.lerp(foot, 0.5), foot], [0.07, 0.065, 0.06], 8, 3, K.SINEW)
+            sk.auto(stump, ["Hips", "Tail"])
+            sk.auto(sk.sphere(foot, 0.058, 8, 4, scale=(1.0, 1.0, 0.7), mi=K.SINEW), ["Hips", "Tail"])
+            sole = sk.sphere(foot + Vector((0, 0, -0.022)), 0.05, 8, 3, scale=(1.0, 1.0, 0.35), mi=K.CHITIN)
+            sk.auto(sole, ["Hips", "Tail"])
 
 
 def build_sac(sk: K.Skin, glands: K.Skin) -> None:
+    """The bladder over the whole back, its glowing dorsal vessel down the middle, veins branching from it over the
+    flanks and patches where the skin is stretched thin."""
     _w, ry_, _top, _bot = SAC_R
-    seg, n = 28, 24
+    seg, n = 28, 30
     rings = []
     for i in range(1, n):
         th = math.pi * i / n
@@ -304,70 +344,84 @@ def build_sac(sk: K.Skin, glands: K.Skin) -> None:
     sk.rigid(verts, "Sac")
     sk.rigid(cap(sk, list(reversed(verts[:seg])), sac_point(SAC_C.y - ry_, 0), K.SINEW), "Sac")
     sk.rigid(cap(sk, verts[-seg:], sac_point(SAC_C.y + ry_, 0), K.SINEW), "Sac")
-    # A few small chitin scutes down the top crease, apart, the glow showing between and beside them.
-    for y0, y1, half in ((-0.5, -0.28, 10), (-0.16, 0.08, 12), (0.2, 0.42, 11), (0.52, 0.68, 8)):
+    # The dorsal vessel: a glowing cord down the top, swelling into a chamber in every segment.
+    y0, y1 = SAC_C.y - ry_ + 0.1, SAC_C.y + ry_ - 0.08
+    m = 36
+    path = [sac_point(y0 + (y1 - y0) * i / m, 90, 0.0) for i in range(m + 1)]
+    radii = [0.018 + 0.014 * bulge(y0 + (y1 - y0) * i / m) for i in range(m + 1)]
+    glands.rigid(tube_radii(glands, path, radii, 6), "Sac")
+    # Veins from the vessel down the flanks, one tree a segment and side, and patches between them.
+    rnd = random.Random(11)
+    for k in range(1, SEGS - 1):
+        ym = seg_mid(k)
+        if not (y0 + 0.02 < ym < y1 - 0.02):
+            continue
+        for _side, s in K.SIDES:
+            heading = math.copysign(rnd.uniform(35, 55), ym - SAC_C.y + 0.05)
+            vein_tree(rnd, glands, s, ym + rnd.uniform(-0.02, 0.02), 84, heading, 0.42, 0.021, 2)
+            if (k + (s > 0)) % 2 == 0 or rnd.random() < 0.3:
+                yp = ym + SEG * rnd.uniform(0.15, 0.3) * rnd.choice((-1, 1))
+                ap = side_angle(rnd.uniform(22, 50), s)
+                glands.rigid(oval(sac_point, glands, yp, ap, 0.04, rnd.uniform(6, 9), 0.002, 0.012, 0), "Sac")
 
-        def width(v: float, h: float = half) -> float:  # an oval shield, blunt in front, pointed at the rear
-            return h * (0.3 + 0.7 * math.sin(math.pi * (0.12 + 0.8 * v)) ** 0.7)
 
-        lo, hi = (lambda v, w=width: 90 - w(v)), (lambda v, w=width: 90 + w(v))
-        sk.rigid(sac_slab(sk, y0, y1, lo, hi, 0.006, 0.03, K.CHITIN, 6, 5, 0.025), "Sac")
-    # Glowing veins: trees spreading from the legs' collars up over the flanks to the top crease and down to the
-    # belly, from the neck up the front, and glowing patches where the skin is stretched thin at some forks.
-    rnd = random.Random(7)
-    for _side, s in K.SIDES:
-        for pts in LEGS.values():
-            y, a = sac_coords(sac_exit(pts[0], pts[1]))
-            for heading, length, depth in ((-35, 0.3, 2), (35, 0.3, 2), (180 + rnd.uniform(-30, 30), 0.22, 1)):
-                vein_tree(rnd, glands, s, y, a + 4, heading + rnd.uniform(-10, 10), length, 0.022, depth)
-        vein_tree(rnd, glands, s, -0.6, -40, 20, 0.3, 0.02, 2)
-        vein_tree(rnd, glands, s, 0.7, -10, -10, 0.25, 0.018, 1)
+def tube_radii(sk: K.Skin, path: list, radii: list, seg: int) -> list:
+    """Tube through every point of `path` (one ring each) with its own radius, closed at both ends."""
+    rings = []
+    for i, c in enumerate(path):
+        d = path[min(i + 1, len(path) - 1)] - path[max(i - 1, 0)]
+        rings.append(K.section(c, d, radii[i], radii[i], radii[i], seg))
+    return sk.loft(rings, 0)
 
 
-def build_neck_head(sk: K.Skin, eyes: K.Skin) -> None:
-    # Neck from the core out of the bladder's lower front down into the back of the head.
-    pts = [Vector((0, -0.45, 0.89)), Vector((0, -0.62, 0.83)), Vector((0, -0.77, 0.715))]
-    sk.auto(K.tube_path(sk, pts, [0.13, 0.11, 0.085], 14, 6, K.SINEW), ["Chest", "Neck", "Head"])
-    # Collar plates over the neck where it leaves the bladder.
-    for a, b, r, bone in (
-        (Vector((0, -0.5, 0.875)), Vector((0, -0.64, 0.825)), 0.115, "Chest"),
-        (Vector((0, -0.62, 0.83)), Vector((0, -0.76, 0.725)), 0.095, "Neck"),
-    ):
-        sk.rigid(K.limb_plate(sk, a, b, r, -75, 75, 0.024, K.CHITIN, Vector((0, -0.3, 1))), bone)
-    # Small armored head: a broad, flat capsule under a collar plate and a shield overhanging its sides and front,
-    # the eyes peering out under the shield's rim.
+def vein_tree(rnd, glands: K.Skin, s: float, y: float, a: float, heading: float, length: float, r: float, depth: int):
+    """A glowing vein on side s from (y, angle a) down the flank, heading `heading` degrees off straight down
+    (positive toward the rear), forking `depth` more times into two thinner, shorter veins; it stops at the
+    bladder's lower edge."""
+    n = max(2, round(length / 0.08))
+    step = length / n
+    pts = [(y, a)]
+    lo_y, hi_y = SAC_C.y - SAC_R[1] + 0.08, SAC_C.y + SAC_R[1] - 0.08
+    for _i in range(n):
+        heading += rnd.uniform(-10, 10)
+        _c, w, top, _b = sac_shape(y)
+        h = math.radians(heading)
+        y = min(max(y + step * math.sin(h), lo_y), hi_y)
+        a -= math.degrees(step * math.cos(h) / max((w + top) / 2, 0.12))
+        pts.append((y, a))
+        if a < -8:
+            depth = 0
+            break
+    path = [sac_point(py, side_angle(pa, s), 0.0) for py, pa in pts]
+    tip = 0.75 if depth == 0 else 0.9
+    glands.rigid(K.tube_path(glands, path, [r, r * (1 + tip) / 2, r * tip], 4, max(len(pts) - 1, 2), 0), "Sac")
+    if depth > 0:
+        spread = rnd.uniform(26, 40)
+        for turn in (-spread, spread):
+            vein_tree(rnd, glands, s, y, a, heading + turn, length * 0.62, max(r * 0.85, 0.016), depth - 1)
+
+
+def build_head(sk: K.Skin, eyes: K.Skin) -> None:
+    """Small, blunt, armored head low at the front: a capsule tucked into the first segment under a shield, short
+    thick mandibles, three small eyes a side under the shield's rim."""
     rings = []
     n = 10
     for i in range(n + 1):
-        c, w, top, bot = SKULL_SHAPE.at(i / n)
-        rings.append(K.section(c, Vector((0, -1, -0.4)), w, top, bot, 14, 0.003, 3 + i))
+        c, w, top, bot = HEAD_SHAPE.at(i / n)
+        rings.append(K.section(c, Vector((0, -1, -0.3)), w, top, bot, 16, 0.003, 3 + i))
     sk.rigid(sk.loft(rings, K.CHITIN), "Head")
-    sk.rigid(K.shell(sk, SKULL_SHAPE, -0.76, -0.86, -20, 200, 0.006, 0.024, K.CHITIN, 10, 2, 0.02), "Head")
-    sk.rigid(K.shell(sk, SKULL_SHAPE, -0.83, -1.05, -12, 192, 0.01, 0.03, K.CHITIN, 10, 4, 0.03), "Head")
+    sk.rigid(K.shell(sk, HEAD_SHAPE, -0.6, -0.7, -10, 190, 0.006, 0.026, K.CHITIN, 10, 2, 0.02), "Head")
+    sk.rigid(K.shell(sk, HEAD_SHAPE, -0.68, -0.86, 18, 162, 0.01, 0.032, K.CHITIN, 8, 4, 0.025), "Head")
     # The mouth between the mandibles.
-    sk.rigid(sk.sphere(Vector((0, -1.035, 0.535)), 0.045, 10, 5, scale=(1.0, 0.7, 0.8), mi=K.MOUTH), "Head")
+    sk.rigid(sk.sphere(Vector((0, -0.855, 0.26)), 0.05, 10, 5, scale=(1.0, 0.7, 0.8), mi=K.MOUTH), "Head")
     for side, s in K.SIDES:
         bone = f"{side}Mandible"
         mp = [K.mirror(p, s) for p in MANDIBLE] + [K.mirror(MANDIBLE_TIP, s)]
-        sk.rigid(K.tube_path(sk, mp, [0.032, 0.03, 0.022, 0.008], 8, 8, K.BONE, 0.7), bone)
-        base = K.path_point(mp, 0.55)
-        sk.rigid(sk.cone(base, base + Vector((-s, -0.3, 0)).normalized() * 0.03, 0.011, 4, K.BONE, 0.6), bone)
-        sk.rigid(sk.sphere(K.mirror(MANDIBLE[0], s), 0.034, 8, 4, mi=K.CHITIN), "Head")
-        # Eyes: two pairs of small glowing beads on the sides of the head, under the shield.
-        for y, a, r in ((-0.95, 4, 0.024), (-0.995, -6, 0.018)):
-            p = SKULL_SHAPE.surface(y, side_angle(a, s), 0.0)
+        sk.rigid(K.tube_path(sk, mp, [0.036, 0.034, 0.025, 0.012], 8, 8, K.BONE, 0.75), bone)
+        sk.rigid(sk.sphere(K.mirror(MANDIBLE[0], s), 0.04, 8, 4, mi=K.CHITIN), "Head")
+        for y, a, r in ((-0.79, 8, 0.022), (-0.765, 16, 0.019), (-0.815, -2, 0.018)):
+            p = HEAD_SHAPE.surface(y, side_angle(a, s), 0.004)
             eyes.rigid(eyes.sphere(p, r, 8, 4), "Head")
-
-
-def sac_exit(hip: Vector, knee: Vector) -> Vector:
-    """Where the femur leaves the bladder (the first point along it outside the bladder's surface)."""
-    for i in range(1, 101):
-        p = hip.lerp(knee, i / 100)
-        c, w, top, bot = sac_shape(p.y)
-        h = top if p.z > c.z else bot
-        if w < 1e-3 or ((p.x - c.x) / w) ** 2 + ((p.z - c.z) / h) ** 2 > 1.0:
-            return p
-    return knee
 
 
 def build_legs(sk: K.Skin) -> None:
@@ -377,41 +431,26 @@ def build_legs(sk: K.Skin) -> None:
             j = [K.mirror(p, s) for p in pts]
             up, low, foot = (f"{leg}{side}{b}" for b in ("UpperLeg", "LowerLeg", "Foot"))
             out = Vector((s, 0, 0))
-            # Coxa: a fleshy socket in the core.
-            sk.auto(sk.sphere(j[0], 0.075, 8, 5, mi=K.SINEW), [body, up])
-            # Femur: a thin chitin segment rising out of the bladder to the high knee, a collar where it leaves it.
-            mid = j[0].lerp(j[1], 0.5) + Vector((0, 0, 0.03))
-            sk.rigid(K.tube_path(sk, [j[0], mid, j[1]], [0.05, 0.05, 0.042], 8, 8, K.CHITIN, 1.0, 0.002), up)
-            ex = sac_exit(j[0], j[1])
-            d = (j[1] - j[0]).normalized()
-            sk.rigid(K.tube_path(sk, [ex - d * 0.06, ex, ex + d * 0.05], [0.075, 0.07, 0.055], 10, 3, K.CHITIN), up)
-            a, b = ex.lerp(j[1], 0.15), j[1].lerp(ex, 0.12)
-            sk.rigid(K.limb_plate(sk, a, b, 0.046, -55, 55, 0.014, K.CHITIN, Vector((s * 0.2, 0, 1))), up)
-            # Knee: a chitin knob with a bone spur pointing up and out (the high knees are the silhouette).
-            sk.rigid(sk.sphere(j[1], 0.062, 8, 5, scale=(1.0, 1.0, 1.1), mi=K.CHITIN), low)
-            spur = (Vector((0, 0, 1)) + (j[1] - j[0]).normalized() * 0.6).normalized()
-            sk.rigid(sk.cone(j[1] + spur * 0.04, j[1] + spur * 0.15, 0.03, 6, K.BONE), low)
-            # Tibia: long and thin down to the ankle, two bands and a pair of spurs on its inner side.
-            mid = j[1].lerp(j[2], 0.5) + out * 0.03
-            sk.rigid(K.tube_path(sk, [j[1], mid, j[2]], [0.045, 0.034, 0.026], 8, 10, K.CHITIN, 1.0, 0.002), low)
-            for t in (0.22, 0.5):
-                c = K.path_point([j[1], mid, j[2]], t)
-                dd = K.path_point([j[1], mid, j[2]], t + 0.03) - c
-                sk.rigid(K.tube_path(sk, [c - dd, c, c + dd], [0.042, 0.048, 0.04], 8, 2, K.CHITIN), low)
-            inner = Vector((j[0].x - j[1].x, j[0].y - j[1].y, 0)).normalized()
-            for t in (0.62, 0.8):
-                base = K.path_point([j[1], mid, j[2]], t)
-                tip = base + (inner * 0.7 + Vector((0, 0, -0.4))).normalized() * 0.07
-                sk.rigid(sk.cone(base, tip, 0.016, 4, K.BONE), low)
-            # Tarsus to the pad, two hooked claws gripping the ground.
-            tarsus = K.tube_path(sk, [j[2], j[2].lerp(j[3], 0.5), j[3]], [0.03, 0.026, 0.028], 6, 3, K.SINEW)
-            sk.auto(tarsus, [low, foot])
-            sk.rigid(sk.sphere(j[3], 0.034, 8, 4, scale=(1.1, 1.2, 0.8), mi=K.CHITIN), foot)
-            fwd = Vector((j[3].x - j[0].x, j[3].y - j[0].y, 0)).normalized()
-            for k in (-1, 1):
-                dk = (fwd + Vector((-fwd.y, fwd.x, 0)) * 0.45 * k).normalized()
-                tip = j[3] + dk * 0.065 + Vector((0, 0, -0.03))
-                sk.rigid(sk.cone(j[3] + Vector((0, 0, 0.004)), tip, 0.016, 5, K.BONE), foot)
+            # Coxa and femur: a fat, fleshy stump out of the belly to the knee, a chitin band over it.
+            sk.auto(sk.sphere(j[0], 0.085, 8, 4, scale=(1.0, 1.0, 0.85), mi=K.SINEW), [body, up])
+            mid = j[0].lerp(j[1], 0.5) + Vector((0, 0, 0.012))
+            sk.auto(K.tube_path(sk, [j[0], mid, j[1]], [0.085, 0.075, 0.066], 8, 4, K.SINEW), [body, up])
+            a, b = j[0].lerp(j[1], 0.42), j[0].lerp(j[1], 0.9)
+            sk.rigid(K.limb_plate(sk, a, b, 0.07, -70, 70, 0.016, K.CHITIN, out * 0.4 + Vector((0, 0, 1))), up)
+            # Knee: a chitin knob; tibia: a short, thick chitin cone down to the ankle with a band.
+            sk.rigid(sk.sphere(j[1], 0.07, 8, 4, mi=K.CHITIN), low)
+            mid = j[1].lerp(j[2], 0.5) + out * 0.01
+            sk.rigid(K.tube_path(sk, [j[1], mid, j[2]], [0.064, 0.056, 0.047], 8, 4, K.CHITIN), low)
+            c = j[1].lerp(j[2], 0.45)
+            d = (j[2] - j[1]).normalized() * 0.018
+            sk.rigid(K.tube_path(sk, [c - d, c, c + d], [0.06, 0.066, 0.058], 8, 2, K.CHITIN), low)
+            # The pad on the ground and one short hooked claw.
+            sk.auto(K.tube_path(sk, [j[2], j[2].lerp(j[3], 0.5), j[3]], [0.045, 0.045, 0.046], 8, 3, K.SINEW),
+                    [low, foot])  # fmt: skip
+            sk.rigid(sk.sphere(j[3], 0.05, 8, 4, scale=(1.05, 1.15, 0.68), mi=K.SINEW), foot)
+            fwd = Vector((j[3].x - j[2].x, j[3].y - j[2].y, 0)).normalized()
+            base = j[3] + fwd * 0.03 + Vector((0, 0, 0.004))
+            sk.rigid(sk.cone(base, base + fwd * 0.055 + Vector((0, 0, -0.03)), 0.022, 6, K.BONE), foot)
 
 
 def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
@@ -419,9 +458,9 @@ def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
     sk = K.Skin("Creature", mats, RIG)
     eyes = K.Skin("Eyes", [C.mat_emissive("Eyes", K.EYE_COLOR, 8.0)], RIG)
     glands = K.Skin("Glands", [C.mat_emissive("Glands", K.EYE_COLOR, GLAND_GLOW)], RIG)
-    build_core(sk)
+    build_trunk(sk)
     build_sac(sk, glands)
-    build_neck_head(sk, eyes)
+    build_head(sk, eyes)
     build_legs(sk)
     objs = (sk.finish(root), eyes.finish(root), glands.finish(root))
     for obj in objs:
@@ -510,38 +549,45 @@ def pulse(x: float, c: float, w: float) -> float:
     return math.exp(-((((x % 1.0) - c) / w) ** 2))
 
 
+def ripple(p: Pose, phase: float, amp: float) -> None:
+    """A wave along the segments from front to back (the hump travels toward the rump), amp in degrees."""
+    p.set("Chest", rx(amp * 0.6 * math.sin(phase)))
+    p.set("Hips", rx(-amp * 0.5 * math.sin(phase - 1.2)))
+    p.set("Tail", rx(-amp * math.sin(phase - 2.2)))
+
+
 def idle(t: float) -> Pose:
-    """A slow double throb of the bladder (a heartbeat over slow breathing), the body bobbing with it, the head
+    """A slow throb of the bladder (a heartbeat over slow breathing), the segments breathing with it, the head
     swaying low, the mandibles working."""
     a = math.tau * t
     beat = pulse(t, 0.2, 0.06) + 0.6 * pulse(t, 0.36, 0.06)
-    p = Pose(RIG, (0, 0, 0.012 * math.sin(a) - 0.008 * beat))
-    p.set("Body", rx(-1.0 * math.sin(a)))
-    p.set("Neck", rz(7 * math.sin(a + 1.0)) @ rx(3 * math.sin(2 * a)))
-    p.set("Head", rx(-3 + 3 * math.sin(a + 1.3)) @ rz(-4 * math.sin(a + 1.0)))
+    p = Pose(RIG, (0, 0, 0.008 * math.sin(a) - 0.006 * beat))
+    p.set("Body", rx(-0.8 * math.sin(a)))
+    ripple(p, a, 1.5)
+    p.set("Neck", rz(6 * math.sin(a + 1.0)) @ rx(3 * math.sin(2 * a)))
+    p.set("Head", rx(-2 + 3 * math.sin(a + 1.3)) @ rz(-4 * math.sin(a + 1.0)))
     p.set("Jaw", rx(-2 * max(0.0, math.sin(a * 3))))
-    mandibles(p, 7 + 7 * max(0.0, math.sin(a * 3 + 0.5)))
-    s = 1.0 + 0.02 * math.sin(a) + 0.04 * beat
+    mandibles(p, 6 + 7 * max(0.0, math.sin(a * 3 + 0.5)))
+    s = 1.0 + 0.02 * math.sin(a) + 0.035 * beat
     p.grow("Sac", s, s + 0.01 * beat, s)
     return p
 
 
 def run(t: float) -> Pose:
-    """A slow, wobbling lumber (legs at rest, the game steps them): two heavy bobs per stride, the trunk rolling from
-    side to side, the bladder lagging behind it, sloshing and squashing; the head low."""
+    """A slow, heavy waddle (legs at rest, the game steps them): two heavy bobs per stride, the body rolling from side
+    to side, the segments rippling from front to back, the bladder lagging behind, sloshing and squashing."""
     a = math.tau * t
     bob = math.cos(2 * a)
-    p = Pose(RIG, (0, 0, -0.03 + 0.03 * bob))
-    p.set("Body", rx(2 * math.sin(2 * a + 0.4)) @ ry(5 * math.sin(a)) @ rz(2.5 * math.sin(a)))
-    p.set("Hips", rz(-2 * math.sin(a - 0.5)))
-    p.set("Chest", rz(-2 * math.sin(a)))
-    p.set("Neck", rx(5 + 3 * math.sin(2 * a)) @ rz(-4 * math.sin(a)))
-    p.set("Head", rx(-3 * math.sin(2 * a)))
+    p = Pose(RIG, (0, 0, -0.015 + 0.015 * bob))
+    p.set("Body", rx(1.2 * math.sin(2 * a + 0.4)) @ ry(4 * math.sin(a)) @ rz(2.5 * math.sin(a)))
+    ripple(p, 2 * a, 3.0)
+    p.set("Neck", rx(3 + 3 * math.sin(2 * a + 0.8)) @ rz(-4 * math.sin(a)))
+    p.set("Head", rx(-2 * math.sin(2 * a)))
     mandibles(p, 6)
     lag = 2 * a - 1.3
-    p.set("Sac", rx(3 * math.sin(lag)) @ ry(-4 * math.sin(a - 1.0)))
+    p.set("Sac", rx(2 * math.sin(lag)) @ ry(-3.5 * math.sin(a - 1.0)))
     sq = math.sin(lag)
-    p.grow("Sac", 1.0 + 0.035 * math.sin(lag + 1.0), 1.0 - 0.06 * sq, 1.0 + 0.035 * math.sin(lag + 1.0))
+    p.grow("Sac", 1.0 + 0.03 * math.sin(lag + 1.0), 1.0 - 0.05 * sq, 1.0 + 0.03 * math.sin(lag + 1.0))
     return p
 
 
@@ -549,57 +595,50 @@ ATTACK_FRAMES = 15  # 0.5 s
 
 
 def attack(t: float) -> Pose:
-    """The pre-burst (0.5 s): the bladder swells to x1.3 (by 0.8) and shudders harder and harder, the body sinks
-    and trembles, the legs brace, the head pulls up with the mandibles flared; it ends at its biggest."""
-    swell = K.smooth(t / 0.8)
+    """The pre-burst (0.5 s): the bladder swells to x1.3 (by 0.85) and shudders harder and harder, the body braces
+    (sinks, the segments bunching, the rump pressing down), the head pulls up with the mandibles flared; it ends at its
+    biggest."""
+    swell = K.smooth(t / 0.85)
     brace = K.smooth(t / 0.4)
     shudder = 0.03 * math.sin(math.tau * 7 * t) * K.smooth(t / 0.3)
-    p = Pose(RIG, (0, 0, -0.1 * brace))
-    p.set("Body", rx(-3 * brace) @ rz(1.5 * math.sin(math.tau * 9 * t) * brace))
-    p.set("Neck", rx(-10 * brace))
-    p.set("Head", rx(-8 * brace))
-    p.set("Jaw", rx(-6 * brace))
-    mandibles(p, 7 + 25 * brace)
+    p = Pose(RIG, (0, 0, -0.035 * brace))
+    p.set("Body", rx(-1.5 * brace) @ rz(1.2 * math.sin(math.tau * 9 * t) * brace))
+    p.set("Chest", rx(3 * brace))
+    p.set("Hips", rx(2 * brace))
+    p.set("Tail", rx(-6 * brace))
+    p.set("Neck", rx(10 * brace))
+    p.set("Head", rx(6 * brace))
+    p.set("Jaw", rx(-8 * brace))
+    mandibles(p, 6 + 22 * brace)
     s = 1.0 + 0.3 * swell
     p.grow("Sac", s + shudder, s - 0.7 * shudder, s + shudder)
     return p
 
 
 DIE_FRAMES = 45  # 1.5 s
-DEAD_Z = 0.38  # the Body's height once it lies on its folded legs
-HUSK = (0.45, 0.28, 0.45)  # the burst bladder's scale (width, height, length)
-# Per leg row: the femur's elevation and the turn of the folded tibia away from pointing straight back at the body
-# (degrees, for the left side).
-DEAD_FOLD = {"Front": (32, -30), "Mid": (30, -20), "Hind": (32, 30)}
+DEAD_DROP = 0.06  # how far the Body sinks once it lies flat
+HUSK = (1.03, 0.5, 0.95)  # the burst bladder's scale (width, height, length): a flat skin over the back
 
 
 def die_trunk(p: Pose, f: float) -> None:
-    p.set("Body", ry(6 * f) @ rx(3 * f))
-    p.set("Neck", rx(-38 * f) @ rz(12 * f))
-    p.set("Head", rx(-10 * f))
+    p.set("Body", ry(4 * f) @ rx(1.5 * f))
+    p.set("Chest", rx(-3 * f))
+    p.set("Hips", rx(-1.5 * f))
+    p.set("Tail", rx(-1.5 * f))
+    p.set("Neck", rx(-14 * f) @ rz(10 * f))
+    p.set("Head", rx(-6 * f))
     p.set("Jaw", rx(10 * f))
-    mandibles(p, 30 * f)
+    mandibles(p, 26 * f)
 
 
 @functools.cache
 def dead_legs() -> dict:
-    """Per leg once folded (world positions with the body down): the knee and the ankle; the knees buckled up and
-    out, the tibias folded back under the body."""
-    p = Pose(RIG, (0, 0, DEAD_Z - BODY.z))
-    die_trunk(p, 1.0)
+    """Per leg once splayed (world positions with the body down): the ankle slid out sideways on the ground."""
     out = {}
-    for leg, (elev, fold) in DEAD_FOLD.items():
+    for leg in LEGS:
         for side, s in K.SIDES:
-            up, low, foot = (f"{leg}{side}{b}" for b in ("UpperLeg", "LowerLeg", "Foot"))
-            hip, ankle = RIG.head[up], RIG.head[foot]
-            h = Vector((ankle.x - hip.x, ankle.y - hip.y, 0)).normalized()
-            e = math.radians(elev)
-            knee = pose_head(p, up) + (h * math.cos(e) + K.UP * math.sin(e)) * (RIG.head[low] - hip).length
-            length = (ankle - RIG.head[low]).length
-            dz = knee.z - 0.11
-            back = Matrix.Rotation(math.radians(fold * s), 3, "Z") @ -h
-            tib = back * math.sqrt(max(length * length - dz * dz, 0.0)) + Vector((0, 0, -dz))
-            out[f"{leg}{side}"] = (knee, knee + tib)
+            ankle = RIG.head[f"{leg}{side}Foot"]
+            out[f"{leg}{side}"] = ankle + Vector((s * 0.09, 0, -0.02))
     return out
 
 
@@ -613,45 +652,46 @@ def two_bone(hip: Vector, target: Vector, a: float, b: float, pole: Vector) -> V
     return hip + axis * x + side * math.sqrt(max(a * a - x * x, 0.0))
 
 
-def fold_legs(p: Pose, u: float) -> None:
-    """Folds the legs by u (0 = rest, 1 = dead) on the posed body: each ankle slides on the ground from its rest spot
-    to its folded one, the knee bending by two-bone IK towards a pole turning from the rest knee to the folded one."""
-    for name, (knee1, ankle1) in dead_legs().items():
+def splay_legs(p: Pose, u: float) -> None:
+    """Splays the legs by u (0 = rest, 1 = dead) on the posed body: each ankle slides out on the ground, the knee
+    bending by two-bone IK up and out under the sagging belly, the pad tipping flat."""
+    for name, ankle1 in dead_legs().items():
         up, low, foot = f"{name}UpperLeg", f"{name}LowerLeg", f"{name}Foot"
+        s = 1.0 if "Left" in name else -1.0
         hip = pose_head(p, up)
-        hip1 = RIG.head[up] + Vector((0, 0, DEAD_Z - BODY.z))
         knee0, ankle0 = RIG.head[low], RIG.head[foot]
-        pole = (knee0 - RIG.head[up]).lerp(knee1 - hip1, u)
+        pole = (knee0 - RIG.head[up]) + Vector((s * 0.05, 0, 0.12 * u))
         a, b = (knee0 - RIG.head[up]).length, (ankle0 - knee0).length
         ankle = ankle0.lerp(ankle1, u)
         knee = two_bone(hip, ankle, a, b, pole)
         aim(p, up, knee - hip)
         aim(p, low, ankle - knee)
-        heading = Vector((ankle.x - knee.x, ankle.y - knee.y, 0)).normalized()
-        aim(p, foot, (RIG.tail[foot] - RIG.head[foot]).normalized().lerp(heading + Vector((0, 0, -0.6)), min(u * 3, 1)))
+        rest = (RIG.tail[foot] - RIG.head[foot]).normalized()
+        flat = Vector((rest.x + s * 0.4, rest.y, 0)).normalized() + Vector((0, 0, -0.25))
+        aim(p, foot, rest.lerp(flat.normalized(), u))
 
 
 def die(t: float) -> Pose:
-    """The burst: the bladder pops to x1.25 (0.05 s) and collapses into a wrinkled husk (x0.28-0.45 by 0.15 s)
-    which wobbles and sags; then the legs buckle and fold under it and it sinks onto them (by about 1 s), the feet
-    sliding in on the ground, the head dropping forward onto the ground."""
+    """The burst: the bladder pops to x1.15 (0.04 s) and collapses into a flat husk by 0.15 s, which wobbles and
+    sags; the body sinks flat onto the ground (by about 1 s), the legs splaying out under it, the head dropping."""
     st = t * DIE_FRAMES / FPS
-    f = K.smooth((st - 0.12) / 0.8)
+    f = K.smooth((st - 0.1) / 0.9)
     sag = K.smooth((st - 0.15) / 1.0)
-    p = Pose(RIG, (0, 0, (DEAD_Z - BODY.z) * f + 0.02 * math.sin(math.pi * min(st / 0.15, 1.0))))
+    jolt = 0.015 * math.sin(math.pi * min(st / 0.15, 1.0))
+    p = Pose(RIG, (0, 0, -DEAD_DROP * f + jolt))
     die_trunk(p, f)
-    fold_legs(p, K.smooth((st - 0.15) / 0.8))
-    p.set("Sac", rx(10 * sag) @ ry(14 * sag))
-    if st < 0.05:
-        k = 1.0 + 0.25 * K.smooth(st / 0.05)
+    splay_legs(p, K.smooth((st - 0.1) / 0.8))
+    p.set("Sac", rx(-3 * sag) @ ry(9 * sag))
+    if st < 0.04:
+        k = 1.0 + 0.15 * K.smooth(st / 0.04)
         p.grow("Sac", k, k, k)
     elif st < 0.15:
-        u = K.smooth((st - 0.05) / 0.1)
-        p.grow("Sac", *(1.25 + (h - 1.25) * u for h in HUSK))
+        u = K.smooth((st - 0.04) / 0.11)
+        p.grow("Sac", *(1.15 + (h - 1.15) * u for h in HUSK))
     else:
-        wob = 0.06 * math.exp(-(st - 0.15) * 7) * math.sin((st - 0.15) * 34)
+        wob = 0.05 * math.exp(-(st - 0.15) * 7) * math.sin((st - 0.15) * 34)
         w, h, ln = HUSK
-        p.grow("Sac", w + 0.05 * sag + 0.5 * wob, h - 0.05 * sag - wob, ln + 0.03 * sag + 0.5 * wob)
+        p.grow("Sac", w + 0.02 * sag + 0.4 * wob, h - 0.04 * sag - wob, ln + 0.4 * wob)
     return p
 
 
@@ -685,22 +725,25 @@ def rnd(v) -> tuple:
 
 def report(arm: bpy.types.Object) -> None:
     rest_pose(arm)
-    w, ry_, top, bot = SAC_R
-    print("POINT sac center rest", rnd(SAC_C), "half-width", w, "half-length", ry_, "top", top, "bottom", bot)
-    print("POINT sac top", round(SAC_C.z + top, 3), "belly", round(SAC_C.z - bot, 3))
-    print("POINT head (Head bone head)", rnd(SKULL), "snout", rnd(SNOUT), "head center", rnd(SKULL.lerp(SNOUT, 0.5)))
+    ry_ = SAC_R[1]
+    _c, cw, ct, _cb = sac_shape(SAC_C.y)
+    print("POINT sac center rest", rnd(SAC_C), "half-width", round(cw, 3), "half-length", ry_, "top", round(ct, 3))
+    print("POINT sac top", round(SAC_C.z + ct, 3), "radius (mean)", round((cw + ry_ + ct) / 3, 3))
+    print("POINT head (Head bone head)", rnd(SKULL), "snout", rnd(SNOUT), "head center", rnd(HEAD_SHAPE.at(0.5)[0]))
     for leg, pts in LEGS.items():
         print("POINT knee", leg, rnd(pts[1]), "ankle", rnd(pts[2]))
     for name, pose in (
+        ("rest", Pose(RIG)),
         ("die15", die(0.15 * FPS / DIE_FRAMES)),
         ("die5", die(0.5)),
         ("die", die(1.0)),
         ("attack", attack(1.0)),
-        ("run", run(0.25)),
+        ("run", run(0.0)),
+        ("run25", run(0.25)),
     ):
         apply(arm, pose)
         bpy.context.view_layer.update()
-        print("POINT", name, "stats", C.stats(), "lowest", lowest_parts())
+        print("POINT", name, "stats", C.stats(), "lowest", lowest_parts(6))
     dips = []
     for f in range(0, DIE_FRAMES + 1, 3):
         apply(arm, die(f / DIE_FRAMES))
@@ -713,63 +756,63 @@ def report(arm: bpy.types.Object) -> None:
 # --- preview ----------------------------------------------------------------------------------------
 
 
-def add_spitter(x: float) -> list:
-    """The spitter's rest-pose mesh beside the bloater for a comparison (wip only, from its procedural .blend)."""
-    src = ROOT / "tmp" / "assets" / "spitter" / "spitter_procedural.blend"
+def add_other(strain: str, x: float, y: float) -> list:
+    """Another strain's rest-pose mesh beside the bloater for a comparison (wip only, from its procedural .blend)."""
+    src = ROOT / "tmp" / "assets" / strain / f"{strain}_procedural.blend"
     if not src.exists():
         return []
     with bpy.data.libraries.load(str(src)) as (data_from, data_to):
         data_to.meshes = [m for m in ("Creature", "Eyes", "Glands") if m in data_from.meshes]
     objs = []
     for me in data_to.meshes:
-        obj = bpy.data.objects.new("Scale" + me.name, me)
+        obj = bpy.data.objects.new(f"Scale{strain}{me.name}", me)
         C.link(obj, None, "Preview")
-        obj.location = (x, 0.8, 0)
+        obj.location = (x, y, 0)
         objs.append(obj)
     return objs
 
 
 def preview(arm: bpy.types.Object, tag: str) -> list:
-    C.preview_scene(crystals=False, figure_location=(2.3, 1.6, 0))
+    C.preview_scene(crystals=False, figure_location=(1.9, 1.5, 0))
     shots = []
     w = OUT / "wip"
-    target = (0, -0.05, 0.85)
+    target = (0, -0.05, 0.42)
     rest_pose(arm)
-    for view, zoom in (("iso", 0.62), ("hero", 0.7), ("back", 0.75), ("iso", 1.4)):
+    for view, zoom in (("iso", 0.5), ("hero", 0.55), ("back", 0.6), ("iso", 1.4)):
         path = w / f"{tag}_rest_{view}{zoom}.png"
         C.render(path, view=view, samples=32, size=512, target=target, zoom=zoom)
         shots.append(path)
-    C.render_from(w / f"{tag}_side.png", Vector((6.5, -0.1, 1.0)), (0, 0.0, 0.85), 50, 32, 512)
-    C.render_from(w / f"{tag}_head.png", Vector((1.2, -2.6, 1.2)), (0, -0.9, 0.62), 50, 32, 512)
-    C.render_from(w / f"{tag}_top.png", Vector((0.0, -0.01, 7.0)), (0, 0.0, 0.0), 50, 32, 512)
+    C.render_from(w / f"{tag}_side.png", Vector((6.0, -0.05, 0.6)), (0, -0.05, 0.42), 50, 32, 512)
+    C.render_from(w / f"{tag}_head.png", Vector((0.9, -2.3, 0.75)), (0, -0.72, 0.33), 50, 32, 512)
+    C.render_from(w / f"{tag}_top.png", Vector((0.0, -0.01, 6.0)), (0, 0.0, 0.0), 50, 32, 512)
     shots += [w / f"{tag}_side.png", w / f"{tag}_head.png", w / f"{tag}_top.png"]
     for name, pose in (
         ("idle", idle(0.2)),
         ("run", run(0.25)),
         ("attack", attack(1.0)),
-        ("die1", die(0.1)),
+        ("die1", die(0.15 * FPS / DIE_FRAMES)),
         ("die5", die(0.5)),
         ("die", die(1.0)),
     ):
         apply(arm, pose)
         bpy.context.view_layer.update()
         path = w / f"{tag}_{name}.png"
-        C.render(path, view="hero", samples=24, size=512, target=target, zoom=0.7)
+        C.render(path, view="hero", samples=24, size=512, target=target, zoom=0.55)
         shots.append(path)
     apply(arm, die(1.0))
     bpy.context.view_layer.update()
     path = w / f"{tag}_die_side.png"
-    C.render_from(path, Vector((6.5, -0.1, 0.6)), (0, 0.0, 0.3), 50, 24, 512)
-    shots.append(path)
-    path = w / f"{tag}_die_iso.png"
-    C.render(path, view="iso", samples=24, size=512, target=(0, 0, 0.3), zoom=0.62)
+    C.render_from(path, Vector((6.0, -0.05, 0.4)), (0, -0.05, 0.25), 50, 24, 512)
     shots.append(path)
     rest_pose(arm)
+    path = w / f"{tag}_under.png"
+    C.render_from(path, Vector((2.2, -1.6, 0.25)), (0.2, -0.15, 0.2), 40, 24, 512)
+    shots.append(path)
     if MODE == "wip":
-        scale = add_spitter(-2.6)
+        scale = add_other("spitter", -2.2, 0.8) + add_other("burrower", 2.3, 0.6)
         if scale:
             path = w / f"{tag}_scale.png"
-            C.render(path, view="iso", samples=32, size=512, target=(-1.2, 0.3, 0.6), zoom=0.85)
+            C.render(path, view="iso", samples=32, size=512, target=(0.0, 0.3, 0.4), zoom=0.95)
             shots.append(path)
             for obj in scale:
                 bpy.data.objects.remove(obj)

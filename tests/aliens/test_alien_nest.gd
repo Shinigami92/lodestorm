@@ -310,10 +310,15 @@ func test_the_nest_nearest_to_a_scream_answers_it() -> void:
 	var shrieker: Alien = _nest.hatch(Alien.Role.HUNTER, SHRIEKER)
 	shrieker.global_position = near.global_position + Vector3(6.0, 0.0, 0.0)
 	await wait_physics_frames(1)
-	shrieker.called_for_help.emit(shrieker.global_position)
+	shrieker.called_for_help.emit(shrieker.global_position, 1.25, 6.0)
 	assert_eq(near.get_hunters().size(), 1, "its next pack, right away")
+	assert_true(near.get_hunters()[0].status.is_boosted(), "boosted like the shrieker's pack")
+	var rings: Array[Node] = near.get_parent().get_children().filter(
+		func(n: Node) -> bool: return n is ScreamWave
+	)
+	assert_eq(rings.size(), 1, "a ring at the nest shows it")
 	assert_eq(_nest.get_hunters(), [shrieker], "only the nearest nest answers")
-	shrieker.called_for_help.emit(shrieker.global_position)
+	shrieker.called_for_help.emit(shrieker.global_position, 1.25, 6.0)
 	assert_eq(near.get_hunters().size(), 1, "not again before its cooldown")
 
 

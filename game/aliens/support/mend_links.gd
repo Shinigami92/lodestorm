@@ -64,7 +64,10 @@ func _exit_tree() -> void:
 func _physics_process(delta: float) -> void:
 	var working: bool = not _alien.dead and not _alien.underground
 	for i: int in linked.size():
-		if linked[i] and (not working or not _holds(linked[i])):
+		if not is_instance_valid(linked[i]):
+			# Freed without dying (a location reset): the slot is free again.
+			linked[i] = null
+		elif not working or not _holds(linked[i]):
 			_unlink(i)
 	if not working:
 		return
@@ -75,17 +78,17 @@ func _physics_process(delta: float) -> void:
 	if _alien.is_staggered():
 		return
 	for alien: Alien in linked:
-		if alien:
+		if is_instance_valid(alien):
 			var healed: float = mend.heal_per_second * alien.health_factor * delta
 			alien.health = minf(alien.health + healed, alien.max_health())
 
 
 func _process(_delta: float) -> void:
 	for i: int in linked.size():
-		var alien: Alien = linked[i]
-		_strands[i].visible = alien != null
-		if not alien:
+		_strands[i].visible = is_instance_valid(linked[i])
+		if not _strands[i].visible:
 			continue
+		var alien: Alien = linked[i]
 		var from: Vector3 = _tip(i)
 		var to: Vector3 = alien.get_aim_point()
 		var along: Vector3 = to - from

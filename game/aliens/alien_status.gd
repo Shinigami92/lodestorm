@@ -40,6 +40,11 @@ func speed() -> float:
 	return _boost * hive_speed
 
 
+## Whether a scream boosts it or a tender's link holds it: it's bigger and outlined then.
+func is_buffed() -> bool:
+	return is_boosted() or is_mended()
+
+
 ## Whether a tender's link holds it.
 func is_mended() -> bool:
 	return is_instance_valid(mended_by)

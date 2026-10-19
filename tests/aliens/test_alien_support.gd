@@ -130,23 +130,25 @@ func test_the_shrieker_stays_back() -> void:
 	assert_gt(shrieker.horizontal_distance(_player), 9.0)
 
 
-func test_the_bloater_bursts_at_its_miner() -> void:
-	_player.global_position = Vector3(-30.0, 0.0, 0.0)
+func test_the_bloater_bursts_next_to_a_player_not_a_miner() -> void:
 	var miner := MINER_SCENE.instantiate() as Miner
-	miner.position = Vector3(6.0, 0.0, 0.0)
+	miner.position = Vector3(6.0, 0.0, 6.0)
 	_arena.add_child(miner)
-	var bloater: Alien = _spawn(BLOATER, Vector3(12.0, 0.0, 0.0), false, Alien.Role.RAIDER)
+	var bloater: Alien = _spawn(BLOATER, Vector3(12.0, 0.0, 6.0))
 	var burst := bloater.strain.attacks[0] as AlienBurst
-	var before: float = miner.health
-	await _wait_until_winding_up(bloater, 5.0)
+	var before: float = _player.health
+	await wait_physics_frames(2)
+	assert_eq(bloater.target, _player, "it hunts players, not miners")
+	await _wait_until_winding_up(bloater, 6.0)
+	assert_lt(bloater.horizontal_distance(_player), bloater.horizontal_distance(miner))
 	await _wait_physics(burst.wind_up + 0.1)
 	assert_true(bloater.dead, "it burst")
-	assert_lt(miner.health, before)
+	assert_lt(_player.health, before)
 	assert_eq(_clouds().size(), 1, "an acid cloud stays")
 
 
 func test_killing_a_bloater_bursts_it_and_hurts_aliens_too() -> void:
-	var bloater: Alien = _spawn(BLOATER, Vector3(20.0, 0.0, 0.0), true, Alien.Role.RAIDER)
+	var bloater: Alien = _spawn(BLOATER, Vector3(20.0, 0.0, 0.0), true)
 	bloater.strain.move_speed = 0.0
 	var mite: Alien = _still(MITE, Vector3(21.5, 0.0, 0.0))
 	var swarmer: Alien = _still(SWARMER, Vector3(20.0, 0.0, 2.0))
@@ -228,6 +230,39 @@ func test_the_new_bodies_stand_on_their_legs() -> void:
 		assert_eq(legs.feet.size(), legs_of[strain], strain.display_name)
 		for foot: Vector3 in legs.feet.values():
 			assert_almost_eq(foot.y, 0.0, 0.05, "%s on the ground" % strain.display_name)
+
+
+func test_a_link_to_an_alien_freed_without_dying_is_taken_again() -> void:
+	var tender: Alien = _still(TENDER, Vector3(20.0, 0.0, 0.0))
+	var aliens: Array[Alien] = []
+	for i: int in 4:
+		aliens.append(_still(SWARMER, Vector3(22.0 + i, 0.0, 3.0)))
+	await _wait_physics(0.6)
+	var links: MendLinks = _links(tender)
+	var gone: Alien = links.linked[0]
+	var spare: Alien = aliens.filter(func(a: Alien) -> bool: return a not in links.linked)[0]
+	gone.free()
+	await _wait_physics(1.0)
+	assert_true(spare in links.linked, "the free slot links the next one")
+
+
+func test_boosted_and_mended_aliens_grow_and_shrink_back() -> void:
+	var swarmer: Alien = _still(SWARMER, Vector3(20.0, 0.0, 0.0))
+	await wait_physics_frames(1)
+	var model := swarmer.get_node("Body/Model") as Node3D
+	assert_almost_eq(model.scale.x, 1.0, 0.001)
+	swarmer.status.boost(1.25, 1.0)
+	await _wait_physics(0.6)
+	assert_almost_eq(model.scale.x, Alien.BUFFED_SCALE, 0.02, "a little bigger while boosted")
+	await _wait_physics(1.2)
+	assert_almost_eq(model.scale.x, 1.0, 0.02, "back to its size")
+	var tender: Alien = _still(TENDER, Vector3(22.0, 0.0, 0.0))
+	await _wait_physics(1.0)
+	assert_true(swarmer.status.is_mended())
+	assert_almost_eq(model.scale.x, Alien.BUFFED_SCALE, 0.02, "and while mended")
+	tender.take_damage(1000.0)
+	await _wait_physics(1.0)
+	assert_almost_eq(model.scale.x, 1.0, 0.02)
 
 
 func _spawn(

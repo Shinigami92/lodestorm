@@ -8,8 +8,8 @@ Writes the game asset assets/aliens/bloater/bloater.glb (textures, skeleton and 
 assets/aliens/bloater/source/bloater.blend; the separate PNGs and check renders go to tmp/assets/bloater/game/.
 
 The shared flow (tools/blender/bake.py) bakes "Creature" (Sinew, Chitin, Bone, Mouth) into one 1024 texture set with
-one "Bloater" PBR material. "Eyes" and "Glands" (the veins and patches on the bladder) keep constant emissive
-materials in the hive's yellow-green (strength TBD (playtest)). The armature modifiers are taken off for the bake
+one "Bloater" PBR material. "Eyes" and "Glands" (the dorsal vessel, veins and patches on the grub's bladder) keep
+constant emissive materials in the hive's yellow-green (strength TBD (playtest)). The armature modifiers are taken off for the bake
 (the rest pose is baked) and put back before the export. Texture size 1024 per the asset budget (many aliens at once,
 small on screen), TBD (playtest).
 """
@@ -58,9 +58,9 @@ JOB = B.Job(
     atlas=["Creature"],
     material="Bloater",
     size=1024,  # final texture size (budget: one 1024 set, TBD (playtest))
-    supersample=2,  # claws, spurs and the mandibles are small in the atlas next to the big bladder
+    supersample=2,  # the claws, mandibles and leg plates are small in the atlas next to the big bladder and body
     island_margin=0.003,
-    ao_distance=0.08,  # a big creature: the cavities between its plates darken a little further
+    ao_distance=0.08,  # a big creature: the rings between its segments darken a little further
     prepare=prepare,
     finish=finish,
 )
@@ -70,11 +70,11 @@ def checks(job: B.Job, meshes: list) -> None:
     print("CHECK actions", sorted(a.name for a in bpy.data.actions))
     for obj in [o for o in bpy.data.objects if o.name.startswith("Icosphere")]:  # the importer's bone shape
         bpy.data.objects.remove(obj)
-    C.preview_scene(crystals=False, figure_location=(2.3, 1.6, 0))
-    target = (0, -0.05, 0.85)
-    for view, zoom in (("iso", 0.62), ("hero", 0.7), ("back", 0.75)):
+    C.preview_scene(crystals=False, figure_location=(1.9, 1.5, 0))
+    target = (0, -0.05, 0.42)
+    for view, zoom in (("iso", 0.5), ("hero", 0.55), ("back", 0.6)):
         C.render(job.game / f"check_{view}.png", view=view, samples=64, size=1024, target=target, zoom=zoom)
-    C.render_from(job.game / "check_head.png", Vector((1.2, -2.6, 1.2)), (0, -0.9, 0.62), 50, 64, 768)
+    C.render_from(job.game / "check_head.png", Vector((0.9, -2.3, 0.75)), (0, -0.72, 0.33), 50, 64, 768)
 
 
 B.run(JOB, checks)

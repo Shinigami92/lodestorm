@@ -9,6 +9,7 @@ reach = 1.2
 cooldown = 1.0
 wind_up = 0.5
 clip_lead = 0.5
+against_miners = false
 radius = 3.0
 cloud_time = 4.0
 cloud_damage = 8.0

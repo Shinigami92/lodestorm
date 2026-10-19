@@ -11,7 +11,8 @@ extends CharacterBody3D
 ## under the ground (`strain.burrows`: out of reach, only a `BurrowRipple` shows) and come up to
 ## attack, and tenders mend the aliens around them (`strain.mend`: see `MendLinks`). A shrieker's
 ## scream speeds up the aliens near it and calls for help (`called_for_help`, answered by the
-## nearest nest); in the hive's frenzy all of them are faster (see `status`).
+## nearest nest); in the hive's frenzy all of them are faster (see `status`). While a scream boosts
+## it or a tender's link holds it, it's a little bigger and outlined in the hive's yellow-green.
 ## Its role (set from its strain by the nest) says what it goes for: guards stay by their nest
 ## (within `strain.leash` of where they hatched, walking back when a player gets away), hunters go
 ## for the nearest player outside however far away and never give up because of distance, and
@@ -30,9 +31,9 @@ signal died
 ## Emitted for every hit it takes, with the damage that got through and whether it hit armor.
 signal hit_taken(hit: Hit, dealt: float, armored: bool)
 ## Emitted when it calls the hive for help at `at` (a shrieker's scream: emitted by
-## `AlienScream`): the nest nearest to it answers.
+## `AlienScream`): the nest nearest to it answers with a pack, boosted `boost` times for `seconds`.
 @warning_ignore("unused_signal")
-signal called_for_help(at: Vector3)
+signal called_for_help(at: Vector3, boost: float, seconds: float)
 
 ## Guards wait until a player comes close, hunters go for players and raiders for miners.
 enum Role { GUARD, HUNTER, RAIDER }
@@ -67,6 +68,11 @@ const HOME_RADIUS: float = 1.5
 ## The rim light is weaker than on players and machines: the alien's many thin, curved parts
 ## would glow all over.
 const RIM_STRENGTH: float = 0.45
+## While boosted or mended (see `AlienStatus.is_buffed`): how much bigger it gets, how fast it
+## grows and shrinks back (per second), and its outline's strength.
+const BUFFED_SCALE: float = 1.15
+const BUFFED_GROW_SPEED: float = 6.0
+const BUFFED_RIM_STRENGTH: float = 1.6
 ## A hit flash covers the model in white.
 const COLOR_FLASH := Color(1.0, 1.0, 1.0, 0.85)
 ## Seconds a hit flash lasts.
@@ -88,6 +94,7 @@ const DEATH_DURATION: float = COLLAPSE_DURATION + SINK_DURATION
 
 ## Shared by all aliens (see `RIM_STRENGTH`).
 static var _rim: ShaderMaterial
+static var _buffed_rim: ShaderMaterial
 
 ## Set by `AlienStrain.spawn`.
 @export var strain: AlienStrain
@@ -179,6 +186,9 @@ func _ready() -> void:
 	if not _rim:
 		_rim = preload("res://assets/shaders/rim_light.tres").duplicate() as ShaderMaterial
 		_rim.set_shader_parameter(&"strength", RIM_STRENGTH)
+		_buffed_rim = _rim.duplicate() as ShaderMaterial
+		_buffed_rim.set_shader_parameter(&"color", COLOR_GLOW)
+		_buffed_rim.set_shader_parameter(&"strength", BUFFED_RIM_STRENGTH)
 	_overlay.next_pass = _rim
 	# Seen behind cliffs too, as a red silhouette.
 	var creature := _model.find_child("Creature", true, false) as GeometryInstance3D
@@ -295,6 +305,10 @@ func _process(delta: float) -> void:
 		var moving: float = 0.5 if Vector2(velocity.x, velocity.z).length() > 0.5 else 0.0
 		_ripple.strength = 1.0 if is_winding_up() else moving
 	_animator.speed = 0.0 if dead else Vector2(velocity.x, velocity.z).length()
+	var buffed: bool = status.is_buffed() and not dead
+	var size: float = BUFFED_SCALE if buffed else 1.0
+	_model.scale = _model.scale.lerp(Vector3.ONE * size, 1.0 - exp(-BUFFED_GROW_SPEED * delta))
+	_overlay.next_pass = _buffed_rim if buffed else _rim
 	if not dead:
 		# Keeps the scale: it grows while hatching.
 		var pose: Transform3D = _pose.update(delta)

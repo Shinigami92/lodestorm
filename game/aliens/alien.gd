@@ -9,7 +9,9 @@ extends CharacterBody3D
 ## walks around obstacles along it and steers around other aliens; elsewhere it goes straight. Some
 ## strains keep away from their target (`strain.keep_away`: spitters back off), burrowers travel
 ## under the ground (`strain.burrows`: out of reach, only a `BurrowRipple` shows) and come up to
-## attack.
+## attack, and tenders mend the aliens around them (`strain.mend`: see `MendLinks`). A shrieker's
+## scream speeds up the aliens near it and calls for help (`called_for_help`, answered by the
+## nearest nest); in the hive's frenzy all of them are faster (see `status`).
 ## Its role (set from its strain by the nest) says what it goes for: guards stay by their nest
 ## (within `strain.leash` of where they hatched, walking back when a player gets away), hunters go
 ## for the nearest player outside however far away and never give up because of distance, and
@@ -27,6 +29,10 @@ extends CharacterBody3D
 signal died
 ## Emitted for every hit it takes, with the damage that got through and whether it hit armor.
 signal hit_taken(hit: Hit, dealt: float, armored: bool)
+## Emitted when it calls the hive for help at `at` (a shrieker's scream: emitted by
+## `AlienScream`): the nest nearest to it answers.
+@warning_ignore("unused_signal")
+signal called_for_help(at: Vector3)
 
 ## Guards wait until a player comes close, hunters go for players and raiders for miners.
 enum Role { GUARD, HUNTER, RAIDER }
@@ -44,8 +50,10 @@ const MIN_DAMAGE_SHARE: float = 0.25
 const STAGGER_DRAIN_TIME: float = 1.0
 ## How fast a push fades (per second).
 const PUSH_DECAY: float = 8.0
-## How much brighter the eyes glow when fully crouched for an attack.
+## How much brighter the eyes glow when fully crouched for an attack, and while it's faster than
+## its strain (a scream's boost, the hive's frenzy).
 const EYE_FLARE: float = 4.0
+const EYE_FLARE_FAST: float = 0.8
 ## A leap ends early when it moves slower than this share of its speed (it ran into something).
 const LUNGE_STALL: float = 0.3
 ## How far ahead it looks for a spot to back off to (m), see `AlienStrain.keep_away`.
@@ -93,6 +101,11 @@ var home := Vector3.INF
 ## stronger aliens (see `MissionSettings.alien_health_at`). Set before it enters the tree.
 var health_factor: float = 1.0
 var damage_factor: float = 1.0
+## A scream's boost, the hive's frenzy and a tender's link on it.
+var status := AlienStatus.new()
+## Where an attack under way wants it to face (horizontal; zero: at its target), e.g. a charge's
+## line.
+var attack_facing := Vector3.ZERO
 ## Current health, from 0 to `max_health()`.
 var health: float
 ## Dead aliens don't move or attack; they disappear after `DEATH_DURATION`.
@@ -103,8 +116,10 @@ var target: Node3D
 var ground_contact := GroundContact.new()
 ## How full the stagger meter is (see `AlienStrain.stagger_threshold`).
 var stagger: float = 0.0
-## Whether the leap under way hit already (see `AlienPounce`).
+## Whether the leap under way hit already (see `AlienPounce`), and whether it ended because it
+## ran into something.
 var lunge_hit: bool = false
+var lunge_stalled: bool = false
 ## Whether it's under the ground (burrowers): it can't be hit and doesn't block anyone.
 var underground: bool = false
 
@@ -179,6 +194,10 @@ func _ready() -> void:
 	if strain.burrows:
 		_ripple = BurrowRipple.new()
 		add_child(_ripple)
+	if strain.mend:
+		var links := MendLinks.new()
+		links.mend = strain.mend
+		add_child(links)
 	_update_look()
 	_body.scale = Vector3.ONE * 0.01
 	_hatch_tween = create_tween()
@@ -206,7 +225,12 @@ func _physics_process(delta: float) -> void:
 		_lunge_velocity = Vector3.ZERO
 		_process_attack(delta)
 		lunging = _lunge_velocity != Vector3.ZERO
-		facing = _lunge_direction if lunging else _offset_to(target)
+		if lunging:
+			facing = _lunge_direction
+		elif attack_facing != Vector3.ZERO:
+			facing = attack_facing
+		else:
+			facing = _offset_to(target)
 	elif not target and strain.leash > 0.0 and role != Role.HUNTER:
 		# Back to where it hatched.
 		var back: Vector3 = home - global_position
@@ -239,7 +263,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		horizontal = Vector3(velocity.x, 0.0, velocity.z) - _push_applied
 		horizontal = horizontal.move_toward(
-			wanted * strain.move_speed * ground_contact.speed(),
+			wanted * strain.move_speed * status.speed() * ground_contact.speed(),
 			strain.acceleration * ground_contact.grip() * delta
 		)
 	horizontal += _push
@@ -258,7 +282,7 @@ func _physics_process(delta: float) -> void:
 	if _agent.avoidance_enabled != avoiding:
 		_agent.avoidance_enabled = avoiding
 	if avoiding:
-		_agent.max_speed = strain.move_speed + _push.length()
+		_agent.max_speed = strain.move_speed * status.speed() + _push.length()
 		_agent.velocity = horizontal
 	else:
 		_on_velocity_computed(horizontal)
@@ -341,25 +365,27 @@ func is_staggered() -> bool:
 
 
 ## Starts a leap of `length` m along `direction` (horizontal), arcing `height` m (see
-## `AlienPounce`).
-func lunge(direction: Vector3, length: float, height: float) -> void:
+## `AlienPounce`); `running`, it runs on its legs instead (a charge, see `AlienCharge`).
+func lunge(direction: Vector3, length: float, height: float, running: bool = false) -> void:
 	_lunge_direction = direction
 	_lunge_length = length
 	lunge_hit = false
+	lunge_stalled = false
 	_pose.leap_height = height
 	_pose.leap = 0.0
-	# The legs hang in the clip's pose in the air.
-	_legs.active = false
+	# In a leap, the legs hang in the clip's pose in the air.
+	_legs.active = running
 
 
 ## Goes on with the leap at `speed`, `travelled` m into it. Returns whether it's over (its length
-## reached, or it ran into something).
+## reached, or it ran into something: `lunge_stalled`).
 func lunge_step(speed: float, travelled: float) -> bool:
 	_pose.leap = clampf(travelled / _lunge_length, 0.0, 1.0) if _lunge_length > 0.0 else 1.0
 	if travelled >= _lunge_length:
 		return true
 	var real := get_real_velocity()
 	if travelled > 0.0 and Vector2(real.x, real.z).length() < speed * LUNGE_STALL:
+		lunge_stalled = true
 		return true
 	_lunge_velocity = _lunge_direction * speed
 	return false
@@ -395,21 +421,31 @@ func surface() -> void:
 func take_hit(hit: Hit) -> float:
 	if dead or underground or hit.damage <= 0.0:
 		return 0.0
-	var armored: bool = strain.armor > 0.0 and _on_armor(hit.direction)
+	var armor: float = _armor_against(hit.direction)
+	var armored: bool = armor > 0.0
 	var dealt: float = hit.damage
 	if armored:
-		dealt = maxf(hit.damage - strain.armor, hit.damage * MIN_DAMAGE_SHARE)
+		dealt = maxf(hit.damage - armor, hit.damage * MIN_DAMAGE_SHARE)
 	_push += hit.direction * hit.push * strain.knockback
 	if is_inside_tree():
 		HitSpray.spawn(get_parent(), hit.point, hit.direction, armored)
 	_pose.jolt()
 	if _staggered == 0.0:
-		stagger += hit.stagger
+		var on_plates: bool = strain.armor > 0.0 and _on_armor(hit.direction)
+		stagger += hit.stagger * (strain.armored_stagger if on_plates else 1.0)
 		if stagger >= strain.stagger_threshold:
 			_stagger()
 	hit_taken.emit(hit, dealt, armored)
 	take_damage(dealt)
 	return dealt
+
+
+## Stops it for `seconds`, its attack broken off (a stagger; a charge into a wall).
+func stagger_for(seconds: float) -> void:
+	stagger = 0.0
+	_staggered = maxf(_staggered, seconds)
+	_pose.stagger(seconds)
+	_end_attack()
 
 
 ## Loses `amount` health, past its armor (burning ground, the debug overlay); dies at zero.
@@ -511,6 +547,7 @@ func _start_attack(distance: float) -> bool:
 		_cooldowns[attack] = attack.cooldown
 		_phase = AttackPhase.WIND_UP
 		_phase_time = 0.0
+		attack.prepare(self)
 		_process_attack(0.0)
 		return true
 	return false
@@ -558,10 +595,13 @@ func _end_attack() -> void:
 		if not underground and not dead:
 			_legs.plant_all()
 			_legs.active = true
+	if _attack:
+		_attack.finish(self)
 	_attack = null
 	_phase = AttackPhase.NONE
 	_phase_time = 0.0
 	_pose.crouch = 0.0
+	attack_facing = Vector3.ZERO
 
 
 ## Ends a leap, if one is under way: back on its feet.
@@ -610,19 +650,26 @@ func _hide_model() -> void:
 
 
 func _stagger() -> void:
-	stagger = 0.0
-	_staggered = strain.stagger_time
-	_pose.stagger(strain.stagger_time)
-	_end_attack()
+	stagger_for(strain.stagger_time)
 
 
 func _count_down(delta: float) -> void:
 	for attack: AlienAttack in _cooldowns:
 		_cooldowns[attack] = maxf(_cooldowns[attack] - delta, 0.0)
 	_staggered = maxf(_staggered - delta, 0.0)
+	status.tick(delta)
 	if not underground:
 		_surfaced_for += delta
 	stagger = maxf(stagger - strain.stagger_threshold / STAGGER_DRAIN_TIME * delta, 0.0)
+
+
+## The armor a hit travelling along `direction` meets: its strain's on the armored side, and a
+## tender's on every side.
+func _armor_against(direction: Vector3) -> float:
+	var armor: float = status.bonus_armor
+	if strain.armor > 0.0 and _on_armor(direction):
+		armor += strain.armor
+	return armor
 
 
 ## Whether a hit travelling along `direction` lands on the armored side.
@@ -689,8 +736,13 @@ func _update_look() -> void:
 	if _flash_left > 0.0:
 		shade = COLOR_FLASH
 	_overlay.albedo_color = shade
+	var fast: float = EYE_FLARE_FAST if status.is_fast() else 0.0
+	# A clip that is the telegraph (rearing up, swelling) brightens them over its wind-up.
+	var winding: float = _pose.crouched()
+	if _phase == AttackPhase.WIND_UP and _attack.clip_lead > 0.0 and _attack.wind_up > 0.0:
+		winding = maxf(winding, _phase_time / _attack.wind_up)
 	for i: int in _glows.size():
-		var flare: float = 1.0 + EYE_FLARE * _pose.crouched()
+		var flare: float = 1.0 + fast + EYE_FLARE * winding
 		_glows[i].emission_energy_multiplier = _glow_energies[i] * flare
 
 
@@ -705,6 +757,8 @@ func _die() -> void:
 	dead = true
 	target = null
 	_end_attack()
+	for attack: AlienAttack in strain.attacks:
+		attack.on_death(self)
 	if _dig_tween:
 		_dig_tween.kill()
 	underground = false

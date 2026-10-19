@@ -24,6 +24,16 @@ extends Resource
 @export var max_raiders_start: float = 1.0
 ## ... and when the storm hits.
 @export var max_raiders_end: float = 2.0
+## Each working miner makes its nearest nest send raiders this much more often (+10 %), one on a
+## signature ore `raider_draw_signature` (+20 %): a big mining site gets busy.
+@export var raider_draw: float = 0.1
+@export var raider_draw_signature: float = 0.2
+## In the hive's frenzy (from the storm's warning on, see `AlienNest.is_frenzied`) aliens are this
+## much faster, and hunters hatch at their end values (interval and how many may be out).
+@export var frenzy_speed: float = 1.15
+## A nest answers a scream (`Alien.called_for_help`) at most this often (s): it sends its next pack
+## of hunters right away.
+@export var call_cooldown: float = 15.0
 ## Aliens hatch this far from the nest's center (horizontally, in m). Far enough out that waiting
 ## guards don't block the paths that hug the nest.
 @export var hatch_radius: float = 3.5

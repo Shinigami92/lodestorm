@@ -9,9 +9,12 @@ extends Node3D
 ## hunters are down below the limit, the next pack hatches a full interval later. Raiders (of the
 ## raiders' strains, the gnawer) go for miners and escalate the same way with their own values, one
 ## by one; they only hatch while a miner works, the first one a full interval after that. The glow
-## in the nest's mouth pulses faster as the hive escalates. Aliens hatch stronger on bodies farther
-## in (see `MissionSettings.alien_health_at`). Nests wait while the living aliens reach the cap
-## (`AlienNestSettings.alien_cap`).
+## in the nest's mouth pulses faster as the hive escalates. Each working miner draws raiders: its
+## nearest nest sends them more often (`AlienNestSettings.raider_draw`). From the storm's warning on
+## the hive frenzies: its aliens are faster and hunters hatch at their highest rate. A scream
+## (`Alien.called_for_help`) makes the nest nearest to the shrieker send its next pack right away.
+## Aliens hatch stronger on bodies farther in (see `MissionSettings.alien_health_at`). Nests wait
+## while the living aliens reach the cap (`AlienNestSettings.alien_cap`).
 
 ## Emitted when an alien hatches.
 signal hatched(alien: Alien)
@@ -25,6 +28,8 @@ const PULSE_RATE_FRENZY: float = 2.0
 ## Glow energy at the low and the high point of a pulse.
 const GLOW_ENERGY_MIN: float = 0.5
 const GLOW_ENERGY_MAX: float = 4.0
+## Seconds between looks at which miners draw raiders to it.
+const DRAW_INTERVAL: float = 1.0
 
 @export var settings: AlienNestSettings
 ## The strains and packs it hatches from (see `table`).
@@ -37,8 +42,10 @@ var table: HatchTable
 ## allowed are out.
 var hunter_cooldown: float
 ## Seconds until the next raider hatches; only counts down while a miner works and fewer raiders
-## than allowed are out.
+## than allowed are out, faster with the miners it draws (`raider_draw_factor`).
 var raider_cooldown: float
+## How much faster raiders hatch for the working miners nearest to it (1: none).
+var raider_draw_factor: float = 1.0
 
 var _hunters: Array[Alien] = []
 var _raiders: Array[Alien] = []
@@ -46,6 +53,9 @@ var _mission: Mission
 var _rng := RandomNumberGenerator.new()
 ## Pulse phase in turns.
 var _pulse: float = 0.0
+var _until_draw: float = 0.0
+## Seconds until it answers a scream again.
+var _call_cooldown: float = 0.0
 var _glow := StandardMaterial3D.new()
 
 ## The look lives in the `Model` child; its `Mouth` and `Glands` meshes pulse with the glow.
@@ -77,15 +87,34 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var level: float = escalation()
-	_pulse = fmod(_pulse + delta * lerpf(PULSE_RATE_CALM, PULSE_RATE_FRENZY, level), 1.0)
+	var frenzied: bool = is_frenzied()
+	var pulse_level: float = 1.0 if frenzied else level
+	_pulse = fmod(_pulse + delta * lerpf(PULSE_RATE_CALM, PULSE_RATE_FRENZY, pulse_level), 1.0)
+	_call_cooldown = maxf(_call_cooldown - delta, 0.0)
+	var speed: float = settings.frenzy_speed if frenzied else 1.0
+	for child: Node in get_children():
+		if child is Alien:
+			(child as Alien).status.hive_speed = speed
 	if not (_find_mission() and _mission.is_running()):
 		return
+	# The frenzy sends hunters at their highest rate, from its start on.
+	var hunting: float = 1.0 if frenzied else level
+	if frenzied:
+		hunter_cooldown = minf(hunter_cooldown, hunter_interval(1.0))
 	hunter_cooldown = _count_down(
-		Alien.Role.HUNTER, hunter_cooldown, hunter_interval(level), max_hunters(level), delta
+		Alien.Role.HUNTER, hunter_cooldown, hunter_interval(hunting), max_hunters(hunting), delta
 	)
+	_until_draw -= delta
+	if _until_draw <= 0.0:
+		_until_draw = DRAW_INTERVAL
+		raider_draw_factor = _draw_factor()
 	var raider_limit: float = max_raiders(level) if Miner.any_working(get_tree()) else 0.0
 	raider_cooldown = _count_down(
-		Alien.Role.RAIDER, raider_cooldown, raider_interval(level), raider_limit, delta
+		Alien.Role.RAIDER,
+		raider_cooldown,
+		raider_interval(level),
+		raider_limit,
+		delta * raider_draw_factor
 	)
 
 
@@ -124,8 +153,32 @@ func hatch(role: Alien.Role, strain: AlienStrain = null) -> Alien:
 		var sent_out: Array[Alien] = _hunters if role == Alien.Role.HUNTER else _raiders
 		sent_out.append(alien)
 		alien.died.connect(func() -> void: sent_out.erase(alien))
+	alien.called_for_help.connect(_on_called_for_help)
 	hatched.emit(alien)
 	return alien
+
+
+## Answers a scream: sends its next pack of hunters right away (unless the cap is reached), at most
+## every `settings.call_cooldown`. Returns the pack (none while it waits).
+func answer_call() -> Array[Alien]:
+	var pack: Array[Alien] = []
+	if _call_cooldown > 0.0:
+		return pack
+	pack = hatch_pack()
+	if not pack.is_empty():
+		_call_cooldown = settings.call_cooldown
+		hunter_cooldown = hunter_interval(escalation())
+	return pack
+
+
+## Whether the hive frenzies: from the mission's storm warning on, and during the storm (never
+## without a mission).
+func is_frenzied() -> bool:
+	if not _find_mission():
+		return false
+	if _mission.state == Mission.State.STORM:
+		return true
+	return _mission.state == Mission.State.RUNNING and _mission.time_left <= _mission.warning_time()
 
 
 ## How far the hive has escalated, from 0 to 1 (the mission's progress; 0 without a mission).
@@ -224,6 +277,39 @@ func _any_strain(role: Alien.Role) -> AlienStrain:
 		var members: Array[AlienStrain] = pack.aliens()
 		return members[_rng.randi() % members.size()]
 	return hive.strains[0]
+
+
+## How much faster raiders hatch for the working miners whose nearest nest it is: each adds
+## `settings.raider_draw`, one on a signature ore `settings.raider_draw_signature`.
+func _draw_factor() -> float:
+	var factor: float = 1.0
+	var nests: Array[Node] = get_tree().get_nodes_in_group(GROUP)
+	for miner: Miner in get_tree().get_nodes_in_group(Miner.GROUP):
+		if miner.broken or _nearest_nest(nests, miner.global_position) != self:
+			continue
+		var signature: bool = miner.ore_type and miner.ore_type.band == OreType.Band.SIGNATURE
+		factor += settings.raider_draw_signature if signature else settings.raider_draw
+	return factor
+
+
+## The nest of `nests` nearest to `point` (horizontally), or null.
+static func _nearest_nest(nests: Array[Node], point: Vector3) -> AlienNest:
+	var nearest: AlienNest
+	var nearest_distance: float = INF
+	for nest: AlienNest in nests:
+		var offset: Vector3 = nest.global_position - point
+		var distance: float = Vector2(offset.x, offset.z).length()
+		if distance < nearest_distance:
+			nearest = nest
+			nearest_distance = distance
+	return nearest
+
+
+## The nest nearest to a scream answers it.
+func _on_called_for_help(at: Vector3) -> void:
+	var nearest: AlienNest = _nearest_nest(get_tree().get_nodes_in_group(GROUP), at)
+	if nearest:
+		nearest.answer_call()
 
 
 ## Looks the mission up until it's found (it may be set up after the nest).

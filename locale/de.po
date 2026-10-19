@@ -4,6 +4,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: game/aliens/strains/bloater/bloater.tres
+msgid "Bloater"
+msgstr "Bläher"
+
+#: game/aliens/strains/brute/brute.tres
+msgid "Brute"
+msgstr "Rammer"
+
 #: game/aliens/strains/burrower/burrower.tres
 msgid "Burrower"
 msgstr "Wühler"
@@ -16,6 +24,10 @@ msgstr "Nager"
 msgid "Mite"
 msgstr "Milbe"
 
+#: game/aliens/strains/shrieker/shrieker.tres
+msgid "Shrieker"
+msgstr "Kreischer"
+
 #: game/aliens/strains/spitter/spitter.tres
 msgid "Spitter"
 msgstr "Spucker"
@@ -23,6 +35,10 @@ msgstr "Spucker"
 #: game/aliens/strains/swarmer/swarmer.tres
 msgid "Swarmer"
 msgstr "Schwärmer"
+
+#: game/aliens/strains/tender/tender.tres
+msgid "Tender"
+msgstr "Heiler"
 
 #: game/aliens/strains/warden/warden.tres
 msgid "Warden"

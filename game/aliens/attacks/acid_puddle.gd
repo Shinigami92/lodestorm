@@ -6,15 +6,19 @@ extends Node3D
 
 ## How often it hurts, in s.
 const TICK: float = 0.5
-## Who stands this much higher or lower than the puddle isn't in it (m).
-const REACH_HEIGHT: float = 1.0
 ## Seconds it takes to fade out at the end.
 const FADE_TIME: float = 1.0
+## How brightly the acid glows, per unit of `opacity`.
+const GLOW: float = 3.0
 
 var radius: float = 1.5
 var lifetime: float = 4.0
 ## Damage per second.
 var damage_per_second: float = 6.0
+## Who stands this much higher or lower than the puddle isn't in it (m).
+var reach_height: float = 1.0
+## How strongly the acid on the ground shows.
+var opacity: float = 0.4
 
 var _left: float
 var _until_hurt: float = TICK
@@ -36,11 +40,11 @@ static func spawn(
 
 func _ready() -> void:
 	_left = lifetime
-	_material.albedo_color = Color(Alien.COLOR_GLOW, 0.4)
+	_material.albedo_color = Color(Alien.COLOR_GLOW, opacity)
 	_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_material.emission_enabled = true
 	_material.emission = Alien.COLOR_GLOW
-	_material.emission_energy_multiplier = 1.2
+	_material.emission_energy_multiplier = GLOW * opacity
 	_material.roughness = 0.1
 	var disc := CylinderMesh.new()
 	disc.top_radius = radius
@@ -69,14 +73,14 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(_delta: float) -> void:
-	_material.albedo_color.a = 0.4 * clampf(_left / FADE_TIME, 0.0, 1.0)
-	_material.emission_energy_multiplier = 1.2 * clampf(_left / FADE_TIME, 0.0, 1.0)
+	_material.albedo_color.a = opacity * clampf(_left / FADE_TIME, 0.0, 1.0)
+	_material.emission_energy_multiplier = GLOW * opacity * clampf(_left / FADE_TIME, 0.0, 1.0)
 
 
 ## Whether `node` stands in it.
 func covers(node: Node3D) -> bool:
 	var offset: Vector3 = node.global_position - global_position
-	if absf(offset.y) > REACH_HEIGHT:
+	if absf(offset.y) > reach_height:
 		return false
 	var reach: float = radius + ((node as Miner).body_radius if node is Miner else 0.0)
 	return Vector2(offset.x, offset.z).length() <= reach

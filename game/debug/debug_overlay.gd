@@ -167,6 +167,72 @@ const TUNING: Dictionary[String, Array] = {
 		["raider_interval_end", 1.0, 300.0, 1.0],
 		["max_raiders_start", 0.0, 20.0, 0.25],
 		["max_raiders_end", 0.0, 20.0, 0.25],
+		["raider_draw", 0.0, 1.0, 0.05],
+		["raider_draw_signature", 0.0, 1.0, 0.05],
+		["frenzy_speed", 1.0, 2.0, 0.05],
+		["call_cooldown", 0.0, 60.0, 1.0],
+	],
+	"res://game/aliens/strains/brute/brute.tres":
+	[
+		["max_health", 1.0, 600.0, 5.0],
+		["armor", 0.0, 50.0, 1.0],
+		["armor_arc", 0.0, 360.0, 5.0],
+		["armored_stagger", 0.0, 1.0, 0.05],
+		["stagger_threshold", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["turn_speed", 0.5, 20.0, 0.5],
+	],
+	"res://game/aliens/strains/brute/charge.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["cooldown", 0.5, 20.0, 0.5],
+		["wind_up", 0.0, 3.0, 0.05],
+		["recovery", 0.0, 3.0, 0.05],
+		["max_range", 2.0, 30.0, 0.5],
+		["charge_speed", 2.0, 30.0, 0.5],
+		["width", 0.3, 3.0, 0.1],
+		["daze", 0.0, 5.0, 0.1],
+	],
+	"res://game/aliens/strains/shrieker/shrieker.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["stagger_threshold", 1.0, 200.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["keep_away", 0.0, 25.0, 0.5],
+	],
+	"res://game/aliens/strains/shrieker/scream.tres":
+	[
+		["reach", 2.0, 40.0, 0.5],
+		["cooldown", 0.5, 30.0, 0.5],
+		["radius", 1.0, 40.0, 0.5],
+		["boost", 1.0, 2.0, 0.05],
+		["boost_time", 0.0, 20.0, 0.5],
+	],
+	"res://game/aliens/strains/bloater/bloater.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+	],
+	"res://game/aliens/strains/bloater/burst.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["radius", 0.5, 8.0, 0.1],
+		["cloud_time", 0.0, 20.0, 0.5],
+		["cloud_damage", 0.0, 50.0, 1.0],
+	],
+	"res://game/aliens/strains/tender/tender.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["keep_away", 0.0, 25.0, 0.5],
+	],
+	"res://game/aliens/strains/tender/mend.tres":
+	[
+		["links", 0.0, 8.0, 1.0],
+		["link_range", 1.0, 30.0, 0.5],
+		["break_range", 1.0, 40.0, 0.5],
+		["heal_per_second", 0.0, 50.0, 0.5],
+		["armor", 0.0, 30.0, 0.5],
 	],
 }
 const PANEL_WIDTH: float = 460.0

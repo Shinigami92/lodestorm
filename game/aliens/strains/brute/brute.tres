@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://ccag78eih83kc"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bkrh11gq2cv4i" path="res://game/aliens/strains/brute/brute.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://bmlpm86qq1mpa" path="res://game/aliens/strains/brute/charge.tres" id="4_charge"]
+[ext_resource type="Resource" uid="uid://csmduy8sfpxx7" path="res://game/aliens/strains/brute/gore.tres" id="5_gore"]
+
+[resource]
+script = ExtResource("1_script")
+scene = ExtResource("2_scene")
+display_name = "Brute"
+tier = 3
+role = 1
+max_health = 200.0
+armor = 8.0
+armor_arc = 160.0
+armored_stagger = 0.3
+stagger_threshold = 70.0
+stagger_time = 0.8
+knockback = 0.2
+stride = 1.2
+move_speed = 4.2
+acceleration = 14.0
+turn_speed = 3.5
+detection_range = 20.0
+chase_range = 24.0
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_charge"), ExtResource("5_gore")])

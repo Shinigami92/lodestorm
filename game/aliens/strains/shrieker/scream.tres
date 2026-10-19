@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AlienScream" format=3 uid="uid://dh1rsrw7abdnf"]
+
+[ext_resource type="Script" uid="uid://lrssjbxosvus" path="res://game/aliens/attacks/alien_scream.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage = 0.0
+reach = 22.0
+cooldown = 8.0
+wind_up = 1.0
+recovery = 0.6
+clip_lead = 1.0
+against_miners = false
+radius = 15.0
+boost = 1.25
+boost_time = 6.0

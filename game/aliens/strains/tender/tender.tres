@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://dlonkypjau511"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cilgn6xhscr7k" path="res://game/aliens/strains/tender/tender.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://duhard0pc2fe" path="res://game/aliens/strains/tender/lash.tres" id="4_lash"]
+[ext_resource type="Resource" uid="uid://bptexvfixmfvs" path="res://game/aliens/strains/tender/mend.tres" id="9_mend"]
+
+[resource]
+script = ExtResource("1_script")
+scene = ExtResource("2_scene")
+display_name = "Tender"
+tier = 4
+role = 1
+max_health = 55.0
+stagger_threshold = 20.0
+move_speed = 4.6
+detection_range = 20.0
+chase_range = 24.0
+keep_away = 9.0
+mend = ExtResource("9_mend")
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_lash")])

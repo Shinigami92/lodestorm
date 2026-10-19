@@ -39,8 +39,23 @@ func approach() -> float:
 	return reach
 
 
+## Called once when the wind-up starts (a telegraph on the ground, where to face).
+func prepare(_alien: Alien) -> void:
+	pass
+
+
 ## Called once when the wind-up is over.
 func begin(_alien: Alien) -> void:
+	pass
+
+
+## Called once when the attack ends or is broken off (a stagger, death), after `prepare`.
+func finish(_alien: Alien) -> void:
+	pass
+
+
+## Called once when the alien dies, however (a bloater bursts).
+func on_death(_alien: Alien) -> void:
 	pass
 
 

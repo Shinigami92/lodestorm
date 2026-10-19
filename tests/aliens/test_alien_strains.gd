@@ -1,10 +1,14 @@
 extends GutTest
 ## The tier 1 and 2 strains besides the swarmer: the mite, the spitter (keeping away, its acid) and
-## the burrower (under the ground, its bite from below).
+## the burrower (under the ground, its bite from below), and the guards' and raiders' own strains:
+## the warden (its leash, its slam) and the gnawer.
 
 const MITE: AlienStrain = preload("res://game/aliens/strains/mite/mite.tres")
 const SPITTER: AlienStrain = preload("res://game/aliens/strains/spitter/spitter.tres")
 const BURROWER: AlienStrain = preload("res://game/aliens/strains/burrower/burrower.tres")
+const WARDEN: AlienStrain = preload("res://game/aliens/strains/warden/warden.tres")
+const GNAWER: AlienStrain = preload("res://game/aliens/strains/gnawer/gnawer.tres")
+const MINER_SCENE: PackedScene = preload("res://game/mining/miner.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 
 var _arena: Node3D
@@ -148,9 +152,74 @@ func test_moving_away_during_the_bulge_dodges_the_bite() -> void:
 	assert_eq(_player.health, before)
 
 
+func test_the_warden_guards_within_its_leash() -> void:
+	var warden: Alien = _spawn(WARDEN, Vector3(10.0, 0.0, 0.0), true, Alien.Role.GUARD)
+	warden.strain.attacks = []
+	await _wait_physics(0.2)
+	assert_eq(warden.target, _player, "a player close by")
+	_player.global_position = Vector3(10.0 - WARDEN.leash - 5.0, 0.0, 0.0)
+	await _wait_physics(0.2)
+	assert_null(warden.target, "lets go beyond its leash")
+	warden.global_position = Vector3(16.0, 0.0, 0.0)
+	await _wait_physics(3.0)
+	var away: float = warden.global_position.distance_to(warden.home)
+	assert_lt(away, Alien.HOME_RADIUS + 0.5, "walks back")
+
+
+func test_the_slam_hits_players_in_front() -> void:
+	var warden: Alien = _spawn(WARDEN, Vector3(2.5, 0.0, 0.0), false, Alien.Role.GUARD)
+	var slam := WARDEN.attacks[0] as AlienSlam
+	var before: float = _player.health
+	await _wait_until_winding_up(warden, 3.0)
+	await _wait_physics(slam.wind_up + 0.1)
+	assert_almost_eq(_player.health, before - slam.damage, 0.01)
+
+
+func test_stepping_out_of_the_slam_dodges_it() -> void:
+	var warden: Alien = _spawn(WARDEN, Vector3(2.5, 0.0, 0.0), false, Alien.Role.GUARD)
+	var slam := WARDEN.attacks[0] as AlienSlam
+	var before: float = _player.health
+	await _wait_until_winding_up(warden, 3.0)
+	_player.global_position = Vector3(0.0, 0.0, 4.0)
+	await _wait_physics(slam.wind_up + 0.1)
+	assert_eq(_player.health, before)
+
+
+func test_the_gnawer_bites_only_a_player_in_its_way() -> void:
+	var miner := MINER_SCENE.instantiate() as Miner
+	miner.settings = miner.settings.duplicate() as MinerSettings
+	miner.settings.hose_range = 0.0
+	miner.settings.repair_range = 0.0
+	miner.position = Vector3(-30.0, 0.0, 0.0)
+	_arena.add_child(miner)
+	var gnawer: Alien = _spawn(GNAWER, Vector3(8.0, 0.0, 5.0), false, Alien.Role.RAIDER)
+	await _wait_physics(0.2)
+	assert_eq(gnawer.target, miner)
+	var before: float = _player.health
+	_player.global_position = gnawer.global_position + Vector3(-1.0, 0.0, 0.0)
+	await _wait_physics(0.5)
+	assert_lt(_player.health, before, "in its way")
+	_player.global_position = Vector3(0.0, 0.0, 30.0)
+	await _wait_physics(0.3)
+	assert_eq(gnawer.target, miner, "back to the miner")
+
+
+func test_raiders_without_a_miner_go_back_and_guard() -> void:
+	var gnawer: Alien = _spawn(GNAWER, Vector3(30.0, 0.0, 0.0), false, Alien.Role.RAIDER)
+	_player.global_position = Vector3(-20.0, 0.0, 0.0)
+	await _wait_physics(0.2)
+	assert_null(gnawer.target, "no miner, the player is far from its home")
+	gnawer.global_position = Vector3(24.0, 0.0, 0.0)
+	await _wait_physics(2.0)
+	var away: float = gnawer.global_position.distance_to(gnawer.home)
+	assert_lt(away, Alien.HOME_RADIUS + 0.5)
+
+
 ## An alien of `strain` at `at`; `own` gives it its own copy of the strain to change.
-func _spawn(strain: AlienStrain, at: Vector3, own: bool = false) -> Alien:
-	var alien: Alien = strain.spawn(Alien.Role.HUNTER)
+func _spawn(
+	strain: AlienStrain, at: Vector3, own: bool = false, role: Alien.Role = Alien.Role.HUNTER
+) -> Alien:
+	var alien: Alien = strain.spawn(role)
 	if own:
 		alien.strain = strain.duplicate() as AlienStrain
 	alien.position = at

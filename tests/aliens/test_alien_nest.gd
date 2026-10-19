@@ -4,6 +4,8 @@ const NEST_SCENE: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn"
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const MITE: AlienStrain = preload("res://game/aliens/strains/mite/mite.tres")
+const WARDEN: AlienStrain = preload("res://game/aliens/strains/warden/warden.tres")
+const GNAWER: AlienStrain = preload("res://game/aliens/strains/gnawer/gnawer.tres")
 
 var _map: Node3D
 var _mission: Mission
@@ -23,7 +25,7 @@ func before_each() -> void:
 		nest.queue_free()
 	_nest = NEST_SCENE.instantiate() as AlienNest
 	_nest.settings = _nest.settings.duplicate() as AlienNestSettings
-	_nest.settings.guard_packs = 2
+	_nest.settings.guards = 2
 	# Packs of one swarmer, so the counts below are aliens.
 	_nest.table = _one_swarmer_packs()
 	_nest.position = _ship.to_global(Vector3(55.0, 0.0, 0.0))
@@ -34,9 +36,10 @@ func before_each() -> void:
 
 func test_guards_hatch_around_the_nest() -> void:
 	var aliens: Array[Alien] = _aliens()
-	assert_eq(aliens.size(), _nest.settings.guard_packs)
+	assert_eq(aliens.size(), _nest.settings.guards)
 	for alien: Alien in aliens:
 		assert_eq(alien.role, Alien.Role.GUARD)
+		assert_eq(alien.strain, WARDEN, "guards are wardens")
 		var offset: Vector3 = alien.global_position - _nest.global_position
 		assert_almost_eq(Vector2(offset.x, offset.z).length(), _nest.settings.hatch_radius, 0.3)
 
@@ -203,7 +206,7 @@ func _one_swarmer_packs() -> HatchTable:
 	var pack := AlienPack.new()
 	pack.members = {SWARMER: 1}
 	var hive := AlienHive.new()
-	hive.strains = [SWARMER]
+	hive.strains = [SWARMER, WARDEN, GNAWER]
 	hive.packs = [pack]
 	return hive.table(1)
 
@@ -239,14 +242,11 @@ func test_hunters_hatch_as_packs_and_count_by_cap_share() -> void:
 		assert_eq(hunter.strain, mite)
 
 
-func test_raiders_hatch_by_raider_weight() -> void:
-	var mite: AlienStrain = MITE
-	var hive := AlienHive.new()
-	hive.strains = [mite, SWARMER]
-	_nest.table = hive.table(1)
-	assert_eq(mite.raider_weight, 0.0, "mites don't raid")
-	for i: int in 10:
-		assert_eq(_nest.hatch(Alien.Role.RAIDER).strain, SWARMER)
+func test_raiders_and_guards_are_their_own_strains() -> void:
+	for i: int in 5:
+		assert_eq(_nest.hatch(Alien.Role.RAIDER).strain, GNAWER)
+		assert_eq(_nest.hatch(Alien.Role.GUARD).strain, WARDEN)
+		assert_eq(_nest.hatch(Alien.Role.HUNTER).strain, SWARMER)
 
 
 func test_guards_take_only_their_share_of_the_cap() -> void:
@@ -258,4 +258,4 @@ func test_guards_take_only_their_share_of_the_cap() -> void:
 	_map.add_child(nest)
 	await wait_physics_frames(2)
 	assert_eq(get_tree().get_nodes_in_group(Alien.GROUP).filter(nest.is_ancestor_of).size(), 0)
-	assert_eq(nest.hatch_pack(Alien.Role.HUNTER).size(), 1, "hunters still come")
+	assert_eq(nest.hatch_pack().size(), 1, "hunters still come")

@@ -1,9 +1,9 @@
 class_name HatchTable
 extends RefCounted
 ## What a location's nests hatch (built by `AlienHive.table`): which strains, from which point of
-## the hive's escalation on, and which of the hive's packs that allows. Hunters and guards come in
-## packs, raiders one by one (by `AlienStrain.raider_weight`); strains the biome favors come more
-## often.
+## the hive's escalation on, and which of the hive's packs that allows. Hunters come in packs,
+## guards and raiders one by one from the strains of their role (by `AlienStrain.weight`); strains
+## the biome favors come more often.
 
 var hive: AlienHive
 ## The escalation from which each strain hatches; strains not in it don't hatch here.
@@ -53,18 +53,16 @@ func pick_pack(rng: RandomNumberGenerator, level: float) -> AlienPack:
 	return usable[index] if index >= 0 else null
 
 
-## A raider's strain at escalation `level`, or null when none raids.
-func pick_raider(rng: RandomNumberGenerator, level: float) -> AlienStrain:
-	var raiders: Array[AlienStrain] = []
+## A strain of `role` (a guard's or a raider's) at escalation `level`, or null when none hatches.
+func pick_single(rng: RandomNumberGenerator, level: float, role: Alien.Role) -> AlienStrain:
+	var candidates: Array[AlienStrain] = []
 	var weights: Array[float] = []
 	for strain: AlienStrain in strains_at(level):
-		if strain.raider_weight > 0.0:
-			raiders.append(strain)
-			weights.append(
-				strain.raider_weight * (hive.favored_weight if strain in favored else 1.0)
-			)
+		if strain.role == role and strain.weight > 0.0:
+			candidates.append(strain)
+			weights.append(strain.weight * (hive.favored_weight if strain in favored else 1.0))
 	var index: int = _pick(rng, weights)
-	return raiders[index] if index >= 0 else null
+	return candidates[index] if index >= 0 else null
 
 
 func _pick(rng: RandomNumberGenerator, weights: Array[float]) -> int:

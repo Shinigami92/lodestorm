@@ -65,6 +65,12 @@ func attack() -> void:
 		set(&"parameters/attack/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 
 
+## Breaks off the attack clip (a stagger).
+func stop_attack() -> void:
+	if tree_root:
+		set(&"parameters/attack/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_ABORT)
+
+
 func _process(_delta: float) -> void:
 	if not tree_root:
 		return

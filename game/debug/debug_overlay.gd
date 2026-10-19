@@ -158,7 +158,7 @@ const TUNING: Dictionary[String, Array] = {
 	],
 	"res://game/aliens/nest/alien_nest_settings.tres":
 	[
-		["guard_packs", 0.0, 5.0, 1.0],
+		["guards", 0.0, 5.0, 1.0],
 		["hunter_interval_start", 1.0, 300.0, 1.0],
 		["hunter_interval_end", 1.0, 300.0, 1.0],
 		["max_hunters_start", 0.0, 20.0, 0.25],
@@ -310,13 +310,14 @@ func kill_aliens() -> void:
 ## Lets every nest hatch a pack of hunters right away.
 func hatch_hunters() -> void:
 	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
-		nest.hatch_pack(Alien.Role.HUNTER)
+		nest.hatch_pack()
 
 
-## Lets every nest hatch a hunter of `strain` right away (also one that doesn't hatch there).
+## Lets every nest hatch an alien of `strain` in its role right away (also one that doesn't hatch
+## there).
 func hatch_strain(strain: AlienStrain) -> void:
 	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
-		nest.hatch(Alien.Role.HUNTER, strain)
+		nest.hatch(strain.role, strain)
 
 
 ## Lets every nest hatch a raider right away.

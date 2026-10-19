@@ -10,7 +10,6 @@ script = ExtResource("1_script")
 display_name = "Spitter"
 scene = ExtResource("2_scene")
 tier = 2
-raider_weight = 0.5
 max_health = 40.0
 move_speed = 4.6
 detection_range = 20.0

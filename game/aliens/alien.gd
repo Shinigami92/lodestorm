@@ -10,10 +10,12 @@ extends CharacterBody3D
 ## strains keep away from their target (`strain.keep_away`: spitters back off), burrowers travel
 ## under the ground (`strain.burrows`: out of reach, only a `BurrowRipple` shows) and come up to
 ## attack.
-## Nests send out two more roles: hunters go for the nearest player outside however far away and
-## never give up because of distance, and raiders go for the nearest miner that still works,
-## however far away, and ignore players until no working miner is left; then they act like guards.
-## Raiders have a darker body. It grows out of the ground when it appears. Hits (`take_hit`) lose
+## Its role (set from its strain by the nest) says what it goes for: guards stay by their nest
+## (within `strain.leash` of where they hatched, walking back when a player gets away), hunters go
+## for the nearest player outside however far away and never give up because of distance, and
+## raiders go for the nearest miner that still works, however far away, biting only a player who
+## stands in their way; without a working miner they walk back and guard. It grows out of the
+## ground when it appears. Hits (`take_hit`) lose
 ## its armor's share, flash it white, spray ichor (sparks off armor), push it back and fill its
 ## stagger meter; past the strain's threshold it rears up, staggered, and its attack is broken off.
 ## At zero health it stops, collapses, sinks into the ground and disappears. Its legs step on
@@ -52,9 +54,8 @@ const BACK_OFF_STEP: float = 5.0
 const DIG_DISTANCE: float = 3.0
 ## How deep a burrower's body sinks under the ground (m).
 const BURROW_DEPTH: float = 1.2
-## Raiders are a different strain: a darker body (orange would look like the player). The
-## alpha is how much the shade covers the model.
-const COLOR_RAIDER := Color(0.0, 0.0, 0.0, 0.5)
+## Without a target, guards walk back once they're this far from where they hatched (m).
+const HOME_RADIUS: float = 1.5
 ## The rim light is weaker than on players and machines: the alien's many thin, curved parts
 ## would glow all over.
 const RIM_STRENGTH: float = 0.45
@@ -84,6 +85,9 @@ static var _rim: ShaderMaterial
 @export var strain: AlienStrain
 ## Hunters and raiders go for their target however far away and never let it get away by distance.
 @export var role := Role.GUARD
+## Where it hatched (global): guards (and raiders without a miner) stay near it. Set when it enters
+## the tree.
+var home := Vector3.INF
 
 ## How much stronger than its strain it is (more health, more damage): bodies farther in have
 ## stronger aliens (see `MissionSettings.alien_health_at`). Set before it enters the tree.
@@ -107,6 +111,8 @@ var underground: bool = false
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## The attack under way and its phase, and the seconds the phase has run.
 var _attack: AlienAttack
+## Whether the attack's clip moves the legs right now (see `AlienAttack.clip_lead`).
+var _clip_legs: bool = false
 var _phase := AttackPhase.NONE
 var _phase_time: float = 0.0
 ## Seconds until each attack can start again.
@@ -125,7 +131,7 @@ var _flash_left: float = 0.0
 var _surfaced_for: float = 0.0
 var _dig_tween: Tween
 var _ripple: BurrowRipple
-## Laid over the model: the raiders' shade, the hit flash, and the rim light as its next pass.
+## Laid over the model: the hit flash, and the rim light as its next pass.
 var _overlay := StandardMaterial3D.new()
 ## The eyes' and glands' own materials, flaring during a wind-up, and their usual energy.
 var _glows: Array[BaseMaterial3D] = []
@@ -143,6 +149,8 @@ var _pose := AlienPose.new()
 
 func _ready() -> void:
 	assert(strain != null, "Alien without a strain: hatch it with AlienStrain.spawn")
+	if home == Vector3.INF:
+		home = global_position
 	add_to_group(GROUP)
 	health = max_health()
 	_animator.run_speed = strain.move_speed
@@ -199,6 +207,11 @@ func _physics_process(delta: float) -> void:
 		_process_attack(delta)
 		lunging = _lunge_velocity != Vector3.ZERO
 		facing = _lunge_direction if lunging else _offset_to(target)
+	elif not target and strain.leash > 0.0 and role != Role.HUNTER:
+		# Back to where it hatched.
+		var back: Vector3 = home - global_position
+		if Vector2(back.x, back.z).length() > HOME_RADIUS:
+			wanted = _direction_to(home)
 	elif target:
 		var offset: Vector3 = _offset_to(target)
 		var distance: float = offset.length()
@@ -427,15 +440,19 @@ static func living_load(tree: SceneTree) -> float:
 	return total
 
 
-## Keeps chasing the target while it's in `strain.chase_range`, otherwise picks the nearest
-## prey in `strain.detection_range`. Hunters keep their prey and pick it from any distance.
-## Raiders keep their miner until it breaks and pick the nearest working one from any distance;
-## without one they act like guards.
+## Keeps chasing the target while it's in `strain.chase_range` (with a leash: while it's within
+## `strain.leash` of home), otherwise picks the nearest prey in `strain.detection_range`.
+## Hunters keep their prey and pick it from any distance. Raiders keep their miner until it
+## breaks and pick the nearest working one from any distance, turning on a player only while one
+## stands in reach; without a working miner they act like guards.
 func _update_target() -> void:
 	if role == Role.RAIDER and _update_miner_target():
+		var in_way: Player = _player_in_reach()
+		if in_way:
+			target = in_way
 		return
 	if target is Player and is_instance_valid(target) and is_prey(get_tree(), target as Player):
-		if role == Role.HUNTER or horizontal_distance(target) <= strain.chase_range:
+		if role == Role.HUNTER or _keeps_chasing(target):
 			return
 	target = null
 	var nearest_distance: float = INF if role == Role.HUNTER else strain.detection_range
@@ -443,9 +460,31 @@ func _update_target() -> void:
 		if not is_prey(get_tree(), player):
 			continue
 		var distance: float = horizontal_distance(player)
-		if distance <= nearest_distance:
+		if distance <= nearest_distance and (role == Role.HUNTER or _within_leash(player)):
 			target = player
 			nearest_distance = distance
+
+
+## Whether a guard (or a raider without a miner) keeps chasing `node`: within its chase range,
+## and with a leash, not too far from home.
+func _keeps_chasing(node: Node3D) -> bool:
+	return horizontal_distance(node) <= strain.chase_range and _within_leash(node)
+
+
+## Whether `node` is within `strain.leash` of home (always without a leash).
+func _within_leash(node: Node3D) -> bool:
+	if strain.leash <= 0.0:
+		return true
+	var offset: Vector3 = node.global_position - home
+	return Vector2(offset.x, offset.z).length() <= strain.leash
+
+
+## A living player outside within reach of its closest attack (in a raider's way), or null.
+func _player_in_reach() -> Player:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if is_prey(get_tree(), player) and horizontal_distance(player) <= strain.reach():
+			return player
+	return null
 
 
 ## Keeps the target miner while it works, otherwise picks the nearest working one. Returns
@@ -485,7 +524,13 @@ func _process_attack(delta: float) -> void:
 		if not is_instance_valid(target):
 			_end_attack()
 			return
-		_pose.crouch = 1.0
+		if _attack.clip_lead > 0.0:
+			if not _clip_legs and _phase_time >= _attack.wind_up - _attack.clip_lead:
+				play_attack()
+				_clip_legs = true
+				_legs.active = false
+		else:
+			_pose.crouch = 1.0
 		if _phase_time < _attack.wind_up:
 			return
 		_pose.crouch = 0.0
@@ -506,6 +551,13 @@ func _process_attack(delta: float) -> void:
 func _end_attack() -> void:
 	if _phase == AttackPhase.ACT:
 		_land()
+	if _clip_legs:
+		_clip_legs = false
+		if _phase != AttackPhase.RECOVER:
+			_animator.stop_attack()
+		if not underground and not dead:
+			_legs.plant_all()
+			_legs.active = true
 	_attack = null
 	_phase = AttackPhase.NONE
 	_phase_time = 0.0
@@ -516,7 +568,7 @@ func _end_attack() -> void:
 func _land() -> void:
 	_lunge_velocity = Vector3.ZERO
 	_pose.leap = 0.0
-	if not _legs.active:
+	if not _legs.active and not _clip_legs:
 		# It lands on its feet, without sliding on.
 		velocity = Vector3(0.0, velocity.y, 0.0)
 		_legs.plant_all()
@@ -636,8 +688,6 @@ func _update_look() -> void:
 	var shade := Color(0.0, 0.0, 0.0, 0.0)
 	if _flash_left > 0.0:
 		shade = COLOR_FLASH
-	elif role == Role.RAIDER:
-		shade = COLOR_RAIDER
 	_overlay.albedo_color = shade
 	for i: int in _glows.size():
 		var flare: float = 1.0 + EYE_FLARE * _pose.crouched()

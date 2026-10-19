@@ -7,6 +7,8 @@ const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.
 const MITE: AlienStrain = preload("res://game/aliens/strains/mite/mite.tres")
 const SPITTER: AlienStrain = preload("res://game/aliens/strains/spitter/spitter.tres")
 const BURROWER: AlienStrain = preload("res://game/aliens/strains/burrower/burrower.tres")
+const WARDEN: AlienStrain = preload("res://game/aliens/strains/warden/warden.tres")
+const GNAWER: AlienStrain = preload("res://game/aliens/strains/gnawer/gnawer.tres")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 
 
@@ -49,8 +51,10 @@ func test_packs_only_with_strains_that_hatch() -> void:
 	assert_gt(late.size(), HIVE.table(2).packs_at(0.0).size(), "the new strains' packs join late")
 
 
-func test_every_strain_hatches_in_some_pack_and_mites_come_many() -> void:
+func test_every_hunter_hatches_in_some_pack_and_mites_come_many() -> void:
 	for strain: AlienStrain in HIVE.strains:
+		if strain.role != Alien.Role.HUNTER:
+			continue
 		var in_pack: bool = HIVE.packs.any(
 			func(pack: AlienPack) -> bool: return pack.members.has(strain)
 		)
@@ -71,20 +75,18 @@ func test_biome_leanings_favor_but_never_require() -> void:
 	assert_lt(share_dust, 1.0, "others still come")
 
 
-func test_burrowers_prefer_raiding() -> void:
+func test_guards_and_raiders_are_their_own_strains() -> void:
+	assert_eq(WARDEN.role, Alien.Role.GUARD)
+	assert_eq(GNAWER.role, Alien.Role.RAIDER)
 	var table: HatchTable = HIVE.table(3)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 3
-	var counts: Dictionary[AlienStrain, int] = {}
-	for i: int in 400:
-		var strain: AlienStrain = table.pick_raider(rng, 1.0)
-		counts[strain] = counts.get(strain, 0) + 1
-	assert_false(counts.has(MITE), "mites don't raid")
-	var burrowers: int = counts[BURROWER]
-	var swarmers: int = counts[SWARMER]
-	var spitters: int = counts.get(SPITTER, 0)
-	assert_gt(burrowers, swarmers)
-	assert_gt(swarmers, spitters)
+	for i: int in 20:
+		assert_eq(table.pick_single(rng, 1.0, Alien.Role.GUARD), WARDEN)
+		assert_eq(table.pick_single(rng, 1.0, Alien.Role.RAIDER), GNAWER)
+	for pack: AlienPack in HIVE.packs:
+		for strain: AlienStrain in pack.members:
+			assert_eq(strain.role, Alien.Role.HUNTER, "packs are hunters: %s" % strain.display_name)
 
 
 func test_pack_cap_load_counts_shares() -> void:

@@ -7,6 +7,8 @@
 [ext_resource type="Resource" uid="uid://ckm26nmpgwrkx" path="res://game/aliens/strains/mite/mite.tres" id="5_mite"]
 [ext_resource type="Resource" uid="uid://dlv8pbjtg5k68" path="res://game/aliens/strains/spitter/spitter.tres" id="6_spitter"]
 [ext_resource type="Resource" uid="uid://b1qi3mgf8juj8" path="res://game/aliens/strains/burrower/burrower.tres" id="7_burrower"]
+[ext_resource type="Resource" uid="uid://cl348kpaig70u" path="res://game/aliens/strains/warden/warden.tres" id="8_warden"]
+[ext_resource type="Resource" uid="uid://bw15y3n4uxc1h" path="res://game/aliens/strains/gnawer/gnawer.tres" id="9_gnawer"]
 
 [sub_resource type="Resource" id="Pack_1"]
 script = ExtResource("2_pack")
@@ -55,5 +57,5 @@ weight = 1.0
 
 [resource]
 script = ExtResource("1_script")
-strains = Array[ExtResource("3_strain")]([ExtResource("4_swarmer"), ExtResource("5_mite"), ExtResource("6_spitter"), ExtResource("7_burrower")])
+strains = Array[ExtResource("3_strain")]([ExtResource("4_swarmer"), ExtResource("5_mite"), ExtResource("6_spitter"), ExtResource("7_burrower"), ExtResource("8_warden"), ExtResource("9_gnawer")])
 packs = Array[ExtResource("2_pack")]([SubResource("Pack_1"), SubResource("Pack_2"), SubResource("Pack_3"), SubResource("Pack_4"), SubResource("Pack_5"), SubResource("Pack_6"), SubResource("Pack_7"), SubResource("Pack_8"), SubResource("Pack_9")])

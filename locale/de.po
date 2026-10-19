@@ -8,6 +8,10 @@ msgstr ""
 msgid "Burrower"
 msgstr "Wühler"
 
+#: game/aliens/strains/gnawer/gnawer.tres
+msgid "Gnawer"
+msgstr "Nager"
+
 #: game/aliens/strains/mite/mite.tres
 msgid "Mite"
 msgstr "Milbe"
@@ -19,6 +23,10 @@ msgstr "Spucker"
 #: game/aliens/strains/swarmer/swarmer.tres
 msgid "Swarmer"
 msgstr "Schwärmer"
+
+#: game/aliens/strains/warden/warden.tres
+msgid "Warden"
+msgstr "Wächter"
 
 #: game/locations/biomes/ash.tres
 msgid "Ash fields"

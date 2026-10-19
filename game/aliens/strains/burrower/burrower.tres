@@ -11,7 +11,6 @@ script = ExtResource("1_script")
 display_name = "Burrower"
 scene = ExtResource("2_scene")
 tier = 2
-raider_weight = 3.0
 max_health = 45.0
 stagger_threshold = 30.0
 knockback = 0.7

@@ -1,8 +1,9 @@
 class_name AlienStrain
 extends Resource
 ## An alien strain: its body (`scene`, an `Alien`), how it moves, what it takes and its attacks.
-## Which role it plays (guard, hunter, raider) is up to the nest that hatches it, so a new strain is
-## a scene plus this data (see `game/aliens/strains/`). All values TBD (playtest).
+## Every strain plays one role (`role`: guards stay by their nest, hunters go for players,
+## raiders for miners), so a role is told apart by its body. A new strain is a scene plus this
+## data (see `game/aliens/strains/`). All values TBD (playtest).
 
 ## The name the crew calls it.
 @export var display_name: String = ""
@@ -13,9 +14,11 @@ extends Resource
 @export var cap_share: float = 1.0
 ## The tier of the bodies that bring it (see `HatchTable`): two new strains per tier.
 @export_range(1, 6, 1, "or_greater") var tier: int = 1
-## How likely a nest sends it out as a raider, against the other strains (0: never; hunters and
-## guards come in packs, see `AlienPack`).
-@export var raider_weight: float = 1.0
+## What it goes for: the nest hatches its guards, hunters and raiders from the strains of that role.
+@export var role := Alien.Role.HUNTER
+## How likely a nest picks it among the guards' or raiders' strains (hunters come in packs, see
+## `AlienPack`).
+@export var weight: float = 1.0
 
 @export_group("Body")
 ## Health of an unhurt alien.
@@ -48,6 +51,9 @@ extends Resource
 ## Keeps at least this far from its target (horizontally, in m): closer, it backs away (spitters);
 ## 0: it doesn't.
 @export var keep_away: float = 0.0
+## Guards (and raiders without a miner) stay within this distance of where they hatched (m): they
+## only go for players inside it and walk back without one; 0: no leash.
+@export var leash: float = 0.0
 
 @export_group("Burrowing")
 ## Whether it travels under the ground towards its target (burrowers): along the paths, out of
@@ -64,11 +70,12 @@ extends Resource
 @export var attacks: Array[AlienAttack] = []
 
 
-## Hatches a new alien of this strain with `role` (not in the tree yet).
-func spawn(role: Alien.Role = Alien.Role.GUARD) -> Alien:
+## Hatches a new alien of this strain playing `as_role` (not in the tree yet; nests pass the
+## strain's own `role`).
+func spawn(as_role: Alien.Role = Alien.Role.GUARD) -> Alien:
 	var alien := scene.instantiate() as Alien
 	alien.strain = self
-	alien.role = role
+	alien.role = as_role
 	return alien
 
 

@@ -16,6 +16,10 @@ extends Resource
 @export var wind_up: float = 0.0
 ## Seconds it stands still afterwards: an opening to hit back.
 @export var recovery: float = 0.0
+## For a model whose attack clip is the telegraph (the warden rearing up): the clip starts this
+## many seconds before the attack acts (its hit lands then) and moves the legs itself; 0: the clip
+## plays when it hits and the body crouches during the wind-up.
+@export var clip_lead: float = 0.0
 ## Whether it's used on miners (raiders) too, or only on players.
 @export var against_miners: bool = true
 ## Whether it starts from under the ground (burrowers, see `AlienStrain.burrows`); the others only

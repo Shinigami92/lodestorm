@@ -1,16 +1,17 @@
 class_name AlienNest
 extends Node3D
 ## Alien nest: an organic mound in the outside world that aliens hatch from, by its `table` (which
-## strains, and the packs they come in: see `HatchTable`). When it appears, `settings.guard_packs`
-## packs hatch and wait around it. While a mission runs it sends out hunters, packs that go for the
-## nearest player outside the ship however far away. The hive escalates with the mission's
-## progress (0 at the start, 1 when the storm hits): packs hatch more often, more hunters are out at
-## once, and a tier's new strains join late in a run. After the hunters are down below the limit,
-## the next pack hatches a full interval later. Raiders go for miners and escalate the same way with
-## their own values, one by one; they only hatch while a miner works, the first one a full interval
-## after that. The glow in the nest's mouth pulses faster as the hive escalates. Aliens hatch
-## stronger on bodies farther in (see `MissionSettings.alien_health_at`). Nests wait while the
-## living aliens reach the cap (`AlienNestSettings.alien_cap`).
+## strains, and the packs hunters come in: see `HatchTable`). When it appears, `settings.guards`
+## guards (of the guards' strains, the warden) hatch and wait around it. While a mission runs it
+## sends out hunters, packs that go for the nearest player outside the ship however far away. The
+## hive escalates with the mission's progress (0 at the start, 1 when the storm hits): packs hatch
+## more often, more hunters are out at once, and a tier's new strains join late in a run. After the
+## hunters are down below the limit, the next pack hatches a full interval later. Raiders (of the
+## raiders' strains, the gnawer) go for miners and escalate the same way with their own values, one
+## by one; they only hatch while a miner works, the first one a full interval after that. The glow
+## in the nest's mouth pulses faster as the hive escalates. Aliens hatch stronger on bodies farther
+## in (see `MissionSettings.alien_health_at`). Nests wait while the living aliens reach the cap
+## (`AlienNestSettings.alien_cap`).
 
 ## Emitted when an alien hatches.
 signal hatched(alien: Alien)
@@ -70,8 +71,8 @@ func _ready() -> void:
 			flat.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	hunter_cooldown = settings.hunter_interval_start
 	raider_cooldown = settings.raider_interval_start
-	for i: int in settings.guard_packs:
-		hatch_pack(Alien.Role.GUARD)
+	for i: int in settings.guards:
+		_hatch_single(Alien.Role.GUARD)
 
 
 func _physics_process(delta: float) -> void:
@@ -93,20 +94,20 @@ func _process(_delta: float) -> void:
 	_glow.emission_energy_multiplier = lerpf(GLOW_ENERGY_MIN, GLOW_ENERGY_MAX, wave)
 
 
-## Hatches a pack (see `HatchTable.pick_pack`) with `role` around the nest, unless the cap is
+## Hatches a pack of hunters (see `HatchTable.pick_pack`) around the nest, unless the cap is
 ## reached. Returns its aliens (none without a pack that fits).
-func hatch_pack(role: Alien.Role) -> Array[Alien]:
+func hatch_pack() -> Array[Alien]:
 	var hatching: Array[Alien] = []
 	var pack: AlienPack = table.pick_pack(_rng, escalation())
-	if not pack or is_full(pack.cap_load(), role == Alien.Role.GUARD):
+	if not pack or is_full(pack.cap_load()):
 		return hatching
 	for strain: AlienStrain in pack.aliens():
-		hatching.append(hatch(role, strain))
+		hatching.append(hatch(Alien.Role.HUNTER, strain))
 	return hatching
 
 
 ## Hatches an alien of `strain` with `role` at a random spot around the nest, facing away from it.
-## Without a strain: a raider's (see `HatchTable.pick_raider`), or one of a pack's.
+## Without a strain: one of that role's (see `HatchTable.pick_single`), for hunters one of a pack's.
 func hatch(role: Alien.Role, strain: AlienStrain = null) -> Alien:
 	if not strain:
 		strain = _any_strain(role)
@@ -196,24 +197,28 @@ func _count_down(
 	cooldown = maxf(cooldown - delta, 0.0)
 	if cooldown > 0.0:
 		return cooldown
-	if role == Alien.Role.HUNTER:
-		if hatch_pack(role).is_empty():
-			return cooldown
-	else:
-		var strain: AlienStrain = table.pick_raider(_rng, escalation())
-		if not strain or is_full(strain.cap_share):
-			return cooldown
-		hatch(role, strain)
-	return interval
+	var hatching: bool = (
+		not hatch_pack().is_empty() if role == Alien.Role.HUNTER else _hatch_single(role) != null
+	)
+	return interval if hatching else cooldown
 
 
-## A strain for a single alien with `role`: a raider's, or one from a pack.
+## Hatches one guard or raider (see `HatchTable.pick_single`) unless the cap (for guards, their
+## share of it) is reached. Returns it, or null.
+func _hatch_single(role: Alien.Role) -> Alien:
+	var strain: AlienStrain = table.pick_single(_rng, escalation(), role)
+	if not strain or is_full(strain.cap_share, role == Alien.Role.GUARD):
+		return null
+	return hatch(role, strain)
+
+
+## A strain for a single alien with `role`: one of that role's, or one from a pack.
 func _any_strain(role: Alien.Role) -> AlienStrain:
 	var level: float = escalation()
-	if role == Alien.Role.RAIDER:
-		var raider: AlienStrain = table.pick_raider(_rng, level)
-		if raider:
-			return raider
+	if role != Alien.Role.HUNTER:
+		var single: AlienStrain = table.pick_single(_rng, level, role)
+		if single:
+			return single
 	var pack: AlienPack = table.pick_pack(_rng, level)
 	if pack:
 		var members: Array[AlienStrain] = pack.aliens()

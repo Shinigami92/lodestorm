@@ -5,8 +5,8 @@ extends Resource
 ## hits (see `Mission.progress`). Hunters and raiders out at once count by their cap share
 ## (`AlienStrain.cap_share`: a swarmer 1, a mite a quarter).
 
-## Packs that hatch when the nest appears and wait around it (see `AlienPack`).
-@export var guard_packs: int = 1
+## Guards that hatch when the nest appears and wait around it.
+@export var guards: int = 1
 ## Seconds between packs of hunters when the mission starts ...
 @export var hunter_interval_start: float = 60.0
 ## ... and when the storm hits.

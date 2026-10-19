@@ -78,10 +78,10 @@ func test_kill_aliens() -> void:
 func test_whole_number_slider_keeps_integer_setting() -> void:
 	var path: String = "res://game/aliens/nest/alien_nest_settings.tres"
 	var settings: AlienNestSettings = load(path)
-	var slider: HSlider = _overlay.call(&"get_slider", path, "guard_packs")
+	var slider: HSlider = _overlay.call(&"get_slider", path, "guards")
 	slider.value = 3.0
-	assert_eq(typeof(settings.get("guard_packs")), TYPE_INT)
-	assert_eq(settings.guard_packs, 3)
+	assert_eq(typeof(settings.get("guards")), TYPE_INT)
+	assert_eq(settings.guards, 3)
 
 
 func test_hatch_hunters() -> void:

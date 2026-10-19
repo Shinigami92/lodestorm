@@ -175,7 +175,8 @@ func test_location_has_aliens_and_resets_them() -> void:
 
 
 func test_raider_goes_for_a_miner_far_away_and_ignores_players() -> void:
-	var miner: Miner = _add_miner(Vector3(-40.0, 0.0, 0.0))
+	# Off to the side: the player doesn't stand in its way.
+	var miner: Miner = _add_miner(Vector3(3.0, 0.0, -40.0))
 	_alien.role = Alien.Role.RAIDER
 	await _place_alien(3.0)
 	var health: float = _player.health

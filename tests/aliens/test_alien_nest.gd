@@ -78,6 +78,9 @@ func test_hunters_find_their_way_around_the_nest() -> void:
 	_mission.reset_location()
 	var nest: AlienNest = _mission.location.get_node("AlienNests/South") as AlienNest
 	await _start_mission()
+	# Its guards wait at random spots around it: one in the hunter's way holds it up a while.
+	for alien: Node in get_tree().get_nodes_in_group(Alien.GROUP).filter(nest.is_ancestor_of):
+		alien.free()
 	var hunter: Alien = nest.hatch(Alien.Role.HUNTER)
 	# Right behind the nest, seen from the player.
 	var away: Vector3 = nest.global_position - _player.global_position

@@ -55,15 +55,15 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 7 D: the darter (flying over rock at 3 m where only locked shots reach it, diving along a lane and staying low), the stalker (a hunched biped with scything talons, see-through and not lockable from afar, a shimmer close by, its first strike from hiding hitting hard, flesh hooks that slow once it's seen, hit and run), the skimmer on tier 6 (a winged ray circling out of reach of flat shots and spitting acid bolts on the move) and the apex, the Ravager (roaming some locations from tier 3, its steps shaking the view and throwing up dust, shedding swarmers, a charge and a slam), modeled, with the tier 5 and 6 packs and their biomes; players and aliens no longer tinted by a lane
 - Step 7 E: debug tools for the aliens: god mode (players lose no health) and switching the aliens' AI off and on, as switches on the debug overlay
 - Step 8: destroyable nests (health and armor scaled per tier and player, every weapon and the target lock reaching them, guards defending them, two bursts with their warning, cracks and a dimming glow per stage, the collapse into a husk, its hunters and raiders stopping, the hive's surge, a signal for the quests' "clear nests" goal, a debug shortcut)
+- Step 9 A: performance with many aliens, profiled in a late, frenzied tier 6 run with the cap full (46 fps before, 53–66 after with about 75 aliens, 30–40 of them on screen, on the development PC): nests at the cap no longer try to hatch every tick, a pack hatches one alien after another and the hive at most one per physics frame, aliens look up paths less often and only two per frame (a look-up costs about 0.5 ms on a generated world), burrowers and backing-off aliens no longer search the navigation mesh every tick, aliens off screen stop their legs, clips and pose, standing aliens don't move, fliers only push apart from fliers
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–7 are done).
+Each step builds on the ones before it (steps 1–8 and 9 A are done).
 
-- [ ] **Step 9 — performance with many aliens, sound effects** ([`planned/aliens.md`](planned/aliens.md), [`planned/sfx.md`](planned/sfx.md))
-  - [ ] **A** performance with many aliens: profile a late, frenzied run with the cap full (the leg IK, animation trees, physics and avoidance, the flying and cloaked strains, the hive's lookups each frame) and fix what costs most; nests hatch a pack one alien at a time instead of all at once
+- [ ] **Step 9 — sound effects** ([`planned/sfx.md`](planned/sfx.md); A, performance with many aliens, is done)
   - [ ] **B1** the audio setup (buses, the listener at the player, volumes on the settings terminal, randomizers, the synthesis scripts and build, the manifest and its license test) with the weapons, player and interface sounds
   - [ ] **B2** the aliens', mining, mission, storm, vent, shard and mud sounds
 - [ ] **Step 10 — more weapons** ([`planned/weapons.md`](planned/weapons.md)); until the quests hand out blueprints, the debug overlay unlocks them; greybox meshes, models with the art pass
@@ -101,7 +101,7 @@ Each step builds on the ones before it (steps 1–7 are done).
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, placing and pickup animations, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
 - Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<ore>_wall` in `assets/ores/<ore>.glb`), which needs placement along the cliff edges
 - Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips
-- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; every strain is modeled; the spitter's sac and the burrower's ripple need their effects (the glob, the puddle and the mound are greybox, like the brute's lane, the scream's ring, the bloater's acid cloud, the tender's strands, the stalker's shimmer and the Ravager's dust; the bloater's husk keeps glowing after it bursts; the darter's wings beat in the clips only, the swarmers the Ravager sheds appear beside it instead of climbing off its back); the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so the performance step (M4 step 9 A) may move it to a cheaper path or skip it for aliens off screen
+- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; every strain is modeled; the spitter's sac and the burrower's ripple need their effects (the glob, the puddle and the mound are greybox, like the brute's lane, the scream's ring, the bloater's acid cloud, the tender's strands, the stalker's shimmer and the Ravager's dust; the bloater's husk keeps glowing after it bursts; the darter's wings beat in the clips only, the swarmers the Ravager sheds appear beside it instead of climbing off its back); the leg IK runs in GDScript (about 40 µs per alien and frame on screen; off screen it stops since M4 step 9 A)
 - Leftovers of the loadout: model the shotgun (with a shell per round in its strip, up to 12 with the magazine upgrade) and the hammer (greybox meshes so far) and give the hammer a swing animation (its head only sweeps sideways through the arc now; the player holds it in the rifle pose)
 - The biomes' textures and meshes (from M4 step 6, see [`planned/biomes.md`](planned/biomes.md)): per biome a ground texture set (floor, barrier, the barrier's lip), its scatter (5–8 rocks and plants) and its feature meshes (snow bridge, crust crossing, shard spikes, fungal stalks, lava), with parallel Blender agents (heavy on the GPU: ask first)
 - The sky per body and the far ring of land beyond the map ([`planned/vr-view.md`](planned/vr-view.md)); each body's light, the darkness floor and the storm's light steps ([`planned/art.md`](planned/art.md))
@@ -113,7 +113,7 @@ Each step builds on the ones before it (steps 1–7 are done).
 - OpenXR setup for Steam Frame
 - The VR viewpoint ([`planned/vr-view.md`](planned/vr-view.md)): the head on the desktop camera's line, following the character (with the comfort options), the haze around the character, the surrounding flight effects, the ship's cut edges capped
 - VR controller mapping onto existing input actions
-- 90 FPS profiling
+- 90 FPS profiling; what M4 step 9 A left: with about 100 aliens (many mites) and 60 of them on screen a late frenzy still drops to 44–51 fps on the development PC, mostly what each alien on screen costs (leg IK, animation, rendering) and every moving one (physics, avoidance). Options then: a limit on living bodies besides the cap shares, no leg IK for tiny aliens, far aliens off screen thinking less often
 
 ### M7 — Co-op
 

@@ -37,6 +37,9 @@ const RAY_DOWN: float = 1.5
 
 ## Where each foot stands (world space), by leg name.
 var feet: Dictionary[String, Vector3] = {}
+## Off screen the legs don't step (nobody sees them); back on screen every foot is put down under
+## its hip.
+var culled: bool = false
 
 var _legs: Array[Leg] = []
 ## The legs of each set that steps together.
@@ -141,6 +144,9 @@ func _process_modification_with_delta(delta: float) -> void:
 		return
 	if _legs.is_empty():
 		_setup()
+	if culled:
+		_started = false
+		return
 	if not _started:
 		plant_all()
 	var xform: Transform3D = skeleton.get_global_transform_interpolated()

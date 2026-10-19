@@ -115,6 +115,8 @@ func test_hatch_hunters() -> void:
 	assert_gt(nests, 0, "the test map has nests")
 	var nest: AlienNest = _overlay.call(&"_nearest_nest")
 	_overlay.call(&"hatch_hunters")
+	# The pack hatches one alien after another.
+	await wait_physics_frames(roundi(nest.settings.hatch_gap * Engine.physics_ticks_per_second) + 2)
 	var hunters: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP).filter(
 		func(alien: Alien) -> bool: return alien.role == Alien.Role.HUNTER
 	)

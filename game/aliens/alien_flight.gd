@@ -7,6 +7,8 @@ extends RefCounted
 ## strain's `dive_height`, low enough for every weapon; up at its flight height only shots locked
 ## on it reach it (they fly at the alien, see `PlayerAim`). Values TBD (playtest).
 
+## The living fliers.
+const GROUP: StringName = &"flying_aliens"
 ## How far ahead it looks for rising ground (seconds at its speed).
 const LOOK_AHEAD: float = 0.6
 ## Rays for the ground start this high above it and reach this far below (m).
@@ -41,14 +43,16 @@ func velocity(alien: Alien, horizontal: Vector3) -> Vector3:
 	return Vector3(horizontal.x, climb, horizontal.z)
 
 
-## The height of the ground under `point` (the highest static surface along a vertical ray), or
-## -INF when there is none. Players and aliens are skipped.
-static func ground_below(alien: Alien, point: Vector3) -> float:
+## The height of the ground under `point` (the highest static surface along a vertical ray from `up`
+## above it to `down` below), or -INF when there is none. Players and aliens are skipped.
+static func ground_below(
+	alien: Alien, point: Vector3, up: float = RAY_UP, down: float = RAY_DOWN
+) -> float:
 	if not alien.is_inside_tree():
 		return -INF
 	var space: PhysicsDirectSpaceState3D = alien.get_world_3d().direct_space_state
 	var query := PhysicsRayQueryParameters3D.create(
-		point + Vector3.UP * RAY_UP, point + Vector3.DOWN * RAY_DOWN, PhysicsLayers.WORLD
+		point + Vector3.UP * up, point + Vector3.DOWN * down, PhysicsLayers.WORLD
 	)
 	var skipped: Array[RID] = [alien.get_rid()]
 	query.exclude = skipped
@@ -67,9 +71,9 @@ static func ground_below(alien: Alien, point: Vector3) -> float:
 ## A push away from the other fliers close to it (horizontal, m/s).
 func _separation(alien: Alien) -> Vector3:
 	var push := Vector3.ZERO
-	for node: Node in alien.get_tree().get_nodes_in_group(Alien.GROUP):
+	for node: Node in alien.get_tree().get_nodes_in_group(GROUP):
 		var other := node as Alien
-		if other == alien or not other.strain.flies():
+		if other == alien:
 			continue
 		var away: Vector3 = alien.global_position - other.global_position
 		away.y = 0.0

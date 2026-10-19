@@ -1,6 +1,6 @@
 # The story (planned)
 
-Decided 2026-10-17 as the campaign's outline; each act is written in its own writing round before its quests are built (M4 step 15 D and on, see [`PLAN.md`](../PLAN.md)). The setting and how it's told: see [Story and setting](../GAME_DESIGN.md#story-and-setting-draft); how quests carry it: see [`quests.md`](quests.md).
+Decided 2026-10-17 as the campaign's outline; each act is written in its own writing round before its quests are built (M4 step 16 D and on, see [`PLAN.md`](../PLAN.md)). The setting and how it's told: see [Story and setting](../GAME_DESIGN.md#story-and-setting-draft); how quests carry it: see [`quests.md`](quests.md).
 
 ## Tone
 
@@ -50,4 +50,4 @@ The game goes on in the same save (no reset): the flare has passed, the star cal
 
 ## Writing
 
-Each act gets its own writing round: the quests' steps, every line in English and German by the dialogue rules, the radio lines, and the logs of that act's regions; the first one before M4 step 15 D.
+Each act gets its own writing round: the quests' steps, every line in English and German by the dialogue rules, the radio lines, and the logs of that act's regions; the first one before M4 step 16 D.

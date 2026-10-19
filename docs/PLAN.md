@@ -60,18 +60,12 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 
 Each step builds on the ones before it (steps 1–6 and 7 A–D are done).
 
-- [ ] **Step 7 — performance with many aliens, sound effects** ([`planned/aliens.md`](planned/aliens.md), [`planned/sfx.md`](planned/sfx.md))
-  - [ ] **E** performance with many aliens: profile a late, frenzied run with the cap full (the leg IK, animation trees, physics and avoidance, the flying and cloaked strains, the hive's lookups each frame) and fix what costs most; nests hatch a pack one alien at a time instead of all at once
-  - [ ] **F1** the audio setup (buses, the listener at the player, volumes on the settings terminal, randomizers, the synthesis scripts and build, the manifest and its license test) with the weapons, player and interface sounds
-  - [ ] **F2** the aliens', mining, mission, storm, vent, shard and mud sounds
-- [ ] **Step 8 — the station** ([`planned/station.md`](planned/station.md)); concept images first
-  - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs
-  - [ ] **B** the named NPCs with their first topics, ambient colonists
-  - [ ] **C** the ore exchange counter (deliveries and requests come with the quests, step 15)
-- [ ] **Step 9 — more crew** ([`planned/crew.md`](planned/crew.md))
-  - [ ] **A** the seven new crew members at their posts (profiles, greybox accessories, greetings and first topics)
-  - [ ] **B** health carrying over, the med bed, the medic's topics, the ramp card's hint
-  - [ ] **C** reactions to events and the pilot's two radio lines (crew joining through the story waits for the quests)
+- [ ] **Step 7 E — debug tools for the aliens**: god mode (players take no damage) and switching the aliens' AI off and on, as debug overlay shortcuts
+- [ ] **Step 8 — destroyable nests** ([`planned/nests.md`](planned/nests.md)): one PR with nest health and armor, the defense bursts with their warning, the three stages and the collapse, its hunters and raiders stopping, the hive's surge, a signal for the quests' "clear nests" goal, a debug shortcut
+- [ ] **Step 9 — performance with many aliens, sound effects** ([`planned/aliens.md`](planned/aliens.md), [`planned/sfx.md`](planned/sfx.md))
+  - [ ] **A** performance with many aliens: profile a late, frenzied run with the cap full (the leg IK, animation trees, physics and avoidance, the flying and cloaked strains, the hive's lookups each frame) and fix what costs most; nests hatch a pack one alien at a time instead of all at once
+  - [ ] **B1** the audio setup (buses, the listener at the player, volumes on the settings terminal, randomizers, the synthesis scripts and build, the manifest and its license test) with the weapons, player and interface sounds
+  - [ ] **B2** the aliens', mining, mission, storm, vent, shard and mud sounds
 - [ ] **Step 10 — more weapons** ([`planned/weapons.md`](planned/weapons.md)); until the quests hand out blueprints, the debug overlay unlocks them; greybox meshes, models with the art pass
   - [ ] **A** the weapon framework (feed, delivery and effects as Resources, a list of upgrade parts per weapon, draw time, building a weapon from its blueprint for ore), Harl, Brask and Dray ported and renamed
   - [ ] **B** the armory's weapon wall and the workbench rack in rows by origin, for any number
@@ -79,17 +73,24 @@ Each step builds on the ones before it (steps 1–6 and 7 A–D are done).
   - [ ] **D** ranged weapons 2 (Scald, Fulgen, Kith, Nadir, Zenith)
   - [ ] **E** melee weapons (Riven, Auger, Jag, Clout, Mantle)
 - [ ] **Step 11 — refinery, crafted miners, timed upgrades** ([`planned/refinery.md`](planned/refinery.md))
-  - [ ] **A** `ItemType`, every player's own hold in their own save (moved from the ship's, see [`planned/coop-ore.md`](planned/coop-ore.md)), the eight alloys as data, the refinery at the cargo bay's far end (furnaces unlocked one by one, up to four, one alloy in any amount each, on the wall clock; the ingot rack; recipe discovery; debug unlock until the quests), the engineer's topics
+  - [ ] **A** `ItemType`, every player's own hold in their own save (moved from the ship's, see [`planned/coop-ore.md`](planned/coop-ore.md)), the eight alloys as data, the refinery at the cargo bay's far end (furnaces unlocked one by one, up to four, one alloy in any amount each, on the wall clock; the ingot rack; recipe discovery; debug unlock until the quests; the engineer's topics on it come with the crew, step 13)
   - [ ] **B** upgrades and skills taking real time (1 min to 6 h each, paid when started, any number at once, shown on the pips and the skill graph)
   - [ ] **C** crafted miners (the miner bay, building, per-miner parts with plating, up to 6 per run, standard-issue miners filling up, picking up and losing them)
   - [ ] **D** drill hardness, alloys in the MK4+ costs and the prototypes' build cost
-- [ ] **Step 12 — destroyable nests** ([`planned/nests.md`](planned/nests.md)): one PR with nest health and armor, the defense bursts with their warning, the three stages and the collapse, its hunters and raiders stopping, the hive's surge, a signal for the quests' "clear nests" goal, a debug shortcut
-- [ ] **Step 13 — reasons to move on** ([`planned/risk-reward.md`](planned/risk-reward.md)); after the crafted miners (dry nodes matter once miners are picked up again) and the nests (the rich fields between them)
+- [ ] **Step 12 — the station** ([`planned/station.md`](planned/station.md)); concept images first
+  - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs
+  - [ ] **B** the named NPCs with their first topics, ambient colonists
+  - [ ] **C** the ore exchange counter (deliveries and requests come with the quests, step 16)
+- [ ] **Step 13 — more crew** ([`planned/crew.md`](planned/crew.md))
+  - [ ] **A** the seven new crew members at their posts (profiles, greybox accessories, greetings and first topics, the engineer's on the refinery)
+  - [ ] **B** health carrying over, the med bed, the medic's topics, the ramp card's hint
+  - [ ] **C** reactions to events and the pilot's two radio lines (crew joining through the story waits for the quests)
+- [ ] **Step 14 — reasons to move on** ([`planned/risk-reward.md`](planned/risk-reward.md)); after the crafted miners (dry nodes matter once miners are picked up again) and the nests (the rich fields between them)
   - [ ] **A** nodes running dry (amounts, three stages, the dry look, the miner's amber blink, the scanner skipping them) and the rich fields in nest hollows
   - [ ] **B** the late deposit (timing, the meteor's streak, boom and beam, the impact site reserved at generation, the radio line, the nest's pack)
   - [ ] **C** the cargo hatch at the ramp (independent: can come any time earlier)
-- [ ] **Step 14 — more skills** ([`planned/skills.md`](planned/skills.md)): one PR with the rescue drone, the hardened canister, rebuilding spares and the miner radar (its amber pointer shows dry nodes too; the sentries with co-op, M7)
-- [ ] **Step 15 — quests** ([`planned/quests.md`](planned/quests.md))
+- [ ] **Step 15 — more skills** ([`planned/skills.md`](planned/skills.md)): one PR with the rescue drone, the hardened canister, rebuilding spares and the miner radar (its amber pointer shows dry nodes too; the sentries with co-op, M7)
+- [ ] **Step 16 — quests** ([`planned/quests.md`](planned/quests.md))
   - [ ] **A** quests as data (quest, steps, goals, rewards, story flags), offering with the diamond marker, accepting, hand-ins, the goals deliver (filled from the hauls), reach a site, mine and build, the quest board on the bridge (quests, logs, jobs), tracking
   - [ ] **B** quest sites in regions, the goals clear nests, recover fragments, recover an item and hunt, the navigator's diamonds, amber beams, radio lines
   - [ ] **C** first content: the quartermaster's chain ending in the shotgun blueprint, the engineer's first furnace (the other furnaces through later quests), the depot master's requests, reputation pips
@@ -100,11 +101,11 @@ Each step builds on the ones before it (steps 1–6 and 7 A–D are done).
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, placing and pickup animations, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
 - Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<ore>_wall` in `assets/ores/<ore>.glb`), which needs placement along the cliff edges
 - Leftovers of the player model: the death pose assumes flat ground (on slopes the body clips into the ground), the cargo canisters and other props on the player don't hide the occlusion silhouette behind them yet, no hit reaction or turn-in-place clips
-- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; every strain is modeled; the spitter's sac and the burrower's ripple need their effects (the glob, the puddle and the mound are greybox, like the brute's lane, the scream's ring, the bloater's acid cloud, the tender's strands, the stalker's shimmer and the Ravager's dust; the bloater's husk keeps glowing after it bursts; the darter's wings beat in the clips only, the swarmers the Ravager sheds appear beside it instead of climbing off its back); the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so the performance step (M4 step 7 E) may move it to a cheaper path or skip it for aliens off screen
+- Leftovers of the swarmer: the body stays level on slopes (only the feet follow the ground), no hit reaction or turning clips, its death pose clips into slopes like the player's; every strain is modeled; the spitter's sac and the burrower's ripple need their effects (the glob, the puddle and the mound are greybox, like the brute's lane, the scream's ring, the bloater's acid cloud, the tender's strands, the stalker's shimmer and the Ravager's dust; the bloater's husk keeps glowing after it bursts; the darter's wings beat in the clips only, the swarmers the Ravager sheds appear beside it instead of climbing off its back); the leg IK runs in GDScript (about 35 µs per alien and frame, 2.8 ms with 80 aliens), so the performance step (M4 step 9 A) may move it to a cheaper path or skip it for aliens off screen
 - Leftovers of the loadout: model the shotgun (with a shell per round in its strip, up to 12 with the magazine upgrade) and the hammer (greybox meshes so far) and give the hammer a swing animation (its head only sweeps sideways through the arc now; the player holds it in the rifle pose)
 - The biomes' textures and meshes (from M4 step 6, see [`planned/biomes.md`](planned/biomes.md)): per biome a ground texture set (floor, barrier, the barrier's lip), its scatter (5–8 rocks and plants) and its feature meshes (snow bridge, crust crossing, shard spikes, fungal stalks, lava), with parallel Blender agents (heavy on the GPU: ask first)
 - The sky per body and the far ring of land beyond the map ([`planned/vr-view.md`](planned/vr-view.md)); each body's light, the darkness floor and the storm's light steps ([`planned/art.md`](planned/art.md))
-- Basic VFX for mining, shooting, reloading, storm (the sound effects come earlier, M4 step 7)
+- Basic VFX for mining, shooting, reloading, storm (the sound effects come earlier, M4 step 9)
 - Voice-over, after the models ([`planned/voice.md`](planned/voice.md)): **A** the spike (the candidates rendered, the listening page, the comparison and decision written into `TECHNICAL.md`); **B** the pipeline tool, the Voice and Radio buses and "Voice on/off", playback from the bubbles and the radio filter, Brannik voiced; the other NPCs with the tool
 
 ### M6 — VR

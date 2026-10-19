@@ -1,6 +1,6 @@
 # Whose ore (planned)
 
-Decided 2026-10-17. Built in parts: the ship's project with the heat shield (done, M4 step 4 A, see [Opening planets](../GAME_DESIGN.md#6-missions)), the players' own holds with the refinery (M4 step 11), quest deliveries with the quests (M4 step 15), the rest with co-op (M7); see [`PLAN.md`](../PLAN.md). All values **TBD (playtest)**. Today the hold is the ship's and lives in the host's save (`ship.json`); solo, the player is the host, so it doesn't show. Co-op rules so far: see [Co-op progression](../GAME_DESIGN.md#co-op-progression).
+Decided 2026-10-17. Built in parts: the ship's project with the heat shield (done, M4 step 4 A, see [Opening planets](../GAME_DESIGN.md#6-missions)), the players' own holds with the refinery (M4 step 11), quest deliveries with the quests (M4 step 16), the rest with co-op (M7); see [`PLAN.md`](../PLAN.md). All values **TBD (playtest)**. Today the hold is the ship's and lives in the host's save (`ship.json`); solo, the player is the host, so it doesn't show. Co-op rules so far: see [Co-op progression](../GAME_DESIGN.md#co-op-progression).
 
 ## Every player has their own hold
 

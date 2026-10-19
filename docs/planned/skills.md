@@ -1,6 +1,6 @@
 # More skills (planned)
 
-Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today the skill graph has four clusters with eight skills (see [Progression](../GAME_DESIGN.md#12-progression--upgrades)).
+Decided 2026-10-17, built in M4 step 15 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today the skill graph has four clusters with eight skills (see [Progression](../GAME_DESIGN.md#12-progression--upgrades)).
 
 ## Where the graph is heading
 

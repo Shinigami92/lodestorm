@@ -1,6 +1,6 @@
 # Reasons to move on (planned)
 
-Decided 2026-10-17, built in M4 step 13 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The goal (see [Reasons to move and to stay](../GAME_DESIGN.md#reasons-to-move-and-to-stay-risk-vs-reward)): standing at one spot until the timer runs low must not pay off. Today ore nodes never run out, nest hollows have no ore, and carried ore is only safe once its carrier is aboard, which ends the mission when everyone alive is. Decided elsewhere: miners draw raiders and the hive frenzies in the storm's warning ([`aliens.md`](aliens.md)), quest and bonus goals elsewhere on the map ([`quests.md`](quests.md)), destroyable nests ([`nests.md`](nests.md)).
+Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The goal (see [Reasons to move and to stay](../GAME_DESIGN.md#reasons-to-move-and-to-stay-risk-vs-reward)): standing at one spot until the timer runs low must not pay off. Today ore nodes never run out, nest hollows have no ore, and carried ore is only safe once its carrier is aboard, which ends the mission when everyone alive is. Decided elsewhere: miners draw raiders and the hive frenzies in the storm's warning ([`aliens.md`](aliens.md)), quest and bonus goals elsewhere on the map ([`quests.md`](quests.md)), destroyable nests ([`nests.md`](nests.md)).
 
 ## Nodes run dry
 

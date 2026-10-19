@@ -27,7 +27,7 @@ Tier 6 brings one new strain, the skimmer; the rest of its danger comes from mix
 
 ## Still open
 
-- **The Ravager guarding a rich site:** it only roams so far; guarding the rich fields comes with them (step 13, [`risk-reward.md`](risk-reward.md)). Killing it rewards nothing yet: the quests' hunt goal will (step 15).
+- **The Ravager guarding a rich site:** it only roams so far; guarding the rich fields comes with them (step 14, [`risk-reward.md`](risk-reward.md)). Killing it rewards nothing yet: the quests' hunt goal will (step 16).
 - **More guard and raider strains** with later tiers, if playtests ask for them (the hive takes any number).
 - **Telegraph sounds:** each wind-up gets its sound with the sound effects (see [`sfx.md`](sfx.md)).
 - **Projectiles** tell the weapons apart (shape, trail, impact), with the weapons (see [`weapons.md`](weapons.md)).

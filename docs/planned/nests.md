@@ -1,6 +1,6 @@
 # Destroyable nests (planned)
 
-Decided 2026-10-17, built in M4 step 12 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today a nest can't be hurt: it hatches its guards, then hunters and raiders, escalating until the storm (see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens)).
+Decided 2026-10-17, built in M4 step 8 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today a nest can't be hurt: it hatches its guards, then hunters and raiders, escalating until the storm (see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens)).
 
 - **Destroying one:** a nest has health, and every weapon hurts it, ranged and melee, so a melee-only loadout can clear nests too. Greybox 600 HP (about 8 s of blaster fire at 8 shots a second, longer while its defenders come). It has armor like the aliens (a flat reduction per hit, at least 25 % gets through, see [`aliens.md`](aliens.md)), so heavy hits and explosives (the seismic launcher, the charge layer, see [`weapons.md`](weapons.md)) are better, never required.
 - **It fights back:** at two thirds and one third of its health it bursts: it spews 3 aliens at once (its tier's strains), after a 1 s warning (the mouth swells and glows white). Its guards, if still alive, come to defend it. So clearing a nest is a short fight, not a free kill.

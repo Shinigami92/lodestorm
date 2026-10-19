@@ -1,6 +1,6 @@
 # Waypost Ostra (planned)
 
-Decided 2026-10-17, built in M4 step 8 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today Waypost Ostra is in the star system's data and on the navigator as a station shape ("No docking yet"); stations and outposts in general: see [Spaceship](../GAME_DESIGN.md#5-spaceship-hub).
+Decided 2026-10-17, built in M4 step 12 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today Waypost Ostra is in the star system's data and on the navigator as a station shape ("No docking yet"); stations and outposts in general: see [Spaceship](../GAME_DESIGN.md#5-spaceship-hub).
 
 - **The colony's hub:** Waypost Ostra is an orbital station where the colony's people, its council and its supply depot are; the colony's settlements on the surface are outposts (later). The players supply it, and when the colony has to leave at the end, it leaves from here. A second station comes later with the story (the lost expedition's abandoned base, deeper in, e.g. in orbit around Gaulm); inhabited outposts (handcrafted landing sites without enemies) later still.
 - **Why players go there:** the story and quest givers outside the crew (the council, other prospecting crews, colonists), crew members who join (some are met there first, see [`crew.md`](crew.md)), the ore exchange, deliveries to the colony (see [`quests.md`](quests.md)), and walking around together in co-op between runs. It never gates progress (the heat shield does) and is reachable from the start, without a tier.

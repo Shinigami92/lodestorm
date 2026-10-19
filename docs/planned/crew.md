@@ -1,6 +1,6 @@
 # The crew (planned)
 
-Decided 2026-10-17, built in M4 step 9 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today one crew member is aboard, Brannik the quartermaster, with the NPC template (see [NPCs](../GAME_DESIGN.md#5-spaceship-hub)).
+Decided 2026-10-17, built in M4 step 13 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today one crew member is aboard, Brannik the quartermaster, with the NPC template (see [NPCs](../GAME_DESIGN.md#5-spaceship-hub)).
 
 ## Eight crew members
 

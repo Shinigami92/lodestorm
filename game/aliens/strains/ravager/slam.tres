@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AlienSlam" format=3 uid="uid://dp7go3ct0k5vb"]
+
+[ext_resource type="Script" uid="uid://cs6xebq35xfa1" path="res://game/aliens/attacks/alien_slam.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage = 40.0
+reach = 3.5
+cooldown = 4.0
+wind_up = 1.0
+recovery = 1.2
+clip_lead = 1.0
+against_miners = false
+radius = 3.0

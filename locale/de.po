@@ -16,6 +16,10 @@ msgstr "Rammer"
 msgid "Burrower"
 msgstr "Wühler"
 
+#: game/aliens/strains/darter/darter.tres
+msgid "Darter"
+msgstr "Stecher"
+
 #: game/aliens/strains/gnawer/gnawer.tres
 msgid "Gnawer"
 msgstr "Nager"
@@ -24,13 +28,25 @@ msgstr "Nager"
 msgid "Mite"
 msgstr "Milbe"
 
+#: game/aliens/strains/ravager/ravager.tres
+msgid "Ravager"
+msgstr "Verwüster"
+
 #: game/aliens/strains/shrieker/shrieker.tres
 msgid "Shrieker"
 msgstr "Kreischer"
 
+#: game/aliens/strains/skimmer/skimmer.tres
+msgid "Skimmer"
+msgstr "Gleiter"
+
 #: game/aliens/strains/spitter/spitter.tres
 msgid "Spitter"
 msgstr "Spucker"
+
+#: game/aliens/strains/stalker/stalker.tres
+msgid "Stalker"
+msgstr "Pirscher"
 
 #: game/aliens/strains/swarmer/swarmer.tres
 msgid "Swarmer"

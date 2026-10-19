@@ -162,6 +162,7 @@ func _ready() -> void:
 	_suit_light.band = _model.find_child("SuitLight") as GeometryInstance3D
 	(_model.find_child("Suit") as GeometryInstance3D).material_overlay = body_overlay
 	OccludedSilhouette.mark_visible(_model)
+	RenderLayers.put(_model, RenderLayers.CHARACTERS)
 	_attach(_weapon_mount, "WeaponGrip")
 	_attach(_cargo_rack, "CargoRack")
 	_attach(_hose_port, "HosePort")
@@ -216,6 +217,7 @@ func _physics_process(delta: float) -> void:
 	if acting:
 		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
 	var move: Vector3 = IsoInput.camera_relative(move_input, camera_basis)
+	ground_contact.tick(delta)
 	var speed: float = settings.move_speed * ground_contact.speed()
 	if _is_reloading() and not skills.has(Skill.Effect.RELOAD_ON_THE_MOVE):
 		speed *= settings.reload_move_speed

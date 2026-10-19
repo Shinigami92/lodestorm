@@ -1,10 +1,10 @@
 # Aliens and the feel of combat (planned)
 
-Decided 2026-10-17, built in M4 step 7 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**; greybox bodies until the art pass. Built so far (step 7 A): strains and their attacks as data with the role on the alien, armor and stagger, hits that push and spray, the wind-up as the telegraph, the swarmer's pounce, the blaster at 8 shots a second and the cap on living aliens, with one strain, the swarmer, in three roles (guard, hunter, raider); step 7 B: tiers 1–2 (the mite, the spitter, the burrower, modeled), the packs, which strains hatch where by tier (new strains late in a run, the preview in hard regions) and the first biome leanings; step 7 C: tiers 3–4 (the brute with its charge, the shrieker, the bloater, the tender, modeled), miners drawing raiders and the hive's frenzy; see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens). This file keeps the rest; the roster below lists the built strains too, for the whole picture.
+Decided 2026-10-17, built in M4 step 7 A–D (see [`PLAN.md`](../PLAN.md)): every strain below, the apex, the packs and biome leanings, armor, stagger and the telegraphs; see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens). This file keeps what's still open (the end of it); the roster stays for the whole picture.
 
 ## Strains and roles
 
-- **10 strains and one apex,** two new ones per tier, so every planet brings something new to learn. The count is data: nests, packs and tests work for any number. Names are descriptive and translated, the way the crew would call them.
+- **11 strains and one apex,** two new ones per tier up to tier 5 and one on tier 6, so every planet brings something new to learn. The count is data: nests, packs and tests work for any number. Names are descriptive and translated, the way the crew would call them.
 
 | Tier | Strain | Size | How it fights | Weak to | Look |
 |---|---|---|---|---|---|
@@ -17,25 +17,19 @@ Decided 2026-10-17, built in M4 step 7 (see [`PLAN.md`](../PLAN.md)). All values
 | 4 | **Bloater** | big, slow | bursts next to a player or on death into an acid cloud that hurts aliens too; a hunter, never at miners | killing it at range, near other aliens | a fat grub on stubby legs, its back a swollen bladder |
 | 4 | **Tender** | medium | heals and hardens aliens near it (a pulsing link); stays back | focus fire | glowing gland clusters and tendrils |
 | 5 | **Darter** | small, flying | winged packs that fly low over cliffs and rock (no paths) and dive at players | arc caster, shotgun, the target lock | translucent wings, a sting |
-| 5 | **Stalker** | medium | see-through until it attacks (a shimmer, visible within 8 m and as a silhouette behind cliffs), ambushes from cover | arc caster, wide hits, sticking together | chameleon chitin |
+| 5 | **Stalker** | tall | see-through until it attacks (a shimmer, visible within 8 m and as a silhouette behind cliffs), its first strike from hiding hits hard; once seen, flesh hooks that slow; hit and run | arc caster, wide hits, sticking together | a hunched biped with scything talons and mouth tendrils, chameleon chitin |
+| 6 | **Skimmer** | medium, flying | circles high out of reach of flat shots and spits straight acid bolts on the move | the target lock, range | a winged ray with a whip tail and a glowing throat sac |
 | 3+ | **Ravager** (apex) | huge | at most one per region, roams or guards a rich site, announced by tremors; slams, charges, sheds swarmers | everything together; avoiding it is fine | the rare huge monster |
 
 Besides the hunters, the nests' **guards and raiders are their own strains** (built in step 7 B, so a role shows in the body, not in a tint): the **warden** guards every nest on every tier (big, front-armored, a slam; more guard strains may come with later tiers), the **gnawer** is the first raider (tier 1, crushing jaws); later raider strains may come with later tiers.
 
-Tier 6 brings no new strain: its danger comes from mixed packs of all of them, and the Ravager more often. The weapons named in the table are planned too (see [`weapons.md`](weapons.md)).
+Tier 6 brings one new strain, the skimmer; the rest of its danger comes from mixed packs of all of them, and the Ravager more often. The weapons named in the table are planned too (see [`weapons.md`](weapons.md)).
 
-## Where they live
+## Still open
 
-- **Biome leanings** still to set with their strains: stalkers in the Overgrowth, darters around the cliffs of the Ash fields and Glass plains (see [`biomes.md`](biomes.md)).
-- **Packs** for tier 5, added with its strains (tiers 3–4 have theirs).
-- **Tiers** also scale health, damage and nests (built, see Tiers in [Missions](../GAME_DESIGN.md#6-missions)).
-
-## Telegraphs and feedback
-
-- **Telegraphs:** each new strain's wind-up uses the built ones (crouching or rearing, glands brightening; on the ground red dashed, like the brute's lane), with its sound (see [`sfx.md`](sfx.md)).
-- **Projectiles** tell the weapons apart (shape, trail, impact).
-
-## Limits
-
-- **How many at once:** darters count as a share towards the cap, like the mites (their `cap_share`). Alien numbers and health still scale with the player count in co-op (M7).
-- **Colors:** every strain glows in the swarmer's yellow-green (acid included), which no ore uses; stalkers have darker chitin (see [Alien look](../GAME_DESIGN.md#alien-look-and-behavior-direction-for-the-art-pass)).
+- **The Ravager guarding a rich site:** it only roams so far; guarding the rich fields comes with them (step 13, [`risk-reward.md`](risk-reward.md)). Killing it rewards nothing yet: the quests' hunt goal will (step 15).
+- **More guard and raider strains** with later tiers, if playtests ask for them (the hive takes any number).
+- **Telegraph sounds:** each wind-up gets its sound with the sound effects (see [`sfx.md`](sfx.md)).
+- **Projectiles** tell the weapons apart (shape, trail, impact), with the weapons (see [`weapons.md`](weapons.md)).
+- **Co-op:** alien numbers and health scale with the player count (M7); a stalker's shimmer then shows per player (now: when any player is close).
+- **Effects with the art pass:** the stalker's shimmer, the Ravager's dust and its swarmers climbing off its back are greybox (see M5 in [`PLAN.md`](../PLAN.md)).

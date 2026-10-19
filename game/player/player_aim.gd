@@ -104,9 +104,12 @@ func is_mouse_over_ui() -> bool:
 	return _with_mouse and holder.get_viewport().gui_get_hovered_control() != null
 
 
-## Whether `alien` can be locked on: it exists, lives and is in the world.
+## Whether `alien` can be locked on: it exists, lives, is in the world and isn't hidden (a
+## stalker no player is close to).
 static func is_lockable(alien: Alien) -> bool:
-	return is_instance_valid(alien) and alien.is_hittable()
+	if not is_instance_valid(alien) or not alien.is_hittable():
+		return false
+	return not (alien.cloaking and alien.cloaking.is_hidden())
 
 
 ## The alien closest to `screen_position` on screen, within the lock radius (the one already

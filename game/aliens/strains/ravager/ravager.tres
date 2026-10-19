@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://8u3ped66fjco"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bc2n2nsybhd4h" path="res://game/aliens/strains/ravager/ravager.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://megne11qe2a5" path="res://game/aliens/strains/ravager/shed.tres" id="4_shed"]
+[ext_resource type="Resource" uid="uid://cqw34guktmjb8" path="res://game/aliens/strains/ravager/charge.tres" id="5_charge"]
+[ext_resource type="Resource" uid="uid://dp7go3ct0k5vb" path="res://game/aliens/strains/ravager/slam.tres" id="6_slam"]
+
+[resource]
+script = ExtResource("1_script")
+scene = ExtResource("2_scene")
+display_name = "Ravager"
+cap_share = 0.0
+tier = 3
+role = 0
+weight = 0.0
+max_health = 1000.0
+armor = 3.0
+stagger_threshold = 400.0
+stagger_time = 1.0
+knockback = 0.05
+stride = 2.5
+move_speed = 3.6
+acceleration = 8.0
+turn_speed = 2.5
+detection_range = 22.0
+chase_range = 30.0
+roams = true
+tremor = 0.08
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_shed"), ExtResource("5_charge"), ExtResource("6_slam")])

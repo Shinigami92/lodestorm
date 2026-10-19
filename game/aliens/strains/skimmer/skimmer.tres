@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://bsmjx1j2nw6ak"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bqxaxo1y2vo5k" path="res://game/aliens/strains/skimmer/skimmer.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://bov64pm5k3hl5" path="res://game/aliens/strains/skimmer/spit.tres" id="4_spit"]
+
+[resource]
+script = ExtResource("1_script")
+scene = ExtResource("2_scene")
+display_name = "Skimmer"
+tier = 6
+role = 1
+max_health = 45.0
+stagger_threshold = 20.0
+knockback = 0.8
+move_speed = 6.0
+acceleration = 14.0
+turn_speed = 5.0
+detection_range = 26.0
+chase_range = 30.0
+keep_away = 10.0
+circles = true
+flight_height = 5.0
+dive_height = 5.0
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_spit")])

@@ -14,6 +14,10 @@ msgstr ""
 msgid "Burrower"
 msgstr ""
 
+#: game/aliens/strains/darter/darter.tres
+msgid "Darter"
+msgstr ""
+
 #: game/aliens/strains/gnawer/gnawer.tres
 msgid "Gnawer"
 msgstr ""
@@ -22,12 +26,24 @@ msgstr ""
 msgid "Mite"
 msgstr ""
 
+#: game/aliens/strains/ravager/ravager.tres
+msgid "Ravager"
+msgstr ""
+
 #: game/aliens/strains/shrieker/shrieker.tres
 msgid "Shrieker"
 msgstr ""
 
+#: game/aliens/strains/skimmer/skimmer.tres
+msgid "Skimmer"
+msgstr ""
+
 #: game/aliens/strains/spitter/spitter.tres
 msgid "Spitter"
+msgstr ""
+
+#: game/aliens/strains/stalker/stalker.tres
+msgid "Stalker"
 msgstr ""
 
 #: game/aliens/strains/swarmer/swarmer.tres

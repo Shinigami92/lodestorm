@@ -234,6 +234,73 @@ const TUNING: Dictionary[String, Array] = {
 		["heal_per_second", 0.0, 50.0, 0.5],
 		["armor", 0.0, 30.0, 0.5],
 	],
+	"res://game/aliens/strains/darter/darter.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["flight_height", 0.5, 10.0, 0.1],
+		["dive_height", 0.2, 3.0, 0.1],
+	],
+	"res://game/aliens/strains/darter/dive.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["cooldown", 0.5, 20.0, 0.5],
+		["wind_up", 0.0, 3.0, 0.05],
+		["recovery", 0.0, 3.0, 0.05],
+		["max_range", 2.0, 30.0, 0.5],
+		["charge_speed", 2.0, 30.0, 0.5],
+	],
+	"res://game/aliens/strains/stalker/stalker.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["retreat_time", 0.0, 10.0, 0.25],
+	],
+	"res://game/aliens/strains/stalker/cloak.tres":
+	[
+		["reveal_range", 0.0, 30.0, 0.5],
+		["shown_time", 0.0, 10.0, 0.25],
+		["fade_time", 0.05, 2.0, 0.05],
+		["ambush_damage", 0.0, 100.0, 1.0],
+		["bend", 0.0, 0.2, 0.005],
+	],
+	"res://game/aliens/strains/stalker/hook.tres":
+	[
+		["cooldown", 0.5, 30.0, 0.5],
+		["max_range", 2.0, 30.0, 0.5],
+		["snare", 0.0, 1.0, 0.05],
+		["snare_time", 0.0, 5.0, 0.1],
+	],
+	"res://game/aliens/strains/skimmer/skimmer.tres":
+	[
+		["max_health", 1.0, 300.0, 1.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["flight_height", 0.5, 10.0, 0.1],
+		["keep_away", 0.0, 25.0, 0.5],
+	],
+	"res://game/aliens/strains/skimmer/spit.tres":
+	[
+		["damage", 0.0, 100.0, 1.0],
+		["reach", 2.0, 40.0, 0.5],
+		["cooldown", 0.5, 20.0, 0.5],
+		["glob_speed", 2.0, 40.0, 0.5],
+	],
+	"res://game/aliens/strains/ravager/ravager.tres":
+	[
+		["max_health", 1.0, 5000.0, 10.0],
+		["armor", 0.0, 50.0, 1.0],
+		["stagger_threshold", 1.0, 1000.0, 5.0],
+		["move_speed", 0.5, 15.0, 0.1],
+		["detection_range", 1.0, 60.0, 1.0],
+		["chase_range", 1.0, 80.0, 1.0],
+		["tremor", 0.0, 0.5, 0.01],
+	],
+	"res://game/aliens/strains/ravager/shed.tres":
+	[
+		["count", 0.0, 10.0, 1.0],
+		["cooldown", 1.0, 60.0, 1.0],
+		["max_range", 2.0, 40.0, 0.5],
+	],
 }
 const PANEL_WIDTH: float = 460.0
 ## Every weapon of the game, for `unlock_weapons`.
@@ -575,6 +642,8 @@ func _build() -> void:
 	var hive: AlienHive = load(HIVE_PATH)
 	# By tier, in the hive's order within one.
 	var by_tier: Array[AlienStrain] = hive.strains.duplicate()
+	if hive.apex:
+		by_tier.append(hive.apex)
 	by_tier.sort_custom(
 		func(a: AlienStrain, b: AlienStrain) -> bool:
 			return (
@@ -584,6 +653,8 @@ func _build() -> void:
 	)
 	for strain: AlienStrain in by_tier:
 		var role: String = (Alien.Role.keys()[strain.role] as String).capitalize()
+		if strain == hive.apex:
+			role = "Apex"
 		var label: String = "%s (T%d, %s)" % [strain.display_name, strain.tier, role]
 		_nest_buttons.append(_button(strains, label, hatch_strain.bind(strain)))
 	var miners: GridContainer = _group(state, "Miners")

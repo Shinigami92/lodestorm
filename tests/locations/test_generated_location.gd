@@ -365,3 +365,32 @@ func _scatter_bodies(location: GeneratedLocation) -> Array[RID]:
 		if child is StaticBody3D:
 			bodies.append((child as StaticBody3D).get_rid())
 	return bodies
+
+
+## Some locations from tier 3 on have the hive's apex roaming between areas away from the landing.
+func test_the_apex_roams_some_locations() -> void:
+	var hive: AlienHive = load("res://game/aliens/hive/hive.tres")
+	var chance: float = hive.apex_chance
+	hive.apex_chance = 1.0
+	var low: GeneratedLocation = LOCATION.instantiate() as GeneratedLocation
+	low.world_seed = 5
+	low.biome = DUST
+	low.area_count = AREAS
+	low.alien_tier = hive.apex_from_tier - 1
+	add_child_autofree(low)
+	var high: GeneratedLocation = LOCATION.instantiate() as GeneratedLocation
+	high.world_seed = 5
+	high.biome = DUST
+	high.area_count = AREAS
+	high.alien_tier = hive.apex_from_tier
+	add_child_autofree(high)
+	hive.apex_chance = chance
+	assert_null(low.get_node_or_null(^"Apex"), "not before its tier")
+	var lair := high.get_node_or_null(^"Apex") as ApexLair
+	assert_not_null(lair)
+	assert_eq(lair.apex.strain, hive.apex)
+	assert_false(lair.route.is_empty())
+	for point: Vector3 in lair.route:
+		var at := Vector2(point.x, point.z)
+		assert_gte(high.landing_distance(at), GeneratedLocation.APEX_LANDING_DISTANCE)
+		assert_true(high.is_reachable(point.x, point.z))

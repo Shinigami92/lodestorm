@@ -9,7 +9,11 @@ extends CharacterBody3D
 ## walks around obstacles along it and steers around other aliens; elsewhere it goes straight. Some
 ## strains keep away from their target (`strain.keep_away`: spitters back off), burrowers travel
 ## under the ground (`strain.burrows`: out of reach, only a `BurrowRipple` shows) and come up to
-## attack, and tenders mend the aliens around them (`strain.mend`: see `MendLinks`). A shrieker's
+## attack, tenders mend the aliens around them (`strain.mend`: see `MendLinks`), darters fly
+## (`strain.flight_height`: see `AlienFlight`), stalkers hide (`strain.cloak`: see
+## `AlienCloaking`) and back off after each attack (`strain.retreat_time`), and the Ravager roams
+## the location (`strain.roams`, `route`) and shakes the ground (`strain.tremor`: see
+## `AlienTremor`). A shrieker's
 ## scream speeds up the aliens near it and calls for help (`called_for_help`, answered by the
 ## nearest nest); in the hive's frenzy all of them are faster (see `status`). While a scream boosts
 ## it or a tender's link holds it, it's a little bigger and outlined in the hive's yellow-green.
@@ -65,6 +69,11 @@ const DIG_DISTANCE: float = 3.0
 const BURROW_DEPTH: float = 1.2
 ## Without a target, guards walk back once they're this far from where they hatched (m).
 const HOME_RADIUS: float = 1.5
+## A roaming alien heads for its route's next point once it's this close to the one it walked to
+## (m).
+const ROAM_ARRIVE: float = 4.0
+## Seconds a flier takes to drop to the ground when it dies.
+const FALL_TIME: float = 0.4
 ## The rim light is weaker than on players and machines: the alien's many thin, curved parts
 ## would glow all over.
 const RIM_STRENGTH: float = 0.45
@@ -103,6 +112,8 @@ static var _buffed_rim: ShaderMaterial
 ## Where it hatched (global): guards (and raiders without a miner) stay near it. Set when it enters
 ## the tree.
 var home := Vector3.INF
+## Where it roams without a target (global points, `strain.roams`), set before it enters the tree.
+var route: Array[Vector3] = []
 
 ## How much stronger than its strain it is (more health, more damage): bodies farther in have
 ## stronger aliens (see `MissionSettings.alien_health_at`). Set before it enters the tree.
@@ -129,6 +140,11 @@ var lunge_hit: bool = false
 var lunge_stalled: bool = false
 ## Whether it's under the ground (burrowers): it can't be hit and doesn't block anyone.
 var underground: bool = false
+## How it flies (fliers only, see `strain.flight_height`).
+var flight := AlienFlight.new()
+## Its see-through body (stalkers), and the ground shaking around it (the Ravager), or null.
+var cloaking: AlienCloaking
+var tremor: AlienTremor
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## The attack under way and its phase, and the seconds the phase has run.
@@ -151,6 +167,12 @@ var _lunge_velocity := Vector3.ZERO
 var _flash_left: float = 0.0
 ## Seconds since a burrower came up.
 var _surfaced_for: float = 0.0
+## Seconds it still backs off after an attack (`strain.retreat_time`).
+var _retreat_left: float = 0.0
+## The route's point it walks to, or -1.
+var _route_index: int = -1
+## Which way it circles its target (`strain.circles`): 1 or -1.
+var _circle_side: float = 1.0 if randf() < 0.5 else -1.0
 var _dig_tween: Tween
 var _ripple: BurrowRipple
 ## Laid over the model: the hit flash, and the rim light as its next pass.
@@ -194,6 +216,7 @@ func _ready() -> void:
 	var creature := _model.find_child("Creature", true, false) as GeometryInstance3D
 	creature.material_overlay = OccludedSilhouette.overlay(OccludedSilhouette.ALIEN_COLOR, _overlay)
 	OccludedSilhouette.mark_visible(_model)
+	RenderLayers.put(_model, RenderLayers.CHARACTERS)
 	for part: String in ["Eyes", "Glands"]:
 		var glowing := _model.find_child(part, true, false) as MeshInstance3D
 		if glowing and glowing.mesh.surface_get_material(0) is BaseMaterial3D:
@@ -208,6 +231,15 @@ func _ready() -> void:
 		var links := MendLinks.new()
 		links.mend = strain.mend
 		add_child(links)
+	if strain.cloak:
+		cloaking = AlienCloaking.new()
+		cloaking.cloak = strain.cloak
+		add_child(cloaking)
+	if strain.tremor > 0.0:
+		tremor = AlienTremor.new()
+		tremor.strength = strain.tremor
+		add_child(tremor)
+		_legs.stepped.connect(tremor.thump)
 	_update_look()
 	_body.scale = Vector3.ONE * 0.01
 	_hatch_tween = create_tween()
@@ -241,6 +273,13 @@ func _physics_process(delta: float) -> void:
 			facing = attack_facing
 		else:
 			facing = _offset_to(target)
+		if _attack and _attack.on_the_move and is_instance_valid(target):
+			wanted = _chase(_offset_to(target).length())
+	elif target and _retreat_left > 0.0:
+		wanted = _direction_away_from(target)
+		facing = _offset_to(target)
+	elif not target and strain.roams and not route.is_empty():
+		wanted = _roam()
 	elif not target and strain.leash > 0.0 and role != Role.HUNTER:
 		# Back to where it hatched.
 		var back: Vector3 = home - global_position
@@ -249,12 +288,8 @@ func _physics_process(delta: float) -> void:
 	elif target:
 		var offset: Vector3 = _offset_to(target)
 		var distance: float = offset.length()
-		if _start_attack(distance):
-			pass
-		elif strain.keep_away > 0.0 and distance < strain.keep_away:
-			wanted = _direction_away_from(target)
-		elif distance > reach_to(target, strain.reach(underground)):
-			wanted = _direction_to(target.global_position)
+		if not _start_attack(distance):
+			wanted = _chase(distance)
 		facing = offset
 	# Face where it actually goes (avoidance and acceleration bend the path), or the target when
 	# it stands.
@@ -281,6 +316,10 @@ func _physics_process(delta: float) -> void:
 	_push *= exp(-PUSH_DECAY * delta)
 	if underground:
 		_move_underground(horizontal, delta)
+		return
+	if strain.flies():
+		velocity = flight.velocity(self, horizontal)
+		move_and_slide()
 		return
 	if is_on_floor():
 		velocity.y = 0.0
@@ -309,6 +348,8 @@ func _process(delta: float) -> void:
 	var size: float = BUFFED_SCALE if buffed else 1.0
 	_model.scale = _model.scale.lerp(Vector3.ONE * size, 1.0 - exp(-BUFFED_GROW_SPEED * delta))
 	_overlay.next_pass = _buffed_rim if buffed else _rim
+	if cloaking and cloaking.is_cloaked():
+		_overlay.next_pass = null
 	if not dead:
 		# Keeps the scale: it grows while hatching.
 		var pose: Transform3D = _pose.update(delta)
@@ -322,6 +363,9 @@ func _process(delta: float) -> void:
 func strike(victim: Node3D, amount: float) -> void:
 	if not is_instance_valid(victim):
 		return
+	if cloaking and cloaking.ambush:
+		amount = maxf(amount, strain.cloak.ambush_damage)
+		cloaking.ambush = false
 	hurt(victim, amount * damage_factor, global_position)
 	play_attack()
 
@@ -561,6 +605,8 @@ func _start_attack(distance: float) -> bool:
 		_cooldowns[attack] = attack.cooldown
 		_phase = AttackPhase.WIND_UP
 		_phase_time = 0.0
+		if cloaking:
+			cloaking.reveal(true)
 		attack.prepare(self)
 		_process_attack(0.0)
 		return true
@@ -611,6 +657,10 @@ func _end_attack() -> void:
 			_legs.active = true
 	if _attack:
 		_attack.finish(self)
+		if not dead:
+			_retreat_left = strain.retreat_time
+	if cloaking:
+		cloaking.ambush = false
 	_attack = null
 	_phase = AttackPhase.NONE
 	_phase_time = 0.0
@@ -627,6 +677,34 @@ func _land() -> void:
 		velocity = Vector3(0.0, velocity.y, 0.0)
 		_legs.plant_all()
 		_legs.active = true
+
+
+## Horizontal direction it goes for its target, `distance` m away, when it doesn't attack: away
+## while closer than `strain.keep_away`, towards it out of reach of its attacks, around it in
+## between if it circles (`strain.circles`), otherwise nowhere.
+func _chase(distance: float) -> Vector3:
+	if strain.keep_away > 0.0 and distance < strain.keep_away:
+		return _direction_away_from(target)
+	if distance > reach_to(target, strain.reach(underground)):
+		return _direction_to(target.global_position)
+	if strain.circles and distance > 0.01:
+		return _offset_to(target).normalized().cross(Vector3.UP) * _circle_side
+	return Vector3.ZERO
+
+
+## Horizontal direction along its route: to the point it walks to, and once there to another one,
+## picked at random.
+func _roam() -> Vector3:
+	var arrived: bool = false
+	if _route_index >= 0:
+		var offset: Vector3 = route[_route_index] - global_position
+		arrived = Vector2(offset.x, offset.z).length() < ROAM_ARRIVE
+	if _route_index < 0 or arrived:
+		var next: int = randi() % route.size()
+		if route.size() > 1 and next == _route_index:
+			next = (next + 1) % route.size()
+		_route_index = next
+	return _direction_to(route[_route_index])
 
 
 ## Burrowers dig in for a target farther away once they've been up for `strain.surface_time`, and
@@ -671,6 +749,7 @@ func _count_down(delta: float) -> void:
 	for attack: AlienAttack in _cooldowns:
 		_cooldowns[attack] = maxf(_cooldowns[attack] - delta, 0.0)
 	_staggered = maxf(_staggered - delta, 0.0)
+	_retreat_left = maxf(_retreat_left - delta, 0.0)
 	status.tick(delta)
 	if not underground:
 		_surfaced_for += delta
@@ -741,7 +820,10 @@ func _direction_to(point: Vector3) -> Vector3:
 	return offset.normalized()
 
 
+## Whether it walks along a navigation mesh: there is one, and it doesn't fly.
 func _has_navigation() -> bool:
+	if strain.flies():
+		return false
 	return not NavigationServer3D.map_get_regions(get_world_3d().navigation_map).is_empty()
 
 
@@ -787,6 +869,11 @@ func _die() -> void:
 	_body.transform = Transform3D(Basis(Vector3.UP, PI), Vector3.ZERO)
 	_animator.dead = true
 	_legs.active = false
+	if strain.flies():
+		var ground: float = AlienFlight.ground_below(self, global_position)
+		if ground > -INF:
+			var fall: Tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+			fall.tween_property(self, ^"global_position:y", ground, FALL_TIME)
 	var tween: Tween = create_tween()
 	tween.tween_interval(COLLAPSE_DURATION)
 	tween.tween_property(_body, ^"position:y", -SINK_DEPTH, SINK_DURATION)

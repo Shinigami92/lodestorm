@@ -1,6 +1,6 @@
 # Sound effects (planned)
 
-Decided 2026-10-17, built in M4 step 7 as PRs E1 and E2 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today the game has no audio at all. Around it: the dark, realistic look (human tech industrial and weathered, the hive organic and wet, see [Art direction](../GAME_DESIGN.md#art-direction)); the timing reload's window gets a sound cue (needed for VR and accessibility); alien telegraphs get a sound (see [`aliens.md`](aliens.md)); the voice-over comes after the art pass (see [`voice.md`](voice.md)).
+Decided 2026-10-17, built in M4 step 7 as PRs F1 and F2 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today the game has no audio at all. Around it: the dark, realistic look (human tech industrial and weathered, the hive organic and wet, see [Art direction](../GAME_DESIGN.md#art-direction)); the timing reload's window gets a sound cue (needed for VR and accessibility); alien telegraphs get a sound (see [`aliens.md`](aliens.md)); the voice-over comes after the art pass (see [`voice.md`](voice.md)).
 
 ## Making the sounds
 

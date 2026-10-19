@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AlienCharge" format=3 uid="uid://cqw34guktmjb8"]
+
+[ext_resource type="Script" uid="uid://brbggpqqnogpp" path="res://game/aliens/attacks/alien_charge.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage = 45.0
+reach = 4.0
+cooldown = 9.0
+wind_up = 1.2
+recovery = 1.5
+against_miners = false
+min_range = 7.0
+max_range = 18.0
+charge_speed = 11.0
+overshoot = 4.0
+max_length = 22.0
+width = 2.2
+daze = 2.5
+max_height_difference = 2.5

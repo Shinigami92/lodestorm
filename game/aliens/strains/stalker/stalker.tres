@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://b4v1uo3absmiu"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://byy81qcgl5fbt" path="res://game/aliens/strains/stalker/stalker.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://d1watv85ppnpt" path="res://game/aliens/strains/stalker/hook.tres" id="7_hook"]
+[ext_resource type="Resource" uid="uid://ddgf34n88scvl" path="res://game/aliens/strains/stalker/pounce.tres" id="4_pounce"]
+[ext_resource type="Resource" uid="uid://cnmvbu6w1vpm6" path="res://game/aliens/strains/stalker/slash.tres" id="5_slash"]
+[ext_resource type="Resource" uid="uid://bodjd2i8f6u0p" path="res://game/aliens/strains/stalker/cloak.tres" id="6_cloak"]
+
+[resource]
+script = ExtResource("1_script")
+scene = ExtResource("2_scene")
+display_name = "Stalker"
+tier = 5
+role = 1
+max_health = 70.0
+stagger_threshold = 30.0
+stride = 1.5
+move_speed = 5.6
+acceleration = 30.0
+detection_range = 22.0
+chase_range = 26.0
+retreat_time = 2.0
+cloak = ExtResource("6_cloak")
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_pounce"), ExtResource("7_hook"), ExtResource("5_slash")])

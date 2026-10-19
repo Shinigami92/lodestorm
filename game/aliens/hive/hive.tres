@@ -13,6 +13,10 @@
 [ext_resource type="Resource" uid="uid://b2u03tetuonte" path="res://game/aliens/strains/shrieker/shrieker.tres" id="11_shrieker"]
 [ext_resource type="Resource" uid="uid://buys0c0jdnsug" path="res://game/aliens/strains/bloater/bloater.tres" id="12_bloater"]
 [ext_resource type="Resource" uid="uid://dlonkypjau511" path="res://game/aliens/strains/tender/tender.tres" id="13_tender"]
+[ext_resource type="Resource" uid="uid://6hywtomscl4b" path="res://game/aliens/strains/darter/darter.tres" id="14_darter"]
+[ext_resource type="Resource" uid="uid://b4v1uo3absmiu" path="res://game/aliens/strains/stalker/stalker.tres" id="15_stalker"]
+[ext_resource type="Resource" uid="uid://8u3ped66fjco" path="res://game/aliens/strains/ravager/ravager.tres" id="16_ravager"]
+[ext_resource type="Resource" uid="uid://bsmjx1j2nw6ak" path="res://game/aliens/strains/skimmer/skimmer.tres" id="17_skimmer"]
 
 [sub_resource type="Resource" id="Pack_1"]
 script = ExtResource("2_pack")
@@ -119,7 +123,78 @@ script = ExtResource("2_pack")
 members = Dictionary[ExtResource("3_strain"), int]({ExtResource("12_bloater"): 1, ExtResource("13_tender"): 1, ExtResource("4_swarmer"): 2})
 weight = 0.5
 
+[sub_resource type="Resource" id="Pack_22"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("14_darter"): 5})
+weight = 2.0
+
+[sub_resource type="Resource" id="Pack_23"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("14_darter"): 3, ExtResource("4_swarmer"): 2})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_24"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("15_stalker"): 2})
+weight = 1.5
+
+[sub_resource type="Resource" id="Pack_25"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("15_stalker"): 1, ExtResource("5_mite"): 6})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_26"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("14_darter"): 4, ExtResource("11_shrieker"): 1})
+weight = 0.5
+
+[sub_resource type="Resource" id="Pack_27"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("15_stalker"): 1, ExtResource("13_tender"): 1, ExtResource("4_swarmer"): 2})
+weight = 0.5
+
+[sub_resource type="Resource" id="Pack_28"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("10_brute"): 1, ExtResource("14_darter"): 4})
+weight = 0.5
+
+[sub_resource type="Resource" id="Pack_29"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("15_stalker"): 2, ExtResource("12_bloater"): 1})
+weight = 0.5
+
+[sub_resource type="Resource" id="Pack_30"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("17_skimmer"): 2})
+weight = 1.5
+
+[sub_resource type="Resource" id="Pack_31"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("17_skimmer"): 3})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_32"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("17_skimmer"): 2, ExtResource("14_darter"): 3})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_33"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("17_skimmer"): 1, ExtResource("10_brute"): 1, ExtResource("4_swarmer"): 2})
+weight = 0.75
+
+[sub_resource type="Resource" id="Pack_34"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("17_skimmer"): 2, ExtResource("15_stalker"): 1})
+weight = 0.75
+
+[sub_resource type="Resource" id="Pack_35"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("17_skimmer"): 4})
+weight = 0.5
+
 [resource]
 script = ExtResource("1_script")
-strains = Array[ExtResource("3_strain")]([ExtResource("4_swarmer"), ExtResource("5_mite"), ExtResource("6_spitter"), ExtResource("7_burrower"), ExtResource("8_warden"), ExtResource("9_gnawer"), ExtResource("10_brute"), ExtResource("11_shrieker"), ExtResource("12_bloater"), ExtResource("13_tender")])
-packs = Array[ExtResource("2_pack")]([SubResource("Pack_1"), SubResource("Pack_2"), SubResource("Pack_3"), SubResource("Pack_4"), SubResource("Pack_5"), SubResource("Pack_6"), SubResource("Pack_7"), SubResource("Pack_8"), SubResource("Pack_9"), SubResource("Pack_10"), SubResource("Pack_11"), SubResource("Pack_12"), SubResource("Pack_13"), SubResource("Pack_14"), SubResource("Pack_15"), SubResource("Pack_16"), SubResource("Pack_17"), SubResource("Pack_18"), SubResource("Pack_19"), SubResource("Pack_20"), SubResource("Pack_21")])
+strains = Array[ExtResource("3_strain")]([ExtResource("4_swarmer"), ExtResource("5_mite"), ExtResource("6_spitter"), ExtResource("7_burrower"), ExtResource("8_warden"), ExtResource("9_gnawer"), ExtResource("10_brute"), ExtResource("11_shrieker"), ExtResource("12_bloater"), ExtResource("13_tender"), ExtResource("14_darter"), ExtResource("15_stalker"), ExtResource("17_skimmer")])
+packs = Array[ExtResource("2_pack")]([SubResource("Pack_1"), SubResource("Pack_2"), SubResource("Pack_3"), SubResource("Pack_4"), SubResource("Pack_5"), SubResource("Pack_6"), SubResource("Pack_7"), SubResource("Pack_8"), SubResource("Pack_9"), SubResource("Pack_10"), SubResource("Pack_11"), SubResource("Pack_12"), SubResource("Pack_13"), SubResource("Pack_14"), SubResource("Pack_15"), SubResource("Pack_16"), SubResource("Pack_17"), SubResource("Pack_18"), SubResource("Pack_19"), SubResource("Pack_20"), SubResource("Pack_21"), SubResource("Pack_22"), SubResource("Pack_23"), SubResource("Pack_24"), SubResource("Pack_25"), SubResource("Pack_26"), SubResource("Pack_27"), SubResource("Pack_28"), SubResource("Pack_29"), SubResource("Pack_30"), SubResource("Pack_31"), SubResource("Pack_32"), SubResource("Pack_33"), SubResource("Pack_34"), SubResource("Pack_35")])
+apex = ExtResource("16_ravager")

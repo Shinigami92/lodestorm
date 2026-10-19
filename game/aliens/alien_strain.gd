@@ -50,6 +50,15 @@ extends Resource
 @export var detection_range: float = 18.0
 ## A chased player farther away than this (horizontally, in m) gets away (not from hunters).
 @export var chase_range: float = 20.0
+## Seconds it backs off from its target after each attack before it comes in again (stalkers hit
+## and run); 0: it doesn't.
+@export var retreat_time: float = 0.0
+## Whether it circles its target between `keep_away` and the reach of its attacks instead of
+## standing (skimmers); with attacks `AlienAttack.on_the_move` it never stops.
+@export var circles: bool = false
+## Whether it wanders between the location's areas without a target (the Ravager, see
+## `Alien.route`), instead of standing.
+@export var roams: bool = false
 ## Keeps at least this far from its target (horizontally, in m): closer, it backs away (spitters);
 ## 0: it doesn't.
 @export var keep_away: float = 0.0
@@ -67,9 +76,21 @@ extends Resource
 ## Seconds digging in and coming up take.
 @export var dig_time: float = 0.4
 
+@export_group("Flight")
+## How high it flies above the ground (darters, see `AlienFlight`): over cliffs and rock, straight
+## at its target, no paths; 0: it walks.
+@export var flight_height: float = 0.0
+## How high it flies while it dives and right after (low enough for every weapon).
+@export var dive_height: float = 1.0
+
 @export_group("Support")
 ## Whether and how it mends the aliens around it (tenders, see `MendLinks`); null: it doesn't.
 @export var mend: AlienMend
+## Whether and how it hides (stalkers, see `AlienCloaking`); null: it doesn't.
+@export var cloak: AlienCloak
+## How strongly the ground shakes around it (the Ravager, see `AlienTremor`): the view's shake at
+## its feet with every step (m); 0: it doesn't.
+@export var tremor: float = 0.0
 
 @export_group("Attacks")
 ## Tried in order: the first one that is ready and has the target in its range starts.
@@ -83,6 +104,11 @@ func spawn(as_role: Alien.Role = Alien.Role.GUARD) -> Alien:
 	alien.strain = self
 	alien.role = as_role
 	return alien
+
+
+## Whether it flies (see `flight_height`).
+func flies() -> bool:
+	return flight_height > 0.0
 
 
 ## How close the alien has to come for its closest attack (horizontally, center to center, in m):

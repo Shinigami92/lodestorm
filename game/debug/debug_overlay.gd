@@ -397,11 +397,12 @@ func _process(_delta: float) -> void:
 	var hunters: int = aliens.filter(_has_role.bind(Alien.Role.HUNTER)).size()
 	var raiders: int = aliens.filter(_has_role.bind(Alien.Role.RAIDER)).size()
 	var nests: int = get_tree().get_nodes_in_group(AlienNest.GROUP).size()
+	var bodies: Array[Node] = get_tree().get_nodes_in_group(Destructible.GROUP)
+	var husks: int = bodies.filter(func(body: Destructible) -> bool: return body.dead).size()
+	var counts: Array = [aliens.size(), chasing, hunters, raiders, nests, husks]
+	counts.append("" if Alien.ai_on else ", AI off")
 	lines.append(
-		(
-			"Aliens: %d (%d chasing, %d hunters, %d raiders), nests: %d%s"
-			% [aliens.size(), chasing, hunters, raiders, nests, "" if Alien.ai_on else ", AI off"]
-		)
+		"Aliens: %d (%d chasing, %d hunters, %d raiders), nests: %d (%d destroyed)%s" % counts
 	)
 	var miners: Array[Node] = get_tree().get_nodes_in_group(Miner.GROUP)
 	var broken: int = miners.filter(func(miner: Miner) -> bool: return miner.broken).size()
@@ -454,6 +455,13 @@ func kill_players() -> void:
 func kill_aliens() -> void:
 	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
 		alien.take_damage(alien.health)
+
+
+## Takes a burst's share of its health off every nest (with two bursts a third: each press is one
+## stage, the third destroys them).
+func _damage_nests() -> void:
+	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
+		nest.body.take_damage(nest.body.max_health / (nest.settings.bursts + 1.0))
 
 
 ## Lets the nest nearest to the local player hatch a pack of hunters right away.
@@ -651,6 +659,7 @@ func _build() -> void:
 	_switch(aliens, "Alien AI", Alien.ai_on, func(on: bool) -> void: Alien.ai_on = on)
 	_nest_buttons.append(_button(aliens, "Hatch hunter packs", hatch_hunters))
 	_nest_buttons.append(_button(aliens, "Hatch raiders", hatch_raiders))
+	_nest_buttons.append(_button(aliens, "Damage nests", _damage_nests))
 	_kill_aliens_button = _button(aliens, "Kill aliens", kill_aliens)
 	var strains: GridContainer = _group(state, "Hatch a strain")
 	var hive: AlienHive = load(HIVE_PATH)

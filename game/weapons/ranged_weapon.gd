@@ -161,8 +161,8 @@ func _attack() -> void:
 	cancel_reload()
 	rounds -= 1
 	var direction: Vector3 = aim_direction
-	if is_instance_valid(aim_target) and not aim_target.dead:
-		direction = _muzzle.global_position.direction_to(aim_target.get_aim_point())
+	if PlayerAim.is_lockable(aim_target):
+		direction = _muzzle.global_position.direction_to(PlayerAim.aim_point(aim_target))
 	var spread: float = deg_to_rad(settings.spread)
 	for pellet: int in settings.pellets:
 		var angle: float = 0.0

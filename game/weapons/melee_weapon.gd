@@ -2,7 +2,8 @@ class_name MeleeWeapon
 extends Weapon
 ## Swings at everything in front of the holder per attack: every alien within reach and the
 ## swing's arc (around the aim direction, or the direction to the locked target) takes the damage,
-## unless something solid is in the way. The model (`Model`) sweeps through the arc, a stand-in for
+## unless something solid is in the way, and so does a destructible (a nest) whose edge is within
+## reach and the arc. The model (`Model`) sweeps through the arc, a stand-in for
 ## a swing animation.
 
 ## Emitted after every swing with the aliens it hit.
@@ -20,7 +21,7 @@ var _sweep: Tween
 
 func _attack() -> void:
 	var direction: Vector3 = aim_direction
-	if is_instance_valid(aim_target) and not aim_target.dead:
+	if PlayerAim.is_lockable(aim_target):
 		var to_target: Vector3 = aim_target.global_position - holder.global_position
 		to_target.y = 0.0
 		if to_target.length() > 0.01:
@@ -48,6 +49,15 @@ func _attack() -> void:
 			holder
 		)
 		DamageNumber.show_hit(holder, alien, alien.take_hit(hit))
+	for node: Node in get_tree().get_nodes_in_group(Destructible.GROUP):
+		var body := node as Destructible
+		if body.is_hittable() and _reaches(body, direction):
+			var away: Vector3 = body.global_position - holder.global_position
+			away.y = 0.0
+			var along: Vector3 = away.normalized() if away.length() > 0.01 else direction
+			var point: Vector3 = body.get_aim_point() - along * body.radius()
+			var hit := Hit.new(settings.damage * damage_multiplier, 0.0, 0.0, along, point, holder)
+			DamageNumber.show_hit(holder, body, body.take_hit(hit))
 	_play_sweep()
 	swung.emit(hits)
 
@@ -73,6 +83,19 @@ func _in_swing(alien: Alien, direction: Vector3, exclude: Array[RID]) -> bool:
 	)
 	query.exclude = exclude
 	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
+
+
+## Whether `body`'s edge is within reach and its middle within the arc around `direction` (or
+## the holder stands at it).
+func _reaches(body: Destructible, direction: Vector3) -> bool:
+	var offset: Vector3 = body.global_position - holder.global_position
+	if absf(body.get_aim_point().y - holder.global_position.y) > settings.reach + body.aim_height:
+		return false
+	offset.y = 0.0
+	var distance: float = offset.length() - body.radius()
+	if distance > settings.reach:
+		return false
+	return distance <= 0.0 or offset.angle_to(direction) <= deg_to_rad(settings.arc) * 0.5
 
 
 func _play_sweep() -> void:

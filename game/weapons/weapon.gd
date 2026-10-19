@@ -8,8 +8,9 @@ var holder: CollisionObject3D
 var trigger_held: bool = false
 ## Horizontal unit vector the weapon attacks along.
 var aim_direction: Vector3 = Vector3.FORWARD
-## The alien the holder locked on, or null: attacks go straight at it, up or down slopes too.
-var aim_target: Alien
+## The alien or `Destructible` the holder locked on, or null: attacks go straight at it, up or
+## down slopes too (see `PlayerAim`).
+var aim_target: Node3D
 ## Scales the damage from the settings, set by the holder from the weapon's MK level.
 var damage_multiplier: float = 1.0
 

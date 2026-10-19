@@ -1,7 +1,7 @@
 class_name DamageNumber
 extends Label3D
-## The damage of a hit, floating up from the alien and fading (the damage readout skill). Hits on
-## the same alien within `MERGE_TIME` add up into one number (a shotgun's pellets).
+## The damage of a hit, floating up from the alien or nest and fading (the damage readout skill).
+## Hits on the same one within `MERGE_TIME` add up into one number (a shotgun's pellets).
 
 const META: StringName = &"damage_number"
 ## How long a number shows (s), how far it rises (m), and how long it takes more hits.
@@ -52,18 +52,19 @@ func is_fresh() -> bool:
 	return _age < MERGE_TIME
 
 
-## Shows `damage` on `alien` if `attacker` is a player with the damage readout skill. Returns the
-## number shown, or null.
-static func show_hit(attacker: Node, alien: Alien, damage: float) -> DamageNumber:
+## Shows `damage` on `target` (an alien or a destructible) if `attacker` is a player with the
+## damage readout skill. Returns the number shown, or null (also for no damage).
+static func show_hit(attacker: Node, target: Node3D, damage: float) -> DamageNumber:
 	var player := attacker as Player
 	if (
 		not player
+		or damage <= 0.0
 		or not player.skills.has(Skill.Effect.DAMAGE_READOUT)
-		or not alien.is_inside_tree()
+		or not target.is_inside_tree()
 	):
 		return null
 	# The last number may be gone already (it frees itself): check before typing it.
-	var last: Variant = alien.get_meta(META) if alien.has_meta(META) else null
+	var last: Variant = target.get_meta(META) if target.has_meta(META) else null
 	if is_instance_valid(last):
 		var shown := last as DamageNumber
 		if shown and shown.is_fresh():
@@ -71,8 +72,8 @@ static func show_hit(attacker: Node, alien: Alien, damage: float) -> DamageNumbe
 			return shown
 	var number := DamageNumber.new()
 	number.add(damage)
-	alien.get_parent().add_child(number)
-	number._start = alien.get_aim_point() + Vector3.UP * 0.5
+	target.get_parent().add_child(number)
+	number._start = PlayerAim.aim_point(target) + Vector3.UP * 0.5
 	number.global_position = number._start
-	alien.set_meta(META, number)
+	target.set_meta(META, number)
 	return number

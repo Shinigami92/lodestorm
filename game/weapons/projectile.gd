@@ -1,8 +1,8 @@
 class_name Projectile
 extends Node3D
 ## Flies straight and disappears on its first hit or after its range. Casts a ray along each
-## physics step, so fast projectiles can't tunnel through thin colliders. Damages the aliens it
-## hits; players are only blocked, there's no friendly fire.
+## physics step, so fast projectiles can't tunnel through thin colliders. Damages the aliens and
+## destructibles (nests) it hits; players are only blocked, there's no friendly fire.
 
 ## Emitted when the projectile hits a collider, right before it disappears.
 signal hit(collider: Object, hit_position: Vector3)
@@ -13,7 +13,7 @@ var velocity: Vector3 = Vector3.ZERO
 var max_distance: float = 0.0
 ## Colliders the projectile flies through (e.g. the one who fired it).
 var exclude: Array[RID] = []
-## Damage dealt to an alien it hits, and its stagger and push (see `Hit`).
+## Damage dealt to what it hits, and its stagger and push (see `Hit`).
 var damage: float = 0.0
 var stagger: float = 0.0
 var push: float = 0.0
@@ -37,12 +37,13 @@ func move_to(target: Vector3) -> bool:
 	if not result.is_empty():
 		global_position = result["position"] as Vector3
 		var collider: Object = result["collider"]
+		var hitting := Hit.new(damage, stagger, push, velocity, global_position, shooter)
 		if collider is Alien:
 			var alien := collider as Alien
-			var dealt: float = alien.take_hit(
-				Hit.new(damage, stagger, push, velocity, global_position, shooter)
-			)
-			DamageNumber.show_hit(shooter, alien, dealt)
+			DamageNumber.show_hit(shooter, alien, alien.take_hit(hitting))
+		elif collider is Destructible:
+			var body := collider as Destructible
+			DamageNumber.show_hit(shooter, body, body.take_hit(hitting))
 		hit.emit(collider, global_position)
 		queue_free()
 		return false

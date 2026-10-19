@@ -9,7 +9,11 @@ extends SkeletonModifier3D
 ## under a new step is found by a ray; without one the feet stay level with the alien's origin. It
 ## works with the interpolated transform, so the feet stay put between physics ticks.
 ## Leg bones are named `<Front|Mid|Hind><Left|Right><UpperLeg|LowerLeg|Foot>` (see
-## tools/blender/creature.py); a row without bones is left out. Values TBD (playtest).
+## tools/blender/creature.py); a row without bones is left out. Each foot landing is announced
+## (`stepped`: the Ravager's tremor). Values TBD (playtest).
+
+## Emitted when a foot lands at `at` (global).
+signal stepped(at: Vector3)
 
 ## The rows of legs from the front, and the sides.
 const ROWS: PackedStringArray = ["Front", "Mid", "Hind"]
@@ -181,6 +185,7 @@ func _update_set(
 			if leg.step >= 1.0:
 				leg.planted = leg.to
 				leg.step = -1.0
+				stepped.emit(leg.planted)
 			continue
 		var off: Vector3 = home - leg.planted
 		var distance: float = Vector2(off.x, off.z).length()

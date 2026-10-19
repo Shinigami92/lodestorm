@@ -1,6 +1,6 @@
 # Aliens and the feel of combat (planned)
 
-Decided 2026-10-17, built in M4 step 7 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**; greybox bodies until the art pass. Built so far (step 7 A): strains and their attacks as data with the role on the alien, armor and stagger, hits that push and spray, the wind-up as the telegraph, the swarmer's pounce, the blaster at 8 shots a second and the cap on living aliens, with one strain, the swarmer, in three roles (guard, hunter, raider); step 7 B: tiers 1–2 (the mite, the spitter, the burrower, modeled), the packs, which strains hatch where by tier (new strains late in a run, the preview in hard regions) and the first biome leanings; step 7 C: tiers 3–4 (the brute with its charge, the shrieker, the bloater, the tender, modeled), miners drawing raiders and the hive's frenzy; see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens). This file keeps the rest; the roster below lists the built strains too, for the whole picture.
+Decided 2026-10-17, built in M4 step 7 A–D (see [`PLAN.md`](../PLAN.md)): every strain below, the apex, the packs and biome leanings, armor, stagger and the telegraphs; see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens). This file keeps what's still open (the end of it); the roster stays for the whole picture.
 
 ## Strains and roles
 
@@ -24,18 +24,11 @@ Besides the hunters, the nests' **guards and raiders are their own strains** (bu
 
 Tier 6 brings no new strain: its danger comes from mixed packs of all of them, and the Ravager more often. The weapons named in the table are planned too (see [`weapons.md`](weapons.md)).
 
-## Where they live
+## Still open
 
-- **Biome leanings** still to set with their strains: stalkers in the Overgrowth, darters around the cliffs of the Ash fields and Glass plains (see [`biomes.md`](biomes.md)).
-- **Packs** for tier 5, added with its strains (tiers 3–4 have theirs).
-- **Tiers** also scale health, damage and nests (built, see Tiers in [Missions](../GAME_DESIGN.md#6-missions)).
-
-## Telegraphs and feedback
-
-- **Telegraphs:** each new strain's wind-up uses the built ones (crouching or rearing, glands brightening; on the ground red dashed, like the brute's lane), with its sound (see [`sfx.md`](sfx.md)).
-- **Projectiles** tell the weapons apart (shape, trail, impact).
-
-## Limits
-
-- **How many at once:** darters count as a share towards the cap, like the mites (their `cap_share`). Alien numbers and health still scale with the player count in co-op (M7).
-- **Colors:** every strain glows in the swarmer's yellow-green (acid included), which no ore uses; stalkers have darker chitin (see [Alien look](../GAME_DESIGN.md#alien-look-and-behavior-direction-for-the-art-pass)).
+- **The Ravager guarding a rich site:** it only roams so far; guarding the rich fields comes with them (step 13, [`risk-reward.md`](risk-reward.md)). Killing it rewards nothing yet: the quests' hunt goal will (step 15).
+- **More guard and raider strains** with later tiers, if playtests ask for them (the hive takes any number).
+- **Telegraph sounds:** each wind-up gets its sound with the sound effects (see [`sfx.md`](sfx.md)).
+- **Projectiles** tell the weapons apart (shape, trail, impact), with the weapons (see [`weapons.md`](weapons.md)).
+- **Co-op:** alien numbers and health scale with the player count (M7); a stalker's shimmer then shows per player (now: when any player is close).
+- **Effects with the art pass:** the stalker's shimmer, the Ravager's dust and its swarmers climbing off its back are greybox (see M5 in [`PLAN.md`](../PLAN.md)).

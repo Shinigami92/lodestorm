@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bc2n2nsybhd4h"]
+
+[ext_resource type="Script" uid="uid://c2behlnycgfcc" path="res://game/aliens/alien.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://c3jg8nh6tjal5" path="res://assets/aliens/ravager/ravager.glb" id="3_model"]
+[ext_resource type="Script" uid="uid://05m4526f30dr" path="res://game/aliens/alien_animator.gd" id="4_animator"]
+
+[sub_resource type="CapsuleShape3D" id="Shape_body"]
+radius = 1.2
+height = 4.8
+
+[node name="Alien" type="CharacterBody3D"]
+collision_mask = 5
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 1.25, 0)
+shape = SubResource("Shape_body")
+
+[node name="Body" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Model" parent="Body" instance=ExtResource("3_model")]
+
+[node name="Animator" type="AnimationTree" parent="."]
+script = ExtResource("4_animator")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 1.0
+path_search_max_polygons = 0
+radius = 1.6
+neighbor_distance = 6.0
+time_horizon_agents = 0.5

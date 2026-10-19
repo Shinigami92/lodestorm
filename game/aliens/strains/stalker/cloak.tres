@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="AlienCloak" format=3 uid="uid://bodjd2i8f6u0p"]
+
+[ext_resource type="Script" uid="uid://qicd11ry8c0v" path="res://game/aliens/support/alien_cloak.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+reveal_range = 8.0
+shown_time = 3.0
+fade_time = 0.4
+bend = 0.035

@@ -2,10 +2,13 @@ class_name AlienSlam
 extends AlienAttack
 ## A warden's slam: after the wind-up (rearing up with its front raised) it brings its front down
 ## `reach` in front of it, hitting every player within `radius` of that spot, not only its target.
-## Stepping out of it during the wind-up dodges it; afterwards it stands still for `recovery`.
+## Stepping out of it during the wind-up dodges it; afterwards it stands still for `recovery`. A
+## huge alien's slam shakes the ground (see `AlienTremor`).
 
 ## Who stands this much higher or lower than the spot isn't hit (m).
 const HIT_HEIGHT: float = 1.5
+## How much harder than a step it shakes the ground.
+const THUMP: float = 4.0
 
 ## How far around the spot it hits (m).
 @export var radius: float = 1.6
@@ -21,6 +24,8 @@ func act(alien: Alien, _elapsed: float) -> bool:
 			Alien.hurt(player, damage * alien.damage_factor, alien.global_position)
 	if clip_lead <= 0.0:
 		alien.play_attack()
+	if alien.tremor:
+		alien.tremor.thump(spot, THUMP)
 	return true
 
 

@@ -3,8 +3,8 @@ extends Node3D
 ## A charge's telegraph on the ground (`AlienCharge`): the lane it will run along, `length` m along
 ## its -Z from where it stands and `width` to each side, as red dashed edges over a faint fill that
 ## grows from the alien to the end of the lane during the wind-up (`duration`), so it shows when the
-## charge comes. Projected onto the ground (decals), so it follows slopes. Greybox look, TBD
-## (playtest).
+## charge comes. Projected onto the ground (decals), so it follows slopes; players and aliens in it
+## stay as they are (`RenderLayers.CHARACTERS`). Greybox look, TBD (playtest).
 
 ## The telegraphs' red (see `docs/planned/player-display.md`: alien telegraphs).
 const COLOR := Color(1.0, 0.16, 0.1)
@@ -65,6 +65,7 @@ func _decal(texture: Texture2D, along: float) -> Decal:
 	decal.modulate = COLOR
 	decal.upper_fade = 0.0
 	decal.lower_fade = 0.0
+	decal.cull_mask = RenderLayers.WORLD
 	return decal
 
 

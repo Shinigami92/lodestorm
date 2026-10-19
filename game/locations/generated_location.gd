@@ -42,6 +42,8 @@ const AREA_WOBBLE: float = 0.2
 const LANDING_MARGIN: float = 10.0
 ## Distance over which the ground flattened under an ore node or nest blends back, in m.
 const SITE_FALLOFF: float = 3.0
+## The apex roams only between areas at least this far from the landing site (straight, m).
+const APEX_LANDING_DISTANCE: float = 40.0
 ## How close a nest may be to the landing site in a straight line, relative to
 ## `LocationBiome.nest_min_distance` (which counts along the passes).
 const NEST_STRAIGHT_SHARE: float = 0.6
@@ -911,3 +913,31 @@ func _add_nests() -> void:
 		nest.name = "Nest%d" % (i + 1)
 		nest.position = _nest_sites[i]
 		nests.add_child(nest)
+	if table:
+		_add_apex(table.hive)
+
+
+## The hive's apex on some locations (see `AlienHive.apex_chance_at`, picked by the seed): it roams
+## between the middles of the areas away from the landing site, starting in one of them.
+func _add_apex(hive: AlienHive) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([world_seed, "apex"])
+	if rng.randf() >= hive.apex_chance_at(alien_tier):
+		return
+	var route: Array[Vector3] = []
+	for area: LocationLayout.Area in layout.areas:
+		var at: Vector2 = area.center
+		if (
+			area.kind != LocationLayout.Kind.LANDING
+			and landing_distance(at) >= APEX_LANDING_DISTANCE
+			and is_reachable(at.x, at.y)
+		):
+			route.append(Vector3(at.x, terrain.height_at(at.x, at.y), at.y))
+	if route.is_empty():
+		return
+	var lair := ApexLair.new()
+	lair.name = "Apex"
+	lair.strain = hive.apex
+	lair.route = route
+	lair.start = rng.randi() % route.size()
+	add_child(lair)

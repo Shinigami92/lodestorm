@@ -16,6 +16,9 @@
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
 
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="alien_strain"]
+[ext_resource type="Resource" uid="uid://b4v1uo3absmiu" path="res://game/aliens/strains/stalker/stalker.tres" id="stalker"]
+
 [sub_resource type="Resource" id="Resource_growth_stalk"]
 script = ExtResource("2_scatter")
 display_name = "Growth stalk"
@@ -334,3 +337,4 @@ scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_grove_stalk"), 
 ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_tessar"), ExtResource("ore_duskine"), ExtResource("ore_ressa")])
 nests_per_area = 0.9
 part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
+favored_strains = Array[ExtResource("alien_strain")]([ExtResource("stalker")])

@@ -4,8 +4,9 @@ extends Node3D
 ## `CameraZone`, it looks at the zone's focus instead. While the target uses a 3D menu (a
 ## `WorldMenu`: a screen or a station), it moves in to frame it, keeping the angle.
 ## The VR diorama will be a separate rig; gameplay only uses the viewport's active camera.
-## `shake` jiggles the view (e.g. the ship's hull in the clouds); scaled with the zoom, so a
-## framed menu shakes no more than the whole view and stays readable.
+## `shake` jiggles the view (e.g. the ship's hull in the clouds), and so do tremors (`tremble`: a
+## huge alien's steps); scaled with the zoom, so a framed menu shakes no more than the whole view
+## and stays readable.
 ## It runs on while the game is paused, so it can frame the pause panel (still, without shaking).
 
 const GROUP: StringName = &"camera_rigs"
@@ -19,6 +20,10 @@ var zoom: float = 1.0
 var shake: float = 0.0
 
 var _shake_time: float = 0.0
+## The strongest tremor of this frame and of the one before (m): the sources may run before or
+## after the rig.
+var _tremor: float = 0.0
+var _tremor_next: float = 0.0
 ## Whether the next frame jumps to the goal instead of gliding there.
 var _snap: bool = false
 
@@ -74,10 +79,18 @@ func apply_settings() -> void:
 		_camera.set_perspective(settings.fov, _camera.near, _camera.far)
 
 
+## Shakes the view by `amount` (m at zoom 1) this frame on top of `shake`; the strongest tremor
+## of a frame counts.
+func tremble(amount: float) -> void:
+	_tremor_next = maxf(_tremor_next, amount)
+
+
 func _shake(delta: float) -> void:
 	_shake_time += delta
+	_tremor = _tremor_next
+	_tremor_next = 0.0
 	var t: float = _shake_time
-	var amount: float = 0.0 if get_tree().paused else shake * zoom
+	var amount: float = 0.0 if get_tree().paused else (shake + _tremor) * zoom
 	_camera.h_offset = amount * (sin(t * 37.0) + 0.6 * sin(t * 23.0 + 1.3)) / 1.6
 	_camera.v_offset = amount * (sin(t * 29.0 + 0.7) + 0.6 * sin(t * 41.0)) / 1.6
 

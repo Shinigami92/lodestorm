@@ -162,6 +162,7 @@ func _ready() -> void:
 	_suit_light.band = _model.find_child("SuitLight") as GeometryInstance3D
 	(_model.find_child("Suit") as GeometryInstance3D).material_overlay = body_overlay
 	OccludedSilhouette.mark_visible(_model)
+	RenderLayers.put(_model, RenderLayers.CHARACTERS)
 	_attach(_weapon_mount, "WeaponGrip")
 	_attach(_cargo_rack, "CargoRack")
 	_attach(_hose_port, "HosePort")

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AlienShed" format=3 uid="uid://megne11qe2a5"]
+
+[ext_resource type="Script" uid="uid://b63mfp85atrhq" path="res://game/aliens/attacks/alien_shed.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://1fsdvrpgexi6" path="res://game/aliens/strains/swarmer/swarmer.tres" id="2_swarmer"]
+
+[resource]
+script = ExtResource("1_script")
+cooldown = 20.0
+wind_up = 1.0
+recovery = 0.5
+against_miners = false
+strain = ExtResource("2_swarmer")
+count = 3
+max_range = 20.0
+spread = 3.5

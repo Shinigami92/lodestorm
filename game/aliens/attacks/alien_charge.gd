@@ -61,9 +61,7 @@ func act(alien: Alien, elapsed: float) -> bool:
 		if player in hit or not Alien.is_prey(alien.get_tree(), player):
 			continue
 		var offset: Vector3 = player.global_position - alien.global_position
-		if absf(offset.y) > max_height_difference:
-			continue
-		if Vector2(offset.x, offset.z).length() <= width:
+		if _can_hit(offset) and Vector2(offset.x, offset.z).length() <= width:
 			Alien.hurt(player, damage * alien.damage_factor, alien.global_position)
 			hit.append(player)
 	if not alien.lunge_step(charge_speed, elapsed * charge_speed):
@@ -82,6 +80,11 @@ func finish(alien: Alien) -> void:
 	if _hit.erase(alien):
 		for player: Player in alien.get_tree().get_nodes_in_group(Player.GROUP):
 			alien.remove_collision_exception_with(player)
+
+
+## Whether a player `offset` away from it (within `width`) is hit: not too far above or below.
+func _can_hit(offset: Vector3) -> bool:
+	return absf(offset.y) <= max_height_difference
 
 
 ## Takes the line off the ground once the charge is over or broken off.

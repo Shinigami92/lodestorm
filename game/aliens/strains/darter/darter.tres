@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://6hywtomscl4b"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://c5k6dixthiohi" path="res://game/aliens/strains/darter/darter.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://bi6dgvigj2e5n" path="res://game/aliens/strains/darter/dive.tres" id="4_dive"]
+
+[resource]
+script = ExtResource("1_script")
+scene = ExtResource("2_scene")
+display_name = "Darter"
+cap_share = 0.5
+tier = 5
+role = 1
+max_health = 20.0
+stagger_threshold = 12.0
+knockback = 1.2
+move_speed = 5.8
+acceleration = 20.0
+turn_speed = 8.0
+detection_range = 22.0
+chase_range = 26.0
+keep_away = 4.0
+flight_height = 3.0
+dive_height = 1.0
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_dive")])

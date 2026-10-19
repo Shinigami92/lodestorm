@@ -4,7 +4,8 @@ extends Resource
 ## location's nests hatch from a `HatchTable` built from it (`table`): the strains of the body's
 ## tier and below, the tier's new ones late in a run, and in hard regions one of the next tier's
 ## even later. A new strain is its folder in `game/aliens/strains/`, an entry here and packs with
-## it. All values TBD (playtest).
+## it. Its apex (the Ravager) isn't hatched by nests: some locations have one roaming (see
+## `apex_chance_at`, `ApexLair`). All values TBD (playtest).
 
 ## Every strain.
 @export var strains: Array[AlienStrain] = []
@@ -19,6 +20,15 @@ extends Resource
 ## How much likelier packs (and raiders) with a strain the biome favors are (see
 ## `LocationBiome.favored_strains`).
 @export var favored_weight: float = 2.0
+
+@export_group("Apex")
+## The hive's apex (the Ravager): at most one per location, roaming (see `ApexLair`); null: none.
+@export var apex: AlienStrain
+## From this tier on a location may have it: with `apex_chance` on that tier and
+## `apex_chance_per_tier` more for each tier above.
+@export var apex_from_tier: int = 3
+@export_range(0.0, 1.0) var apex_chance: float = 0.25
+@export var apex_chance_per_tier: float = 0.1
 
 
 ## What nests hatch on a body of `tier` in `biome`; `preview` (a hard region) adds one strain of
@@ -47,6 +57,13 @@ func table(
 			weights.append(favored_weight if strain in hatching.favored else 1.0)
 		hatching.from[next[rng.rand_weighted(PackedFloat32Array(weights))]] = preview_from
 	return hatching
+
+
+## How likely a location on a body of `tier` has the apex.
+func apex_chance_at(tier: int) -> float:
+	if not apex or tier < apex_from_tier:
+		return 0.0
+	return clampf(apex_chance + apex_chance_per_tier * (tier - apex_from_tier), 0.0, 1.0)
 
 
 ## The lowest tier of its strains: the first planet's.

@@ -53,14 +53,14 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 7 B: the mite (packs, one hit kills), the spitter (keeping away, lobbing acid with a ring where it lands, burning puddles) and the burrower (under the ground, bursting up under its target), modeled; packs of hunters from recipes, which strains hatch where by tier (new ones late in a run, a preview in hard regions), the first biome leanings; guards and raiders as their own strains (the warden with its leash and slam, the gnawer), modeled, instead of a darker tint; a shared creature kit for the aliens' build scripts and six-legged steps
 - Step 7 C: the brute (front plates, a soft back, its charge with the lane on the ground), the shrieker (staying back, its scream speeding up the aliens around it and calling a pack), the bloater (a grub that bursts next to players into an acid cloud hurting everyone) and the tender (healing and hardening links), modeled, with their packs; buffed aliens bigger and outlined; working miners drawing raiders to their nearest nest; the hive's frenzy from the storm's warning on
 - Step 7 D: the darter (flying over rock at 3 m where only locked shots reach it, diving along a lane and staying low), the stalker (a hunched biped with scything talons, see-through and not lockable from afar, a shimmer close by, its first strike from hiding hitting hard, flesh hooks that slow once it's seen, hit and run), the skimmer on tier 6 (a winged ray circling out of reach of flat shots and spitting acid bolts on the move) and the apex, the Ravager (roaming some locations from tier 3, its steps shaking the view and throwing up dust, shedding swarmers, a charge and a slam), modeled, with the tier 5 and 6 packs and their biomes; players and aliens no longer tinted by a lane
+- Step 7 E: debug tools for the aliens: god mode (players lose no health) and switching the aliens' AI off and on, as switches on the debug overlay
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–6 and 7 A–D are done).
+Each step builds on the ones before it (steps 1–7 are done).
 
-- [ ] **Step 7 E — debug tools for the aliens**: god mode (players take no damage) and switching the aliens' AI off and on, as debug overlay shortcuts
 - [ ] **Step 8 — destroyable nests** ([`planned/nests.md`](planned/nests.md)): one PR with nest health and armor, the defense bursts with their warning, the three stages and the collapse, its hunters and raiders stopping, the hive's surge, a signal for the quests' "clear nests" goal, a debug shortcut
 - [ ] **Step 9 — performance with many aliens, sound effects** ([`planned/aliens.md`](planned/aliens.md), [`planned/sfx.md`](planned/sfx.md))
   - [ ] **A** performance with many aliens: profile a late, frenzied run with the cap full (the leg IK, animation trees, physics and avoidance, the flying and cloaked strains, the hive's lookups each frame) and fix what costs most; nests hatch a pack one alien at a time instead of all at once

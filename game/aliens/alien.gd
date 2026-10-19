@@ -101,6 +101,10 @@ const SINK_DEPTH: float = 0.6
 ## Seconds from death until the alien is gone.
 const DEATH_DURATION: float = COLLAPSE_DURATION + SINK_DURATION
 
+## Whether aliens think (the debug overlay switches it): off, every alien stands where it is,
+## without a target or an attack (one under way is broken off, burrowers come up), but can still be
+## hit, pushed, staggered and killed.
+static var ai_on: bool = true
 ## Shared by all aliens (see `RIM_STRENGTH`).
 static var _rim: ShaderMaterial
 static var _buffed_rim: ShaderMaterial
@@ -253,7 +257,9 @@ func _physics_process(delta: float) -> void:
 	if dead:
 		return
 	_count_down(delta)
-	if _phase == AttackPhase.NONE:
+	if not ai_on:
+		_stand_still()
+	elif _phase == AttackPhase.NONE:
 		_update_target()
 		if strain.burrows:
 			_update_burrow()
@@ -261,7 +267,7 @@ func _physics_process(delta: float) -> void:
 	var wanted := Vector3.ZERO
 	var lunging: bool = false
 	var facing := Vector3.ZERO
-	if _staggered > 0.0:
+	if _staggered > 0.0 or not ai_on:
 		pass
 	elif _phase != AttackPhase.NONE:
 		_lunge_velocity = Vector3.ZERO
@@ -705,6 +711,15 @@ func _roam() -> Vector3:
 			next = (next + 1) % route.size()
 		_route_index = next
 	return _direction_to(route[_route_index])
+
+
+## Without its AI (`ai_on`): no target, the attack under way broken off, up from under the ground.
+func _stand_still() -> void:
+	target = null
+	if _phase != AttackPhase.NONE:
+		_end_attack()
+	if underground:
+		surface()
 
 
 ## Burrowers dig in for a target farther away once they've been up for `strain.surface_time`, and

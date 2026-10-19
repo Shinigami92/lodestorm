@@ -30,6 +30,10 @@ func before_each() -> void:
 	watch_signals(_alien)
 
 
+func after_each() -> void:
+	Alien.ai_on = true
+
+
 ## Aliens find their way however long it is: around the rock of a generated location the default
 ## search limit runs out (and Godot logs an error every frame).
 func test_path_search_has_no_polygon_limit() -> void:
@@ -139,6 +143,26 @@ func test_dead_alien_does_not_attack() -> void:
 	await _place_alien(1.0)
 	await wait_physics_frames(10)
 	assert_eq(_player.health, _player.settings.max_health)
+
+
+func test_without_its_ai_it_stands_still_and_breaks_off_its_attack() -> void:
+	await _place_alien(2.0)
+	await wait_physics_frames(5)
+	assert_eq(_alien.target, _player)
+	Alien.ai_on = false
+	await wait_physics_frames(2)
+	var health: float = _player.health
+	var at: Vector3 = _alien.global_position
+	await wait_physics_frames(60)
+	assert_null(_alien.target)
+	assert_false(_alien.is_attacking())
+	assert_eq(_player.health, health, "no more bites")
+	assert_almost_eq(_alien.global_position.distance_to(at), 0.0, 0.05, "stays put")
+	_alien.take_damage(5.0)
+	assert_eq(_alien.health, _alien.max_health() - 5.0, "can still be hurt")
+	Alien.ai_on = true
+	await wait_physics_frames(2)
+	assert_eq(_alien.target, _player, "hunts again")
 
 
 func test_no_hunting_aboard_the_ship() -> void:

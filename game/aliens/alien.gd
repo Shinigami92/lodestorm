@@ -6,16 +6,22 @@ extends CharacterBody3D
 ## attacks that is ready and in range (`AlienAttack`: a wind-up as the telegraph, the attack,
 ## standing still afterwards). A player gets away by running farther than `strain.chase_range` or
 ## by going aboard; aliens don't hunt players inside the ship. Where there is a navigation mesh it
-## walks around obstacles along it and steers around other aliens; elsewhere it goes straight.
-## Nests send out two more roles: hunters go for the nearest player outside however far away and
-## never give up because of distance, and raiders go for the nearest miner that still works,
-## however far away, and ignore players until no working miner is left; then they act like guards.
-## Raiders have a darker body. It grows out of the ground when it appears. Hits (`take_hit`) lose
+## walks around obstacles along it and steers around other aliens; elsewhere it goes straight. Some
+## strains keep away from their target (`strain.keep_away`: spitters back off), burrowers travel
+## under the ground (`strain.burrows`: out of reach, only a `BurrowRipple` shows) and come up to
+## attack.
+## Its role (set from its strain by the nest) says what it goes for: guards stay by their nest
+## (within `strain.leash` of where they hatched, walking back when a player gets away), hunters go
+## for the nearest player outside however far away and never give up because of distance, and
+## raiders go for the nearest miner that still works, however far away, biting only a player who
+## stands in their way; without a working miner they walk back and guard. It grows out of the
+## ground when it appears. Hits (`take_hit`) lose
 ## its armor's share, flash it white, spray ichor (sparks off armor), push it back and fill its
 ## stagger meter; past the strain's threshold it rears up, staggered, and its attack is broken off.
 ## At zero health it stops, collapses, sinks into the ground and disappears. Its legs step on
 ## their own (`AlienLegs`), the body plays the model's clips (`AlienAnimator`) and is posed on top
-## of them (`AlienPose`).
+## of them (`AlienPose`). Its eyes and glands (the model's `Eyes` and `Glands`) flare during a
+## wind-up.
 
 ## Emitted when health reaches zero.
 signal died
@@ -42,9 +48,14 @@ const PUSH_DECAY: float = 8.0
 const EYE_FLARE: float = 4.0
 ## A leap ends early when it moves slower than this share of its speed (it ran into something).
 const LUNGE_STALL: float = 0.3
-## Raiders are a different strain: a darker body (orange would look like the player). The
-## alpha is how much the shade covers the model.
-const COLOR_RAIDER := Color(0.0, 0.0, 0.0, 0.5)
+## How far ahead it looks for a spot to back off to (m), see `AlienStrain.keep_away`.
+const BACK_OFF_STEP: float = 5.0
+## Burrowers dig in only for targets farther away than this (m); closer, they fight up top.
+const DIG_DISTANCE: float = 3.0
+## How deep a burrower's body sinks under the ground (m).
+const BURROW_DEPTH: float = 1.2
+## Without a target, guards walk back once they're this far from where they hatched (m).
+const HOME_RADIUS: float = 1.5
 ## The rim light is weaker than on players and machines: the alien's many thin, curved parts
 ## would glow all over.
 const RIM_STRENGTH: float = 0.45
@@ -74,6 +85,9 @@ static var _rim: ShaderMaterial
 @export var strain: AlienStrain
 ## Hunters and raiders go for their target however far away and never let it get away by distance.
 @export var role := Role.GUARD
+## Where it hatched (global): guards (and raiders without a miner) stay near it. Set when it enters
+## the tree.
+var home := Vector3.INF
 
 ## How much stronger than its strain it is (more health, more damage): bodies farther in have
 ## stronger aliens (see `MissionSettings.alien_health_at`). Set before it enters the tree.
@@ -91,10 +105,14 @@ var ground_contact := GroundContact.new()
 var stagger: float = 0.0
 ## Whether the leap under way hit already (see `AlienPounce`).
 var lunge_hit: bool = false
+## Whether it's under the ground (burrowers): it can't be hit and doesn't block anyone.
+var underground: bool = false
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## The attack under way and its phase, and the seconds the phase has run.
 var _attack: AlienAttack
+## Whether the attack's clip moves the legs right now (see `AlienAttack.clip_lead`).
+var _clip_legs: bool = false
 var _phase := AttackPhase.NONE
 var _phase_time: float = 0.0
 ## Seconds until each attack can start again.
@@ -109,11 +127,15 @@ var _lunge_direction := Vector3.ZERO
 var _lunge_length: float = 0.0
 var _lunge_velocity := Vector3.ZERO
 var _flash_left: float = 0.0
-## Laid over the model: the raiders' shade, the hit flash, and the rim light as its next pass.
+## Seconds since a burrower came up.
+var _surfaced_for: float = 0.0
+var _dig_tween: Tween
+var _ripple: BurrowRipple
+## Laid over the model: the hit flash, and the rim light as its next pass.
 var _overlay := StandardMaterial3D.new()
-## The eyes' own material, flaring during a wind-up.
-var _eyes: BaseMaterial3D
-var _eye_energy: float = 1.0
+## The eyes' and glands' own materials, flaring during a wind-up, and their usual energy.
+var _glows: Array[BaseMaterial3D] = []
+var _glow_energies: Array[float] = []
 var _hatch_tween: Tween
 var _legs := AlienLegs.new()
 var _pose := AlienPose.new()
@@ -127,10 +149,15 @@ var _pose := AlienPose.new()
 
 func _ready() -> void:
 	assert(strain != null, "Alien without a strain: hatch it with AlienStrain.spawn")
+	if home == Vector3.INF:
+		home = global_position
 	add_to_group(GROUP)
 	health = max_health()
 	_animator.run_speed = strain.move_speed
 	_animator.setup(_model)
+	_legs.step_distance *= strain.stride
+	_legs.step_distance_per_speed *= strain.stride
+	_legs.step_height *= strain.stride
 	(_model.find_child("Skeleton3D", true, false) as Skeleton3D).add_child(_legs)
 	_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_overlay.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -142,11 +169,16 @@ func _ready() -> void:
 	var creature := _model.find_child("Creature", true, false) as GeometryInstance3D
 	creature.material_overlay = OccludedSilhouette.overlay(OccludedSilhouette.ALIEN_COLOR, _overlay)
 	OccludedSilhouette.mark_visible(_model)
-	var eyes := _model.find_child("Eyes", true, false) as MeshInstance3D
-	if eyes and eyes.mesh.surface_get_material(0) is BaseMaterial3D:
-		_eyes = eyes.mesh.surface_get_material(0).duplicate() as BaseMaterial3D
-		_eye_energy = _eyes.emission_energy_multiplier
-		eyes.material_override = _eyes
+	for part: String in ["Eyes", "Glands"]:
+		var glowing := _model.find_child(part, true, false) as MeshInstance3D
+		if glowing and glowing.mesh.surface_get_material(0) is BaseMaterial3D:
+			var glow := glowing.mesh.surface_get_material(0).duplicate() as BaseMaterial3D
+			_glows.append(glow)
+			_glow_energies.append(glow.emission_energy_multiplier)
+			glowing.material_override = glow
+	if strain.burrows:
+		_ripple = BurrowRipple.new()
+		add_child(_ripple)
 	_update_look()
 	_body.scale = Vector3.ONE * 0.01
 	_hatch_tween = create_tween()
@@ -162,6 +194,8 @@ func _physics_process(delta: float) -> void:
 	_count_down(delta)
 	if _phase == AttackPhase.NONE:
 		_update_target()
+		if strain.burrows:
+			_update_burrow()
 
 	var wanted := Vector3.ZERO
 	var lunging: bool = false
@@ -173,10 +207,19 @@ func _physics_process(delta: float) -> void:
 		_process_attack(delta)
 		lunging = _lunge_velocity != Vector3.ZERO
 		facing = _lunge_direction if lunging else _offset_to(target)
+	elif not target and strain.leash > 0.0 and role != Role.HUNTER:
+		# Back to where it hatched.
+		var back: Vector3 = home - global_position
+		if Vector2(back.x, back.z).length() > HOME_RADIUS:
+			wanted = _direction_to(home)
 	elif target:
 		var offset: Vector3 = _offset_to(target)
 		var distance: float = offset.length()
-		if not _start_attack(distance) and distance > reach_to(target, strain.reach()):
+		if _start_attack(distance):
+			pass
+		elif strain.keep_away > 0.0 and distance < strain.keep_away:
+			wanted = _direction_away_from(target)
+		elif distance > reach_to(target, strain.reach(underground)):
 			wanted = _direction_to(target.global_position)
 		facing = offset
 	# Face where it actually goes (avoidance and acceleration bend the path), or the target when
@@ -202,6 +245,9 @@ func _physics_process(delta: float) -> void:
 	horizontal += _push
 	_push_applied = _push
 	_push *= exp(-PUSH_DECAY * delta)
+	if underground:
+		_move_underground(horizontal, delta)
+		return
 	if is_on_floor():
 		velocity.y = 0.0
 	else:
@@ -220,6 +266,10 @@ func _physics_process(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	_flash_left = maxf(_flash_left - delta, 0.0)
+	if _ripple:
+		_ripple.active = underground and not dead
+		var moving: float = 0.5 if Vector2(velocity.x, velocity.z).length() > 0.5 else 0.0
+		_ripple.strength = 1.0 if is_winding_up() else moving
 	_animator.speed = 0.0 if dead else Vector2(velocity.x, velocity.z).length()
 	if not dead:
 		# Keeps the scale: it grows while hatching.
@@ -234,11 +284,21 @@ func _process(delta: float) -> void:
 func strike(victim: Node3D, amount: float) -> void:
 	if not is_instance_valid(victim):
 		return
-	if victim is Player:
-		(victim as Player).take_damage(amount * damage_factor, global_position)
-	elif victim is Miner:
-		(victim as Miner).take_damage(amount * damage_factor)
+	hurt(victim, amount * damage_factor, global_position)
+	play_attack()
+
+
+## Plays the model's attack clip once.
+func play_attack() -> void:
 	_animator.attack()
+
+
+## Hurts `victim` (a player or a miner) by `amount`, coming from `from` (for a player's hit marks).
+static func hurt(victim: Node3D, amount: float, from: Vector3 = Vector3.INF) -> void:
+	if victim is Player:
+		(victim as Player).take_damage(amount, from)
+	elif victim is Miner:
+		(victim as Miner).take_damage(amount)
 
 
 ## Health of the unhurt alien.
@@ -264,6 +324,11 @@ func horizontal_distance(node: Node3D) -> float:
 ## Whether it's winding up, attacking or recovering from an attack.
 func is_attacking() -> bool:
 	return _phase != AttackPhase.NONE
+
+
+## Whether shots, swings and the target lock can reach it: alive and not under the ground.
+func is_hittable() -> bool:
+	return not dead and not underground and is_inside_tree()
 
 
 ## Whether it's winding up for an attack (its telegraph).
@@ -300,10 +365,35 @@ func lunge_step(speed: float, travelled: float) -> bool:
 	return false
 
 
+## Digs in under the ground (burrowers): it sinks, can't be hit and travels on as a ripple.
+func dig_in() -> void:
+	if underground or dead:
+		return
+	underground = true
+	_end_attack()
+	_collision.set_deferred(&"disabled", true)
+	_agent.avoidance_enabled = false
+	_legs.active = false
+	_sink_to(BURROW_DEPTH, _hide_model)
+
+
+## Comes up from under the ground where it is (burrowers).
+func surface() -> void:
+	if not underground:
+		return
+	underground = false
+	_surfaced_for = 0.0
+	_collision.set_deferred(&"disabled", false)
+	_model.visible = true
+	_legs.plant_all()
+	_legs.active = true
+	_sink_to(0.0)
+
+
 ## Takes `hit`: armor takes its share (on the armored side), it flashes, sprays, is pushed back and
 ## its stagger fills. Returns the damage that got through.
 func take_hit(hit: Hit) -> float:
-	if dead or hit.damage <= 0.0:
+	if dead or underground or hit.damage <= 0.0:
 		return 0.0
 	var armored: bool = strain.armor > 0.0 and _on_armor(hit.direction)
 	var dealt: float = hit.damage
@@ -350,15 +440,19 @@ static func living_load(tree: SceneTree) -> float:
 	return total
 
 
-## Keeps chasing the target while it's in `strain.chase_range`, otherwise picks the nearest
-## prey in `strain.detection_range`. Hunters keep their prey and pick it from any distance.
-## Raiders keep their miner until it breaks and pick the nearest working one from any distance;
-## without one they act like guards.
+## Keeps chasing the target while it's in `strain.chase_range` (with a leash: while it's within
+## `strain.leash` of home), otherwise picks the nearest prey in `strain.detection_range`.
+## Hunters keep their prey and pick it from any distance. Raiders keep their miner until it
+## breaks and pick the nearest working one from any distance, turning on a player only while one
+## stands in reach; without a working miner they act like guards.
 func _update_target() -> void:
 	if role == Role.RAIDER and _update_miner_target():
+		var in_way: Player = _player_in_reach()
+		if in_way:
+			target = in_way
 		return
 	if target is Player and is_instance_valid(target) and is_prey(get_tree(), target as Player):
-		if role == Role.HUNTER or horizontal_distance(target) <= strain.chase_range:
+		if role == Role.HUNTER or _keeps_chasing(target):
 			return
 	target = null
 	var nearest_distance: float = INF if role == Role.HUNTER else strain.detection_range
@@ -366,9 +460,31 @@ func _update_target() -> void:
 		if not is_prey(get_tree(), player):
 			continue
 		var distance: float = horizontal_distance(player)
-		if distance <= nearest_distance:
+		if distance <= nearest_distance and (role == Role.HUNTER or _within_leash(player)):
 			target = player
 			nearest_distance = distance
+
+
+## Whether a guard (or a raider without a miner) keeps chasing `node`: within its chase range,
+## and with a leash, not too far from home.
+func _keeps_chasing(node: Node3D) -> bool:
+	return horizontal_distance(node) <= strain.chase_range and _within_leash(node)
+
+
+## Whether `node` is within `strain.leash` of home (always without a leash).
+func _within_leash(node: Node3D) -> bool:
+	if strain.leash <= 0.0:
+		return true
+	var offset: Vector3 = node.global_position - home
+	return Vector2(offset.x, offset.z).length() <= strain.leash
+
+
+## A living player outside within reach of its closest attack (in a raider's way), or null.
+func _player_in_reach() -> Player:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if is_prey(get_tree(), player) and horizontal_distance(player) <= strain.reach():
+			return player
+	return null
 
 
 ## Keeps the target miner while it works, otherwise picks the nearest working one. Returns
@@ -408,7 +524,13 @@ func _process_attack(delta: float) -> void:
 		if not is_instance_valid(target):
 			_end_attack()
 			return
-		_pose.crouch = 1.0
+		if _attack.clip_lead > 0.0:
+			if not _clip_legs and _phase_time >= _attack.wind_up - _attack.clip_lead:
+				play_attack()
+				_clip_legs = true
+				_legs.active = false
+		else:
+			_pose.crouch = 1.0
 		if _phase_time < _attack.wind_up:
 			return
 		_pose.crouch = 0.0
@@ -429,6 +551,13 @@ func _process_attack(delta: float) -> void:
 func _end_attack() -> void:
 	if _phase == AttackPhase.ACT:
 		_land()
+	if _clip_legs:
+		_clip_legs = false
+		if _phase != AttackPhase.RECOVER:
+			_animator.stop_attack()
+		if not underground and not dead:
+			_legs.plant_all()
+			_legs.active = true
 	_attack = null
 	_phase = AttackPhase.NONE
 	_phase_time = 0.0
@@ -439,11 +568,45 @@ func _end_attack() -> void:
 func _land() -> void:
 	_lunge_velocity = Vector3.ZERO
 	_pose.leap = 0.0
-	if not _legs.active:
+	if not _legs.active and not _clip_legs:
 		# It lands on its feet, without sliding on.
 		velocity = Vector3(0.0, velocity.y, 0.0)
 		_legs.plant_all()
 		_legs.active = true
+
+
+## Burrowers dig in for a target farther away once they've been up for `strain.surface_time`, and
+## come up without one.
+func _update_burrow() -> void:
+	if underground:
+		if not is_instance_valid(target):
+			surface()
+	elif is_instance_valid(target) and _surfaced_for >= strain.surface_time:
+		if horizontal_distance(target) > reach_to(target, DIG_DISTANCE):
+			dig_in()
+
+
+## Moves it under the ground at `horizontal` (m/s), on the navigation mesh's surface: nothing
+## blocks it there.
+func _move_underground(horizontal: Vector3, delta: float) -> void:
+	velocity = horizontal
+	var next: Vector3 = global_position + horizontal * delta
+	if _has_navigation():
+		next = NavigationServer3D.map_get_closest_point(get_world_3d().navigation_map, next)
+	global_position = next
+
+
+func _sink_to(depth: float, then: Callable = Callable()) -> void:
+	if _dig_tween:
+		_dig_tween.kill()
+	_dig_tween = create_tween()
+	_dig_tween.tween_property(_pose, ^"sink", depth, strain.dig_time)
+	if then.is_valid():
+		_dig_tween.tween_callback(then)
+
+
+func _hide_model() -> void:
+	_model.visible = false
 
 
 func _stagger() -> void:
@@ -457,6 +620,8 @@ func _count_down(delta: float) -> void:
 	for attack: AlienAttack in _cooldowns:
 		_cooldowns[attack] = maxf(_cooldowns[attack] - delta, 0.0)
 	_staggered = maxf(_staggered - delta, 0.0)
+	if not underground:
+		_surfaced_for += delta
 	stagger = maxf(stagger - strain.stagger_threshold / STAGGER_DRAIN_TIME * delta, 0.0)
 
 
@@ -487,6 +652,18 @@ func _offset_to(node: Node3D) -> Vector3:
 	return offset
 
 
+## Horizontal direction to back off from `node`: towards a spot farther away, on the navigation
+## mesh if there is one (cornered, it stays).
+func _direction_away_from(node: Node3D) -> Vector3:
+	var away: Vector3 = -_offset_to(node)
+	if away.length() < 0.01:
+		away = global_basis.z
+	var spot: Vector3 = global_position + away.normalized() * BACK_OFF_STEP
+	if _has_navigation():
+		spot = NavigationServer3D.map_get_closest_point(get_world_3d().navigation_map, spot)
+	return _direction_to(spot)
+
+
 ## Horizontal direction towards `point`: along the navigation mesh if there is one and it has a
 ## path, straight otherwise.
 func _direction_to(point: Vector3) -> Vector3:
@@ -511,11 +688,10 @@ func _update_look() -> void:
 	var shade := Color(0.0, 0.0, 0.0, 0.0)
 	if _flash_left > 0.0:
 		shade = COLOR_FLASH
-	elif role == Role.RAIDER:
-		shade = COLOR_RAIDER
 	_overlay.albedo_color = shade
-	if _eyes:
-		_eyes.emission_energy_multiplier = _eye_energy * (1.0 + EYE_FLARE * _pose.crouched())
+	for i: int in _glows.size():
+		var flare: float = 1.0 + EYE_FLARE * _pose.crouched()
+		_glows[i].emission_energy_multiplier = _glow_energies[i] * flare
 
 
 func _on_velocity_computed(safe_velocity: Vector3) -> void:
@@ -529,6 +705,11 @@ func _die() -> void:
 	dead = true
 	target = null
 	_end_attack()
+	if _dig_tween:
+		_dig_tween.kill()
+	underground = false
+	_pose.sink = 0.0
+	_model.visible = true
 	remove_from_group(GROUP)
 	velocity = Vector3.ZERO
 	_agent.avoidance_enabled = false

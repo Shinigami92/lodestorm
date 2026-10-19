@@ -1,8 +1,8 @@
 class_name AlienPose
 extends RefCounted
 ## Moves an alien's body (the node holding its model) on top of its clips, until the models get
-## their own clips: crouching for a wind-up, arcing through a leap, rearing up when staggered and
-## a small jolt per hit. Values TBD (playtest).
+## their own clips: crouching for a wind-up, arcing through a leap, rearing up when staggered, a
+## small jolt per hit and sinking into the ground (burrowers). Values TBD (playtest).
 
 ## How low the body drops when fully crouched (m), and how far its nose dips (radians).
 const CROUCH_DROP: float = 0.14
@@ -20,6 +20,8 @@ var crouch: float = 0.0
 ## Height of the leap's arc at its middle (m), and how far through it the body is (0 to 1).
 var leap_height: float = 0.0
 var leap: float = 0.0
+## How far the body is sunk into the ground (m): a burrower digging in and coming up.
+var sink: float = 0.0
 ## Seconds of stagger left, out of `stagger_time`.
 var stagger_left: float = 0.0
 var stagger_time: float = 1.0
@@ -50,7 +52,7 @@ func update(delta: float) -> Transform3D:
 	_crouched = lerpf(_crouched, crouch, 1.0 - exp(-CROUCH_SPEED * delta))
 	_jolt_left = maxf(_jolt_left - delta, 0.0)
 	stagger_left = maxf(stagger_left - delta, 0.0)
-	var height: float = -CROUCH_DROP * _crouched + 4.0 * leap_height * leap * (1.0 - leap)
+	var height: float = -CROUCH_DROP * _crouched + 4.0 * leap_height * leap * (1.0 - leap) - sink
 	# Positive pitch dips the nose.
 	var pitch: float = CROUCH_PITCH * _crouched
 	pitch += JOLT_PITCH * _jolt_left / JOLT_TIME

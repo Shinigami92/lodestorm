@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://dlv8pbjtg5k68"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://dxuu80ytcp2cv" path="res://game/aliens/strains/spitter/spitter.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://cvxsgme2jaguh" path="res://game/aliens/strains/spitter/spit.tres" id="4_spit"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Spitter"
+scene = ExtResource("2_scene")
+tier = 2
+max_health = 40.0
+move_speed = 4.6
+detection_range = 20.0
+chase_range = 24.0
+keep_away = 9.0
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_spit")])

@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://cl348kpaig70u"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://b0vpfxve20b00" path="res://game/aliens/strains/warden/warden.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://kevif7sitvn8" path="res://game/aliens/strains/warden/slam.tres" id="4_slam"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Warden"
+scene = ExtResource("2_scene")
+role = 0
+max_health = 150.0
+armor = 6.0
+armor_arc = 140.0
+stagger_threshold = 60.0
+stagger_time = 0.8
+knockback = 0.3
+stride = 1.3
+move_speed = 3.6
+acceleration = 15.0
+turn_speed = 4.0
+detection_range = 14.0
+chase_range = 25.0
+leash = 25.0
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_slam")])

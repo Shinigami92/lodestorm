@@ -29,7 +29,7 @@ func _attack() -> void:
 	var exclude: Array[RID] = [holder.get_rid()]
 	for node: Node in get_tree().get_nodes_in_group(Alien.GROUP):
 		var alien := node as Alien
-		if not alien.dead and alien.is_inside_tree():
+		if alien.is_hittable():
 			aliens.append(alien)
 			exclude.append(alien.get_rid())
 	var hits: Array[Alien] = []

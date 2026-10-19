@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://du8153qdwkql5" path="res://game/aliens/nest/alien_nest.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://d0q87hyldp5t8" path="res://game/aliens/nest/alien_nest_settings.tres" id="2_settings"]
-[ext_resource type="Resource" uid="uid://1fsdvrpgexi6" path="res://game/aliens/strains/swarmer/swarmer.tres" id="3_strain"]
+[ext_resource type="Resource" uid="uid://b1n2rik6l2xeh" path="res://game/aliens/hive/hive.tres" id="3_hive"]
 [ext_resource type="PackedScene" uid="uid://oomt7vjaq3on" path="res://assets/aliens/nest/nest.glb" id="4_model"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_mound"]
@@ -12,7 +12,7 @@ radius = 1.6
 [node name="AlienNest" type="Node3D"]
 script = ExtResource("1_script")
 settings = ExtResource("2_settings")
-strain = ExtResource("3_strain")
+hive = ExtResource("3_hive")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 

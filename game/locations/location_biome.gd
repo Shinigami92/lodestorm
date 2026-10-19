@@ -201,6 +201,9 @@ enum Hazard {
 ## Closest a nest is to the landing site along the passes, in m (in a straight line, through the
 ## rock, it may be a bit closer: `GeneratedLocation.NEST_STRAIGHT_SHARE`).
 @export var nest_min_distance: float = 80.0
+## Strains that come more often here (never only these, so no biome needs a particular weapon; see
+## `AlienHive.favored_weight`).
+@export var favored_strains: Array[AlienStrain] = []
 
 
 ## Whether its barrier has gaps, or a band of growth laid out like them.

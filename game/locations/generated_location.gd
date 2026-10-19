@@ -91,6 +91,10 @@ const CANYON_FADE: Vector2 = Vector2(4.0, 16.0)
 @export var view_direction: Vector3 = Vector3.ZERO
 ## Scales the biome's number of nests (the mission's difficulty).
 @export var nest_factor: float = 1.0
+## What its nests hatch (see `AlienHive.table`): the body's tier, and whether the region is hard
+## enough to preview a strain of the next tier (the mission sets both).
+@export var alien_tier: int = 1
+@export var preview_strain: bool = false
 ## The region's set pieces: always placed (the mission sets them).
 @export var set_pieces: Array[PartPlacement] = []
 ## What the crates hold, in the order they're placed (later quest fragments, set by the mission);
@@ -898,8 +902,12 @@ func _add_nests() -> void:
 	var nests := Node3D.new()
 	nests.name = "AlienNests"
 	add_child(nests)
+	var table: HatchTable = null
 	for i: int in _nest_sites.size():
 		var nest := ALIEN_NEST.instantiate() as AlienNest
+		if not table:
+			table = nest.hive.table(alien_tier, biome, preview_strain, world_seed)
+		nest.table = table
 		nest.name = "Nest%d" % (i + 1)
 		nest.position = _nest_sites[i]
 		nests.add_child(nest)

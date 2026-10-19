@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AlienEruption" format=3 uid="uid://cyqvq6x3w53uf"]
+
+[ext_resource type="Script" uid="uid://cqwnjwplccaqf" path="res://game/aliens/attacks/alien_eruption.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage = 18.0
+reach = 1.6
+cooldown = 3.0
+wind_up = 0.7
+recovery = 0.6
+underground = true

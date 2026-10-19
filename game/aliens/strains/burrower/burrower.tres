@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://b1qi3mgf8juj8"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://jk70oj8jitt4" path="res://game/aliens/strains/burrower/burrower.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://cyqvq6x3w53uf" path="res://game/aliens/strains/burrower/eruption.tres" id="4_eruption"]
+[ext_resource type="Resource" uid="uid://dn5uqssr25fj7" path="res://game/aliens/strains/burrower/bite.tres" id="5_bite"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Burrower"
+scene = ExtResource("2_scene")
+tier = 2
+max_health = 45.0
+stagger_threshold = 30.0
+knockback = 0.7
+move_speed = 5.0
+burrows = true
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_eruption"), ExtResource("5_bite")])

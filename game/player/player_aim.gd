@@ -106,7 +106,7 @@ func is_mouse_over_ui() -> bool:
 
 ## Whether `alien` can be locked on: it exists, lives and is in the world.
 static func is_lockable(alien: Alien) -> bool:
-	return is_instance_valid(alien) and not alien.dead and alien.is_inside_tree()
+	return is_instance_valid(alien) and alien.is_hittable()
 
 
 ## The alien closest to `screen_position` on screen, within the lock radius (the one already

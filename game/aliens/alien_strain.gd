@@ -1,8 +1,9 @@
 class_name AlienStrain
 extends Resource
 ## An alien strain: its body (`scene`, an `Alien`), how it moves, what it takes and its attacks.
-## Which role it plays (guard, hunter, raider) is up to the nest that hatches it, so a new strain is
-## a scene plus this data (see `game/aliens/strains/`). All values TBD (playtest).
+## Every strain plays one role (`role`: guards stay by their nest, hunters go for players,
+## raiders for miners), so a role is told apart by its body. A new strain is a scene plus this
+## data (see `game/aliens/strains/`). All values TBD (playtest).
 
 ## The name the crew calls it.
 @export var display_name: String = ""
@@ -11,6 +12,13 @@ extends Resource
 ## How much one alive counts towards the cap on living aliens (see `MissionSettings.alien_cap`):
 ## small ones that come in packs count as a share.
 @export var cap_share: float = 1.0
+## The tier of the bodies that bring it (see `HatchTable`): two new strains per tier.
+@export_range(1, 6, 1, "or_greater") var tier: int = 1
+## What it goes for: the nest hatches its guards, hunters and raiders from the strains of that role.
+@export var role := Alien.Role.HUNTER
+## How likely a nest picks it among the guards' or raiders' strains (hunters come in packs, see
+## `AlienPack`).
+@export var weight: float = 1.0
 
 @export_group("Body")
 ## Health of an unhurt alien.
@@ -25,6 +33,9 @@ extends Resource
 @export var stagger_time: float = 0.5
 ## How far hits push it, as a share of the weapon's push (heavy strains less).
 @export var knockback: float = 1.0
+## Its steps against the swarmer's (`AlienLegs`: how far and how high a foot steps): shorter legs,
+## smaller steps.
+@export var stride: float = 1.0
 
 @export_group("Movement")
 ## Top speed in m/s; below the player's, so running away works.
@@ -37,23 +48,42 @@ extends Resource
 @export var detection_range: float = 18.0
 ## A chased player farther away than this (horizontally, in m) gets away (not from hunters).
 @export var chase_range: float = 20.0
+## Keeps at least this far from its target (horizontally, in m): closer, it backs away (spitters);
+## 0: it doesn't.
+@export var keep_away: float = 0.0
+## Guards (and raiders without a miner) stay within this distance of where they hatched (m): they
+## only go for players inside it and walk back without one; 0: no leash.
+@export var leash: float = 0.0
+
+@export_group("Burrowing")
+## Whether it travels under the ground towards its target (burrowers): along the paths, out of
+## reach of shots and swings, only a ripple in the ground shows where it is. Attacks marked
+## `underground` start from there (`AlienEruption`); without a target it comes up.
+@export var burrows: bool = false
+## Seconds it stays up after coming up, before it digs in again.
+@export var surface_time: float = 3.0
+## Seconds digging in and coming up take.
+@export var dig_time: float = 0.4
 
 @export_group("Attacks")
 ## Tried in order: the first one that is ready and has the target in its range starts.
 @export var attacks: Array[AlienAttack] = []
 
 
-## Hatches a new alien of this strain with `role` (not in the tree yet).
-func spawn(role: Alien.Role = Alien.Role.GUARD) -> Alien:
+## Hatches a new alien of this strain playing `as_role` (not in the tree yet; nests pass the
+## strain's own `role`).
+func spawn(as_role: Alien.Role = Alien.Role.GUARD) -> Alien:
 	var alien := scene.instantiate() as Alien
 	alien.strain = self
-	alien.role = role
+	alien.role = as_role
 	return alien
 
 
-## How close the alien has to come for its closest attack (horizontally, center to center, in m).
-func reach() -> float:
+## How close the alien has to come for its closest attack (horizontally, center to center, in m):
+## of those that start from under the ground if `underground`, of the others if not.
+func reach(underground: bool = false) -> float:
 	var shortest: float = INF
 	for attack: AlienAttack in attacks:
-		shortest = minf(shortest, attack.reach)
+		if attack.underground == underground:
+			shortest = minf(shortest, attack.approach())
 	return shortest if shortest < INF else 1.0

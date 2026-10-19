@@ -6,6 +6,8 @@ const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.
 const MITE: AlienStrain = preload("res://game/aliens/strains/mite/mite.tres")
 const WARDEN: AlienStrain = preload("res://game/aliens/strains/warden/warden.tres")
 const GNAWER: AlienStrain = preload("res://game/aliens/strains/gnawer/gnawer.tres")
+const SHRIEKER: AlienStrain = preload("res://game/aliens/strains/shrieker/shrieker.tres")
+const SIGNATURE_ORE: OreType = preload("res://game/ores/types/ore_aethrine.tres")
 
 var _map: Node3D
 var _mission: Mission
@@ -259,3 +261,73 @@ func test_guards_take_only_their_share_of_the_cap() -> void:
 	await wait_physics_frames(2)
 	assert_eq(get_tree().get_nodes_in_group(Alien.GROUP).filter(nest.is_ancestor_of).size(), 0)
 	assert_eq(nest.hatch_pack().size(), 1, "hunters still come")
+
+
+func test_working_miners_draw_raiders_to_their_nearest_nest() -> void:
+	var far := _second_nest(Vector3(-55.0, 0.0, 0.0))
+	var miner: Miner = _place_miner()
+	var nearest: AlienNest = _nest
+	if (
+		far.global_position.distance_to(miner.global_position)
+		< _nest.global_position.distance_to(miner.global_position)
+	):
+		nearest = far
+	var other: AlienNest = far if nearest == _nest else _nest
+	await _start_mission()
+	await _wait_physics(AlienNest.DRAW_INTERVAL + 0.1)
+	assert_almost_eq(nearest.raider_draw_factor, 1.0 + nearest.settings.raider_draw, 1e-4)
+	assert_eq(other.raider_draw_factor, 1.0, "only its nearest nest")
+	miner.ore_type = SIGNATURE_ORE
+	await _wait_physics(AlienNest.DRAW_INTERVAL)
+	assert_almost_eq(nearest.raider_draw_factor, 1.0 + nearest.settings.raider_draw_signature, 1e-4)
+	miner.take_damage(miner.health)
+	await _wait_physics(AlienNest.DRAW_INTERVAL)
+	assert_eq(nearest.raider_draw_factor, 1.0, "not while it's broken")
+
+
+func test_the_hive_frenzies_from_the_storm_warning_on() -> void:
+	_set_interval(60.0)
+	await _start_mission()
+	assert_false(_nest.is_frenzied())
+	var guard: Alien = _aliens()[0]
+	assert_eq(guard.status.hive_speed, 1.0)
+	_mission.time_left = _mission.warning_time() - 1.0
+	await wait_physics_frames(2)
+	assert_true(_nest.is_frenzied())
+	assert_eq(guard.status.hive_speed, _nest.settings.frenzy_speed, "faster")
+	assert_lte(
+		_nest.hunter_cooldown, _nest.settings.hunter_interval_end, "hunters at their highest rate"
+	)
+	_mission.time_left = 0.0
+	await wait_physics_frames(2)
+	assert_eq(_mission.state, Mission.State.STORM)
+	assert_true(_nest.is_frenzied(), "during the storm too")
+
+
+func test_the_nest_nearest_to_a_scream_answers_it() -> void:
+	var near := _second_nest(Vector3(-55.0, 0.0, 0.0))
+	await _start_mission()
+	var shrieker: Alien = _nest.hatch(Alien.Role.HUNTER, SHRIEKER)
+	shrieker.global_position = near.global_position + Vector3(6.0, 0.0, 0.0)
+	await wait_physics_frames(1)
+	shrieker.called_for_help.emit(shrieker.global_position, 1.25, 6.0)
+	assert_eq(near.get_hunters().size(), 1, "its next pack, right away")
+	assert_true(near.get_hunters()[0].status.is_boosted(), "boosted like the shrieker's pack")
+	var rings: Array[Node] = near.get_parent().get_children().filter(
+		func(n: Node) -> bool: return n is ScreamWave
+	)
+	assert_eq(rings.size(), 1, "a ring at the nest shows it")
+	assert_eq(_nest.get_hunters(), [shrieker], "only the nearest nest answers")
+	shrieker.called_for_help.emit(shrieker.global_position, 1.25, 6.0)
+	assert_eq(near.get_hunters().size(), 1, "not again before its cooldown")
+
+
+## Another nest with packs of one swarmer and no guards.
+func _second_nest(offset: Vector3) -> AlienNest:
+	var nest := NEST_SCENE.instantiate() as AlienNest
+	nest.settings = nest.settings.duplicate() as AlienNestSettings
+	nest.settings.guards = 0
+	nest.table = _one_swarmer_packs()
+	nest.position = _ship.to_global(offset)
+	_map.add_child(nest)
+	return nest

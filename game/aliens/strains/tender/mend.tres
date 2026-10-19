@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AlienMend" format=3 uid="uid://bptexvfixmfvs"]
+
+[ext_resource type="Script" uid="uid://bsn030lxmcxsu" path="res://game/aliens/support/alien_mend.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+links = 3
+link_range = 8.0
+break_range = 10.0
+heal_per_second = 5.0
+armor = 3.0

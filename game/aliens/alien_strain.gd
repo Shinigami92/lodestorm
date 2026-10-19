@@ -27,6 +27,8 @@ extends Resource
 @export var armor: float = 0.0
 ## Width of the armored side around its front, in degrees (360: armored all around).
 @export var armor_arc: float = 360.0
+## Share of a hit's stagger that hits on the armor fill (the brute's plates hold, its back doesn't).
+@export_range(0.0, 1.0) var armored_stagger: float = 1.0
 ## Stagger a hit fills (see `WeaponSettings.stagger`) up to which it keeps going; past it, it's
 ## staggered for `stagger_time` and its attack is broken off. The stagger drains in a second.
 @export var stagger_threshold: float = 25.0
@@ -64,6 +66,10 @@ extends Resource
 @export var surface_time: float = 3.0
 ## Seconds digging in and coming up take.
 @export var dig_time: float = 0.4
+
+@export_group("Support")
+## Whether and how it mends the aliens around it (tenders, see `MendLinks`); null: it doesn't.
+@export var mend: AlienMend
 
 @export_group("Attacks")
 ## Tried in order: the first one that is ready and has the target in its range starts.

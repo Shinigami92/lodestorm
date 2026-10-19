@@ -9,6 +9,10 @@
 [ext_resource type="Resource" uid="uid://b1qi3mgf8juj8" path="res://game/aliens/strains/burrower/burrower.tres" id="7_burrower"]
 [ext_resource type="Resource" uid="uid://cl348kpaig70u" path="res://game/aliens/strains/warden/warden.tres" id="8_warden"]
 [ext_resource type="Resource" uid="uid://bw15y3n4uxc1h" path="res://game/aliens/strains/gnawer/gnawer.tres" id="9_gnawer"]
+[ext_resource type="Resource" uid="uid://ccag78eih83kc" path="res://game/aliens/strains/brute/brute.tres" id="10_brute"]
+[ext_resource type="Resource" uid="uid://b2u03tetuonte" path="res://game/aliens/strains/shrieker/shrieker.tres" id="11_shrieker"]
+[ext_resource type="Resource" uid="uid://buys0c0jdnsug" path="res://game/aliens/strains/bloater/bloater.tres" id="12_bloater"]
+[ext_resource type="Resource" uid="uid://dlonkypjau511" path="res://game/aliens/strains/tender/tender.tres" id="13_tender"]
 
 [sub_resource type="Resource" id="Pack_1"]
 script = ExtResource("2_pack")
@@ -55,7 +59,67 @@ script = ExtResource("2_pack")
 members = Dictionary[ExtResource("3_strain"), int]({ExtResource("4_swarmer"): 1, ExtResource("7_burrower"): 1, ExtResource("6_spitter"): 1})
 weight = 1.0
 
+[sub_resource type="Resource" id="Pack_10"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("10_brute"): 1, ExtResource("4_swarmer"): 4})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_11"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("10_brute"): 1, ExtResource("5_mite"): 6})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_12"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("10_brute"): 2})
+weight = 0.5
+
+[sub_resource type="Resource" id="Pack_13"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("11_shrieker"): 1, ExtResource("4_swarmer"): 3})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_14"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("11_shrieker"): 1, ExtResource("6_spitter"): 2})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_15"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("13_tender"): 1, ExtResource("4_swarmer"): 3})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_16"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("13_tender"): 1, ExtResource("10_brute"): 1, ExtResource("4_swarmer"): 2})
+weight = 0.75
+
+[sub_resource type="Resource" id="Pack_17"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("13_tender"): 1, ExtResource("7_burrower"): 2})
+weight = 0.5
+
+[sub_resource type="Resource" id="Pack_18"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("13_tender"): 1, ExtResource("11_shrieker"): 1, ExtResource("6_spitter"): 2})
+weight = 0.5
+
+[sub_resource type="Resource" id="Pack_19"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("12_bloater"): 1, ExtResource("4_swarmer"): 3})
+weight = 1.0
+
+[sub_resource type="Resource" id="Pack_20"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("12_bloater"): 2, ExtResource("5_mite"): 6})
+weight = 0.75
+
+[sub_resource type="Resource" id="Pack_21"]
+script = ExtResource("2_pack")
+members = Dictionary[ExtResource("3_strain"), int]({ExtResource("12_bloater"): 1, ExtResource("13_tender"): 1, ExtResource("4_swarmer"): 2})
+weight = 0.5
+
 [resource]
 script = ExtResource("1_script")
-strains = Array[ExtResource("3_strain")]([ExtResource("4_swarmer"), ExtResource("5_mite"), ExtResource("6_spitter"), ExtResource("7_burrower"), ExtResource("8_warden"), ExtResource("9_gnawer")])
-packs = Array[ExtResource("2_pack")]([SubResource("Pack_1"), SubResource("Pack_2"), SubResource("Pack_3"), SubResource("Pack_4"), SubResource("Pack_5"), SubResource("Pack_6"), SubResource("Pack_7"), SubResource("Pack_8"), SubResource("Pack_9")])
+strains = Array[ExtResource("3_strain")]([ExtResource("4_swarmer"), ExtResource("5_mite"), ExtResource("6_spitter"), ExtResource("7_burrower"), ExtResource("8_warden"), ExtResource("9_gnawer"), ExtResource("10_brute"), ExtResource("11_shrieker"), ExtResource("12_bloater"), ExtResource("13_tender")])
+packs = Array[ExtResource("2_pack")]([SubResource("Pack_1"), SubResource("Pack_2"), SubResource("Pack_3"), SubResource("Pack_4"), SubResource("Pack_5"), SubResource("Pack_6"), SubResource("Pack_7"), SubResource("Pack_8"), SubResource("Pack_9"), SubResource("Pack_10"), SubResource("Pack_11"), SubResource("Pack_12"), SubResource("Pack_13"), SubResource("Pack_14"), SubResource("Pack_15"), SubResource("Pack_16"), SubResource("Pack_17"), SubResource("Pack_18"), SubResource("Pack_19"), SubResource("Pack_20"), SubResource("Pack_21")])

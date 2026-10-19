@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AlienStrain" format=3 uid="uid://buys0c0jdnsug"]
+
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cunf6as3b4hps" path="res://game/aliens/strains/bloater/bloater.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://cmp8mhd0nx3vq" path="res://game/aliens/attacks/alien_attack.gd" id="3_attack"]
+[ext_resource type="Resource" uid="uid://bpf3bkw051t2s" path="res://game/aliens/strains/bloater/burst.tres" id="4_burst"]
+
+[resource]
+script = ExtResource("1_script")
+scene = ExtResource("2_scene")
+display_name = "Bloater"
+tier = 4
+role = 1
+max_health = 70.0
+stagger_threshold = 40.0
+knockback = 0.4
+stride = 0.45
+move_speed = 3.2
+acceleration = 8.0
+turn_speed = 3.0
+detection_range = 20.0
+chase_range = 24.0
+attacks = Array[ExtResource("3_attack")]([ExtResource("4_burst")])

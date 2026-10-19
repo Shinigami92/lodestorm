@@ -12,10 +12,12 @@ nest_procedural.blend that the bake stage turns into the game asset.
 Game contract (game/aliens/nest/alien_nest.tscn): collision cylinder r 1.6 m x 2.4 m, the mound stays inside it;
 tendrils and slime spread to ~4.5 m; aliens hatch at settings.hatch_radius (3.5 m). Objects under the root
 empty "Nest": Mound, Tendrils (share one texture atlas when baked), Slime and Mouth (own simple materials, the
-game pulses the Mouth's glow), Glands (small glowing pustules, same glow material as the Mouth) and the empty
-"HatchPoint" in the mouth. Origin at the ground center. Tube meshes carry a point attribute "flow"
-(arc length in m, 0..1 along the tube, 1 = tube) that the procedural materials read for ribbing and tips.
-Triangle budget ~15k, TBD (playtest).
+game pulses the Mouth's glow), Glands (small glowing pustules, same glow material as the Mouth), the empty
+"HatchPoint" in the mouth, and Cracks1 and Cracks2: glowing fissures in the plates (same glow material) that the
+game shows per burst stage (stage 1 Cracks1, stage 2 Cracks2 as well; Cracks2 also runs over the flesh to the
+mouth). Origin at the ground center. Tube meshes carry a point attribute "flow" (arc length in m, 0..1 along the
+tube, 1 = tube) that the procedural materials read for ribbing and tips. Triangle budget ~15k (cracks ~2.5k on
+top), TBD (playtest).
 """
 
 import math
@@ -507,14 +509,20 @@ def build_mound_body(part: Part) -> None:
         orient(part, faces, (faces[0].calc_center_median() - Vector((0, 0, 0.3))) if ts[j] < T_CREST else Z, 0)
 
 
-def plate(part: Part, th_c: float, hw: float, t0: float, t1: float, lift: float, thick: float) -> None:
-    """Shield-shaped chitin plate following the mound surface; the pointed lower end lifts off like a scale."""
+def plate_width(v: float) -> float:
+    """Plate half width (share of hw) at v: narrow at the pointed lower end (v 0), full from v 0.6, 0.7 at the top."""
+    return (0.15 + 0.85 * math.sin(min(v / 0.6, 1.0) * math.pi / 2)) * (1 - 0.3 * max(0.0, (v - 0.7) / 0.3))
+
+
+def plate(part: Part, th_c: float, hw: float, t0: float, t1: float, lift: float, thick: float) -> list:
+    """Shield-shaped chitin plate following the mound surface; the pointed lower end lifts off like a scale.
+    Returns the top surface as rows (along v) of vertex positions (across, uu -1..1), for the cracks."""
     nu, nv = 6, 6
     top, bot = [], []
     for j in range(nv):
         v = j / (nv - 1)
         t = t0 + v * (t1 - t0)
-        w = (0.15 + 0.85 * math.sin(min(v / 0.6, 1.0) * math.pi / 2)) * (1 - 0.3 * max(0.0, (v - 0.7) / 0.3))
+        w = plate_width(v)
         rt, rb = [], []
         for i in range(nu):
             uu = -1 + 2 * i / (nu - 1)
@@ -531,10 +539,12 @@ def plate(part: Part, th_c: float, hw: float, t0: float, t1: float, lift: float,
     ring_b = bot[0] + [r[-1] for r in bot[1:]] + bot[-1][-2::-1] + [r[0] for r in bot[-2:0:-1]]
     faces += part.faces([ring_t, ring_b], M_CHITIN, closed_u=True)
     bmesh.ops.recalc_face_normals(part.bm, faces=faces)
+    return [[v.co.copy() for v in row] for row in top]
 
 
-def build_plates(part: Part, rnd: random.Random) -> list:
-    """Two rows of plates in the gaps between the tendrils; returns gaps left free for egg sacs."""
+def build_plates(part: Part, rnd: random.Random, plates: list) -> list:
+    """Two rows of plates in the gaps between the tendrils; returns gaps left free for egg sacs and adds each
+    plate to `plates` (gap index, upper row, center angle, half width, t range, top surface grid)."""
     angs = sorted(math.radians(a) for a, _, _ in TENDRILS)
     sac_gaps = []
     for k, a in enumerate(angs):
@@ -545,8 +555,12 @@ def build_plates(part: Part, rnd: random.Random) -> list:
         if k in (6, 2):  # front-right (camera side) and one side: egg sacs instead of the lower plate
             sac_gaps.append((mid, hw))
         else:
-            plate(part, mid + rnd.uniform(-0.04, 0.04), hw, t_at_z(0.2), t_at_z(0.8), 0.07, 0.05)
-        plate(part, mid + rnd.uniform(-0.05, 0.05), hw * 0.92, t_at_z(0.62), t_at_z(1.2), 0.07, 0.045)
+            th, t0, t1 = mid + rnd.uniform(-0.04, 0.04), t_at_z(0.2), t_at_z(0.8)
+            top = plate(part, th, hw, t0, t1, 0.07, 0.05)
+            plates.append(dict(k=k, upper=False, th=th, hw=hw, t0=t0, t1=t1, top=top))
+        th, t0, t1 = mid + rnd.uniform(-0.05, 0.05), t_at_z(0.62), t_at_z(1.2)
+        top = plate(part, th, hw * 0.92, t0, t1, 0.07, 0.045)
+        plates.append(dict(k=k, upper=True, th=th, hw=hw * 0.92, t0=t0, t1=t1, top=top))
     return sac_gaps
 
 
@@ -762,6 +776,236 @@ def build_slime(nest, tips: list, rnd: random.Random) -> None:
     part.finish(nest)
 
 
+# --- cracks (the nest bursting open: the game shows Cracks1, then Cracks2 as well) -------------------------
+
+
+class Sheet:
+    """A surface the cracks lie on, as built: bilinear over a grid of vertex positions (rows along b, columns
+    along a; a, b in grid steps), so they sit on the faces and not on the smooth formula between them."""
+
+    def __init__(self, grid: list, wrap: bool = False, a_lim: tuple = (0.0, 1e9), b_lim: tuple = (0.0, 1e9)):
+        self.grid, self.wrap = grid, wrap
+        self.na, self.nb = len(grid[0]), len(grid)
+        self.a_lim = (max(a_lim[0], 0.0), min(a_lim[1], self.na - 1.0))
+        self.b_lim = (max(b_lim[0], 0.0), min(b_lim[1], self.nb - 1.0))
+
+    def clamp(self, a: float, b: float) -> tuple[float, float]:
+        if not self.wrap:
+            a = max(self.a_lim[0], min(self.a_lim[1], a))
+        return a, max(self.b_lim[0], min(self.b_lim[1], b))
+
+    def pos(self, a: float, b: float) -> Vector:
+        a, b = self.clamp(a, b)
+        if self.wrap:
+            a %= self.na
+        i, j = min(int(a), self.na - (1 if self.wrap else 2)), min(int(b), self.nb - 2)
+        fa, fb = a - i, b - j
+        i1 = (i + 1) % self.na
+        r0, r1 = self.grid[j], self.grid[j + 1]
+        return (r0[i] * (1 - fa) + r0[i1] * fa) * (1 - fb) + (r1[i] * (1 - fa) + r1[i1] * fa) * fb
+
+    def frame(self, a: float, b: float) -> tuple[Vector, Vector, Vector, Vector]:
+        """Point, normal (a x b: away from the mound outside, up in the crater) and the tangents along a and b."""
+        e = 0.02
+        pa = (self.pos(a + e, b) - self.pos(a - e, b)) / (2 * e)
+        pb = (self.pos(a, b + e) - self.pos(a, b - e)) / (2 * e)
+        return self.pos(a, b), pa.cross(pb).normalized(), pa, pb
+
+    def move(self, a: float, b: float, d: Vector) -> tuple[float, float]:
+        """Parameters of the point a step d (in the tangent plane) away."""
+        _p, _n, pa, pb = self.frame(a, b)
+        g11, g12, g22 = pa.dot(pa), pa.dot(pb), pb.dot(pb)
+        r1, r2 = pa.dot(d), pb.dot(d)
+        det = g11 * g22 - g12 * g12
+        return self.clamp(a + (r1 * g22 - r2 * g12) / det, b + (g11 * r2 - g12 * r1) / det)
+
+
+def plate_sheet(pl: dict) -> Sheet:
+    """A plate's top surface: a 0..5 across (uu -1..1), b 0..5 from the pointed lower end to the top; cracks
+    keep off the side edges."""
+    return Sheet(pl["top"], a_lim=(0.8, 4.2), b_lim=(0.25, 4.97))
+
+
+def mound_sheet() -> Sheet:
+    """The mound body: a = th in segments (wraps), b = t in rings, as build_mound_body lays it out."""
+    grid = [[P(i / MOUND_SEG * math.tau, j / (MOUND_RINGS - 1)) for i in range(MOUND_SEG)] for j in range(MOUND_RINGS)]
+    return Sheet(grid, wrap=True)
+
+
+def crack_walk(sheet: Sheet, start: tuple, end: tuple, rnd: random.Random, step=(0.025, 0.08)) -> list:
+    """Jagged path over the sheet from start to end (parameters): straight steps of mixed length, kinked off a
+    slowly wandering heading toward the end (irregular, not an even zig-zag)."""
+    pts, cur = [start], start
+    sign, drift = rnd.choice((-1, 1)), 0.0
+    for _ in range(80):
+        p, n, _pa, _pb = sheet.frame(*cur)
+        to = sheet.pos(*end) - p
+        to -= n * to.dot(n)
+        if to.length < step[1] * 1.3:
+            break
+        drift = max(-0.5, min(0.5, drift + rnd.uniform(-0.3, 0.3)))
+        d = Matrix.Rotation(drift + sign * rnd.uniform(0.05, 0.65), 3, n) @ to.normalized()
+        if rnd.random() < 0.6:
+            sign = -sign
+        cur = sheet.move(*cur, d * rnd.uniform(*step))
+        pts.append(cur)
+    pts.append(end)
+    return pts
+
+
+def crack_branch(sheet: Sheet, start: tuple, heading: Vector, steps: int, rnd: random.Random) -> list:
+    """Short side crack: a few jagged steps from start, meandering around heading."""
+    pts, cur = [start], start
+    for _ in range(steps):
+        _p, n, _pa, _pb = sheet.frame(*cur)
+        heading = (heading - n * heading.dot(n)).normalized()
+        d = Matrix.Rotation(rnd.uniform(-0.5, 0.5), 3, n) @ heading
+        cur = sheet.move(*cur, d * rnd.uniform(0.035, 0.06))
+        pts.append(cur)
+    return pts
+
+
+def ribbon(part: Part, sheet: Sheet, path: list, widths: list, lift: float) -> None:
+    """Thin strip along path just above the sheet: three verts across (glowing middle, dim edges, each edge
+    its own jagged width), a single vert where the width is 0 (pointed ends)."""
+    bm = part.bm
+    pos = [sheet.pos(*q) for q in path]
+    rows, normals = [], []
+    for k, (a, b) in enumerate(path):
+        p, n, _pa, _pb = sheet.frame(a, b)
+        t_in = (pos[k] - pos[k - 1]).normalized() if k > 0 else None
+        t_out = (pos[k + 1] - pos[k]).normalized() if k < len(path) - 1 else None
+        tan = (t_in if t_in is not None else t_out) + (t_out if t_out is not None else t_in)
+        tan.normalize()
+        miter = 1.0 / max(tan.dot(t_in), 0.6) if t_in is not None and t_out is not None else 1.0
+        side = n.cross(tan)
+        side = (side - n * side.dot(n)).normalized()
+        wl, wr, glow = widths[k]
+        mid = bm.verts.new(p + n * lift)
+        mid[part.glow] = glow
+        if wl + wr < 1e-4:
+            rows.append([mid])
+        else:
+            row = []
+            for sgn, w in ((-1, wl), (1, wr)):
+                q = sheet.move(a, b, side * (sgn * w * miter))
+                _q, nq, _qa, _qb = sheet.frame(*q)
+                v = bm.verts.new(sheet.pos(*q) + nq * lift)
+                v[part.glow] = glow * 0.12
+                row.append(v)
+            rows.append([row[0], mid, row[1]])
+        normals.append(n)
+    for k, (ra, rb) in enumerate(itertools.pairwise(rows)):
+        if len(ra) == 3 and len(rb) == 3:
+            quads = [(ra[0], ra[1], rb[1], rb[0]), (ra[1], ra[2], rb[2], rb[1])]
+        elif len(ra) == 3:
+            quads = [(ra[0], ra[1], rb[0]), (ra[1], ra[2], rb[0])]
+        elif len(rb) == 3:
+            quads = [(ra[0], rb[1], rb[0]), (ra[0], rb[2], rb[1])]
+        else:
+            continue
+        for q in quads:
+            f = bm.faces.new(q)
+            f.smooth = True
+            f.normal_update()
+            if f.normal.dot(normals[k] + normals[k + 1]) < 0:
+                f.normal_flip()
+
+
+def crack_widths(path: list, sheet: Sheet, width: float, rnd: random.Random, taper=(0.2, 0.25), w_end=0.0) -> list:
+    """(left, right, glow) per path point: full width in the middle, tapering to points (or to w_end at the
+    end), both edges jagged on their own; the glow dims toward the tips."""
+    pos = [sheet.pos(*q) for q in path]
+    arcs = [0.0]
+    for a, b in itertools.pairwise(pos):
+        arcs.append(arcs[-1] + (b - a).length)
+    out = []
+    for s in arcs:
+        u = s / arcs[-1]
+        env = min(1.0, u / taper[0] if taper[0] else 1.0, w_end + (1 - w_end) * (1 - u) / taper[1])
+        env = max(env, 0.0) ** 0.7
+        out.append(
+            (0.5 * width * env * rnd.uniform(0.6, 1.2), 0.5 * width * env * rnd.uniform(0.6, 1.2), 0.5 + 0.5 * env)
+        )
+    return out
+
+
+def add_branches(part: Part, sheet: Sheet, path: list, widths: list, rnd: random.Random, count: int) -> None:
+    """Side cracks off a fissure, alternating sides, a bit below it so they don't fight over the overlap."""
+    if len(path) < 5:
+        return
+    picks = sorted(rnd.sample(range(1, len(path) - 2), min(count, len(path) - 3)))
+    sgn = rnd.choice((-1, 1))
+    for k in picks:
+        a, b = path[k]
+        p, n, _pa, _pb = sheet.frame(a, b)
+        tan = (sheet.pos(*path[k + 1]) - p).normalized()
+        heading = Matrix.Rotation(sgn * rnd.uniform(0.7, 1.15), 3, n) @ tan
+        sgn = -sgn
+        bp = crack_branch(sheet, path[k], heading, rnd.randint(3, 5), rnd)
+        w0 = (widths[k][0] + widths[k][1]) * 0.6
+        bw = []
+        for i in range(len(bp)):
+            f = 1 - i / (len(bp) - 1)
+            bw.append((0.5 * w0 * f**0.8, 0.5 * w0 * f**0.8, 0.6 + 0.3 * f))
+        ribbon(part, sheet, bp, bw, 0.0035)
+
+
+def plate_crack(part: Part, pl: dict, rnd: random.Random, v0: float, v1: float, width: float, branches: int) -> tuple:
+    """Main fissure along a plate from v0 to v1 (zig-zagging across it) with side cracks; returns its end
+    parameters (a, b)."""
+    sheet = plate_sheet(pl)
+    start = sheet.clamp(rnd.uniform(1.6, 3.4), v0 * 5)
+    end = sheet.clamp(rnd.uniform(1.5, 3.5), v1 * 5)
+    path = crack_walk(sheet, start, end, rnd)
+    keep_end = v1 > 0.97  # runs out over the plate's top edge (onto the flesh): no pointed end
+    widths = crack_widths(path, sheet, width, rnd, w_end=0.5 if keep_end else 0.0)
+    ribbon(part, sheet, path, widths, 0.0045)
+    add_branches(part, sheet, path, widths, rnd, branches)
+    return path[-1]
+
+
+def flesh_crack(part: Part, mound: Sheet, pl: dict, end: tuple, rnd: random.Random, width: float) -> None:
+    """Continues an upper plate's fissure from under its top edge over the rim crest down to the mouth."""
+    uu = end[0] / 2.5 - 1.0
+    th = pl["th"] + uu * pl["hw"] * plate_width(1.0)
+    t_mouth = next(i / 400 for i in range(400, 0, -1) if prof(i / 400)[0] > 0.49)
+    a0 = th / math.tau * MOUND_SEG
+    start = (a0, (pl["t1"] - 0.02) * (MOUND_RINGS - 1))
+    stop = (a0 + rnd.uniform(-0.6, 0.6), t_mouth * (MOUND_RINGS - 1))
+    path = crack_walk(mound, start, stop, rnd)
+    widths = crack_widths(path, mound, width, rnd, taper=(0.0, 0.15), w_end=0.25)
+    ribbon(part, mound, path, widths, 0.006)
+    add_branches(part, mound, path, widths, rnd, 2)
+
+
+# Which plates crack open when, as (gap index, upper row): stage 1 about a third of them, spread around the nest
+# (the camera side and the back), stage 2 all the others, the upper ones in FLESH_CRACKS running on to the mouth.
+CRACKS1 = [(0, True), (2, True), (3, False), (5, False), (6, True)]
+FLESH_CRACKS = [1, 3, 5, 7]
+
+
+def build_cracks(nest, plates: list) -> None:
+    """Glowing fissures in the chitin plates (same glow material as the Mouth): Cracks1 on a third of the plates,
+    Cracks2 more and longer ones on all the others, some running over the flesh to the mouth."""
+    rnd = random.Random(29)  # own sequence: the nest above stays the same
+    mound = mound_sheet()
+    stage1, stage2 = Part("Cracks1", [GLOW]), Part("Cracks2", [GLOW])
+    for pl in plates:
+        if (pl["k"], pl["upper"]) in CRACKS1:
+            plate_crack(stage1, pl, rnd, rnd.uniform(0.08, 0.15), rnd.uniform(0.85, 0.92), rnd.uniform(0.06, 0.07), 3)
+            continue
+        to_mouth = pl["upper"] and pl["k"] in FLESH_CRACKS
+        v1 = 0.995 if to_mouth else rnd.uniform(0.9, 0.95)
+        end = plate_crack(stage2, pl, rnd, rnd.uniform(0.05, 0.1), v1, rnd.uniform(0.055, 0.07), 3)
+        if to_mouth:
+            flesh_crack(stage2, mound, pl, end, rnd, rnd.uniform(0.05, 0.065))
+        else:  # a second, shorter fissure across the plate
+            plate_crack(stage2, pl, rnd, rnd.uniform(0.35, 0.5), rnd.uniform(0.75, 0.85), rnd.uniform(0.04, 0.05), 1)
+    stage1.finish(nest)
+    stage2.finish(nest)
+
+
 # --- main -------------------------------------------------------------------------------------------
 
 
@@ -770,7 +1014,8 @@ def build() -> bpy.types.Object:
     nest = C.asset_root(ASSET)
     mound = Part("Mound", [FLESH, CHITIN, RESIN, SAC])
     build_mound_body(mound)
-    gaps = build_plates(mound, rnd)
+    plates: list = []
+    gaps = build_plates(mound, rnd, plates)
     build_sacs(mound, gaps, rnd)
     build_teeth(mound, rnd)
     tendrils = Part("Tendrils", [FLESH, CHITIN])
@@ -782,6 +1027,7 @@ def build() -> bpy.types.Object:
     build_mouth(nest)
     build_slime(nest, tips, rnd)
     C.empty("HatchPoint", HATCH, nest)
+    build_cracks(nest, plates)
     return nest
 
 

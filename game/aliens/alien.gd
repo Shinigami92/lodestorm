@@ -18,7 +18,8 @@ extends CharacterBody3D
 ## nearest nest); in the hive's frenzy all of them are faster (see `status`). While a scream boosts
 ## it or a tender's link holds it, it's a little bigger and outlined in the hive's yellow-green.
 ## Its role (set from its strain by the nest) says what it goes for: guards stay by their nest
-## (within `strain.leash` of where they hatched, walking back when a player gets away), hunters go
+## (within `strain.leash` of where they hatched, walking back when a player gets away) and go for
+## a player who hits it from any distance (`AlienStatus.defending`), hunters go
 ## for the nearest player outside however far away and never give up because of distance, and
 ## raiders go for the nearest miner that still works, however far away, biting only a player who
 ## stands in their way; without a working miner they walk back and guard. It grows out of the
@@ -544,8 +545,11 @@ static func living_load(tree: SceneTree) -> float:
 ## `strain.leash` of home), otherwise picks the nearest prey in `strain.detection_range`.
 ## Hunters keep their prey and pick it from any distance. Raiders keep their miner until it
 ## breaks and pick the nearest working one from any distance, turning on a player only while one
-## stands in reach; without a working miner they act like guards.
+## stands in reach; without a working miner they act like guards. Guards defending their nest go
+## for its attacker first.
 func _update_target() -> void:
+	if role == Role.GUARD and _defends():
+		return
 	if role == Role.RAIDER and _update_miner_target():
 		var in_way: Player = _player_in_reach()
 		if in_way:
@@ -563,6 +567,20 @@ func _update_target() -> void:
 		if distance <= nearest_distance and (role == Role.HUNTER or _within_leash(player)):
 			target = player
 			nearest_distance = distance
+
+
+## Whether it defends its nest (`status.defending`): the attacker is prey and within its leash,
+## then it's the target. Otherwise it forgets them.
+func _defends() -> bool:
+	if not is_instance_valid(status.defending):
+		status.defending = null
+		return false
+	var attacker := status.defending as Player
+	if attacker and is_prey(get_tree(), attacker) and _within_leash(attacker):
+		target = attacker
+		return true
+	status.defending = null
+	return false
 
 
 ## Whether a guard (or a raider without a miner) keeps chasing `node`: within its chase range,

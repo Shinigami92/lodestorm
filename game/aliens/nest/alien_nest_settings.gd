@@ -44,6 +44,21 @@ extends Resource
 ## Guards take at most this share of the cap, so hunters and raiders still hatch on big maps with
 ## many nests (nests whose guards don't fit wait without them).
 @export_range(0.0, 1.0) var guard_share: float = 0.5
+## Health of a nest on a tier 1 body (more farther in, like the aliens', see
+## `MissionSettings.alien_health_at`); every player beyond the first adds `health_per_player` of it.
+@export var health: float = 600.0
+@export var health_per_player: float = 0.5
+## Taken off every hit's damage, like an alien's armor (see `Alien.MIN_DAMAGE_SHARE`).
+@export var armor: float = 1.0
+## How often it bursts on the way down, evenly spread over its health (2: at two thirds and one
+## third): after a `burst_warning` (s) it spews `burst_aliens` hunters, and its next crack stage
+## opens.
+@export var bursts: int = 2
+@export var burst_aliens: int = 3
+@export var burst_warning: float = 1.0
+## Once destroyed: how long it takes to collapse, and its slime to dry (s).
+@export var collapse_time: float = 1.5
+@export var dry_time: float = 4.0
 
 
 ## How many aliens may live at once (see `max_aliens`).

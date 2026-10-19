@@ -1,7 +1,7 @@
 class_name AlienStatus
 extends RefCounted
 ## What the hive and other aliens do to an alien right now (`Alien.status`): a shrieker's boost,
-## the hive's frenzy and a tender's link. Values TBD (playtest).
+## the hive's frenzy, a tender's link and its nest calling its guards. Values TBD (playtest).
 
 ## How much faster the hive makes it (its frenzy at the end of a run, set by its nest).
 var hive_speed: float = 1.0
@@ -9,6 +9,9 @@ var hive_speed: float = 1.0
 ## and that link's holder.
 var bonus_armor: float = 0.0
 var mended_by: Node
+## The player who hit its nest (set by the nest on its guards, see `AlienNest`): a guard goes for
+## them from any distance while they're within its leash. Null: none, or forgotten.
+var defending: Node3D
 
 ## A scream's boost: how much faster it is, and for how many more seconds.
 var _boost: float = 1.0

@@ -9,9 +9,9 @@ Writes the game asset assets/aliens/nest/nest.glb (textures embedded) and its so
 assets/aliens/nest/source/nest.blend; the separate PNGs and check renders go to tmp/assets/nest/game/.
 
 The shared flow (tools/blender/bake.py) bakes Mound and Tendrils (materials Flesh, Chitin, Resin, EggSac) into one
-2048 texture set with one "Nest" PBR material; the Slime and the emissive Mouth/Glands get simple constant materials
-(the game overrides the Mouth's material to pulse it). Texture size and triangle counts are provisional, TBD
-(playtest).
+2048 texture set with one "Nest" PBR material; the Slime and the emissive Mouth, Glands and Cracks1/Cracks2 (the
+burst stages' fissures) get simple constant materials (the game overrides the glowing parts' material to pulse
+them). Texture size and triangle counts are provisional, TBD (playtest).
 """
 
 import pathlib
@@ -33,7 +33,7 @@ SLIME_COLOR = (0.02, 0.006, 0.008)
 def finish(job: B.Job, objs: list) -> None:
     C.assign(bpy.data.objects["Slime"], B.mat_constant("Slime", SLIME_COLOR, roughness=0.1))
     glow = B.mat_constant("Nest_Glow", GLOW_COLOR, roughness=0.15, emission=5.0)
-    for name in ("Mouth", "Glands"):
+    for name in ("Mouth", "Glands", "Cracks1", "Cracks2"):
         C.assign(bpy.data.objects[name], glow)
 
 

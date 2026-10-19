@@ -1,13 +1,13 @@
 class_name TargetMarker
 extends MeshInstance3D
 ## The target lock on the ground (a child of the player, see GAME_DESIGN.md, UI): four corner
-## brackets around the alien the player locked on (`PlayerAim.target`), in the player's color,
-## sized to the alien's body and kept square to the screen like the suit ring. Drawn over the
+## brackets around the alien or nest the player locked on (`PlayerAim.target`), in the player's
+## color, sized to its body and kept square to the screen like the suit ring. Drawn over the
 ## ground and low plants, hidden by cliffs and props.
 
 ## Space between the alien's body and the brackets (m). TBD (playtest).
 const MARGIN: float = 0.4
-## The brackets' size for an alien without a known body.
+## The brackets' size for a target without a known body.
 const DEFAULT_RADIUS: float = 0.5
 const ALPHA: float = 0.95
 
@@ -27,7 +27,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	var target: Alien = _player.aim.target
+	var target: Node3D = _player.aim.target
 	visible = PlayerAim.is_lockable(target) and not _player.dead and _player.local
 	if not visible:
 		return
@@ -51,9 +51,9 @@ func _process(_delta: float) -> void:
 	)
 
 
-## The radius of `alien`'s body on the ground (its collision shape), in m.
-static func body_radius(alien: Alien) -> float:
-	var shape_node := alien.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
+## The radius of `target`'s body on the ground (its collision shape), in m.
+static func body_radius(target: Node3D) -> float:
+	var shape_node := target.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
 	var shape: Shape3D = shape_node.shape if shape_node else null
 	if shape is CapsuleShape3D:
 		return (shape as CapsuleShape3D).radius

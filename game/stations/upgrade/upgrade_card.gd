@@ -7,7 +7,8 @@ extends StationCard
 ## the ship's reach show as faint pips and the card says which heat shield plate brings the next
 ## one, and while a mission is underway it says why nothing can be bought. A weapon's part is
 ## titled with the weapon's name. On the workbench, a weapon the player doesn't own shows what
-## building it costs and "Build" (with its blueprint, see `WeaponStation.build`).
+## building it costs and "Build" (with its blueprint, see `WeaponStation.build`); a weapon selected
+## on the rack shows what it is and "Lay on the bench".
 
 ## Dims what a locked upgrade would bring (the card itself and "Locked" stay readable).
 const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
@@ -19,8 +20,10 @@ const PIP_SIZE := Vector2(20.0, 14.0)
 
 ## The upgrade shown, or null.
 var upgrade: Upgrade
-## The weapon to build shown, or null.
+## The weapon to build or to lay on the bench shown, or null.
 var weapon_type: WeaponType
+## Whether `weapon_type` is shown on the rack, to lay it on the bench (else to build it).
+var picking: bool = false
 
 @onready var _title: Label = %Title
 @onready var _pips: HBoxContainer = %Pips
@@ -45,6 +48,9 @@ func show_part(part: StationPart) -> void:
 		hold = upgrade_station.ship.hold
 	var weapon_station := station as WeaponStation
 	var to_build := part.item as WeaponType if part else null
+	if to_build and weapon_station and part in weapon_station.get_rack_parts():
+		show_pick(to_build, not weapon_station.user or weapon_station.user.arsenal.owns(to_build))
+		return
 	if to_build and weapon_station and weapon_station.user:
 		show_build(
 			to_build,
@@ -87,9 +93,11 @@ func show_upgrade(
 ) -> void:
 	upgrade = shown
 	weapon_type = null
+	picking = false
 	visible = shown != null
 	if not shown:
 		return
+	_cost_row.visible = true
 	_title.text = tr(shown.display_name)
 	if weapon_name:
 		_title.text = "%s — %s" % [weapon_name, _title.text]
@@ -131,9 +139,11 @@ func show_build(
 ) -> void:
 	upgrade = null
 	weapon_type = shown
+	picking = false
 	visible = shown != null
 	if not shown:
 		return
+	_cost_row.visible = true
 	_title.text = "%s — %s" % [shown.display_name, tr(shown.class_word)]
 	_description.text = tr(shown.description)
 	_pips.visible = false
@@ -150,7 +160,34 @@ func show_build(
 		dimmed.modulate = Color.WHITE if blueprint else LOCKED_COLOR
 
 
+## Shows `shown`, selected on the rack: what it is (`owned`: whether the player has it, else
+## "Locked") and "Lay on the bench".
+func show_pick(shown: WeaponType, owned: bool = true) -> void:
+	upgrade = null
+	weapon_type = shown
+	picking = true
+	visible = shown != null
+	if not shown:
+		return
+	_title.text = "%s — %s" % [shown.display_name, tr(shown.class_word)]
+	_description.text = tr(shown.description)
+	_pips.visible = false
+	_effect.text = "" if owned else tr("Locked")
+	_cost_row.visible = false
+	_status.visible = false
+	_buy.text = tr("Lay on the bench")
+	_buy.disabled = false
+	for dimmed: CanvasItem in [_title, _description]:
+		dimmed.modulate = Color.WHITE if owned else LOCKED_COLOR
+
+
 func press_primary() -> bool:
+	if weapon_type and picking:
+		var bench := station as WeaponStation
+		if not bench:
+			return false
+		bench.lay_on_bench(weapon_type)
+		return true
 	if weapon_type:
 		var weapon_station := station as WeaponStation
 		return weapon_station != null and weapon_station.build(weapon_type)

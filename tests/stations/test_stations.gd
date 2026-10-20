@@ -115,15 +115,16 @@ func test_weapon_station_lays_the_picked_weapon_on_the_bench() -> void:
 	assert_eq(station.bench_weapon, HARL)
 	assert_eq(_items(station.get_parts()), HARL.parts as Array)
 	assert_false(_rack_part(station, HARL).visible, "its rack slot is empty")
-	_send(&"tab_next")
+	station.lay_on_bench(BRASK)
 	assert_eq(station.bench_weapon, BRASK)
 	assert_true(_rack_part(station, HARL).visible, "back on the rack")
 	assert_eq(_items(station.get_parts()), [BRASK] + (BRASK.parts as Array), "not owned: build it")
 	assert_eq(station.selected.item, BRASK)
-	_send(&"tab_prev")
-	_send(&"tab_prev")
-	assert_eq(station.bench_weapon, DRAY, "wraps around")
+	_send(&"tab_next")
+	assert_eq(station.bench_weapon, DRAY, "the first weapon of the next row")
 	assert_eq(_items(station.get_parts()), DRAY.parts as Array)
+	_send(&"tab_next")
+	assert_eq(station.bench_weapon, HARL, "wraps around")
 
 
 func test_weapon_station_shows_unowned_weapons_see_through() -> void:

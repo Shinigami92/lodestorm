@@ -131,28 +131,46 @@ func select(part: StationPart) -> void:
 		card_menu.show_part(part)
 
 
-## Moves the highlight to the nearest part in `direction` on screen (up is -Y), if there is one.
+## Moves the highlight to the next part in `direction` on screen (up is -Y), if there is one (see
+## `_neighbor`).
 func step(direction: Vector2) -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
-	if not camera or not selected:
+	if not selected:
 		return
-	var from: Vector2 = camera.unproject_position(selected.global_position)
+	var best: StationPart = _neighbor(selected, direction)
+	if best:
+		select(best)
+
+
+## The part the highlight moves to from `part` in `direction` (on screen: up is -Y), or null. By
+## default the nearest of `get_parts` in that direction on screen; a station with a grid of parts
+## (the weapon racks) moves along it instead.
+func _neighbor(part: StationPart, direction: Vector2) -> StationPart:
+	return _nearest_on_screen(part, direction, get_parts())
+
+
+## The one of `parts` nearest to `part` in `direction` on screen, or null.
+func _nearest_on_screen(
+	part: StationPart, direction: Vector2, parts: Array[StationPart]
+) -> StationPart:
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	if not camera:
+		return null
+	var from: Vector2 = camera.unproject_position(part.global_position)
 	var best: StationPart = null
 	var best_score: float = INF
-	for part: StationPart in get_parts():
-		if part == selected:
+	for candidate: StationPart in parts:
+		if candidate == part:
 			continue
-		var offset: Vector2 = camera.unproject_position(part.global_position) - from
+		var offset: Vector2 = camera.unproject_position(candidate.global_position) - from
 		var along: float = offset.dot(direction)
 		if along <= 0.0:
 			continue
 		# Straight in that direction counts more than off to the side.
 		var score: float = along + 2.0 * absf(offset.cross(direction))
 		if score < best_score:
-			best = part
+			best = candidate
 			best_score = score
-	if best:
-		select(best)
+	return best
 
 
 ## Shows or hides the card and its leader line (e.g. while the bed's player falls asleep).
@@ -318,14 +336,20 @@ func _place_card(weight: float) -> void:
 	_draw_leader(view)
 
 
-## The leader line from the card's edge facing the part to the part, and a dot on the part.
+## The leader line from the card's edge facing the part to the part (its side edge, or the top or
+## bottom edge when the part is above or below it), and a dot on the part.
 func _draw_leader(view: Basis) -> void:
 	_leader_mesh.clear_surfaces()
 	if not selected:
 		return
 	var to: Vector3 = selected.global_position
-	var side: float = signf(view.x.dot(to - card.global_position))
-	var from: Vector3 = card.global_position + view.x * side * card.size.x * 0.5 * _card_scale()
+	var offset: Vector3 = to - card.global_position
+	var half: Vector2 = card.size * 0.5 * _card_scale()
+	var from: Vector3 = card.global_position
+	if absf(view.x.dot(offset)) > half.x:
+		from += view.x * signf(view.x.dot(offset)) * half.x
+	else:
+		from += view.y * signf(view.y.dot(offset)) * half.y
 	_leader_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	var across: Vector3 = view.z.cross(to - from).normalized() * LEADER_WIDTH * 0.5
 	_quad(from - across, from + across, to + across, to - across)

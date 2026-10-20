@@ -109,6 +109,19 @@ func test_walking_on_the_ground_steps_every_two_meters() -> void:
 	assert_does_not_have(_played, _sound("player/step_deck"))
 
 
+func test_steps_in_a_hazard_sound_like_it() -> void:
+	var mud := GroundHazard.new()
+	mud.step_sound = _sound("player/step_mud")
+	_player.ground_contact.enter(mud)
+	Input.action_press(&"move_right")
+	await wait_physics_frames(60)
+	Input.action_release(&"move_right")
+	_player.ground_contact.leave(mud)
+	mud.free()
+	assert_has(_played, _sound("player/step_mud"))
+	assert_does_not_have(_played, _sound("player/step_ground"))
+
+
 func _sound(path: String) -> Sound:
 	return load(SFX_DIR + path + ".tres") as Sound
 

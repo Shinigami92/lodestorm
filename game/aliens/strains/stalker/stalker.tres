@@ -23,4 +23,5 @@ detection_range = 22.0
 chase_range = 26.0
 retreat_time = 2.0
 cloak = ExtResource("6_cloak")
+voice_pitch = 0.9
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_pounce"), ExtResource("7_hook"), ExtResource("5_slash")])

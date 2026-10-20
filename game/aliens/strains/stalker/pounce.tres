@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienPounce" format=3 uid="uid://ddgf34n88scvl"]
 
 [ext_resource type="Script" uid="uid://bgkwpebf4727d" path="res://game/aliens/attacks/alien_pounce.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bkcikg5ryjq2l" path="res://assets/audio/sfx/aliens/windup_pounce.tres" id="2_windup_pounce"]
 
 [resource]
 script = ExtResource("1_script")
@@ -14,3 +15,4 @@ max_range = 6.0
 leap_distance = 5.5
 leap_speed = 14.0
 leap_height = 0.4
+wind_up_sound = ExtResource("2_windup_pounce")

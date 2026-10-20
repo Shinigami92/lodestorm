@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienEruption" format=3 uid="uid://cyqvq6x3w53uf"]
 
 [ext_resource type="Script" uid="uid://cqwnjwplccaqf" path="res://game/aliens/attacks/alien_eruption.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://ftxvsxhq6kp5" path="res://assets/audio/sfx/aliens/windup_eruption.tres" id="2_windup_eruption"]
 
 [resource]
 script = ExtResource("1_script")
@@ -10,3 +11,4 @@ cooldown = 3.0
 wind_up = 0.7
 recovery = 0.6
 underground = true
+wind_up_sound = ExtResource("2_windup_eruption")

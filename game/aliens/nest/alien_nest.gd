@@ -26,6 +26,9 @@ extends Node3D
 ## flickers lower. When it's destroyed it collapses inwards, the glow goes dark and its slime dries
 ## grey: the husk stays, hatches nothing more and is no nest any more (it leaves `GROUP`); its
 ## aliens stay, and every other nest sends its next pack right away (the hive's surge).
+## Its sounds: a deep, wet throb with each pulse of its glow (louder as the hive escalates), a wet
+## pop for each alien hatching (not the guards it starts with), hits in its flesh, a groaning
+## swell for a burst's warning and the collapse.
 
 ## Emitted when an alien hatches.
 signal hatched(alien: Alien)
@@ -70,6 +73,16 @@ const HUSK_TINT := Color(0.32, 0.3, 0.3)
 const HUSK_GLOW := Color(0.05, 0.05, 0.04)
 const DRY_SLIME := Color(0.2, 0.19, 0.18)
 const DRY_ROUGHNESS: float = 0.95
+## The pulse's throb at escalation 0 and 1 (dB on its sound's volume). TBD (playtest).
+const PULSE_VOLUME_CALM: float = -8.0
+const PULSE_VOLUME_FRENZY: float = 0.0
+## Its sounds play this much lower than a swarmer's (a big body).
+const VOICE_PITCH: float = 0.7
+
+const PULSE_SOUND: Sound = preload("res://assets/audio/sfx/aliens/nest_pulse.tres")
+const HATCH_SOUND: Sound = preload("res://assets/audio/sfx/aliens/nest_hatch.tres")
+const SWELL_SOUND: Sound = preload("res://assets/audio/sfx/aliens/nest_swell.tres")
+const DESTROYED_SOUND: Sound = preload("res://assets/audio/sfx/aliens/nest_destroyed.tres")
 
 ## The physics frame in which a nest last hatched an alien that waited: the hive hatches one per
 ## frame.
@@ -170,7 +183,12 @@ func _physics_process(delta: float) -> void:
 	var level: float = escalation()
 	var frenzied: bool = is_frenzied()
 	var pulse_level: float = 1.0 if frenzied else level
-	_pulse = fmod(_pulse + delta * lerpf(PULSE_RATE_CALM, PULSE_RATE_FRENZY, pulse_level), 1.0)
+	var pulsed: float = _pulse + delta * lerpf(PULSE_RATE_CALM, PULSE_RATE_FRENZY, pulse_level)
+	_pulse = fmod(pulsed, 1.0)
+	if pulsed >= 1.0 and not _destroyed:
+		var throb: AudioStreamPlayer3D = Sfx.play_at(PULSE_SOUND, _mouth_position())
+		if throb:
+			throb.volume_db += lerpf(PULSE_VOLUME_CALM, PULSE_VOLUME_FRENZY, pulse_level)
 	_call_cooldown = maxf(_call_cooldown - delta, 0.0)
 	var speed: float = settings.frenzy_speed if frenzied else 1.0
 	for child: Node in get_children():
@@ -259,6 +277,8 @@ func hatch(role: Alien.Role, strain: AlienStrain = null) -> Alien:
 		sent_out.append(alien)
 		alien.died.connect(func() -> void: sent_out.erase(alien))
 	alien.called_for_help.connect(_on_called_for_help)
+	if role != Alien.Role.GUARD:
+		Sfx.play_at(HATCH_SOUND, _mouth_position(), false, VOICE_PITCH)
 	hatched.emit(alien)
 	return alien
 
@@ -516,7 +536,9 @@ func _on_damaged(_amount: float, by: Node) -> void:
 	):
 		_bursts_due += 1
 	if _bursts_due > stage and _warning_left == 0.0 and not body.dead:
-		_warning_left = settings.burst_warning
+		_warn()
+	if not body.dead:
+		Sfx.play_at(AlienSounds.HIT_SOUND, _mouth_position(), false, VOICE_PITCH)
 
 
 ## Spews `settings.burst_aliens` hunters of its packs' strains, one after another (unless the cap
@@ -533,7 +555,13 @@ func _burst() -> void:
 		cracks[i].visible = i < stage
 	_flare_left = ANSWER_FLARE_TIME
 	if _bursts_due > stage:
-		_warning_left = settings.burst_warning
+		_warn()
+
+
+## Starts a burst's warning: the mouth swells and glows white, groaning.
+func _warn() -> void:
+	_warning_left = settings.burst_warning
+	Sfx.play_at(SWELL_SOUND, _mouth_position())
 
 
 ## Destroyed: no more hatching, no more a nest; its guards stop defending it, the other nests
@@ -549,7 +577,13 @@ func _on_destroyed() -> void:
 	destroyed.emit()
 	for nest: AlienNest in get_tree().get_nodes_in_group(GROUP):
 		nest.surge()
+	Sfx.play_at(DESTROYED_SOUND, _mouth_position())
 	_collapse()
+
+
+## Where its sounds come from: its mouth.
+func _mouth_position() -> Vector3:
+	return global_transform * MOUTH_CENTER
 
 
 ## The mound sinks in and draws together, the glow goes dark, the body darkens and the slime dries

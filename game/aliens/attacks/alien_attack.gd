@@ -28,6 +28,10 @@ extends Resource
 ## Whether it starts from under the ground (burrowers, see `AlienStrain.burrows`); the others only
 ## start while the alien is up.
 @export var underground: bool = false
+## Played when the wind-up starts (the telegraph's sound) and when it acts (a scream), in the
+## strain's voice (see `AlienSounds`); null: none.
+@export var wind_up_sound: Sound
+@export var act_sound: Sound
 
 
 ## Whether it can start on `target`, `distance` m away (horizontally).

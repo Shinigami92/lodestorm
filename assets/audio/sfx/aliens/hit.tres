@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://dx7ubwjutgjcj"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://dvp7wd8308krn" path="res://assets/audio/sfx/aliens/hit_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://0e4u4irigkmt" path="res://assets/audio/sfx/aliens/hit_2.wav" id="3_variant"]
+[ext_resource type="AudioStream" uid="uid://64e61vuix0vk" path="res://assets/audio/sfx/aliens/hit_3.wav" id="4_variant"]
+[ext_resource type="AudioStream" uid="uid://chraqkg1x5221" path="res://assets/audio/sfx/aliens/hit_4.wav" id="5_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.08
+streams_count = 4
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+stream_2/stream = ExtResource("4_variant")
+stream_3/stream = ExtResource("5_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -8.0
+unit_size = 8.0
+max_distance = 40.0

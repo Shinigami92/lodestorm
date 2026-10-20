@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b63mfp85atrhq" path="res://game/aliens/attacks/alien_shed.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://1fsdvrpgexi6" path="res://game/aliens/strains/swarmer/swarmer.tres" id="2_swarmer"]
+[ext_resource type="Resource" uid="uid://c40xrtytk8tv2" path="res://assets/audio/sfx/aliens/windup_shed.tres" id="3_windup_shed"]
 
 [resource]
 script = ExtResource("1_script")
@@ -13,3 +14,4 @@ strain = ExtResource("2_swarmer")
 count = 3
 max_range = 20.0
 spread = 3.5
+wind_up_sound = ExtResource("3_windup_shed")

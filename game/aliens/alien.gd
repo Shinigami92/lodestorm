@@ -29,7 +29,7 @@ extends CharacterBody3D
 ## At zero health it stops, collapses, sinks into the ground and disappears. Its legs step on
 ## their own (`AlienLegs`), the body plays the model's clips (`AlienAnimator`) and is posed on top
 ## of them (`AlienPose`). Its eyes and glands (the model's `Eyes` and `Glands`) flare during a
-## wind-up.
+## wind-up. Its sounds (chitter, telegraphs, strikes, hits, death) come from `AlienSounds`.
 
 ## Emitted when health reaches zero.
 signal died
@@ -39,6 +39,11 @@ signal hit_taken(hit: Hit, dealt: float, armored: bool)
 ## `AlienScream`): the nest nearest to it answers with a pack, boosted `boost` times for `seconds`.
 @warning_ignore("unused_signal")
 signal called_for_help(at: Vector3, boost: float, seconds: float)
+## Emitted when an attack's wind-up starts (its telegraph), and when it acts after it.
+signal winding_up(attack: AlienAttack)
+signal acting(attack: AlienAttack)
+## Emitted when it hits `victim` (a player or a miner) with a strike.
+signal struck(victim: Node3D)
 
 ## Guards wait until a player comes close, hunters go for players and raiders for miners.
 enum Role { GUARD, HUNTER, RAIDER }
@@ -264,6 +269,10 @@ func _ready() -> void:
 	_hatch_tween.tween_callback(_legs.plant_all)
 	_pathing = AlienPathing.new(self, _agent)
 	_agent.velocity_computed.connect(_on_velocity_computed)
+	var sounds := AlienSounds.new()
+	sounds.name = "Sounds"
+	sounds.alien = self
+	add_child(sounds)
 
 
 func _physics_process(delta: float) -> void:
@@ -389,6 +398,7 @@ func strike(victim: Node3D, amount: float) -> void:
 		cloaking.ambush = false
 	hurt(victim, amount * damage_factor, global_position)
 	play_attack()
+	struck.emit(victim)
 
 
 ## Plays the model's attack clip once.
@@ -646,6 +656,7 @@ func _start_attack(distance: float) -> bool:
 		if cloaking:
 			cloaking.reveal(true)
 		attack.prepare(self)
+		winding_up.emit(attack)
 		_process_attack(0.0)
 		return true
 	return false
@@ -671,6 +682,7 @@ func _process_attack(delta: float) -> void:
 		_pose.crouch = 0.0
 		_phase = AttackPhase.ACT
 		_phase_time = 0.0
+		acting.emit(_attack)
 		_attack.begin(self)
 	if _phase == AttackPhase.ACT:
 		if not _attack.act(self, _phase_time):

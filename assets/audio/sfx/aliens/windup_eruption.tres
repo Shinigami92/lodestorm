@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://ftxvsxhq6kp5"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://baighlm6rpsiu" path="res://assets/audio/sfx/aliens/windup_eruption_1.wav" id="2_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.04
+streams_count = 1
+stream_0/stream = ExtResource("2_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -4.0
+limit = 3
+max_distance = 40.0

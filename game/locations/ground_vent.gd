@@ -3,8 +3,8 @@ extends GroundHazard
 ## A vent in the ground (the Ash fields' hazard, see `LocationBiome.Hazard.VENTS`): it rests a
 ## while, then glows and rumbles for `warning` s and bursts, hurting every player and alien
 ## standing on it (`hurt`). Readable and avoidable: its reach is painted on the ground, and the glow
-## comes first. Greybox: a cone, a glowing disc over its reach and a plume of fire; the rumble's
-## sound comes with the sound effects. All values TBD (playtest).
+## and a rising rumble come first. Greybox: a cone, a glowing disc over its reach and a plume of
+## fire. All values TBD (playtest).
 
 ## How opaque the disc glows while the vent rests (a hint where it reaches) and when it bursts.
 const RESTING_GLOW: float = 0.08
@@ -17,6 +17,10 @@ const PLUME_TIME: float = 0.9
 const PLUME_HEIGHT: float = 4.0
 ## How far the cone shakes while it rumbles, in m.
 const RUMBLE: float = 0.04
+
+## The rumble during the warning (as long as the default `warning`) and the burst.
+const RUMBLE_SOUND: Sound = preload("res://assets/audio/sfx/biomes/vent_rumble.tres")
+const BURST_SOUND: Sound = preload("res://assets/audio/sfx/biomes/vent_burst.tres")
 
 ## How long it rests between bursts (shortest, longest), in s.
 @export var rest: Vector2 = Vector2(6.0, 12.0)
@@ -46,9 +50,13 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	var resting: bool = not is_warning()
 	_until_burst -= delta
+	if resting and is_warning():
+		Sfx.play_at(RUMBLE_SOUND, global_position)
 	if _until_burst <= 0.0:
 		hurt(damage)
+		Sfx.play_at(BURST_SOUND, global_position)
 		_plume_left = PLUME_TIME
 		_until_burst = randf_range(rest.x, rest.y) + warning
 	_plume_left = maxf(_plume_left - delta, 0.0)

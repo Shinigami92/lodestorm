@@ -28,4 +28,5 @@ detection_range = 22.0
 chase_range = 30.0
 roams = true
 tremor = 0.08
+voice_pitch = 0.55
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_shed"), ExtResource("5_charge"), ExtResource("6_slam")])

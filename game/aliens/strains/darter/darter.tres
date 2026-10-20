@@ -23,4 +23,5 @@ chase_range = 26.0
 keep_away = 4.0
 flight_height = 3.0
 dive_height = 1.0
+voice_pitch = 1.25
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_dive")])

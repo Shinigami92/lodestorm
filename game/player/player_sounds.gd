@@ -3,9 +3,9 @@ extends Node
 ## The `holder`'s own sounds, and the ears of the local player: an `AudioListener3D` at the player
 ## (not at the camera far above), turned like the camera, so left and right match the screen and
 ## the falloff fits what's on screen (see GAME_DESIGN.md, Sound). Plays the hits it takes, the dash
-## and its steps (subtle, every `STEP_LENGTH` walked on the ground: on the ship's metal deck or on
-## the ground outside); for the local player, the hits are critical cues and below a quarter of
-## the health a slow pulse beats.
+## and its steps (subtle, every `STEP_LENGTH` walked on the ground: on the ship's metal deck, on
+## the ground outside, or as the hazard it stands in sounds: shards, mud); for the local player,
+## the hits are critical cues and below a quarter of the health a slow pulse beats.
 
 ## Below this share of the maximum health the pulse beats. TBD (playtest).
 const LOW_HEALTH: float = 0.25
@@ -65,7 +65,7 @@ func _physics_process(delta: float) -> void:
 	_walked += speed * delta
 	if _walked >= STEP_LENGTH:
 		_walked -= STEP_LENGTH
-		_play(STEP_DECK_SOUND if _on_deck() else STEP_GROUND_SOUND)
+		_play(_step_sound())
 
 
 ## The slow pulse below `LOW_HEALTH` (alive only).
@@ -77,6 +77,14 @@ func _beat(delta: float) -> void:
 	if _pulse <= 0.0:
 		_pulse += PULSE_INTERVAL
 		Sfx.play_at(PULSE_SOUND, holder.global_position, true)
+
+
+## How the next step sounds: like the hazard it stands in, the deck or the ground.
+func _step_sound() -> Sound:
+	var hazard: Sound = holder.ground_contact.step_sound()
+	if hazard:
+		return hazard
+	return STEP_DECK_SOUND if _on_deck() else STEP_GROUND_SOUND
 
 
 ## Whether the player stands on the ship (its deck, the ramp) rather than the ground.

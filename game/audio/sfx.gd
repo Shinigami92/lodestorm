@@ -2,6 +2,8 @@ extends Node
 ## Plays the sound effects (`Sound`s), as the autoload `Sfx` (see GAME_DESIGN.md, Sound):
 ## - in the world at a place (`play_at`, 3D: heard from the local player's ears, see
 ##   `PlayerSounds`), or flat (`play_ui`: e.g. a volume slider's sample, also while paused);
+## - loops (the drill, the storm) on a node until it stops them or leaves the tree (`play_loop_at`
+##   in the world, following the node; `play_loop` flat), outside the limits;
 ## - when more of a sound start than its `limit`, the farthest from the ears are dropped first;
 ## - critical cues for the local player (the timing window, a hit taken, low health) always play
 ##   and duck the Effects and Ambience buses a little while they do;
@@ -46,24 +48,52 @@ func _process(delta: float) -> void:
 	_apply_volumes()
 
 
-## Plays `sound` at `where` in the world. A `critical` cue (only for the local player) always
-## plays and ducks the rest. Returns its player, or null when it was dropped (its limit).
-func play_at(sound: Sound, where: Vector3, critical: bool = false) -> AudioStreamPlayer3D:
+## Plays `sound` at `where` in the world, `pitch` times its pitch (bigger aliens lower). A
+## `critical` cue (only for the local player) always plays and ducks the rest. Returns its player,
+## or null when it was dropped (its limit).
+func play_at(
+	sound: Sound, where: Vector3, critical: bool = false, pitch: float = 1.0
+) -> AudioStreamPlayer3D:
 	if not sound or not _make_room(sound, where, critical):
 		return null
-	var player := AudioStreamPlayer3D.new()
-	player.stream = sound.stream
-	player.bus = sound.bus
-	player.volume_db = sound.volume_db
-	player.unit_size = sound.unit_size
-	player.max_distance = sound.max_distance
+	var player: AudioStreamPlayer3D = _world_player(sound)
+	player.pitch_scale = pitch
 	# World sounds stop with the world (pause) and go on after it.
 	player.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(player)
 	player.global_position = where
 	player.play()
-	_start(sound, player, where, critical)
+	_start(sound, player, where, critical, pitch)
 	return player
+
+
+## Starts `sound` looping in the world at `holder`, following it, until the returned player is
+## freed (`stop_loop`) or the holder leaves the tree; it pauses with the holder.
+func play_loop_at(sound: Sound, holder: Node3D) -> AudioStreamPlayer3D:
+	var player: AudioStreamPlayer3D = _world_player(sound)
+	holder.add_child(player)
+	player.play()
+	played.emit(sound, false)
+	return player
+
+
+## Starts `sound` looping flat (the storm all around) under `holder`, until the returned player is
+## freed (`stop_loop`) or the holder leaves the tree; it pauses with the holder.
+func play_loop(sound: Sound, holder: Node) -> AudioStreamPlayer:
+	var player := AudioStreamPlayer.new()
+	player.stream = sound.stream
+	player.bus = sound.bus
+	player.volume_db = sound.volume_db
+	holder.add_child(player)
+	player.play()
+	played.emit(sound, false)
+	return player
+
+
+## Stops a loop started by `play_loop_at` or `play_loop` (null or freed: nothing to stop).
+func stop_loop(player: Node) -> void:
+	if is_instance_valid(player):
+		player.queue_free()
 
 
 ## Plays `sound` flat, on `bus` (default: its own), also while paused. Returns its player, or
@@ -118,8 +148,18 @@ func _make_room(sound: Sound, where: Vector3, critical: bool) -> bool:
 	return true
 
 
-func _start(sound: Sound, player: Node, where: Vector3, critical: bool) -> void:
-	var voice := Voice.new(player, where, sound.length(), critical)
+func _world_player(sound: Sound) -> AudioStreamPlayer3D:
+	var player := AudioStreamPlayer3D.new()
+	player.stream = sound.stream
+	player.bus = sound.bus
+	player.volume_db = sound.volume_db
+	player.unit_size = sound.unit_size
+	player.max_distance = sound.max_distance
+	return player
+
+
+func _start(sound: Sound, player: Node, where: Vector3, critical: bool, pitch: float = 1.0) -> void:
+	var voice := Voice.new(player, where, sound.length() / maxf(pitch, 0.01), critical)
 	if sound not in _voices:
 		_voices[sound] = []
 	(_voices[sound] as Array).append(voice)

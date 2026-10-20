@@ -10,6 +10,7 @@ extends Node
 ## It also shows the ship's flight (`ShipFlight`): the sky turns to space with stars (and the
 ## ambient light colder), and in the clouds the sky takes their color and a thick fog below the
 ## decks hides the ground until the touchdown clears it.
+## Its `MissionSounds` child plays the storm, its warning and the countdown for the `viewer`.
 
 ## How much of the storm shows when the timer runs out (0–1); the rest comes with the storm.
 const BUILD_UP: float = 0.4
@@ -72,6 +73,10 @@ func _ready() -> void:
 	env.background_mode = Environment.BG_SKY
 	mission.opened.connect(_clear)
 	mission.selected.connect(_clear.unbind(1))
+	var sounds := MissionSounds.new()
+	sounds.name = "Sounds"
+	sounds.weather = self
+	add_child(sounds)
 	_apply()
 
 

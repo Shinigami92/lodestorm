@@ -3,15 +3,19 @@ extends GridContainer
 ## The player's settings, the same wherever they're changed (the pause panel and the settings
 ## terminal in cabin 1, see GAME_DESIGN.md, UI): the language (picking one switches the game's
 ## texts right away), the suit ring's size and "Always show", and a volume per sound bus (a slider
-## in 10 % steps; changing it plays a sample on that bus, once it has sounds), each saved at once
+## in 10 % steps; changing it plays a sample on that bus), each saved at once
 ## (see `GameSettings`).
 
 ## Each language's name, written in that language.
 const LANGUAGE_NAMES: Dictionary[String, String] = {"en": "English", "de": "Deutsch"}
-## What a volume slider plays when it changes: a shot on the Master and Effects buses (Ambience
-## has no sounds yet).
-const SAMPLE: Sound = preload("res://assets/audio/sfx/weapons/blaster_shot.tres")
-const SAMPLED: Array[StringName] = [&"Master", &"Effects"]
+## What a volume slider plays when it changes: a shot on the Master and Effects buses, the storm
+## on the Ambience bus (once at a time).
+const SHOT: Sound = preload("res://assets/audio/sfx/weapons/blaster_shot.tres")
+const SAMPLES: Dictionary[StringName, Sound] = {
+	&"Master": SHOT,
+	&"Effects": SHOT,
+	&"Ambience": preload("res://assets/audio/sfx/mission/storm.tres"),
+}
 
 @onready var _languages: HBoxContainer = %Languages
 @onready var _ring_sizes: HBoxContainer = %RingSizes
@@ -58,8 +62,8 @@ func _ready() -> void:
 func _on_volume_changed(level: float, bus: StringName, row: HBoxContainer) -> void:
 	GameSettings.set_volume(bus, level)
 	_show_volume(row, level)
-	if bus in SAMPLED:
-		Sfx.play_ui(SAMPLE, bus)
+	if bus in SAMPLES:
+		Sfx.play_ui(SAMPLES[bus], bus)
 
 
 static func _show_volume(row: HBoxContainer, level: float) -> void:

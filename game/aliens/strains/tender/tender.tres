@@ -19,4 +19,5 @@ detection_range = 20.0
 chase_range = 24.0
 keep_away = 9.0
 mend = ExtResource("9_mend")
+voice_pitch = 1.1
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_lash")])

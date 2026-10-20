@@ -3,6 +3,7 @@ extends GutTest
 const SETTINGS_LIST: PackedScene = preload("res://game/ui/settings_list.tscn")
 const SHOT: Sound = preload("res://assets/audio/sfx/weapons/blaster_shot.tres")
 const TICK: Sound = preload("res://assets/audio/sfx/weapons/window_tick.tres")
+const DRILL: Sound = preload("res://assets/audio/sfx/mining/drill.tres")
 const DIRECTORY: String = "user://test_sfx/"
 
 var _ears: AudioListener3D
@@ -34,6 +35,29 @@ func test_beyond_its_limit_the_farthest_sound_is_dropped() -> void:
 	assert_not_null(Sfx.play_at(SHOT, Vector3(1.0, 0.0, 0.0)), "nearer: the farthest makes room")
 	assert_eq(Sfx.playing(SHOT), SHOT.limit)
 	assert_true(farthest.is_queued_for_deletion())
+
+
+func test_a_lower_pitch_plays_longer() -> void:
+	Sfx.play_at(SHOT, Vector3.ZERO, false, 0.5)
+	await wait_seconds(SHOT.length() * 1.2)
+	assert_eq(Sfx.playing(SHOT), 1, "half the pitch: twice as long")
+	await wait_seconds(SHOT.length() * 1.0)
+	assert_eq(Sfx.playing(SHOT), 0)
+
+
+func test_a_loop_follows_its_holder_until_stopped() -> void:
+	var holder := Node3D.new()
+	add_child_autofree(holder)
+	var loop: AudioStreamPlayer3D = Sfx.play_loop_at(DRILL, holder)
+	assert_eq(loop.get_parent(), holder)
+	assert_true(loop.playing)
+	assert_has(_played, DRILL)
+	var wav := (DRILL.stream as AudioStreamRandomizer).get_stream(0) as AudioStreamWAV
+	assert_eq(wav.loop_mode, AudioStreamWAV.LOOP_FORWARD, "its loop points come with the file")
+	await wait_seconds(DRILL.length() * 1.5)
+	assert_true(is_instance_valid(loop) and not loop.is_queued_for_deletion(), "loops go on")
+	Sfx.stop_loop(loop)
+	assert_true(loop.is_queued_for_deletion())
 
 
 func test_sounds_are_done_after_their_length() -> void:

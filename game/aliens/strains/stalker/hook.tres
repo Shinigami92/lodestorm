@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienHook" format=3 uid="uid://d1watv85ppnpt"]
 
 [ext_resource type="Script" uid="uid://n6uwy2r858g6" path="res://game/aliens/attacks/alien_hook.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cvpksvpfiyimh" path="res://assets/audio/sfx/aliens/windup_hook.tres" id="2_windup_hook"]
 
 [resource]
 script = ExtResource("1_script")
@@ -15,3 +16,4 @@ hook_speed = 24.0
 snare = 0.5
 snare_time = 1.5
 mouth = Vector3(0, 1.33, -0.84)
+wind_up_sound = ExtResource("2_windup_hook")

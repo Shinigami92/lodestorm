@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienSpit" format=3 uid="uid://bov64pm5k3hl5"]
 
 [ext_resource type="Script" uid="uid://bac6kqjisq6qv" path="res://game/aliens/attacks/alien_spit.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://c1qgwtgjrbt7i" path="res://assets/audio/sfx/aliens/windup_spit.tres" id="2_windup_spit"]
 
 [resource]
 script = ExtResource("1_script")
@@ -20,3 +21,4 @@ splash_radius = 1.0
 puddle_radius = 1.0
 puddle_time = 3.0
 puddle_damage = 5.0
+wind_up_sound = ExtResource("2_windup_spit")

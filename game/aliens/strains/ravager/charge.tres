@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienCharge" format=3 uid="uid://cqw34guktmjb8"]
 
 [ext_resource type="Script" uid="uid://brbggpqqnogpp" path="res://game/aliens/attacks/alien_charge.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://c1ooasg1s8n15" path="res://assets/audio/sfx/aliens/windup_charge.tres" id="2_windup_charge"]
 
 [resource]
 script = ExtResource("1_script")
@@ -18,3 +19,4 @@ max_length = 22.0
 width = 2.2
 daze = 2.5
 max_height_difference = 2.5
+wind_up_sound = ExtResource("2_windup_charge")

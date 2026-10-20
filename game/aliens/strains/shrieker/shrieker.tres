@@ -19,4 +19,5 @@ move_speed = 5.0
 detection_range = 22.0
 chase_range = 26.0
 keep_away = 11.0
+voice_pitch = 1.1
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_scream"), ExtResource("5_peck")])

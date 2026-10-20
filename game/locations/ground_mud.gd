@@ -2,8 +2,8 @@ class_name GroundMud
 extends GroundHazard
 ## A mud pool in a mire (the Overgrowth's hazard, see `LocationBiome.Hazard.MUD`): players and
 ## aliens walk slower in it (`speed`); the dash isn't slowed. Readable and avoidable: the pool lies
-## a bit lower than its shore, its wet surface shines. Greybox: a flat, glossy sheet fading out at
-## its edge; the squelch comes with the sound effects. All values TBD (playtest).
+## a bit lower than its shore, its wet surface shines, steps in it squelch (`step_sound`).
+## Greybox: a flat, glossy sheet fading out at its edge. All values TBD (playtest).
 
 ## How high the surface lies above the pool's level ground, in m, and how far inside the pool's edge
 ## it fades out (so it stays off the shore, which would cut it in the ground's grid squares).
@@ -20,6 +20,8 @@ const SURFACE_FADE: float = 0.35
 
 func _ready() -> void:
 	super()
+	if not step_sound:
+		step_sound = preload("res://assets/audio/sfx/player/step_mud.tres")
 	_build()
 
 

@@ -1,6 +1,6 @@
 # Weapons (planned)
 
-Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (steps 10 A, B, C and D1, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens), [Upgrade stations](../GAME_DESIGN.md#upgrade-stations) and the armory in [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)): the framework (a weapon composed of its feed, trigger, delivery, effects and parts as Resources), Harl, Brask, Dray, Pinner, Grindle, Quill, Tremor, Wick, Scald, Kith and Zenith with three parts each, the heat feed, the draw time, blueprints and building a weapon at the workbench; the armory's weapon wall and the workbench rack in rows by origin, for any number.
+Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (steps 10 A, B, C and D, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens), [Upgrade stations](../GAME_DESIGN.md#upgrade-stations) and the armory in [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)): the framework (a weapon composed of its feed, trigger, delivery, effects and parts as Resources), Harl, Brask, Dray, Pinner, Grindle, Quill, Tremor, Wick, Scald, Kith, Zenith, Fulgen and Nadir with three parts each, the heat feed, the chain and the gravity well, the draw time, blueprints and building a weapon at the workbench; the armory's weapon wall and the workbench rack in rows by origin, for any number.
 
 ## The roster
 
@@ -38,10 +38,10 @@ Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the
 
 Every ranged weapon runs on ore, except the batteries; each feed has its own reload or rhythm and its own display on the weapon:
 
-- **Magazine** (Harl, Quill, Tremor, Wick, Fulgen) and **single rounds** (Brask): as built (see [Ammo and reloading](../GAME_DESIGN.md#ammo-and-reloading)).
+- **Magazine** (Harl, Quill, Tremor, Wick, Fulgen; built) and **single rounds** (Brask): as built (see [Ammo and reloading](../GAME_DESIGN.md#ammo-and-reloading)).
 - **Belt** (Grindle, built): a big magazine with a long reload; the spin-up is its trigger; its drum is the display.
 - **Heat** (Scald, Kith, Zenith; built): fires continuously from a fuel cell, which is its magazine (spares first, then refilled from ore). Heat builds while firing and stops it when full. **Venting** works like the timing reload: a press within the window vents at once, so the timing skill carries over; heat sets the rhythm, ore stays the cost.
-- **Battery** (Pinner, built; Nadir): recharges by itself, no ore. Pinner as the weak fallback, Nadir because it deals little damage itself.
+- **Battery** (Pinner, Nadir; built): recharges by itself, no ore. Pinner as the weak fallback, Nadir because it deals little damage itself.
 
 The spare magazine rules and skills apply to every weapon fed with ore (cells, belts, loads of shells).
 
@@ -54,7 +54,7 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 
 ## Upgrades and getting them
 
-- **Upgrade parts:** three per weapon at the workbench (built for Harl, Brask, Dray, Pinner, Grindle, Quill, Tremor, Wick, Scald, Kith and Zenith): **damage**, **capacity** (magazine, belt, battery, cell, heat; for melee: swing speed) and a **part of its own** (built: Pinner's recharge, Grindle's spin-up, Quill's charge time, Tremor's blast radius, Wick's charges out at once, Scald's burn, Kith's range (its heal rate in place of damage), Zenith's cooling), for the coming weapons e.g. Fulgen: jumps; Mantle: block angle.
+- **Upgrade parts:** three per weapon at the workbench (built for every ranged weapon and Dray): **damage**, **capacity** (magazine, belt, battery, cell, heat; for melee: swing speed) and a **part of its own** (built: Pinner's recharge, Grindle's spin-up, Quill's charge time, Tremor's blast radius, Wick's charges out at once, Scald's burn, Kith's range (its heal rate in place of damage), Zenith's cooling, Fulgen's jumps, Nadir's well radius), for the coming weapons e.g. Mantle: block angle.
 - **Getting them:** blueprints from quests (see [`quests.md`](quests.md)): colony arms and tools from the crew's quest chains, the six prototypes from the lost expedition's sites (story). Building one from its blueprint at the workbench for a fixed ore cost is built; later weapons cost the planet's signature ore, the prototypes also alloys (see [`refinery.md`](refinery.md)). In co-op everyone in the session gets the blueprint and builds it from their own hold (own holds: step 11 A). The debug overlay gives the blueprints until then.
 
 ## Loadout and switching
@@ -64,4 +64,4 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 
 ## Data and tests
 
-The composition is built (feeds: magazine, single, battery, heat; triggers: held, per press, spin, charge; deliveries: projectile, also piercing, lobbed with a blast, placed charge, cone, beam, swing; effects: damage, burn, heal). Still to come with the weapons: the deliveries chain, thrust, held and block, and the effects shock, knockback and pull. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.
+The composition is built (feeds: magazine, single, battery, heat; triggers: held, per press, spin, charge; deliveries: projectile, also piercing, lobbed with a blast, placed charge, gravity well (pull and hold), cone, beam, chain, swing; effects: damage (Fulgen's shock is its stagger), burn, heal). Still to come with the melee weapons: the deliveries thrust, held and block, and the effect knockback. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.

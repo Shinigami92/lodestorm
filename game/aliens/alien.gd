@@ -13,7 +13,8 @@ extends CharacterBody3D
 ## (`strain.flight_height`: see `AlienFlight`), stalkers hide (`strain.cloak`: see
 ## `AlienCloaking`) and back off after each attack (`strain.retreat_time`), and the Ravager roams
 ## the location (`strain.roams`, `route`) and shakes the ground (`strain.tremor`: see
-## `AlienTremor`). A shrieker's
+## `AlienTremor`). A gravity well (Nadir's) pulls it in and holds it (see `AlienStatus.hold`). A
+## shrieker's
 ## scream speeds up the aliens near it and calls for help (`called_for_help`, answered by the
 ## nearest nest); in the hive's frenzy all of them are faster (see `status`). While a scream boosts
 ## it or a tender's link holds it, it's a little bigger and outlined in the hive's yellow-green.
@@ -279,6 +280,8 @@ func _physics_process(delta: float) -> void:
 	if dead:
 		return
 	_count_down(delta)
+	if _held() and _attack and _attack.moves():
+		_end_attack()
 	if not ai_on:
 		_stand_still()
 	elif _phase == AttackPhase.NONE:
@@ -303,6 +306,11 @@ func _physics_process(delta: float) -> void:
 			facing = _offset_to(target)
 		if _attack and _attack.on_the_move and is_instance_valid(target):
 			wanted = _chase(_offset_to(target).length())
+	elif _held():
+		# In a gravity well: it doesn't walk, only attacks that don't move it.
+		if is_instance_valid(target):
+			facing = _offset_to(target)
+			_start_attack(facing.length())
 	elif target and _retreat_left > 0.0:
 		wanted = _pathing.direction_away_from(target)
 		facing = _offset_to(target)
@@ -321,7 +329,7 @@ func _physics_process(delta: float) -> void:
 		facing = offset
 	# Face where it actually goes (avoidance and acceleration bend the path), or the target when
 	# it stands.
-	if not lunging and _phase == AttackPhase.NONE:
+	if not lunging and _phase == AttackPhase.NONE and not _held():
 		var moving := Vector3(velocity.x, 0.0, velocity.z)
 		if moving.length() >= FACE_VELOCITY_MIN:
 			facing = moving
@@ -333,6 +341,8 @@ func _physics_process(delta: float) -> void:
 	var horizontal: Vector3
 	if lunging:
 		horizontal = _lunge_velocity
+	elif _held():
+		horizontal = status.pull
 	else:
 		horizontal = Vector3(velocity.x, 0.0, velocity.z) - _push_applied
 		horizontal = horizontal.move_toward(
@@ -353,9 +363,9 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 	else:
 		velocity.y -= _gravity * delta
-	# Avoidance only runs with a navigation mesh while it walks; it answers with
-	# `velocity_computed`.
-	var avoiding: bool = AlienPathing.has_navigation(self) and not lunging
+	# Avoidance only runs with a navigation mesh while it walks (not in a leap or a well's pull); it
+	# answers with `velocity_computed`.
+	var avoiding: bool = AlienPathing.has_navigation(self) and not lunging and not _held()
 	if _agent.avoidance_enabled != avoiding:
 		_agent.avoidance_enabled = avoiding
 	if avoiding:
@@ -647,7 +657,9 @@ func _update_miner_target() -> bool:
 ## Starts the first attack that is ready and has the target in range. Returns whether one started.
 func _start_attack(distance: float) -> bool:
 	for attack: AlienAttack in strain.attacks:
-		if _cooldowns.get(attack, 0.0) > 0.0 or not attack.can_start(self, target, distance):
+		if _cooldowns.get(attack, 0.0) > 0.0 or (attack.moves() and _held()):
+			continue
+		if not attack.can_start(self, target, distance):
 			continue
 		_attack = attack
 		_cooldowns[attack] = attack.cooldown
@@ -772,7 +784,7 @@ func _update_burrow() -> void:
 	if underground:
 		if not is_instance_valid(target):
 			surface()
-	elif is_instance_valid(target) and _surfaced_for >= strain.surface_time:
+	elif is_instance_valid(target) and _surfaced_for >= strain.surface_time and not _held():
 		if horizontal_distance(target) > reach_to(target, DIG_DISTANCE):
 			dig_in()
 
@@ -802,6 +814,11 @@ func _sink_to(depth: float, then: Callable = Callable()) -> void:
 
 func _hide_model() -> void:
 	_model.visible = false
+
+
+## Whether a gravity well holds it (see `AlienStatus.hold`).
+func _held() -> bool:
+	return strain.held_by_wells and status.is_held()
 
 
 func _stagger() -> void:

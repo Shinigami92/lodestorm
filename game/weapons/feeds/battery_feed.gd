@@ -1,7 +1,7 @@
 class_name BatteryFeed
 extends WeaponFeed
-## A weapon fed by a battery that recharges by itself, for no ore (Pinner), see `BatteryAmmo`.
-## All values TBD (playtest).
+## A weapon fed by a battery that recharges by itself, for no ore (Pinner, Nadir), see
+## `BatteryAmmo`. All values TBD (playtest).
 
 ## Shots a full battery holds at MK1.
 @export var cells: int = 12
@@ -9,11 +9,14 @@ extends WeaponFeed
 @export var recharge_delay: float = 0.8
 ## Shots it recharges per second at MK1 (more with the MK level of the weapon's recharge).
 @export var recharge_rate: float = 5.0
+## Whether running it empty drains it: it recharges fully before it fires again (Pinner). If not
+## (Nadir), it fires again as soon as a shot has recharged.
+@export var drains: bool = true
 ## Seconds from drained to full at MK1, when it ran empty (it can't fire meanwhile).
 @export var drained_recharge_time: float = 2.5
 
 @export_group("Sounds")
-## Full again after running empty.
+## Full again after running empty; for a battery that doesn't drain, each shot recharged.
 @export var charged_sound: Sound
 
 

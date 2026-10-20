@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MagazineFeed" format=3 uid="uid://c8m6hu7sqhom"]
+
+[ext_resource type="Script" uid="uid://bwsh0mrtvqkbg" path="res://game/weapons/feeds/magazine_feed.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://7plpkh7jahnw" path="res://assets/audio/sfx/weapons/reload_start.tres" id="2_reload_sound"]
+[ext_resource type="Resource" uid="uid://xyrx6kq6y8fk" path="res://assets/audio/sfx/weapons/magazine_in.tres" id="3_load_sound"]
+
+[resource]
+script = ExtResource("1_script")
+ore_per_round = 0.2
+magazine = 30
+reload_time = 2.0
+reload_sound = ExtResource("2_reload_sound")
+load_sound = ExtResource("3_load_sound")

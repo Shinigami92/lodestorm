@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BatteryFeed" format=3 uid="uid://b2ydlw3igq5ss"]
+
+[ext_resource type="Script" uid="uid://c3hal6er2xa10" path="res://game/weapons/feeds/battery_feed.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://dncml16wahfcb" path="res://assets/audio/sfx/weapons/nadir_charged.tres" id="2_charged_sound"]
+
+[resource]
+script = ExtResource("1_script")
+ore_per_round = 0.0
+cells = 2
+recharge_delay = 1.0
+recharge_rate = 0.1667
+drains = false
+charged_sound = ExtResource("2_charged_sound")

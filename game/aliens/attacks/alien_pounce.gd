@@ -21,6 +21,10 @@ const OVERSHOOT: float = 0.5
 @export var max_height_difference: float = 1.5
 
 
+func moves() -> bool:
+	return true
+
+
 func begin(alien: Alien) -> void:
 	var offset: Vector3 = alien.target.global_position - alien.global_position
 	offset.y = 0.0

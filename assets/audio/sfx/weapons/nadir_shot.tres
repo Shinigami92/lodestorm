@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://dkfplymy3xxys"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://dc0h3kg8udwj7" path="res://assets/audio/sfx/weapons/nadir_shot_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://8q5s1e45pnsb" path="res://assets/audio/sfx/weapons/nadir_shot_2.wav" id="3_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.04
+streams_count = 2
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -8.0
+limit = 3
+unit_size = 8.0
+max_distance = 40.0

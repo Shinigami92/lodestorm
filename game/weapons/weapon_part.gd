@@ -9,7 +9,7 @@ extends Upgrade
 ## load, shots per battery), attacks per second (melee: swing speed), pellets per shot, a swing's
 ## arc, how quickly barrels spin up, a charge fills and a battery recharges, a blast's radius and
 ## how many charges can lie on the ground at once, how long a flame burns, how much a beam heals,
-## how far it reaches and how slowly heat builds.
+## how far it reaches, how slowly heat builds and how many times lightning jumps on.
 enum Stat {
 	DAMAGE,
 	CAPACITY,
@@ -25,6 +25,7 @@ enum Stat {
 	HEAL,
 	RANGE,
 	COOLING,
+	JUMPS,
 }
 
 @export var stat: Stat = Stat.DAMAGE

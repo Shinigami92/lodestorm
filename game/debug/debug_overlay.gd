@@ -342,6 +342,23 @@ const WEAPON_TUNING: Dictionary[String, Array] = {
 		["arm_time", 0.0, 5.0, 0.1],
 		["trip_time", 0.0, 2.0, 0.05],
 	],
+	"WellDelivery":
+	[
+		["reach", 2.0, 40.0, 0.5],
+		["stick_reach", 2.0, 40.0, 0.5],
+		["speed", 2.0, 40.0, 0.5],
+		["blast_radius", 0.5, 12.0, 0.1],
+		["hold_time", 0.2, 10.0, 0.1],
+	],
+	"ChainDelivery":
+	[
+		["reach", 2.0, 40.0, 0.5],
+		["angle", 5.0, 180.0, 1.0],
+		["jumps", 0.0, 12.0, 1.0],
+		["jump_reach", 0.5, 15.0, 0.5],
+		["jump_share", 0.0, 1.0, 0.05],
+		["ground_reach", 1.0, 20.0, 0.5],
+	],
 	"ConeDelivery":
 	[
 		["reach", 1.0, 15.0, 0.5],

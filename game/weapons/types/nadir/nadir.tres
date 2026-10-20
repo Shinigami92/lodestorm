@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bxup01t7dfxc0"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://rhygxdi6arof" path="res://game/weapons/types/nadir/nadir.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://fubw3yqyyux5" path="res://game/weapons/types/nadir/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://dcde7gaaeljlx" path="res://game/weapons/types/nadir/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://dkfplymy3xxys" path="res://assets/audio/sfx/weapons/nadir_shot.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://b2ydlw3igq5ss" path="res://game/weapons/types/nadir/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://btn5m3o851uro" path="res://game/weapons/types/nadir/trigger.tres" id="9_trigger"]
+[ext_resource type="Resource" uid="uid://de7t51kwi1yc6" path="res://game/weapons/types/nadir/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://cgav45qi2nqo6" path="res://game/weapons/types/nadir/mk_battery.tres" id="mk_battery"]
+[ext_resource type="Resource" uid="uid://b3okbnvjpylio" path="res://game/weapons/types/nadir/mk_radius.tres" id="mk_radius"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="ore_noctile"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Nadir"
+class_word = "Gravity projector"
+description = "A well that pulls aliens together, holds them and bursts."
+origin = 2
+scene = ExtResource("2_scene")
+attack_rate = 1.25
+draw_time = 0.6
+feed = ExtResource("8_feed")
+trigger = ExtResource("9_trigger")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_battery"), ExtResource("mk_radius")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 420, ExtResource("ore_noctile"): 200
+})
+attack_sound = ExtResource("7_sound")

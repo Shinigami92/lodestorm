@@ -33,8 +33,11 @@ extends Resource
 ## staggered for `stagger_time` and its attack is broken off. The stagger drains in a second.
 @export var stagger_threshold: float = 25.0
 @export var stagger_time: float = 0.5
-## How far hits push it, as a share of the weapon's push (heavy strains less).
+## How far hits push it, as a share of the weapon's push (heavy strains less); also how fast a
+## gravity well pulls it in (see `GravityWell`).
 @export var knockback: float = 1.0
+## Whether a gravity well holds it (see `AlienStatus.hold`); if not (the apex), it's only slowed.
+@export var held_by_wells: bool = true
 ## Its steps against the swarmer's (`AlienLegs`: how far and how high a foot steps): shorter legs,
 ## smaller steps.
 @export var stride: float = 1.0

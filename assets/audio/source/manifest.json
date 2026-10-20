@@ -231,6 +231,11 @@
       "variants": 2,
       "recordings": []
     },
+    "weapons/fulgen_arc": {
+      "made_by": "build.py",
+      "variants": 4,
+      "recordings": []
+    },
     "weapons/grindle_shot": {
       "made_by": "build.py",
       "variants": 4,
@@ -257,6 +262,16 @@
       "recordings": []
     },
     "weapons/magazine_in": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/nadir_charged": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/nadir_shot": {
       "made_by": "build.py",
       "variants": 2,
       "recordings": []
@@ -319,6 +334,16 @@
     "weapons/tremor_shot": {
       "made_by": "build.py",
       "variants": 3,
+      "recordings": []
+    },
+    "weapons/well_burst": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/well_hum": {
+      "made_by": "build.py",
+      "variants": 1,
       "recordings": []
     },
     "weapons/wick_armed": {

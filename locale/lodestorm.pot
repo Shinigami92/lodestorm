@@ -1002,8 +1002,10 @@ msgstr ""
 
 #: game/weapons/types/brask/mk_damage.tres
 #: game/weapons/types/dray/mk_damage.tres
+#: game/weapons/types/fulgen/mk_damage.tres
 #: game/weapons/types/grindle/mk_damage.tres
 #: game/weapons/types/harl/mk_damage.tres
+#: game/weapons/types/nadir/mk_damage.tres
 #: game/weapons/types/pinner/mk_damage.tres
 #: game/weapons/types/quill/mk_damage.tres
 #: game/weapons/types/scald/mk_damage.tres
@@ -1061,6 +1063,38 @@ msgstr ""
 msgid "More swings per second"
 msgstr ""
 
+#: game/weapons/types/fulgen/fulgen.tres
+msgid "Arc caster"
+msgstr ""
+
+#: game/weapons/types/fulgen/fulgen.tres
+msgid "Lightning to the nearest alien. It jumps on to the next."
+msgstr ""
+
+#: game/weapons/types/fulgen/mk_damage.tres
+msgid "More damage per arc"
+msgstr ""
+
+#: game/weapons/types/fulgen/mk_jumps.tres
+msgid "Jumps"
+msgstr ""
+
+#: game/weapons/types/fulgen/mk_jumps.tres
+msgid "Jumps on to more aliens"
+msgstr ""
+
+#: game/weapons/types/fulgen/mk_magazine.tres
+#: game/weapons/types/harl/mk_magazine.tres
+#: game/weapons/types/quill/mk_magazine.tres
+#: game/weapons/types/tremor/mk_magazine.tres
+#: game/weapons/types/wick/mk_magazine.tres
+msgid "Magazine"
+msgstr ""
+
+#: game/weapons/types/fulgen/mk_magazine.tres
+msgid "More arcs per magazine"
+msgstr ""
+
 #: game/weapons/types/grindle/grindle.tres
 msgid "Rotary gun"
 msgstr ""
@@ -1098,13 +1132,6 @@ msgstr ""
 
 #: game/weapons/types/harl/harl.tres
 msgid "Rapid shots that reach far."
-msgstr ""
-
-#: game/weapons/types/harl/mk_magazine.tres
-#: game/weapons/types/quill/mk_magazine.tres
-#: game/weapons/types/tremor/mk_magazine.tres
-#: game/weapons/types/wick/mk_magazine.tres
-msgid "Magazine"
 msgstr ""
 
 #: game/weapons/types/harl/mk_magazine.tres
@@ -1157,8 +1184,33 @@ msgstr ""
 msgid "A longer beam"
 msgstr ""
 
+#: game/weapons/types/nadir/mk_battery.tres
 #: game/weapons/types/pinner/mk_battery.tres
 msgid "Battery"
+msgstr ""
+
+#: game/weapons/types/nadir/mk_battery.tres
+msgid "More wells per battery"
+msgstr ""
+
+#: game/weapons/types/nadir/mk_damage.tres
+msgid "More damage per burst"
+msgstr ""
+
+#: game/weapons/types/nadir/mk_radius.tres
+msgid "Well radius"
+msgstr ""
+
+#: game/weapons/types/nadir/mk_radius.tres
+msgid "Pulls from farther away"
+msgstr ""
+
+#: game/weapons/types/nadir/nadir.tres
+msgid "Gravity projector"
+msgstr ""
+
+#: game/weapons/types/nadir/nadir.tres
+msgid "A well that pulls aliens together, holds them and bursts."
 msgstr ""
 
 #: game/weapons/types/pinner/mk_battery.tres

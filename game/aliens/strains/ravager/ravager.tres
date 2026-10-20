@@ -20,6 +20,7 @@ armor = 3.0
 stagger_threshold = 400.0
 stagger_time = 1.0
 knockback = 0.05
+held_by_wells = false
 stride = 2.5
 move_speed = 3.6
 acceleration = 8.0

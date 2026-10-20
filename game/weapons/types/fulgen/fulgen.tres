@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://dqun5bjigg116"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bgoffwueca0d6" path="res://game/weapons/types/fulgen/fulgen.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://3xnm5spkqj6m" path="res://game/weapons/types/fulgen/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://bkimd74a4yb7w" path="res://game/weapons/types/fulgen/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://bli7ypqly4qsy" path="res://assets/audio/sfx/weapons/fulgen_arc.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://c8m6hu7sqhom" path="res://game/weapons/types/fulgen/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://4i6ogf80xpya" path="res://game/weapons/types/fulgen/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://cfoimbbcg02mb" path="res://game/weapons/types/fulgen/mk_magazine.tres" id="mk_magazine"]
+[ext_resource type="Resource" uid="uid://clpidk8i5voqe" path="res://game/weapons/types/fulgen/mk_jumps.tres" id="mk_jumps"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Fulgen"
+class_word = "Arc caster"
+description = "Lightning to the nearest alien. It jumps on to the next."
+origin = 2
+scene = ExtResource("2_scene")
+attack_rate = 4
+draw_time = 0.5
+feed = ExtResource("8_feed")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_magazine"), ExtResource("mk_jumps")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 400, ExtResource("ore_selyx"): 180
+})
+attack_sound = ExtResource("7_sound")

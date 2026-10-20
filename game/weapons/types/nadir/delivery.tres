@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="WellDelivery" format=3 uid="uid://fubw3yqyyux5"]
+
+[ext_resource type="Script" uid="uid://cl1od61c6tr3j" path="res://game/weapons/deliveries/well_delivery.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bbhip8sw1nw4j" path="res://game/weapons/types/nadir/orb.tscn" id="2_shot_scene"]
+[ext_resource type="Resource" uid="uid://c63obhdn86ewa" path="res://assets/audio/sfx/weapons/well_burst.tres" id="3_blast_sound"]
+[ext_resource type="Resource" uid="uid://b8fv4a51hbif7" path="res://assets/audio/sfx/weapons/well_hum.tres" id="4_hum_sound"]
+
+[resource]
+script = ExtResource("1_script")
+reach = 20.0
+stick_reach = 12.0
+speed = 12.0
+min_flight_time = 0.4
+arc_per_meter = 0.08
+min_arc = 0.4
+blast_radius = 5.0
+hold_time = 3.0
+shot_scene = ExtResource("2_shot_scene")
+blast_sound = ExtResource("3_blast_sound")
+hum_sound = ExtResource("4_hum_sound")

@@ -61,6 +61,12 @@ func finish(_alien: Alien) -> void:
 	pass
 
 
+## Whether it moves the alien (a leap, a charge, a dive): a gravity well holding the alien stops
+## it and doesn't let it start (see `AlienStatus.hold`).
+func moves() -> bool:
+	return false
+
+
 ## Called once when the alien dies, however (a bloater bursts).
 func on_death(_alien: Alien) -> void:
 	pass

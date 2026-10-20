@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ChainDelivery" format=3 uid="uid://3xnm5spkqj6m"]
+
+[ext_resource type="Script" uid="uid://cx2fv40kxeegc" path="res://game/weapons/deliveries/chain_delivery.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+reach = 14.0
+angle = 60.0
+jumps = 3
+jump_reach = 5.0
+jump_share = 0.75
+ground_reach = 8.0

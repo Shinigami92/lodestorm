@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://bbhip8sw1nw4j"]
+
+[ext_resource type="Script" uid="uid://c32ifvtqodwil" path="res://game/weapons/well_orb.gd" id="1_script"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+albedo_color = Color(0.015, 0.012, 0.01, 1)
+shading_mode = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shell"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(2, 1.44, 0.6, 0.45)
+
+[sub_resource type="SphereMesh" id="SphereMesh_core"]
+material = SubResource("StandardMaterial3D_core")
+radius = 0.15
+height = 0.3
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="SphereMesh_shell"]
+material = SubResource("StandardMaterial3D_shell")
+radius = 0.24
+height = 0.48
+radial_segments = 12
+rings = 6
+
+[node name="Orb" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_core")
+
+[node name="Shell" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_shell")
+
+[node name="Light" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.72, 0.3, 1)
+light_energy = 1.5
+omni_range = 3.0

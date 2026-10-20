@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ConeDelivery" format=3 uid="uid://d1l40d1b8fvu6"]
+
+[ext_resource type="Script" uid="uid://mcmb11e5n5i0" path="res://game/weapons/deliveries/cone_delivery.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+reach = 5.5
+angle = 40.0

@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="HealEffect" format=3 uid="uid://caaqo7yjgw2jl"]
+
+[ext_resource type="Script" uid="uid://c6skuklewxh3y" path="res://game/weapons/effects/heal_effect.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+heal = 2.0

@@ -39,10 +39,13 @@ func after_each() -> void:
 func test_every_upgrade_has_texts_and_rising_levels() -> void:
 	var all: Array[Upgrade] = [ARMOR, DRILL, TANK, HOSE]
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
-		assert_eq(
-			weapon_type.parts.size(), 3, "%s: damage, capacity, its own" % weapon_type.display_name
+		var label: String = weapon_type.display_name
+		assert_eq(weapon_type.parts.size(), 3, "%s: damage, capacity, its own" % label)
+		# Kith, a support tool, has its heal rate in place of the damage.
+		var first: WeaponPart.Stat = (
+			WeaponPart.Stat.HEAL if label == "Kith" else WeaponPart.Stat.DAMAGE
 		)
-		assert_not_null(weapon_type.get_part(WeaponPart.Stat.DAMAGE), weapon_type.display_name)
+		assert_not_null(weapon_type.get_part(first), label)
 		all.append_array(weapon_type.parts)
 	for upgrade: Upgrade in all:
 		assert_ne(upgrade.display_name, "")
@@ -124,10 +127,11 @@ func test_every_weapon_shows_pips() -> void:
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		var weapon := weapon_type.create()
 		weapon.apply_upgrades(Upgrades.new())
-		var pips := weapon.get_node_or_null("DamagePips") as MkPips
+		var first: WeaponPart = weapon_type.parts[0]
+		var pips := weapon.get_node_or_null(NodePath(first.pips_name())) as MkPips
 		assert_not_null(pips, weapon_type.display_name)
 		if pips:
-			assert_eq(pips.get_child_count(), weapon_type.get_part(WeaponPart.Stat.DAMAGE).max_mk())
+			assert_eq(pips.get_child_count(), first.max_mk())
 		weapon.free()
 
 

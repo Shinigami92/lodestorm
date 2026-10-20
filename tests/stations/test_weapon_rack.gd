@@ -5,6 +5,7 @@ const TEST_MAP := preload("res://tests/support/test_map.gd")
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
+const KITH: WeaponType = preload("res://game/weapons/types/kith/kith.tres")
 
 
 func test_rows_by_origin_for_18_weapons() -> void:
@@ -132,13 +133,15 @@ func test_workbench_tabs_between_rows() -> void:
 	var station := map.get_node("Ship/Rooms/Lower/Weapons/UpgradeStation") as WeaponStation
 	var rack := station.get_node("Rack") as WeaponRack
 	assert_eq(station.bench_weapon, HARL)
-	assert_eq(rack.get_row_origins().size(), 2, "colony arms and tools so far")
+	assert_eq(rack.get_row_origins().size(), 3, "colony arms, tools and prototypes")
 	station._cycle(1)
 	assert_eq(station.bench_weapon, DRAY, "the next row")
 	station._cycle(1)
+	assert_eq(station.bench_weapon, KITH, "the last row")
+	station._cycle(1)
 	assert_eq(station.bench_weapon, HARL, "wraps around")
 	station._cycle(-1)
-	assert_eq(station.bench_weapon, DRAY)
+	assert_eq(station.bench_weapon, KITH)
 
 
 func test_workbench_keyboard_reaches_the_rack() -> void:

@@ -6,11 +6,12 @@ extends MeshInstance3D
 ## damage, a red mark on the outer edge towards where a hit came from), the equipped ammo
 ## weapon's ammo arc on the right in its ammo color (reloads and a drained battery recharging with
 ## their timing window, a charge filling it and turning white when full, a red flash when a reload
-## can't start, a white one when a timed press finishes it), the spare magazines as
-## ticks inside the ammo arc, the dash as a thin inner ring while it recharges, a green outer
-## band while the player hands a teammate ammo, and the pointers as arrows on its edge (the way
-## back to the ship from `ShipPointer`, the nearest ore from `OreScanner`). Both arcs fill from the
-## bottom up.
+## can't start, a white one when a timed press finishes it; a vent like a reload), the heat of a
+## heat-fed weapon as a thin band outside the ammo arc (amber, red when nearly full, blinking
+## while it vents), the spare magazines as ticks inside the ammo arc, the dash as a thin inner
+## ring while it recharges, a green outer band while the player hands a teammate ammo, and the
+## pointers as arrows on its edge (the way back to the ship from `ShipPointer`, the nearest ore
+## from `OreScanner`). Both arcs fill from the bottom up.
 ## Quiet when nothing goes on: an arc dims to a faint outline `lit_time` after its last change,
 ## unless its value is low (health below half, a nearly empty magazine) or the player set "Always
 ## show"; the spare ticks show on a reload and when a spare is used. Aboard (weapon holstered) the
@@ -38,6 +39,9 @@ const FILL_ALPHA: float = 0.9
 const DASH_COLOR := Color(1.0, 0.93, 0.8, FILL_ALPHA)
 const GIVE_COLOR := Color(0.35, 1.0, 0.45, FILL_ALPHA)
 const FUMBLE_COLOR := Color(1.0, 0.12, 0.08, FILL_ALPHA)
+const HEAT_COLOR := Color(1.0, 0.6, 0.15, FILL_ALPHA)
+## Heat from which the heat band turns red.
+const HEAT_HIGH: float = 0.7
 const HIT_MARKS: int = 4
 ## Pointers on the edge at most (the ship, the ore scanner, later the tracked quest).
 const POINTERS: int = 3
@@ -105,6 +109,7 @@ func _ready() -> void:
 	_material.set_shader_parameter(&"give_band", Vector2(radius + 0.06, radius + 0.14))
 	_material.set_shader_parameter(&"hit_band", Vector2(radius + 0.06, radius + 0.24))
 	_material.set_shader_parameter(&"team_band", Vector2(radius + 0.03, radius + 0.1))
+	_material.set_shader_parameter(&"heat_band", Vector2(radius + 0.025, radius + 0.075))
 	_material.set_shader_parameter(&"pointer_base", radius + POINTER_BASE)
 	_material.set_shader_parameter(&"dash_color", DASH_COLOR)
 	_material.set_shader_parameter(&"give_color", GIVE_COLOR)
@@ -192,6 +197,7 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 		ammo_glow = 0.0
 		spares_alpha = 0.0
 		_material.set_shader_parameter(&"spare_alpha", 0.0)
+		_material.set_shader_parameter(&"heat_alpha", 0.0)
 		return
 	var capacity: int = ammo.capacity()
 	var refilling: bool = ammo.refilling()
@@ -277,6 +283,18 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 	)
 	_material.set_shader_parameter(&"spare_fill", float(ammo.spare_rounds) / capacity)
 	_material.set_shader_parameter(&"spare_color", spare_color)
+	_update_heat(ammo, blink_on)
+
+
+## The heat band: amber, turning red as it nears full, blinking while it vents.
+func _update_heat(ammo: WeaponAmmo, blink_on: bool) -> void:
+	var heat: float = ammo.heat_share()
+	var color: Color = HEAT_COLOR.lerp(FUMBLE_COLOR, smoothstep(HEAT_HIGH, 1.0, heat))
+	if ammo.refilling() and not blink_on:
+		color = color.darkened(1.0 - BLINK_DIM)
+	_material.set_shader_parameter(&"heat_alpha", ammo_glow if heat > 0.0 else 0.0)
+	_material.set_shader_parameter(&"heat_fill", heat)
+	_material.set_shader_parameter(&"heat_color", color)
 
 
 func _update_dash(delta: float) -> void:

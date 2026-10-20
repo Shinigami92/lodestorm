@@ -1,5 +1,6 @@
 """Recipes of the weapons' sounds: shots, Dray's swings, Grindle's spin, Quill's charge,
-Pinner's battery, Tremor's and Wick's blasts and charges, reloads and the timing window."""
+Pinner's battery, Tremor's and Wick's blasts and charges, Scald's flame, Kith's and Zenith's
+beams, overheating and venting, reloads and the timing window."""
 
 import random
 
@@ -175,6 +176,72 @@ def wick_tripped(rng: random.Random, take: str, variant: int) -> Signal:
         return shape(mix((tone(freq, 0.04, "square"), 0.5), (tone(freq, 0.04), 1.0)), env(0.04, 0.001, 0.035))
 
     return lowpass(mix(*((beep(1000 + 220 * i), 0.6, 0.065 * i) for i in range(5))), 4500)
+
+
+@sound("weapons/scald_flame", loop=True)
+def scald_flame(rng: random.Random, take: str, variant: int) -> Signal:
+    """Scald's flame (a loop, 1 s, while it fires): a roaring hiss of burning gas with a low,
+    fluttering rumble and the odd crackle."""
+    seconds = loop_seconds(1.0)
+    roar = lowpass(bandpass(noise(rng, seconds), 900, 0.6), 2400)
+    hiss = highpass(noise(rng, seconds), 3500)
+    rumble = tremolo(lowpass(noise(rng, seconds), 180), 9.0, 0.5)
+    crack = highpass(crackle(rng, seconds, 30), 1500)
+    return saturate(mix((roar, 0.8), (hiss, 0.15), (rumble, 0.9), (crack, 0.2)), 1.3)
+
+
+@sound("weapons/kith_beam", loop=True)
+def kith_beam(rng: random.Random, take: str, variant: int) -> Signal:
+    """Kith's beam (a loop, 1 s, while it fires): a soft, warm chord that slowly breathes, with a
+    faint shimmer on top."""
+    seconds = loop_seconds(1.0)
+    chord = mix(
+        (tone(392, seconds), 1.0), (tone(494, seconds), 0.6), (tone(587, seconds), 0.45), (tone(784, seconds), 0.2)
+    )
+    shimmer = tremolo(bandpass(noise(rng, seconds), 6000, 2.0), 8.0, 0.6)
+    return mix((tremolo(chord, 2.0, 0.25), 0.6), (shimmer, 0.05))
+
+
+@sound("weapons/zenith_beam", loop=True)
+def zenith_beam(rng: random.Random, take: str, variant: int) -> Signal:
+    """Zenith's beam (a loop, 1 s, while it fires): a deep, searing drone with a hard electric
+    buzz and a crackling edge."""
+    seconds = loop_seconds(1.0)
+    drone = lowpass(mix((tone(82, seconds, "saw"), 1.0), (tone(164, seconds, "square"), 0.35)), 900)
+    buzz = bandpass(tone(330, seconds, "saw"), 1800, 1.5)
+    sear = tremolo(highpass(noise(rng, seconds), 4000), 30.0, 0.7)
+    crack = highpass(crackle(rng, seconds, 60), 2500)
+    return saturate(mix((drone, 0.8), (buzz, 0.3), (sear, 0.12), (crack, 0.15)), 1.8)
+
+
+@sound("weapons/overheat")
+def overheat(rng: random.Random, take: str, variant: int) -> Signal:
+    """A heat-fed weapon overheating: a sharp metallic ping and two short, falling alarm tones."""
+
+    def falling(start: float) -> Signal:
+        return shape(tone(glide(start, start * 0.7, 0.12), 0.14, "square"), env(0.14, 0.003, 0.11))
+
+    ping = modes(rng, [(3300, 0.12, 1.0), (5100, 0.06, 0.4)], 0.15)
+    return lowpass(mix((ping, 0.6), (falling(1400), 0.4, 0.05), (falling(1400), 0.4, 0.22)), 5000)
+
+
+@sound("weapons/heat_vent", variants=2)
+def heat_vent(rng: random.Random, take: str, variant: int) -> Signal:
+    """A heat-fed weapon venting: a valve's clack and a long, falling hiss of hot gas."""
+    j = 0.06
+    clack = mix((click(rng, jitter(rng, 2600, j), 5, 0.015), 1.0), (thump(320, 200, 0.005, 0.05, 0.06), 0.6))
+    hiss = burst(rng, 1.3, 0.02, jitter(rng, 0.9, j), "bandpass", glide(jitter(rng, 5200, j), 1800, 1.1), 0.8)
+    return mix((clack, 0.8), (hiss, 0.7, 0.03))
+
+
+@sound("weapons/cell_in", variants=2)
+def cell_in(rng: random.Random, take: str, variant: int) -> Signal:
+    """A fuel cell seated: a heavy slide, a clunk, and a short pressurising hiss."""
+    j = 0.06
+    slide_in = shape(bandpass(noise(rng, 0.07), 1300, 1.5), env(0.07, 0.03, 0.03))
+    clunk = mix((thump(jitter(rng, 200, j), 110, 0.006, 0.08, 0.1), 1.0), (click(rng, 1500, 2.5, 0.02), 0.6))
+    hiss = burst(rng, 0.25, 0.01, 0.18, "highpass", 4200)
+    return mix((slide_in, 0.35), (clunk, 1.0, 0.05), (hiss, 0.2, 0.1))
 
 
 @sound("weapons/dray_swing", variants=3, seed="weapons/hammer_swing")

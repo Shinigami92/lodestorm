@@ -6,8 +6,9 @@ const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const QUILL: WeaponType = preload("res://game/weapons/types/quill/quill.tres")
-const PINNER: WeaponType = preload("res://game/weapons/types/pinner/pinner.tres")
-const TREMOR: WeaponType = preload("res://game/weapons/types/tremor/tremor.tres")
+const GRINDLE: WeaponType = preload("res://game/weapons/types/grindle/grindle.tres")
+const SCALD: WeaponType = preload("res://game/weapons/types/scald/scald.tres")
+const KITH: WeaponType = preload("res://game/weapons/types/kith/kith.tres")
 
 var _map: Node3D
 var _player: Player
@@ -57,9 +58,9 @@ func test_locker_moves_over_the_wall_as_a_grid() -> void:
 	_send(&"ui_right")
 	assert_eq(locker.selected, locker.get_part(QUILL), "the end of the row")
 	_send(&"ui_down")
-	assert_eq(locker.selected, locker.get_part(TREMOR), "the nearest in the next row")
+	assert_eq(locker.selected, locker.get_part(SCALD), "the nearest in the next row")
 	_send(&"ui_up")
-	assert_eq(locker.selected, locker.get_part(PINNER), "the nearest above")
+	assert_eq(locker.selected, locker.get_part(GRINDLE), "the nearest above")
 	_send(&"ui_up")
 	assert_eq(locker.selected, locker.get_cradle_part(1), "up from the top row into the cradles")
 
@@ -71,9 +72,11 @@ func test_locker_tabs_between_rows() -> void:
 	_send(&"tab_next")
 	assert_eq(locker.selected, locker.get_part(DRAY), "the next row")
 	_send(&"tab_next")
+	assert_eq(locker.selected, locker.get_part(KITH), "the last row")
+	_send(&"tab_next")
 	assert_eq(locker.selected, locker.get_part(HARL), "wraps around")
 	_send(&"tab_prev")
-	assert_eq(locker.selected, locker.get_part(DRAY))
+	assert_eq(locker.selected, locker.get_part(KITH))
 
 
 func test_an_empty_slot_is_filled_next() -> void:

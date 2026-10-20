@@ -211,6 +211,11 @@
       "variants": 4,
       "recordings": []
     },
+    "weapons/cell_in": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
     "weapons/dray_hit": {
       "made_by": "build.py",
       "variants": 3,
@@ -241,9 +246,24 @@
       "variants": 4,
       "recordings": []
     },
+    "weapons/heat_vent": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/kith_beam": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "weapons/magazine_in": {
       "made_by": "build.py",
       "variants": 2,
+      "recordings": []
+    },
+    "weapons/overheat": {
+      "made_by": "build.py",
+      "variants": 1,
       "recordings": []
     },
     "weapons/pinner_charged": {
@@ -274,6 +294,11 @@
     "weapons/reload_start": {
       "made_by": "build.py",
       "variants": 2,
+      "recordings": []
+    },
+    "weapons/scald_flame": {
+      "made_by": "build.py",
+      "variants": 1,
       "recordings": []
     },
     "weapons/shell_in": {
@@ -312,6 +337,11 @@
       "recordings": []
     },
     "weapons/window_tick": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/zenith_beam": {
       "made_by": "build.py",
       "variants": 1,
       "recordings": []

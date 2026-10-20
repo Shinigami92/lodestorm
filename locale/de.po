@@ -1008,8 +1008,10 @@ msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
 #: game/weapons/types/harl/mk_damage.tres
 #: game/weapons/types/pinner/mk_damage.tres
 #: game/weapons/types/quill/mk_damage.tres
+#: game/weapons/types/scald/mk_damage.tres
 #: game/weapons/types/tremor/mk_damage.tres
 #: game/weapons/types/wick/mk_damage.tres
+#: game/weapons/types/zenith/mk_damage.tres
 msgid "Damage"
 msgstr "Schaden"
 
@@ -1121,6 +1123,42 @@ msgstr "Feuerrate"
 msgid "More shots per second"
 msgstr "Mehr Schüsse pro Sekunde"
 
+#: game/weapons/types/kith/kith.tres
+msgid "Mender"
+msgstr "Heilstrahler"
+
+#: game/weapons/types/kith/kith.tres
+msgid "A beam that heals teammates and repairs miners."
+msgstr "Ein Strahl, der Mitspieler heilt und Miner repariert."
+
+#: game/weapons/types/kith/mk_cell.tres
+#: game/weapons/types/scald/mk_cell.tres
+#: game/weapons/types/zenith/mk_cell.tres
+msgid "Fuel cell"
+msgstr "Brennstoffzelle"
+
+#: game/weapons/types/kith/mk_cell.tres
+#: game/weapons/types/scald/mk_cell.tres
+#: game/weapons/types/zenith/mk_cell.tres
+msgid "More fuel per cell"
+msgstr "Mehr Brennstoff pro Zelle"
+
+#: game/weapons/types/kith/mk_heal.tres
+msgid "Heal rate"
+msgstr "Heilleistung"
+
+#: game/weapons/types/kith/mk_heal.tres
+msgid "Heals and repairs faster"
+msgstr "Heilt und repariert schneller"
+
+#: game/weapons/types/kith/mk_range.tres
+msgid "Range"
+msgstr "Reichweite"
+
+#: game/weapons/types/kith/mk_range.tres
+msgid "A longer beam"
+msgstr "Ein längerer Strahl"
+
 #: game/weapons/types/pinner/mk_battery.tres
 msgid "Battery"
 msgstr "Batterie"
@@ -1160,6 +1198,27 @@ msgstr "Schienengewehr"
 #: game/weapons/types/quill/quill.tres
 msgid "Hold to charge. A full charge pierces a line."
 msgstr "Halten zum Laden. Voll geladen trifft es eine ganze Reihe."
+
+#: game/weapons/types/scald/mk_burn.tres
+msgid "Burn"
+msgstr "Brand"
+
+#: game/weapons/types/scald/mk_burn.tres
+msgid "Aliens burn longer"
+msgstr "Aliens brennen länger"
+
+#: game/weapons/types/scald/mk_damage.tres
+#: game/weapons/types/zenith/mk_damage.tres
+msgid "More damage per second"
+msgstr "Mehr Schaden pro Sekunde"
+
+#: game/weapons/types/scald/scald.tres
+msgid "Thermal cutter"
+msgstr "Schneidbrenner"
+
+#: game/weapons/types/scald/scald.tres
+msgid "A short cone of flame. Aliens in it burn on."
+msgstr "Ein kurzer Flammenkegel. Getroffene Aliens brennen weiter."
 
 #: game/weapons/types/tremor/mk_blast.tres
 msgid "Blast"
@@ -1201,6 +1260,22 @@ msgstr "Ladungsleger"
 #: game/weapons/types/wick/wick.tres
 msgid "Tosses charges that blast when aliens come close."
 msgstr "Wirft Ladungen, die explodieren, wenn Aliens nahe kommen."
+
+#: game/weapons/types/zenith/mk_cooling.tres
+msgid "Cooling"
+msgstr "Kühlung"
+
+#: game/weapons/types/zenith/mk_cooling.tres
+msgid "Heats up slower"
+msgstr "Wird langsamer heiß"
+
+#: game/weapons/types/zenith/zenith.tres
+msgid "Star lance"
+msgstr "Sternlanze"
+
+#: game/weapons/types/zenith/zenith.tres
+msgid "A beam through every alien in line. It burns hotter on one."
+msgstr "Durchdringt jedes Alien. Brennt auf einem immer heißer."
 
 #: game/world/celestial_body.gd
 msgid "Moon"

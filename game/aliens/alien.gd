@@ -516,7 +516,7 @@ func take_hit(hit: Hit) -> float:
 	if armored:
 		dealt = maxf(hit.damage - armor, hit.damage * MIN_DAMAGE_SHARE)
 	_push += hit.direction * hit.push * strain.knockback
-	if is_inside_tree():
+	if hit.spray and is_inside_tree():
 		HitSpray.spawn(get_parent(), hit.point, hit.direction, armored)
 	_pose.jolt()
 	if _staggered == 0.0:

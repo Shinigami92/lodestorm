@@ -6,9 +6,9 @@ extends CanvasLayer
 ## resources live, so every scene using them sees the new values right away; they last until the
 ## game stops and aren't written to the files. Also shows the mission and flight state and has
 ## shortcuts for testing the flight, storm, death, fights, weapons, ammo, upgrades and the heat
-## shield, and teammates standing still (to see their rings before co-op), and switches for god
-## mode (players take no damage) and the aliens' AI (off: they stand still). Integer settings get
-## whole-number sliders.
+## shield, and teammates standing still (to see their rings before co-op, and hurt to heal them),
+## and switches for god mode (players take no damage) and the aliens' AI (off: they stand still).
+## Integer settings get whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -285,6 +285,20 @@ const WEAPON_TUNING: Dictionary[String, Array] = {
 		["chain_speedup", 0.0, 0.5, 0.05],
 		["max_chain_speedup", 0.0, 0.9, 0.05],
 	],
+	"HeatFeed":
+	[
+		["magazine", 1.0, 400.0, 1.0],
+		["ore_per_round", 0.0, 1.0, 0.01],
+		["reload_time", 0.1, 5.0, 0.05],
+		["heat_per_round", 0.0, 0.2, 0.002],
+		["cool_delay", 0.0, 3.0, 0.05],
+		["cool_rate", 0.0, 2.0, 0.05],
+		["vent_time", 0.1, 6.0, 0.1],
+		["vent_from", 0.0, 1.0, 0.05],
+		["sweet_spot_start", 0.0, 1.0, 0.05],
+		["sweet_spot_width", 0.0, 1.0, 0.05],
+		["fumble_time", 0.0, 3.0, 0.05],
+	],
 	"BatteryFeed":
 	[
 		["cells", 1.0, 60.0, 1.0],
@@ -327,6 +341,26 @@ const WEAPON_TUNING: Dictionary[String, Array] = {
 		["trigger_radius", 0.5, 6.0, 0.1],
 		["arm_time", 0.0, 5.0, 0.1],
 		["trip_time", 0.0, 2.0, 0.05],
+	],
+	"ConeDelivery":
+	[
+		["reach", 1.0, 15.0, 0.5],
+		["angle", 5.0, 120.0, 1.0],
+	],
+	"BeamDelivery":
+	[
+		["reach", 2.0, 60.0, 0.5],
+		["ramp", 1.0, 10.0, 0.1],
+		["ramp_time", 0.1, 10.0, 0.1],
+	],
+	"BurnEffect":
+	[
+		["damage_per_second", 0.0, 100.0, 0.5],
+		["seconds", 0.0, 15.0, 0.1],
+	],
+	"HealEffect":
+	[
+		["heal", 0.0, 50.0, 0.1],
 	],
 	"SwingDelivery":
 	[
@@ -618,6 +652,13 @@ func _remove_teammates() -> void:
 
 
 ## Adds `HOLD_FILL` units of every ore type to each ship's hold, to test the upgrade stations.
+## Takes half the health of every teammate (to try healing them, Kith).
+func _hurt_teammates() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if not player.local:
+			player.take_damage(player.vitals.maximum() * 0.5)
+
+
 func fill_hold() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
 		for ore_type: OreType in ALL_ORES.ores:
@@ -687,6 +728,7 @@ func _build() -> void:
 	_button(players, "Kill players", kill_players)
 	_button(players, "Add teammate", _add_teammate)
 	_button(players, "Remove teammates", _remove_teammates)
+	_button(players, "Hurt teammates", _hurt_teammates)
 	_button(players, "Give ore", give_ore)
 	_switch(
 		players,

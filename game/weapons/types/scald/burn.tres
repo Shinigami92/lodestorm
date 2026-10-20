@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="BurnEffect" format=3 uid="uid://vqw5136uldah"]
+
+[ext_resource type="Script" uid="uid://b0rj17s1ad7wb" path="res://game/weapons/effects/burn_effect.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage_per_second = 8.0
+seconds = 3.0

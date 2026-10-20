@@ -1006,8 +1006,10 @@ msgstr ""
 #: game/weapons/types/harl/mk_damage.tres
 #: game/weapons/types/pinner/mk_damage.tres
 #: game/weapons/types/quill/mk_damage.tres
+#: game/weapons/types/scald/mk_damage.tres
 #: game/weapons/types/tremor/mk_damage.tres
 #: game/weapons/types/wick/mk_damage.tres
+#: game/weapons/types/zenith/mk_damage.tres
 msgid "Damage"
 msgstr ""
 
@@ -1119,6 +1121,42 @@ msgstr ""
 msgid "More shots per second"
 msgstr ""
 
+#: game/weapons/types/kith/kith.tres
+msgid "Mender"
+msgstr ""
+
+#: game/weapons/types/kith/kith.tres
+msgid "A beam that heals teammates and repairs miners."
+msgstr ""
+
+#: game/weapons/types/kith/mk_cell.tres
+#: game/weapons/types/scald/mk_cell.tres
+#: game/weapons/types/zenith/mk_cell.tres
+msgid "Fuel cell"
+msgstr ""
+
+#: game/weapons/types/kith/mk_cell.tres
+#: game/weapons/types/scald/mk_cell.tres
+#: game/weapons/types/zenith/mk_cell.tres
+msgid "More fuel per cell"
+msgstr ""
+
+#: game/weapons/types/kith/mk_heal.tres
+msgid "Heal rate"
+msgstr ""
+
+#: game/weapons/types/kith/mk_heal.tres
+msgid "Heals and repairs faster"
+msgstr ""
+
+#: game/weapons/types/kith/mk_range.tres
+msgid "Range"
+msgstr ""
+
+#: game/weapons/types/kith/mk_range.tres
+msgid "A longer beam"
+msgstr ""
+
 #: game/weapons/types/pinner/mk_battery.tres
 msgid "Battery"
 msgstr ""
@@ -1157,6 +1195,27 @@ msgstr ""
 
 #: game/weapons/types/quill/quill.tres
 msgid "Hold to charge. A full charge pierces a line."
+msgstr ""
+
+#: game/weapons/types/scald/mk_burn.tres
+msgid "Burn"
+msgstr ""
+
+#: game/weapons/types/scald/mk_burn.tres
+msgid "Aliens burn longer"
+msgstr ""
+
+#: game/weapons/types/scald/mk_damage.tres
+#: game/weapons/types/zenith/mk_damage.tres
+msgid "More damage per second"
+msgstr ""
+
+#: game/weapons/types/scald/scald.tres
+msgid "Thermal cutter"
+msgstr ""
+
+#: game/weapons/types/scald/scald.tres
+msgid "A short cone of flame. Aliens in it burn on."
 msgstr ""
 
 #: game/weapons/types/tremor/mk_blast.tres
@@ -1198,6 +1257,22 @@ msgstr ""
 
 #: game/weapons/types/wick/wick.tres
 msgid "Tosses charges that blast when aliens come close."
+msgstr ""
+
+#: game/weapons/types/zenith/mk_cooling.tres
+msgid "Cooling"
+msgstr ""
+
+#: game/weapons/types/zenith/mk_cooling.tres
+msgid "Heats up slower"
+msgstr ""
+
+#: game/weapons/types/zenith/zenith.tres
+msgid "Star lance"
+msgstr ""
+
+#: game/weapons/types/zenith/zenith.tres
+msgid "A beam through every alien in line. It burns hotter on one."
 msgstr ""
 
 #: game/world/celestial_body.gd

@@ -35,6 +35,14 @@ func dash(direction: Vector3 = Vector3.ZERO) -> bool:
 	return true
 
 
+## Carries the holder along `velocity` for `seconds` like a dash (a heavy blow stopped by a
+## shield's field), without its cooldown.
+func shove(velocity: Vector3, seconds: float) -> void:
+	velocity.y = 0.0
+	_velocity = velocity
+	_left = seconds
+
+
 ## Whether a dash is underway.
 func is_dashing() -> bool:
 	return _left > 0.0

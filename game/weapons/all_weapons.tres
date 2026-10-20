@@ -18,7 +18,9 @@
 [ext_resource type="Resource" uid="uid://ev7qejl2b7a" path="res://game/weapons/types/riven/riven.tres" id="16_riven"]
 [ext_resource type="Resource" uid="uid://0rh1i3wlhf84" path="res://game/weapons/types/auger/auger.tres" id="17_auger"]
 [ext_resource type="Resource" uid="uid://c5v8lia3x35w4" path="res://game/weapons/types/jag/jag.tres" id="18_jag"]
+[ext_resource type="Resource" uid="uid://ynn4yay1hdu1" path="res://game/weapons/types/clout/clout.tres" id="19_clout"]
+[ext_resource type="Resource" uid="uid://bf6m0n77ajae6" path="res://game/weapons/types/mantle/mantle.tres" id="20_mantle"]
 
 [resource]
 script = ExtResource("1_script")
-weapons = Array[ExtResource("2_weapon_type")]([ExtResource("3_harl"), ExtResource("4_brask"), ExtResource("6_pinner"), ExtResource("7_grindle"), ExtResource("8_quill"), ExtResource("5_dray"), ExtResource("16_riven"), ExtResource("10_wick"), ExtResource("17_auger"), ExtResource("9_tremor"), ExtResource("11_scald"), ExtResource("18_jag"), ExtResource("12_kith"), ExtResource("13_zenith"), ExtResource("14_fulgen"), ExtResource("15_nadir")])
+weapons = Array[ExtResource("2_weapon_type")]([ExtResource("3_harl"), ExtResource("4_brask"), ExtResource("6_pinner"), ExtResource("7_grindle"), ExtResource("8_quill"), ExtResource("5_dray"), ExtResource("16_riven"), ExtResource("10_wick"), ExtResource("17_auger"), ExtResource("9_tremor"), ExtResource("11_scald"), ExtResource("18_jag"), ExtResource("12_kith"), ExtResource("13_zenith"), ExtResource("14_fulgen"), ExtResource("15_nadir"), ExtResource("19_clout"), ExtResource("20_mantle")])

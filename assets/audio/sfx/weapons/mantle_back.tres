@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://ks1m67kuxgvi"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://d3aaku5e5w3o6" path="res://assets/audio/sfx/weapons/mantle_back_1.wav" id="2_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+streams_count = 1
+stream_0/stream = ExtResource("2_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -10.0
+limit = 2
+unit_size = 6.0
+max_distance = 30.0

@@ -10,7 +10,7 @@ extends Upgrade
 ## arc, how quickly barrels spin up, a charge fills and a battery recharges, a blast's radius and
 ## how many charges can lie on the ground at once, how long a flame burns, how much a beam heals,
 ## how far it reaches, how slowly heat builds, how many times lightning jumps on, how much a hit
-## staggers and how quickly a drill's damage rises.
+## staggers, how quickly a drill's damage rises and how far a punch throws.
 enum Stat {
 	DAMAGE,
 	CAPACITY,
@@ -29,6 +29,7 @@ enum Stat {
 	JUMPS,
 	STAGGER,
 	RAMP,
+	THROW,
 }
 
 @export var stat: Stat = Stat.DAMAGE

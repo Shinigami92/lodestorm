@@ -14,15 +14,18 @@ Skeleton "Skeleton": Godot's humanoid bone names (SkeletonProfileHumanoid, witho
 could be retargeted later. Meshes: "Suit" (one skinned object, rigid parts weighted 100 % to their bone, the
 undersuit limbs blended across the joints) and "SuitLight" (the collar band, constant emissive; the game drives its
 color by health). Empties on bones: "WeaponGrip" (RightHand, Harl's origin in the aim pose; Godot axes:
--Z forward), "CargoRack" and "HosePort" (UpperChest, on the backpack).
+-Z forward), "ShieldGrip" (LeftLowerArm, Mantle's plate on the forearm, facing forward in "ReadyShield"),
+"CargoRack" and "HosePort" (UpperChest, on the backpack).
 
 Animations (one action per clip, each in its own NLA track, all at 30 fps): "Idle" (loop), "Run", "RunBack",
 "StrafeLeft", "StrafeRight" (loops, authored at RUN_SPEED: the game scales their speed by the actual one),
 "Aim" (upper-body pose holding Harl; the game layers it over the legs), "Die" (once, ends lying face
-down) and the melee clips, upper body only too: the holds "ReadyBlade" (Riven), "ReadyHammer" (Dray) and "Brace"
-(Jag, Auger: two-handed at the hip), the attacks "Slash", "SlashBack", "Overhead" and "Thrust" (wind-up, a stroke of
-ATTACK_STROKE frames the game fits to the attack's time, staying at the end) and the braced tool's loops "Cut"
-(leaning in, shaking) and "Drill" (out at the thrust's end, shaking). Poses are built from world-space rotations per bone and two-bone IK for arms and legs, then converted to
+down) and the melee clips, upper body only too: the holds "ReadyBlade" (Riven), "ReadyHammer" (Dray), "Brace"
+(Jag, Auger: two-handed at the hip), "ReadyFist" (Clout: the gauntlet raised) and "ReadyShield" (Mantle: the left
+forearm across the chest), the attacks "Slash", "SlashBack", "Overhead", "Thrust", "Punch" and "Bash" (wind-up, a
+stroke of ATTACK_STROKE frames the game fits to the attack's time, staying at the end), the braced tool's loops "Cut"
+(leaning in, shaking) and "Drill" (out at the thrust's end, shaking) and the gauntlet's "Cock" (drawn back for a
+charged punch, trembling). Poses are built from world-space rotations per bone and two-bone IK for arms and legs, then converted to
 the bones' local rotations (pose_of()).
 """
 
@@ -313,9 +316,12 @@ def markers(arm: bpy.types.Object) -> None:
         ("CargoRack", "UpperChest", (0, 0.31, 0.95)),
         ("HosePort", "UpperChest", (0, 0.29, 1.08)),
         ("WeaponGrip", "RightHand", GRIP),  # placed in the aim pose
+        ("ShieldGrip", "LeftLowerArm", _shield_grip()),  # placed in the shield's hold
     ):
         if name == "WeaponGrip":
             apply(arm, idle(0.0, aim=True))
+        elif name == "ShieldGrip":
+            apply(arm, ready_shield())
         e = bpy.data.objects.new(name, None)
         e.empty_display_type = "ARROWS"
         e.empty_display_size = 0.15
@@ -676,6 +682,91 @@ def thrust(t: float) -> Pose:
     return brace(lerp(-0.06, 0.4, u), 16 * u)
 
 
+# Clout: the hand grips the gauntlet like a pistol grip, so the weapon's forward is the fist's direction turned up
+# by the grip's angle (the hand points 41 degrees below a gun's forward, see aim_upper()).
+FIST_TILT = math.radians(41)
+
+
+def fist(p: Pose, wrist_at, punch, pole) -> Matrix:
+    """Puts Clout's grip at `wrist_at` with the fist (and the forearm behind it) pointing along `punch`."""
+    d = Vector(punch).normalized()
+    side = d.cross(Vector((0, 0, 1))).normalized()
+    up = side.cross(d).normalized()
+    forward = d * math.cos(FIST_TILT) + up * math.sin(FIST_TILT)
+    top = up * math.cos(FIST_TILT) - d * math.sin(FIST_TILT)
+    return hold(p, wrist_at, forward, top, pole)
+
+
+def ready_fist() -> Pose:
+    """Clout: the gauntlet raised in front of the chest, the left hand open in front as a guard."""
+    p = stance(6, -12)
+    fist(p, (-0.16, -0.34, 1.26), (0.1, -1, 0.12), (-0.8, 0.2, -1))
+    guard(p, 0.9)
+    return p
+
+
+def cocked(shake: Vector | None = None) -> Pose:
+    """Clout drawn back for a charged punch: the fist by the right shoulder, the body turned away."""
+    p = stance(2, -32)
+    fist(p, Vector((-0.26, 0.02, 1.24)) + (shake or Vector()), (0.25, -1, 0.1), (-0.9, 0.6, -1))
+    guard(p, 1.0)
+    return p
+
+
+def punch(t: float) -> Pose:
+    """Clout's punch: a short pull back, then straight out with the body turning in, staying out."""
+    w, s = ATTACK_WIND, ATTACK_STROKE
+    f = t * (w + s + ATTACK_HOLD)
+    start, back, out = Vector((-0.16, -0.34, 1.26)), Vector((-0.2, -0.22, 1.25)), Vector((-0.06, -0.66, 1.32))
+    if f < w:
+        u = smooth(f / w)
+        at, lean, turn = lerp(start, back, u), 6.0, lerp(-12.0, -18.0, u)
+    else:
+        u = 1 - (1 - min((f - w) / s, 1.0)) ** 3  # out at once: the hit lands as the attack starts
+        at, lean, turn = lerp(back, out, u), lerp(6.0, 14.0, u), lerp(-18.0, 16.0, u)
+    p = stance(lean, turn)
+    fist(p, at, (0.04, -1, 0.06), (-0.7, 0.3, -1))
+    guard(p, 1.0 - 0.4 * u if f >= w else 1.0)
+    return p
+
+
+# Mantle: the plate on the left forearm, the forearm across the chest; the right fist behind it.
+SHIELD_WRIST = Vector((-0.04, -0.42, 1.22))
+
+
+def ready_shield(push: float = 0.0, lean: float = 0.0, turn: float = 0.0) -> Pose:
+    """Mantle: the left forearm across the chest with the plate facing out, the right fist behind it; push moves
+    both forward (m)."""
+    p = stance(6 + lean, 10 + turn)
+    ahead = Vector((0, -push, 0.04 * push))
+    p.arm("Left", SHIELD_WRIST + ahead, Vector((1, 0.4, -0.5)), Vector((-1, -0.1, 0.1)), Vector((0, 1, 0)))
+    p.arm(
+        "Right",
+        Vector((-0.14, -0.3, 1.14)) + ahead * 0.8,
+        Vector((-1, 0.4, -1)),
+        Vector((0.3, -0.8, 0.3)),
+        Vector((1, 0, 0)),
+    )
+    return p
+
+
+def _shield_grip() -> Vector:
+    """The plate's middle on the forearm in the shield's hold, a little in front of it."""
+    p = ready_shield()
+    elbow, wrist = p.pos("LeftLowerArm"), p.pos("LeftHand")
+    return elbow.lerp(wrist, 0.55) + Vector((0, -0.06, 0))
+
+
+def bash(t: float) -> Pose:
+    """Mantle's bash: pulled in a little, then a shove forward with the shoulder, staying out."""
+    w, s = ATTACK_WIND, ATTACK_STROKE
+    f = t * (w + s + ATTACK_HOLD)
+    if f < w:
+        return ready_shield(-0.06 * smooth(f / w), 0.0, 4 * smooth(f / w))
+    u = 1 - (1 - min((f - w) / s, 1.0)) ** 3
+    return ready_shield(lerp(-0.06, 0.28, u), 14 * u, lerp(4.0, 14.0, u))
+
+
 def tremor(t: float) -> Vector:
     """A loop of small jolts (m), the same at 0 and 1."""
     a = 2 * math.pi * t
@@ -702,6 +793,11 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
     "Thrust": (ATTACK_FRAMES, thrust),
     "Cut": (SHAKE_FRAMES, lambda t: brace(0.05, 8, tremor(t))),
     "Drill": (SHAKE_FRAMES, lambda t: brace(0.4, 16, tremor(t))),
+    "ReadyFist": (1, lambda t: ready_fist()),
+    "ReadyShield": (1, lambda t: ready_shield()),
+    "Punch": (ATTACK_FRAMES, punch),
+    "Bash": (ATTACK_FRAMES, bash),
+    "Cock": (SHAKE_FRAMES, lambda t: cocked(tremor(t) * 0.6)),
 }
 
 
@@ -765,6 +861,9 @@ STAND_INS = {  # rough weapons for the clip previews: boxes (center, size) in th
         ((0, 0, -0.69), (0.095, 0.014, 1)),
     ],
     "hammer": [((0, 0.05, -0.3), (0.056, 0.056, 0.85)), ((0, 0.05, -0.72), (0.18, 0.4, 0.18))],
+    # Clout's gauntlet: the fist's block along the hand (41 degrees below the weapon's forward), the sleeve behind it.
+    "fist": [((0, -0.04, -0.05), (0.13, 0.12, 0.12)), ((0, 0.12, 0.14), (0.14, 0.14, 0.24))],
+    "shield": [((0, 0, 0), (0.42, 0.52, 0.05))],
     "tool": [
         ((0, 0, 0.12), (0.05, 0.05, 0.22)),
         ((0, 0.04, -0.06), (0.17, 0.17, 0.26)),
@@ -783,13 +882,18 @@ PREVIEW_CLIPS = {  # clip: stand-in
     "Thrust": "tool",
     "Cut": "tool",
     "Drill": "tool",
+    "ReadyFist": "fist",
+    "Punch": "fist",
+    "Cock": "fist",
+    "ReadyShield": "shield",
+    "Bash": "shield",
 }
 
 
 def stand_ins() -> dict:
-    grip = bpy.data.objects["WeaponGrip"]
     out = {}
     for kind, boxes in STAND_INS.items():
+        grip = bpy.data.objects["ShieldGrip" if kind == "shield" else "WeaponGrip"]
         parts = boxes + ([STAND_IN_EDGE] if kind == "blade" else [])
         objs = []
         for i, ((x, y, z), (sx, sy, sz)) in enumerate(parts):

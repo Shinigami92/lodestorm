@@ -1002,11 +1002,13 @@ msgstr ""
 
 #: game/weapons/types/auger/mk_damage.tres
 #: game/weapons/types/brask/mk_damage.tres
+#: game/weapons/types/clout/mk_damage.tres
 #: game/weapons/types/dray/mk_damage.tres
 #: game/weapons/types/fulgen/mk_damage.tres
 #: game/weapons/types/grindle/mk_damage.tres
 #: game/weapons/types/harl/mk_damage.tres
 #: game/weapons/types/jag/mk_damage.tres
+#: game/weapons/types/mantle/mk_damage.tres
 #: game/weapons/types/nadir/mk_damage.tres
 #: game/weapons/types/pinner/mk_damage.tres
 #: game/weapons/types/quill/mk_damage.tres
@@ -1064,6 +1066,35 @@ msgstr ""
 
 #: game/weapons/types/brask/mk_pellets.tres
 msgid "More pellets per shell"
+msgstr ""
+
+#: game/weapons/types/clout/clout.tres
+msgid "Power fist"
+msgstr ""
+
+#: game/weapons/types/clout/clout.tres
+msgid "Hold to charge a punch that throws aliens into others."
+msgstr ""
+
+#: game/weapons/types/clout/mk_charge.tres
+#: game/weapons/types/quill/mk_charge.tres
+msgid "Charge time"
+msgstr ""
+
+#: game/weapons/types/clout/mk_charge.tres
+msgid "A full charge sooner"
+msgstr ""
+
+#: game/weapons/types/clout/mk_damage.tres
+msgid "More damage per punch"
+msgstr ""
+
+#: game/weapons/types/clout/mk_throw.tres
+msgid "Throw"
+msgstr ""
+
+#: game/weapons/types/clout/mk_throw.tres
+msgid "Throws farther and hits harder on the way"
 msgstr ""
 
 #: game/weapons/types/dray/dray.tres
@@ -1244,6 +1275,34 @@ msgstr ""
 msgid "A longer beam"
 msgstr ""
 
+#: game/weapons/types/mantle/mantle.tres
+msgid "Shield"
+msgstr ""
+
+#: game/weapons/types/mantle/mantle.tres
+msgid "Its field blocks blows and shots in front, for those behind it too."
+msgstr ""
+
+#: game/weapons/types/mantle/mk_arc.tres
+msgid "Block angle"
+msgstr ""
+
+#: game/weapons/types/mantle/mk_arc.tres
+msgid "A wider field"
+msgstr ""
+
+#: game/weapons/types/mantle/mk_capacity.tres
+msgid "Field charge"
+msgstr ""
+
+#: game/weapons/types/mantle/mk_capacity.tres
+msgid "The field stops more before it breaks"
+msgstr ""
+
+#: game/weapons/types/mantle/mk_damage.tres
+msgid "More damage per bash"
+msgstr ""
+
 #: game/weapons/types/nadir/mk_battery.tres
 #: game/weapons/types/pinner/mk_battery.tres
 msgid "Battery"
@@ -1291,10 +1350,6 @@ msgstr ""
 
 #: game/weapons/types/pinner/pinner.tres
 msgid "Weak single shots from a battery that recharges itself."
-msgstr ""
-
-#: game/weapons/types/quill/mk_charge.tres
-msgid "Charge time"
 msgstr ""
 
 #: game/weapons/types/quill/mk_charge.tres

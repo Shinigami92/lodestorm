@@ -1,7 +1,8 @@
 extends GutTest
 ## The player's arms with melee weapons: every weapon's hold and every attack motion has its clip,
 ## the hold follows the equipped weapon, attacks play their motions (Riven's chain one way, then
-## back), Jag's motor shakes the arms and Auger's drill keeps them out.
+## back), Jag's motor shakes the arms and Auger's drill keeps them out, Clout's charge draws the
+## arm back and it punches, Mantle hangs on the left forearm and bashes.
 
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
@@ -10,6 +11,8 @@ const RIVEN: WeaponType = preload("res://game/weapons/types/riven/riven.tres")
 const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const AUGER: WeaponType = preload("res://game/weapons/types/auger/auger.tres")
 const JAG: WeaponType = preload("res://game/weapons/types/jag/jag.tres")
+const CLOUT: WeaponType = preload("res://game/weapons/types/clout/clout.tres")
+const MANTLE: WeaponType = preload("res://game/weapons/types/mantle/mantle.tres")
 
 var _arena: Node3D
 var _player: Player
@@ -29,7 +32,7 @@ func before_each() -> void:
 	_arena.add_child(floor_body)
 	_player = PLAYER_SCENE.instantiate() as Player
 	_arena.add_child(_player)
-	for weapon_type: WeaponType in [RIVEN, DRAY, AUGER, JAG]:
+	for weapon_type: WeaponType in [RIVEN, DRAY, AUGER, JAG, CLOUT, MANTLE]:
 		_player.arsenal.unlock(weapon_type)
 	_animator = _player.get_node("Animator") as PlayerAnimator
 	await wait_physics_frames(1)
@@ -45,7 +48,7 @@ func test_every_hold_and_motion_has_its_clip() -> void:
 	var clips: Array[StringName] = []
 	clips.append_array(PlayerAnimator.HOLD_CLIPS)
 	clips.append_array(PlayerAnimator.MOTION_CLIPS)
-	clips.append_array([&"Cut", &"Drill"] as Array[StringName])
+	clips.append_array(PlayerAnimator.LAYER_CLIPS)
 	var player := _player.find_child("AnimationPlayer", true, false) as AnimationPlayer
 	for clip: StringName in clips:
 		assert_true(player.has_animation(clip), "clip %s" % clip)
@@ -53,7 +56,12 @@ func test_every_hold_and_motion_has_its_clip() -> void:
 
 func test_the_hold_follows_the_weapon() -> void:
 	var cases: Array = [
-		[HARL, &"Aim"], [RIVEN, &"ReadyBlade"], [DRAY, &"ReadyHammer"], [JAG, &"Brace"]
+		[HARL, &"Aim"],
+		[RIVEN, &"ReadyBlade"],
+		[DRAY, &"ReadyHammer"],
+		[JAG, &"Brace"],
+		[CLOUT, &"ReadyFist"],
+		[MANTLE, &"ReadyShield"],
 	]
 	for case: Array in cases:
 		await _drawn(case[0] as WeaponType)
@@ -109,6 +117,30 @@ func test_auger_thrusts_and_stays_out_while_drilling() -> void:
 	await wait_seconds(0.5)
 	assert_false(_animator.drilling)
 	assert_almost_eq(_amount(&"drill"), 0.0, 0.01)
+
+
+func test_clout_draws_back_while_charging_then_punches() -> void:
+	var clout: Weapon = await _drawn(CLOUT)
+	Input.action_press(&"attack")
+	await wait_seconds(0.5)
+	assert_gt(_amount(&"cock"), 0.3, "drawn back")
+	Input.action_release(&"attack")
+	await wait_process_frames(3)
+	assert_true(_active(&"punch"), "the punch")
+	assert_eq(clout.wind, 0.0)
+	await wait_process_frames(2)
+	assert_eq(_amount(&"cock"), 0.0)
+
+
+func test_mantle_hangs_on_the_left_forearm_and_bashes() -> void:
+	var mantle: Weapon = await _drawn(MANTLE)
+	assert_eq(mantle.get_parent().name, &"ShieldMount")
+	Input.action_press(&"attack")
+	await wait_process_frames(3)
+	Input.action_release(&"attack")
+	assert_true(_active(&"bash"))
+	await _drawn(RIVEN)
+	assert_eq(_player.weapon.get_parent().name, &"WeaponMount", "back in the right hand")
 
 
 func _active(motion: StringName) -> bool:

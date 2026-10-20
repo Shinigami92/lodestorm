@@ -10,6 +10,8 @@ extends WeaponTrigger
 @export var charge_time: float = 1.2
 ## Power of an attack let go right away, as a share of a full charge's.
 @export_range(0.0, 1.0) var min_power: float = 0.3
+## Share of the holder's top speed while it charges.
+@export_range(0.0, 1.0) var charging_move_share: float = 1.0
 
 @export_group("Sounds")
 ## The charge building up (a loop), its pitch rising with the charge.
@@ -38,3 +40,7 @@ func update(weapon: Weapon, delta: float, able: bool, _pressed: bool) -> bool:
 
 func charge(weapon: Weapon) -> float:
 	return weapon.wind
+
+
+func move_share(weapon: Weapon) -> float:
+	return charging_move_share if weapon.wind > 0.0 else 1.0

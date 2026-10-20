@@ -26,6 +26,11 @@ var slow: float = 1.0
 var slow_time: float = 0.0
 ## Health it restores to a teammate, or a miner's it repairs (see `HealEffect`).
 var heal: float = 0.0
+## How it throws the alien it lands on (see `ThrowEffect`), or null, how far (m, before the
+## strain's knockback) and the share of it the aliens on the way take.
+var throw: ThrowEffect
+var throw_distance: float = 0.0
+var throw_passed: float = 0.0
 
 
 func _init(

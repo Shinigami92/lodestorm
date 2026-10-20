@@ -10,7 +10,8 @@ extends Node3D
 ## (`multiplier`) and light their pips. After a switch it's drawn (`draw`): the model swings up from
 ## the hip for the type's draw time. Each attack plays the type's `attack_sound` at the weapon.
 ## A melee attack asks the holder to move its arms (`motion_started`, see `PlayerAnimator`); the
-## model's own motions (`sweep`, `chop`) are a small extra on top.
+## model's own motions (`sweep`, `chop`) are a small extra on top. A shield (its type's `guard`)
+## has a field in front of the holder (`field`).
 
 ## Emitted after every swing or thrust (a melee delivery) with the aliens it hit.
 @warning_ignore("unused_signal")
@@ -19,8 +20,8 @@ signal swung(hits: Array[Alien])
 signal motion_started(motion: Motion, duration: float)
 
 ## The holder's arm motions of melee attacks: a slash from the right to the left and one back, an
-## overhead blow, a thrust.
-enum Motion { SLASH, SLASH_BACK, OVERHEAD, THRUST }
+## overhead blow, a thrust, a punch, a shield's bash.
+enum Motion { SLASH, SLASH_BACK, OVERHEAD, THRUST, PUNCH, BASH }
 
 ## How the model starts when drawn: tipped down and lower, as from the hip (radians around X, m).
 const DRAW_TILT: float = -1.1
@@ -64,6 +65,8 @@ var chain: int = 0
 ## null, and for how many seconds it has.
 var latched: Node3D
 var latched_for: float = 0.0
+## Its shield's field (with its type's guard), or null.
+var field: ShieldField
 
 ## How much the MK level of each part scales its value; missing ones are 1.
 var _multipliers: Dictionary[WeaponPart.Stat, float] = {}
@@ -77,6 +80,15 @@ var _sweep: Tween
 var _was_held: bool = false
 ## The trigger's loop playing (a spin, a charge), or null.
 var _loop: AudioStreamPlayer3D
+
+
+func _ready() -> void:
+	if type and type.guard and not field:
+		field = ShieldField.new()
+		field.name = "Field"
+		field.weapon = self
+		field.guard = type.guard
+		add_child(field)
 
 
 func _physics_process(delta: float) -> void:
@@ -173,9 +185,11 @@ func latch(target: Node3D) -> void:
 	latched_for = 0.0
 
 
-## Share of the holder's top speed while it's used (spinning barrels slow them).
+## Share of the holder's top speed while it's used (spinning barrels slow them) or held (a
+## shield).
 func move_share() -> float:
-	return type.trigger.move_share(self) if type.trigger else 1.0
+	var share: float = type.trigger.move_share(self) if type.trigger else 1.0
+	return share * (type.guard.move_share if type.guard else 1.0)
 
 
 ## How far the attack being charged is, 0 to 1 (0 when it doesn't charge).

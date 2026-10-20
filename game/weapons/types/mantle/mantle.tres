@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bf6m0n77ajae6"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://r3hymqlsodxb" path="res://game/weapons/types/mantle/mantle.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="3_effect"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="4_part"]
+[ext_resource type="Resource" uid="uid://33nd8npd0bii" path="res://game/weapons/types/mantle/feed.tres" id="feed"]
+[ext_resource type="Resource" uid="uid://b6spekp1cm7q7" path="res://game/weapons/types/mantle/trigger.tres" id="trigger"]
+[ext_resource type="Resource" uid="uid://du4dhdsqmbp6i" path="res://game/weapons/types/mantle/delivery.tres" id="delivery"]
+[ext_resource type="Resource" uid="uid://drc4wujr0rynm" path="res://game/weapons/types/mantle/guard.tres" id="guard"]
+[ext_resource type="Resource" uid="uid://c5gktvsd5ikk4" path="res://assets/audio/sfx/weapons/mantle_bash.tres" id="attack_sound"]
+[ext_resource type="Resource" uid="uid://bj3snikhbwwam" path="res://game/weapons/types/mantle/damage.tres" id="fx_damage"]
+[ext_resource type="Resource" uid="uid://c4o61ygxive8w" path="res://game/weapons/types/mantle/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://ben4s2fbtmbkk" path="res://game/weapons/types/mantle/mk_capacity.tres" id="mk_capacity"]
+[ext_resource type="Resource" uid="uid://cxawma8v3gijp" path="res://game/weapons/types/mantle/mk_arc.tres" id="mk_arc"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Mantle"
+class_word = "Shield"
+description = "Its field blocks blows and shots in front, for those behind it too."
+origin = 2
+attack_rate = 1.2
+draw_time = 0.6
+hold = 5
+scene = ExtResource("2_scene")
+feed = ExtResource("feed")
+trigger = ExtResource("trigger")
+delivery = ExtResource("delivery")
+guard = ExtResource("guard")
+effects = Array[ExtResource("3_effect")]([ExtResource("fx_damage")])
+parts = Array[ExtResource("4_part")]([ExtResource("mk_damage"), ExtResource("mk_capacity"), ExtResource("mk_arc")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 380, ExtResource("ore_selyx"): 170
+})
+attack_sound = ExtResource("attack_sound")

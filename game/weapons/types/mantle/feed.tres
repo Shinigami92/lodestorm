@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FieldFeed" format=3 uid="uid://33nd8npd0bii"]
+
+[ext_resource type="Script" uid="uid://kpiukcwag04s" path="res://game/weapons/feeds/field_feed.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://di6qwgdml28lq" path="res://assets/audio/sfx/weapons/mantle_break.tres" id="2_break_sound"]
+[ext_resource type="Resource" uid="uid://ks1m67kuxgvi" path="res://assets/audio/sfx/weapons/mantle_back.tres" id="3_back_sound"]
+
+[resource]
+script = ExtResource("1_script")
+ore_per_round = 0.0
+break_sound = ExtResource("2_break_sound")
+back_sound = ExtResource("3_back_sound")

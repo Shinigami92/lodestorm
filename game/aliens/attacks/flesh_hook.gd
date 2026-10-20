@@ -4,7 +4,8 @@ extends Node3D
 ## towards where its target was, catching the first player in its way (see `AlienHook`); rock stops
 ## it. A caught player keeps it in them while the snare holds, then it's pulled back, as it is when
 ## it misses or flies its full length. The line runs from the stalker to the hook all the time and
-## goes when the stalker dies. Greybox look, TBD (playtest).
+## goes when the stalker dies. A shield's field it flies into stops it (see
+## `ShieldField.stopping`). Greybox look, TBD (playtest).
 
 ## Where on a player it aims and holds (m above their feet).
 const CHEST_HEIGHT: float = 1.2
@@ -126,6 +127,11 @@ func _start() -> Vector3:
 ## Flies on for `delta` seconds: catches a player in its way, stops at rock.
 func _fly(delta: float) -> void:
 	var step: Vector3 = direction * hook.hook_speed * delta
+	var amount: float = hook.damage * alien.damage_factor
+	if ShieldField.stopping(get_tree(), global_position, global_position + step, amount):
+		global_position += step * 0.5
+		_pull_back()
+		return
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	var query := PhysicsRayQueryParameters3D.create(
 		global_position, global_position + step, PhysicsLayers.SHOTS

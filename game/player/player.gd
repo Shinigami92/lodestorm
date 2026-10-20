@@ -24,7 +24,8 @@ extends CharacterBody3D
 ## (`DamageNumber`).
 ## The suit model (Body/Model) is animated by `PlayerAnimator` (holding the weapon as its type
 ## says, swinging it with its melee attacks); the weapon, the cargo rack and the hose port follow
-## its markers (WeaponGrip in the right hand, the others on the backpack).
+## its markers (WeaponGrip in the right hand, ShieldGrip on the left forearm for a shield, the
+## others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
 ## `pause` with no menu open shows its pause panel (`pause_panel`).
 ## Each player has a `number` (1–4) and its color; only the `local` one (the one this machine plays
@@ -153,6 +154,7 @@ var _armor_pips := MkPips.new()
 var _scanner := OreScanner.new()
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
+@onready var _shield_mount: Marker3D = $ShieldMount
 @onready var _hose_port: Marker3D = $HosePort
 @onready var _cargo_rack: CargoRack = $CargoRack
 @onready var _suit_light: SuitLight = $SuitLight
@@ -170,6 +172,7 @@ func _ready() -> void:
 	OccludedSilhouette.mark_visible(_model)
 	RenderLayers.put(_model, RenderLayers.CHARACTERS)
 	_attach(_weapon_mount, "WeaponGrip")
+	_attach(_shield_mount, "ShieldGrip")
 	_attach(_cargo_rack, "CargoRack")
 	_attach(_hose_port, "HosePort")
 	cargo_changed.connect(_cargo_rack.show_cargo)
@@ -418,8 +421,13 @@ func take_cargo() -> Dictionary[OreType, float]:
 
 
 ## Loses `amount` health (from an attacker at `from`, if it has one: the suit ring marks where
-## the hit came from); dies at zero.
-func take_damage(amount: float, from: Vector3 = Vector3.INF) -> void:
+## the hit came from); dies at zero. A blow of an `attacker` (`heavy`: a charge, a slam) may be
+## stopped by the field of a shield the player holds (see `ShieldField.block`).
+func take_damage(
+	amount: float, from: Vector3 = Vector3.INF, attacker: Node3D = null, heavy: bool = false
+) -> void:
+	if attacker and weapon and weapon.field:
+		amount = weapon.field.block(amount, attacker, heavy)
 	vitals.damage(amount, from)
 
 
@@ -627,7 +635,7 @@ func _equip(weapon_type: WeaponType) -> void:
 		_spares[_weapon_type] = get_ammo().spare_rounds
 	_weapon_type = weapon_type
 	if weapon:
-		_weapon_mount.remove_child(weapon)
+		weapon.get_parent().remove_child(weapon)
 		weapon.queue_free()
 		weapon = null
 	if not weapon_type:
@@ -647,7 +655,8 @@ func _equip(weapon_type: WeaponType) -> void:
 		ammo.reload_timed.connect(_on_reload_timed.bind(ammo))
 	weapon.visible = weapon_allowed and not dead
 	OccludedSilhouette.mark_visible(weapon)
-	_weapon_mount.add_child(weapon)
+	var shield: bool = weapon_type.hold == WeaponType.Hold.SHIELD
+	(_shield_mount if shield else _weapon_mount).add_child(weapon)
 
 
 ## A reload that can't start (no ore) flashes the ring's ammo arc red.

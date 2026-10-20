@@ -14,8 +14,9 @@ extends Resource
 ## tools, or the lost expedition's prototypes. Shapes its look and groups the racks.
 enum Origin { COLONY, TOOL, PROTOTYPE }
 ## How the holder carries it between attacks (see `PlayerAnimator`): raised to aim (the ranged
-## weapons), a blade in one hand, a hammer in both, a tool braced at the hip in both.
-enum Hold { AIM, BLADE, HAMMER, BRACE }
+## weapons), a blade in one hand, a hammer in both, a tool braced at the hip in both, a fist raised
+## in a gauntlet, a shield on the left forearm.
+enum Hold { AIM, BLADE, HAMMER, BRACE, FIST, SHIELD }
 
 ## Its name, the same in every language (like the ores and places).
 @export var display_name: String = ""
@@ -39,6 +40,8 @@ enum Hold { AIM, BLADE, HAMMER, BRACE }
 @export var delivery: WeaponDelivery
 ## What every hit does (damage, ...), in order.
 @export var effects: Array[WeaponEffect] = []
+## A shield's field standing in front of the holder while it's drawn (Mantle), or null.
+@export var guard: WeaponGuard
 ## The parts the workbench upgrades, in the order it lists them.
 @export var parts: Array[WeaponPart] = []
 ## The ore building it from its blueprint takes, from the hold; empty: nothing (the starting
@@ -50,9 +53,9 @@ enum Hold { AIM, BLADE, HAMMER, BRACE }
 @export var attack_sound: Sound
 
 
-## Whether it's a melee weapon: no ammo.
+## Whether it's a melee weapon: no ammo (a shield's field charge isn't ammo).
 func is_melee() -> bool:
-	return feed == null
+	return feed == null or not feed.is_ammo()
 
 
 ## Its parts as upgrades, in the order the workbench lists them.

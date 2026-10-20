@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DamageEffect" format=3 uid="uid://bj3snikhbwwam"]
+
+[ext_resource type="Script" uid="uid://bytrjpx3lblyy" path="res://game/weapons/effects/damage_effect.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+damage = 10.0
+stagger = 40.0
+push = 8.0

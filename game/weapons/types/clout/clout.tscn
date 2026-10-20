@@ -1,0 +1,134 @@
+[gd_scene format=3 uid="uid://cp7ed7ndj5kw"]
+
+[ext_resource type="Script" uid="uid://wqy8q2v67cpr" path="res://game/weapons/weapon.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://b7eewrjdbdfpr" path="res://game/weapons/winding_part.gd" id="2_wind"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://game/progression/upgrades/mk_pips.gd" id="9_pips"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.13, 0.135, 0.145, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.07, 0.07, 0.075, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dark"]
+albedo_color = Color(0.2, 0.19, 0.18, 1)
+metallic = 0.7
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+albedo_color = Color(0.05, 0.045, 0.04, 1)
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+emission_enabled = true
+emission = Color(1, 0.78, 0.35, 1)
+emission_energy_multiplier = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_fist"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.13, 0.12, 0.13)
+
+[sub_resource type="BoxMesh" id="BoxMesh_knuckles"]
+material = SubResource("StandardMaterial3D_dark")
+size = Vector3(0.15, 0.06, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sleeve"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.15, 0.14, 0.26)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cuff"]
+material = SubResource("StandardMaterial3D_dark")
+size = Vector3(0.17, 0.16, 0.05)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_piston"]
+material = SubResource("StandardMaterial3D_dark")
+top_radius = 0.016
+bottom_radius = 0.016
+height = 0.22
+radial_segments = 12
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_rod"]
+material = SubResource("StandardMaterial3D_grip")
+top_radius = 0.009
+bottom_radius = 0.009
+height = 0.12
+radial_segments = 12
+rings = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_core"]
+material = SubResource("StandardMaterial3D_core")
+radius = 0.03
+height = 0.06
+radial_segments = 12
+rings = 6
+
+[node name="Clout" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Model" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.75471, -0.65606, 0, 0.65606, 0.75471, 0, 0, 0)
+
+[node name="Fist" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.02)
+mesh = SubResource("BoxMesh_fist")
+
+[node name="Knuckles" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.1)
+mesh = SubResource("BoxMesh_knuckles")
+
+[node name="Sleeve" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0.17)
+mesh = SubResource("BoxMesh_sleeve")
+
+[node name="Cuff" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0.3)
+mesh = SubResource("BoxMesh_cuff")
+
+[node name="PistonLeft" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.085, 0.05, 0.14)
+mesh = SubResource("CylinderMesh_piston")
+
+[node name="PistonRight" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.085, 0.05, 0.14)
+mesh = SubResource("CylinderMesh_piston")
+
+[node name="RodLeft" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.085, 0.05, 0)
+mesh = SubResource("CylinderMesh_rod")
+script = ExtResource("2_wind")
+travel = Vector3(0, 0, 0.07)
+
+[node name="RodRight" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.085, 0.05, 0)
+mesh = SubResource("CylinderMesh_rod")
+script = ExtResource("2_wind")
+travel = Vector3(0, 0, 0.07)
+
+[node name="Core" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, 0.06)
+mesh = SubResource("SphereMesh_core")
+script = ExtResource("2_wind")
+energy = 6.0
+
+[node name="DamagePips" type="Node3D" parent="Model"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.04, 0.08, 0.2)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032
+
+[node name="ChargePips" type="Node3D" parent="Model"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.08, 0.2)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032
+
+[node name="ThrowPips" type="Node3D" parent="Model"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.04, 0.08, 0.2)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032

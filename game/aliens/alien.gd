@@ -13,11 +13,11 @@ extends CharacterBody3D
 ## (`strain.flight_height`: see `AlienFlight`), stalkers hide (`strain.cloak`: see
 ## `AlienCloaking`) and back off after each attack (`strain.retreat_time`), and the Ravager roams
 ## the location (`strain.roams`, `route`) and shakes the ground (`strain.tremor`: see
-## `AlienTremor`). A gravity well (Nadir's) pulls it in and holds it (see `AlienStatus.hold`). A
-## shrieker's
-## scream speeds up the aliens near it and calls for help (`called_for_help`, answered by the
-## nearest nest); in the hive's frenzy all of them are faster (see `status`). While a scream boosts
-## it or a tender's link holds it, it's a little bigger and outlined in the hive's yellow-green.
+## `AlienTremor`). A gravity well (Nadir's) pulls it in and holds it (see `AlienStatus.hold`), a
+## punch (Clout's) throws it (`thrown`). A shrieker's scream speeds up the aliens near it and
+## calls for help (`called_for_help`, answered by the nearest nest); in the hive's frenzy all of
+## them are faster (see `status`). While a scream boosts it or a tender's link holds it, it's a
+## little bigger and outlined in the hive's yellow-green.
 ## Its role (set from its strain by the nest) says what it goes for: guards stay by their nest
 ## (within `strain.leash` of where they hatched, walking back when a player gets away) and go for
 ## a player who hits it from any distance (`AlienStatus.defending`), hunters go
@@ -159,6 +159,8 @@ var lunge_stalled: bool = false
 var underground: bool = false
 ## How it flies (fliers only, see `strain.flight_height`).
 var flight := AlienFlight.new()
+## Its flight from a punch (see `AlienThrow`).
+var thrown := AlienThrow.new()
 ## Its see-through body (stalkers), and the ground shaking around it (the Ravager), or null.
 var cloaking: AlienCloaking
 var tremor: AlienTremor
@@ -339,7 +341,9 @@ func _physics_process(delta: float) -> void:
 		_turn_to(facing, delta)
 
 	var horizontal: Vector3
-	if lunging:
+	if thrown.is_flying():
+		horizontal = thrown.step(self, delta)
+	elif lunging:
 		horizontal = _lunge_velocity
 	elif _held():
 		horizontal = status.pull
@@ -365,7 +369,9 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= _gravity * delta
 	# Avoidance only runs with a navigation mesh while it walks (not in a leap or a well's pull); it
 	# answers with `velocity_computed`.
-	var avoiding: bool = AlienPathing.has_navigation(self) and not lunging and not _held()
+	var avoiding: bool = (
+		AlienPathing.has_navigation(self) and not lunging and not _held() and not thrown.is_flying()
+	)
 	if _agent.avoidance_enabled != avoiding:
 		_agent.avoidance_enabled = avoiding
 	if avoiding:
@@ -373,6 +379,7 @@ func _physics_process(delta: float) -> void:
 		_agent.velocity = horizontal
 	else:
 		_on_velocity_computed(horizontal)
+		thrown.check_impact(self)
 
 
 func _process(delta: float) -> void:
@@ -406,7 +413,7 @@ func strike(victim: Node3D, amount: float) -> void:
 	if cloaking and cloaking.ambush:
 		amount = maxf(amount, strain.cloak.ambush_damage)
 		cloaking.ambush = false
-	hurt(victim, amount * damage_factor, global_position)
+	hurt(victim, amount * damage_factor, global_position, self)
 	play_attack()
 	struck.emit(victim)
 
@@ -417,9 +424,17 @@ func play_attack() -> void:
 
 
 ## Hurts `victim` (a player or a miner) by `amount`, coming from `from` (for a player's hit marks).
-static func hurt(victim: Node3D, amount: float, from: Vector3 = Vector3.INF) -> void:
+## A blow of an `attacker` (`heavy`: a charge, a slam) may be stopped by a player's shield; shots
+## and acid aren't blows (shots stop at a shield's field on their way, see `ShieldField`).
+static func hurt(
+	victim: Node3D,
+	amount: float,
+	from: Vector3 = Vector3.INF,
+	attacker: Alien = null,
+	heavy: bool = false
+) -> void:
 	if victim is Player:
-		(victim as Player).take_damage(amount, from)
+		(victim as Player).take_damage(amount, from, attacker, heavy)
 	elif victim is Miner:
 		(victim as Miner).take_damage(amount)
 
@@ -515,8 +530,8 @@ func surface() -> void:
 	_sink_to(0.0)
 
 
-## Takes `hit`: armor takes its share (on the armored side), it flashes, sprays, is pushed back and
-## its stagger fills. Returns the damage that got through.
+## Takes `hit`: armor takes its share (on the armored side), it flashes, sprays, is pushed back (or
+## thrown, see `thrown`) and its stagger fills. Returns the damage that got through.
 func take_hit(hit: Hit) -> float:
 	if dead or underground or hit.damage <= 0.0:
 		return 0.0
@@ -538,6 +553,8 @@ func take_hit(hit: Hit) -> float:
 			_stagger()
 	hit_taken.emit(hit, dealt, armored)
 	take_damage(dealt)
+	if hit.throw and not dead:
+		thrown.start(self, hit)
 	return dealt
 
 

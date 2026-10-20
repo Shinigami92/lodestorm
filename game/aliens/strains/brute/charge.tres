@@ -5,6 +5,7 @@
 
 [resource]
 script = ExtResource("1_script")
+heavy = true
 damage = 30.0
 cooldown = 6.0
 wind_up = 1.0

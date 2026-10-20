@@ -51,6 +51,8 @@ func test_catalog_lists_every_weapon_once() -> void:
 			"Zenith",
 			"Fulgen",
 			"Nadir",
+			"Clout",
+			"Mantle",
 		]
 	)
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ThrowEffect" format=3 uid="uid://dx8emvnoudifm"]
+
+[ext_resource type="Script" uid="uid://c0nc66k110ol6" path="res://game/weapons/effects/throw_effect.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bgu4wv130yehk" path="res://assets/audio/sfx/weapons/clout_land.tres" id="2_land_sound"]
+[ext_resource type="Resource" uid="uid://b1h57wn77whm6" path="res://assets/audio/sfx/weapons/clout_crash.tres" id="3_crash_sound"]
+
+[resource]
+script = ExtResource("1_script")
+
+land_sound = ExtResource("2_land_sound")
+crash_sound = ExtResource("3_crash_sound")

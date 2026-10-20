@@ -21,7 +21,7 @@ func act(alien: Alien, _elapsed: float) -> bool:
 			continue
 		var offset: Vector3 = player.global_position - spot
 		if absf(offset.y) <= HIT_HEIGHT and Vector2(offset.x, offset.z).length() <= radius:
-			Alien.hurt(player, damage * alien.damage_factor, alien.global_position)
+			Alien.hurt(player, damage * alien.damage_factor, alien.global_position, alien, heavy)
 	if clip_lead <= 0.0:
 		alien.play_attack()
 	if alien.tremor:

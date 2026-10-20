@@ -20,6 +20,9 @@ extends Resource
 ## many seconds before the attack acts (its hit lands then) and moves the legs itself; 0: the clip
 ## plays when it hits and the body crouches during the wind-up.
 @export var clip_lead: float = 0.0
+## Whether it's a heavy blow (a charge, a slam): a shield's field that stops it shoves the player
+## back (see `ShieldField.block`).
+@export var heavy: bool = false
 ## Whether it's used on miners (raiders) too, or only on players.
 @export var against_miners: bool = true
 ## Whether the alien keeps moving as before during the wind-up and the recovery (a skimmer spits

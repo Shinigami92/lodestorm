@@ -2,7 +2,8 @@ class_name AlienStatus
 extends RefCounted
 ## What the hive, other aliens and players' weapons do to an alien right now (`Alien.status`): a
 ## shrieker's boost, the hive's frenzy, a tender's link, its nest calling its guards, a gravity
-## well holding it and a weapon slowing it (a saw). Values TBD (playtest).
+## well holding it, a weapon slowing it (a saw) and a shield stopping its charge. Values TBD
+## (playtest).
 
 ## Seconds a well's hold lasts after its last renewal (wells renew it every physics step).
 const HOLD_GRACE: float = 0.1
@@ -20,6 +21,9 @@ var mended_by: Node
 var defending: Node3D
 ## How fast a gravity well pulls it towards its middle (m/s, horizontal) while it's in one.
 var pull := Vector3.ZERO
+## Whether a shield's field stopped its heavy blow (see `ShieldField.block`): a charge under way
+## ends dazed, as if it ran into rock (see `AlienCharge`).
+var blocked: bool = false
 
 ## A scream's boost: how much faster it is, and for how many more seconds.
 var _boost: float = 1.0

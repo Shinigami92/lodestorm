@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SwingDelivery" format=3 uid="uid://du4dhdsqmbp6i"]
+
+[ext_resource type="Script" uid="uid://bedfq27s65p03" path="res://game/weapons/deliveries/swing_delivery.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://ph1q2tjarlcp" path="res://assets/audio/sfx/weapons/mantle_hit.tres" id="2_hit_sound"]
+
+[resource]
+script = ExtResource("1_script")
+reach = 1.8
+arc = 120.0
+stroke = 3
+stroke_time = 0.2
+hit_sound = ExtResource("2_hit_sound")

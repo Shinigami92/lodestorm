@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ProjectileDelivery" format=3 uid="uid://ukfbq6c24xy4"]
+
+[ext_resource type="Script" uid="uid://bfbxcrlc3di4i" path="res://game/weapons/deliveries/projectile_delivery.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+speed = 32.0
+reach = 22.0

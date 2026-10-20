@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BatteryFeed" format=3 uid="uid://grw43qx4ytse"]
+
+[ext_resource type="Script" uid="uid://c3hal6er2xa10" path="res://game/weapons/feeds/battery_feed.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cdx7oveah51o4" path="res://assets/audio/sfx/weapons/pinner_charged.tres" id="2_charged"]
+
+[resource]
+script = ExtResource("1_script")
+ore_per_round = 0.0
+charged_sound = ExtResource("2_charged")

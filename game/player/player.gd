@@ -97,7 +97,7 @@ var weapon_allowed: bool = true:
 		weapon_allowed = value
 		if weapon:
 			weapon.visible = value
-			weapon.trigger_held = false
+			weapon.stop()
 ## Units carried per ore type; no carry limit.
 var cargo: Dictionary[OreType, float] = {}
 ## Whether reloads cost nothing (aboard: from the ship's stock).
@@ -228,6 +228,8 @@ func _physics_process(delta: float) -> void:
 	var speed: float = settings.move_speed * ground_contact.speed()
 	if _is_reloading() and not skills.has(Skill.Effect.RELOAD_ON_THE_MOVE):
 		speed *= settings.reload_move_speed
+	if weapon:
+		speed *= weapon.move_share()
 	if acting and _action_just_pressed(&"dash"):
 		suit_dash.dash(move)
 	var horizontal: Vector3 = suit_dash.step(
@@ -474,7 +476,7 @@ func _on_died() -> void:
 	velocity = Vector3.ZERO
 	suit_dash.cancel()
 	if weapon:
-		weapon.trigger_held = false
+		weapon.stop()
 		weapon.visible = false
 	if get_ammo():
 		get_ammo().cancel_reload()

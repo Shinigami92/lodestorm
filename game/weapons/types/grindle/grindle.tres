@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://d3jfjybt3jg4y"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://c01eocrqpgr5h" path="res://game/weapons/types/grindle/grindle.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://ukfbq6c24xy4" path="res://game/weapons/types/grindle/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://cmp0vyh1xf3b6" path="res://game/weapons/types/grindle/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://blxipjiwu7xpx" path="res://assets/audio/sfx/weapons/grindle_shot.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://b4ise4ph30mxk" path="res://game/weapons/types/grindle/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://b8wxa1ciwj4ba" path="res://game/weapons/types/grindle/trigger.tres" id="9_trigger"]
+[ext_resource type="Resource" uid="uid://dkwx4wnmhs6a" path="res://game/weapons/types/grindle/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://c4gtll7j7o0m6" path="res://game/weapons/types/grindle/mk_belt.tres" id="mk_belt"]
+[ext_resource type="Resource" uid="uid://djsi0lfguuiea" path="res://game/weapons/types/grindle/mk_spin.tres" id="mk_spin"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Grindle"
+class_word = "Rotary gun"
+description = "Spins up, then a storm of shots."
+scene = ExtResource("2_scene")
+attack_rate = 14
+draw_time = 0.8
+feed = ExtResource("8_feed")
+trigger = ExtResource("9_trigger")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_belt"), ExtResource("mk_spin")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 300, ExtResource("ore_emerin"): 120
+})
+attack_sound = ExtResource("7_sound")

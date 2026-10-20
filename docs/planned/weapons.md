@@ -1,6 +1,6 @@
 # Weapons (planned)
 
-Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (steps 10 A and B, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens), [Upgrade stations](../GAME_DESIGN.md#upgrade-stations) and the armory in [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)): the framework (a weapon composed of its feed, delivery, effects and parts as Resources), Harl, Brask and Dray with three parts each, the draw time, blueprints and building a weapon at the workbench; the armory's weapon wall and the workbench rack in rows by origin, for any number.
+Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (steps 10 A, B and C1, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens), [Upgrade stations](../GAME_DESIGN.md#upgrade-stations) and the armory in [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)): the framework (a weapon composed of its feed, trigger, delivery, effects and parts as Resources), Harl, Brask, Dray, Pinner, Grindle and Quill with three parts each, the draw time, blueprints and building a weapon at the workbench; the armory's weapon wall and the workbench rack in rows by origin, for any number.
 
 ## The roster
 
@@ -38,10 +38,10 @@ Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the
 
 Every ranged weapon runs on ore, except the batteries; each feed has its own reload or rhythm and its own display on the weapon:
 
-- **Magazine** (Harl, Quill, Tremor, Wick, Fulgen) and **single rounds** (Brask): as today (see [Ammo and reloading](../GAME_DESIGN.md#ammo-and-reloading)).
-- **Belt** (Grindle): a magazine with a spin-up and a long reload; its drum is the display.
+- **Magazine** (Harl, Quill, Tremor, Wick, Fulgen) and **single rounds** (Brask): as built (see [Ammo and reloading](../GAME_DESIGN.md#ammo-and-reloading)).
+- **Belt** (Grindle, built): a big magazine with a long reload; the spin-up is its trigger; its drum is the display.
 - **Heat** (Scald, Kith, Zenith): fires continuously from a fuel cell, which is its magazine (spares first, then refilled from ore). Heat builds while firing and stops it when full. **Venting** works like the timing reload: a press within the window vents at once, so the timing skill carries over; heat sets the rhythm, ore stays the cost.
-- **Battery** (Pinner, Nadir): recharges by itself, no ore. Pinner as the weak fallback, Nadir because it deals little damage itself.
+- **Battery** (Pinner, built; Nadir): recharges by itself, no ore. Pinner as the weak fallback, Nadir because it deals little damage itself.
 
 The spare magazine rules and skills apply to every weapon fed with ore (cells, belts, loads of shells).
 
@@ -54,14 +54,14 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 
 ## Upgrades and getting them
 
-- **Upgrade parts:** three per weapon at the workbench (built for Harl, Brask and Dray): **damage**, **capacity** (magazine, belt, cell, heat; for melee: swing speed) and a **part of its own**, for the coming weapons e.g. Quill: charge time; Grindle: spin-up; Fulgen: jumps; Kith: heal rate; Tremor: blast radius; Wick: charges placed; Mantle: block angle.
+- **Upgrade parts:** three per weapon at the workbench (built for Harl, Brask, Dray, Pinner, Grindle and Quill): **damage**, **capacity** (magazine, belt, battery, cell, heat; for melee: swing speed) and a **part of its own** (built: Pinner's recharge, Grindle's spin-up, Quill's charge time), for the coming weapons e.g. Fulgen: jumps; Kith: heal rate; Tremor: blast radius; Wick: charges placed; Mantle: block angle.
 - **Getting them:** blueprints from quests (see [`quests.md`](quests.md)): colony arms and tools from the crew's quest chains, the six prototypes from the lost expedition's sites (story). Building one from its blueprint at the workbench for a fixed ore cost is built; later weapons cost the planet's signature ore, the prototypes also alloys (see [`refinery.md`](refinery.md)). In co-op everyone in the session gets the blueprint and builds it from their own hold (own holds: step 11 A). The debug overlay gives the blueprints until then.
 
 ## Loadout and switching
 
-- **Draw time** (built): the rotary gun's 0.8 s, and switching also cancels a charge.
+- **Draw time** (built, also Grindle's 0.8 s and switching cancelling Quill's charge).
 - **Slots stay 2;** a third one comes later as a skill deep in a tree (rare ores), since choosing from many weapons is the point.
 
 ## Data and tests
 
-The composition is built (feeds: magazine, single; deliveries: projectile, swing; effects: damage). Still to come with the weapons: the feeds belt, heat and battery, the deliveries projectile with pierce, arc or blast, beam, cone, chain, placed charge, thrust, held and block, and the effects burn, knockback, pull and heal. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.
+The composition is built (feeds: magazine, single, battery; triggers: held, per press, spin, charge; deliveries: projectile, also piercing, swing; effects: damage). Still to come with the weapons: the heat feed, the deliveries projectile with arc or blast, beam, cone, chain, placed charge, thrust, held and block, and the effects burn, knockback, pull and heal. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.

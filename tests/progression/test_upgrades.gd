@@ -216,8 +216,11 @@ func test_each_player_has_their_own_upgrades() -> void:
 
 
 func test_every_upgrade_room_has_a_station() -> void:
+	var weapon_parts: Array[Upgrade] = []
+	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
+		weapon_parts.append_array(weapon_type.get_upgrades())
 	var stations: Dictionary[String, Array] = {
-		"Weapons": HARL.get_upgrades() + BRASK.get_upgrades() + DRAY.get_upgrades(),
+		"Weapons": weapon_parts,
 		"Armor": [ARMOR],
 		"Miners": [DRILL, TANK, HOSE],
 	}

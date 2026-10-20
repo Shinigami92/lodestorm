@@ -1,4 +1,5 @@
-"""Recipes of the weapons' sounds: shots, Dray's swings, reloads and the timing window."""
+"""Recipes of the weapons' sounds: shots, Dray's swings, Grindle's spin, Quill's charge,
+Pinner's battery, reloads and the timing window."""
 
 import random
 
@@ -11,6 +12,7 @@ from synth import (
     glide,
     highpass,
     jitter,
+    loop_seconds,
     lowpass,
     mix,
     modes,
@@ -21,6 +23,7 @@ from synth import (
     sound,
     thump,
     tone,
+    tremolo,
     whoosh,
 )
 
@@ -45,6 +48,79 @@ def brask_shot(rng: random.Random, take: str, variant: int) -> Signal:
     blast = burst(rng, 0.35, 0.001, jitter(rng, 0.25, j), "lowpass", glide(4000, 380, 0.08))
     rumble = burst(rng, 0.9, 0.01, jitter(rng, 0.8, j), "lowpass", 260)
     return saturate(mix((crack, 0.6), (body, 1.0), (blast, 0.8), (rumble, 0.55)), 2.5)
+
+
+@sound("weapons/pinner_shot", variants=4)
+def pinner_shot(rng: random.Random, take: str, variant: int) -> Signal:
+    """Pinner, the rivet pistol: a light pneumatic snap with a metal tick, no boom."""
+    j = 0.08
+    snap = burst(rng, 0.03, 0.0002, jitter(rng, 0.012, j), "highpass", jitter(rng, 3200, j))
+    puff = burst(rng, 0.08, 0.001, jitter(rng, 0.04, j), "bandpass", jitter(rng, 1400, j), 1.2)
+    body = thump(jitter(rng, 330, j), jitter(rng, 180, j), 0.008, jitter(rng, 0.035, j), 0.06)
+    tick = modes(rng, [(jitter(rng, 4200, 0.04), 0.025, 1.0), (jitter(rng, 6900, 0.04), 0.015, 0.5)], 0.04)
+    return saturate(mix((snap, 0.7), (puff, 0.6), (body, 0.7), (tick, 0.15, 0.004)), 1.3)
+
+
+@sound("weapons/pinner_charged")
+def pinner_charged(rng: random.Random, take: str, variant: int) -> Signal:
+    """Pinner's battery full again after running dry: a soft rising two-tone chirp."""
+
+    def note(freq: float, seconds: float) -> Signal:
+        return shape(
+            mix((tone(freq, seconds), 1.0), (tone(freq * 2.0, seconds), 0.2)), env(seconds, 0.004, seconds * 0.8)
+        )
+
+    return mix((note(1180, 0.09), 0.6), (note(1770, 0.14), 0.7, 0.07))
+
+
+@sound("weapons/grindle_shot", variants=4)
+def grindle_shot(rng: random.Random, take: str, variant: int) -> Signal:
+    """Grindle, the rotary gun (14 shots a second): a short, dry punch that blurs into a roar."""
+    j = 0.08
+    crack = burst(rng, 0.025, 0.0002, jitter(rng, 0.008, j), "highpass", jitter(rng, 2200, j))
+    body = thump(jitter(rng, 150, j), jitter(rng, 60, j), 0.01, jitter(rng, 0.05, j), 0.08)
+    bark = burst(rng, 0.06, 0.0008, jitter(rng, 0.035, j), "bandpass", jitter(rng, 700, j), 0.9)
+    return saturate(mix((crack, 0.6), (body, 1.0), (bark, 0.6)), 1.8)
+
+
+@sound("weapons/grindle_spin", loop=True)
+def grindle_spin(rng: random.Random, take: str, variant: int) -> Signal:
+    """Grindle's barrels spinning (a loop, 1 s, its pitch following the spin): a motor whine over
+    the rattle of the barrels going round."""
+    seconds = loop_seconds(1.0)
+    whine = lowpass(mix((tone(220, seconds, "saw"), 1.0), (tone(440, seconds), 0.4)), 1600)
+    rattle = tremolo(bandpass(noise(rng, seconds), 2400, 2.0), 30.0, 0.7)
+    hum = lowpass(tone(55, seconds, "square"), 300)
+    return saturate(mix((whine, 0.35), (rattle, 0.5), (hum, 0.4)), 1.2)
+
+
+@sound("weapons/quill_shot", variants=3)
+def quill_shot(rng: random.Random, take: str, variant: int) -> Signal:
+    """Quill, the rail rifle: an electric snap, a hard crack and a falling zing down the rails."""
+    j = 0.06
+    snap = burst(rng, 0.02, 0.0001, jitter(rng, 0.006, j), "highpass", jitter(rng, 4000, j))
+    crack = burst(rng, 0.12, 0.0005, jitter(rng, 0.07, j), "bandpass", jitter(rng, 1800, j), 0.8)
+    body = thump(jitter(rng, 140, j), jitter(rng, 45, j), 0.02, jitter(rng, 0.18, j), 0.25)
+    zing = shape(tone(glide(jitter(rng, 3600, j), 900, 0.25), 0.35, "saw"), env(0.35, 0.002, 0.25))
+    tail = burst(rng, 0.5, 0.004, jitter(rng, 0.35, j), "lowpass", glide(2500, 400, 0.2))
+    return saturate(mix((snap, 0.7), (crack, 0.8), (body, 0.9), (lowpass(zing, 5000), 0.2), (tail, 0.35)), 1.6)
+
+
+@sound("weapons/quill_charge", loop=True)
+def quill_charge(rng: random.Random, take: str, variant: int) -> Signal:
+    """Quill charging (a loop, 1 s, its pitch rising with the charge): a capacitor hum with a fast
+    electric flutter."""
+    seconds = loop_seconds(1.0)
+    hum = mix((tone(330, seconds), 1.0), (tone(660, seconds), 0.35), (tone(990, seconds, "square"), 0.08))
+    flutter = tremolo(highpass(noise(rng, seconds), 5000), 24.0, 0.8)
+    return mix((tremolo(hum, 12.0, 0.25), 0.6), (flutter, 0.08))
+
+
+@sound("weapons/quill_full")
+def quill_full(rng: random.Random, take: str, variant: int) -> Signal:
+    """Quill's charge full: a bright, short ping that cuts through the hum."""
+    ping = modes(rng, [(2640, 0.25, 1.0), (5280, 0.12, 0.3), (7920, 0.06, 0.1)], 0.3)
+    return mix((ping, 1.0), (click(rng, 6000, 3, 0.004), 0.3))
 
 
 @sound("weapons/dray_swing", variants=3, seed="weapons/hammer_swing")

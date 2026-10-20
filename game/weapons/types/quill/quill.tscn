@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://dw74iux4ww4lb"]
+
+[ext_resource type="Script" uid="uid://wqy8q2v67cpr" path="res://game/weapons/weapon.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://5wk7qcpcy8mc" path="res://game/weapons/sight_line.gd" id="2_sight"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://game/progression/upgrades/mk_pips.gd" id="9_pips"]
+[ext_resource type="Script" uid="uid://3611pxyg528a" path="res://game/weapons/shell_strip.gd" id="10_gauge"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.13, 0.135, 0.145, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.07, 0.07, 0.075, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_receiver"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.09, 0.13, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rail"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.018, 0.05, 0.62)
+
+[sub_resource type="BoxMesh" id="BoxMesh_coil"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.1, 0.08, 0.035)
+
+[sub_resource type="BoxMesh" id="BoxMesh_stock"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.07, 0.11, 0.26)
+
+[node name="Quill" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Receiver" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.08)
+mesh = SubResource("BoxMesh_receiver")
+
+[node name="RailLeft" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.028, 0.12, -0.58)
+mesh = SubResource("BoxMesh_rail")
+
+[node name="RailRight" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.028, 0.12, -0.58)
+mesh = SubResource("BoxMesh_rail")
+
+[node name="CoilRear" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.42)
+mesh = SubResource("BoxMesh_coil")
+
+[node name="CoilFront" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.74)
+mesh = SubResource("BoxMesh_coil")
+
+[node name="Stock" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.07, 0.24)
+mesh = SubResource("BoxMesh_stock")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.9)
+
+[node name="SightLine" type="MeshInstance3D" parent="."]
+script = ExtResource("2_sight")
+color = Color(1, 0.86, 0.66, 1)
+
+[node name="AmmoGauge" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.046, 0.1, -0.1)
+script = ExtResource("10_gauge")
+color = Color(1, 0.86, 0.66, 1)
+energy = 3.0
+size = Vector3(0.004, 0.05, 0.24)
+gap = 0.008
+
+[node name="DamagePips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.166, 0.06)
+script = ExtResource("9_pips")
+
+[node name="CapacityPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.166, -0.1)
+script = ExtResource("9_pips")
+lit_color = Color(1, 0.86, 0.66, 1)
+
+[node name="ChargePips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.166, -0.26)
+script = ExtResource("9_pips")

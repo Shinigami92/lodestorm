@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="PressTrigger" format=3 uid="uid://cqyqvqb0nu0mb"]
+
+[ext_resource type="Script" uid="uid://blfwx2l8rutog" path="res://game/weapons/triggers/press_trigger.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")

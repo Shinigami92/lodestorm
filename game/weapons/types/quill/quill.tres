@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bk2kh2wolr5iw"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://dw74iux4ww4lb" path="res://game/weapons/types/quill/quill.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://qqx48heuaxmk" path="res://game/weapons/types/quill/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://4l6y1vqbvcmh" path="res://game/weapons/types/quill/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://bnph2gh620kct" path="res://assets/audio/sfx/weapons/quill_shot.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://bcsvv0tl8lnku" path="res://game/weapons/types/quill/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://8y4k0f04dlna" path="res://game/weapons/types/quill/trigger.tres" id="9_trigger"]
+[ext_resource type="Resource" uid="uid://nmnqyq6q00ku" path="res://game/weapons/types/quill/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://cber6ivc4oie7" path="res://game/weapons/types/quill/mk_magazine.tres" id="mk_magazine"]
+[ext_resource type="Resource" uid="uid://dg45bmsl4e8qu" path="res://game/weapons/types/quill/mk_charge.tres" id="mk_charge"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://dsspev82ieiuo" path="res://game/ores/types/ore_indral.tres" id="ore_indral"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Quill"
+class_word = "Rail rifle"
+description = "Hold to charge. A full charge pierces a line."
+scene = ExtResource("2_scene")
+attack_rate = 2.5
+draw_time = 0.5
+feed = ExtResource("8_feed")
+trigger = ExtResource("9_trigger")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_magazine"), ExtResource("mk_charge")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 320, ExtResource("ore_indral"): 140
+})
+attack_sound = ExtResource("7_sound")

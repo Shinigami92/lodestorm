@@ -5,6 +5,7 @@ const TEST_MAP := preload("res://tests/support/test_map.gd")
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
+const QUILL: WeaponType = preload("res://game/weapons/types/quill/quill.tres")
 
 var _map: Node3D
 var _player: Player
@@ -48,8 +49,11 @@ func test_locker_moves_over_the_wall_as_a_grid() -> void:
 	assert_eq(locker.selected, locker.get_part(HARL), "the wall's first weapon")
 	_send(&"ui_right")
 	assert_eq(locker.selected, locker.get_part(BRASK))
+	for step: int in 3:
+		_send(&"ui_right")
+	assert_eq(locker.selected, locker.get_part(QUILL))
 	_send(&"ui_right")
-	assert_eq(locker.selected, locker.get_part(BRASK), "the end of the row")
+	assert_eq(locker.selected, locker.get_part(QUILL), "the end of the row")
 	_send(&"ui_down")
 	assert_eq(locker.selected, locker.get_part(DRAY), "the next row")
 	_send(&"ui_up")

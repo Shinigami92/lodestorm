@@ -2,7 +2,8 @@ class_name ProjectileDelivery
 extends WeaponDelivery
 ## Fires projectiles from the weapon's muzzle: along the aim direction, or straight at the locked
 ## target. With several pellets per shot (more with the MK level of the weapon's pellets) they fly
-## in an even fan (`spread`) around that direction. All values TBD (playtest).
+## in an even fan (`spread`) around that direction. With `pierce`, a shot at full power flies on
+## through the aliens it hits. All values TBD (playtest).
 
 const PROJECTILE: PackedScene = preload("res://game/weapons/projectile.tscn")
 
@@ -14,15 +15,15 @@ const PROJECTILE: PackedScene = preload("res://game/weapons/projectile.tscn")
 @export var pellets: int = 1
 ## Width of the fan the pellets fly in, around the attack direction, in degrees.
 @export var spread: float = 0.0
+## Whether shots at full power (every shot; with a `ChargeTrigger`, a full charge) fly on through
+## every alien they hit; rock and nests stop them.
+@export var pierce: bool = false
 ## What flies; the plain projectile when null.
 @export var projectile_scene: PackedScene
 
 
 func attack(weapon: Weapon) -> void:
-	var muzzle: Vector3 = weapon.get_muzzle().global_position
-	var direction: Vector3 = weapon.aim_direction
-	if PlayerAim.is_lockable(weapon.aim_target):
-		direction = muzzle.direction_to(PlayerAim.aim_point(weapon.aim_target))
+	var direction: Vector3 = weapon.shot_direction()
 	var count: int = pellets_of(weapon)
 	var fan: float = deg_to_rad(spread)
 	for pellet: int in count:
@@ -52,6 +53,7 @@ func _fire(weapon: Weapon, direction: Vector3) -> void:
 	projectile.damage = hit.damage
 	projectile.stagger = hit.stagger
 	projectile.push = hit.push
+	projectile.pierce = pierce and weapon.power >= 1.0
 	projectile.exclude = [holder.get_rid()]
 	projectile.shooter = holder
 	holder.get_parent().add_child(projectile)

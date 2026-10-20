@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ProjectileDelivery" format=3 uid="uid://qqx48heuaxmk"]
+
+[ext_resource type="Script" uid="uid://bfbxcrlc3di4i" path="res://game/weapons/deliveries/projectile_delivery.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://dgb8i5buv4sqg" path="res://game/weapons/types/quill/slug.tscn" id="2_slug"]
+
+[resource]
+script = ExtResource("1_script")
+speed = 90.0
+reach = 35.0
+pierce = true
+projectile_scene = ExtResource("2_slug")

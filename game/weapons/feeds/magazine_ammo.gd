@@ -27,9 +27,8 @@ var careful: bool = false
 var reload_elapsed: float = 0.0
 ## How long the current reload (round) takes, longer after a press outside the window.
 var reload_duration: float = 0.0
-## Whether the current reload (round) had its timing press, and whether that missed the window.
+## Whether the current reload (round) had its timing press (`fumbled`: outside the window).
 var timing_pressed: bool = false
-var fumbled: bool = false
 ## Rounds in a row loaded within the window (`ReloadMode.SINGLE`).
 var chain: int = 0
 
@@ -115,6 +114,14 @@ func is_single() -> bool:
 ## the window (`feed.sweet_spot_start`, `feed.sweet_spot_width`).
 func reload_share() -> float:
 	return reload_elapsed / _round_time() if reloading else 0.0
+
+
+func refill_share() -> float:
+	return reload_share()
+
+
+func timing_window() -> Vector2:
+	return Vector2(feed.sweet_spot_start, feed.sweet_spot_start + feed.sweet_spot_width)
 
 
 ## Like a reload: a magazine replaces the rounds left in it, single rounds top it up.

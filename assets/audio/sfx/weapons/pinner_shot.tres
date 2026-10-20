@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://blxki4smb3fmg"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://cmaawxnp6s68g" path="res://assets/audio/sfx/weapons/pinner_shot_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://ihe0mio17btj" path="res://assets/audio/sfx/weapons/pinner_shot_2.wav" id="3_variant"]
+[ext_resource type="AudioStream" uid="uid://7crbx8mvhbj0" path="res://assets/audio/sfx/weapons/pinner_shot_3.wav" id="4_variant"]
+[ext_resource type="AudioStream" uid="uid://dkrw1if0lynql" path="res://assets/audio/sfx/weapons/pinner_shot_4.wav" id="5_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.06
+streams_count = 4
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+stream_2/stream = ExtResource("4_variant")
+stream_3/stream = ExtResource("5_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -6.0
+limit = 6

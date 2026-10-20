@@ -17,7 +17,7 @@ The camera shows about 21 m of height, so the player (1.86 m) is about 100 px ta
        '-~~~~~~~~-'
 ```
 
-- **Right arc, other feeds:** the heat, charge or belt of the planned weapons (see [`weapons.md`](weapons.md)) show on the ammo arc the way a reload does.
+- **Right arc, other feeds:** the heat of the planned weapons (see [`weapons.md`](weapons.md)) shows on the ammo arc the way a reload does (built for a drained battery and a charge, see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)).
 - **Outer edge:** the tracked quest's pointer (see [`quests.md`](quests.md)), an arrow like the ship's and the ore scanner's.
 - **Miners left:** show as ticks for 3 s when one is placed or picked up (see [`refinery.md`](refinery.md)).
 

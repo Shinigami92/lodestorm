@@ -1002,7 +1002,10 @@ msgstr ""
 
 #: game/weapons/types/brask/mk_damage.tres
 #: game/weapons/types/dray/mk_damage.tres
+#: game/weapons/types/grindle/mk_damage.tres
 #: game/weapons/types/harl/mk_damage.tres
+#: game/weapons/types/pinner/mk_damage.tres
+#: game/weapons/types/quill/mk_damage.tres
 msgid "Damage"
 msgstr ""
 
@@ -1054,6 +1057,37 @@ msgstr ""
 msgid "More swings per second"
 msgstr ""
 
+#: game/weapons/types/grindle/grindle.tres
+msgid "Rotary gun"
+msgstr ""
+
+#: game/weapons/types/grindle/grindle.tres
+msgid "Spins up, then a storm of shots."
+msgstr ""
+
+#: game/weapons/types/grindle/mk_belt.tres
+msgid "Belt"
+msgstr ""
+
+#: game/weapons/types/grindle/mk_belt.tres
+msgid "More rounds per belt"
+msgstr ""
+
+#: game/weapons/types/grindle/mk_damage.tres
+#: game/weapons/types/harl/mk_damage.tres
+#: game/weapons/types/pinner/mk_damage.tres
+#: game/weapons/types/quill/mk_damage.tres
+msgid "More damage per shot"
+msgstr ""
+
+#: game/weapons/types/grindle/mk_spin.tres
+msgid "Spin-up"
+msgstr ""
+
+#: game/weapons/types/grindle/mk_spin.tres
+msgid "The barrels spin up faster"
+msgstr ""
+
 #: game/weapons/types/harl/harl.tres
 msgid "Assault rifle"
 msgstr ""
@@ -1062,15 +1096,13 @@ msgstr ""
 msgid "Rapid shots that reach far."
 msgstr ""
 
-#: game/weapons/types/harl/mk_damage.tres
-msgid "More damage per shot"
-msgstr ""
-
 #: game/weapons/types/harl/mk_magazine.tres
+#: game/weapons/types/quill/mk_magazine.tres
 msgid "Magazine"
 msgstr ""
 
 #: game/weapons/types/harl/mk_magazine.tres
+#: game/weapons/types/quill/mk_magazine.tres
 msgid "More rounds per magazine"
 msgstr ""
 
@@ -1080,6 +1112,46 @@ msgstr ""
 
 #: game/weapons/types/harl/mk_rate.tres
 msgid "More shots per second"
+msgstr ""
+
+#: game/weapons/types/pinner/mk_battery.tres
+msgid "Battery"
+msgstr ""
+
+#: game/weapons/types/pinner/mk_battery.tres
+msgid "More shots per battery"
+msgstr ""
+
+#: game/weapons/types/pinner/mk_recharge.tres
+msgid "Recharge"
+msgstr ""
+
+#: game/weapons/types/pinner/mk_recharge.tres
+msgid "The battery recharges faster"
+msgstr ""
+
+#: game/weapons/types/pinner/pinner.tres
+msgid "Rivet pistol"
+msgstr ""
+
+#: game/weapons/types/pinner/pinner.tres
+msgid "Weak single shots from a battery that recharges itself."
+msgstr ""
+
+#: game/weapons/types/quill/mk_charge.tres
+msgid "Charge time"
+msgstr ""
+
+#: game/weapons/types/quill/mk_charge.tres
+msgid "Charges faster"
+msgstr ""
+
+#: game/weapons/types/quill/quill.tres
+msgid "Rail rifle"
+msgstr ""
+
+#: game/weapons/types/quill/quill.tres
+msgid "Hold to charge. A full charge pierces a line."
 msgstr ""
 
 #: game/world/celestial_body.gd

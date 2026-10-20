@@ -30,7 +30,9 @@ func after_each() -> void:
 
 
 func test_catalog_lists_every_weapon_once() -> void:
-	assert_eq(ALL_WEAPONS.weapons, [HARL, BRASK, DRAY] as Array[WeaponType])
+	var names: Array[String] = []
+	names.assign(ALL_WEAPONS.weapons.map(func(w: WeaponType) -> String: return w.display_name))
+	assert_eq(names, ["Harl", "Brask", "Pinner", "Grindle", "Quill", "Dray"])
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		assert_ne(weapon_type.display_name, "")
 		assert_ne(weapon_type.description, "")

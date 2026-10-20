@@ -1004,11 +1004,13 @@ msgstr "Ein Stoß durch eine Reihe. Halten bohrt sich in eines."
 
 #: game/weapons/types/auger/mk_damage.tres
 #: game/weapons/types/brask/mk_damage.tres
+#: game/weapons/types/clout/mk_damage.tres
 #: game/weapons/types/dray/mk_damage.tres
 #: game/weapons/types/fulgen/mk_damage.tres
 #: game/weapons/types/grindle/mk_damage.tres
 #: game/weapons/types/harl/mk_damage.tres
 #: game/weapons/types/jag/mk_damage.tres
+#: game/weapons/types/mantle/mk_damage.tres
 #: game/weapons/types/nadir/mk_damage.tres
 #: game/weapons/types/pinner/mk_damage.tres
 #: game/weapons/types/quill/mk_damage.tres
@@ -1067,6 +1069,35 @@ msgstr "Schrotkugeln"
 #: game/weapons/types/brask/mk_pellets.tres
 msgid "More pellets per shell"
 msgstr "Mehr Schrotkugeln pro Patrone"
+
+#: game/weapons/types/clout/clout.tres
+msgid "Power fist"
+msgstr "Kraftfaust"
+
+#: game/weapons/types/clout/clout.tres
+msgid "Hold to charge a punch that throws aliens into others."
+msgstr "Halten lädt einen Schlag auf, der Aliens in andere schleudert."
+
+#: game/weapons/types/clout/mk_charge.tres
+#: game/weapons/types/quill/mk_charge.tres
+msgid "Charge time"
+msgstr "Ladezeit"
+
+#: game/weapons/types/clout/mk_charge.tres
+msgid "A full charge sooner"
+msgstr "Früher voll aufgeladen"
+
+#: game/weapons/types/clout/mk_damage.tres
+msgid "More damage per punch"
+msgstr "Mehr Schaden pro Schlag"
+
+#: game/weapons/types/clout/mk_throw.tres
+msgid "Throw"
+msgstr "Wurf"
+
+#: game/weapons/types/clout/mk_throw.tres
+msgid "Throws farther and hits harder on the way"
+msgstr "Schleudert weiter und trifft unterwegs härter"
 
 #: game/weapons/types/dray/dray.tres
 msgid "Hammer"
@@ -1246,6 +1277,34 @@ msgstr "Reichweite"
 msgid "A longer beam"
 msgstr "Ein längerer Strahl"
 
+#: game/weapons/types/mantle/mantle.tres
+msgid "Shield"
+msgstr "Schild"
+
+#: game/weapons/types/mantle/mantle.tres
+msgid "Its field blocks blows and shots in front, for those behind it too."
+msgstr "Sein Feld hält Hiebe und Schüsse von vorn ab, auch für alle dahinter."
+
+#: game/weapons/types/mantle/mk_arc.tres
+msgid "Block angle"
+msgstr "Schutzwinkel"
+
+#: game/weapons/types/mantle/mk_arc.tres
+msgid "A wider field"
+msgstr "Ein breiteres Feld"
+
+#: game/weapons/types/mantle/mk_capacity.tres
+msgid "Field charge"
+msgstr "Feldladung"
+
+#: game/weapons/types/mantle/mk_capacity.tres
+msgid "The field stops more before it breaks"
+msgstr "Das Feld hält mehr aus, bevor es bricht"
+
+#: game/weapons/types/mantle/mk_damage.tres
+msgid "More damage per bash"
+msgstr "Mehr Schaden pro Schildstoß"
+
 #: game/weapons/types/nadir/mk_battery.tres
 #: game/weapons/types/pinner/mk_battery.tres
 msgid "Battery"
@@ -1294,10 +1353,6 @@ msgstr "Nietpistole"
 #: game/weapons/types/pinner/pinner.tres
 msgid "Weak single shots from a battery that recharges itself."
 msgstr "Schwache Einzelschüsse aus einer Batterie, die sich selbst auflädt."
-
-#: game/weapons/types/quill/mk_charge.tres
-msgid "Charge time"
-msgstr "Ladezeit"
 
 #: game/weapons/types/quill/mk_charge.tres
 msgid "Charges faster"

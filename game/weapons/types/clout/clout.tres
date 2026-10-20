@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://ynn4yay1hdu1"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cp7ed7ndj5kw" path="res://game/weapons/types/clout/clout.tscn" id="2_scene"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="3_effect"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="4_part"]
+[ext_resource type="Resource" uid="uid://cmxcfjsx7jmql" path="res://game/weapons/types/clout/trigger.tres" id="trigger"]
+[ext_resource type="Resource" uid="uid://dyjjk5rw2thsy" path="res://game/weapons/types/clout/delivery.tres" id="delivery"]
+[ext_resource type="Resource" uid="uid://dyfdk4pxw3na1" path="res://assets/audio/sfx/weapons/clout_punch.tres" id="attack_sound"]
+[ext_resource type="Resource" uid="uid://b1yh5nfoi3gka" path="res://game/weapons/types/clout/damage.tres" id="fx_damage"]
+[ext_resource type="Resource" uid="uid://dx8emvnoudifm" path="res://game/weapons/types/clout/throw.tres" id="fx_throw"]
+[ext_resource type="Resource" uid="uid://clle8c3aedy32" path="res://game/weapons/types/clout/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://tesgh61s6ojv" path="res://game/weapons/types/clout/mk_charge.tres" id="mk_charge"]
+[ext_resource type="Resource" uid="uid://dt7lf0x2osag" path="res://game/weapons/types/clout/mk_throw.tres" id="mk_throw"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Clout"
+class_word = "Power fist"
+description = "Hold to charge a punch that throws aliens into others."
+origin = 2
+attack_rate = 1.5
+draw_time = 0.4
+hold = 4
+scene = ExtResource("2_scene")
+trigger = ExtResource("trigger")
+delivery = ExtResource("delivery")
+effects = Array[ExtResource("3_effect")]([ExtResource("fx_damage"), ExtResource("fx_throw")])
+parts = Array[ExtResource("4_part")]([ExtResource("mk_damage"), ExtResource("mk_charge"), ExtResource("mk_throw")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 280, ExtResource("ore_emerin"): 140
+})
+attack_sound = ExtResource("attack_sound")

@@ -5,6 +5,7 @@
 
 [resource]
 script = ExtResource("1_script")
+heavy = true
 damage = 45.0
 reach = 4.0
 cooldown = 9.0

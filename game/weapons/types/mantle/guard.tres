@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="WeaponGuard" format=3 uid="uid://drc4wujr0rynm"]
+
+[ext_resource type="Script" uid="uid://c6c3unumtjydj" path="res://game/weapons/weapon_guard.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://ljvwvdjg66n0" path="res://assets/audio/sfx/weapons/mantle_block.tres" id="2_block_sound"]
+[ext_resource type="Resource" uid="uid://ssc0sbhqo8bk" path="res://assets/audio/sfx/weapons/mantle_block_heavy.tres" id="3_heavy_sound"]
+[ext_resource type="Resource" uid="uid://sctbl4v0x4pf" path="res://assets/audio/sfx/weapons/mantle_hum.tres" id="4_hum_sound"]
+
+[resource]
+script = ExtResource("1_script")
+
+block_sound = ExtResource("2_block_sound")
+heavy_sound = ExtResource("3_heavy_sound")
+hum_sound = ExtResource("4_hum_sound")

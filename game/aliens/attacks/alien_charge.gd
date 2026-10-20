@@ -4,8 +4,9 @@ extends AlienAttack
 ## ground (`ChargeLine`, aimed at where the target stood when it started), then it runs along it at
 ## `charge_speed`, hitting every player within `width` of its path once, up to `overshoot` past the
 ## target's spot. A step out of the line dodges it. It runs through players (hitting them);
-## running into rock, a miner or another alien ends it dazed for `daze` (its soft back open);
-## otherwise it stands still for `recovery`.
+## running into rock, a miner or another alien ends it dazed for `daze` (its soft back open), and
+## so does a shield's field that stops it (`AlienStatus.blocked`); otherwise it stands still for
+## `recovery`.
 
 ## The target has to be between these distances to start (horizontally, in m).
 @export var min_range: float = 5.0
@@ -54,6 +55,7 @@ func begin(alien: Alien) -> void:
 		direction = -alien.global_basis.z
 	var length: float = _lengths.get(alien, max_length)
 	alien.lunge(direction, length, 0.0, true)
+	alien.status.blocked = false
 	_hit[alien] = []
 	for player: Player in alien.get_tree().get_nodes_in_group(Player.GROUP):
 		alien.add_collision_exception_with(player)
@@ -66,8 +68,14 @@ func act(alien: Alien, elapsed: float) -> bool:
 			continue
 		var offset: Vector3 = player.global_position - alien.global_position
 		if _can_hit(offset) and Vector2(offset.x, offset.z).length() <= width:
-			Alien.hurt(player, damage * alien.damage_factor, alien.global_position)
+			Alien.hurt(player, damage * alien.damage_factor, alien.global_position, alien, heavy)
 			hit.append(player)
+	if alien.status.blocked:
+		alien.status.blocked = false
+		_free_line(alien)
+		alien.play_attack()
+		alien.stagger_for.call_deferred(daze)
+		return true
 	if not alien.lunge_step(charge_speed, elapsed * charge_speed):
 		return false
 	_free_line(alien)

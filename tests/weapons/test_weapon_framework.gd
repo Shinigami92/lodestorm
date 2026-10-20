@@ -41,10 +41,11 @@ func test_every_weapon_is_composed_and_named() -> void:
 			stats.append(part.stat)
 		var weapon: Weapon = weapon_type.create()
 		assert_eq(weapon.type, weapon_type)
-		assert_eq(weapon.ammo == null, weapon_type.is_melee(), "%s: ammo when fed" % label)
+		assert_eq(weapon.ammo == null, weapon_type.feed == null, "%s: ammo when fed" % label)
+		if weapon.ammo:
+			assert_not_null(weapon.get_gauge(), label)
 		if not weapon_type.is_melee():
 			assert_not_null(weapon.get_muzzle(), label)
-			assert_not_null(weapon.get_gauge(), label)
 		weapon.free()
 
 

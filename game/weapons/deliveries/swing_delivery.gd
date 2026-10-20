@@ -4,7 +4,8 @@ extends WeaponDelivery
 ## (around the aim direction, or the direction to the locked target; wider with the MK level of
 ## the weapon's arc) takes a hit, unless something solid is in the way, and so does a destructible
 ## (a nest) whose edge is within reach and the arc. The holder's arms and the weapon's model move
-## as its `stroke` says (`Weapon.sweep`, `Weapon.chop`), and it emits `Weapon.swung`. A swing that
+## as its `stroke` says (`Weapon.sweep`, `Weapon.chop`, a shield's bash), and it emits
+## `Weapon.swung`. A swing that
 ## hits something plays `hit_sound`. A saw (Jag) doesn't stroke: it hits many times a second, only
 ## some of them spraying.
 ## A chain (`combo`, Riven) counts the swings made in a row, each within `combo_gap` of the last
@@ -13,8 +14,9 @@ extends WeaponDelivery
 ## values TBD (playtest).
 
 ## How the arms and the model move with a swing: across the arc (`Weapon.sweep`), an overhead
-## blow (`Weapon.chop`), or not at all (a saw's blade spins instead).
-enum Stroke { SWEEP, OVERHEAD, NONE }
+## blow (`Weapon.chop`), not at all (a saw's blade spins instead), or a shove forward (a shield's
+## bash: only the arms).
+enum Stroke { SWEEP, OVERHEAD, NONE, BASH }
 
 ## Share of the time between swings the stroke takes.
 const SWEEP_SHARE: float = 0.6
@@ -24,6 +26,8 @@ const SWEEP_SHARE: float = 0.6
 ## Width of the swing around the attack direction at MK1, in degrees.
 @export var arc: float = 120.0
 @export var stroke: Stroke = Stroke.SWEEP
+## Seconds the stroke takes; 0: a share of the time between swings (`SWEEP_SHARE`).
+@export var stroke_time: float = 0.0
 ## Share of the hits that spray ichor or sparks (a saw hits ten times a second).
 @export_range(0.0, 1.0) var spray_share: float = 1.0
 
@@ -72,13 +76,15 @@ func attack(weapon: Weapon) -> void:
 		weapon.play(hit_sound)
 	if finisher:
 		weapon.play(finisher_sound)
-	var duration: float = SWEEP_SHARE / weapon.attack_rate()
+	var duration: float = stroke_time if stroke_time > 0.0 else SWEEP_SHARE / weapon.attack_rate()
 	match stroke:
 		Stroke.SWEEP:
 			var back: bool = combo > 1 and weapon.chain % 2 == 0
 			weapon.sweep(half_arc * (-2.0 if back else 2.0), duration)
 		Stroke.OVERHEAD:
 			weapon.chop(half_arc * 2.0, duration)
+		Stroke.BASH:
+			weapon.motion_started.emit(Weapon.Motion.BASH, duration)
 	weapon.swung.emit(hits)
 
 

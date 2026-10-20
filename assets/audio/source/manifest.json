@@ -231,6 +231,36 @@
       "variants": 2,
       "recordings": []
     },
+    "weapons/clout_charge": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/clout_crash": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/clout_full": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/clout_hit": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/clout_land": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/clout_punch": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
     "weapons/dray_hit": {
       "made_by": "build.py",
       "variants": 3,
@@ -289,6 +319,41 @@
     "weapons/magazine_in": {
       "made_by": "build.py",
       "variants": 2,
+      "recordings": []
+    },
+    "weapons/mantle_back": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/mantle_bash": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/mantle_block": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/mantle_block_heavy": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/mantle_break": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/mantle_hit": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/mantle_hum": {
+      "made_by": "build.py",
+      "variants": 1,
       "recordings": []
     },
     "weapons/nadir_charged": {

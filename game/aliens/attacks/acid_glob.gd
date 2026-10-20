@@ -4,7 +4,8 @@ extends Node3D
 ## glowing and dripping, while a ring on the ground shows where it lands. There it splashes whoever
 ## is close (players and miners) and leaves a burning puddle (`AcidPuddle`). It flies over
 ## everything: rocks and gaps don't stop it. The ring starts wider than the splash and closes in
-## on it as the glob comes down (so it doesn't read as the suit ring). Greybox look, TBD (playtest).
+## on it as the glob comes down (so it doesn't read as the suit ring). A shield's field it flies
+## into stops it there (see `ShieldField.stopping`). Greybox look, TBD (playtest).
 
 const COLOR := Alien.COLOR_GLOW
 ## Size of the glob, and of its drops (m).
@@ -81,8 +82,12 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_elapsed += delta
 	var t: float = minf(_elapsed / flight_time, 1.0)
+	var was: Vector3 = global_position
 	global_position = start.lerp(landing, t) + Vector3.UP * arc_height * 4.0 * t * (1.0 - t)
-	if t >= 1.0:
+	if ShieldField.stopping(get_tree(), was, global_position, damage):
+		HitSpray.spawn(get_parent(), global_position, (was - global_position).normalized(), false)
+		queue_free()
+	elif t >= 1.0:
 		_land()
 
 

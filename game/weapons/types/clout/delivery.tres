@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="PunchDelivery" format=3 uid="uid://dyjjk5rw2thsy"]
+
+[ext_resource type="Script" uid="uid://drnxlughvv2vc" path="res://game/weapons/deliveries/punch_delivery.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://h8fyjrgpewpu" path="res://assets/audio/sfx/weapons/clout_hit.tres" id="2_hit_sound"]
+
+[resource]
+script = ExtResource("1_script")
+
+hit_sound = ExtResource("2_hit_sound")

@@ -3,11 +3,12 @@ extends AnimationTree
 ## Plays the suit model's clips (assets/player/player.glb): the legs blend between "Idle" and
 ## the four run directions by the velocity relative to where the player faces, the upper body
 ## holds the weapon while it's out, as the weapon's `hold` says (`WeaponType.Hold`: the "Aim" pose,
-## a blade, a hammer, a braced tool), and "Die" plays once on death and holds. A melee attack plays
-## its motion over the hold (`play_motion`: a slash, an overhead blow, a thrust), its stroke fitted
-## to the attack's time. A braced tool leans in and shakes with its motor (`shake`), and stays out
-## at the thrust's end while it drills (`drilling`). All clips but "Die" and the motions loop (set
-## here, so the import settings stay default).
+## a blade, a hammer, a braced tool, a gauntlet, a shield), and "Die" plays once on death and
+## holds. A melee attack plays its motion over the hold (`play_motion`: a slash, an overhead blow, a
+## thrust, a punch, a bash), its stroke fitted to the attack's time. A braced tool leans in and
+## shakes with its motor (`shake`), and stays out at the thrust's end while it drills
+## (`drilling`); a gauntlet draws back as its punch charges (`shake`). All clips but "Die" and the
+## motions loop (set here, so the import settings stay default).
 
 const UPPER_BODY: Array[StringName] = [
 	&"Spine",
@@ -27,9 +28,16 @@ const UPPER_BODY: Array[StringName] = [
 ## The slowest the clips play (a share of their speed), so standing still still breathes.
 const MIN_TIME_SCALE: float = 0.4
 ## The upper body's pose per `WeaponType.Hold`.
-const HOLD_CLIPS: Array[StringName] = [&"Aim", &"ReadyBlade", &"ReadyHammer", &"Brace"]
+const HOLD_CLIPS: Array[StringName] = [
+	&"Aim", &"ReadyBlade", &"ReadyHammer", &"Brace", &"ReadyFist", &"ReadyShield"
+]
 ## The clip per `Weapon.Motion`.
-const MOTION_CLIPS: Array[StringName] = [&"Slash", &"SlashBack", &"Overhead", &"Thrust"]
+const MOTION_CLIPS: Array[StringName] = [
+	&"Slash", &"SlashBack", &"Overhead", &"Thrust", &"Punch", &"Bash"
+]
+## The layers over the hold, blended in by the weapon's state: a braced tool cutting and drilling,
+## a gauntlet drawn back for a punch.
+const LAYER_CLIPS: Array[StringName] = [&"Cut", &"Drill", &"Cock"]
 ## Seconds the motions' strokes are authored at (ATTACK_STROKE in player_build.py).
 const MOTION_STROKE: float = 0.2
 ## Seconds a motion blends in over the hold, and back out at its end.
@@ -53,7 +61,8 @@ var hold: WeaponType.Hold = WeaponType.Hold.AIM:
 		if value != hold:
 			hold = value
 			set(&"parameters/hold/transition_request", HOLD_CLIPS[hold])
-## How hard a braced tool's motor runs, 0 to 1: the body leans in and the arms shake.
+## How hard a braced tool's motor runs, 0 to 1: the body leans in and the arms shake; for a
+## gauntlet, how far its punch has charged: the arm draws back.
 var shake: float = 0.0
 ## Whether a braced tool drills into a target: the arms stay out.
 var drilling: bool = false
@@ -113,7 +122,7 @@ func setup(model: Node3D) -> void:
 		blend.add_node(HOLD_CLIPS[i], _clip(player, HOLD_CLIPS[i]))
 		blend.connect_node(&"hold", i, HOLD_CLIPS[i])
 	var upper: StringName = &"hold"
-	for layer: StringName in [&"Cut", &"Drill"]:
+	for layer: StringName in LAYER_CLIPS:
 		var mix := StringName(layer.to_lower())
 		blend.add_node(mix, AnimationNodeBlend2.new())
 		blend.add_node(layer, _clip(player, layer))
@@ -173,6 +182,8 @@ func _process(delta: float) -> void:
 	var out: float = 1.0 if drilling and braced else 0.0
 	_drill_amount = move_toward(_drill_amount, out, delta / drill_blend_time)
 	set(&"parameters/drill/blend_amount", _drill_amount)
+	var fist: bool = hold == WeaponType.Hold.FIST
+	set(&"parameters/cock/blend_amount", clampf(shake, 0.0, 1.0) if fist else 0.0)
 
 
 func _clip(player: AnimationPlayer, clip: StringName, loop: bool = true) -> AnimationNodeAnimation:

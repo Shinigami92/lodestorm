@@ -412,6 +412,129 @@ def jag_bite(rng: random.Random, take: str, variant: int) -> Signal:
     return saturate(mix((rasp, 0.9), (crunch, 0.5)), 1.6)
 
 
+@sound("weapons/clout_punch", variants=3)
+def clout_punch(rng: random.Random, take: str, variant: int) -> Signal:
+    """Clout, the power fist, punching: the pistons firing (a hard pneumatic bang) and a short rush of
+    air."""
+    j = 0.07
+    bang = burst(rng, 0.08, 0.0003, jitter(rng, 0.03, j), "bandpass", jitter(rng, 700, j), 0.8)
+    piston = modes(rng, [(jitter(rng, 420, 0.04), 0.09, 1.0), (jitter(rng, 1130, 0.04), 0.06, 0.5)], 0.12)
+    rush = whoosh(rng, 0.16, glide(1400, 500, 0.16), 1.2, 0.2)
+    return saturate(mix((bang, 0.9), (piston, 0.3), (rush, 0.5)), 1.4)
+
+
+@sound("weapons/clout_hit", variants=3)
+def clout_hit(rng: random.Random, take: str, variant: int) -> Signal:
+    """Clout's punch landing: a deep, heavy thump with a crunch of chitin and a pressure crack."""
+    j = 0.08
+    thud = thump(jitter(rng, 95, j), 40, 0.02, jitter(rng, 0.22, j), 0.35)
+    crunch = burst(rng, 0.09, 0.0004, jitter(rng, 0.05, j), "bandpass", jitter(rng, 1500, j), 0.9)
+    crack = burst(rng, 0.03, 0.0002, 0.012, "highpass", jitter(rng, 3500, j))
+    return saturate(mix((thud, 1.0), (crunch, 0.6), (crack, 0.4)), 1.6)
+
+
+@sound("weapons/clout_charge", loop=True)
+def clout_charge(rng: random.Random, take: str, variant: int) -> Signal:
+    """Clout charging (a loop, 1 s, its pitch rising with the charge): a low, straining servo whine
+    over a hydraulic hiss."""
+    seconds = loop_seconds(1.0)
+    whine = lowpass(mix((tone(180, seconds, "saw"), 1.0), (tone(360, seconds), 0.4)), 1600)
+    hiss = tremolo(bandpass(noise(rng, seconds), 2400, 1.2), 9.0, 0.4)
+    return mix((tremolo(whine, 6.0, 0.2), 0.5), (hiss, 0.25))
+
+
+@sound("weapons/clout_full")
+def clout_full(rng: random.Random, take: str, variant: int) -> Signal:
+    """Clout's charge full: a heavy latch clacking into place and a short, low ping."""
+    latch = modes(rng, [(860, 0.06, 1.0), (2100, 0.04, 0.4)], 0.1)
+    ping = modes(rng, [(1320, 0.22, 1.0), (2640, 0.1, 0.25)], 0.3)
+    return mix((latch, 0.8), (click(rng, 3000, 3, 0.006), 0.4), (ping, 0.6, 0.02))
+
+
+@sound("weapons/clout_land", variants=3)
+def clout_land(rng: random.Random, take: str, variant: int) -> Signal:
+    """An alien thrown by Clout hitting the ground: a dull thud and grit scattering."""
+    j = 0.1
+    thud = thump(jitter(rng, 80, j), 45, 0.02, jitter(rng, 0.14, j), 0.25)
+    grit = shape(highpass(crackle(rng, 0.2, 200), 1800), env(0.2, 0.002, 0.15))
+    return mix((thud, 1.0), (grit, 0.35, 0.01))
+
+
+@sound("weapons/clout_crash", variants=2)
+def clout_crash(rng: random.Random, take: str, variant: int) -> Signal:
+    """A thrown alien slamming into rock: a hard crack of chitin on stone and falling chips."""
+    j = 0.08
+    crack = burst(rng, 0.12, 0.0003, jitter(rng, 0.06, j), "bandpass", jitter(rng, 1900, j), 0.8)
+    body = thump(jitter(rng, 120, j), 50, 0.015, jitter(rng, 0.18, j), 0.3)
+    chips = shape(highpass(crackle(rng, 0.35, 120), 2500), env(0.35, 0.01, 0.28))
+    return saturate(mix((crack, 0.9), (body, 0.9), (chips, 0.3, 0.03)), 1.6)
+
+
+@sound("weapons/mantle_bash", variants=3)
+def mantle_bash(rng: random.Random, take: str, variant: int) -> Signal:
+    """Mantle's bash: the field shoved forward, a heavy, soft whump with an electric edge."""
+    j = 0.07
+    whump = thump(jitter(rng, 100, j), 45, 0.04, jitter(rng, 0.2, j), 0.3)
+    air = whoosh(rng, 0.18, glide(700, 300, 0.18), 0.9, 0.3)
+    buzz = shape(bandpass(tone(jitter(rng, 120, j), 0.15, "saw"), 1800, 2.0), env(0.15, 0.005, 0.1))
+    return mix((whump, 1.0), (air, 0.4), (buzz, 0.25))
+
+
+@sound("weapons/mantle_hit", variants=3)
+def mantle_hit(rng: random.Random, take: str, variant: int) -> Signal:
+    """Mantle's bash landing: a blunt slam and a zap of the field."""
+    j = 0.08
+    slam = thump(jitter(rng, 140, j), 55, 0.015, jitter(rng, 0.14, j), 0.22)
+    zap = burst(rng, 0.06, 0.0005, jitter(rng, 0.04, j), "bandpass", jitter(rng, 3200, j), 2.0)
+    return saturate(mix((slam, 1.0), (zap, 0.4)), 1.3)
+
+
+@sound("weapons/mantle_block", variants=3)
+def mantle_block(rng: random.Random, take: str, variant: int) -> Signal:
+    """Mantle's field stopping a blow or a shot: a thud into the field and a bright crackling zap."""
+    j = 0.08
+    thud = thump(jitter(rng, 160, j), 70, 0.015, jitter(rng, 0.1, j), 0.18)
+    zap = shape(tremolo(bandpass(noise(rng, 0.14), jitter(rng, 2800, j), 1.6), 90.0, 0.7), env(0.14, 0.002, 0.1))
+    ring = modes(rng, [(jitter(rng, 990, 0.03), 0.12, 1.0), (jitter(rng, 1980, 0.03), 0.08, 0.3)], 0.18)
+    return mix((thud, 0.9), (zap, 0.5), (ring, 0.15))
+
+
+@sound("weapons/mantle_block_heavy", variants=2)
+def mantle_block_heavy(rng: random.Random, take: str, variant: int) -> Signal:
+    """Mantle's field stopping a heavy blow: a deep boom, the field straining with a long crackle."""
+    j = 0.07
+    boom = thump(jitter(rng, 90, j), 35, 0.03, jitter(rng, 0.35, j), 0.55)
+    strain = shape(tremolo(bandpass(noise(rng, 0.4), 1800, 1.2), 60.0, 0.6), env(0.4, 0.005, 0.32))
+    hum = shape(tone(glide(220, 110, 0.4), 0.4, "saw"), env(0.4, 0.01, 0.3))
+    return saturate(mix((boom, 1.0), (strain, 0.45), (lowpass(hum, 900), 0.25)), 1.5)
+
+
+@sound("weapons/mantle_hum", loop=True)
+def mantle_hum(rng: random.Random, take: str, variant: int) -> Signal:
+    """Mantle's field standing (a loop, 1 s, quiet, it's on all the time): a soft electric drone."""
+    seconds = loop_seconds(1.0)
+    drone = mix((tone(110, seconds), 1.0), (tone(220, seconds, "triangle"), 0.3), (tone(330, seconds), 0.1))
+    fizz = tremolo(bandpass(noise(rng, seconds), 4000, 1.5), 7.0, 0.5)
+    return mix((tremolo(drone, 3.0, 0.15), 0.6), (fizz, 0.04))
+
+
+@sound("weapons/mantle_break")
+def mantle_break(rng: random.Random, take: str, variant: int) -> Signal:
+    """Mantle's field breaking: a glassy crackle falling apart and a dying electric whine."""
+    shards = shape(highpass(crackle(rng, 0.6, 260), 2200), env(0.6, 0.002, 0.5))
+    snap = burst(rng, 0.05, 0.0002, 0.02, "highpass", 4000)
+    whine = shape(tone(glide(880, 90, 0.5), 0.5, "saw"), env(0.5, 0.005, 0.45))
+    return mix((snap, 0.8), (shards, 0.6), (lowpass(whine, 2000), 0.3))
+
+
+@sound("weapons/mantle_back")
+def mantle_back(rng: random.Random, take: str, variant: int) -> Signal:
+    """Mantle's field back up: a rising tone swelling into the hum."""
+    rise = shape(tone(glide(110, 330, 0.35), 0.4, "triangle"), env(0.4, 0.2, 0.15))
+    shimmer = shape(bandpass(noise(rng, 0.4), glide(1500, 4000, 0.4), 2.0), env(0.4, 0.25, 0.12))
+    return mix((rise, 0.8), (shimmer, 0.2))
+
+
 @sound("weapons/empty_click", variants=2)
 def empty_click(rng: random.Random, take: str, variant: int) -> Signal:
     """The trigger on an empty weapon that can't reload: two dry clicks (trigger, then the

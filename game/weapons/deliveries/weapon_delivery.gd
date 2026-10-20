@@ -4,8 +4,8 @@ extends Resource
 ## (`ProjectileDelivery`), a lobbed shell blasting where it lands (`LobDelivery`), a placed charge
 ## (`ChargeDelivery`), a gravity well (`WellDelivery`), a flame's cone (`ConeDelivery`), a beam
 ## (`BeamDelivery`), lightning jumping from alien to alien (`ChainDelivery`), a swing, also a saw's
-## (`SwingDelivery`) or a thrust and a drill (`ThrustDelivery`) so far; a block is planned (see
-## docs/planned/weapons.md). The weapon's effects make each hit (`Weapon.make_hit`). All values TBD
+## (`SwingDelivery`, also a shield's bash), a thrust and a drill (`ThrustDelivery`) and a punch
+## (`PunchDelivery`). The weapon's effects make each hit (`Weapon.make_hit`). All values TBD
 ## (playtest).
 
 ## Performs one attack of `weapon`, along its aim direction or at its locked target.

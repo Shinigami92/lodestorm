@@ -1,7 +1,13 @@
 class_name AlienStatus
 extends RefCounted
-## What the hive and other aliens do to an alien right now (`Alien.status`): a shrieker's boost,
-## the hive's frenzy, a tender's link and its nest calling its guards. Values TBD (playtest).
+## What the hive, other aliens and players' weapons do to an alien right now (`Alien.status`): a
+## shrieker's boost, the hive's frenzy, a tender's link, its nest calling its guards and a gravity
+## well holding it. Values TBD (playtest).
+
+## Seconds a well's hold lasts after its last renewal (wells renew it every physics step).
+const HOLD_GRACE: float = 0.1
+## How fast an alien a well doesn't hold (the apex) moves while it's in one.
+const WELL_SLOW: float = 0.5
 
 ## How much faster the hive makes it (its frenzy at the end of a run, set by its nest).
 var hive_speed: float = 1.0
@@ -12,10 +18,13 @@ var mended_by: Node
 ## The player who hit its nest (set by the nest on its guards, see `AlienNest`): a guard goes for
 ## them from any distance while they're within its leash. Null: none, or forgotten.
 var defending: Node3D
+## How fast a gravity well pulls it towards its middle (m/s, horizontal) while it's in one.
+var pull := Vector3.ZERO
 
 ## A scream's boost: how much faster it is, and for how many more seconds.
 var _boost: float = 1.0
 var _boost_left: float = 0.0
+var _held_left: float = 0.0
 
 
 ## Makes it `factor` times faster for `seconds` (a shrieker's scream); a stronger boost under way
@@ -26,6 +35,19 @@ func boost(factor: float, seconds: float) -> void:
 		_boost_left = seconds
 	elif factor == _boost:
 		_boost_left = maxf(_boost_left, seconds)
+
+
+## Puts it in a gravity well pulling it at `velocity` (see `GravityWell`): an alien the wells hold
+## (`AlienStrain.held_by_wells`) can't walk or start attacks that move it, and a flier sinks low;
+## any other is slowed. A well renews it every physics step.
+func hold(velocity: Vector3) -> void:
+	pull = velocity
+	_held_left = HOLD_GRACE
+
+
+## Whether a gravity well has it.
+func is_held() -> bool:
+	return _held_left > 0.0
 
 
 ## Whether a scream's boost is under way.
@@ -40,7 +62,7 @@ func is_fast() -> bool:
 
 ## How much faster than its strain it is.
 func speed() -> float:
-	return _boost * hive_speed
+	return _boost * hive_speed * (WELL_SLOW if is_held() else 1.0)
 
 
 ## Whether a scream boosts it or a tender's link holds it: it's bigger and outlined then.
@@ -53,8 +75,11 @@ func is_mended() -> bool:
 	return is_instance_valid(mended_by)
 
 
-## Counts the boost down.
+## Counts the boost and a well's hold down.
 func tick(delta: float) -> void:
+	_held_left = maxf(_held_left - delta, 0.0)
+	if _held_left == 0.0:
+		pull = Vector3.ZERO
 	_boost_left = maxf(_boost_left - delta, 0.0)
 	if _boost_left == 0.0:
 		_boost = 1.0

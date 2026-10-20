@@ -5,7 +5,8 @@ extends RefCounted
 ## sinks below its target's ground (over a gap it flies on level). It goes straight for its target
 ## (no paths) and keeps a little apart from other fliers. While it dives (`low`) it flies at its
 ## strain's `dive_height`, low enough for every weapon; up at its flight height only shots locked
-## on it reach it (they fly at the alien, see `PlayerAim`). Values TBD (playtest).
+## on it reach it (they fly at the alien, see `PlayerAim`). A gravity well holding it pulls it
+## down to `HELD_HEIGHT`, in reach of everything too. Values TBD (playtest).
 
 ## The living fliers.
 const GROUP: StringName = &"flying_aliens"
@@ -17,6 +18,8 @@ const RAY_DOWN: float = 60.0
 ## How fast it closes the gap to its height (per second), and its fastest climb or drop (m/s).
 const HEIGHT_GAIN: float = 6.0
 const MAX_CLIMB: float = 10.0
+## How high it flies while a gravity well holds it (m).
+const HELD_HEIGHT: float = 1.0
 ## Fliers closer than this keep apart (m), pushed up to this fast when they touch (m/s).
 const SEPARATION: float = 1.6
 const SEPARATION_PUSH: float = 3.0
@@ -29,6 +32,8 @@ var low: bool = false
 func velocity(alien: Alien, horizontal: Vector3) -> Vector3:
 	horizontal += _separation(alien)
 	var height: float = alien.strain.dive_height if low else alien.strain.flight_height
+	if alien.status.is_held() and alien.strain.held_by_wells:
+		height = minf(height, HELD_HEIGHT)
 	var ground: float = maxf(
 		ground_below(alien, alien.global_position),
 		ground_below(alien, alien.global_position + horizontal * LOOK_AHEAD)

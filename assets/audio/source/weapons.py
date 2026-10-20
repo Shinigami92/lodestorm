@@ -1,6 +1,6 @@
 """Recipes of the weapons' sounds: shots, Dray's swings, Grindle's spin, Quill's charge,
 Pinner's battery, Tremor's and Wick's blasts and charges, Scald's flame, Kith's and Zenith's
-beams, overheating and venting, reloads and the timing window."""
+beams, overheating and venting, Fulgen's lightning, Nadir's wells, reloads and the timing window."""
 
 import random
 
@@ -242,6 +242,58 @@ def cell_in(rng: random.Random, take: str, variant: int) -> Signal:
     clunk = mix((thump(jitter(rng, 200, j), 110, 0.006, 0.08, 0.1), 1.0), (click(rng, 1500, 2.5, 0.02), 0.6))
     hiss = burst(rng, 0.25, 0.01, 0.18, "highpass", 4200)
     return mix((slide_in, 0.35), (clunk, 1.0, 0.05), (hiss, 0.2, 0.1))
+
+
+@sound("weapons/fulgen_arc", variants=4)
+def fulgen_arc(rng: random.Random, take: str, variant: int) -> Signal:
+    """Fulgen's lightning (4 a second): a sharp electric crack, a short buzzing snarl and a
+    crackling tail."""
+    j = 0.08
+    crack = burst(rng, 0.05, 0.0002, jitter(rng, 0.02, j), "highpass", jitter(rng, 2500, j))
+    snarl = shape(bandpass(tone(glide(jitter(rng, 180, j), 90, 0.12), 0.16, "saw"), 1400, 1.2), env(0.16, 0.002, 0.12))
+    tail = shape(highpass(crackle(rng, 0.22, 400), 2200), env(0.22, 0.004, 0.18))
+    return saturate(mix((crack, 0.8), (snarl, 0.6), (tail, 0.35, 0.01)), 1.6)
+
+
+@sound("weapons/nadir_shot", variants=2)
+def nadir_shot(rng: random.Random, take: str, variant: int) -> Signal:
+    """Nadir firing its orb: a deep, soft whomp and a low hum sliding down."""
+    j = 0.06
+    whomp = thump(jitter(rng, 110, j), 38, 0.12, 0.35, 0.45)
+    hum = shape(tone(glide(jitter(rng, 220, j), 70, 0.35), 0.45, "triangle"), env(0.45, 0.01, 0.3))
+    air = whoosh(rng, 0.3, glide(900, 300, 0.3), 0.8, 0.2)
+    return mix((whomp, 1.0), (hum, 0.4), (air, 0.25))
+
+
+@sound("weapons/well_hum", loop=True)
+def well_hum(rng: random.Random, take: str, variant: int) -> Signal:
+    """A gravity well open (a loop, 1 s): a deep throbbing drone with air rushing in."""
+    seconds = loop_seconds(1.0)
+    drone = mix((tone(55, seconds), 1.0), (tone(83, seconds, "triangle"), 0.4), (tone(110, seconds), 0.2))
+    rush = bandpass(noise(rng, seconds), 500, 0.9)
+    return mix((tremolo(drone, 6.0, 0.45), 0.8), (tremolo(rush, 3.0, 0.5), 0.2))
+
+
+@sound("weapons/well_burst", variants=2)
+def well_burst(rng: random.Random, take: str, variant: int) -> Signal:
+    """A gravity well bursting: a short sucking rise, then a deep, hollow boom."""
+    j = 0.08
+    suck = shape(bandpass(noise(rng, 0.16), glide(300, 2600, 0.16), 2.0), env(0.16, 0.14, 0.02))
+    boom = thump(jitter(rng, 70, j), 30, 0.06, jitter(rng, 0.6, j), 0.8)
+    body = burst(rng, 0.6, 0.004, 0.45, "lowpass", glide(1600, 200, 0.5))
+    return saturate(mix((suck, 0.45), (boom, 1.0, 0.15), (body, 0.6, 0.15)), 1.8)
+
+
+@sound("weapons/nadir_charged")
+def nadir_charged(rng: random.Random, take: str, variant: int) -> Signal:
+    """Nadir's battery holding one more well: a soft, low two-tone chime."""
+
+    def note(freq: float, seconds: float) -> Signal:
+        return shape(
+            mix((tone(freq, seconds), 1.0), (tone(freq * 2.0, seconds), 0.15)), env(seconds, 0.006, seconds * 0.8)
+        )
+
+    return mix((note(523, 0.12), 0.6), (note(784, 0.2), 0.7, 0.09))
 
 
 @sound("weapons/dray_swing", variants=3, seed="weapons/hammer_swing")

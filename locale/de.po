@@ -1004,8 +1004,10 @@ msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
 
 #: game/weapons/types/brask/mk_damage.tres
 #: game/weapons/types/dray/mk_damage.tres
+#: game/weapons/types/fulgen/mk_damage.tres
 #: game/weapons/types/grindle/mk_damage.tres
 #: game/weapons/types/harl/mk_damage.tres
+#: game/weapons/types/nadir/mk_damage.tres
 #: game/weapons/types/pinner/mk_damage.tres
 #: game/weapons/types/quill/mk_damage.tres
 #: game/weapons/types/scald/mk_damage.tres
@@ -1063,6 +1065,38 @@ msgstr "Schlagtempo"
 msgid "More swings per second"
 msgstr "Mehr Schläge pro Sekunde"
 
+#: game/weapons/types/fulgen/fulgen.tres
+msgid "Arc caster"
+msgstr "Bogenwerfer"
+
+#: game/weapons/types/fulgen/fulgen.tres
+msgid "Lightning to the nearest alien. It jumps on to the next."
+msgstr "Blitz zum nächsten Alien. Er springt zum nächsten weiter."
+
+#: game/weapons/types/fulgen/mk_damage.tres
+msgid "More damage per arc"
+msgstr "Mehr Schaden pro Blitz"
+
+#: game/weapons/types/fulgen/mk_jumps.tres
+msgid "Jumps"
+msgstr "Sprünge"
+
+#: game/weapons/types/fulgen/mk_jumps.tres
+msgid "Jumps on to more aliens"
+msgstr "Springt auf mehr Aliens über"
+
+#: game/weapons/types/fulgen/mk_magazine.tres
+#: game/weapons/types/harl/mk_magazine.tres
+#: game/weapons/types/quill/mk_magazine.tres
+#: game/weapons/types/tremor/mk_magazine.tres
+#: game/weapons/types/wick/mk_magazine.tres
+msgid "Magazine"
+msgstr "Magazin"
+
+#: game/weapons/types/fulgen/mk_magazine.tres
+msgid "More arcs per magazine"
+msgstr "Mehr Blitze pro Magazin"
+
 #: game/weapons/types/grindle/grindle.tres
 msgid "Rotary gun"
 msgstr "Rotorkanone"
@@ -1101,13 +1135,6 @@ msgstr "Sturmgewehr"
 #: game/weapons/types/harl/harl.tres
 msgid "Rapid shots that reach far."
 msgstr "Schnelle Schüsse mit großer Reichweite."
-
-#: game/weapons/types/harl/mk_magazine.tres
-#: game/weapons/types/quill/mk_magazine.tres
-#: game/weapons/types/tremor/mk_magazine.tres
-#: game/weapons/types/wick/mk_magazine.tres
-msgid "Magazine"
-msgstr "Magazin"
 
 #: game/weapons/types/harl/mk_magazine.tres
 #: game/weapons/types/quill/mk_magazine.tres
@@ -1159,9 +1186,34 @@ msgstr "Reichweite"
 msgid "A longer beam"
 msgstr "Ein längerer Strahl"
 
+#: game/weapons/types/nadir/mk_battery.tres
 #: game/weapons/types/pinner/mk_battery.tres
 msgid "Battery"
 msgstr "Batterie"
+
+#: game/weapons/types/nadir/mk_battery.tres
+msgid "More wells per battery"
+msgstr "Mehr Sogfelder pro Batterie"
+
+#: game/weapons/types/nadir/mk_damage.tres
+msgid "More damage per burst"
+msgstr "Mehr Schaden pro Ausbruch"
+
+#: game/weapons/types/nadir/mk_radius.tres
+msgid "Well radius"
+msgstr "Sogradius"
+
+#: game/weapons/types/nadir/mk_radius.tres
+msgid "Pulls from farther away"
+msgstr "Zieht aus größerer Entfernung"
+
+#: game/weapons/types/nadir/nadir.tres
+msgid "Gravity projector"
+msgstr "Gravitationswerfer"
+
+#: game/weapons/types/nadir/nadir.tres
+msgid "A well that pulls aliens together, holds them and bursts."
+msgstr "Ein Sog, der Aliens bündelt, festhält und dann platzt."
 
 #: game/weapons/types/pinner/mk_battery.tres
 msgid "More shots per battery"

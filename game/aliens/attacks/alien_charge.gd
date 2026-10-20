@@ -28,6 +28,10 @@ var _lengths: Dictionary[Alien, float] = {}
 var _hit: Dictionary[Alien, Array] = {}
 
 
+func moves() -> bool:
+	return true
+
+
 func prepare(alien: Alien) -> void:
 	var offset: Vector3 = alien.target.global_position - alien.global_position
 	offset.y = 0.0

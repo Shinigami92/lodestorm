@@ -45,13 +45,17 @@ func test_catalog_lists_every_weapon_once() -> void:
 			"Tremor",
 			"Scald",
 			"Kith",
-			"Zenith"
+			"Zenith",
+			"Fulgen",
+			"Nadir",
 		]
 	)
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		assert_ne(weapon_type.display_name, "")
 		assert_ne(weapon_type.description, "")
-		assert_is(weapon_type.scene.instantiate(), Weapon)
+		var weapon: Node = weapon_type.scene.instantiate()
+		assert_is(weapon, Weapon)
+		weapon.free()
 	assert_true(DRAY.is_melee())
 	assert_false(BRASK.is_melee())
 

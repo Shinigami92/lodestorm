@@ -1,0 +1,130 @@
+[gd_scene format=3 uid="uid://rhygxdi6arof"]
+
+[ext_resource type="Script" uid="uid://wqy8q2v67cpr" path="res://game/weapons/weapon.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://twsywklvuos7" path="res://game/weapons/landing_ring.gd" id="2_ring"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://game/progression/upgrades/mk_pips.gd" id="9_pips"]
+[ext_resource type="Script" uid="uid://3611pxyg528a" path="res://game/weapons/shell_strip.gd" id="10_gauge"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.13, 0.135, 0.145, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.07, 0.07, 0.075, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dark"]
+albedo_color = Color(0.2, 0.19, 0.18, 1)
+metallic = 0.7
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rim"]
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+emission_enabled = true
+emission = Color(1, 0.78, 0.35, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+albedo_color = Color(0.015, 0.012, 0.01, 1)
+roughness = 0.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.15, 0.15, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_grip"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.05, 0.13, 0.06)
+
+[sub_resource type="TorusMesh" id="TorusMesh_emitter"]
+material = SubResource("StandardMaterial3D_dark")
+inner_radius = 0.085
+outer_radius = 0.115
+rings = 16
+ring_segments = 8
+
+[sub_resource type="TorusMesh" id="TorusMesh_rim"]
+material = SubResource("StandardMaterial3D_rim")
+inner_radius = 0.06
+outer_radius = 0.07
+rings = 16
+ring_segments = 8
+
+[sub_resource type="TorusMesh" id="TorusMesh_front"]
+material = SubResource("StandardMaterial3D_metal")
+inner_radius = 0.05
+outer_radius = 0.068
+rings = 16
+ring_segments = 8
+
+[sub_resource type="SphereMesh" id="SphereMesh_core"]
+material = SubResource("StandardMaterial3D_core")
+radius = 0.055
+height = 0.11
+radial_segments = 12
+rings = 6
+
+[node name="Nadir" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+mesh = SubResource("BoxMesh_body")
+
+[node name="Grip" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.342, 0, -0.342, 0.94, 0, -0.03, 0.08)
+mesh = SubResource("BoxMesh_grip")
+
+[node name="Emitter" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.12, -0.2)
+mesh = SubResource("TorusMesh_emitter")
+
+[node name="Rim" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.12, -0.21)
+mesh = SubResource("TorusMesh_rim")
+
+[node name="Core" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.22)
+mesh = SubResource("SphereMesh_core")
+
+[node name="Front" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.12, -0.31)
+mesh = SubResource("TorusMesh_front")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.36)
+
+[node name="LandingRing" type="MeshInstance3D" parent="."]
+script = ExtResource("2_ring")
+color = Color(1, 0.78, 0.35, 1)
+
+[node name="AmmoGauge" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.077, 0.12, -0.02)
+script = ExtResource("10_gauge")
+color = Color(1, 0.78, 0.35, 1)
+energy = 3.0
+size = Vector3(0.004, 0.07, 0.2)
+gap = 0.006
+segments = 0
+
+[node name="DamagePips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.035, 0.196, 0.08)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032
+
+[node name="CapacityPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.035, 0.196, -0.08)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032
+lit_color = Color(1, 0.78, 0.35, 1)
+
+[node name="BlastPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.035, 0.196, -0.08)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032

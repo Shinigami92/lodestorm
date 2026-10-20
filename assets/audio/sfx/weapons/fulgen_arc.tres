@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://bli7ypqly4qsy"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://78c8oe771tmq" path="res://assets/audio/sfx/weapons/fulgen_arc_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://b26yfsjrrognl" path="res://assets/audio/sfx/weapons/fulgen_arc_2.wav" id="3_variant"]
+[ext_resource type="AudioStream" uid="uid://dl6u2kuxw2vdf" path="res://assets/audio/sfx/weapons/fulgen_arc_3.wav" id="4_variant"]
+[ext_resource type="AudioStream" uid="uid://bmji1scgheuv2" path="res://assets/audio/sfx/weapons/fulgen_arc_4.wav" id="5_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.06
+streams_count = 4
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+stream_2/stream = ExtResource("4_variant")
+stream_3/stream = ExtResource("5_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -9.0
+unit_size = 8.0
+max_distance = 40.0

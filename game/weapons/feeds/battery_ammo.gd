@@ -2,10 +2,10 @@ class_name BatteryAmmo
 extends WeaponAmmo
 ## The ammo of a weapon fed by a battery (`BatteryFeed`): each attack uses one of its `rounds`; a
 ## full battery holds `capacity()` (more with the capacity's MK level). A while after the last shot
-## it recharges by itself, for no ore. Run empty, it's drained: it recharges fully before it fires
-## again (a refill without a timing window). No spares, no reload by hand; a teammate can't hand
-## it ammo. Sounds: an empty click when the trigger is pulled while drained, a chime when it's full
-## again.
+## it recharges by itself, for no ore. Run empty, it's drained (if its feed `drains`): it recharges
+## fully before it fires again (a refill without a timing window). No spares, no reload by hand; a
+## teammate can't hand it ammo. Sounds: an empty click when the trigger is pulled while drained, a
+## chime when it's full again (one that doesn't drain: when a shot has recharged).
 
 const EMPTY_SOUND: Sound = preload("res://assets/audio/sfx/weapons/empty_click.tres")
 
@@ -36,6 +36,8 @@ func process(delta: float) -> void:
 	elif _idle >= feed.recharge_delay:
 		_partial += delta * speed * feed.recharge_rate
 	var whole: int = floori(_partial)
+	if whole > 0 and not feed.drains and rounds < capacity():
+		weapon.play(feed.charged_sound)
 	rounds = mini(rounds + whole, capacity())
 	_partial = 0.0 if rounds >= capacity() else _partial - whole
 	if _drained and rounds >= capacity():
@@ -56,7 +58,7 @@ func use() -> void:
 	if rounds <= 0:
 		rounds = 0
 		_partial = 0.0
-		_drained = true
+		_drained = feed.drains
 
 
 func fill(_spare_magazines: int) -> void:

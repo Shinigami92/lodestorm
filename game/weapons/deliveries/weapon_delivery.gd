@@ -2,8 +2,9 @@
 extends Resource
 ## How a weapon's attack reaches its targets (see `WeaponType.delivery`): projectiles
 ## (`ProjectileDelivery`), a lobbed shell blasting where it lands (`LobDelivery`), a placed charge
-## (`ChargeDelivery`), a flame's cone (`ConeDelivery`), a beam (`BeamDelivery`) or a swing
-## (`SwingDelivery`) so far; chains, thrusts, held tools and blocks are planned (see
+## (`ChargeDelivery`), a gravity well (`WellDelivery`), a flame's cone (`ConeDelivery`), a beam
+## (`BeamDelivery`), lightning jumping from alien to alien (`ChainDelivery`) or a swing
+## (`SwingDelivery`) so far; thrusts, held tools and blocks are planned (see
 ## docs/planned/weapons.md). The weapon's effects make each hit (`Weapon.make_hit`). All values TBD
 ## (playtest).
 

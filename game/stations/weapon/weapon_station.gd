@@ -67,7 +67,9 @@ func get_rack_parts() -> Array[StationPart]:
 
 
 ## A weapon selected on the rack and its card beside the rack; else the bench, shifted halfway
-## along the rack towards the bench weapon's empty place on it, so the camera follows a long rack.
+## along the rack towards the bench weapon's empty place on it, so the camera follows a long rack;
+## only to the right, since a shift to the left would push the card right of the bench off the
+## screen.
 func get_view_center() -> Vector3:
 	if _rack.get_parts().has(selected):
 		return (selected.global_position + _beside_rack()) * 0.5
@@ -75,7 +77,7 @@ func get_view_center() -> Vector3:
 	var slot: StationPart = _rack.get_part(bench_weapon)
 	if slot:
 		var along: Vector3 = _rack.global_basis.x.normalized()
-		center += along * along.dot(slot.global_position - center) * 0.5
+		center += along * maxf(along.dot(slot.global_position - center), 0.0) * 0.5
 	return center
 
 

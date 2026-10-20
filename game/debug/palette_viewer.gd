@@ -250,7 +250,7 @@ static func close_pairs(all: Array[Group], seen_with: ColorVision.Vision) -> Arr
 
 ## The ammo color of a ranged weapon's gauge (its scene's `AmmoGauge`), or null.
 static func _ammo_color(weapon: WeaponType) -> Variant:
-	if weapon.kind != WeaponType.Kind.RANGED or not weapon.scene:
+	if weapon.is_melee() or not weapon.scene:
 		return null
 	var state: SceneState = weapon.scene.get_state()
 	for node: int in state.get_node_count():

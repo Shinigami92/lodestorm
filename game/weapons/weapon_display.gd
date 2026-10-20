@@ -9,14 +9,14 @@ const LOCKED_TRANSPARENCY: float = 0.75
 
 ## A display of `weapon_type`, its pips showing `upgrades` (all MK1 when null).
 static func create(weapon_type: WeaponType, upgrades: Upgrades = null) -> Weapon:
-	var display := weapon_type.scene.instantiate() as Weapon
+	var display: Weapon = weapon_type.create()
 	display.process_mode = Node.PROCESS_MODE_DISABLED
-	display.apply_upgrades(upgrades if upgrades else Upgrades.new(), weapon_type)
+	display.apply_upgrades(upgrades if upgrades else Upgrades.new())
 	return display
 
 
 ## Moves `display` (in the tree, under its holder) so its meshes' bounds center on the holder's
-## origin: weapon models start at their grip, so a long one (the hammer) would stick out.
+## origin: weapon models start at their grip, so a long one (Dray) would stick out.
 static func center(display: Node3D) -> void:
 	var holder := display.get_parent() as Node3D
 	var to_holder: Transform3D = holder.global_transform.affine_inverse()

@@ -1,7 +1,7 @@
 class_name DamageNumber
 extends Label3D
 ## The damage of a hit, floating up from the alien or nest and fading (the damage readout skill).
-## Hits on the same one within `MERGE_TIME` add up into one number (a shotgun's pellets).
+## Hits on the same one within `MERGE_TIME` add up into one number (Brask's pellets).
 
 const META: StringName = &"damage_number"
 ## How long a number shows (s), how far it rises (m), and how long it takes more hits.

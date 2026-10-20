@@ -1,7 +1,7 @@
 extends GutTest
 
 const SETTINGS_LIST: PackedScene = preload("res://game/ui/settings_list.tscn")
-const SHOT: Sound = preload("res://assets/audio/sfx/weapons/blaster_shot.tres")
+const SHOT: Sound = preload("res://assets/audio/sfx/weapons/harl_shot.tres")
 const TICK: Sound = preload("res://assets/audio/sfx/weapons/window_tick.tres")
 const DRILL: Sound = preload("res://assets/audio/sfx/mining/drill.tres")
 const DIRECTORY: String = "user://test_sfx/"

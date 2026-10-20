@@ -1,6 +1,6 @@
 # Weapons (planned)
 
-Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Today there are three weapons (blaster, shotgun, hammer) with magazines and single shells, damage and magazine upgrades, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens).
+Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (step 10 A, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens) and [Upgrade stations](../GAME_DESIGN.md#upgrade-stations)): the framework (a weapon composed of its feed, delivery, effects and parts as Resources), Harl, Brask and Dray with three parts each, the draw time, blueprints and building a weapon at the workbench.
 
 ## The roster
 
@@ -54,8 +54,8 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 
 ## Upgrades and getting them
 
-- **Upgrade parts:** three per weapon at the workbench instead of today's damage and magazine: **damage**, **capacity** (magazine, belt, cell, heat; for melee: swing speed) and a **part of its own** (e.g. Quill: charge time; Grindle: spin-up; Fulgen: jumps; Kith: heal rate; Tremor: blast radius; Wick: charges placed; Dray: arc width; Mantle: block angle). In the data, a list of parts per weapon, so a weapon can get more later. MK levels up to MK8 come with the planets (built, see [Upgrade stations](../GAME_DESIGN.md#upgrade-stations)).
-- **Getting them:** blueprints from quests (see [`quests.md`](quests.md)): colony arms and tools from the crew's quest chains, the six prototypes from the lost expedition's sites (story). A blueprint lets the player **build** the weapon once at the workbench for ore (later weapons with the planet's signature ore, the prototypes also with alloys, see [`refinery.md`](refinery.md)), so a lucky blueprint isn't free and early ores stay useful. In co-op everyone in the session gets the blueprint and builds it from their own hold. The debug overlay keeps unlocking them.
+- **Upgrade parts:** three per weapon at the workbench (built for Harl, Brask and Dray): **damage**, **capacity** (magazine, belt, cell, heat; for melee: swing speed) and a **part of its own**, for the coming weapons e.g. Quill: charge time; Grindle: spin-up; Fulgen: jumps; Kith: heal rate; Tremor: blast radius; Wick: charges placed; Mantle: block angle.
+- **Getting them:** blueprints from quests (see [`quests.md`](quests.md)): colony arms and tools from the crew's quest chains, the six prototypes from the lost expedition's sites (story). Building one from its blueprint at the workbench for a fixed ore cost is built; later weapons cost the planet's signature ore, the prototypes also alloys (see [`refinery.md`](refinery.md)). In co-op everyone in the session gets the blueprint and builds it from their own hold (own holds: step 11 A). The debug overlay gives the blueprints until then.
 
 ## The armory and the workbench
 
@@ -64,9 +64,9 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 
 ## Loadout and switching
 
-- **Draw time:** switching takes a draw time per weapon (greybox: 0.3 s for light ones, 0.6 s for heavy ones, 0.8 s for the rotary gun) and cancels a reload or a charge.
+- **Draw time** (built): the rotary gun's 0.8 s, and switching also cancels a charge.
 - **Slots stay 2;** a third one comes later as a skill deep in a tree (rare ores), since choosing from many weapons is the point.
 
 ## Data and tests
 
-A weapon is composed of Resources: a **feed** (magazine, single, belt, heat, battery), a **delivery** (projectile with pierce, arc or blast; beam; cone; chain; placed charge; swing; thrust; held; block) and **effects** (damage, burn, knockback, pull, heal), so most new weapons are data plus a greybox scene. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.
+The composition is built (feeds: magazine, single; deliveries: projectile, swing; effects: damage). Still to come with the weapons: the feeds belt, heat and battery, the deliveries projectile with pierce, arc or blast, beam, cone, chain, placed charge, thrust, held and block, and the effects burn, knockback, pull and heal. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.

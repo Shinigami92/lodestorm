@@ -1,9 +1,9 @@
 extends GutTest
 
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
-const BLASTER: WeaponType = preload("res://game/weapons/types/blaster.tres")
-const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
+const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")
 const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
@@ -18,7 +18,7 @@ func before_each() -> void:
 	add_child_autofree(_arena)
 	_add_floor()
 	_player = _add_player(Vector3.ZERO)
-	_player.arsenal.unlock(SHOTGUN)
+	_player.arsenal.unlock(BRASK)
 	_fired.clear()
 	_arena.child_entered_tree.connect(_on_child_entered)
 	await wait_physics_frames(1)
@@ -30,22 +30,22 @@ func after_each() -> void:
 
 
 func test_weapons_start_full_and_each_shot_uses_a_round() -> void:
-	var blaster := _blaster()
-	assert_eq(blaster.capacity(), blaster.settings.magazine)
-	assert_eq(blaster.rounds, blaster.capacity())
+	var harl := _harl()
+	assert_eq(harl.capacity(), harl.feed.magazine)
+	assert_eq(harl.rounds, harl.capacity())
 	await _attack_once()
 	assert_eq(_fired.size(), 1)
-	assert_eq(blaster.rounds, blaster.capacity() - 1)
+	assert_eq(harl.rounds, harl.capacity() - 1)
 
 
 func test_empty_weapon_without_ore_neither_fires_nor_reloads() -> void:
-	var blaster := _blaster()
-	blaster.rounds = 0
-	watch_signals(blaster)
+	var harl := _harl()
+	harl.rounds = 0
+	watch_signals(harl)
 	await _attack_once()
 	assert_eq(_fired.size(), 0)
-	assert_false(blaster.reloading)
-	assert_signal_emitted(blaster, "reload_denied")
+	assert_false(harl.reloading)
+	assert_signal_emitted(harl, "reload_denied")
 	await wait_process_frames(1)
 	var color: Color = _ring().shown(&"ammo_color")
 	assert_eq(Color(color, 1.0), Color(SuitRing.FUMBLE_COLOR, 1.0), "the ring flashes red")
@@ -57,37 +57,37 @@ func test_spare_magazines_show_on_the_ring_and_refill_for_new_runs() -> void:
 	await wait_process_frames(2)
 	assert_eq(_number(&"spare_slots"), 2.0)
 	assert_eq(_number(&"spare_fill"), 2.0)
-	_blaster().spare_rounds = 0
+	_harl().spare_rounds = 0
 	await wait_process_frames(1)
 	assert_eq(_number(&"spare_fill"), 0.0)
 	assert_gt(_ring().spares_alpha, 0.0, "a used spare shows the ticks")
 	_player.switch_weapon()
 	await wait_process_frames(1)
-	assert_false(_ring().shows_ammo(), "nothing to show with the hammer")
+	assert_false(_ring().shows_ammo(), "nothing to show with Dray")
 	assert_eq(_number(&"spare_alpha"), 0.0)
 	_player.switch_weapon()
-	assert_eq(_blaster().spare_rounds, 0, "kept while holstered")
+	assert_eq(_harl().spare_rounds, 0, "kept while holstered")
 	_player.refill_ammo()
-	assert_eq(_blaster().spare_rounds, 2 * _blaster().capacity())
+	assert_eq(_harl().spare_rounds, 2 * _harl().capacity())
 
 
 func test_new_runs_and_respawns_fill_the_magazines() -> void:
-	_blaster().rounds = 3
+	_harl().rounds = 3
 	_player.switch_weapon()
 	_player.refill_ammo()
 	_player.switch_weapon()
-	assert_eq(_blaster().rounds, _blaster().capacity())
-	_blaster().rounds = 0
+	assert_eq(_harl().rounds, _harl().capacity())
+	_harl().rounds = 0
 	_player.take_damage(1000.0)
 	_player.respawn(Vector3.ZERO)
-	assert_eq(_blaster().rounds, _blaster().capacity())
+	assert_eq(_harl().rounds, _harl().capacity())
 
 
 func test_holding_interact_next_to_a_teammate_hands_them_a_magazine() -> void:
 	var teammate: Player = _add_player(Vector3(1.0, 0.0, 0.0))
 	await wait_physics_frames(1)
-	var their_blaster := teammate.weapon as RangedWeapon
-	their_blaster.rounds = 3
+	var their_harl := teammate.get_ammo() as MagazineAmmo
+	their_harl.rounds = 3
 	_player.add_cargo(KYRITE, 20.0)
 	Input.action_press(&"interact")
 	await wait_physics_frames(2)
@@ -95,7 +95,7 @@ func test_holding_interact_next_to_a_teammate_hands_them_a_magazine() -> void:
 	await wait_process_frames(1)
 	assert_eq(_number(&"give_alpha"), 1.0, "the ring fills while handing it over")
 	await wait_seconds(_player.settings.give_ammo_time + 0.1)
-	assert_eq(their_blaster.rounds, their_blaster.capacity())
+	assert_eq(their_harl.rounds, their_harl.capacity())
 	assert_almost_eq(_player.cargo[KYRITE], 20.0 - 6.0, 0.001)
 	assert_null(_player.give_ammo_target, "once per hold")
 
@@ -103,9 +103,9 @@ func test_holding_interact_next_to_a_teammate_hands_them_a_magazine() -> void:
 func test_teammates_without_ore_get_nothing() -> void:
 	var teammate: Player = _add_player(Vector3(1.0, 0.0, 0.0))
 	await wait_physics_frames(1)
-	(teammate.weapon as RangedWeapon).rounds = 3
+	(teammate.get_ammo() as MagazineAmmo).rounds = 3
 	assert_false(_player.give_ammo(teammate))
-	assert_eq((teammate.weapon as RangedWeapon).rounds, 3)
+	assert_eq((teammate.get_ammo() as MagazineAmmo).rounds, 3)
 
 
 func test_ore_value_and_spending() -> void:
@@ -122,52 +122,52 @@ func test_ore_value_and_spending() -> void:
 
 
 func test_magazine_upgrade_holds_more_and_lights_its_pips() -> void:
-	var pips := _blaster().get_node("MagazinePips") as MkPips
+	var pips := _player.weapon.get_node("CapacityPips") as MkPips
 	assert_eq(pips.lit_count(), 1)
-	_player.upgrades.raise(BLASTER.magazine_upgrade)
-	assert_eq(_blaster().capacity(), roundi(_blaster().settings.magazine * 1.5))
-	assert_eq(_blaster().rounds, _blaster().capacity(), "filled to the new size aboard")
+	_player.upgrades.raise(HARL.get_part(WeaponPart.Stat.CAPACITY))
+	assert_eq(_harl().capacity(), roundi(_harl().feed.magazine * 1.5))
+	assert_eq(_harl().rounds, _harl().capacity(), "filled to the new size aboard")
 	assert_eq(pips.lit_count(), 2)
 
 
 func test_counter_shows_the_loaded_share_and_warns() -> void:
-	var blaster := _blaster()
-	var gauge := blaster.get_node("AmmoGauge") as AmmoGauge
-	assert_eq(_lit_segments(gauge, blaster), 6)
+	var harl := _harl()
+	var gauge: AmmoGauge = _player.weapon.get_gauge()
+	assert_eq(_lit_segments(gauge, harl), 6)
 	@warning_ignore("integer_division")
-	blaster.rounds = blaster.capacity() / 2
-	assert_eq(_lit_segments(gauge, blaster), 3)
-	blaster.rounds = 2
-	var glow: Array[Color] = gauge.segment_glow(blaster, 6)
+	harl.rounds = harl.capacity() / 2
+	assert_eq(_lit_segments(gauge, harl), 3)
+	harl.rounds = 2
+	var glow: Array[Color] = gauge.segment_glow(harl, 6)
 	assert_true(glow[0] == AmmoGauge.WARNING * gauge.energy or glow[0] == AmmoGauge.DARK)
-	blaster.rounds = 0
-	glow = gauge.segment_glow(blaster, 6)
+	harl.rounds = 0
+	glow = gauge.segment_glow(harl, 6)
 	assert_true(glow[0] == AmmoGauge.EMPTY * gauge.energy * 0.4 or glow[0] == AmmoGauge.DARK)
 
 
 func test_shell_strip_has_a_shell_per_round() -> void:
-	var shotgun := _equip(SHOTGUN) as RangedWeapon
-	assert_eq(shotgun.get_node("AmmoGauge").get_child_count(), shotgun.capacity())
-	_player.upgrades.raise(SHOTGUN.magazine_upgrade)
-	_player.upgrades.raise(SHOTGUN.magazine_upgrade)
-	shotgun = _player.weapon as RangedWeapon
-	assert_eq(shotgun.capacity(), shotgun.settings.magazine * 2)
-	assert_eq(shotgun.get_node("AmmoGauge").get_child_count(), shotgun.capacity())
+	var brask := _equip(BRASK).ammo as MagazineAmmo
+	assert_eq(_player.weapon.get_gauge().get_child_count(), brask.capacity())
+	_player.upgrades.raise(BRASK.get_part(WeaponPart.Stat.CAPACITY))
+	_player.upgrades.raise(BRASK.get_part(WeaponPart.Stat.CAPACITY))
+	brask = _player.get_ammo() as MagazineAmmo
+	assert_eq(brask.capacity(), brask.feed.magazine * 2)
+	assert_eq(_player.weapon.get_gauge().get_child_count(), brask.capacity())
 
 
 func test_ring_shows_a_reload() -> void:
-	_blaster().rounds = 0
+	_harl().rounds = 0
 	_player.add_cargo(KYRITE, 100.0)
 	_player.reload()
 	await wait_process_frames(2)
 	assert_true(_ring().visible)
 	assert_eq(_number(&"ammo_alpha"), 1.0)
 	var window: Vector2 = _ring().shown(&"ammo_window")
-	assert_almost_eq(window.x, _blaster().settings.sweet_spot_start, 0.001, "the timing window")
+	assert_almost_eq(window.x, _harl().feed.sweet_spot_start, 0.001, "the timing window")
 	assert_lt(_number(&"ammo_fill"), 1.0, "fills up during the reload")
 
 
-func _lit_segments(gauge: AmmoGauge, weapon: RangedWeapon) -> int:
+func _lit_segments(gauge: AmmoGauge, weapon: MagazineAmmo) -> int:
 	var lit: int = 0
 	for glow: Color in gauge.segment_glow(weapon, 6):
 		if glow != AmmoGauge.DARK:
@@ -175,9 +175,9 @@ func _lit_segments(gauge: AmmoGauge, weapon: RangedWeapon) -> int:
 	return lit
 
 
-func _blaster() -> RangedWeapon:
-	assert_eq(_player.get_weapon_type(), BLASTER)
-	return _player.weapon as RangedWeapon
+func _harl() -> MagazineAmmo:
+	assert_eq(_player.get_weapon_type(), HARL)
+	return _player.get_ammo() as MagazineAmmo
 
 
 func _ring() -> SuitRing:
@@ -189,14 +189,14 @@ func _equip(weapon_type: WeaponType) -> Weapon:
 	return _player.weapon
 
 
-func _finish_reload(weapon: RangedWeapon) -> void:
+func _finish_reload(weapon: MagazineAmmo) -> void:
 	if not weapon.reloading:
 		assert_true(_player.reload())
 	await _finish_round(weapon)
 
 
 ## Skips to the end of the current reload (round).
-func _finish_round(weapon: RangedWeapon) -> void:
+func _finish_round(weapon: MagazineAmmo) -> void:
 	weapon.reload_elapsed = weapon.reload_duration
 	await wait_physics_frames(1)
 

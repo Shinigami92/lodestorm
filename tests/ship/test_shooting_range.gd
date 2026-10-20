@@ -51,15 +51,15 @@ func test_reloads_in_the_range_spend_no_ore() -> void:
 	_player.add_cargo(kyrite, 10.0)
 	await _move(_player, _range.global_position)
 	assert_true(_player.ammo_free)
-	var blaster := _player.weapon as RangedWeapon
-	blaster.rounds = 1
+	var harl := _player.get_ammo() as MagazineAmmo
+	harl.rounds = 1
 	Input.action_press(&"attack")
 	await wait_physics_frames(2)
 	Input.action_release(&"attack")
-	assert_true(blaster.reloading, "the empty magazine reloads")
-	blaster.reload_elapsed = blaster.reload_duration
+	assert_true(harl.reloading, "the empty magazine reloads")
+	harl.reload_elapsed = harl.reload_duration
 	await wait_physics_frames(1)
-	assert_eq(blaster.rounds, blaster.capacity())
+	assert_eq(harl.rounds, harl.capacity())
 	assert_eq(_player.cargo[kyrite], 10.0)
 
 

@@ -5,7 +5,9 @@ extends StationCard
 ## (compared to MK1), the next level's cost per ore next to what the hold has of it (red where it's
 ## short), and "Upgrade". A weapon's upgrade the player can't buy yet says "Locked", levels beyond
 ## the ship's reach show as faint pips and the card says which heat shield plate brings the next
-## one, and while a mission is underway it says why nothing can be bought.
+## one, and while a mission is underway it says why nothing can be bought. A weapon's part is
+## titled with the weapon's name. On the workbench, a weapon the player doesn't own shows what
+## building it costs and "Build" (with its blueprint, see `WeaponStation.build`).
 
 ## Dims what a locked upgrade would bring (the card itself and "Locked" stay readable).
 const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
@@ -17,6 +19,8 @@ const PIP_SIZE := Vector2(20.0, 14.0)
 
 ## The upgrade shown, or null.
 var upgrade: Upgrade
+## The weapon to build shown, or null.
+var weapon_type: WeaponType
 
 @onready var _title: Label = %Title
 @onready var _pips: HBoxContainer = %Pips
@@ -36,13 +40,25 @@ func _ready() -> void:
 
 func show_part(part: StationPart) -> void:
 	var upgrade_station := station as UpgradeStation
+	var hold: Dictionary[OreType, float] = {}
+	if upgrade_station and upgrade_station.ship:
+		hold = upgrade_station.ship.hold
+	var weapon_station := station as WeaponStation
+	var to_build := part.item as WeaponType if part else null
+	if to_build and weapon_station and weapon_station.user:
+		show_build(
+			to_build,
+			hold,
+			weapon_station.user.arsenal.has_blueprint(to_build),
+			weapon_station.is_locked(),
+			weapon_station.can_build(to_build)
+		)
+		return
 	var shown := part.item as Upgrade if part else null
 	if not shown or not upgrade_station or not upgrade_station.user:
 		show_upgrade(null)
 		return
-	var hold: Dictionary[OreType, float] = {}
-	if upgrade_station.ship:
-		hold = upgrade_station.ship.hold
+	var weapon: WeaponType = upgrade_station.get_weapon(shown)
 	show_upgrade(
 		shown,
 		upgrade_station.user.upgrades.mk(shown),
@@ -50,13 +66,15 @@ func show_part(part: StationPart) -> void:
 		upgrade_station.is_available(shown),
 		upgrade_station.is_locked(),
 		upgrade_station.can_buy(shown),
-		upgrade_station.upgrade_cap()
+		upgrade_station.upgrade_cap(),
+		weapon.display_name if weapon else ""
 	)
 
 
 ## Shows `shown` at MK `mk` (null: nothing). `hold`: what the hold has; `available`: whether the
 ## player has its weapon; `locked`: whether a mission is underway; `can_buy`: whether its next
-## level can be bought right now; `cap`: the highest MK level the ship's heat shield allows.
+## level can be bought right now; `cap`: the highest MK level the ship's heat shield allows;
+## `weapon_name`: the name of the weapon it's a part of (empty: none).
 func show_upgrade(
 	shown: Upgrade,
 	mk: int = 1,
@@ -64,14 +82,19 @@ func show_upgrade(
 	available: bool = true,
 	locked: bool = false,
 	can_buy: bool = false,
-	cap: int = 99
+	cap: int = 99,
+	weapon_name: String = ""
 ) -> void:
 	upgrade = shown
+	weapon_type = null
 	visible = shown != null
 	if not shown:
 		return
 	_title.text = tr(shown.display_name)
+	if weapon_name:
+		_title.text = "%s — %s" % [weapon_name, _title.text]
 	_description.text = tr(shown.description)
+	_pips.visible = true
 	show_pips(_pips, mk if available else 0, shown.max_mk(), cap)
 	var next: UpgradeLevel = shown.level_after(mk)
 	if not available:
@@ -96,7 +119,41 @@ func show_upgrade(
 		dimmed.modulate = Color.WHITE if available else LOCKED_COLOR
 
 
+## Shows building `shown`: what it costs next to what the hold has. `blueprint`: whether the
+## player has its blueprint; `locked`: whether a mission is underway; `can_build`: whether it can
+## be built right now.
+func show_build(
+	shown: WeaponType,
+	hold: Dictionary[OreType, float] = {},
+	blueprint: bool = false,
+	locked: bool = false,
+	can_build: bool = false
+) -> void:
+	upgrade = null
+	weapon_type = shown
+	visible = shown != null
+	if not shown:
+		return
+	_title.text = "%s — %s" % [shown.display_name, tr(shown.class_word)]
+	_description.text = tr(shown.description)
+	_pips.visible = false
+	_effect.text = tr("Blueprint") if blueprint else tr("Locked")
+	_cost.show_cost(shown.build_cost, hold)
+	_status.visible = locked or not blueprint
+	if locked:
+		_status.text = tr("Locked until everyone is back aboard.")
+	elif not blueprint:
+		_status.text = tr("Building it needs its blueprint.")
+	_buy.text = tr("Build")
+	_buy.disabled = not can_build
+	for dimmed: CanvasItem in [_title, _description, _cost_row]:
+		dimmed.modulate = Color.WHITE if blueprint else LOCKED_COLOR
+
+
 func press_primary() -> bool:
+	if weapon_type:
+		var weapon_station := station as WeaponStation
+		return weapon_station != null and weapon_station.build(weapon_type)
 	var upgrade_station := station as UpgradeStation
 	return upgrade_station != null and upgrade_station.buy(upgrade)
 

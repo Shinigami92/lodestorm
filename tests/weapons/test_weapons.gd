@@ -37,7 +37,7 @@ func test_no_attack_inside_ship() -> void:
 
 func test_player_equips_first_loadout_weapon() -> void:
 	assert_eq(_player.get_weapon_type(), _player.loadout.get_weapon(0))
-	assert_is(_player.weapon, RangedWeapon)
+	assert_not_null(_player.get_ammo())
 	assert_eq(_player.weapon.get_parent().name, &"WeaponMount")
 
 
@@ -45,7 +45,7 @@ func test_holding_attack_fires_at_attack_rate() -> void:
 	var fired: Array[Projectile] = _record_projectiles()
 	Input.action_press(&"attack")
 	await wait_physics_frames(Engine.physics_ticks_per_second)
-	var rate: float = (_player.weapon as RangedWeapon).settings.attack_rate
+	var rate: float = _player.get_weapon_type().attack_rate
 	assert_between(float(fired.size()), rate, rate + 1.0)
 
 

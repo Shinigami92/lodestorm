@@ -2,9 +2,9 @@ extends GutTest
 ## What a save file holds and how older or damaged ones load (see `SaveGame`).
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
-const BLASTER: WeaponType = preload("res://game/weapons/types/blaster.tres")
-const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
+const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 const SUIT: Skill = preload("res://game/progression/skills/tree/reinforced_suit.tres")
@@ -23,7 +23,7 @@ func test_unreadable_save_starts_fresh_and_is_kept() -> void:
 	_write(SaveGame.PLAYER_FILE, "{ not json")
 	await _restart()
 	assert_push_error("can't read")
-	assert_eq(_player.arsenal.weapons, [BLASTER, HAMMER] as Array[WeaponType])
+	assert_eq(_player.arsenal.weapons, [HARL, DRAY] as Array[WeaponType])
 	var corrupt: String = SaveGame.save_directory().path_join(SaveGame.PLAYER_FILE + ".corrupt")
 	assert_true(FileAccess.file_exists(corrupt))
 
@@ -42,15 +42,15 @@ func test_unknown_entries_are_skipped() -> void:
 			KYRITE.resource_path: 30.0,
 			"res://nothing.tres": 5.0,
 			"user://ore.tres": 5.0,
-			SHOTGUN.resource_path: 5.0,
+			BRASK.resource_path: 5.0,
 			OLVANE.resource_path: -4.0,
 		},
 		"story": ["quartermaster.ammo", 3, ""],
 	}
 	var player_data: Dictionary = {
 		"version": SaveGame.VERSION,
-		"arsenal": [BLASTER.resource_path, "res://nothing.tres", 3, KYRITE.resource_path],
-		"loadout": [HAMMER.resource_path, SHOTGUN.resource_path],
+		"arsenal": [HARL.resource_path, "res://nothing.tres", 3, KYRITE.resource_path],
+		"loadout": [DRAY.resource_path, BRASK.resource_path],
 		"upgrades": {ARMOR.resource_path: 99, "res://nothing.tres": 2, DRILL.resource_path: "x"},
 		"skills": {SUIT.resource_path: 99, ARMOR.resource_path: 1, DASH.resource_path: 0},
 	}
@@ -59,10 +59,10 @@ func test_unknown_entries_are_skipped() -> void:
 	await _restart()
 	assert_eq(_ship.hold.keys(), [KYRITE] as Array[OreType])
 	assert_eq(_ship.story.flags.keys(), [&"quartermaster.ammo"] as Array[StringName])
-	assert_eq(_player.arsenal.weapons, [BLASTER] as Array[WeaponType])
+	assert_eq(_player.arsenal.weapons, [HARL] as Array[WeaponType])
 	# Neither saved weapon is owned, and the loadout is never empty: the default's owned ones stay.
-	assert_eq(_player.loadout.get_weapon(0), BLASTER)
-	assert_null(_player.loadout.get_weapon(1), "the default hammer isn't owned")
+	assert_eq(_player.loadout.get_weapon(0), HARL)
+	assert_null(_player.loadout.get_weapon(1), "the default Dray isn't owned")
 	assert_eq(_player.upgrades.mk(ARMOR), ARMOR.max_mk(), "clamped")
 	assert_eq(_player.upgrades.mk(DRILL), 1)
 	assert_eq(_player.skills.rank(SUIT), SUIT.max_rank(), "clamped")
@@ -85,8 +85,8 @@ func test_resources_are_saved_by_uid() -> void:
 	var skills: Dictionary = player_data["skills"]
 	assert_eq(hold, {_uid(KYRITE): 10.0})
 	assert_eq(found, [_uid(KYRITE)])
-	assert_eq(arsenal, [_uid(BLASTER), _uid(HAMMER)])
-	assert_eq(loadout, [_uid(BLASTER), _uid(HAMMER)])
+	assert_eq(arsenal, [_uid(HARL), _uid(DRAY)])
+	assert_eq(loadout, [_uid(HARL), _uid(DRAY)])
 	assert_eq(upgrades, {_uid(ARMOR): 2.0})
 	assert_eq(skills, {_uid(DASH): 1.0})
 	assert_true(_uid(KYRITE).begins_with("uid://"))
@@ -167,8 +167,8 @@ func test_version_1_saves_still_load() -> void:
 	assert_eq(_ship.hold[KYRITE], 30.0, "renamed from cyan")
 	assert_eq(_ship.hold[load("res://game/ores/types/ore_pallin.tres") as OreType], 12.0)
 	assert_true(OLVANE in _ship.found_ores, "renamed from green")
-	assert_eq(_player.arsenal.weapons, [BLASTER, HAMMER, SHOTGUN] as Array[WeaponType])
-	assert_eq(_player.loadout.get_weapon(0), SHOTGUN)
+	assert_eq(_player.arsenal.weapons, [HARL, DRAY, BRASK] as Array[WeaponType])
+	assert_eq(_player.loadout.get_weapon(0), BRASK)
 	assert_null(_player.loadout.get_weapon(1))
 	assert_eq(_player.upgrades.mk(ARMOR), 3)
 	assert_eq(_player.skills.rank(DASH), 1)
@@ -200,10 +200,10 @@ func test_save_without_a_known_weapon_keeps_the_defaults() -> void:
 	}
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
 	await _restart()
-	assert_eq(_player.arsenal.weapons, [BLASTER, HAMMER] as Array[WeaponType])
-	assert_eq(_player.loadout.get_weapon(0), BLASTER)
-	assert_eq(_player.loadout.get_weapon(1), HAMMER)
-	assert_eq(_player.get_weapon_type(), BLASTER)
+	assert_eq(_player.arsenal.weapons, [HARL, DRAY] as Array[WeaponType])
+	assert_eq(_player.loadout.get_weapon(0), HARL)
+	assert_eq(_player.loadout.get_weapon(1), DRAY)
+	assert_eq(_player.get_weapon_type(), HARL)
 
 
 func before_each() -> void:

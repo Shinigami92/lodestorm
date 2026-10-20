@@ -2,7 +2,7 @@
 
     python assets/audio/source/build.py [name ...]
         Builds the take the game uses of every sound (or of the named ones, e.g.
-        weapons/blaster_shot) into assets/audio/sfx/<group>/<name>_<variant>.wav and lists every
+        weapons/harl_shot) into assets/audio/sfx/<group>/<name>_<variant>.wav and lists every
         sound with the recordings it uses in manifest.json.
     python assets/audio/source/build.py --takes DIR [name ...]
         Builds every take into DIR with a listening page (DIR/listen.html) to pick from.
@@ -40,7 +40,7 @@ ALLOWED_LICENSES = ("CC0-1.0", "CC-BY-4.0")
 
 
 def render(recipe: Recipe, take: str, variant: int) -> Signal:
-    rng = random.Random(zlib.crc32(f"{recipe.name}/{take}/{variant}".encode()))
+    rng = random.Random(zlib.crc32(f"{recipe.seed or recipe.name}/{take}/{variant}".encode()))
     signal = recipe.make(rng, take, variant)
     return finish_loop(signal, recipe.peak_db) if recipe.loop else finish(signal, recipe.peak_db)
 

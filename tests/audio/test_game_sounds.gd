@@ -1,8 +1,8 @@
 extends GutTest
 
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
-const BLASTER: WeaponType = preload("res://game/weapons/types/blaster.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const DASH: Skill = preload("res://game/progression/skills/tree/dash.tres")
 const SFX_DIR: String = "res://assets/audio/sfx/"
 
@@ -45,25 +45,25 @@ func test_the_local_player_is_where_the_game_is_heard_from() -> void:
 
 
 func test_shots_and_a_reload_sound() -> void:
-	var blaster := _player.weapon as RangedWeapon
+	var harl := _player.get_ammo() as MagazineAmmo
 	Input.action_press(&"attack")
 	await wait_physics_frames(1)
 	Input.action_release(&"attack")
-	assert_has(_played, _sound("weapons/blaster_shot"))
-	blaster.rounds = 1
+	assert_has(_played, _sound("weapons/harl_shot"))
+	harl.rounds = 1
 	_played.clear()
 	assert_true(_player.reload())
 	assert_eq(_played, [_sound("weapons/reload_start")] as Array[Sound])
-	blaster.reload_elapsed = blaster.reload_duration
+	harl.reload_elapsed = harl.reload_duration
 	await wait_physics_frames(1)
 	assert_has(_played, _sound("weapons/magazine_in"))
 
 
 func test_the_window_ticks_for_the_local_player_as_a_critical_cue() -> void:
-	var blaster := _player.weapon as RangedWeapon
-	blaster.rounds = 1
+	var harl := _player.get_ammo() as MagazineAmmo
+	harl.rounds = 1
 	assert_true(_player.reload())
-	blaster.reload_elapsed = blaster.reload_duration * (blaster.settings.sweet_spot_start - 0.01)
+	harl.reload_elapsed = harl.reload_duration * (harl.feed.sweet_spot_start - 0.01)
 	await wait_physics_frames(2)
 	assert_has(_critical, _sound("weapons/window_tick"))
 	assert_true(_player.reload(), "the timing press")
@@ -71,22 +71,22 @@ func test_the_window_ticks_for_the_local_player_as_a_critical_cue() -> void:
 
 
 func test_a_reload_that_cant_start_clicks() -> void:
-	var blaster := _player.weapon as RangedWeapon
-	blaster.rounds = 0
-	blaster.spare_rounds = 0
+	var harl := _player.get_ammo() as MagazineAmmo
+	harl.rounds = 0
+	harl.spare_rounds = 0
 	_player.ammo_free = false
 	assert_false(_player.reload())
 	assert_eq(_played, [_sound("weapons/empty_click")] as Array[Sound])
 
 
 func test_a_swing_at_nothing_only_whooshes() -> void:
-	_player.arsenal.unlock(HAMMER)
-	_player.loadout.assign(0, HAMMER)
+	_player.arsenal.unlock(DRAY)
+	_player.loadout.assign(0, DRAY)
 	Input.action_press(&"attack")
 	await wait_physics_frames(1)
 	Input.action_release(&"attack")
-	assert_has(_played, _sound("weapons/hammer_swing"))
-	assert_does_not_have(_played, _sound("weapons/hammer_hit"))
+	assert_has(_played, _sound("weapons/dray_swing"))
+	assert_does_not_have(_played, _sound("weapons/dray_hit"))
 
 
 func test_hits_low_health_and_the_dash() -> void:

@@ -4,9 +4,9 @@ const TEST_MAP := preload("res://tests/support/test_map.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const MINER_SCENE: PackedScene = preload("res://game/mining/miner.tscn")
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
-const BLASTER: WeaponType = preload("res://game/weapons/types/blaster.tres")
-const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
+const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 const TANK: Upgrade = preload("res://game/progression/upgrades/miner_tank.tres")
@@ -39,8 +39,11 @@ func after_each() -> void:
 func test_every_upgrade_has_texts_and_rising_levels() -> void:
 	var all: Array[Upgrade] = [ARMOR, DRILL, TANK, HOSE]
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
-		assert_not_null(weapon_type.upgrade, "%s has MK levels" % weapon_type.display_name)
-		all.append(weapon_type.upgrade)
+		assert_eq(
+			weapon_type.parts.size(), 3, "%s: damage, capacity, its own" % weapon_type.display_name
+		)
+		assert_not_null(weapon_type.get_part(WeaponPart.Stat.DAMAGE), weapon_type.display_name)
+		all.append_array(weapon_type.parts)
 	for upgrade: Upgrade in all:
 		assert_ne(upgrade.display_name, "")
 		assert_ne(upgrade.description, "")
@@ -100,35 +103,37 @@ func test_hold_pays_only_what_it_has() -> void:
 
 
 func test_weapon_upgrade_raises_its_damage_and_lights_its_pips() -> void:
-	assert_eq(_player.get_weapon_type(), BLASTER)
-	assert_eq(_player.weapon.damage_multiplier, 1.0)
-	var pips := _player.weapon.get_node("MkPips") as MkPips
+	assert_eq(_player.get_weapon_type(), HARL)
+	assert_eq(_player.weapon.multiplier(WeaponPart.Stat.DAMAGE), 1.0)
+	var pips := _player.weapon.get_node("DamagePips") as MkPips
 	assert_eq(pips.lit_count(), 1)
 	assert_eq(pips.max_mk, 8)
-	_player.upgrades.raise(BLASTER.upgrade)
-	assert_eq(_player.weapon.damage_multiplier, BLASTER.upgrade.levels[0].multiplier)
+	_player.upgrades.raise(HARL.get_part(WeaponPart.Stat.DAMAGE))
+	assert_eq(_player.weapon.multiplier(WeaponPart.Stat.DAMAGE), _damage(HARL, 2))
 	assert_eq(pips.lit_count(), 2)
 	_player.switch_weapon()
-	assert_eq(_player.get_weapon_type(), HAMMER)
-	assert_eq(_player.weapon.damage_multiplier, 1.0, "each weapon has its own level")
+	assert_eq(_player.get_weapon_type(), DRAY)
+	assert_eq(
+		_player.weapon.multiplier(WeaponPart.Stat.DAMAGE), 1.0, "each weapon has its own level"
+	)
 	_player.switch_weapon()
-	assert_eq(_player.weapon.damage_multiplier, BLASTER.upgrade.levels[0].multiplier)
+	assert_eq(_player.weapon.multiplier(WeaponPart.Stat.DAMAGE), _damage(HARL, 2))
 
 
 func test_every_weapon_shows_pips() -> void:
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
-		var weapon := weapon_type.scene.instantiate() as Weapon
-		weapon.apply_upgrades(Upgrades.new(), weapon_type)
-		var pips := weapon.get_node_or_null("MkPips") as MkPips
+		var weapon := weapon_type.create()
+		weapon.apply_upgrades(Upgrades.new())
+		var pips := weapon.get_node_or_null("DamagePips") as MkPips
 		assert_not_null(pips, weapon_type.display_name)
 		if pips:
-			assert_eq(pips.get_child_count(), weapon_type.upgrade.max_mk())
+			assert_eq(pips.get_child_count(), weapon_type.get_part(WeaponPart.Stat.DAMAGE).max_mk())
 		weapon.free()
 
 
 func test_projectiles_carry_the_upgraded_damage() -> void:
-	_player.upgrades.raise(BLASTER.upgrade)
-	_player.upgrades.raise(BLASTER.upgrade)
+	_player.upgrades.raise(HARL.get_part(WeaponPart.Stat.DAMAGE))
+	_player.upgrades.raise(HARL.get_part(WeaponPart.Stat.DAMAGE))
 	# Weapons are holstered inside the ship, where the player starts.
 	_player.global_position = _ship.to_global(Vector3(22.0, 0.0, 0.0))
 	_player.reset_physics_interpolation()
@@ -142,9 +147,9 @@ func test_projectiles_carry_the_upgraded_damage() -> void:
 		if node is Projectile:
 			projectiles.append(node as Projectile)
 	assert_false(projectiles.is_empty())
-	var settings := (_player.weapon as RangedWeapon).settings
+	var effect := HARL.effects[0] as DamageEffect
 	for projectile: Projectile in projectiles:
-		assert_eq(projectile.damage, settings.damage * BLASTER.upgrade.levels[1].multiplier)
+		assert_eq(projectile.damage, effect.damage * _damage(HARL, 3))
 
 
 func test_armor_upgrade_adds_health_and_lights_its_pips() -> void:
@@ -212,14 +217,7 @@ func test_each_player_has_their_own_upgrades() -> void:
 
 func test_every_upgrade_room_has_a_station() -> void:
 	var stations: Dictionary[String, Array] = {
-		"Weapons":
-		[
-			BLASTER.upgrade,
-			BLASTER.magazine_upgrade,
-			SHOTGUN.upgrade,
-			SHOTGUN.magazine_upgrade,
-			HAMMER.upgrade,
-		],
+		"Weapons": HARL.get_upgrades() + BRASK.get_upgrades() + DRAY.get_upgrades(),
 		"Armor": [ARMOR],
 		"Miners": [DRILL, TANK, HOSE],
 	}
@@ -288,12 +286,12 @@ func test_station_locks_weapons_the_player_does_not_own() -> void:
 	_ship.add_to_hold(KYRITE, 1000.0)
 	_ship.add_to_hold(VYREL, 1000.0)
 	await wait_process_frames(1)
-	assert_false(station.can_buy(SHOTGUN.upgrade), "no shotgun yet")
-	assert_false(station.buy(SHOTGUN.upgrade))
-	assert_true(station.can_buy(BLASTER.upgrade))
-	_player.arsenal.unlock(SHOTGUN)
-	assert_true(station.buy(SHOTGUN.upgrade))
-	assert_eq(_player.upgrades.mk(SHOTGUN.upgrade), 2)
+	assert_false(station.can_buy(BRASK.get_part(WeaponPart.Stat.DAMAGE)), "no brask yet")
+	assert_false(station.buy(BRASK.get_part(WeaponPart.Stat.DAMAGE)))
+	assert_true(station.can_buy(HARL.get_part(WeaponPart.Stat.DAMAGE)))
+	_player.arsenal.unlock(BRASK)
+	assert_true(station.buy(BRASK.get_part(WeaponPart.Stat.DAMAGE)))
+	assert_eq(_player.upgrades.mk(BRASK.get_part(WeaponPart.Stat.DAMAGE)), 2)
 
 
 func test_station_locks_while_a_mission_is_underway() -> void:
@@ -329,3 +327,8 @@ func _open_station(room: String) -> UpgradeStation:
 	await wait_process_frames(2)
 	assert_eq(station.ship, _ship)
 	return station
+
+
+## The damage multiplier of `weapon_type` at MK `mk`.
+func _damage(weapon_type: WeaponType, mk: int) -> float:
+	return weapon_type.get_part(WeaponPart.Stat.DAMAGE).multiplier(mk)

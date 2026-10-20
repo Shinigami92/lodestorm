@@ -180,18 +180,18 @@ func test_crate_refills_spares_once() -> void:
 	player.position = Vector3(0.0, 0.0, -1.2)
 	arena.add_child(player)
 	await wait_physics_frames(2)
-	var blaster := player.weapon as RangedWeapon
-	blaster.spare_rounds = 0
+	var harl := player.get_ammo() as MagazineAmmo
+	harl.spare_rounds = 0
 	assert_eq(Interactable.nearest(get_tree(), player.global_position), crate)
 	crate.use(player)
-	assert_eq(blaster.spare_rounds, player.spare_magazines * blaster.capacity())
+	assert_eq(harl.spare_rounds, player.spare_magazines * harl.capacity())
 	assert_true(crate.opened)
 	assert_false(crate.enabled)
 	var strip := crate.get_node("Strip") as MeshInstance3D
 	assert_false((strip.material_override as StandardMaterial3D).emission_enabled)
-	blaster.spare_rounds = 0
+	harl.spare_rounds = 0
 	crate.use(player)
-	assert_eq(blaster.spare_rounds, 0, "only once")
+	assert_eq(harl.spare_rounds, 0, "only once")
 	await wait_seconds(Crate.OPEN_TIME + 0.1)
 	assert_almost_eq((crate.get_node("Lid") as Node3D).rotation.x, Crate.LID_OPEN, 0.01)
 

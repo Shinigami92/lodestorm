@@ -12,11 +12,11 @@ extends CharacterBody3D
 ## the suit light; at zero health the player dies, drops everything carried and lies still until
 ## `respawn`.
 ## Owns the weapons in its `arsenal` and carries the ones in its `loadout` (picked in the armory);
-## `switch_weapon` equips the next one. Ranged weapons keep their loaded rounds while holstered
-## for the run and `reload` them with ammo the suit makes from the carried ore (`OreAmmo`; free
-## aboard), walking slower meanwhile. Holding `interact` next to a teammate, with nothing else to
-## use there, hands them a magazine for their equipped weapon, paid from its ore. Its `upgrades`
-## (bought at the upgrade stations) raise its weapons' damage and magazines, its armor
+## `switch_weapon` equips and draws the next one. Fed weapons keep their loaded rounds while
+## holstered for the run and `reload` them with ammo the suit makes from the carried ore (`OreAmmo`;
+## free aboard), walking slower meanwhile. Holding `interact` next to a teammate, with nothing else
+## to use there, hands them a magazine for their equipped weapon, paid from its ore. Its `upgrades`
+## (bought at the upgrade stations) raise its weapons' parts (damage, capacity, ...), its armor
 ## (`armor_upgrade`: more health, shown by pips on the helmet) and the miners it places. Its
 ## `skills` (learned at the skill graph) add health, regeneration, the dash (`suit_dash`, its
 ## cooldown shown on the suit ring), more spare magazines, reloading at full speed,
@@ -140,9 +140,9 @@ var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 ## Actions held since a menu opened or closed; they're ignored until released.
 var _held_since_menu: Array[StringName] = []
 var _weapon_type: WeaponType
-## Rounds loaded per ranged weapon of the loadout that isn't equipped; missing ones are full.
+## Rounds loaded per fed weapon of the loadout that isn't equipped; missing ones are full.
 var _rounds: Dictionary[WeaponType, int] = {}
-## Spare rounds per ranged weapon of the loadout that isn't equipped; missing ones have all spares.
+## Spare rounds per fed weapon of the loadout that isn't equipped; missing ones have all spares.
 var _spares: Dictionary[WeaponType, int] = {}
 ## Shows the armor's MK level.
 var _armor_pips := MkPips.new()
@@ -204,6 +204,7 @@ func _ready() -> void:
 	add_child(sounds)
 	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()
 	arsenal.weapons = arsenal.weapons.duplicate()
+	arsenal.blueprints = arsenal.blueprints.duplicate()
 	loadout = loadout.duplicate() if loadout else Loadout.new()
 	loadout.weapons = loadout.weapons.duplicate()
 	loadout.changed.connect(_on_loadout_changed)
@@ -302,42 +303,43 @@ func interact() -> Interactable:
 	return interact_target
 
 
-## The `reload` action on the equipped ranged weapon (see `RangedWeapon.reload`). Returns whether
+## The `reload` action on the equipped weapon's ammo (see `WeaponAmmo.reload`). Returns whether
 ## it started or timed a reload.
 func reload() -> bool:
-	var ranged := weapon as RangedWeapon
-	return ranged != null and weapon_allowed and not dead and ranged.reload()
+	var ammo: WeaponAmmo = get_ammo()
+	return ammo != null and weapon_allowed and not dead and ammo.reload()
 
 
-## Fills every ranged weapon's magazine and spare magazines for free (the ship's stock, for a new
+## Fills every fed weapon's magazine and spare magazines for free (the ship's stock, for a new
 ## run).
 func refill_ammo() -> void:
 	_rounds.clear()
 	_spares.clear()
-	var ranged := weapon as RangedWeapon
-	if ranged:
-		ranged.fill(spare_magazines)
+	var ammo: WeaponAmmo = get_ammo()
+	if ammo:
+		ammo.fill(spare_magazines)
 
 
-## Fills the spare magazines of every ranged weapon in the loadout (a supply cache in a crate),
+## Fills the spare magazines of every fed weapon in the loadout (a supply cache in a crate),
 ## leaving the loaded rounds as they are.
 func refill_spares() -> void:
 	_spares.clear()
-	var ranged := weapon as RangedWeapon
-	if ranged:
-		ranged.spare_rounds = spare_magazines * ranged.capacity()
+	var ammo: WeaponAmmo = get_ammo()
+	if ammo:
+		ammo.spare_rounds = spare_magazines * ammo.capacity()
 
 
-## Hands `teammate` a magazine for their equipped ranged weapon, paid from the carried ore (see
-## `RangedWeapon.receive_ammo`). Returns whether it did.
+## Hands `teammate` a magazine for their equipped fed weapon, paid from the carried ore (see
+## `WeaponAmmo.receive_ammo`). Returns whether it did.
 func give_ammo(teammate: Player) -> bool:
 	if teammate == self or teammate.dead or dead:
 		return false
-	var ranged := teammate.weapon as RangedWeapon
-	return ranged != null and ranged.receive_ammo(self)
+	var ammo: WeaponAmmo = teammate.get_ammo()
+	return ammo != null and ammo.receive_ammo(self)
 
 
-## Equips the weapon in the next filled loadout slot (wrapping around). Returns whether it switched.
+## Equips the weapon in the next filled loadout slot (wrapping around) and draws it. Returns
+## whether it switched.
 func switch_weapon() -> bool:
 	var slots: int = settings.loadout_slots
 	for step: int in range(1, slots):
@@ -345,8 +347,15 @@ func switch_weapon() -> bool:
 		if loadout.get_weapon(slot):
 			weapon_slot = slot
 			_equip(loadout.get_weapon(slot))
+			if weapon:
+				weapon.draw()
 			return true
 	return false
+
+
+## The equipped weapon's ammo, or null (no weapon, or a melee one).
+func get_ammo() -> WeaponAmmo:
+	return weapon.ammo if weapon else null
 
 
 ## The weapon type of the equipped weapon, or null.
@@ -445,8 +454,8 @@ static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Play
 
 
 func _is_reloading() -> bool:
-	var ranged := weapon as RangedWeapon
-	return ranged != null and ranged.reloading
+	var ammo: WeaponAmmo = get_ammo()
+	return ammo != null and ammo.reloading
 
 
 ## Whether `action` is held for the player to act (not while using a menu, nor a press from it).
@@ -467,8 +476,8 @@ func _on_died() -> void:
 	if weapon:
 		weapon.trigger_held = false
 		weapon.visible = false
-	if weapon is RangedWeapon:
-		(weapon as RangedWeapon).cancel_reload()
+	if get_ammo():
+		get_ammo().cancel_reload()
 	give_ammo_target = null
 	give_ammo_time = 0.0
 	if is_instance_valid(miner_target):
@@ -549,7 +558,7 @@ func _update_miner_target() -> void:
 
 
 ## Holding `interact` with nothing to use in range hands the nearest teammate in range (whose
-## equipped ranged weapon isn't full) a magazine once it's held for `settings.give_ammo_time`.
+## equipped fed weapon isn't full) a magazine once it's held for `settings.give_ammo_time`.
 func _update_give_ammo(delta: float) -> void:
 	var target: Player = null
 	if not interact_target and _action_held(&"interact"):
@@ -575,8 +584,8 @@ func _teammate_needing_ammo() -> Player:
 		var teammate := node as Player
 		if teammate == self or teammate.dead:
 			continue
-		var ranged := teammate.weapon as RangedWeapon
-		if not ranged or ranged.rounds >= ranged.capacity():
+		var ammo: WeaponAmmo = teammate.get_ammo()
+		if not ammo or ammo.is_full():
 			continue
 		var distance: float = global_position.distance_to(teammate.global_position)
 		if distance <= best_distance:
@@ -600,10 +609,10 @@ func _update_interact_target() -> void:
 func _equip(weapon_type: WeaponType) -> void:
 	if weapon_type == _weapon_type:
 		return
-	if weapon is RangedWeapon:
+	if get_ammo():
 		# A magazine reload cut short leaves it empty; loaded single rounds stay.
-		_rounds[_weapon_type] = (weapon as RangedWeapon).rounds
-		_spares[_weapon_type] = (weapon as RangedWeapon).spare_rounds
+		_rounds[_weapon_type] = get_ammo().rounds
+		_spares[_weapon_type] = get_ammo().spare_rounds
 	_weapon_type = weapon_type
 	if weapon:
 		_weapon_mount.remove_child(weapon)
@@ -611,18 +620,18 @@ func _equip(weapon_type: WeaponType) -> void:
 		weapon = null
 	if not weapon_type:
 		return
-	weapon = weapon_type.scene.instantiate() as Weapon
+	weapon = weapon_type.create()
 	weapon.holder = self
-	weapon.apply_upgrades(upgrades, weapon_type)
-	var ranged := weapon as RangedWeapon
-	if ranged:
-		ranged.supplier = self
-		var loaded: int = _rounds.get(weapon_type, ranged.capacity())
-		ranged.rounds = mini(loaded, ranged.capacity())
-		ranged.spare_rounds = _spares.get(weapon_type, spare_magazines * ranged.capacity())
-		ranged.careful = skills.has(Skill.Effect.CAREFUL_RELOAD)
-		ranged.reload_denied.connect(_on_reload_denied)
-		ranged.reload_timed.connect(_on_reload_timed.bind(ranged))
+	weapon.apply_upgrades(upgrades)
+	var ammo: WeaponAmmo = weapon.ammo
+	if ammo:
+		ammo.supplier = self
+		var loaded: int = _rounds.get(weapon_type, ammo.capacity())
+		ammo.rounds = mini(loaded, ammo.capacity())
+		ammo.spare_rounds = _spares.get(weapon_type, spare_magazines * ammo.capacity())
+		_set_careful()
+		ammo.reload_denied.connect(_on_reload_denied)
+		ammo.reload_timed.connect(_on_reload_timed.bind(ammo))
 	weapon.visible = weapon_allowed and not dead
 	OccludedSilhouette.mark_visible(weapon)
 	_weapon_mount.add_child(weapon)
@@ -634,8 +643,8 @@ func _on_reload_denied() -> void:
 
 
 ## A hit that finished the reload flashes the ring (single rounds go on loading meanwhile).
-func _on_reload_timed(hit: bool, ranged: RangedWeapon) -> void:
-	if hit and not ranged.reloading:
+func _on_reload_timed(hit: bool, ammo: WeaponAmmo) -> void:
+	if hit and not ammo.reloading:
 		_ring.flash(AmmoGauge.TIMING)
 
 
@@ -643,7 +652,7 @@ func _on_reload_timed(hit: bool, ranged: RangedWeapon) -> void:
 ## Upgrades are bought aboard, so the magazines are filled to their new size.
 func _on_upgrades_changed() -> void:
 	if weapon:
-		weapon.apply_upgrades(upgrades, _weapon_type)
+		weapon.apply_upgrades(upgrades)
 	refill_ammo()
 	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
 	vitals.update_maximum()
@@ -652,11 +661,16 @@ func _on_upgrades_changed() -> void:
 ## Skills are learned aboard: more spare magazines fill up, more health adds the difference, the
 ## equipped weapon reloads carefully.
 func _on_skills_changed() -> void:
-	var ranged := weapon as RangedWeapon
-	if ranged:
-		ranged.careful = skills.has(Skill.Effect.CAREFUL_RELOAD)
+	_set_careful()
 	refill_ammo()
 	vitals.update_maximum()
+
+
+## Whether the equipped weapon's magazine reloads keep the rounds left in it (the skill).
+func _set_careful() -> void:
+	var magazine := get_ammo() as MagazineAmmo
+	if magazine:
+		magazine.careful = skills.has(Skill.Effect.CAREFUL_RELOAD)
 
 
 ## Keeps the equipped weapon in the loadout: the one in its slot, or else the first one there.

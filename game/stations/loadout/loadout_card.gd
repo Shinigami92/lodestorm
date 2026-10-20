@@ -1,8 +1,8 @@
 class_name LoadoutCard
 extends StationCard
-## The holo card of a locker (`LoadoutStation`): the selected weapon's name, how it plays, ranged
-## or melee ("Locked" when the player doesn't own it yet), its MK levels as pips (damage, and the
-## magazine for ranged weapons) and a button per slot, pressed where the weapon is. The slot
+## The holo card of a locker (`LoadoutStation`): the selected weapon's name, how it plays, what
+## it is ("Assault rifle"; "Locked" when the player doesn't own it yet), the MK level of each of
+## its parts as pips and a button per slot, pressed where the weapon is. The slot
 ## `interact` uses has an amber frame (not the focus: moving the focus every frame would cancel a
 ## mouse press on the other button). Below, what the slots are for, or while a mission is underway
 ## why nothing changes.
@@ -10,7 +10,7 @@ extends StationCard
 const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
 const PIP_LIT := Color(0.3, 0.85, 1.0)
 const PIP_DARK := Color(0.12, 0.18, 0.22)
-const PIP_SIZE := Vector2(30.0, 14.0)
+const PIP_SIZE := Vector2(22.0, 12.0)
 const SELECTED_SLOT_COLOR := Color(1.0, 0.75, 0.3)
 const STATUS_LOCKED := Color(1.0, 0.75, 0.3)
 const STATUS_HINT := Color(1.0, 1.0, 1.0, 0.6)
@@ -75,14 +75,9 @@ func show_weapon(
 	visible = shown != null
 	if not shown:
 		return
-	_title.text = tr(shown.display_name)
+	_title.text = shown.display_name
 	_description.text = tr(shown.description)
-	if not owned:
-		_kind.text = tr("Locked")
-	elif shown.kind == WeaponType.Kind.MELEE:
-		_kind.text = tr("Melee")
-	else:
-		_kind.text = tr("Ranged")
+	_kind.text = tr(shown.class_word) if owned else tr("Locked")
 	_show_levels(shown, upgrades if upgrades else Upgrades.new(), owned)
 	# Why nothing changes, else what the slots are for.
 	_status.text = (
@@ -108,29 +103,20 @@ func get_slot_button(slot: int) -> Button:
 	return _slot_buttons[slot] if slot >= 0 and slot < _slot_buttons.size() else null
 
 
-## One row per part (damage, magazine): its name and its MK level as pips.
+## One row per part (damage, capacity, ...): its name and its MK level as pips.
 func _show_levels(shown: WeaponType, upgrades: Upgrades, owned: bool) -> void:
-	var levels: Array = [
-		shown,
-		upgrades.mk(shown.upgrade) if owned else 0,
-		upgrades.mk(shown.magazine_upgrade) if owned else 0,
-		TranslationServer.get_locale(),
-	]
+	var levels: Array = [shown, TranslationServer.get_locale()]
+	for part: WeaponPart in shown.parts:
+		levels.append(upgrades.mk(part) if owned else 0)
 	if levels == _levels_shown:
 		return
 	_levels_shown = levels
 	for node: Node in _levels.get_children():
 		_levels.remove_child(node)
 		node.queue_free()
-	var parts: Dictionary[String, Upgrade] = {
-		tr("Damage"): shown.upgrade, tr("Magazine"): shown.magazine_upgrade
-	}
-	for part_name: String in parts:
-		var upgrade: Upgrade = parts[part_name]
-		if not upgrade:
-			continue
-		var label: Label = _label(part_name)
-		label.add_theme_font_size_override(&"font_size", 26)
+	for upgrade: WeaponPart in shown.parts:
+		var label: Label = _label(tr(upgrade.display_name))
+		label.add_theme_font_size_override(&"font_size", 20)
 		_levels.add_child(label)
 		var pips := HBoxContainer.new()
 		pips.add_theme_constant_override(&"separation", 6)

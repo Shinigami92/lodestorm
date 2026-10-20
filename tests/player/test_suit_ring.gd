@@ -1,7 +1,7 @@
 extends GutTest
 
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
-const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
+const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 
 var _player: Player
 var _ring: SuitRing
@@ -39,12 +39,12 @@ func test_arcs_dim_after_a_while_unless_low() -> void:
 	assert_eq(_ring.health_glow, 0.0, "full health dims")
 	assert_eq(_ring.ammo_glow, 0.0, "a full magazine dims")
 	_player.take_damage(_player.max_health() * 0.6)
-	(_player.weapon as RangedWeapon).rounds = 2
+	(_player.get_ammo() as MagazineAmmo).rounds = 2
 	await wait_seconds(0.2 + SuitRing.FADE_TIME + 0.2)
 	assert_eq(_ring.health_glow, 1.0, "below half stays lit")
 	assert_eq(_ring.ammo_glow, 1.0, "nearly empty stays lit")
 	_player.heal()
-	(_player.weapon as RangedWeapon).rounds = 10
+	(_player.get_ammo() as MagazineAmmo).rounds = 10
 	await wait_process_frames(2)
 	assert_gt(_ring.health_glow, 0.0, "a change lights it up")
 	await wait_seconds(0.2 + SuitRing.FADE_TIME + 0.2)
@@ -65,13 +65,13 @@ func test_hits_mark_where_they_came_from() -> void:
 	assert_eq(_ring.hits.size(), 0, "the marks fade")
 
 
-func test_shotgun_shows_its_rounds_as_segments() -> void:
-	assert_eq(_number(&"ammo_segments"), 0.0, "the blaster's magazine is one bar")
-	_player.arsenal.unlock(SHOTGUN)
-	_player.loadout.assign(0, SHOTGUN)
+func test_brask_shows_its_rounds_as_segments() -> void:
+	assert_eq(_number(&"ammo_segments"), 0.0, "Harl's magazine is one bar")
+	_player.arsenal.unlock(BRASK)
+	_player.loadout.assign(0, BRASK)
 	await wait_process_frames(1)
-	var shotgun := _player.weapon as RangedWeapon
-	assert_eq(_number(&"ammo_segments"), float(shotgun.capacity()))
+	var brask := _player.get_ammo() as MagazineAmmo
+	assert_eq(_number(&"ammo_segments"), float(brask.capacity()))
 
 
 func test_tilts_with_the_ground() -> void:

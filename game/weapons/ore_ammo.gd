@@ -1,6 +1,6 @@
 class_name OreAmmo
 ## The suit's ammo maker: ranged weapons pay their rounds with carried ore (see
-## `RangedWeaponSettings.ore_per_round`). Any ore type works, each worth its `OreType.ammo_yield`;
+## `WeaponFeed.ore_per_round`). Any ore type works, each worth its `OreType.ammo_yield`;
 ## the commonest one (lowest `OreType.tier`) is used first, so rare ore is spent last.
 
 ## Rounds `affordable` reports when they cost nothing.

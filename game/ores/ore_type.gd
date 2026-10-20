@@ -28,7 +28,7 @@ enum Glow {
 ## How rare it is: 1 is the commonest, each ore its own. Ammo is made from the commonest carried ore
 ## first; the hold and the lists order ores by it.
 @export var tier: int = 1
-## How much ammo one unit makes, compared to the commonest ore (`RangedWeaponSettings.ore_per_round`
+## How much ammo one unit makes, compared to the commonest ore (`WeaponFeed.ore_per_round`
 ## is in units of that). TBD (playtest).
 @export var ammo_yield: float = 1.0
 ## How fast miners fill up with it, relative to the commonest ore (rarer ores mine slower). TBD

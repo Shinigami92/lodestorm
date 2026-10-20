@@ -29,7 +29,7 @@ extends Resource
 @export var armor_arc: float = 360.0
 ## Share of a hit's stagger that hits on the armor fill (the brute's plates hold, its back doesn't).
 @export_range(0.0, 1.0) var armored_stagger: float = 1.0
-## Stagger a hit fills (see `WeaponSettings.stagger`) up to which it keeps going; past it, it's
+## Stagger a hit fills (see `DamageEffect.stagger`) up to which it keeps going; past it, it's
 ## staggered for `stagger_time` and its attack is broken off. The stagger drains in a second.
 @export var stagger_threshold: float = 25.0
 @export var stagger_time: float = 0.5

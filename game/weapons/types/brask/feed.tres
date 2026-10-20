@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MagazineFeed" format=3 uid="uid://m1hasm0but8f"]
+
+[ext_resource type="Script" uid="uid://bwsh0mrtvqkbg" path="res://game/weapons/feeds/magazine_feed.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://7plpkh7jahnw" path="res://assets/audio/sfx/weapons/reload_start.tres" id="2_reload_start"]
+[ext_resource type="Resource" uid="uid://ddkhq4rqa5dhc" path="res://assets/audio/sfx/weapons/shell_in.tres" id="3_load"]
+
+[resource]
+script = ExtResource("1_script")
+ore_per_round = 1.0
+magazine = 6
+reload_mode = 1
+reload_time = 0.5
+sweet_spot_start = 0.4
+sweet_spot_width = 0.5
+fumble_time = 0.3
+chain_speedup = 0.05
+max_chain_speedup = 0.1
+reload_sound = ExtResource("2_reload_start")
+load_sound = ExtResource("3_load")

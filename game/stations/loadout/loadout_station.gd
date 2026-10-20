@@ -205,7 +205,7 @@ func _arrange() -> void:
 			)
 		var display := part.get_child(0) as Weapon
 		if player:
-			display.apply_upgrades(player.upgrades, weapon_type)
+			display.apply_upgrades(player.upgrades)
 		WeaponDisplay.show_owned(display, not player or player.arsenal.owns(weapon_type))
 	_arranged_for = _arrangement(player) if player else []
 

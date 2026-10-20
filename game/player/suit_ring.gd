@@ -3,7 +3,7 @@ extends MeshInstance3D
 ## The ring the suit projects on the ground around the player (a child of it; see GAME_DESIGN.md,
 ## UI): everything a player reads in a fight. Its halves stay fixed to the screen: the health arc
 ## on the left (green, amber below half, red and blinking below a quarter, flashing white on
-## damage, a red mark on the outer edge towards where a hit came from), the equipped ranged
+## damage, a red mark on the outer edge towards where a hit came from), the equipped ammo
 ## weapon's ammo arc on the right in its ammo color (reloads with their timing window, a red flash
 ## when a reload can't start, a white one when a timed press finishes it), the spare magazines as
 ## ticks inside the ammo arc, the dash as a thin inner ring while it recharges, a green outer
@@ -72,7 +72,7 @@ var _ammo_lit: float = 0.0
 var _spares_lit: float = 0.0
 var _dash_lit: float = 0.0
 var _last_health: float = -1.0
-var _last_weapon: RangedWeapon
+var _last_ammo: MagazineAmmo
 var _last_rounds: int = -1
 var _last_spares: int = -1
 var _was_reloading: bool = false
@@ -125,10 +125,10 @@ func shown(parameter: StringName) -> Variant:
 	return _material.get_shader_parameter(parameter)
 
 
-## Whether the ammo arc shows (a ranged weapon is drawn, on the local player's ring).
+## Whether the ammo arc shows (a fed weapon is drawn, on the local player's ring).
 func shows_ammo() -> bool:
-	var ranged := _player.weapon as RangedWeapon
-	return ranged != null and ranged.visible and _player.local
+	var ammo := _player.get_ammo() as MagazineAmmo
+	return ammo != null and _player.weapon.visible and _player.local
 
 
 ## How far the ship arrow's tip reaches from the player (m, with the size setting).
@@ -183,71 +183,66 @@ func _update_health(delta: float, blink_on: bool) -> void:
 
 
 func _update_ammo(delta: float, blink_on: bool) -> void:
-	var ranged := _player.weapon as RangedWeapon
+	var ammo := _player.get_ammo() as MagazineAmmo
 	var drawn: bool = shows_ammo()
 	_material.set_shader_parameter(&"ammo_alpha", 1.0 if drawn else 0.0)
 	if not drawn:
-		_last_weapon = null
+		_last_ammo = null
 		ammo_glow = 0.0
 		spares_alpha = 0.0
 		_material.set_shader_parameter(&"spare_alpha", 0.0)
 		return
-	var capacity: int = ranged.capacity()
-	if ranged != _last_weapon or ranged.rounds != _last_rounds or ranged.reloading:
+	var capacity: int = ammo.capacity()
+	if ammo != _last_ammo or ammo.rounds != _last_rounds or ammo.reloading:
 		_ammo_lit = lit_time
-	var started: bool = ranged.reloading and not _was_reloading
-	if ranged != _last_weapon or ranged.spare_rounds != _last_spares or started:
+	var started: bool = ammo.reloading and not _was_reloading
+	if ammo != _last_ammo or ammo.spare_rounds != _last_spares or started:
 		_spares_lit = lit_time
-	if ranged.reloading:
+	if ammo.reloading:
 		_spares_lit = maxf(_spares_lit, FADE_TIME)
-	_last_weapon = ranged
-	_last_rounds = ranged.rounds
-	_last_spares = ranged.spare_rounds
-	_was_reloading = ranged.reloading
+	_last_ammo = ammo
+	_last_rounds = ammo.rounds
+	_last_spares = ammo.spare_rounds
+	_was_reloading = ammo.reloading
 	_ammo_lit = maxf(_ammo_lit - delta, 0.0)
 	_spares_lit = maxf(_spares_lit - delta, 0.0)
 
-	var share: float = float(ranged.rounds) / capacity
+	var share: float = float(ammo.rounds) / capacity
 	var low: bool = share <= NEARLY_EMPTY
-	var gauge := ranged.get_node_or_null(^"AmmoGauge") as AmmoGauge
+	var gauge: AmmoGauge = _player.weapon.get_gauge()
 	var color: Color = gauge.color if gauge else Color.WHITE
 	color.a = FILL_ALPHA
-	var settings: RangedWeaponSettings = ranged.settings
-	var single: bool = settings.reload_mode == RangedWeaponSettings.ReloadMode.SINGLE
+	var feed: MagazineFeed = ammo.feed
+	var single: bool = ammo.is_single()
 	var segments: int = capacity if capacity <= MAX_SEGMENTS else 0
 	var fill: float = share
 	var window := Vector2(1.0, 0.0)
 	var loading: int = -1
 	var loading_color := color
-	if ranged.reloading and not single:
-		fill = ranged.reload_share()
+	if ammo.reloading and not single:
+		fill = ammo.reload_share()
 		segments = 0
-		if ranged.fumbled:
+		if ammo.fumbled:
 			color = FUMBLE_COLOR
 		else:
-			window = Vector2(
-				settings.sweet_spot_start, settings.sweet_spot_start + settings.sweet_spot_width
-			)
-	elif ranged.reloading and ranged.rounds < capacity:
-		var reload_share: float = ranged.reload_share()
-		var in_window: bool = (
-			reload_share >= settings.sweet_spot_start
-			and reload_share <= settings.sweet_spot_start + settings.sweet_spot_width
-		)
-		loading = ranged.rounds
+			window = Vector2(feed.sweet_spot_start, feed.sweet_spot_start + feed.sweet_spot_width)
+	elif ammo.reloading and ammo.rounds < capacity:
+		var reload_share: float = ammo.reload_share()
+		var in_window: bool = feed.in_window(reload_share)
+		loading = ammo.rounds
 		loading_color = (
-			FUMBLE_COLOR if ranged.fumbled else (AmmoGauge.TIMING if in_window else color)
+			FUMBLE_COLOR if ammo.fumbled else (AmmoGauge.TIMING if in_window else color)
 		)
 		loading_color.a = FILL_ALPHA * clampf(reload_share, 0.15, 1.0)
 		if segments == 0:
 			# One bar: the round being loaded grows it.
-			fill = (ranged.rounds + clampf(reload_share, 0.0, 1.0)) / capacity
+			fill = (ammo.rounds + clampf(reload_share, 0.0, 1.0)) / capacity
 			color = color.lerp(loading_color, 0.5)
-	elif ranged.rounds == 0 and not ranged.can_reload():
+	elif ammo.rounds == 0 and not ammo.can_reload():
 		fill = 1.0
 		color = AmmoGauge.EMPTY if blink_on else AmmoGauge.EMPTY.darkened(1.0 - BLINK_DIM)
 		color.a = FILL_ALPHA * 0.6
-	elif low and ranged.rounds > 0:
+	elif low and ammo.rounds > 0:
 		color = AmmoGauge.WARNING if blink_on else AmmoGauge.WARNING.darkened(1.0 - BLINK_DIM)
 		color.a = FILL_ALPHA
 	if _flash_left > 0.0:
@@ -269,7 +264,7 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 	_material.set_shader_parameter(&"loading_color", loading_color)
 	_material.set_shader_parameter(&"spare_alpha", spares_alpha)
 	_material.set_shader_parameter(&"spare_slots", _player.spare_magazines)
-	_material.set_shader_parameter(&"spare_fill", float(ranged.spare_rounds) / capacity)
+	_material.set_shader_parameter(&"spare_fill", float(ammo.spare_rounds) / capacity)
 	_material.set_shader_parameter(&"spare_color", spare_color)
 
 

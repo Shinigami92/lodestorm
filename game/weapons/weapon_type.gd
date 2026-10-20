@@ -1,28 +1,71 @@
 class_name WeaponType
 extends Resource
-## One weapon of the game as the armory lists it: its name, how it plays and its scene. Players
-## own weapon types (`Arsenal`) and take some into a mission (`Loadout`).
+## One weapon of the game, composed of Resources: what feeds it (`feed`: its ammo; melee weapons
+## have none), how an attack reaches its targets (`delivery`: projectiles, a swing) and what a hit
+## does to them (`effects`), plus the parts the workbench upgrades (`parts`) and its model
+## (`scene`), so most weapons are data plus a greybox scene. `create` makes one to hold or show.
+## Players own weapon types (`Arsenal`): the first ones from the start, the others built at the
+## workbench from their blueprint for ore (`build_cost`), and take some into a mission
+## (`Loadout`). `game/weapons/all_weapons.tres` lists every weapon of the game.
 
-enum Kind { RANGED, MELEE }
+## Where a weapon comes from: the militia's standard issue, the prospectors' converted mining
+## tools, or the lost expedition's prototypes. Shapes its look and groups the racks.
+enum Origin { COLONY, TOOL, PROTOTYPE }
 
-## Player-facing name.
+## Its name, the same in every language (like the ores and places).
 @export var display_name: String = ""
+## What it is, translated, shown under its name (e.g. "Assault rifle").
+@export var class_word: String = ""
 ## One line on how it plays, shown in the armory.
 @export var description: String = ""
-@export var kind: Kind = Kind.RANGED
-## The weapon scene (root extends `Weapon`).
+@export var origin: Origin = Origin.COLONY
+## The model, its root a `Weapon`: with a `Muzzle` marker where projectiles leave, an
+## `AmmoGauge` for a fed weapon, a `Model` that swings, and pips per part (see `WeaponPart`).
 @export var scene: PackedScene
-## Its MK levels at the weapons upgrade station: each one raises its damage.
-@export var upgrade: Upgrade
-## The MK levels of its magazine (ranged weapons): each one holds more rounds.
-@export var magazine_upgrade: Upgrade
+## Attacks (shots, swings) per second while the attack button is held, at MK1.
+@export var attack_rate: float = 6.0
+## Seconds from switching to it until it can attack: the model swings up meanwhile.
+@export var draw_time: float = 0.3
+## Its ammo; null for melee weapons.
+@export var feed: WeaponFeed
+@export var delivery: WeaponDelivery
+## What every hit does (damage, ...), in order.
+@export var effects: Array[WeaponEffect] = []
+## The parts the workbench upgrades, in the order it lists them.
+@export var parts: Array[WeaponPart] = []
+## The ore building it from its blueprint takes, from the hold; empty: nothing (the starting
+## weapons are owned anyway). All amounts TBD (playtest).
+@export var build_cost: Dictionary[OreType, int] = {}
+
+@export_group("Sounds")
+## Each attack (a shot, a swing).
+@export var attack_sound: Sound
 
 
-## Its upgrades (the parts the weapons upgrade station improves), in the order the station lists
-## them.
+## Whether it's a melee weapon: no ammo.
+func is_melee() -> bool:
+	return feed == null
+
+
+## Its parts as upgrades, in the order the workbench lists them.
 func get_upgrades() -> Array[Upgrade]:
-	var parts: Array[Upgrade] = []
-	for part: Upgrade in [upgrade, magazine_upgrade]:
-		if part:
-			parts.append(part)
-	return parts
+	var upgrades: Array[Upgrade] = []
+	upgrades.assign(parts)
+	return upgrades
+
+
+## Its part improving `stat`, or null.
+func get_part(stat: WeaponPart.Stat) -> WeaponPart:
+	for part: WeaponPart in parts:
+		if part.stat == stat:
+			return part
+	return null
+
+
+## A new weapon of this type, not in the tree yet; its ammo (if fed) starts empty.
+func create() -> Weapon:
+	var weapon := scene.instantiate() as Weapon
+	weapon.type = self
+	if feed:
+		weapon.ammo = feed.create_ammo(weapon)
+	return weapon

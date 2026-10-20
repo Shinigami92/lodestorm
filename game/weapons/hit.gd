@@ -5,9 +5,9 @@ extends RefCounted
 
 ## Damage before the alien's armor.
 var damage: float
-## Stagger it adds (see `WeaponSettings.stagger`).
+## Stagger it adds (see `DamageEffect.stagger`).
 var stagger: float
-## How hard it pushes the alien back, in m/s (see `WeaponSettings.push`).
+## How hard it pushes the alien back, in m/s (see `DamageEffect.push`).
 var push: float
 ## Horizontal unit vector the hit travels along (from the attacker to the alien).
 var direction: Vector3

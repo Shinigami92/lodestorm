@@ -2,8 +2,8 @@ class_name SaveGame
 extends Node
 ## Keeps the progress between sessions in one save: the host's (the ship's hold, its heat shield,
 ## where it is and the story's flags, later crew and quests) in `ship.json` and the local
-## player's (owned weapons, loadout, upgrade levels, skill ranks) in `player.json`, both in
-## `save/` under `directory`. It loads
+## player's (owned weapons and blueprints, loadout, upgrade levels, skill ranks) in `player.json`,
+## both in `save/` under `directory`. It loads
 ## them when the map starts and saves whenever progress changes while no mission is underway;
 ## what changes during a mission is saved once it's over (returned or lost), so quitting
 ## mid-mission loses that run like dying. The settings (`GameSettings`) are kept apart and survive
@@ -25,7 +25,16 @@ const MOVED: Dictionary[String, String] = {
 	"res://scenes/mining/ores/ore_green.tres": "res://game/ores/types/ore_olvane.tres",
 	"res://scenes/mining/ores/ore_violet.tres": "res://game/ores/types/ore_vyrel.tres",
 	"res://scenes/mining/ores/": "res://game/ores/types/",
+	"res://scenes/weapons/types/blaster.tres": "res://game/weapons/types/harl/harl.tres",
+	"res://scenes/weapons/types/shotgun.tres": "res://game/weapons/types/brask/brask.tres",
+	"res://scenes/weapons/types/hammer.tres": "res://game/weapons/types/dray/dray.tres",
 	"res://scenes/weapons/types/": "res://game/weapons/types/",
+	"res://scenes/upgrades/blaster.tres": "res://game/weapons/types/harl/mk_damage.tres",
+	"res://scenes/upgrades/blaster_magazine.tres": "res://game/weapons/types/harl/mk_magazine.tres",
+	"res://scenes/upgrades/shotgun.tres": "res://game/weapons/types/brask/mk_damage.tres",
+	"res://scenes/upgrades/shotgun_magazine.tres":
+	"res://game/weapons/types/brask/mk_magazine.tres",
+	"res://scenes/upgrades/hammer.tres": "res://game/weapons/types/dray/mk_damage.tres",
 	"res://scenes/upgrades/": "res://game/progression/upgrades/",
 	"res://scenes/skills/": "res://game/progression/skills/tree/",
 }
@@ -174,12 +183,15 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 	return data
 
 
-## What's saved of `of_player`: the weapons it owns, its loadout (null: empty slot), the MK
-## level of each upgrade it bought and the rank of each skill it learned.
+## What's saved of `of_player`: the weapons it owns and its blueprints, its loadout (null: empty
+## slot), the MK level of each upgrade it bought and the rank of each skill it learned.
 static func player_data(of_player: Player) -> Dictionary:
 	var weapons: Array = []
 	for weapon_type: WeaponType in of_player.arsenal.weapons:
 		weapons.append(_reference(weapon_type))
+	var blueprints: Array = []
+	for weapon_type: WeaponType in of_player.arsenal.blueprints:
+		blueprints.append(_reference(weapon_type))
 	var loadout: Array = []
 	for weapon_type: WeaponType in of_player.loadout.weapons:
 		if weapon_type:
@@ -195,6 +207,7 @@ static func player_data(of_player: Player) -> Dictionary:
 	return {
 		"version": VERSION,
 		"arsenal": weapons,
+		"blueprints": blueprints,
 		"loadout": loadout,
 		"upgrades": levels,
 		"skills": ranks,
@@ -287,6 +300,18 @@ func _apply_player(data: Dictionary) -> void:
 		else:
 			player.arsenal.weapons = weapons
 			player.arsenal.emit_changed()
+	if data.get("blueprints") is Array:
+		var blueprints: Array[WeaponType] = []
+		for path: Variant in data["blueprints"] as Array:
+			var weapon_type := _resource(path) as WeaponType
+			if weapon_type and weapon_type not in blueprints:
+				if not player.arsenal.owns(weapon_type):
+					blueprints.append(weapon_type)
+			else:
+				_outdated = true
+				push_warning("Save: skipped blueprint %s" % path)
+		player.arsenal.blueprints = blueprints
+		player.arsenal.emit_changed()
 	if data.get("loadout") is Array:
 		# Only owned weapons; anything else leaves the slot empty.
 		var slots: Array[WeaponType] = []

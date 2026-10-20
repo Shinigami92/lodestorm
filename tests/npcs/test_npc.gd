@@ -2,7 +2,7 @@ extends GutTest
 ## Crew members aboard (`Npc`): the quartermaster in the armory, talking to them, their topics.
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
-const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
+const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 
 var _map: Node3D
 var _player: Player
@@ -60,7 +60,7 @@ func test_first_talk_plays_the_greeting() -> void:
 	assert_eq(
 		_titles(),
 		["Ammo", "Spare magazines", "Reloading", "Shooting range"],
-		"timing needs reloading, the shotgun owning one"
+		"timing needs reloading, Brask owning one"
 	)
 
 
@@ -90,16 +90,16 @@ func test_topics_open_up_and_lose_their_dot() -> void:
 	assert_false(_npc.has_news())
 
 
-func test_shotgun_topic_once_it_is_unlocked() -> void:
+func test_brask_topic_once_it_is_unlocked() -> void:
 	_ship.story.set_flag(_npc.profile.dialogue.greeting.id)
 	# Hearing some opens up others.
 	while _npc.has_news(_player):
 		for topic: Topic in _npc.get_choices(_player):
 			_ship.story.set_flag(topic.id)
-	assert_false(_titles(_player).has("Shotgun"), "locked")
-	_player.arsenal.unlock(SHOTGUN)
-	assert_true(_titles(_player).has("Shotgun"))
-	assert_true(_npc.has_news(_player), "the shotgun is new")
+	assert_false(_titles(_player).has("Brask"), "locked")
+	_player.arsenal.unlock(BRASK)
+	assert_true(_titles(_player).has("Brask"))
+	assert_true(_npc.has_news(_player), "Brask is new")
 	await wait_process_frames(1)
 	assert_true(_npc._new_marker.visible)
 

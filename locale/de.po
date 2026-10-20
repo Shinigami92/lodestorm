@@ -138,8 +138,8 @@ msgid "The rarer the ore, the more rounds you get from the same amount."
 msgstr "Je seltener das Erz, desto mehr Munition bekommst du aus der gleichen Menge."
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take the hammer along: it needs no ammo."
-msgstr "Sind deine Ersatzmagazine aufgebraucht, kannst du ohne Erz nicht mehr nachladen. Stell also früh deine Miner auf, oder nimm den Hammer mit: Der braucht keine Munition."
+msgid "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take Dray along: a hammer needs no ammo."
+msgstr "Sind deine Ersatzmagazine aufgebraucht, kannst du ohne Erz nicht mehr nachladen. Stell also früh deine Miner auf, oder nimm Dray mit: Ein Hammer braucht keine Munition."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "Aboard, every reload is free: the rounds come from the ship's stock."
@@ -171,8 +171,8 @@ msgid "You can reload whenever you want, as long as you still have a spare magaz
 msgstr "Du kannst nachladen, wann immer du willst, solange du noch ein Ersatzmagazin oder Erz dafür hast. Ist das Magazin leer, lädt deine Waffe von selbst nach."
 
 #: game/npcs/crew/quartermaster.tres
-msgid "But careful with the blaster: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
-msgstr "Aber Vorsicht beim Blaster: Das Nachladen wirft die Munition weg, die noch im Magazin ist. Lade ein halbvolles Magazin also nicht einfach aus Gewohnheit nach."
+msgid "But careful with Harl: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
+msgstr "Aber Vorsicht bei Harl: Das Nachladen wirft die Munition weg, die noch im Magazin ist. Lade ein halbvolles Magazin also nicht einfach aus Gewohnheit nach."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "While you reload, you walk slower. So pick a moment when nothing is right on your heels."
@@ -195,14 +195,12 @@ msgid "If you don't press a second time at all, it just takes the normal time. S
 msgstr "Drückst du gar kein zweites Mal, dauert es einfach so lange wie immer. Probier es also zuerst am Schießstand aus, dort kostet es dich nichts."
 
 #: game/npcs/crew/quartermaster.tres
-#: game/progression/upgrades/shotgun.tres
-#: game/weapons/types/shotgun.tres
-msgid "Shotgun"
-msgstr "Schrotflinte"
+msgid "Brask"
+msgstr "Brask"
 
 #: game/npcs/crew/quartermaster.tres
-msgid "So you've got a shotgun now. It has no magazine: it loads one shell after another, and keeps the shells that are already in."
-msgstr "Du hast jetzt also eine Schrotflinte. Sie hat kein Magazin, sondern lädt eine Patrone nach der anderen und behält die Patronen, die schon drin sind."
+msgid "So you've got Brask now, the shotgun. It has no magazine: it loads one shell after another, and keeps the shells that are already in."
+msgstr "Du hast jetzt also Brask, die Schrotflinte. Sie hat kein Magazin, sondern lädt eine Patrone nach der anderen und behält die Patronen, die schon drin sind."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded."
@@ -433,32 +431,6 @@ msgstr "Anzugpanzerung"
 msgid "More health"
 msgstr "Mehr Gesundheit"
 
-#: game/progression/upgrades/blaster.tres
-#: game/weapons/types/blaster.tres
-msgid "Blaster"
-msgstr "Blaster"
-
-#: game/progression/upgrades/blaster.tres
-msgid "More damage per shot"
-msgstr "Mehr Schaden pro Schuss"
-
-#: game/progression/upgrades/blaster_magazine.tres
-msgid "Blaster magazine"
-msgstr "Blaster-Magazin"
-
-#: game/progression/upgrades/blaster_magazine.tres
-msgid "More rounds per magazine"
-msgstr "Mehr Schuss pro Magazin"
-
-#: game/progression/upgrades/hammer.tres
-#: game/weapons/types/hammer.tres
-msgid "Hammer"
-msgstr "Hammer"
-
-#: game/progression/upgrades/hammer.tres
-msgid "More damage per swing"
-msgstr "Mehr Schaden pro Schlag"
-
 #: game/progression/upgrades/miner_drill.tres
 msgid "Drill"
 msgstr "Bohrer"
@@ -482,18 +454,6 @@ msgstr "Erztank"
 #: game/progression/upgrades/miner_tank.tres
 msgid "Miners hold more ore"
 msgstr "Miner fassen mehr Erz"
-
-#: game/progression/upgrades/shotgun.tres
-msgid "More damage per pellet"
-msgstr "Mehr Schaden pro Schrotkugel"
-
-#: game/progression/upgrades/shotgun_magazine.tres
-msgid "Shotgun magazine"
-msgstr "Schrotflinten-Magazin"
-
-#: game/progression/upgrades/shotgun_magazine.tres
-msgid "More shells per load"
-msgstr "Mehr Patronen pro Ladung"
 
 #: game/ship/rooms/cargo_bay.tscn
 msgid "Cargo bay"
@@ -822,24 +782,8 @@ msgid "Locked"
 msgstr "Gesperrt"
 
 #: game/stations/loadout/loadout_card.gd
-msgid "Melee"
-msgstr "Nahkampf"
-
-#: game/stations/loadout/loadout_card.gd
-msgid "Ranged"
-msgstr "Fernkampf"
-
-#: game/stations/loadout/loadout_card.gd
 msgid "Slots 1 and 2 go along on the next mission; one weapon always does."
 msgstr "Platz 1 und 2 kommen mit auf die nächste Mission; eine Waffe immer."
-
-#: game/stations/loadout/loadout_card.gd
-msgid "Damage"
-msgstr "Schaden"
-
-#: game/stations/loadout/loadout_card.gd
-msgid "Magazine"
-msgstr "Magazin"
 
 #: game/stations/loadout/loadout_card.gd
 msgid "Slot %d"
@@ -921,6 +865,18 @@ msgstr "Aufrüsten"
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Max"
 msgstr "Max"
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Blueprint"
+msgstr "Bauplan"
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Building it needs its blueprint."
+msgstr "Zum Bauen fehlt noch der Bauplan."
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Build"
+msgstr "Bauen"
 
 #: game/ui/credits.tscn
 msgid "Design and direction"
@@ -1022,17 +978,95 @@ msgstr "Nur, solange du allein bist. Mit anderen in deiner Sitzung behalten alle
 msgid "Press any button"
 msgstr "Beliebige Taste drücken"
 
-#: game/weapons/types/blaster.tres
-msgid "Rapid shots that reach far."
-msgstr "Schnelle Schüsse mit großer Reichweite."
+#: game/weapons/types/brask/brask.tres
+msgid "Shotgun"
+msgstr "Schrotflinte"
 
-#: game/weapons/types/hammer.tres
+#: game/weapons/types/brask/brask.tres
+msgid "A fan of pellets, strong up close."
+msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
+
+#: game/weapons/types/brask/mk_damage.tres
+#: game/weapons/types/dray/mk_damage.tres
+#: game/weapons/types/harl/mk_damage.tres
+msgid "Damage"
+msgstr "Schaden"
+
+#: game/weapons/types/brask/mk_damage.tres
+msgid "More damage per pellet"
+msgstr "Mehr Schaden pro Schrotkugel"
+
+#: game/weapons/types/brask/mk_magazine.tres
+msgid "Shells"
+msgstr "Patronen"
+
+#: game/weapons/types/brask/mk_magazine.tres
+msgid "More shells per load"
+msgstr "Mehr Patronen pro Ladung"
+
+#: game/weapons/types/brask/mk_pellets.tres
+msgid "Pellets"
+msgstr "Schrotkugeln"
+
+#: game/weapons/types/brask/mk_pellets.tres
+msgid "More pellets per shell"
+msgstr "Mehr Schrotkugeln pro Patrone"
+
+#: game/weapons/types/dray/dray.tres
+msgid "Hammer"
+msgstr "Hammer"
+
+#: game/weapons/types/dray/dray.tres
 msgid "Heavy swings that hit everything in front."
 msgstr "Wuchtige Schläge, die alles davor treffen."
 
-#: game/weapons/types/shotgun.tres
-msgid "A fan of pellets, strong up close."
-msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
+#: game/weapons/types/dray/mk_arc.tres
+msgid "Arc width"
+msgstr "Schlagbreite"
+
+#: game/weapons/types/dray/mk_arc.tres
+msgid "A wider swing"
+msgstr "Ein breiterer Schlag"
+
+#: game/weapons/types/dray/mk_damage.tres
+msgid "More damage per swing"
+msgstr "Mehr Schaden pro Schlag"
+
+#: game/weapons/types/dray/mk_rate.tres
+msgid "Swing speed"
+msgstr "Schlagtempo"
+
+#: game/weapons/types/dray/mk_rate.tres
+msgid "More swings per second"
+msgstr "Mehr Schläge pro Sekunde"
+
+#: game/weapons/types/harl/harl.tres
+msgid "Assault rifle"
+msgstr "Sturmgewehr"
+
+#: game/weapons/types/harl/harl.tres
+msgid "Rapid shots that reach far."
+msgstr "Schnelle Schüsse mit großer Reichweite."
+
+#: game/weapons/types/harl/mk_damage.tres
+msgid "More damage per shot"
+msgstr "Mehr Schaden pro Schuss"
+
+#: game/weapons/types/harl/mk_magazine.tres
+msgid "Magazine"
+msgstr "Magazin"
+
+#: game/weapons/types/harl/mk_magazine.tres
+msgid "More rounds per magazine"
+msgstr "Mehr Schuss pro Magazin"
+
+#: game/weapons/types/harl/mk_rate.tres
+msgid "Fire rate"
+msgstr "Feuerrate"
+
+#: game/weapons/types/harl/mk_rate.tres
+msgid "More shots per second"
+msgstr "Mehr Schüsse pro Sekunde"
 
 #: game/world/celestial_body.gd
 msgid "Moon"

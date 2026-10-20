@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bcy70upxk1eyk"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cykcrssakcta5" path="res://game/weapons/types/harl/harl.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://11x2oq46b07q" path="res://game/weapons/types/harl/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://uqbjhdcck1i" path="res://game/weapons/types/harl/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://0ovnp0fw1pu" path="res://assets/audio/sfx/weapons/harl_shot.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://cpccmkaoknnt2" path="res://game/weapons/types/harl/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://jjw1gevkr1h2" path="res://game/weapons/types/harl/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://nkbawto3e28v" path="res://game/weapons/types/harl/mk_magazine.tres" id="mk_magazine"]
+[ext_resource type="Resource" uid="uid://bnti3gll4ygc6" path="res://game/weapons/types/harl/mk_rate.tres" id="mk_rate"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Harl"
+class_word = "Assault rifle"
+description = "Rapid shots that reach far."
+scene = ExtResource("2_scene")
+attack_rate = 8
+draw_time = 0.3
+feed = ExtResource("8_feed")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_magazine"), ExtResource("mk_rate")])
+attack_sound = ExtResource("7_sound")

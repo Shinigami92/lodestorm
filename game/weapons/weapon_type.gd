@@ -13,6 +13,9 @@ extends Resource
 ## Where a weapon comes from: the militia's standard issue, the prospectors' converted mining
 ## tools, or the lost expedition's prototypes. Shapes its look and groups the racks.
 enum Origin { COLONY, TOOL, PROTOTYPE }
+## How the holder carries it between attacks (see `PlayerAnimator`): raised to aim (the ranged
+## weapons), a blade in one hand, a hammer in both, a tool braced at the hip in both.
+enum Hold { AIM, BLADE, HAMMER, BRACE }
 
 ## Its name, the same in every language (like the ores and places).
 @export var display_name: String = ""
@@ -28,6 +31,7 @@ enum Origin { COLONY, TOOL, PROTOTYPE }
 @export var attack_rate: float = 6.0
 ## Seconds from switching to it until it can attack: the model swings up meanwhile.
 @export var draw_time: float = 0.3
+@export var hold: Hold = Hold.AIM
 ## Its ammo; null for melee weapons.
 @export var feed: WeaponFeed
 ## How holding the attack button attacks; null: at `attack_rate` while it's held.

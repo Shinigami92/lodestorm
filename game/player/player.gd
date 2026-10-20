@@ -22,8 +22,9 @@ extends CharacterBody3D
 ## cooldown shown on the suit ring), more spare magazines, reloading at full speed,
 ## careful reloads, the ore scanner's arrow (`OreScanner`) and the damage readout
 ## (`DamageNumber`).
-## The suit model (Body/Model) is animated by `PlayerAnimator`; the weapon, the cargo rack and
-## the hose port follow its markers (WeaponGrip in the right hand, the others on the backpack).
+## The suit model (Body/Model) is animated by `PlayerAnimator` (holding the weapon as its type
+## says, swinging it with its melee attacks); the weapon, the cargo rack and the hose port follow
+## its markers (WeaponGrip in the right hand, the others on the backpack).
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
 ## `pause` with no menu open shows its pause panel (`pause_panel`).
 ## Each player has a `number` (1–4) and its color; only the `local` one (the one this machine plays
@@ -264,6 +265,9 @@ func _physics_process(delta: float) -> void:
 	_animator.aiming = weapon != null and weapon_allowed
 
 	if weapon:
+		_animator.hold = weapon.type.hold
+		_animator.shake = weapon.wind
+		_animator.drilling = is_instance_valid(weapon.latched)
 		weapon.aim_direction = aim.direction
 		weapon.aim_target = aim.target
 		weapon.aim_point = aim.ground_point
@@ -630,6 +634,7 @@ func _equip(weapon_type: WeaponType) -> void:
 		return
 	weapon = weapon_type.create()
 	weapon.holder = self
+	weapon.motion_started.connect(_animator.play_motion)
 	weapon.apply_upgrades(upgrades)
 	var ammo: WeaponAmmo = weapon.ammo
 	if ammo:

@@ -3,6 +3,7 @@
 Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
     tools/blender.sh assets/player/source/player_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/player/source/player_build.py final      # renders + player_procedural.blend
+    tools/blender.sh assets/player/source/player_build.py clips [Slash ...]  # workbench sheets of the melee clips
 
 Everything it writes goes to tmp/assets/player/; player_bake.py turns player_procedural.blend into the game asset.
 
@@ -17,8 +18,11 @@ color by health). Empties on bones: "WeaponGrip" (RightHand, Harl's origin in th
 
 Animations (one action per clip, each in its own NLA track, all at 30 fps): "Idle" (loop), "Run", "RunBack",
 "StrafeLeft", "StrafeRight" (loops, authored at RUN_SPEED: the game scales their speed by the actual one),
-"Aim" (upper-body pose holding Harl; the game layers it over the legs) and "Die" (once, ends lying face
-down). Poses are built from world-space rotations per bone and two-bone IK for arms and legs, then converted to
+"Aim" (upper-body pose holding Harl; the game layers it over the legs), "Die" (once, ends lying face
+down) and the melee clips, upper body only too: the holds "ReadyBlade" (Riven), "ReadyHammer" (Dray) and "Brace"
+(Jag, Auger: two-handed at the hip), the attacks "Slash", "SlashBack", "Overhead" and "Thrust" (wind-up, a stroke of
+ATTACK_STROKE frames the game fits to the attack's time, staying at the end) and the braced tool's loops "Cut"
+(leaning in, shaking) and "Drill" (out at the thrust's end, shaking). Poses are built from world-space rotations per bone and two-bone IK for arms and legs, then converted to
 the bones' local rotations (pose_of()).
 """
 
@@ -520,6 +524,164 @@ def die(t: float) -> Pose:
     return p
 
 
+# --- melee ------------------------------------------------------------------------------------------
+# A weapon is placed by its grip (the WeaponGrip marker): hold() puts the right hand there, turned so the weapon
+# points along `forward` with its top along `up` (armature space). Points on a weapon are given in its scene's axes
+# (Godot: x right, y up, -z forward) and turned into the armature's by weapon_point().
+
+GRIP_TURN = rz(180)  # the marker's rotation (its +Y is the weapon's forward, its +Z its top)
+FIST = 0.065  # wrist to the middle of the fist
+ATTACK_WIND, ATTACK_STROKE, ATTACK_HOLD = 2, 6, 6  # frames of an attack clip: wind-up, stroke, staying at the end
+ATTACK_FRAMES = ATTACK_WIND + ATTACK_STROKE + ATTACK_HOLD
+SHAKE_FRAMES = 12  # one loop of a braced tool's tremor
+HAMMER_LOWER_HAND = (0.0, 0.0, 0.11)  # Dray's haft, behind the right hand
+SIDE_HANDLE = (-0.2, 0.04, -0.06)  # Jag's and Auger's handle for the left hand
+
+
+def _grip_in_hand() -> tuple:
+    """The grip's offset and rotation in the right hand's rest frame (the marker is placed in the aim pose)."""
+    p = idle(0.0, aim=True)
+    h = p.w["RightHand"]
+    return h.transposed() @ (GRIP - p.pos("RightHand")), h.transposed() @ GRIP_TURN
+
+
+GRIP_OFFSET, GRIP_REST = _grip_in_hand()
+
+
+def weapon_frame(forward, up) -> Matrix:
+    f = Vector(forward).normalized()
+    u = Vector(up)
+    u = (u - f * u.dot(f)).normalized()
+    return Matrix((f.cross(u), f, u)).transposed()
+
+
+def weapon_point(grip: Vector, frame_: Matrix, local) -> Vector:
+    gx, gy, gz = local
+    return grip + frame_ @ Vector((gx, -gz, gy))
+
+
+def hold(p: Pose, grip, forward, up, pole) -> Matrix:
+    """Puts the right hand on the weapon's grip at `grip`; returns the weapon's frame."""
+    g = weapon_frame(forward, up)
+    h = g @ GRIP_REST.transposed()
+    p.arm("Right", Vector(grip) - h @ GRIP_OFFSET, Vector(pole), Vector((-1, 0, 0)), Vector((0, 0, -1)))
+    p.w["RightHand"] = h
+    return g
+
+
+def left_on(p: Pose, point: Vector, hand_dir, palm, pole) -> None:
+    """Puts the left fist around `point`, the hand pointing along hand_dir."""
+    d = Vector(hand_dir).normalized()
+    p.arm("Left", point - d * FIST, Vector(pole), d, Vector(palm))
+
+
+def stance(lean: float = 0.0, turn: float = 0.0) -> Pose:
+    """The idle legs with the upper body leaning forward and turned left (degrees, spread over the spine)."""
+    p = idle(0.0)
+    tilt = lambda share: rz(turn * share) @ rx(lean * share)
+    p.spine(spine=tilt(0.3), chest=tilt(0.6), upper=tilt(1.0), neck=rz(-turn * 0.6), head=I3)
+    return p
+
+
+def lerp(a, b, t: float):
+    return a + (b - a) * t
+
+
+def guard(p: Pose, raise_: float = 1.0) -> None:
+    """The free left arm up in front of the chest."""
+    wrist = lerp(Vector((0.3, -0.06, 1.0)), Vector((0.2, -0.3, 1.28)), raise_)
+    p.arm("Left", wrist, Vector((1, 0.4, -1)), Vector((-0.2, -0.3, 1)), Vector((-1, -0.2, 0)))
+
+
+def ready_blade() -> Pose:
+    """Riven: one-handed, the blade low in front pointing forward and up, the left arm up as a guard."""
+    p = stance(4, -12)
+    hold(p, (-0.24, -0.34, 1.0), (0.12, -0.75, 0.6), (-1, 0, 0), (-0.6, 0.6, -1))
+    guard(p)
+    return p
+
+
+def slash(t: float, back: bool = False) -> Pose:
+    """Riven's slash across the front, from the right to the left (back: the other way), edge first."""
+    w, s = ATTACK_WIND, ATTACK_STROKE
+    f = t * (w + s + ATTACK_HOLD)
+    a0, a1 = (-65.0, 45.0) if not back else (45.0, -65.0)
+    if f < w:  # cocked a little further back
+        deg = lerp(a0, a0 - 0.1 * (a1 - a0), smooth(f / w))
+        u = 0.0
+    else:
+        u = 1 - (1 - min((f - w) / s, 1.0)) ** 3  # fast out of the wind-up, slowing at the end
+        deg = lerp(a0 - 0.1 * (a1 - a0), a1, u)
+    a = math.radians(deg)
+    p = stance(8 + 6 * u, deg * 0.4)
+    side = Vector((math.sin(a), -math.cos(a), 0))
+    grip = Vector((-0.08, -0.08, 1.16)) + side * 0.48 + Vector((0, 0, 0.1 - 0.16 * u))
+    edge_up = 1.0 if back else -1.0
+    hold(p, grip, side + Vector((0, 0, -0.12)), (0, 0, edge_up), (-0.5 * edge_up - 0.2, 0.5, -1))
+    guard(p, 0.6)
+    return p
+
+
+def ready_hammer() -> Pose:
+    """Dray: two-handed, the haft across the body, the head up by the right shoulder."""
+    p = stance(4, -10)
+    g = hold(p, (-0.08, -0.3, 1.02), (-0.55, 0.3, 0.75), (0.1, -1, 0.2), (-0.6, 0.6, -1))
+    left_on(
+        p,
+        weapon_point(Vector((-0.08, -0.3, 1.02)), g, HAMMER_LOWER_HAND),
+        (-0.6, 0.1, -0.1),
+        (0, 0.4, -1),
+        (1, 0.3, -1),
+    )
+    return p
+
+
+def overhead(t: float) -> Pose:
+    """Dray's blow: raised over the right shoulder, then down in front, both hands on the haft."""
+    w, s = ATTACK_WIND, ATTACK_STROKE
+    total = w + s + ATTACK_HOLD
+    f = t * total
+    if f < w:  # raise
+        u = smooth(f / w)
+        phi, lean = lerp(-15.0, -40.0, u), lerp(4.0, -8.0, u)
+    else:
+        u = 1 - (1 - min((f - w) / s, 1.0)) ** 2  # down at once: the hit lands as the attack starts
+        phi, lean = lerp(-40.0, 145.0, u), lerp(-8.0, 24.0, u)
+    r = math.radians(phi)
+    p = stance(lean, -10 + 6 * max(phi, 0) / 145)
+    forward = Vector((-0.12, -math.sin(r), math.cos(r)))
+    up = Vector((0, -math.cos(r), -math.sin(r)))
+    grip = Vector((-0.1, -0.06, 1.3)) + Vector((0, -math.sin(r), math.cos(r))) * 0.32 + Vector((0, -0.12, 0))
+    g = hold(p, grip, forward, up, (-0.8, 0.3, -1))
+    left_on(p, weapon_point(grip, g, HAMMER_LOWER_HAND), (-1, 0, 0), up, (1, 0.4, -1))
+    return p
+
+
+def brace(push: float = 0.0, lean: float = 0.0, shake: Vector | None = None) -> Pose:
+    """Jag and Auger: two-handed at the hip, the left hand on the side handle; push moves it forward (m)."""
+    p = stance(6 + lean, -14 + 0.25 * lean)
+    grip = Vector((-0.2, -0.32 - push, 0.98 + 0.4 * push)) + (shake or Vector())
+    g = hold(p, grip, (0.02, -1, -0.04), (0, 0, 1), (-0.8, 0.5, -1))
+    left_on(p, weapon_point(grip, g, SIDE_HANDLE), (0, -0.4, -1), (-1, 0, 0), (1, 0.3, -1))
+    return p
+
+
+def thrust(t: float) -> Pose:
+    """Auger's thrust: pulled back a little, pushed out with the body leaning in, staying out."""
+    w, s = ATTACK_WIND, ATTACK_STROKE
+    f = t * (w + s + ATTACK_HOLD)
+    if f < w:
+        return brace(-0.06 * smooth(f / w))
+    u = 1 - (1 - min((f - w) / s, 1.0)) ** 2
+    return brace(lerp(-0.06, 0.4, u), 16 * u)
+
+
+def tremor(t: float) -> Vector:
+    """A loop of small jolts (m), the same at 0 and 1."""
+    a = 2 * math.pi * t
+    return Vector((0.006 * math.sin(3 * a) + 0.003 * math.sin(7 * a), 0.006 * math.sin(5 * a), 0.008 * math.cos(4 * a)))
+
+
 MOVES = {
     "Run": Vector((0, -1, 0)),
     "RunBack": Vector((0, 1, 0)),
@@ -531,6 +693,15 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
     **{name: (RUN_FRAMES, lambda t, m=m: run(t, m)) for name, m in MOVES.items()},
     "Aim": (1, lambda t: idle(0.0, aim=True)),
     "Die": (36, die),
+    "ReadyBlade": (1, lambda t: ready_blade()),
+    "ReadyHammer": (1, lambda t: ready_hammer()),
+    "Brace": (1, lambda t: brace()),
+    "Slash": (ATTACK_FRAMES, slash),
+    "SlashBack": (ATTACK_FRAMES, lambda t: slash(t, back=True)),
+    "Overhead": (ATTACK_FRAMES, overhead),
+    "Thrust": (ATTACK_FRAMES, thrust),
+    "Cut": (SHAKE_FRAMES, lambda t: brace(0.05, 8, tremor(t))),
+    "Drill": (SHAKE_FRAMES, lambda t: brace(0.4, 16, tremor(t))),
 }
 
 
@@ -587,6 +758,101 @@ def preview(arm: bpy.types.Object, tag: str) -> list:
     return shots
 
 
+STAND_INS = {  # rough weapons for the clip previews: boxes (center, size) in the weapon scenes' axes
+    "blade": [
+        ((0, 0, 0.02), (0.05, 0.05, 0.3)),
+        ((0, 0, -0.16), (0.18, 0.06, 0.06)),
+        ((0, 0, -0.69), (0.095, 0.014, 1)),
+    ],
+    "hammer": [((0, 0.05, -0.3), (0.056, 0.056, 0.85)), ((0, 0.05, -0.72), (0.18, 0.4, 0.18))],
+    "tool": [
+        ((0, 0, 0.12), (0.05, 0.05, 0.22)),
+        ((0, 0.04, -0.06), (0.17, 0.17, 0.26)),
+        ((0, 0.04, -0.5), (0.14, 0.14, 0.5)),
+        (SIDE_HANDLE, (0.2, 0.04, 0.04)),
+    ],
+}
+STAND_IN_EDGE = ((0.052, 0, -0.7), (0.012, 0.018, 0.98))  # Riven's edge, bright
+PREVIEW_CLIPS = {  # clip: stand-in
+    "ReadyBlade": "blade",
+    "Slash": "blade",
+    "SlashBack": "blade",
+    "ReadyHammer": "hammer",
+    "Overhead": "hammer",
+    "Brace": "tool",
+    "Thrust": "tool",
+    "Cut": "tool",
+    "Drill": "tool",
+}
+
+
+def stand_ins() -> dict:
+    grip = bpy.data.objects["WeaponGrip"]
+    out = {}
+    for kind, boxes in STAND_INS.items():
+        parts = boxes + ([STAND_IN_EDGE] if kind == "blade" else [])
+        objs = []
+        for i, ((x, y, z), (sx, sy, sz)) in enumerate(parts):
+            obj = bpy.data.objects.new(f"StandIn_{kind}{i}", _box((sx, sz, sy)))
+            C.link(obj)
+            obj.parent = grip
+            obj.location = (x, -z, y)
+            obj.color = (1.0, 0.85, 0.3, 1) if (kind == "blade" and i == len(parts) - 1) else (0.75, 0.35, 0.1, 1)
+            objs.append(obj)
+        out[kind] = objs
+    return out
+
+
+def _box(size) -> bpy.types.Mesh:
+    sx, sy, sz = (v / 2 for v in size)
+    verts = [(x * sx, y * sy, z * sz) for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)]
+    faces = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)]
+    mesh = bpy.data.meshes.new("StandIn")
+    mesh.from_pydata(verts, [], faces)
+    return mesh
+
+
+def preview_clips(arm: bpy.types.Object, only: list) -> None:
+    """Workbench contact sheets of the melee clips (rows: a view each, columns: frames)."""
+    C.preview_scene(crystals=False, figure_location=(30, 30, 0))
+    scene = bpy.context.scene
+    scene.render.engine = "BLENDER_WORKBENCH"
+    scene.display.shading.light = "STUDIO"
+    scene.display.shading.color_type = "OBJECT"
+    scene.render.resolution_x = scene.render.resolution_y = 320
+    for name in ("Suit", "SuitLight"):
+        bpy.data.objects[name].color = (0.35, 0.38, 0.42, 1) if name == "Suit" else (0.3, 1, 0.45, 1)
+    weapons = stand_ins()
+    views = (("hero", 0.62), ("iso", 0.42), ("top", 0.0))
+    close = (("hero", 0.3), ("back", 0.3), ("iso", 0.22))
+    for clip, kind in PREVIEW_CLIPS.items():
+        if only and clip not in only:
+            continue
+        for k, objs in weapons.items():
+            for obj in objs:
+                obj.hide_render = k != kind
+        frames, fn = CLIPS[clip]
+        steps = list(range(0, frames + 1, max(1, frames // 7))) if frames > 1 else [0]
+        shots = []
+        for view, zoom in views if frames > 1 else close:
+            for f in steps:
+                apply(arm, fn(f / frames if frames else 0.0))
+                bpy.context.view_layer.update()
+                path = OUT / "clips" / f"{clip}_{view}{zoom}_{f:02d}.png"
+                if view == "top":
+                    cam = C._camera("custom")
+                    cam.data.lens = 40
+                    cam.location = Vector((0, -0.4, 6.5))
+                    cam.rotation_euler = (0, 0, 0)
+                    scene.camera = cam
+                else:
+                    C._camera(view, (0, -0.2, 1.1), zoom)
+                C._write_render(path)
+                shots.append(path)
+        C.contact_sheet(shots, OUT / "clips" / f"sheet_{clip}.png", cols=len(steps) if frames > 1 else 3, tile=320)
+    rest_pose(arm)
+
+
 def main() -> None:
     C.reset(ASSET)
     root = C.asset_root(ASSET)
@@ -594,6 +860,9 @@ def main() -> None:
     _suit, _band = build_suit(root, arm)
     markers(arm)
     print("STATS", C.stats(), C.tris_per_object())
+    if MODE == "clips":
+        preview_clips(arm, ARGV[1:])
+        return
     preview(arm, TAG if MODE == "wip" else "final")
     if MODE == "final":
         bake_clips(arm)

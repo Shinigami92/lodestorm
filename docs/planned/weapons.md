@@ -64,7 +64,7 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 
 ## Player animations for melee
 
-Decided 2026-10-20, built right after step 10 E1, before E2: melee weapons need the player's arms to swing, not only the weapon model (ranged weapons don't). Upper-body attack clips in `assets/player/source/player_build.py` (a slash one way and back, an overhead blow, a thrust, a two-handed hold for the saw and the drill), played per attack by the delivery's stroke; the weapon-model motions stay as a small extra. E2's punch (Clout) and bash (Mantle) get their clips with them.
+Built (step 10 E1b, see GAME_DESIGN.md, Art direction, Player): every weapon names how it's held (`WeaponType.hold`), the melee attacks move the arms. E2's punch (Clout) and bash (Mantle) get their holds and clips with them.
 
 ## Data and tests
 

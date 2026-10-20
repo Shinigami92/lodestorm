@@ -8,6 +8,7 @@ extends WeaponDelivery
 ## seconds (quicker with the MK level of the weapon's ramp), so armor takes less off; the drill
 ## lets go when its target dies or gets out of reach. The bit spins (`Weapon.wind`, see
 ## `DrillTrigger`): full speed with a thrust, and while drilling the faster the more it ramped up.
+## The holder's arms thrust (`Weapon.motion_started`) within `stroke` seconds.
 ## A thrust that hits plays `hit_sound`. All values TBD (playtest).
 
 ## How far to either side of an alien's center the line still hits it (its body, m).
@@ -17,6 +18,8 @@ const DRILL_SPIN_MIN: float = 0.5
 
 ## How far the thrust reaches, from the holder (horizontally, m).
 @export var reach: float = 4.0
+## Seconds the holder's arms take to thrust out.
+@export var stroke: float = 0.2
 ## Width of its line (m).
 @export var width: float = 0.6
 ## Drilling hits per second.
@@ -91,6 +94,7 @@ func _thrust(weapon: Weapon) -> void:
 		weapon.play(hit_sound)
 	weapon.latch(first)
 	weapon.wind = 1.0
+	weapon.motion_started.emit(Weapon.Motion.THRUST, stroke)
 	weapon.swung.emit(hits)
 
 

@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://0rh1i3wlhf84"]
 
 [ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://dawtwbark7jmu" path="res://game/weapons/types/auger/auger.tscn" id="2_scene"]
+[ext_resource type="PackedScene" uid="uid://bbnjgbi2v6mvu" path="res://game/weapons/types/auger/auger.tscn" id="2_scene"]
 [ext_resource type="Resource" uid="uid://d14rpfx6khas5" path="res://game/weapons/types/auger/delivery.tres" id="3_delivery"]
 [ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
 [ext_resource type="Resource" uid="uid://dcsxebck158qn" path="res://game/weapons/types/auger/damage.tres" id="5_damage"]

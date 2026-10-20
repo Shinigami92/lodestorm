@@ -7,6 +7,6 @@
 script = ExtResource("1_script")
 reach = 2.0
 arc = 100.0
-sweeps = false
+stroke = 2
 spray_share = 0.3
 hit_sound = ExtResource("2_hit_sound")

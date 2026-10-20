@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://ev7qejl2b7a"]
 
 [ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://cq1rut13vxgku" path="res://game/weapons/types/riven/riven.tscn" id="2_scene"]
+[ext_resource type="PackedScene" uid="uid://bexxr5gik2nek" path="res://game/weapons/types/riven/riven.tscn" id="2_scene"]
 [ext_resource type="Resource" uid="uid://y7oj5lwn50n1" path="res://game/weapons/types/riven/delivery.tres" id="3_delivery"]
 [ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
 [ext_resource type="Resource" uid="uid://bwniykat0iaql" path="res://game/weapons/types/riven/damage.tres" id="5_damage"]

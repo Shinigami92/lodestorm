@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://b4n8iu48o6a2y"]
+[gd_scene format=3 uid="uid://cjuntljr52ti0"]
 
 [ext_resource type="Script" uid="uid://wqy8q2v67cpr" path="res://game/weapons/weapon.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://0wsme0mqs3x1" path="res://game/weapons/spinning_part.gd" id="2_spin"]

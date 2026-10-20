@@ -3,17 +3,21 @@ extends WeaponDelivery
 ## Swings at everything in front of the holder: every alien within reach and the swing's arc
 ## (around the aim direction, or the direction to the locked target; wider with the MK level of
 ## the weapon's arc) takes a hit, unless something solid is in the way, and so does a destructible
-## (a nest) whose edge is within reach and the arc. The weapon's model sweeps through the arc, a
-## stand-in for a swing animation, and emits `Weapon.swung`. A swing that hits something plays
-## `hit_sound`. A saw (Jag) doesn't sweep (`sweeps`): it hits many times a second, only some of
-## them spraying.
+## (a nest) whose edge is within reach and the arc. The weapon's model moves as its `stroke` says
+## (a stand-in for a swing animation), and it emits `Weapon.swung`. A swing that hits something
+## plays `hit_sound`. A saw (Jag) doesn't stroke: it hits many times a second, only some of them
+## spraying.
 ## A chain (`combo`, Riven) counts the swings made in a row, each within `combo_gap` of the last
-## (`Weapon.chain`): they sweep one way and back, and the last one lunges: the holder darts along
+## (`Weapon.chain`): they sweep one way, then back, and the last one lunges: the holder darts along
 ## the attack (farther with the MK level of the weapon's lunge; rock and the first alien in the way
 ## stop it short), and everything along its path takes `lunge_power` times a swing's hit. All
 ## values TBD (playtest).
 
-## Share of the time between swings the sweep takes.
+## How the model moves with a swing: across the arc (`Weapon.sweep`), an overhead blow
+## (`Weapon.chop`), or not at all (a saw's blade spins instead).
+enum Stroke { SWEEP, OVERHEAD, NONE }
+
+## Share of the time between swings the stroke takes.
 const SWEEP_SHARE: float = 0.6
 ## How far short of rock and of the first alien in its way a lunge stops (m), and how high above
 ## the holder's feet it looks for rock.
@@ -26,8 +30,7 @@ const LUNGE_THRUST: float = 0.5
 @export var reach: float = 2.5
 ## Width of the swing around the attack direction at MK1, in degrees.
 @export var arc: float = 120.0
-## Whether the model sweeps through the arc with each attack (a saw's blade spins instead).
-@export var sweeps: bool = true
+@export var stroke: Stroke = Stroke.SWEEP
 ## Share of the hits that spray ichor or sparks (a saw hits ten times a second).
 @export_range(0.0, 1.0) var spray_share: float = 1.0
 
@@ -76,9 +79,13 @@ func attack(weapon: Weapon) -> void:
 			struck = true
 	if struck:
 		weapon.play(hit_sound)
-	if sweeps:
-		var back: bool = combo > 1 and weapon.chain % 2 == 0
-		weapon.sweep(half_arc * (-2.0 if back else 2.0), SWEEP_SHARE / weapon.attack_rate())
+	var duration: float = SWEEP_SHARE / weapon.attack_rate()
+	match stroke:
+		Stroke.SWEEP:
+			var back: bool = combo > 1 and weapon.chain % 2 == 0
+			weapon.sweep(half_arc * (-2.0 if back else 2.0), duration)
+		Stroke.OVERHEAD:
+			weapon.chop(half_arc * 2.0, duration)
 	weapon.swung.emit(hits)
 
 

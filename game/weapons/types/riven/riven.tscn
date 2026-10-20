@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://cq1rut13vxgku"]
+[gd_scene format=3 uid="uid://bexxr5gik2nek"]
 
 [ext_resource type="Script" uid="uid://wqy8q2v67cpr" path="res://game/weapons/weapon.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://game/progression/upgrades/mk_pips.gd" id="9_pips"]
@@ -30,31 +30,35 @@ emission_energy_multiplier = 3
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_grip"]
 material = SubResource("StandardMaterial3D_grip")
-top_radius = 0.022
-bottom_radius = 0.022
-height = 0.24
+top_radius = 0.024
+bottom_radius = 0.024
+height = 0.3
 radial_segments = 10
 rings = 1
 
 [sub_resource type="BoxMesh" id="BoxMesh_pommel"]
 material = SubResource("StandardMaterial3D_metal")
-size = Vector3(0.05, 0.05, 0.04)
+size = Vector3(0.055, 0.055, 0.05)
 
 [sub_resource type="BoxMesh" id="BoxMesh_guard"]
 material = SubResource("StandardMaterial3D_hazard")
-size = Vector3(0.15, 0.05, 0.05)
+size = Vector3(0.18, 0.06, 0.06)
 
 [sub_resource type="BoxMesh" id="BoxMesh_blade"]
 material = SubResource("StandardMaterial3D_metal")
-size = Vector3(0.075, 0.012, 0.74)
+size = Vector3(0.095, 0.014, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_tip"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.06, 0.014, 0.08)
 
 [sub_resource type="BoxMesh" id="BoxMesh_edge"]
 material = SubResource("StandardMaterial3D_edge")
-size = Vector3(0.008, 0.014, 0.7)
+size = Vector3(0.01, 0.016, 0.98)
 
 [sub_resource type="BoxMesh" id="BoxMesh_spine"]
 material = SubResource("StandardMaterial3D_dark")
-size = Vector3(0.012, 0.02, 0.6)
+size = Vector3(0.014, 0.024, 0.82)
 
 [node name="Riven" type="Node3D"]
 script = ExtResource("1_script")
@@ -62,43 +66,47 @@ script = ExtResource("1_script")
 [node name="Model" type="Node3D" parent="."]
 
 [node name="Grip" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.02)
 mesh = SubResource("CylinderMesh_grip")
 
 [node name="Pommel" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.14)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.19)
 mesh = SubResource("BoxMesh_pommel")
 
 [node name="Guard" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.14)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.16)
 mesh = SubResource("BoxMesh_guard")
 
 [node name="Blade" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.535)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.69)
 mesh = SubResource("BoxMesh_blade")
 
+[node name="Tip" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015, 0, -1.22)
+mesh = SubResource("BoxMesh_tip")
+
 [node name="Edge" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.041, 0, -0.54)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.052, 0, -0.7)
 mesh = SubResource("BoxMesh_edge")
 
 [node name="Spine" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03, 0.008, -0.48)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.038, 0.01, -0.62)
 mesh = SubResource("BoxMesh_spine")
 
 [node name="DamagePips" type="Node3D" parent="."]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.02, 0.012, -0.3)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.025, 0.014, -0.34)
 script = ExtResource("9_pips")
 pip_size = Vector3(0.024, 0.012, 0.024)
 spacing = 0.032
 
 [node name="RatePips" type="Node3D" parent="."]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.012, -0.42)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.014, -0.5)
 script = ExtResource("9_pips")
 pip_size = Vector3(0.024, 0.012, 0.024)
 spacing = 0.032
 
 [node name="LungePips" type="Node3D" parent="."]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.02, 0.012, -0.3)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.025, 0.014, -0.34)
 script = ExtResource("9_pips")
 pip_size = Vector3(0.024, 0.012, 0.024)
 spacing = 0.032

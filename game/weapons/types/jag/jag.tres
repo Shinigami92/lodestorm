@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://c5v8lia3x35w4"]
 
 [ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://b4n8iu48o6a2y" path="res://game/weapons/types/jag/jag.tscn" id="2_scene"]
+[ext_resource type="PackedScene" uid="uid://cjuntljr52ti0" path="res://game/weapons/types/jag/jag.tscn" id="2_scene"]
 [ext_resource type="Resource" uid="uid://bkygmof0wu0hh" path="res://game/weapons/types/jag/delivery.tres" id="3_delivery"]
 [ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
 [ext_resource type="Resource" uid="uid://b751e52oe6hhe" path="res://game/weapons/types/jag/damage.tres" id="5_damage"]

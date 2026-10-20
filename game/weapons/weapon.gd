@@ -17,6 +17,13 @@ signal swung(hits: Array[Alien])
 ## How the model starts when drawn: tipped down and lower, as from the hip (radians around X, m).
 const DRAW_TILT: float = -1.1
 const DRAW_DROP := Vector3(0.0, -0.15, 0.1)
+## Swing motions (`sweep`, `chop`): seconds to turn to the start, to stay at the end, and to return
+## to rest; how far up a hammer is raised and how far down it comes (radians around X).
+const MOTION_WIND_UP: float = 0.05
+const MOTION_HOLD: float = 0.25
+const MOTION_REST: float = 0.25
+const CHOP_RAISE: float = 1.2
+const CHOP_DOWN: float = -0.45
 
 ## What it is; set by `WeaponType.create`.
 var type: WeaponType
@@ -193,33 +200,75 @@ func get_gauge() -> AmmoGauge:
 	return get_node_or_null(^"AmmoGauge") as AmmoGauge
 
 
-## Sweeps the model (`Model`) through `arc` radians around the grip within `duration` seconds and
-## back, a stand-in for a swing animation; a negative `arc` sweeps the other way.
+## Sweeps the model (`Model`) through `arc` radians around the grip, from one side to the other
+## (a negative `arc` the other way), a stand-in for a swing animation: a quick turn to the start
+## side, the stroke within `duration` seconds, then it stays at the end for a moment (where the
+## next swing of a chain starts back from) before it returns to rest.
 func sweep(arc: float, duration: float) -> void:
-	var model := get_node_or_null(^"Model") as Node3D
+	var model: Node3D = _start_motion()
 	if not model:
 		return
-	if _sweep:
-		_sweep.kill()
-	model.position.z = 0.0
-	model.rotation.y = arc * 0.5
-	_sweep = create_tween()
-	_sweep.tween_property(model, ^"rotation:y", -arc * 0.5, duration * 0.4)
-	_sweep.tween_property(model, ^"rotation:y", 0.0, duration * 0.6)
+	var start := Vector3(0.0, arc * 0.5, 0.0)
+	_sweep.tween_property(model, ^"rotation", start, minf(MOTION_WIND_UP, duration * 0.2))
+	(
+		_sweep
+		. tween_property(model, ^"rotation", -start, duration)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
+	_rest_after(model)
+
+
+## Brings the model (`Model`) down in an overhead blow within `duration` seconds, a stand-in for a
+## hammer's swing: raised up and back with its head a little to one side, then slammed down and
+## across `arc` radians in front, accelerating, then it returns to rest.
+func chop(arc: float, duration: float) -> void:
+	var model: Node3D = _start_motion()
+	if not model:
+		return
+	_sweep.tween_property(model, ^"rotation", Vector3(CHOP_RAISE, arc * 0.25, 0.0), MOTION_WIND_UP)
+	(
+		_sweep
+		. tween_property(model, ^"rotation", Vector3(CHOP_DOWN, -arc * 0.25, 0.0), duration)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_IN)
+	)
+	_rest_after(model)
 
 
 ## Pushes the model (`Model`) `length` m forward within `duration` seconds and back, a stand-in for
 ## a thrust animation.
 func thrust(length: float, duration: float) -> void:
-	var model := get_node_or_null(^"Model") as Node3D
+	var model: Node3D = _start_motion()
 	if not model:
 		return
-	if _sweep:
-		_sweep.kill()
-	model.rotation.y = 0.0
-	_sweep = create_tween()
+	model.rotation = Vector3.ZERO
 	_sweep.tween_property(model, ^"position:z", -length, duration * 0.3)
 	_sweep.tween_property(model, ^"position:z", 0.0, duration * 0.7)
+
+
+## The model, its motion under way stopped and a new one's tween started (`_sweep`); null without a
+## model.
+func _start_motion() -> Node3D:
+	var model := get_node_or_null(^"Model") as Node3D
+	if not model:
+		return null
+	if _sweep:
+		_sweep.kill()
+	model.position.z = 0.0
+	_sweep = create_tween()
+	return model
+
+
+## Ends the motion of `_sweep`: the model stays for `MOTION_HOLD`, then returns to rest.
+func _rest_after(model: Node3D) -> void:
+	_sweep.tween_interval(MOTION_HOLD)
+	(
+		_sweep
+		. tween_property(model, ^"rotation", Vector3.ZERO, MOTION_REST)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_IN_OUT)
+	)
 
 
 ## Plays `sound` at the weapon. A `cue` (the reload's timing) is only for the local player

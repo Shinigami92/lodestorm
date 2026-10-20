@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://870eo5ge05ql" path="res://game/weapons/arsenal.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="2_weapon_type"]
-[ext_resource type="Resource" uid="uid://bcy70upxk1eyk" path="res://game/weapons/types/blaster.tres" id="3_blaster"]
-[ext_resource type="Resource" uid="uid://bpp6gvbope5wb" path="res://game/weapons/types/hammer.tres" id="4_hammer"]
+[ext_resource type="Resource" uid="uid://bcy70upxk1eyk" path="res://game/weapons/types/harl/harl.tres" id="3_harl"]
+[ext_resource type="Resource" uid="uid://bpp6gvbope5wb" path="res://game/weapons/types/dray/dray.tres" id="4_dray"]
 
 [resource]
 script = ExtResource("1_script")
-weapons = Array[ExtResource("2_weapon_type")]([ExtResource("3_blaster"), ExtResource("4_hammer")])
+weapons = Array[ExtResource("2_weapon_type")]([ExtResource("3_harl"), ExtResource("4_dray")])

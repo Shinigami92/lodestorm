@@ -5,8 +5,8 @@ const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const ORE_NODE: PackedScene = preload("res://game/mining/ore_node.tscn")
 const MINER_SCENE: PackedScene = preload("res://game/mining/miner.tscn")
-const BLASTER: WeaponType = preload("res://game/weapons/types/blaster.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const TREE: SkillTree = preload("res://game/progression/skills/tree/skill_tree.tres")
@@ -185,14 +185,14 @@ func test_reload_on_the_move_keeps_full_speed() -> void:
 		if learned:
 			_player.skills.raise(DASH)
 			_player.skills.raise(RELOAD_ON_THE_MOVE)
-		var blaster := _player.weapon as RangedWeapon
-		blaster.rounds = 1
+		var harl := _player.get_ammo() as MagazineAmmo
+		harl.rounds = 1
 		Input.action_press(&"move_right")
 		assert_true(_player.reload())
 		await _wait_physics(0.4)
 		speeds.append(Vector2(_player.velocity.x, _player.velocity.z).length())
 		Input.action_release(&"move_right")
-		await _wait_physics(blaster.settings.reload_time)
+		await _wait_physics(harl.feed.reload_time)
 	var full: float = _player.settings.move_speed
 	assert_almost_eq(speeds[0], full * _player.settings.reload_move_speed, 0.05)
 	assert_almost_eq(speeds[1], full, 0.05)
@@ -203,35 +203,35 @@ func test_spare_magazines_add_a_magazine_per_rank() -> void:
 	_player.skills.raise(SPARES)
 	_player.skills.raise(SPARES)
 	assert_eq(_player.spare_magazines, before + 2)
-	var blaster := _player.weapon as RangedWeapon
-	assert_eq(blaster.spare_rounds, (before + 2) * blaster.capacity(), "filled right away")
+	var harl := _player.get_ammo() as MagazineAmmo
+	assert_eq(harl.spare_rounds, (before + 2) * harl.capacity(), "filled right away")
 
 
 func test_careful_reload_keeps_the_rounds_left() -> void:
-	var blaster := _player.weapon as RangedWeapon
+	var harl := _player.get_ammo() as MagazineAmmo
 	_player.settings.spare_magazines = 1
 	_player.skills.raise(SPARES)
 	_player.skills.raise(CAREFUL)
-	assert_true(blaster.careful)
-	var capacity: int = blaster.capacity()
-	blaster.rounds = 10
-	var spares: int = blaster.spare_rounds
+	assert_true(harl.careful)
+	var capacity: int = harl.capacity()
+	harl.rounds = 10
+	var spares: int = harl.spare_rounds
 	assert_true(_player.reload())
-	assert_eq(blaster.rounds, 10, "keeps them during the reload")
-	await _wait_physics(blaster.settings.reload_time + 0.1)
-	assert_eq(blaster.rounds, capacity)
-	assert_eq(blaster.spare_rounds, spares - (capacity - 10), "only the missing rounds")
+	assert_eq(harl.rounds, 10, "keeps them during the reload")
+	await _wait_physics(harl.feed.reload_time + 0.1)
+	assert_eq(harl.rounds, capacity)
+	assert_eq(harl.spare_rounds, spares - (capacity - 10), "only the missing rounds")
 
 
 func test_reload_throws_the_rest_away_without_careful_reload() -> void:
-	var blaster := _player.weapon as RangedWeapon
-	assert_false(blaster.careful)
-	blaster.rounds = 10
-	var spares: int = blaster.spare_rounds
+	var harl := _player.get_ammo() as MagazineAmmo
+	assert_false(harl.careful)
+	harl.rounds = 10
+	var spares: int = harl.spare_rounds
 	_player.reload()
-	assert_eq(blaster.rounds, 0)
-	await _wait_physics(blaster.settings.reload_time + 0.1)
-	assert_eq(blaster.spare_rounds, spares - blaster.capacity())
+	assert_eq(harl.rounds, 0)
+	await _wait_physics(harl.feed.reload_time + 0.1)
+	assert_eq(harl.spare_rounds, spares - harl.capacity())
 
 
 func test_ore_scanner_points_to_the_nearest_node_in_range() -> void:
@@ -279,9 +279,9 @@ func test_damage_readout_shows_hits_and_adds_up_pellets() -> void:
 	assert_null(DamageNumber.show_hit(alien, alien, 5.0), "only players' hits")
 
 
-func test_hits_with_the_hammer_show_their_damage() -> void:
-	_player.arsenal.unlock(HAMMER)
-	_player.loadout.assign(0, HAMMER)
+func test_hits_with_the_dray_show_their_damage() -> void:
+	_player.arsenal.unlock(DRAY)
+	_player.loadout.assign(0, DRAY)
 	_player.skills.raise(SCANNER)
 	_player.skills.raise(READOUT)
 	var alien := SWARMER.spawn()
@@ -296,7 +296,7 @@ func test_hits_with_the_hammer_show_their_damage() -> void:
 	assert_true(alien.has_meta(DamageNumber.META))
 	var number := alien.get_meta(DamageNumber.META) as DamageNumber
 	assert_not_null(number)
-	assert_eq(number.amount, (_player.weapon as MeleeWeapon).settings.damage)
+	assert_eq(number.amount, (_player.get_weapon_type().effects[0] as DamageEffect).damage)
 
 
 func _add_node(at: Vector3) -> OreNode:

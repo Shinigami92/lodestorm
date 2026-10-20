@@ -8,7 +8,7 @@ const PROJECTILE: PackedScene = preload("res://game/weapons/projectile.tscn")
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const WARDEN: AlienStrain = preload("res://game/aliens/strains/warden/warden.tres")
 const GNAWER: AlienStrain = preload("res://game/aliens/strains/gnawer/gnawer.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 
 var _map: Node3D
 var _mission: Mission
@@ -71,14 +71,14 @@ func test_shots_and_swings_hurt_it() -> void:
 	await wait_physics_frames(20)
 	assert_lt(_nest.body.health, health, "a shot hurts it")
 	health = _nest.body.health
-	_player.loadout.assign(0, HAMMER)
-	# The blaster it replaced goes at the end of the frame.
+	_player.loadout.assign(0, DRAY)
+	# Harl, which it replaced, goes at the end of the frame.
 	await wait_physics_frames(1)
-	var hammer := _player.weapon as MeleeWeapon
-	_stand_at(Vector3(0.0, 0.0, hammer.settings.reach + 1.0))
-	hammer.aim_direction = Vector3.FORWARD
-	hammer.aim_target = null
-	hammer._attack()
+	var dray: Weapon = _player.weapon
+	_stand_at(Vector3(0.0, 0.0, (DRAY.delivery as SwingDelivery).reach + 1.0))
+	dray.aim_direction = Vector3.FORWARD
+	dray.aim_target = null
+	DRAY.delivery.attack(dray)
 	assert_lt(_nest.body.health, health, "a swing reaches its edge")
 
 

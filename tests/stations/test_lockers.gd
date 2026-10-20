@@ -2,9 +2,9 @@ extends GutTest
 ## The lockers in the armory, where each player picks their loadout.
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
-const BLASTER: WeaponType = preload("res://game/weapons/types/blaster.tres")
-const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
+const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 
 var _map: Node3D
 var _player: Player
@@ -23,19 +23,19 @@ func before_each() -> void:
 func test_locker_assigns_slots() -> void:
 	var locker: LoadoutStation = await _open_locker()
 	var card := locker.card_menu as LoadoutCard
-	_select(locker, HAMMER)
-	assert_eq(card.weapon_type, HAMMER)
+	_select(locker, DRAY)
+	assert_eq(card.weapon_type, DRAY)
 	assert_false(card.get_slot_button(0).button_pressed)
-	assert_true(card.get_slot_button(1).button_pressed, "the hammer is in slot 2")
+	assert_true(card.get_slot_button(1).button_pressed, "Dray is in slot 2")
 	assert_eq(locker.selected_slot, 0)
 	assert_true(card.press_primary(), "interact puts it into the selected slot")
-	assert_eq(_player.loadout.weapons, [HAMMER, BLASTER] as Array[WeaponType], "swapped")
+	assert_eq(_player.loadout.weapons, [DRAY, HARL] as Array[WeaponType], "swapped")
 	await wait_process_frames(1)
 	assert_true(card.get_slot_button(0).button_pressed)
 	assert_true(card.press_primary())
 	assert_null(_player.loadout.get_weapon(0), "again takes it out")
 	card.get_slot_button(1).pressed.emit()
-	assert_eq(_player.loadout.get_weapon(1), HAMMER, "the card's slot buttons")
+	assert_eq(_player.loadout.get_weapon(1), DRAY, "the card's slot buttons")
 
 
 func test_locker_tabs_between_slots() -> void:
@@ -44,10 +44,10 @@ func test_locker_tabs_between_slots() -> void:
 	assert_eq(locker.selected_slot, 1)
 	_send(&"tab_next")
 	assert_eq(locker.selected_slot, 0, "wraps around")
-	_select(locker, BLASTER)
+	_select(locker, HARL)
 	_send(&"tab_next")
 	_send(&"interact")
-	assert_eq(_player.loadout.weapons, [HAMMER, BLASTER] as Array[WeaponType])
+	assert_eq(_player.loadout.weapons, [DRAY, HARL] as Array[WeaponType])
 
 
 func test_locker_lays_the_loadout_in_its_cradles() -> void:
@@ -55,25 +55,25 @@ func test_locker_lays_the_loadout_in_its_cradles() -> void:
 	var cradle_1 := locker.get_node("Cradle1") as Node3D
 	var cradle_2 := locker.get_node("Cradle2") as Node3D
 	var near := Vector3.ONE * 0.01
-	assert_almost_eq(locker.get_part(BLASTER).global_position, cradle_1.global_position, near)
-	assert_almost_eq(locker.get_part(HAMMER).global_position, cradle_2.global_position, near)
-	assert_true(locker.toggle(BLASTER, 0))
+	assert_almost_eq(locker.get_part(HARL).global_position, cradle_1.global_position, near)
+	assert_almost_eq(locker.get_part(DRAY).global_position, cradle_2.global_position, near)
+	assert_true(locker.toggle(HARL, 0))
 	await wait_process_frames(1)
-	var hanging: Vector3 = locker.get_part(BLASTER).global_position
+	var hanging: Vector3 = locker.get_part(HARL).global_position
 	assert_gt(hanging.y, cradle_1.global_position.y + 0.5, "back up where it hangs")
 
 
 func test_locker_shows_locked_weapons() -> void:
 	var locker: LoadoutStation = await _open_locker()
 	var card := locker.card_menu as LoadoutCard
-	_select(locker, SHOTGUN)
+	_select(locker, BRASK)
 	assert_true(card.get_slot_button(0).disabled, "not owned yet")
-	assert_false(locker.toggle(SHOTGUN, 0))
-	_player.arsenal.unlock(SHOTGUN)
+	assert_false(locker.toggle(BRASK, 0))
+	_player.arsenal.unlock(BRASK)
 	await wait_process_frames(2)
 	assert_false(card.get_slot_button(0).disabled)
 	assert_true(card.press_primary())
-	assert_eq(_player.loadout.get_weapon(0), SHOTGUN)
+	assert_eq(_player.loadout.get_weapon(0), BRASK)
 
 
 func test_locker_locks_while_a_mission_is_underway() -> void:
@@ -83,8 +83,8 @@ func test_locker_locks_while_a_mission_is_underway() -> void:
 	await wait_process_frames(2)
 	assert_true(locker.is_locked())
 	assert_true((locker.get_node("Door") as Node3D).visible, "the door is shut")
-	assert_false(locker.toggle(HAMMER, 0))
-	assert_eq(_player.loadout.get_weapon(0), BLASTER, "unchanged")
+	assert_false(locker.toggle(DRAY, 0))
+	assert_eq(_player.loadout.get_weapon(0), HARL, "unchanged")
 
 
 func test_each_player_has_their_own_locker() -> void:
@@ -128,15 +128,15 @@ func _send(action: StringName) -> void:
 
 func test_mouse_puts_a_weapon_into_slot_2() -> void:
 	var locker: LoadoutStation = await _open_locker()
-	_player.arsenal.unlock(SHOTGUN)
+	_player.arsenal.unlock(BRASK)
 	await wait_seconds(0.5)
 	var camera: Camera3D = get_viewport().get_camera_3d()
-	await _click(camera.unproject_position(locker.get_part(SHOTGUN).global_position))
-	assert_eq(locker.selected.item, SHOTGUN)
+	await _click(camera.unproject_position(locker.get_part(BRASK).global_position))
+	assert_eq(locker.selected.item, BRASK)
 	await wait_seconds(0.5)
 	var button: Button = (locker.card_menu as LoadoutCard).get_slot_button(1)
 	await _click(_on_card(locker, button.get_global_rect().get_center()))
-	assert_eq(_player.loadout.get_weapon(1), SHOTGUN)
+	assert_eq(_player.loadout.get_weapon(1), BRASK)
 
 
 func _click(at: Vector2) -> void:
@@ -164,23 +164,23 @@ func _on_card(station: Station, pixel: Vector2) -> Vector2:
 
 func test_locker_keeps_one_weapon_in_the_loadout() -> void:
 	var locker: LoadoutStation = await _open_locker()
-	assert_true(locker.toggle(HAMMER, 1))
+	assert_true(locker.toggle(DRAY, 1))
 	assert_eq(_player.loadout.get_weapon(1), null)
-	assert_false(locker.toggle(BLASTER, 0), "the last one stays")
-	assert_eq(_player.loadout.get_weapon(0), BLASTER)
-	assert_true(locker.toggle(HAMMER, 0), "swapping it out still works")
-	assert_eq(_player.loadout.get_weapon(0), HAMMER)
+	assert_false(locker.toggle(HARL, 0), "the last one stays")
+	assert_eq(_player.loadout.get_weapon(0), HARL)
+	assert_true(locker.toggle(DRAY, 0), "swapping it out still works")
+	assert_eq(_player.loadout.get_weapon(0), DRAY)
 
 
 func test_keys_1_and_2_put_the_selected_weapon_into_that_slot() -> void:
 	var locker: LoadoutStation = await _open_locker()
-	_player.arsenal.unlock(SHOTGUN)
-	_select(locker, SHOTGUN)
+	_player.arsenal.unlock(BRASK)
+	_select(locker, BRASK)
 	_send(&"slot_2")
 	assert_eq(locker.selected_slot, 1)
-	assert_eq(_player.loadout.weapons, [BLASTER, SHOTGUN] as Array[WeaponType])
+	assert_eq(_player.loadout.weapons, [HARL, BRASK] as Array[WeaponType])
 	_send(&"slot_1")
 	assert_eq(locker.selected_slot, 0)
-	assert_eq(_player.loadout.weapons, [SHOTGUN, BLASTER] as Array[WeaponType], "swapped")
+	assert_eq(_player.loadout.weapons, [BRASK, HARL] as Array[WeaponType], "swapped")
 	_send(&"slot_1")
-	assert_eq(_player.loadout.weapons, [null, BLASTER] as Array[WeaponType], "again takes it out")
+	assert_eq(_player.loadout.weapons, [null, HARL] as Array[WeaponType], "again takes it out")

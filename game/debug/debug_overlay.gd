@@ -46,49 +46,6 @@ const TUNING: Dictionary[String, Array] = {
 		["reload_move_speed", 0.1, 1.0, 0.05],
 		["spare_magazines", 0.0, 10.0, 1.0],
 	],
-	"res://game/weapons/blaster_settings.tres":
-	[
-		["damage", 1.0, 100.0, 1.0],
-		["attack_rate", 0.5, 20.0, 0.5],
-		["stagger", 0.0, 100.0, 1.0],
-		["push", 0.0, 10.0, 0.1],
-		["projectile_speed", 5.0, 100.0, 1.0],
-		["projectile_range", 5.0, 60.0, 1.0],
-		["magazine", 1.0, 200.0, 1.0],
-		["ore_per_round", 0.0, 5.0, 0.05],
-		["reload_time", 0.1, 5.0, 0.05],
-		["sweet_spot_start", 0.0, 1.0, 0.05],
-		["sweet_spot_width", 0.0, 1.0, 0.05],
-		["fumble_time", 0.0, 3.0, 0.05],
-	],
-	"res://game/weapons/shotgun_settings.tres":
-	[
-		["damage", 1.0, 100.0, 1.0],
-		["attack_rate", 0.5, 20.0, 0.5],
-		["stagger", 0.0, 100.0, 1.0],
-		["push", 0.0, 10.0, 0.1],
-		["pellets", 1.0, 20.0, 1.0],
-		["spread", 0.0, 90.0, 1.0],
-		["projectile_speed", 5.0, 100.0, 1.0],
-		["projectile_range", 5.0, 60.0, 1.0],
-		["magazine", 1.0, 200.0, 1.0],
-		["ore_per_round", 0.0, 5.0, 0.05],
-		["reload_time", 0.1, 5.0, 0.05],
-		["sweet_spot_start", 0.0, 1.0, 0.05],
-		["sweet_spot_width", 0.0, 1.0, 0.05],
-		["fumble_time", 0.0, 3.0, 0.05],
-		["chain_speedup", 0.0, 0.5, 0.05],
-		["max_chain_speedup", 0.0, 0.9, 0.05],
-	],
-	"res://game/weapons/hammer_settings.tres":
-	[
-		["damage", 1.0, 200.0, 1.0],
-		["attack_rate", 0.2, 5.0, 0.1],
-		["stagger", 0.0, 100.0, 1.0],
-		["push", 0.0, 10.0, 0.1],
-		["reach", 0.5, 6.0, 0.1],
-		["arc", 10.0, 360.0, 5.0],
-	],
 	"res://game/aliens/strains/swarmer/swarmer.tres":
 	[
 		["max_health", 1.0, 300.0, 1.0],
@@ -303,8 +260,46 @@ const TUNING: Dictionary[String, Array] = {
 		["max_range", 2.0, 40.0, 0.5],
 	],
 }
+## Sliders per class of a weapon's resources (see `WeaponType`), the same for every weapon: each
+## weapon gets a section per resource it's made of.
+const WEAPON_TUNING: Dictionary[String, Array] = {
+	"WeaponType":
+	[
+		["attack_rate", 0.2, 20.0, 0.1],
+		["draw_time", 0.0, 2.0, 0.05],
+	],
+	"DamageEffect":
+	[
+		["damage", 1.0, 200.0, 1.0],
+		["stagger", 0.0, 100.0, 1.0],
+		["push", 0.0, 10.0, 0.1],
+	],
+	"MagazineFeed":
+	[
+		["magazine", 1.0, 200.0, 1.0],
+		["ore_per_round", 0.0, 5.0, 0.05],
+		["reload_time", 0.1, 5.0, 0.05],
+		["sweet_spot_start", 0.0, 1.0, 0.05],
+		["sweet_spot_width", 0.0, 1.0, 0.05],
+		["fumble_time", 0.0, 3.0, 0.05],
+		["chain_speedup", 0.0, 0.5, 0.05],
+		["max_chain_speedup", 0.0, 0.9, 0.05],
+	],
+	"ProjectileDelivery":
+	[
+		["speed", 5.0, 100.0, 1.0],
+		["reach", 5.0, 60.0, 1.0],
+		["pellets", 1.0, 20.0, 1.0],
+		["spread", 0.0, 90.0, 1.0],
+	],
+	"SwingDelivery":
+	[
+		["reach", 0.5, 6.0, 0.1],
+		["arc", 10.0, 360.0, 5.0],
+	],
+}
 const PANEL_WIDTH: float = 460.0
-## Every weapon of the game, for `unlock_weapons`.
+## Every weapon of the game, for `unlock_weapons`, `_give_blueprints` and the tuning.
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
 ## Every skill of the game, for `learn_skills`.
 const SKILL_TREE: SkillTree = preload("res://game/progression/skills/tree/skill_tree.tres")
@@ -509,7 +504,15 @@ func break_miners() -> void:
 		miner.take_damage(miner.health)
 
 
-## Gives every player every weapon of the game (until blueprints unlock them).
+## Gives every player the blueprint of every weapon they don't own, to build them at the
+## workbench (until the quests hand them out).
+func _give_blueprints() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		for weapon_type: WeaponType in ALL_WEAPONS.weapons:
+			player.arsenal.learn(weapon_type)
+
+
+## Gives every player every weapon of the game, without building them.
 func unlock_weapons() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		for weapon_type: WeaponType in ALL_WEAPONS.weapons:
@@ -683,6 +686,7 @@ func _build() -> void:
 	var miners: GridContainer = _group(state, "Miners")
 	_break_miners_button = _button(miners, "Break miners", break_miners)
 	var progress: GridContainer = _group(state, "Progress")
+	_button(progress, "Give blueprints", _give_blueprints)
 	_button(progress, "Unlock weapons", unlock_weapons)
 	_button(progress, "Learn skills", learn_skills)
 	_button(progress, "Fill hold", fill_hold)
@@ -703,6 +707,22 @@ func _build() -> void:
 		section.add_child(rows)
 		for row: Array in TUNING[path]:
 			_add_slider(rows, resource, path, row)
+	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
+		var parts: Array[Resource] = [weapon_type, weapon_type.feed, weapon_type.delivery]
+		parts.append_array(weapon_type.effects)
+		for resource: Resource in parts:
+			var rows_of: Array = WEAPON_TUNING.get(_class_of(resource), [])
+			if rows_of.is_empty():
+				continue
+			var section := FoldableContainer.new()
+			section.title = "%s %s" % [weapon_type.display_name, _class_of(resource).capitalize()]
+			section.folded = true
+			section.focus_mode = Control.FOCUS_NONE
+			tuning.add_child(section)
+			var rows := VBoxContainer.new()
+			section.add_child(rows)
+			for row: Array in rows_of:
+				_add_slider(rows, resource, resource.resource_path, row)
 
 
 ## A tab of `tabs` named `title`, scrolling vertically; returns its content box.
@@ -775,6 +795,13 @@ func _heading(text: String) -> Label:
 	label.text = text
 	label.add_theme_font_size_override(&"font_size", 18)
 	return label
+
+
+## The class name of `resource`'s script ("MagazineFeed"), or "" (none, e.g. no feed).
+static func _class_of(resource: Resource) -> String:
+	if not resource or not resource.get_script():
+		return ""
+	return (resource.get_script() as Script).get_global_name()
 
 
 ## A tuning section's title: the file's name, with its strain's for an attack ("Mite bite").

@@ -13,5 +13,5 @@ extends Resource
 @export var lines: Array[String] = []
 ## Story flags it needs before it shows (e.g. another topic's id).
 @export var requires: Array[StringName] = []
-## A weapon it's about: it only shows to a player who owns it (e.g. the shotgun once unlocked).
+## A weapon it's about: it only shows to a player who owns it (e.g. Brask once built).
 @export var requires_weapon: WeaponType

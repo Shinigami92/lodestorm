@@ -30,7 +30,9 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"StarSystem": [&"display_name"],
 	"Topic": [&"title", &"lines"],
 	"Upgrade": [&"display_name", &"description"],
-	"WeaponType": [&"display_name", &"description"],
+	"WeaponPart": [&"display_name", &"description"],
+	# The name stays the same in every language.
+	"WeaponType": [&"class_word", &"description"],
 }
 const TRANSLATIONS_SETTING := "internationalization/locale/translations"
 ## Separates the context from the text in entry keys (as in gettext's binary format).

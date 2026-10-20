@@ -1,9 +1,9 @@
 extends GutTest
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
-const BLASTER: WeaponType = preload("res://game/weapons/types/blaster.tres")
-const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
+const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 const TANK: Upgrade = preload("res://game/progression/upgrades/miner_tank.tres")
 const HOSE: Upgrade = preload("res://game/progression/upgrades/miner_hose.tres")
@@ -112,27 +112,26 @@ func test_mouse_picks_parts_and_uses_the_card() -> void:
 
 func test_weapon_station_lays_the_picked_weapon_on_the_bench() -> void:
 	var station := await _use("Weapons") as WeaponStation
-	assert_eq(station.bench_weapon, BLASTER)
-	assert_eq(_items(station.get_parts()), [BLASTER.upgrade, BLASTER.magazine_upgrade])
-	assert_false(_rack_part(station, BLASTER).visible, "its rack slot is empty")
+	assert_eq(station.bench_weapon, HARL)
+	assert_eq(_items(station.get_parts()), HARL.parts as Array)
+	assert_false(_rack_part(station, HARL).visible, "its rack slot is empty")
 	_send(&"tab_next")
-	assert_eq(station.bench_weapon, SHOTGUN)
-	assert_true(_rack_part(station, BLASTER).visible, "back on the rack")
-	assert_eq(station.selected.item, SHOTGUN.upgrade)
+	assert_eq(station.bench_weapon, BRASK)
+	assert_true(_rack_part(station, HARL).visible, "back on the rack")
+	assert_eq(_items(station.get_parts()), [BRASK] + (BRASK.parts as Array), "not owned: build it")
+	assert_eq(station.selected.item, BRASK)
 	_send(&"tab_prev")
 	_send(&"tab_prev")
-	assert_eq(station.bench_weapon, HAMMER, "wraps around")
-	assert_eq(_items(station.get_parts()), [HAMMER.upgrade])
+	assert_eq(station.bench_weapon, DRAY, "wraps around")
+	assert_eq(_items(station.get_parts()), DRAY.parts as Array)
 
 
 func test_weapon_station_shows_unowned_weapons_see_through() -> void:
 	var station := await _use("Weapons") as WeaponStation
-	assert_false(_player.arsenal.owns(SHOTGUN))
-	var mesh := (
-		_rack_part(station, SHOTGUN).find_children("*", "GeometryInstance3D", true, false)[0]
-	)
+	assert_false(_player.arsenal.owns(BRASK))
+	var mesh := _rack_part(station, BRASK).find_children("*", "GeometryInstance3D", true, false)[0]
 	assert_gt((mesh as GeometryInstance3D).transparency, 0.0)
-	mesh = _rack_part(station, HAMMER).find_children("*", "GeometryInstance3D", true, false)[0]
+	mesh = _rack_part(station, DRAY).find_children("*", "GeometryInstance3D", true, false)[0]
 	assert_eq((mesh as GeometryInstance3D).transparency, 0.0)
 
 
@@ -140,8 +139,8 @@ func test_mouse_picks_a_weapon_from_the_rack() -> void:
 	var station := await _use("Weapons") as WeaponStation
 	await wait_seconds(0.5)
 	var camera: Camera3D = get_viewport().get_camera_3d()
-	_click(camera.unproject_position(_rack_part(station, HAMMER).global_position))
-	assert_eq(station.bench_weapon, HAMMER)
+	_click(camera.unproject_position(_rack_part(station, DRAY).global_position))
+	assert_eq(station.bench_weapon, DRAY)
 
 
 func _use(room: String) -> UpgradeStation:

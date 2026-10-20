@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://lay3okicjhoa"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://2hc467wmg72n" path="res://assets/audio/sfx/weapons/dray_swing_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://cm8u3p8nd6n1t" path="res://assets/audio/sfx/weapons/dray_swing_2.wav" id="3_variant"]
+[ext_resource type="AudioStream" uid="uid://c6tcgll2cid8q" path="res://assets/audio/sfx/weapons/dray_swing_3.wav" id="4_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.05
+streams_count = 3
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+stream_2/stream = ExtResource("4_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -6.0

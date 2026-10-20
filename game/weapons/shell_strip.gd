@@ -1,6 +1,6 @@
 class_name ShellStrip
 extends AmmoGauge
-## An ammo gauge of glowing shells in a row along -Z (e.g. on the shotgun's side), one per round,
+## An ammo gauge of glowing shells in a row along -Z (e.g. on Brask's side), one per round,
 ## spread over `length`. Greybox until the art pass.
 
 ## Size of the strip in m: X and Y of each shell, Z the length of the row.
@@ -36,7 +36,7 @@ func build(capacity: int) -> void:
 		_materials.append(material)
 
 
-func show_state(weapon: RangedWeapon) -> void:
-	var glow: Array[Color] = segment_glow(weapon, _materials.size())
+func show_state(ammo: WeaponAmmo) -> void:
+	var glow: Array[Color] = segment_glow(ammo as MagazineAmmo, _materials.size())
 	for i: int in _materials.size():
 		_materials[i].emission = glow[i]

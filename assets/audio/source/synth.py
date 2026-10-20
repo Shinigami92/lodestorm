@@ -38,6 +38,9 @@ class Recipe:
     peak_db: float = -1.0
     # A loop (the drill, the storm): its end crossfades into its start, with loop points in the WAV
     loop: bool = False
+    # The name its randomness is seeded with (empty: `name`); a renamed sound keeps its old one, so
+    # its files stay the same
+    seed: str = ""
 
     @property
     def description(self) -> str:

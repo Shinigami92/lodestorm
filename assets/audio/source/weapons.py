@@ -1,4 +1,4 @@
-"""Recipes of the weapons' sounds: shots, the hammer, reloads and the timing window."""
+"""Recipes of the weapons' sounds: shots, Dray's swings, reloads and the timing window."""
 
 import random
 
@@ -25,9 +25,9 @@ from synth import (
 )
 
 
-@sound("weapons/blaster_shot", variants=4)
-def blaster_shot(rng: random.Random, take: str, variant: int) -> Signal:
-    """The blaster (8 shots a second): a tight punch with a crack."""
+@sound("weapons/harl_shot", variants=4, seed="weapons/blaster_shot")
+def harl_shot(rng: random.Random, take: str, variant: int) -> Signal:
+    """Harl, the assault rifle (8 shots a second): a tight punch with a crack."""
     j = 0.08
     crack = burst(rng, 0.03, 0.0002, jitter(rng, 0.012, j), "highpass", jitter(rng, 2500, j))
     body = thump(jitter(rng, 190, j), jitter(rng, 65, j), 0.015, jitter(rng, 0.09, j), 0.12)
@@ -36,9 +36,9 @@ def blaster_shot(rng: random.Random, take: str, variant: int) -> Signal:
     return saturate(mix((crack, 0.7), (body, 0.9), (bark, 0.7), (tail, 0.3)), 1.6)
 
 
-@sound("weapons/shotgun_shot", variants=4)
-def shotgun_shot(rng: random.Random, take: str, variant: int) -> Signal:
-    """The shotgun: a deep boom with a rumbling tail."""
+@sound("weapons/brask_shot", variants=4, seed="weapons/shotgun_shot")
+def brask_shot(rng: random.Random, take: str, variant: int) -> Signal:
+    """Brask, the shotgun: a deep boom with a rumbling tail."""
     j = 0.07
     crack = burst(rng, 0.04, 0.0002, jitter(rng, 0.02, j), "highpass", jitter(rng, 1800, j))
     body = thump(jitter(rng, 120, j), jitter(rng, 38, j), 0.03, jitter(rng, 0.25, j), 0.3)
@@ -47,9 +47,9 @@ def shotgun_shot(rng: random.Random, take: str, variant: int) -> Signal:
     return saturate(mix((crack, 0.6), (body, 1.0), (blast, 0.8), (rumble, 0.55)), 2.5)
 
 
-@sound("weapons/hammer_swing", variants=3)
-def hammer_swing(rng: random.Random, take: str, variant: int) -> Signal:
-    """The hammer cutting the air: one heavy whoosh."""
+@sound("weapons/dray_swing", variants=3, seed="weapons/hammer_swing")
+def dray_swing(rng: random.Random, take: str, variant: int) -> Signal:
+    """Dray, the hammer, cutting the air: one heavy whoosh."""
     seconds = jitter(rng, 0.3, 0.1)
 
     def sweep(t: float) -> float:
@@ -59,9 +59,9 @@ def hammer_swing(rng: random.Random, take: str, variant: int) -> Signal:
     return whoosh(rng, seconds, sweep, 1.4)
 
 
-@sound("weapons/hammer_hit", variants=3)
-def hammer_hit(rng: random.Random, take: str, variant: int) -> Signal:
-    """The hammer striking: a thud with a crunch and the steel head ringing."""
+@sound("weapons/dray_hit", variants=3, seed="weapons/hammer_hit")
+def dray_hit(rng: random.Random, take: str, variant: int) -> Signal:
+    """Dray striking: a thud with a crunch and the steel head ringing."""
     j = 0.08
     thud = thump(jitter(rng, 95, j), jitter(rng, 50, j), 0.02, jitter(rng, 0.16, j), 0.2)
     crunch = burst(rng, 0.08, 0.0005, jitter(rng, 0.05, j), "bandpass", jitter(rng, 1500, j), 0.7)
@@ -91,7 +91,7 @@ def reload_start(rng: random.Random, take: str, variant: int) -> Signal:
 
 @sound("weapons/shell_in", variants=3)
 def shell_in(rng: random.Random, take: str, variant: int) -> Signal:
-    """A shell pushed into the shotgun: a thunk with a brass ring."""
+    """A shell pushed into Brask: a thunk with a brass ring."""
     j = 0.06
     ring = modes(rng, [(jitter(rng, 3100, j), 0.03, 1.0), (jitter(rng, 5200, j), 0.02, 0.5)], 0.05)
     body = thump(jitter(rng, 420, j), 260, 0.006, 0.04, 0.07)

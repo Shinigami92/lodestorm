@@ -35,4 +35,4 @@ Quests belong to the host's save. Anyone can open a crate and carry a fragment, 
 
 ## First content
 
-Brannik's chain (deliver 300 Kyrite → clear two nests in Hollow Mire → recover three fragments in Redscar Flats → the hand-in gives the shotgun blueprint, then building it), Okoro's first furnace (deliver Kyrite and Vyrel to rebuild it, then he explains refining), the depot master's requests at Waypost Ostra. The main story's first act follows in its own step, written first.
+Brannik's chain (deliver 300 Kyrite → clear two nests in Hollow Mire → recover three fragments in Redscar Flats → the hand-in gives Brask's blueprint, then building it), Okoro's first furnace (deliver Kyrite and Vyrel to rebuild it, then he explains refining), the depot master's requests at Waypost Ostra. The main story's first act follows in its own step, written first.

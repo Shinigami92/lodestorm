@@ -1,7 +1,7 @@
 class_name AmmoCounter
 extends AmmoGauge
 ## An ammo gauge on a modeled weapon: the glowing segments of its mesh `mesh_name` (one UV.x value
-## per segment, `(i + 0.5) / segments` from the rear to the front, e.g. the blaster's counter),
+## per segment, `(i + 0.5) / segments` from the rear to the front, e.g. Harl's counter),
 ## lit through a texture with one pixel per segment.
 
 ## Name of the segment mesh in the weapon's model.
@@ -30,10 +30,10 @@ func build(_capacity: int) -> void:
 		mesh.material_override = _material
 
 
-func show_state(weapon: RangedWeapon) -> void:
+func show_state(ammo: WeaponAmmo) -> void:
 	if not _image:
 		return
-	var glow: Array[Color] = segment_glow(weapon, segments)
+	var glow: Array[Color] = segment_glow(ammo as MagazineAmmo, segments)
 	for i: int in segments:
 		_image.set_pixel(i, 0, glow[i])
 	_texture.update(_image)

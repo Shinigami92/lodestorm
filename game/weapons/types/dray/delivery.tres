@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="SwingDelivery" format=3 uid="uid://bmvaidn1vcbd7"]
+
+[ext_resource type="Script" uid="uid://bedfq27s65p03" path="res://game/weapons/deliveries/swing_delivery.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cncejdve756sp" path="res://assets/audio/sfx/weapons/dray_hit.tres" id="2_hit"]
+
+[resource]
+script = ExtResource("1_script")
+hit_sound = ExtResource("2_hit")

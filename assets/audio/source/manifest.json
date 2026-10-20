@@ -201,9 +201,19 @@
       "variants": 6,
       "recordings": []
     },
-    "weapons/blaster_shot": {
+    "weapons/brask_shot": {
       "made_by": "build.py",
       "variants": 4,
+      "recordings": []
+    },
+    "weapons/dray_hit": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/dray_swing": {
+      "made_by": "build.py",
+      "variants": 3,
       "recordings": []
     },
     "weapons/empty_click": {
@@ -211,14 +221,9 @@
       "variants": 2,
       "recordings": []
     },
-    "weapons/hammer_hit": {
+    "weapons/harl_shot": {
       "made_by": "build.py",
-      "variants": 3,
-      "recordings": []
-    },
-    "weapons/hammer_swing": {
-      "made_by": "build.py",
-      "variants": 3,
+      "variants": 4,
       "recordings": []
     },
     "weapons/magazine_in": {
@@ -234,11 +239,6 @@
     "weapons/shell_in": {
       "made_by": "build.py",
       "variants": 3,
-      "recordings": []
-    },
-    "weapons/shotgun_shot": {
-      "made_by": "build.py",
-      "variants": 4,
       "recordings": []
     },
     "weapons/timed_hit": {

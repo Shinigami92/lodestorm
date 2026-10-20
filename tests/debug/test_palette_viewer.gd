@@ -47,8 +47,8 @@ func test_lists_the_colors_from_their_sources() -> void:
 	assert_eq(colors["Ores"].size(), OreCatalog.all().ores.size())
 	for ore_type: OreType in OreCatalog.all().ores:
 		assert_has(colors["Ores"], ore_type.color, ore_type.display_name)
-	# The ranged weapons' ammo colors come from their scenes (the blaster's from the gauge's script).
-	assert_has(colors["Ammo"], Color(0.02, 0.7, 1.0))
+	# The ranged weapons' ammo colors come from their scenes: Harl's warm white, Brask's orange.
+	assert_has(colors["Ammo"], Color(1.0, 0.86, 0.66))
 	assert_has(colors["Ammo"], Color(1.0, 0.55, 0.15))
 	assert_false(colors["Crew"].is_empty())
 

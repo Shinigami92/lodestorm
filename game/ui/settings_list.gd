@@ -10,7 +10,7 @@ extends GridContainer
 const LANGUAGE_NAMES: Dictionary[String, String] = {"en": "English", "de": "Deutsch"}
 ## What a volume slider plays when it changes: a shot on the Master and Effects buses, the storm
 ## on the Ambience bus (once at a time).
-const SHOT: Sound = preload("res://assets/audio/sfx/weapons/blaster_shot.tres")
+const SHOT: Sound = preload("res://assets/audio/sfx/weapons/harl_shot.tres")
 const SAMPLES: Dictionary[StringName, Sound] = {
 	&"Master": SHOT,
 	&"Effects": SHOT,

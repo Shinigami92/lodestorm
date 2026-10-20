@@ -3,8 +3,8 @@ extends Resource
 ## Something the upgrade stations in the ship improve in MK levels: a weapon, the suit's armor,
 ## the miners' drill, ... MK1 is what a new player has; each further level costs ore from the
 ## ship's hold (the same rule for every upgrade, `COSTS`, scaled by `cost_scale`) and multiplies
-## the values it improves. What it improves is up to its user (e.g. `WeaponType.upgrade` raises
-## that weapon's damage). The levels a player bought are in their `Upgrades`; how high they can go
+## the values it improves. What it improves is up to its user (e.g. a weapon's `WeaponPart` raises
+## one of its values). The levels a player bought are in their `Upgrades`; how high they can go
 ## depends on the planets the ship has opened (see `HeatShield.upgrade_cap`).
 
 const COSTS: MkCosts = preload("res://game/progression/upgrades/mk_costs.tres")

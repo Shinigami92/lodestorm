@@ -1,9 +1,9 @@
 extends GutTest
 
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
-const BLASTER: WeaponType = preload("res://game/weapons/types/blaster.tres")
-const SHOTGUN: WeaponType = preload("res://game/weapons/types/shotgun.tres")
-const HAMMER: WeaponType = preload("res://game/weapons/types/hammer.tres")
+const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
+const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
+const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")
 const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
@@ -18,7 +18,7 @@ func before_each() -> void:
 	add_child_autofree(_arena)
 	_add_floor()
 	_player = _add_player(Vector3.ZERO)
-	_player.arsenal.unlock(SHOTGUN)
+	_player.arsenal.unlock(BRASK)
 	_fired.clear()
 	_arena.child_entered_tree.connect(_on_child_entered)
 	await wait_physics_frames(1)
@@ -30,88 +30,88 @@ func after_each() -> void:
 
 
 func test_magazine_reload_throws_away_the_rest_and_pays_the_commonest_ore_first() -> void:
-	var blaster := _blaster()
-	blaster.rounds = 20
+	var harl := _harl()
+	harl.rounds = 20
 	_player.add_cargo(OLVANE, 10.0)
 	_player.add_cargo(KYRITE, 5.0)
 	assert_true(_player.reload())
-	assert_true(blaster.reloading)
-	assert_eq(blaster.rounds, 0, "the rounds left in the magazine are lost")
-	await _finish_reload(blaster)
-	assert_false(blaster.reloading)
-	assert_eq(blaster.rounds, blaster.capacity())
+	assert_true(harl.reloading)
+	assert_eq(harl.rounds, 0, "the rounds left in the magazine are lost")
+	await _finish_reload(harl)
+	assert_false(harl.reloading)
+	assert_eq(harl.rounds, harl.capacity())
 	# A full magazine costs 24 * 0.25 = 6: all 5 kyrite, then 1 / 1.25 = 0.8 olvane.
 	assert_almost_eq(_player.cargo[KYRITE], 0.0, 0.001)
 	assert_almost_eq(_player.cargo[OLVANE], 9.2, 0.001)
 
 
 func test_full_magazine_ignores_reload_without_a_warning() -> void:
-	var blaster := _blaster()
-	watch_signals(blaster)
+	var harl := _harl()
+	watch_signals(harl)
 	assert_false(_player.reload())
-	assert_signal_not_emitted(blaster, "reload_denied")
-	assert_false(blaster.reloading)
+	assert_signal_not_emitted(harl, "reload_denied")
+	assert_false(harl.reloading)
 
 
 func test_magazine_reload_loads_what_the_ore_pays() -> void:
-	var blaster := _blaster()
-	blaster.rounds = 10
+	var harl := _harl()
+	harl.rounds = 10
 	_player.add_cargo(KYRITE, 2.0)
 	assert_false(_player.reload(), "8 rounds wouldn't be more than the 10 loaded")
-	assert_eq(blaster.rounds, 10)
-	blaster.rounds = 0
-	await _finish_reload(blaster)
-	assert_eq(blaster.rounds, 8)
+	assert_eq(harl.rounds, 10)
+	harl.rounds = 0
+	await _finish_reload(harl)
+	assert_eq(harl.rounds, 8)
 	assert_almost_eq(_player.cargo[KYRITE], 0.0, 0.001)
 
 
 func test_empty_weapon_reloads_by_itself() -> void:
-	var blaster := _blaster()
-	blaster.rounds = 1
+	var harl := _harl()
+	harl.rounds = 1
 	_player.add_cargo(KYRITE, 100.0)
 	await _attack_once()
-	assert_eq(blaster.rounds, 0)
-	assert_true(blaster.reloading, "the last shot starts a reload")
+	assert_eq(harl.rounds, 0)
+	assert_true(harl.reloading, "the last shot starts a reload")
 
 
 func test_timing_press_within_the_window_finishes_the_reload() -> void:
-	var blaster := _blaster()
-	blaster.rounds = 0
+	var harl := _harl()
+	harl.rounds = 0
 	_player.add_cargo(KYRITE, 100.0)
 	assert_true(_player.reload())
-	var settings: RangedWeaponSettings = blaster.settings
-	blaster.reload_elapsed = (
-		(settings.sweet_spot_start + settings.sweet_spot_width * 0.5) * (settings.reload_time)
+	var feed: MagazineFeed = harl.feed
+	harl.reload_elapsed = (
+		(feed.sweet_spot_start + feed.sweet_spot_width * 0.5) * (feed.reload_time)
 	)
-	watch_signals(blaster)
+	watch_signals(harl)
 	assert_true(_player.reload())
-	assert_signal_emitted_with_parameters(blaster, "reload_timed", [true])
-	assert_false(blaster.reloading)
-	assert_eq(blaster.rounds, blaster.capacity())
+	assert_signal_emitted_with_parameters(harl, "reload_timed", [true])
+	assert_false(harl.reloading)
+	assert_eq(harl.rounds, harl.capacity())
 
 
 func test_timing_press_outside_the_window_takes_longer() -> void:
-	var blaster := _blaster()
-	blaster.rounds = 0
+	var harl := _harl()
+	harl.rounds = 0
 	_player.add_cargo(KYRITE, 100.0)
 	_player.reload()
-	var settings: RangedWeaponSettings = blaster.settings
-	blaster.reload_elapsed = settings.sweet_spot_start * 0.5 * settings.reload_time
-	watch_signals(blaster)
+	var feed: MagazineFeed = harl.feed
+	harl.reload_elapsed = feed.sweet_spot_start * 0.5 * feed.reload_time
+	watch_signals(harl)
 	assert_true(_player.reload())
-	assert_signal_emitted_with_parameters(blaster, "reload_timed", [false])
-	assert_true(blaster.fumbled)
-	assert_almost_eq(blaster.reload_duration, settings.reload_time + settings.fumble_time, 0.001)
-	blaster.reload_elapsed = (
-		(settings.sweet_spot_start + settings.sweet_spot_width * 0.5) * (settings.reload_time)
+	assert_signal_emitted_with_parameters(harl, "reload_timed", [false])
+	assert_true(harl.fumbled)
+	assert_almost_eq(harl.reload_duration, feed.reload_time + feed.fumble_time, 0.001)
+	harl.reload_elapsed = (
+		(feed.sweet_spot_start + feed.sweet_spot_width * 0.5) * (feed.reload_time)
 	)
 	assert_false(_player.reload(), "one timing press per reload")
-	assert_true(blaster.reloading)
+	assert_true(harl.reloading)
 
 
 func test_reloading_slows_the_player_down() -> void:
 	_player.add_cargo(KYRITE, 100.0)
-	_blaster().rounds = 0
+	_harl().rounds = 0
 	_player.reload()
 	Input.action_press(&"move_left")
 	await wait_physics_frames(20)
@@ -119,118 +119,120 @@ func test_reloading_slows_the_player_down() -> void:
 	assert_almost_eq(Vector2(_player.velocity.x, _player.velocity.z).length(), expected, 0.01)
 
 
-func test_shotgun_loads_one_shell_after_another_and_fires_mid_reload() -> void:
-	var shotgun := _equip(SHOTGUN) as RangedWeapon
-	shotgun.rounds = 0
+func test_brask_loads_one_shell_after_another_and_fires_mid_reload() -> void:
+	var brask := _equip(BRASK).ammo as MagazineAmmo
+	brask.rounds = 0
 	_player.add_cargo(KYRITE, 2.5)
 	assert_true(_player.reload())
-	await _finish_round(shotgun)
-	assert_eq(shotgun.rounds, 1)
-	assert_true(shotgun.reloading, "goes on with the next shell")
-	await _finish_round(shotgun)
-	assert_eq(shotgun.rounds, 2)
-	assert_false(shotgun.reloading, "the ore pays no third shell")
+	await _finish_round(brask)
+	assert_eq(brask.rounds, 1)
+	assert_true(brask.reloading, "goes on with the next shell")
+	await _finish_round(brask)
+	assert_eq(brask.rounds, 2)
+	assert_false(brask.reloading, "the ore pays no third shell")
 	assert_almost_eq(_player.cargo[KYRITE], 0.5, 0.001)
 
 	_player.add_cargo(KYRITE, 10.0)
 	_player.reload()
 	await _attack_once()
-	assert_eq(_fired.size(), shotgun.settings.pellets, "fires the loaded shells")
-	assert_eq(shotgun.rounds, 1)
-	assert_false(shotgun.reloading, "firing stops the reload")
+	assert_eq(
+		_fired.size(), (BRASK.delivery as ProjectileDelivery).pellets, "fires the loaded shells"
+	)
+	assert_eq(brask.rounds, 1)
+	assert_false(brask.reloading, "firing stops the reload")
 
 
-func test_shotgun_shells_timed_in_a_row_load_quicker() -> void:
-	var shotgun := _equip(SHOTGUN) as RangedWeapon
-	var settings: RangedWeaponSettings = shotgun.settings
-	shotgun.rounds = 0
+func test_brask_shells_timed_in_a_row_load_quicker() -> void:
+	var brask := _equip(BRASK).ammo as MagazineAmmo
+	var feed: MagazineFeed = brask.feed
+	brask.rounds = 0
 	_player.add_cargo(KYRITE, 100.0)
 	_player.reload()
 	for shell: int in 2:
-		shotgun.reload_elapsed = (
-			(settings.sweet_spot_start + settings.sweet_spot_width * 0.5) * shotgun.reload_duration
+		brask.reload_elapsed = (
+			(feed.sweet_spot_start + feed.sweet_spot_width * 0.5) * brask.reload_duration
 		)
 		assert_true(_player.reload())
-	assert_eq(shotgun.rounds, 2)
-	assert_eq(shotgun.chain, 2)
+	assert_eq(brask.rounds, 2)
+	assert_eq(brask.chain, 2)
 	assert_almost_eq(
-		shotgun.reload_duration, settings.reload_time * (1.0 - 2.0 * settings.chain_speedup), 0.001
+		brask.reload_duration, feed.reload_time * (1.0 - 2.0 * feed.chain_speedup), 0.001
 	)
-	shotgun.reload_elapsed = 0.0
+	brask.reload_elapsed = 0.0
 	_player.reload()
-	assert_eq(shotgun.chain, 0, "a miss breaks the chain")
+	assert_eq(brask.chain, 0, "a miss breaks the chain")
 
 
 func test_switching_keeps_the_rounds_and_cancels_a_reload() -> void:
-	var blaster := _blaster()
-	blaster.rounds = 12
+	var harl := _harl()
+	harl.rounds = 12
 	_player.switch_weapon()
-	assert_eq(_player.get_weapon_type(), HAMMER)
+	assert_eq(_player.get_weapon_type(), DRAY)
 	_player.switch_weapon()
-	blaster = _blaster()
-	assert_eq(blaster.rounds, 12)
+	harl = _harl()
+	assert_eq(harl.rounds, 12)
 
 	_player.add_cargo(KYRITE, 100.0)
 	_player.reload()
 	_player.switch_weapon()
 	_player.switch_weapon()
-	blaster = _blaster()
-	assert_false(blaster.reloading)
-	assert_eq(blaster.rounds, 0, "the magazine was thrown away")
+	harl = _harl()
+	assert_false(harl.reloading)
+	assert_eq(harl.rounds, 0, "the magazine was thrown away")
 
 
 func test_reloads_use_the_spare_magazines_before_ore() -> void:
 	_give_spares(2)
-	var blaster := _blaster()
-	assert_eq(blaster.spare_rounds, 2 * blaster.capacity())
+	var harl := _harl()
+	assert_eq(harl.spare_rounds, 2 * harl.capacity())
 	_player.add_cargo(KYRITE, 100.0)
 	for spare: int in 2:
-		blaster.rounds = 5
-		await _finish_reload(blaster)
-		assert_eq(blaster.rounds, blaster.capacity(), "the rest is thrown away, a full one goes in")
-		assert_eq(blaster.spare_rounds, (1 - spare) * blaster.capacity())
+		harl.rounds = 5
+		await _finish_reload(harl)
+		assert_eq(harl.rounds, harl.capacity(), "the rest is thrown away, a full one goes in")
+		assert_eq(harl.spare_rounds, (1 - spare) * harl.capacity())
 		assert_eq(_player.cargo[KYRITE], 100.0, "spares cost no ore")
-	blaster.rounds = 0
-	await _finish_reload(blaster)
-	assert_eq(blaster.rounds, blaster.capacity())
+	harl.rounds = 0
+	await _finish_reload(harl)
+	assert_eq(harl.rounds, harl.capacity())
 	assert_lt(_player.cargo[KYRITE], 100.0, "then ore pays")
 
 
 func test_empty_weapon_with_spares_reloads_without_ore() -> void:
 	_give_spares(1)
-	var blaster := _blaster()
-	blaster.rounds = 1
+	var harl := _harl()
+	harl.rounds = 1
 	await _attack_once()
-	assert_true(blaster.reloading)
-	await _finish_round(blaster)
-	assert_eq(blaster.rounds, blaster.capacity())
-	assert_eq(blaster.spare_rounds, 0)
+	assert_true(harl.reloading)
+	await _finish_round(harl)
+	assert_eq(harl.rounds, harl.capacity())
+	assert_eq(harl.spare_rounds, 0)
 
 
-func test_shotgun_takes_spare_shells_one_by_one() -> void:
+func test_brask_takes_spare_shells_one_by_one() -> void:
 	_give_spares(1)
-	var shotgun := _equip(SHOTGUN) as RangedWeapon
-	assert_eq(shotgun.spare_rounds, shotgun.capacity())
-	shotgun.rounds = shotgun.capacity() - 2
-	await _finish_reload(shotgun)
-	assert_eq(shotgun.spare_rounds, shotgun.capacity() - 1)
-	await _finish_round(shotgun)
-	assert_eq(shotgun.rounds, shotgun.capacity())
-	assert_eq(shotgun.spare_rounds, shotgun.capacity() - 2)
-	assert_false(shotgun.reloading)
+	var brask := _equip(BRASK).ammo as MagazineAmmo
+	assert_eq(brask.spare_rounds, brask.capacity())
+	brask.rounds = brask.capacity() - 2
+	await _finish_reload(brask)
+	assert_eq(brask.spare_rounds, brask.capacity() - 1)
+	await _finish_round(brask)
+	assert_eq(brask.rounds, brask.capacity())
+	assert_eq(brask.spare_rounds, brask.capacity() - 2)
+	assert_false(brask.reloading)
 
 
 func test_reloads_are_free_aboard() -> void:
-	var blaster := _blaster()
-	blaster.rounds = 0
+	var harl := _harl()
+	harl.rounds = 0
 	_player.ammo_free = true
-	await _finish_reload(blaster)
-	assert_eq(blaster.rounds, blaster.capacity())
+	await _finish_reload(harl)
+	assert_eq(harl.rounds, harl.capacity())
 
 
-func _blaster() -> RangedWeapon:
-	assert_eq(_player.get_weapon_type(), BLASTER)
-	return _player.weapon as RangedWeapon
+func _harl() -> MagazineAmmo:
+	assert_eq(_player.get_weapon_type(), HARL)
+	return _player.get_ammo() as MagazineAmmo
 
 
 func _equip(weapon_type: WeaponType) -> Weapon:
@@ -238,14 +240,14 @@ func _equip(weapon_type: WeaponType) -> Weapon:
 	return _player.weapon
 
 
-func _finish_reload(weapon: RangedWeapon) -> void:
+func _finish_reload(weapon: MagazineAmmo) -> void:
 	if not weapon.reloading:
 		assert_true(_player.reload())
 	await _finish_round(weapon)
 
 
 ## Skips to the end of the current reload (round).
-func _finish_round(weapon: RangedWeapon) -> void:
+func _finish_round(weapon: MagazineAmmo) -> void:
 	weapon.reload_elapsed = weapon.reload_duration
 	await wait_physics_frames(1)
 

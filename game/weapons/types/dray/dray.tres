@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bpp6gvbope5wb"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://c8hhj07nu07v4" path="res://game/weapons/types/dray/dray.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://bmvaidn1vcbd7" path="res://game/weapons/types/dray/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://clw5p6fymdvt4" path="res://game/weapons/types/dray/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://lay3okicjhoa" path="res://assets/audio/sfx/weapons/dray_swing.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://dcbf06vllak6p" path="res://game/weapons/types/dray/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://cq7e4hjhaeodh" path="res://game/weapons/types/dray/mk_rate.tres" id="mk_rate"]
+[ext_resource type="Resource" uid="uid://mjkrxbs7gsj2" path="res://game/weapons/types/dray/mk_arc.tres" id="mk_arc"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Dray"
+class_word = "Hammer"
+description = "Heavy swings that hit everything in front."
+origin = 1
+scene = ExtResource("2_scene")
+attack_rate = 1.5
+draw_time = 0.6
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_rate"), ExtResource("mk_arc")])
+attack_sound = ExtResource("7_sound")

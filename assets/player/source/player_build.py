@@ -12,12 +12,12 @@ turns the model by 180 degrees to face the player's -Z). T-pose rest, feet on th
 Skeleton "Skeleton": Godot's humanoid bone names (SkeletonProfileHumanoid, without fingers), so the animations
 could be retargeted later. Meshes: "Suit" (one skinned object, rigid parts weighted 100 % to their bone, the
 undersuit limbs blended across the joints) and "SuitLight" (the collar band, constant emissive; the game drives its
-color by health). Empties on bones: "WeaponGrip" (RightHand, the blaster's origin in the aim pose; Godot axes:
+color by health). Empties on bones: "WeaponGrip" (RightHand, Harl's origin in the aim pose; Godot axes:
 -Z forward), "CargoRack" and "HosePort" (UpperChest, on the backpack).
 
 Animations (one action per clip, each in its own NLA track, all at 30 fps): "Idle" (loop), "Run", "RunBack",
 "StrafeLeft", "StrafeRight" (loops, authored at RUN_SPEED: the game scales their speed by the actual one),
-"Aim" (upper-body pose holding the blaster; the game layers it over the legs) and "Die" (once, ends lying face
+"Aim" (upper-body pose holding Harl; the game layers it over the legs) and "Die" (once, ends lying face
 down). Poses are built from world-space rotations per bone and two-bone IK for arms and legs, then converted to
 the bones' local rotations (pose_of()).
 """
@@ -414,8 +414,8 @@ def rest_pose(arm: bpy.types.Object) -> None:
 
 # --- clips ------------------------------------------------------------------------------------------
 
-GRIP = Vector((-0.17, -0.25, 1.1))  # the blaster's origin (pistol grip) in the aim pose; muzzle ~1.25 m up
-FOREGRIP = GRIP + Vector((0, -0.35, 0.086))  # blaster.glb "Foregrip"
+GRIP = Vector((-0.17, -0.25, 1.1))  # Harl's origin (pistol grip) in the aim pose; muzzle ~1.25 m up
+FOREGRIP = GRIP + Vector((0, -0.35, 0.086))  # harl.glb "Foregrip"
 
 
 def smooth(t: float) -> float:

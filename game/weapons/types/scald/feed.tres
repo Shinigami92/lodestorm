@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="HeatFeed" format=3 uid="uid://c3587gq6k6iq8"]
+
+[ext_resource type="Script" uid="uid://1qm3c40ls42w" path="res://game/weapons/feeds/heat_feed.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://7plpkh7jahnw" path="res://assets/audio/sfx/weapons/reload_start.tres" id="2_reload_start"]
+[ext_resource type="Resource" uid="uid://cqbkalimus6cr" path="res://assets/audio/sfx/weapons/cell_in.tres" id="3_load"]
+[ext_resource type="Resource" uid="uid://dlrbf6jkajca7" path="res://assets/audio/sfx/weapons/overheat.tres" id="4_overheat"]
+[ext_resource type="Resource" uid="uid://weckdw2uo2b6" path="res://assets/audio/sfx/weapons/heat_vent.tres" id="5_vent"]
+
+[resource]
+script = ExtResource("1_script")
+ore_per_round = 0.08
+magazine = 80
+reload_time = 2.0
+sweet_spot_start = 0.5
+heat_per_round = 0.02
+cool_delay = 0.5
+cool_rate = 0.4
+vent_time = 2.0
+reload_sound = ExtResource("2_reload_start")
+load_sound = ExtResource("3_load")
+overheat_sound = ExtResource("4_overheat")
+vent_sound = ExtResource("5_vent")

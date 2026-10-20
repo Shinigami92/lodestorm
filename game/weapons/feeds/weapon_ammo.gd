@@ -5,7 +5,8 @@ extends RefCounted
 ## (`process`); the holder reloads it (`reload`), fills it for a run (`fill`) and hands a teammate
 ## ammo (`receive_ammo`). Rounds beyond the spares are paid with ore by the `supplier` (see
 ## `OreAmmo`); aboard (`Player.ammo_free`) they're free. The weapon's gauge and the suit ring show
-## it the same way for every feed: the rounds, and a refill (`refilling`) with its timing window.
+## it the same way for every feed: the rounds, a refill (`refilling`: a reload, a drained battery,
+## a vent) with its timing window, and the heat (`heat_share`).
 
 ## Emitted when a reload can't start although it isn't full (nothing pays more rounds).
 @warning_ignore("unused_signal")
@@ -83,6 +84,11 @@ func timing_window() -> Vector2:
 func in_window(share: float) -> bool:
 	var window: Vector2 = timing_window()
 	return share >= window.x and share <= window.y
+
+
+## How hot it is, from 0 (cold, or it doesn't heat up) to 1 (overheated), see `HeatAmmo`.
+func heat_share() -> float:
+	return 0.0
 
 
 ## Whether it has spares (spare magazines, shells) from the ship's stock.

@@ -1,6 +1,6 @@
 // The suit ring on the ground around the player (on a PlaneMesh, see SuitRing): the health arc on
-// the screen's left, the ammo arc on its right (both filling from the bottom up), the spare
-// magazine ticks inside the ammo arc, the dash's thin inner ring, the green outer band while
+// the screen's left, the ammo arc on its right (both filling from the bottom up) with a heat-fed
+// weapon's heat as a thin band outside it, the spare magazine ticks inside the ammo arc, the dash's thin inner ring, the green outer band while
 // handing over ammo, short red marks on the outer edge where hits came from, and the pointers'
 // arrows beyond them. A dimmed arc shows as a faint outline. A teammate's ring shows only the
 // health arc inside an outline in their color. Lines keep `min_line` pixels on screen. Pulled
@@ -26,6 +26,7 @@ uniform vec2 dash_band = vec2(0.92, 0.96);
 uniform vec2 give_band = vec2(1.42, 1.5);
 uniform vec2 hit_band = vec2(1.42, 1.6);
 uniform vec2 team_band = vec2(1.39, 1.43);
+uniform vec2 heat_band = vec2(1.385, 1.435);
 // Dark, so the ring reads on light ground too.
 uniform vec4 track_color : source_color = vec4(0.0, 0.0, 0.0, 0.4);
 // How much of a dimmed arc's outline shows (0 aboard, where the ring stays quiet).
@@ -55,6 +56,10 @@ uniform int spare_slots = 0;
 // Spare magazines left (a fraction: a partly used one).
 uniform float spare_fill = 0.0;
 uniform vec4 spare_color : source_color = vec4(0.02, 0.7, 1.0, 0.9);
+
+uniform float heat_alpha = 0.0;
+uniform float heat_fill = 0.0;
+uniform vec4 heat_color : source_color = vec4(1.0, 0.6, 0.15, 0.9);
 
 uniform float dash_alpha = 0.0;
 uniform float dash_fill = 1.0;
@@ -194,6 +199,15 @@ void fragment() {
 			c.a *= in_spares * tick;
 			color = over(color, c);
 		}
+	}
+
+	float in_heat = band(r, heat_band, fw, edge) * heat_alpha;
+	if (in_heat > 0.0) {
+		in_heat *= span(s, top_gap, 0.5 - bottom_gap, r, fw);
+		float along_m = arc_span * TAU * r;
+		vec4 c = arc_color(right_t, heat_fill, heat_color, 1.0, edge, along_m, fw);
+		c.a *= in_heat;
+		color = over(color, c);
 	}
 
 	float in_dash = band(r, dash_band, fw, edge) * dash_alpha;

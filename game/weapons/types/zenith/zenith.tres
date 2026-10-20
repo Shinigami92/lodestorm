@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bqas048ol3t0i"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://xp1d0x746ncg" path="res://game/weapons/types/zenith/zenith.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://cqfdbjv43g15n" path="res://game/weapons/types/zenith/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://cnim2qyin0rkq" path="res://game/weapons/types/zenith/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://bi84biu1f2nq" path="res://game/weapons/types/zenith/damage.tres" id="5_damage"]
+[ext_resource type="Resource" uid="uid://35gydblvrnar" path="res://game/weapons/types/zenith/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://cpf21vjt0gsoe" path="res://game/weapons/types/zenith/mk_cell.tres" id="mk_cell"]
+[ext_resource type="Resource" uid="uid://b5m6mrgjsre2o" path="res://game/weapons/types/zenith/mk_cooling.tres" id="mk_cooling"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://1v26qj8f1fdi" path="res://game/ores/types/ore_aethrine.tres" id="ore_aethrine"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Zenith"
+class_word = "Star lance"
+description = "A beam through every alien in line. It burns hotter on one."
+origin = 2
+scene = ExtResource("2_scene")
+attack_rate = 10
+draw_time = 0.7
+feed = ExtResource("8_feed")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_cell"), ExtResource("mk_cooling")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 500, ExtResource("ore_aethrine"): 300
+})

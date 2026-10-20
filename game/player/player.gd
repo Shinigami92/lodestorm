@@ -419,9 +419,9 @@ func take_damage(amount: float, from: Vector3 = Vector3.INF) -> void:
 	vitals.damage(amount, from)
 
 
-## Restores full health.
-func heal() -> void:
-	vitals.heal()
+## Restores `amount` health (all of it by default; not when dead).
+func heal(amount: float = INF) -> void:
+	vitals.heal(amount)
 
 
 ## Brings a dead player back at `at` with full health.

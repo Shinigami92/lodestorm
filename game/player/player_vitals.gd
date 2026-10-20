@@ -65,10 +65,10 @@ func damage(amount: float, from: Vector3 = Vector3.INF) -> void:
 	died.emit()
 
 
-## Restores full health (not when dead).
-func heal() -> void:
+## Restores `amount` health, all of it by default (not when dead).
+func heal(amount: float = INF) -> void:
 	if not dead:
-		_set_health(maximum())
+		_set_health(minf(health + amount, maximum()))
 
 
 ## Alive again with full health.

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BeamDelivery" format=3 uid="uid://cqfdbjv43g15n"]
+
+[ext_resource type="Script" uid="uid://t15r1g8teq8c" path="res://game/weapons/deliveries/beam_delivery.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+reach = 25.0
+pierce = true
+ramp = 3.0
+ramp_time = 2.0

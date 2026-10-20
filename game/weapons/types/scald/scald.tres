@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bgn5udnb13xdt"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://ckm03rich3lwu" path="res://game/weapons/types/scald/scald.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://d1l40d1b8fvu6" path="res://game/weapons/types/scald/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://c3587gq6k6iq8" path="res://game/weapons/types/scald/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://bprb5e8r7mn2n" path="res://game/weapons/types/scald/damage.tres" id="5_damage"]
+[ext_resource type="Resource" uid="uid://vqw5136uldah" path="res://game/weapons/types/scald/burn.tres" id="5_burn"]
+[ext_resource type="Resource" uid="uid://dy35h6whq0im0" path="res://game/weapons/types/scald/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://deysx53ed5rnd" path="res://game/weapons/types/scald/mk_cell.tres" id="mk_cell"]
+[ext_resource type="Resource" uid="uid://dvck1qyi26qhi" path="res://game/weapons/types/scald/mk_burn.tres" id="mk_burn"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="ore_noctile"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Scald"
+class_word = "Thermal cutter"
+description = "A short cone of flame. Aliens in it burn on."
+origin = 1
+scene = ExtResource("2_scene")
+attack_rate = 10
+draw_time = 0.5
+feed = ExtResource("8_feed")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage"), ExtResource("5_burn")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_cell"), ExtResource("mk_burn")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 380, ExtResource("ore_noctile"): 180
+})

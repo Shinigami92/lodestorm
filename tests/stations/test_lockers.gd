@@ -52,15 +52,63 @@ func test_locker_tabs_between_slots() -> void:
 
 func test_locker_lays_the_loadout_in_its_cradles() -> void:
 	var locker: LoadoutStation = await _open_locker()
-	var cradle_1 := locker.get_node("Cradle1") as Node3D
-	var cradle_2 := locker.get_node("Cradle2") as Node3D
 	var near := Vector3.ONE * 0.01
-	assert_almost_eq(locker.get_part(HARL).global_position, cradle_1.global_position, near)
-	assert_almost_eq(locker.get_part(DRAY).global_position, cradle_2.global_position, near)
+	for slot: int in 2:
+		var cradle := locker.get_node("Cradle%d" % (slot + 1)) as Node3D
+		var part: StationPart = locker.get_cradle_part(slot)
+		assert_almost_eq(part.global_position, cradle.global_position, near)
+		assert_eq(part.item, ([HARL, DRAY] as Array[WeaponType])[slot])
+		assert_true(part.visible)
+	assert_eq(locker.selected, locker.get_cradle_part(0), "slot 1 is selected on opening")
 	assert_true(locker.toggle(HARL, 0))
 	await wait_process_frames(1)
-	var hanging: Vector3 = locker.get_part(HARL).global_position
-	assert_gt(hanging.y, cradle_1.global_position.y + 0.5, "back up where it hangs")
+	assert_null(locker.get_cradle_part(0).item)
+	assert_false(locker.get_cradle_part(0).visible, "an empty cradle")
+	assert_eq(locker.selected, locker.get_part(HARL), "selected on the wall now")
+	assert_true(locker.get_part(HARL).is_visible_in_tree(), "still on the wall")
+
+
+func test_selection_follows_a_weapon_into_the_other_cradle() -> void:
+	var locker: LoadoutStation = await _open_locker()
+	locker.select(locker.get_cradle_part(0))
+	assert_true(locker.toggle(HARL, 1))
+	assert_eq(_player.loadout.weapons, [DRAY, HARL] as Array[WeaponType], "swapped")
+	assert_eq(locker.selected, locker.get_cradle_part(1))
+	assert_eq(locker.selected.item, HARL)
+
+
+func test_camera_follows_the_selected_weapon_to_the_wall() -> void:
+	var locker: LoadoutStation = await _open_locker()
+	var at_locker: Vector3 = locker.get_view_center()
+	assert_eq(at_locker, (locker.get_node("Focus") as Node3D).global_position)
+	_select(locker, BRASK)
+	assert_true(locker.is_on_wall())
+	var part: Vector3 = locker.get_part(BRASK).global_position
+	var center: Vector3 = locker.get_view_center()
+	assert_almost_eq(center.x, part.x, 0.001, "over the weapon")
+	assert_gt(center.y, part.y, "and its card above the wall")
+	await wait_seconds(0.5)
+	assert_eq(locker.view_height, locker.wall_view_height, "frames the wall")
+	var wall_top: float = locker.wall.to_global(Vector3.UP * locker.wall.get_top()).y
+	var card_bottom: float = locker.card.global_position.y - locker.card.size.y * 0.5
+	assert_gt(card_bottom, wall_top, "the card hides no weapon")
+	locker.select(locker.get_cradle_part(0))
+	assert_eq(locker.get_view_center(), at_locker, "back at the locker")
+
+
+func test_wall_marks_the_loadout_with_slot_numbers() -> void:
+	var locker: LoadoutStation = await _open_locker()
+	var wall: WeaponWall = locker.wall
+	await wait_process_frames(1)
+	assert_eq(wall.viewer, _player)
+	assert_true(wall.get_tag(HARL).visible)
+	assert_eq(wall.get_tag(HARL).text, "1")
+	assert_eq(wall.get_tag(DRAY).text, "2")
+	assert_eq(wall.get_tag(DRAY).modulate, _player.color())
+	assert_false(wall.get_tag(BRASK).visible, "not in the loadout")
+	assert_true(locker.toggle(DRAY, 1))
+	await wait_process_frames(1)
+	assert_false(wall.get_tag(DRAY).visible, "taken out")
 
 
 func test_locker_shows_locked_weapons() -> void:
@@ -129,7 +177,9 @@ func _send(action: StringName) -> void:
 func test_mouse_puts_a_weapon_into_slot_2() -> void:
 	var locker: LoadoutStation = await _open_locker()
 	_player.arsenal.unlock(BRASK)
-	await wait_seconds(0.5)
+	# The camera goes to the wall with the selection.
+	_select(locker, HARL)
+	await wait_seconds(1.0)
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	await _click(camera.unproject_position(locker.get_part(BRASK).global_position))
 	assert_eq(locker.selected.item, BRASK)

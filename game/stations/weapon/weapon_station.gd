@@ -1,43 +1,42 @@
 class_name WeaponStation
 extends UpgradeStation
-## The weapons room's station: a rack along the wall with every weapon of the game (`weapons`;
-## the ones the player using it doesn't own yet see-through, their upgrades "Locked") and a
-## workbench. Picking a weapon on the rack (a click, or `tab_prev`/`tab_next`) lays it on the bench
-## (its rack slot stays empty meanwhile), where its parts are the upgrades, each at its pips (see
-## `WeaponPart`). A weapon the player doesn't own is itself a part on the bench (`StationPart.item`
-## the `WeaponType`): with its blueprint, the card builds it for its ore from the hold (`build`).
-## The rack grows with the weapons (`rack_spacing` each).
+## The weapons room's station: a rack along the wall with every weapon of the game (`weapons`) in
+## rows by origin (a `WeaponRack`; the ones the player using it doesn't own yet see-through, their
+## upgrades "Locked") and a workbench. Picking a weapon on the rack (a click, or
+## `tab_prev`/`tab_next` in the rack's order) lays it on the bench (its rack slot stays empty
+## meanwhile), where its parts are the upgrades, each at its pips (see `WeaponPart`). A weapon the
+## player doesn't own is itself a part on the bench (`StationPart.item` the `WeaponType`): with its
+## blueprint, the card builds it for its ore from the hold (`build`). The rack grows with the
+## weapons, and the camera follows the bench weapon's place on it.
 
 ## Where the holo card floats next to the bench's parts (see `StationPart.card_offset`).
 const BENCH_CARD_OFFSET := Vector2(1.5, -0.1)
 
-## Every weapon of the game, in rack order.
+## Every weapon of the game (the rack hangs them in rows by origin).
 @export var weapons: Arsenal
-## Distance between the weapons on the rack, in m.
-@export var rack_spacing: float = 1.0
 
 ## The weapon on the bench.
 var bench_weapon: WeaponType
 
-var _rack_parts: Array[StationPart] = []
 var _bench_display: Weapon
 var _bench_parts: Array[StationPart] = []
 ## The weapon on the bench as a part, to build it; shown while the player doesn't own it.
 var _build_part: StationPart
 
-## The rack's slots start at its origin and go along its +X; `Rack/Panel` is resized to fit them.
 ## The weapons hang and lie with their barrels along +X.
-@onready var _rack: Node3D = $Rack
-@onready var _rack_panel: MeshInstance3D = $Rack/Panel
+@onready var _rack: WeaponRack = $Rack
 ## Where the weapon on the bench lies.
 @onready var _bench_spot: Node3D = $BenchSpot
 
 
 func _ready() -> void:
 	super()
-	_build_rack()
-	if weapons and not weapons.weapons.is_empty():
-		lay_on_bench(weapons.weapons[0])
+	if _rack.weapons != weapons:
+		_rack.weapons = weapons
+		_rack.build()
+	var order: Array[WeaponType] = _rack.get_order()
+	if not order.is_empty():
+		lay_on_bench(order[0])
 
 
 func get_parts() -> Array[StationPart]:
@@ -50,7 +49,7 @@ func get_parts() -> Array[StationPart]:
 
 func get_pickable_parts() -> Array[StationPart]:
 	var parts: Array[StationPart] = get_parts()
-	for part: StationPart in _rack_parts:
+	for part: StationPart in _rack.get_parts():
 		if part.visible:
 			parts.append(part)
 	return parts
@@ -58,7 +57,18 @@ func get_pickable_parts() -> Array[StationPart]:
 
 ## The weapons on the rack, one part each (`StationPart.item` the `WeaponType`).
 func get_rack_parts() -> Array[StationPart]:
-	return _rack_parts.duplicate()
+	return _rack.get_parts()
+
+
+## The bench, shifted halfway towards the bench weapon's empty place on the rack, so the camera
+## follows along a long rack.
+func get_view_center() -> Vector3:
+	var center: Vector3 = super()
+	var slot: StationPart = _rack.get_part(bench_weapon)
+	if slot:
+		var along: Vector3 = _rack.global_basis.x.normalized()
+		center += along * along.dot(slot.global_position - center) * 0.5
+	return center
 
 
 ## The part building the weapon on the bench (shown while the player doesn't own it), or null.
@@ -142,7 +152,7 @@ func lay_on_bench(weapon_type: WeaponType) -> void:
 		_bench_spot.add_child(part)
 		part.global_position = pips.global_position
 		_bench_parts.append(part)
-	for part: StationPart in _rack_parts:
+	for part: StationPart in _rack.get_parts():
 		part.visible = part.item != weapon_type
 	_show_owned()
 	if user:
@@ -151,14 +161,14 @@ func lay_on_bench(weapon_type: WeaponType) -> void:
 
 
 func _cycle(step_by: int) -> void:
-	if not weapons or weapons.weapons.is_empty():
+	var order: Array[WeaponType] = _rack.get_order()
+	if order.is_empty():
 		return
-	var index: int = weapons.weapons.find(bench_weapon)
-	lay_on_bench(weapons.weapons[posmod(index + step_by, weapons.weapons.size())])
+	lay_on_bench(order[posmod(order.find(bench_weapon) + step_by, order.size())])
 
 
 func _picked(part: StationPart) -> void:
-	if part in _rack_parts:
+	if part in _rack.get_parts():
 		lay_on_bench(part.item as WeaponType)
 	else:
 		super(part)
@@ -173,36 +183,10 @@ func _bought(_upgrade: Upgrade) -> void:
 	_show_owned()
 
 
-func _build_rack() -> void:
-	if not weapons:
-		return
-	for i: int in weapons.weapons.size():
-		var weapon_type: WeaponType = weapons.weapons[i]
-		var part := StationPart.new()
-		part.name = weapon_type.resource_path.get_file().get_basename().capitalize()
-		part.item = weapon_type
-		part.pick_radius = rack_spacing * 0.4
-		part.position = Vector3(rack_spacing * i, 0.0, 0.0)
-		var display: Weapon = WeaponDisplay.create(weapon_type)
-		# Hanging with the barrel to the right, like on the bench.
-		display.rotation.y = -PI * 0.5
-		part.outline = display
-		_rack.add_child(part)
-		part.add_child(display)
-		WeaponDisplay.center(display)
-		_rack_parts.append(part)
-	var box := _rack_panel.mesh.duplicate() as BoxMesh
-	_rack_panel.mesh = box
-	var length: float = rack_spacing * weapons.weapons.size()
-	box.size.x = length
-	_rack_panel.position.x = (length - rack_spacing) * 0.5
-
-
 ## Shows the player's levels on the bench's weapon, and the weapons they don't own see-through
 ## (the one on the bench then a part to build it).
 func _show_owned() -> void:
-	for part: StationPart in _rack_parts:
-		_set_owned_look(part, part.item as WeaponType)
+	_rack.show_for(user)
 	if _bench_display:
 		if user:
 			_bench_display.apply_upgrades(user.upgrades)

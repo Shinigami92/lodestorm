@@ -318,14 +318,20 @@ func _place_card(weight: float) -> void:
 	_draw_leader(view)
 
 
-## The leader line from the card's edge facing the part to the part, and a dot on the part.
+## The leader line from the card's edge facing the part to the part (its side edge, or the top or
+## bottom edge when the part is above or below it), and a dot on the part.
 func _draw_leader(view: Basis) -> void:
 	_leader_mesh.clear_surfaces()
 	if not selected:
 		return
 	var to: Vector3 = selected.global_position
-	var side: float = signf(view.x.dot(to - card.global_position))
-	var from: Vector3 = card.global_position + view.x * side * card.size.x * 0.5 * _card_scale()
+	var offset: Vector3 = to - card.global_position
+	var half: Vector2 = card.size * 0.5 * _card_scale()
+	var from: Vector3 = card.global_position
+	if absf(view.x.dot(offset)) > half.x:
+		from += view.x * signf(view.x.dot(offset)) * half.x
+	else:
+		from += view.y * signf(view.y.dot(offset)) * half.y
 	_leader_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	var across: Vector3 = view.z.cross(to - from).normalized() * LEADER_WIDTH * 0.5
 	_quad(from - across, from + across, to + across, to - across)

@@ -1,6 +1,6 @@
 # Weapons (planned)
 
-Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (step 10 A, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens) and [Upgrade stations](../GAME_DESIGN.md#upgrade-stations)): the framework (a weapon composed of its feed, delivery, effects and parts as Resources), Harl, Brask and Dray with three parts each, the draw time, blueprints and building a weapon at the workbench.
+Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (steps 10 A and B, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens), [Upgrade stations](../GAME_DESIGN.md#upgrade-stations) and the armory in [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)): the framework (a weapon composed of its feed, delivery, effects and parts as Resources), Harl, Brask and Dray with three parts each, the draw time, blueprints and building a weapon at the workbench; the armory's weapon wall and the workbench rack in rows by origin, for any number.
 
 ## The roster
 
@@ -56,11 +56,6 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 
 - **Upgrade parts:** three per weapon at the workbench (built for Harl, Brask and Dray): **damage**, **capacity** (magazine, belt, cell, heat; for melee: swing speed) and a **part of its own**, for the coming weapons e.g. Quill: charge time; Grindle: spin-up; Fulgen: jumps; Kith: heal rate; Tremor: blast radius; Wick: charges placed; Mantle: block angle.
 - **Getting them:** blueprints from quests (see [`quests.md`](quests.md)): colony arms and tools from the crew's quest chains, the six prototypes from the lost expedition's sites (story). Building one from its blueprint at the workbench for a fixed ore cost is built; later weapons cost the planet's signature ore, the prototypes also alloys (see [`refinery.md`](refinery.md)). In co-op everyone in the session gets the blueprint and builds it from their own hold (own holds: step 11 A). The debug overlay gives the blueprints until then.
-
-## The armory and the workbench
-
-- **Weapon wall:** a locker can't hold 18 weapons, so a weapon wall across the armory shows every weapon once, in rows by origin, the ones not owned yet see-through as now, and the camera follows the selected one; each locker keeps its two loadout cradles, and players pick from the wall into their own.
-- **Workbench rack:** the weapons room's rack holds them in rows by origin too.
 
 ## Loadout and switching
 

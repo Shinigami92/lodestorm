@@ -328,6 +328,9 @@ func test_text_reads_from_the_camera() -> void:
 		var card: WorldPanel = station.card
 		var text_height: float = font_size / card.pixels_per_meter * card.global_basis.y.length()
 		assert_gte(text_height / station.view_height, MIN_TEXT_HEIGHT, path)
+		if station is LoadoutStation:
+			var at_wall: float = (station as LoadoutStation).wall_view_height
+			assert_gte(text_height / at_wall, MIN_TEXT_HEIGHT, path + " at the wall")
 	for path: String in NPCS.values():
 		var npc := _ship.get_node(path) as Npc
 		var bubble: WorldPanel = npc.bubble

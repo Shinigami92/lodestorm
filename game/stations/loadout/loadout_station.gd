@@ -1,15 +1,19 @@
 class_name LoadoutStation
 extends Station
 ## A player's locker in the armory, where they pick their loadout (see GAME_DESIGN.md, Armory).
-## Every weapon of the game (`weapons`) hangs in it, the ones the player doesn't own yet
-## see-through ("Locked"); below are two cradles, slots 1 and 2, holding the weapons in the
-## loadout. The weapons are the parts; `tab_prev`/`tab_next` pick the slot (its cradle's strip
-## lights up, its number turns amber), and `interact` (or the card's slot buttons) puts the
-## selected weapon into that slot (if it's in the other one, the two swap) or takes it out again,
-## unless it's the only weapon in the loadout: one always goes along. `slot_1`/`slot_2` (keys 1
-## and 2) put it straight into that slot. Locker `number` belongs to the `number`th player; nobody
-## else can open it. While a mission is underway its door stays shut and the loadout can't change;
-## lockers of players who aren't in the session stay shut too.
+## It has two cradles, slots 1 and 2, holding the weapons in the loadout; every weapon of the game
+## hangs once on the armory's weapon wall (`wall`), the ones the player doesn't own yet
+## see-through ("Locked"). The weapons on the wall and in the cradles are the parts, and the
+## camera follows the selected one to the wall and back. `tab_prev`/`tab_next` pick the slot (its
+## cradle's strip lights up, its number turns amber), and `interact` (or the card's slot buttons)
+## puts the selected weapon into that slot (if it's in the other one, the two swap) or takes it
+## out again, unless it's the only weapon in the loadout: one always goes along.
+## `slot_1`/`slot_2` (keys 1 and 2) put it straight into that slot. Locker `number` belongs to the
+## `number`th player; nobody else can open it. While a mission is underway its door stays shut and
+## the loadout can't change; lockers of players who aren't in the session stay shut too.
+
+## Between the weapon wall's top edge and the card above it, in m.
+const CARD_GAP: float = 0.1
 
 ## The cradles' light strips: dim, the selected slot's bright (its number turns amber). A strip
 ## fully amber made the weapon on it hard to read.
@@ -17,8 +21,11 @@ const SLOT_COLOR := Color(0.12, 0.34, 0.4)
 const SELECTED_SLOT_COLOR := Color(0.3, 0.85, 1.0)
 const SELECTED_NUMBER_COLOR := Color(1.0, 0.75, 0.3)
 
-## Every weapon of the game, in the order they hang.
-@export var weapons: Arsenal
+## The weapon wall the player picks from.
+@export var wall: WeaponWall
+## How much the camera sees (m high) while a weapon on the wall is selected: the weapon and its
+## card above the wall.
+@export var wall_view_height: float = 3.0
 ## Whose locker it is: the `number`th player (1: the first, the one playing solo).
 @export_range(1, 4) var number: int = 1
 ## The owner's color, on the strip along the locker. TBD with co-op (players' colors).
@@ -27,24 +34,20 @@ const SELECTED_NUMBER_COLOR := Color(1.0, 0.75, 0.3)
 		color = value
 		if is_node_ready():
 			_show_color()
-## Vertical distance between the weapons hanging in it, and how many hang in a column (more
-## weapons start the next column, `column_spacing` to the right).
-@export var row_spacing: float = 0.34
-@export var rows_per_column: int = 4
-@export var column_spacing: float = 1.0
 
 ## The slot `interact` puts the selected weapon into (0: slot 1).
 var selected_slot: int = 0
 ## The mission that locks it while underway; found in the scene tree when not set.
 var mission: Mission
 
-var _weapon_parts: Array[StationPart] = []
-## What the weapons were last arranged for: the player, their loadout, weapons and MK levels.
+## One part per cradle, showing the weapon in that slot (hidden while the slot is empty).
+var _cradle_parts: Array[StationPart] = []
+## What the cradles were last arranged for: the player, their loadout and MK levels.
 var _arranged_for: Array = []
 var _cradle_materials: Array[StandardMaterial3D] = []
+## `view_height` at the locker.
+var _locker_view_height: float
 
-## Where the weapons hang (the first at its origin, then down).
-@onready var _rack: Node3D = $Rack
 ## One marker per slot, where the weapon in it lies.
 @onready var _cradles: Array[Node3D] = [$Cradle1 as Node3D, $Cradle2 as Node3D]
 @onready var _door: Node3D = $Door
@@ -56,6 +59,7 @@ var _cradle_materials: Array[StandardMaterial3D] = []
 
 func _ready() -> void:
 	super()
+	_locker_view_height = view_height
 	for cradle: Node3D in _cradles:
 		var glow := cradle.get_node(^"Glow") as MeshInstance3D
 		var material := StandardMaterial3D.new()
@@ -65,7 +69,14 @@ func _ready() -> void:
 		_cradle_materials.append(material)
 	_number_label.text = str(number)
 	_show_color()
-	_build()
+	for slot: int in _cradles.size():
+		var part := StationPart.new()
+		part.name = "Slot%d" % (slot + 1)
+		part.pick_radius = 0.3
+		part.card_offset = Vector2(1.1, 0.1)
+		_cradles[slot].add_child(part)
+		_cradle_parts.append(part)
+	_arrange()
 
 
 func _process(delta: float) -> void:
@@ -74,11 +85,13 @@ func _process(delta: float) -> void:
 		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
 	# Lockers of players not in the session stay shut, like all of them during a mission.
 	_door.visible = is_locked() or not get_owner_player()
-	_rack.visible = not _door.visible
 	_loadout_sign.visible = not _door.visible
+	for part: StationPart in _cradle_parts:
+		part.visible = part.item != null and not _door.visible
 	var player: Player = user if user else get_owner_player()
-	if player and _arranged_for != _arrangement(player):
+	if _arranged_for != _arrangement(player):
 		_arrange()
+	view_height = wall_view_height if is_on_wall() else _locker_view_height
 	if user:
 		refresh()
 
@@ -97,16 +110,38 @@ func is_locked() -> bool:
 	return mission != null and mission.is_underway()
 
 
-## The part showing `weapon_type`, or null.
+## The part showing `weapon_type` on the wall, or null.
 func get_part(weapon_type: WeaponType) -> StationPart:
-	for part: StationPart in _weapon_parts:
-		if part.item == weapon_type:
-			return part
-	return null
+	return wall.get_part(weapon_type) if wall else null
 
 
+## The part in `slot`'s cradle (its `item` the weapon in that slot, null while empty).
+func get_cradle_part(slot: int) -> StationPart:
+	return _cradle_parts[slot]
+
+
+## The weapons in the cradles first (slot 1 is selected on opening), then the wall's.
 func get_parts() -> Array[StationPart]:
-	return _weapon_parts.duplicate()
+	var parts: Array[StationPart] = []
+	for part: StationPart in _cradle_parts:
+		if part.visible:
+			parts.append(part)
+	if wall:
+		parts.append_array(wall.get_parts())
+	return parts
+
+
+## Whether the selected weapon is one on the wall.
+func is_on_wall() -> bool:
+	return selected != null and wall != null and selected in wall.get_parts()
+
+
+## The selected weapon on the wall and its card above (up to its top edge), or the locker.
+func get_view_center() -> Vector3:
+	if is_on_wall():
+		var card_top: Vector3 = _above_wall() + Vector3.UP * card.size.y * 0.5 * _card_scale()
+		return (selected.global_position + card_top) * 0.5
+	return super()
 
 
 ## Whether the player using it can put `weapon_type` into a slot or take it out right now.
@@ -167,54 +202,61 @@ func _opened() -> void:
 	super()
 
 
-func _build() -> void:
-	if not weapons:
-		return
-	for weapon_type: WeaponType in weapons.weapons:
-		var part := StationPart.new()
-		part.name = weapon_type.resource_path.get_file().get_basename().capitalize()
-		part.item = weapon_type
-		part.pick_radius = 0.3
-		part.card_offset = Vector2(1.1, 0.1)
-		var display: Weapon = WeaponDisplay.create(weapon_type)
-		# Hanging with the barrel to the right, like on the weapons rack.
-		display.rotation.y = -PI * 0.5
-		part.outline = display
-		_rack.add_child(part)
-		part.add_child(display)
-		WeaponDisplay.center(display)
-		_weapon_parts.append(part)
-	_arrange()
+## On the wall the card floats above it, over the selected weapon, so it hides no other weapon.
+func _card_position(camera: Camera3D) -> Vector3:
+	return _above_wall() if is_on_wall() else super(camera)
 
 
-## Hangs every weapon at its place, or lays it in its slot's cradle; shows the player's levels on
-## them and the ones they don't own see-through.
+## Where the card floats above the wall, over the selected weapon.
+func _above_wall() -> Vector3:
+	var at: Vector3 = wall.to_local(selected.global_position)
+	at.y = wall.get_top() + CARD_GAP + card.size.y * 0.5 * _card_scale()
+	return wall.to_global(at)
+
+
+## Lays the weapons of the loadout in their cradles, showing the player's levels on them. A
+## selected weapon in a cradle stays selected: in its new cradle, or on the wall.
 func _arrange() -> void:
 	var player: Player = user if user else get_owner_player()
-	for i: int in _weapon_parts.size():
-		var part: StationPart = _weapon_parts[i]
-		var weapon_type := part.item as WeaponType
-		var slot: int = player.loadout.slot_of(weapon_type) if player else -1
-		if slot >= 0 and slot < _cradles.size():
-			part.global_position = _cradles[slot].global_position
-		else:
-			part.position = Vector3(
-				floori(float(i) / rows_per_column) * column_spacing,
-				-(i % rows_per_column) * row_spacing,
-				0.0
-			)
-		var display := part.get_child(0) as Weapon
-		if player:
-			display.apply_upgrades(player.upgrades)
-		WeaponDisplay.show_owned(display, not player or player.arsenal.owns(weapon_type))
-	_arranged_for = _arrangement(player) if player else []
+	var followed: WeaponType = selected.item as WeaponType if selected in _cradle_parts else null
+	for slot: int in _cradle_parts.size():
+		var part: StationPart = _cradle_parts[slot]
+		var weapon_type: WeaponType = player.loadout.get_weapon(slot) if player else null
+		if part.item != weapon_type:
+			_lay(part, weapon_type)
+		if weapon_type:
+			(part.get_child(0) as Weapon).apply_upgrades(player.upgrades)
+		part.visible = weapon_type != null and not _door.visible
+	if followed and selected.item != followed:
+		var slot: int = player.loadout.slot_of(followed) if player else -1
+		select(_cradle_parts[slot] if slot >= 0 else get_part(followed))
+	_arranged_for = _arrangement(player)
+
+
+## Lays a display of `weapon_type` (null: none) in the cradle of `part`.
+func _lay(part: StationPart, weapon_type: WeaponType) -> void:
+	part.outline = null
+	# Freed right away: nothing else refers to the old display.
+	for child: Node in part.get_children():
+		child.free()
+	part.item = weapon_type
+	if not weapon_type:
+		return
+	var display: Weapon = WeaponDisplay.create(weapon_type)
+	# Lying with the barrel to the right, like on the wall.
+	display.rotation.y = -PI * 0.5
+	part.outline = display
+	part.add_child(display)
+	WeaponDisplay.center(display)
+	part.set_highlight(part.highlight)
 
 
 func _arrangement(player: Player) -> Array:
+	if not player:
+		return [null]
 	return [
 		player,
 		player.loadout.weapons.duplicate(),
-		player.arsenal.weapons.duplicate(),
 		player.upgrades.levels.duplicate(),
 	]
 

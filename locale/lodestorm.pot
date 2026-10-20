@@ -876,6 +876,18 @@ msgstr ""
 msgid "Build"
 msgstr ""
 
+#: game/stations/weapon_rack.gd
+msgid "Converted mining tools"
+msgstr ""
+
+#: game/stations/weapon_rack.gd
+msgid "Expedition prototypes"
+msgstr ""
+
+#: game/stations/weapon_rack.gd
+msgid "Colony arms"
+msgstr ""
+
 #: game/ui/credits.tscn
 msgid "Design and direction"
 msgstr ""

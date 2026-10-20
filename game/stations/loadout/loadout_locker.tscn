@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://dvjycwpwhh0kw"]
 
 [ext_resource type="Script" uid="uid://c8pdsr3g2riyu" path="res://game/stations/loadout/loadout_station.gd" id="1_script"]
-[ext_resource type="Resource" uid="uid://ca7jx6rwpdvbk" path="res://game/weapons/all_weapons.tres" id="2_weapons"]
 [ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="3_panel"]
 [ext_resource type="PackedScene" uid="uid://c1yqvikxucboi" path="res://game/stations/loadout/loadout_card.tscn" id="4_card"]
 [ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="5_use"]
@@ -62,7 +61,6 @@ size = Vector3(1.4, 0.02, 0.06)
 
 [node name="LoadoutLocker" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
 script = ExtResource("1_script")
-weapons = ExtResource("2_weapons")
 user_spot = NodePath("UserSpot")
 view_height = 2.8
 view_focus = NodePath("Focus")
@@ -105,11 +103,8 @@ text = "1"
 font_size = 48
 outline_size = 8
 
-[node name="Rack" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0.05)
-
 [node name="LoadoutSign" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.95, 0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.75, 0.2)
 pixel_size = 0.0035
 modulate = Color(1, 0.75, 0.3, 1)
 text = "Loadout"
@@ -123,7 +118,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, -0.08, 0)
 mesh = SubResource("BoxMesh_divider")
 
 [node name="Cradle1" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0.05)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0.05)
 
 [node name="Glow" type="MeshInstance3D" parent="Cradle1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.12)
@@ -138,7 +133,7 @@ font_size = 40
 outline_size = 6
 
 [node name="Cradle2" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0.05)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0.05)
 
 [node name="Glow" type="MeshInstance3D" parent="Cradle2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.12)

@@ -878,6 +878,18 @@ msgstr "Zum Bauen fehlt noch der Bauplan."
 msgid "Build"
 msgstr "Bauen"
 
+#: game/stations/weapon_rack.gd
+msgid "Converted mining tools"
+msgstr "Umgebaute Bergbaugeräte"
+
+#: game/stations/weapon_rack.gd
+msgid "Expedition prototypes"
+msgstr "Prototypen der Expedition"
+
+#: game/stations/weapon_rack.gd
+msgid "Colony arms"
+msgstr "Waffen der Kolonie"
+
 #: game/ui/credits.tscn
 msgid "Design and direction"
 msgstr "Design und Leitung"

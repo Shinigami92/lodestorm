@@ -1,8 +1,8 @@
 class_name AlienStatus
 extends RefCounted
 ## What the hive, other aliens and players' weapons do to an alien right now (`Alien.status`): a
-## shrieker's boost, the hive's frenzy, a tender's link, its nest calling its guards and a gravity
-## well holding it. Values TBD (playtest).
+## shrieker's boost, the hive's frenzy, a tender's link, its nest calling its guards, a gravity
+## well holding it and a weapon slowing it (a saw). Values TBD (playtest).
 
 ## Seconds a well's hold lasts after its last renewal (wells renew it every physics step).
 const HOLD_GRACE: float = 0.1
@@ -25,6 +25,9 @@ var pull := Vector3.ZERO
 var _boost: float = 1.0
 var _boost_left: float = 0.0
 var _held_left: float = 0.0
+## A weapon's slow: the share of its speed it keeps, and for how many more seconds.
+var _slow: float = 1.0
+var _slow_left: float = 0.0
 
 
 ## Makes it `factor` times faster for `seconds` (a shrieker's scream); a stronger boost under way
@@ -45,6 +48,16 @@ func hold(velocity: Vector3) -> void:
 	_held_left = HOLD_GRACE
 
 
+## Slows it to `factor` of its speed for `seconds` (a weapon's hit, see `SlowEffect`); a stronger
+## slow under way stays, an equal one lasts the longer of the two.
+func slow(factor: float, seconds: float) -> void:
+	if factor < _slow:
+		_slow = factor
+		_slow_left = seconds
+	elif factor == _slow:
+		_slow_left = maxf(_slow_left, seconds)
+
+
 ## Whether a gravity well has it.
 func is_held() -> bool:
 	return _held_left > 0.0
@@ -62,7 +75,7 @@ func is_fast() -> bool:
 
 ## How much faster than its strain it is.
 func speed() -> float:
-	return _boost * hive_speed * (WELL_SLOW if is_held() else 1.0)
+	return _boost * hive_speed * _slow * (WELL_SLOW if is_held() else 1.0)
 
 
 ## Whether a scream boosts it or a tender's link holds it: it's bigger and outlined then.
@@ -75,7 +88,7 @@ func is_mended() -> bool:
 	return is_instance_valid(mended_by)
 
 
-## Counts the boost and a well's hold down.
+## Counts the boost, a well's hold and a slow down.
 func tick(delta: float) -> void:
 	_held_left = maxf(_held_left - delta, 0.0)
 	if _held_left == 0.0:
@@ -83,3 +96,6 @@ func tick(delta: float) -> void:
 	_boost_left = maxf(_boost_left - delta, 0.0)
 	if _boost_left == 0.0:
 		_boost = 1.0
+	_slow_left = maxf(_slow_left - delta, 0.0)
+	if _slow_left == 0.0:
+		_slow = 1.0

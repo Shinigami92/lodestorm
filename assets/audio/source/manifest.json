@@ -201,6 +201,21 @@
       "variants": 6,
       "recordings": []
     },
+    "weapons/auger_drill": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/auger_hit": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/auger_thrust": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
     "weapons/blast": {
       "made_by": "build.py",
       "variants": 3,
@@ -256,6 +271,16 @@
       "variants": 2,
       "recordings": []
     },
+    "weapons/jag_bite": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/jag_saw": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "weapons/kith_beam": {
       "made_by": "build.py",
       "variants": 1,
@@ -309,6 +334,21 @@
     "weapons/reload_start": {
       "made_by": "build.py",
       "variants": 2,
+      "recordings": []
+    },
+    "weapons/riven_hit": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/riven_lunge": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/riven_swing": {
+      "made_by": "build.py",
+      "variants": 3,
       "recordings": []
     },
     "weapons/scald_flame": {

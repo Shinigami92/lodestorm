@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SwingDelivery" format=3 uid="uid://y7oj5lwn50n1"]
+
+[ext_resource type="Script" uid="uid://bedfq27s65p03" path="res://game/weapons/deliveries/swing_delivery.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://f0t8hopfpm70" path="res://assets/audio/sfx/weapons/riven_hit.tres" id="2_hit_sound"]
+[ext_resource type="Resource" uid="uid://brwhxg7wgpquh" path="res://assets/audio/sfx/weapons/riven_lunge.tres" id="3_lunge_sound"]
+
+[resource]
+script = ExtResource("1_script")
+reach = 1.8
+arc = 60.0
+combo = 3
+combo_gap = 0.6
+lunge = 2.5
+lunge_time = 0.15
+lunge_width = 1.0
+lunge_power = 2.0
+hit_sound = ExtResource("2_hit_sound")
+lunge_sound = ExtResource("3_lunge_sound")

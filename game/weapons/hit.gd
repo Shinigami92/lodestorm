@@ -21,6 +21,9 @@ var spray: bool = true
 ## Damage per second it sets the target burning with, and for how many seconds (see `Burning`).
 var burn_damage: float = 0.0
 var burn_time: float = 0.0
+## Share of its speed an alien keeps for `slow_time` seconds after it (see `SlowEffect`).
+var slow: float = 1.0
+var slow_time: float = 0.0
 ## Health it restores to a teammate, or a miner's it repairs (see `HealEffect`).
 var heal: float = 0.0
 

@@ -4,13 +4,13 @@ extends Node3D
 ## While the trigger is held and it's drawn, it attacks at its attack rate, or as its type's trigger
 ## says (`WeaponTrigger`: per press, after spinning up, a charge let go): a fed weapon uses a round
 ## of its `ammo` (see `WeaponAmmo`), then its type's delivery reaches the targets (`WeaponDelivery`:
-## projectiles, lobbed shells and charges, a swing) and its effects make the hits (`make_hit`). The
-## holder sets `trigger_held`, `aim_direction`, `aim_target` and `aim_point`; weapons don't read
-## input. The MK levels of its parts (`apply_upgrades`) scale its values (`multiplier`) and light
-## their pips. After a switch it's drawn (`draw`): the model swings up from the hip for the type's
-## draw time. Each attack plays the type's `attack_sound` at the weapon.
+## projectiles, lobbed shells and charges, a swing, a thrust) and its effects make the hits
+## (`make_hit`). The holder sets `trigger_held`, `aim_direction`, `aim_target` and `aim_point`;
+## weapons don't read input. The MK levels of its parts (`apply_upgrades`) scale its values
+## (`multiplier`) and light their pips. After a switch it's drawn (`draw`): the model swings up from
+## the hip for the type's draw time. Each attack plays the type's `attack_sound` at the weapon.
 
-## Emitted after every swing (a melee delivery) with the aliens it hit.
+## Emitted after every swing or thrust (a melee delivery) with the aliens it hit.
 @warning_ignore("unused_signal")
 signal swung(hits: Array[Alien])
 
@@ -39,6 +39,14 @@ var wind: float = 0.0
 var power: float = 1.0
 ## Seconds since the trigger was let go; 0 while it's held.
 var released_for: float = INF
+## Seconds since its last attack.
+var since_attack: float = INF
+## How many attacks of a chain it made in a row so far (Riven's combo, see `SwingDelivery.combo`).
+var chain: int = 0
+## The alien or `Destructible` a held attack stays on (Auger's drill, see `ThrustDelivery`), or
+## null, and for how many seconds it has.
+var latched: Node3D
+var latched_for: float = 0.0
 
 ## How much the MK level of each part scales its value; missing ones are 1.
 var _multipliers: Dictionary[WeaponPart.Stat, float] = {}
@@ -59,6 +67,7 @@ func _physics_process(delta: float) -> void:
 		ammo.process(delta)
 	_draw_left = maxf(_draw_left - delta, 0.0)
 	_cooldown -= delta
+	since_attack += delta
 	var pressed: bool = trigger_held and not _was_held
 	_was_held = trigger_held
 	released_for = 0.0 if trigger_held else released_for + delta
@@ -71,7 +80,8 @@ func _physics_process(delta: float) -> void:
 			ammo.use()
 		type.delivery.attack(self)
 		play(type.attack_sound)
-		_cooldown += 1.0 / attack_rate()
+		_cooldown += type.delivery.interval(self)
+		since_attack = 0.0
 	else:
 		_cooldown = maxf(_cooldown, 0.0)
 	power = 1.0
@@ -129,13 +139,21 @@ func is_drawn() -> bool:
 	return _draw_left <= 0.0
 
 
-## Lets go of the trigger without attacking (holstered, the holder down): a charge is lost and
-## spinning barrels stop.
+## Lets go of the trigger without attacking (holstered, the holder down): a charge is lost,
+## spinning barrels stop, a chain starts over and a drill lets go.
 func stop() -> void:
 	trigger_held = false
 	_was_held = false
 	wind = 0.0
+	chain = 0
+	latch(null)
 	stop_loop()
+
+
+## Stays on `target` with held attacks (see `latched`); null lets go.
+func latch(target: Node3D) -> void:
+	latched = target
+	latched_for = 0.0
 
 
 ## Share of the holder's top speed while it's used (spinning barrels slow them).
@@ -176,17 +194,32 @@ func get_gauge() -> AmmoGauge:
 
 
 ## Sweeps the model (`Model`) through `arc` radians around the grip within `duration` seconds and
-## back, a stand-in for a swing animation.
+## back, a stand-in for a swing animation; a negative `arc` sweeps the other way.
 func sweep(arc: float, duration: float) -> void:
 	var model := get_node_or_null(^"Model") as Node3D
 	if not model:
 		return
 	if _sweep:
 		_sweep.kill()
+	model.position.z = 0.0
 	model.rotation.y = arc * 0.5
 	_sweep = create_tween()
 	_sweep.tween_property(model, ^"rotation:y", -arc * 0.5, duration * 0.4)
 	_sweep.tween_property(model, ^"rotation:y", 0.0, duration * 0.6)
+
+
+## Pushes the model (`Model`) `length` m forward within `duration` seconds and back, a stand-in for
+## a thrust animation.
+func thrust(length: float, duration: float) -> void:
+	var model := get_node_or_null(^"Model") as Node3D
+	if not model:
+		return
+	if _sweep:
+		_sweep.kill()
+	model.rotation.y = 0.0
+	_sweep = create_tween()
+	_sweep.tween_property(model, ^"position:z", -length, duration * 0.3)
+	_sweep.tween_property(model, ^"position:z", 0.0, duration * 0.7)
 
 
 ## Plays `sound` at the weapon. A `cue` (the reload's timing) is only for the local player

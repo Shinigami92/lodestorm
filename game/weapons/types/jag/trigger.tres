@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SpinTrigger" format=3 uid="uid://6jcwy7swuwb7"]
+
+[ext_resource type="Script" uid="uid://bbknvp78q4h67" path="res://game/weapons/triggers/spin_trigger.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://du7jquv5t4y8u" path="res://assets/audio/sfx/weapons/jag_saw.tres" id="2_spin_sound"]
+
+[resource]
+script = ExtResource("1_script")
+spin_up = 0.15
+keep_spinning = 0.3
+spin_down = 0.4
+spinning_move_share = 0.5
+spin_sound = ExtResource("2_spin_sound")

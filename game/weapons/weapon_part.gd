@@ -2,14 +2,15 @@ class_name WeaponPart
 extends Upgrade
 ## One part of a weapon that the workbench upgrades in MK levels (see `WeaponType.parts`): each
 ## level multiplies one of the weapon's values (`stat`, see `Weapon.multiplier`). The pips on the
-## weapon showing its level are the weapon scene's child named after the stat (`pips_name`, e.g.
-## `DamagePips`), if it has one.
+## weapon showing its level are the weapon scene's node named after the stat (`pips_name`, e.g.
+## `DamagePips`, see `Weapon.get_pips`), if it has one.
 
 ## The value a part improves: the damage per hit, the capacity (rounds per magazine, shells per
 ## load, shots per battery), attacks per second (melee: swing speed), pellets per shot, a swing's
 ## arc, how quickly barrels spin up, a charge fills and a battery recharges, a blast's radius and
 ## how many charges can lie on the ground at once, how long a flame burns, how much a beam heals,
-## how far it reaches, how slowly heat builds and how many times lightning jumps on.
+## how far it reaches, how slowly heat builds, how many times lightning jumps on, how much a hit
+## staggers and how quickly a drill's damage rises.
 enum Stat {
 	DAMAGE,
 	CAPACITY,
@@ -26,6 +27,8 @@ enum Stat {
 	RANGE,
 	COOLING,
 	JUMPS,
+	STAGGER,
+	RAMP,
 }
 
 @export var stat: Stat = Stat.DAMAGE

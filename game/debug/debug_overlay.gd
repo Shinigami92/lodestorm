@@ -379,10 +379,33 @@ const WEAPON_TUNING: Dictionary[String, Array] = {
 	[
 		["heal", 0.0, 50.0, 0.1],
 	],
+	"SlowEffect":
+	[
+		["factor", 0.0, 1.0, 0.05],
+		["seconds", 0.0, 3.0, 0.05],
+	],
 	"SwingDelivery":
 	[
 		["reach", 0.5, 6.0, 0.1],
 		["arc", 10.0, 360.0, 5.0],
+		["combo_gap", 0.1, 3.0, 0.05],
+		["finisher_power", 1.0, 5.0, 0.1],
+		["finisher_stagger", 1.0, 6.0, 0.1],
+	],
+	"ThrustDelivery":
+	[
+		["reach", 0.5, 10.0, 0.1],
+		["width", 0.1, 3.0, 0.05],
+		["drill_rate", 1.0, 30.0, 0.5],
+		["drill_damage", 0.0, 1.0, 0.05],
+		["drill_stagger", 0.0, 1.0, 0.05],
+		["ramp", 1.0, 10.0, 0.1],
+		["ramp_time", 0.1, 10.0, 0.1],
+	],
+	"DrillTrigger":
+	[
+		["drilling_move_share", 0.0, 1.0, 0.05],
+		["spin_down", 0.0, 3.0, 0.05],
 	],
 }
 const PANEL_WIDTH: float = 460.0

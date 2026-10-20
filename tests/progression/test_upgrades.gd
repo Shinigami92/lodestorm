@@ -128,7 +128,7 @@ func test_every_weapon_shows_pips() -> void:
 		var weapon := weapon_type.create()
 		weapon.apply_upgrades(Upgrades.new())
 		var first: WeaponPart = weapon_type.parts[0]
-		var pips := weapon.get_node_or_null(NodePath(first.pips_name())) as MkPips
+		var pips: MkPips = weapon.get_pips(first)
 		assert_not_null(pips, weapon_type.display_name)
 		if pips:
 			assert_eq(pips.get_child_count(), first.max_mk())

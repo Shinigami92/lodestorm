@@ -1,8 +1,8 @@
 class_name DamageEffect
 extends WeaponEffect
-## A hit's damage (scaled by the MK level of the weapon's damage), with the stagger it adds and how
-## hard it pushes (see `Hit`); a partial charge (`Weapon.power`) scales all three. All values TBD
-## (playtest).
+## A hit's damage (scaled by the MK level of the weapon's damage), with the stagger it adds (scaled
+## by the MK level of its stagger) and how hard it pushes (see `Hit`); a partial charge or a heavy
+## slash (`Weapon.power`) scales all three. All values TBD (playtest).
 
 ## Damage per hit (a projectile, a pellet, a swing) at MK1.
 @export var damage: float = 10.0
@@ -14,5 +14,5 @@ extends WeaponEffect
 
 func add_to(hit: Hit, weapon: Weapon) -> void:
 	hit.damage += damage * weapon.multiplier(WeaponPart.Stat.DAMAGE) * weapon.power
-	hit.stagger += stagger * weapon.power
+	hit.stagger += stagger * weapon.multiplier(WeaponPart.Stat.STAGGER) * weapon.power
 	hit.push += push * weapon.power

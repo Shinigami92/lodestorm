@@ -55,7 +55,7 @@ func test_every_part_shows_its_pips_on_the_weapon() -> void:
 		upgrades.raise(weapon_type.parts[-1])
 		weapon.apply_upgrades(upgrades)
 		for part: WeaponPart in weapon_type.parts:
-			var pips := weapon.get_node_or_null(NodePath(part.pips_name())) as MkPips
+			var pips: MkPips = weapon.get_pips(part)
 			var label: String = "%s %s" % [weapon_type.display_name, part.display_name]
 			assert_not_null(pips, label)
 			if pips:

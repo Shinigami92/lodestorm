@@ -5,4 +5,5 @@
 
 [resource]
 script = ExtResource("1_script")
+stroke = 1
 hit_sound = ExtResource("2_hit")

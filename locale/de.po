@@ -994,6 +994,52 @@ msgstr "Nur, solange du allein bist. Mit anderen in deiner Sitzung behalten alle
 msgid "Press any button"
 msgstr "Beliebige Taste drücken"
 
+#: game/weapons/types/auger/auger.tres
+msgid "Drill lance"
+msgstr "Bohrlanze"
+
+#: game/weapons/types/auger/auger.tres
+msgid "A thrust through a line. Hold on to drill into one."
+msgstr "Ein Stoß durch eine Reihe. Halten bohrt sich in eines."
+
+#: game/weapons/types/auger/mk_damage.tres
+#: game/weapons/types/brask/mk_damage.tres
+#: game/weapons/types/dray/mk_damage.tres
+#: game/weapons/types/fulgen/mk_damage.tres
+#: game/weapons/types/grindle/mk_damage.tres
+#: game/weapons/types/harl/mk_damage.tres
+#: game/weapons/types/jag/mk_damage.tres
+#: game/weapons/types/nadir/mk_damage.tres
+#: game/weapons/types/pinner/mk_damage.tres
+#: game/weapons/types/quill/mk_damage.tres
+#: game/weapons/types/riven/mk_damage.tres
+#: game/weapons/types/scald/mk_damage.tres
+#: game/weapons/types/tremor/mk_damage.tres
+#: game/weapons/types/wick/mk_damage.tres
+#: game/weapons/types/zenith/mk_damage.tres
+msgid "Damage"
+msgstr "Schaden"
+
+#: game/weapons/types/auger/mk_damage.tres
+msgid "More damage per thrust"
+msgstr "Mehr Schaden pro Stoß"
+
+#: game/weapons/types/auger/mk_ramp.tres
+msgid "Drill ramp"
+msgstr "Bohranstieg"
+
+#: game/weapons/types/auger/mk_ramp.tres
+msgid "The drill hits harder sooner"
+msgstr "Der Bohrer trifft früher härter"
+
+#: game/weapons/types/auger/mk_rate.tres
+msgid "Thrust speed"
+msgstr "Stoßtempo"
+
+#: game/weapons/types/auger/mk_rate.tres
+msgid "More thrusts per second"
+msgstr "Mehr Stöße pro Sekunde"
+
 #: game/weapons/types/brask/brask.tres
 msgid "Shotgun"
 msgstr "Schrotflinte"
@@ -1001,21 +1047,6 @@ msgstr "Schrotflinte"
 #: game/weapons/types/brask/brask.tres
 msgid "A fan of pellets, strong up close."
 msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
-
-#: game/weapons/types/brask/mk_damage.tres
-#: game/weapons/types/dray/mk_damage.tres
-#: game/weapons/types/fulgen/mk_damage.tres
-#: game/weapons/types/grindle/mk_damage.tres
-#: game/weapons/types/harl/mk_damage.tres
-#: game/weapons/types/nadir/mk_damage.tres
-#: game/weapons/types/pinner/mk_damage.tres
-#: game/weapons/types/quill/mk_damage.tres
-#: game/weapons/types/scald/mk_damage.tres
-#: game/weapons/types/tremor/mk_damage.tres
-#: game/weapons/types/wick/mk_damage.tres
-#: game/weapons/types/zenith/mk_damage.tres
-msgid "Damage"
-msgstr "Schaden"
 
 #: game/weapons/types/brask/mk_damage.tres
 msgid "More damage per pellet"
@@ -1058,6 +1089,7 @@ msgid "More damage per swing"
 msgstr "Mehr Schaden pro Schlag"
 
 #: game/weapons/types/dray/mk_rate.tres
+#: game/weapons/types/riven/mk_rate.tres
 msgid "Swing speed"
 msgstr "Schlagtempo"
 
@@ -1149,6 +1181,34 @@ msgstr "Feuerrate"
 #: game/weapons/types/harl/mk_rate.tres
 msgid "More shots per second"
 msgstr "Mehr Schüsse pro Sekunde"
+
+#: game/weapons/types/jag/jag.tres
+msgid "Rock saw"
+msgstr "Gesteinssäge"
+
+#: game/weapons/types/jag/jag.tres
+msgid "Held, it grinds whatever is in front and slows it."
+msgstr "Gehalten zersägt sie alles davor und bremst es."
+
+#: game/weapons/types/jag/mk_arc.tres
+msgid "Width"
+msgstr "Breite"
+
+#: game/weapons/types/jag/mk_arc.tres
+msgid "A wider cut"
+msgstr "Ein breiterer Schnitt"
+
+#: game/weapons/types/jag/mk_damage.tres
+msgid "More damage per cut"
+msgstr "Mehr Schaden pro Schnitt"
+
+#: game/weapons/types/jag/mk_rate.tres
+msgid "Blade speed"
+msgstr "Blatttempo"
+
+#: game/weapons/types/jag/mk_rate.tres
+msgid "More cuts per second"
+msgstr "Mehr Schnitte pro Sekunde"
 
 #: game/weapons/types/kith/kith.tres
 msgid "Mender"
@@ -1250,6 +1310,30 @@ msgstr "Schienengewehr"
 #: game/weapons/types/quill/quill.tres
 msgid "Hold to charge. A full charge pierces a line."
 msgstr "Halten zum Laden. Voll geladen trifft es eine ganze Reihe."
+
+#: game/weapons/types/riven/mk_damage.tres
+msgid "More damage per slash"
+msgstr "Mehr Schaden pro Hieb"
+
+#: game/weapons/types/riven/mk_rate.tres
+msgid "More slashes per second"
+msgstr "Mehr Hiebe pro Sekunde"
+
+#: game/weapons/types/riven/mk_stagger.tres
+msgid "Stagger"
+msgstr "Wucht"
+
+#: game/weapons/types/riven/mk_stagger.tres
+msgid "Slashes stagger more"
+msgstr "Hiebe bringen mehr ins Taumeln"
+
+#: game/weapons/types/riven/riven.tres
+msgid "Blade"
+msgstr "Klinge"
+
+#: game/weapons/types/riven/riven.tres
+msgid "Fast slashes. Every third one hits hard."
+msgstr "Schnelle Hiebe. Jeder dritte trifft hart."
 
 #: game/weapons/types/scald/mk_burn.tres
 msgid "Burn"

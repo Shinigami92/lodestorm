@@ -3,7 +3,7 @@ extends Node3D
 ## A part of a weapon's model that turns around its own Z axis as the weapon's trigger winds up
 ## (`Weapon.wind`: Grindle's barrels spinning). A child of the weapon's scene.
 
-## Radians per second at full speed.
+## Radians per second at full speed; negative turns the other way.
 @export var speed: float = 30.0
 
 @onready var _weapon: Weapon = owner as Weapon

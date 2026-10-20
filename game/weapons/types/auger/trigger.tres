@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DrillTrigger" format=3 uid="uid://d35g0d00lkle4"]
+
+[ext_resource type="Script" uid="uid://fwxk4ld676pu" path="res://game/weapons/triggers/drill_trigger.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bvcwx6sqe0r6g" path="res://assets/audio/sfx/weapons/auger_drill.tres" id="2_drill_sound"]
+
+[resource]
+script = ExtResource("1_script")
+drilling_move_share = 0.4
+drill_sound = ExtResource("2_drill_sound")

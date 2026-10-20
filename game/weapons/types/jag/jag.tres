@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://c5v8lia3x35w4"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cjuntljr52ti0" path="res://game/weapons/types/jag/jag.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://bkygmof0wu0hh" path="res://game/weapons/types/jag/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://b751e52oe6hhe" path="res://game/weapons/types/jag/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://6jcwy7swuwb7" path="res://game/weapons/types/jag/trigger.tres" id="9_trigger"]
+[ext_resource type="Resource" uid="uid://dvxa5tvq2ysmy" path="res://game/weapons/types/jag/slow.tres" id="10_slow"]
+[ext_resource type="Resource" uid="uid://0sk0xsg4c21w" path="res://game/weapons/types/jag/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://cqfvoxy77p1bq" path="res://game/weapons/types/jag/mk_rate.tres" id="mk_rate"]
+[ext_resource type="Resource" uid="uid://dy44rixsn22xf" path="res://game/weapons/types/jag/mk_arc.tres" id="mk_arc"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="ore_noctile"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Jag"
+class_word = "Rock saw"
+description = "Held, it grinds whatever is in front and slows it."
+origin = 1
+scene = ExtResource("2_scene")
+attack_rate = 10
+draw_time = 0.6
+trigger = ExtResource("9_trigger")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage"), ExtResource("10_slow")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_rate"), ExtResource("mk_arc")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 360, ExtResource("ore_noctile"): 170
+})

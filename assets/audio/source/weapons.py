@@ -1,6 +1,7 @@
-"""Recipes of the weapons' sounds: shots, Dray's swings, Grindle's spin, Quill's charge,
-Pinner's battery, Tremor's and Wick's blasts and charges, Scald's flame, Kith's and Zenith's
-beams, overheating and venting, Fulgen's lightning, Nadir's wells, reloads and the timing window."""
+"""Recipes of the weapons' sounds: shots, Dray's swings, Riven's slashes, Auger's thrust
+and drill, Jag's saw, Grindle's spin, Quill's charge, Pinner's battery, Tremor's and Wick's blasts
+and charges, Scald's flame, Kith's and Zenith's beams, overheating and venting, Fulgen's lightning,
+Nadir's wells, reloads and the timing window."""
 
 import random
 
@@ -319,6 +320,96 @@ def dray_hit(rng: random.Random, take: str, variant: int) -> Signal:
     partials = [(jitter(rng, f, 0.03), d, level) for f, d, level in steel]
     ring = modes(rng, partials, 0.3)
     return saturate(mix((thud, 1.0), (crunch, 0.7), (grit, 0.25), (ring, 0.1)), 1.5)
+
+
+@sound("weapons/riven_swing", variants=3)
+def riven_swing(rng: random.Random, take: str, variant: int) -> Signal:
+    """Riven, the blade, cutting the air (3 a second): a short, thin swish with a faint metallic
+    whistle."""
+    seconds = jitter(rng, 0.16, 0.1)
+
+    def sweep(t: float) -> float:
+        x = t / seconds
+        return 900 + 2600 * (4.0 * x * (1.0 - x)) ** 1.2
+
+    swish = whoosh(rng, seconds, sweep, 2.2)
+    whistle = shape(tone(glide(jitter(rng, 2400, 0.05), 3100, seconds), seconds), env(seconds, 0.03, 0.08))
+    return mix((swish, 1.0), (whistle, 0.08))
+
+
+@sound("weapons/riven_finisher", variants=2)
+def riven_finisher(rng: random.Random, take: str, variant: int) -> Signal:
+    """Riven's third, heavy slash: a deeper rush of air and a sharp, ringing cut."""
+    j = 0.06
+    rush = whoosh(rng, 0.22, glide(500, 2600, 0.22), 1.6, 0.3)
+    stab = burst(rng, 0.06, 0.0003, jitter(rng, 0.03, j), "highpass", jitter(rng, 3000, j))
+    steel = [(1850, 0.2, 1.0), (3920, 0.12, 0.5), (5600, 0.08, 0.3)]
+    ring = modes(rng, [(jitter(rng, f, 0.03), d, level) for f, d, level in steel], 0.25)
+    return saturate(mix((rush, 0.8), (stab, 0.7, 0.16), (ring, 0.1, 0.16)), 1.3)
+
+
+@sound("weapons/riven_hit", variants=3)
+def riven_hit(rng: random.Random, take: str, variant: int) -> Signal:
+    """Riven slicing into something: a sharp scrape of steel and a short, wet cut."""
+    j = 0.08
+    scrape = shape(bandpass(noise(rng, 0.09), glide(jitter(rng, 4200, j), 2200, 0.09), 2.5), env(0.09, 0.001, 0.06))
+    cut = burst(rng, 0.07, 0.0005, jitter(rng, 0.04, j), "bandpass", jitter(rng, 1100, j), 0.8)
+    tick = click(rng, jitter(rng, 2800, j), 8, 0.01)
+    return saturate(mix((scrape, 0.7), (cut, 0.9), (tick, 0.4)), 1.4)
+
+
+@sound("weapons/auger_thrust", variants=3)
+def auger_thrust(rng: random.Random, take: str, variant: int) -> Signal:
+    """Auger, the drill lance, thrusting: a pneumatic hiss and a hard, low punch."""
+    j = 0.06
+    hiss = shape(highpass(noise(rng, 0.14), jitter(rng, 2800, j)), env(0.14, 0.002, 0.1))
+    punch = thump(jitter(rng, 120, j), 55, 0.015, jitter(rng, 0.12, j), 0.3)
+    clank = modes(rng, [(jitter(rng, 640, 0.04), 0.12, 1.0), (jitter(rng, 1530, 0.04), 0.08, 0.5)], 0.15)
+    return saturate(mix((hiss, 0.5), (punch, 1.0, 0.02), (clank, 0.2, 0.02)), 1.4)
+
+
+@sound("weapons/auger_hit", variants=2)
+def auger_hit(rng: random.Random, take: str, variant: int) -> Signal:
+    """Auger's point piercing: a crunch through chitin with a dull, wet thud."""
+    j = 0.08
+    crunch = burst(rng, 0.1, 0.0005, jitter(rng, 0.06, j), "bandpass", jitter(rng, 1700, j), 0.9)
+    thud = thump(jitter(rng, 85, j), 45, 0.01, jitter(rng, 0.14, j), 0.2)
+    grit = shape(highpass(crackle(rng, 0.12, 300), 2000), env(0.12, 0.001, 0.08))
+    return saturate(mix((crunch, 0.9), (thud, 0.9), (grit, 0.3)), 1.5)
+
+
+@sound("weapons/auger_drill", loop=True)
+def auger_drill(rng: random.Random, take: str, variant: int) -> Signal:
+    """Auger drilling (a loop, 1 s, its pitch rising with the drill): a high motor whine over a
+    gritty, chattering grind."""
+    seconds = loop_seconds(1.0)
+    whine = lowpass(mix((tone(330, seconds, "saw"), 1.0), (tone(660, seconds), 0.3)), 2400)
+    grind = tremolo(bandpass(noise(rng, seconds), 1800, 1.4), 24.0, 0.6)
+    grit = highpass(crackle(rng, seconds, 80), 2500)
+    return saturate(mix((whine, 0.3), (grind, 0.7), (grit, 0.25)), 1.4)
+
+
+@sound("weapons/jag_saw", loop=True)
+def jag_saw(rng: random.Random, take: str, variant: int) -> Signal:
+    """Jag, the rock saw, running (a loop, 1 s, its pitch following the blade): a raw two-stroke
+    motor and the blade's teeth buzzing round."""
+    seconds = loop_seconds(1.0)
+    motor = lowpass(tremolo(tone(70, seconds, "square"), 35.0, 0.5), 900)
+    teeth = tremolo(bandpass(tone(180, seconds, "saw"), 1300, 1.0), 60.0, 0.4)
+    air = bandpass(noise(rng, seconds), 2600, 1.2)
+    return saturate(mix((motor, 0.6), (teeth, 0.5), (air, 0.15)), 1.5)
+
+
+@sound("weapons/jag_bite", variants=3)
+def jag_bite(rng: random.Random, take: str, variant: int) -> Signal:
+    """Jag's blade biting into something (up to 10 a second): a short, harsh rasp."""
+    j = 0.1
+    rasp = shape(
+        tremolo(bandpass(noise(rng, 0.09), jitter(rng, 2000, j), 1.6), jitter(rng, 120, j), 0.7),
+        env(0.09, 0.002, 0.06),
+    )
+    crunch = burst(rng, 0.05, 0.0005, 0.03, "bandpass", jitter(rng, 900, j), 0.7)
+    return saturate(mix((rasp, 0.9), (crunch, 0.5)), 1.6)
 
 
 @sound("weapons/empty_click", variants=2)

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://25enh4k6qauf"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://bhfabb8pwunvq" path="res://assets/audio/sfx/weapons/jag_bite_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://cqe0sxbafl3t1" path="res://assets/audio/sfx/weapons/jag_bite_2.wav" id="3_variant"]
+[ext_resource type="AudioStream" uid="uid://cvani54huv1nt" path="res://assets/audio/sfx/weapons/jag_bite_3.wav" id="4_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.08
+streams_count = 3
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+stream_2/stream = ExtResource("4_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -12.0
+limit = 2
+unit_size = 6.0
+max_distance = 30.0

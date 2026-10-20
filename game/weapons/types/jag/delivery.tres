@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SwingDelivery" format=3 uid="uid://bkygmof0wu0hh"]
+
+[ext_resource type="Script" uid="uid://bedfq27s65p03" path="res://game/weapons/deliveries/swing_delivery.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://25enh4k6qauf" path="res://assets/audio/sfx/weapons/jag_bite.tres" id="2_hit_sound"]
+
+[resource]
+script = ExtResource("1_script")
+reach = 2.0
+arc = 100.0
+stroke = 2
+spray_share = 0.3
+hit_sound = ExtResource("2_hit_sound")

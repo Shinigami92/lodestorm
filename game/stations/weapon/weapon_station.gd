@@ -150,7 +150,7 @@ func lay_on_bench(weapon_type: WeaponType) -> void:
 	_build_part.outline = _bench_display
 	_bench_spot.add_child(_build_part)
 	for weapon_part: WeaponPart in weapon_type.parts:
-		var pips := _bench_display.get_node_or_null(NodePath(weapon_part.pips_name())) as Node3D
+		var pips: Node3D = _bench_display.get_pips(weapon_part)
 		if not pips:
 			continue
 		var part := StationPart.new()

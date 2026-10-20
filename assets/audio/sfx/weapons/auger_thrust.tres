@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://c5loti54v81i2"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://d0d6w1t4exo58" path="res://assets/audio/sfx/weapons/auger_thrust_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://t0rcaulj0xki" path="res://assets/audio/sfx/weapons/auger_thrust_2.wav" id="3_variant"]
+[ext_resource type="AudioStream" uid="uid://ux6y2qfjh8g8" path="res://assets/audio/sfx/weapons/auger_thrust_3.wav" id="4_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.04
+streams_count = 3
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+stream_2/stream = ExtResource("4_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -8.0
+limit = 3
+unit_size = 8.0
+max_distance = 40.0

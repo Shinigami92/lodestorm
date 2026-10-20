@@ -2,6 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://dcdqdft4tmxpg" path="res://assets/ui/checkbox_checked.svg" id="1_checked"]
 [ext_resource type="Texture2D" uid="uid://bpmbeywjik8eq" path="res://assets/ui/checkbox_unchecked.svg" id="2_unchecked"]
+[ext_resource type="Texture2D" uid="uid://oo8vii1qu4ao" path="res://assets/ui/slider_grabber.svg" id="3_grabber"]
+[ext_resource type="Texture2D" uid="uid://bmppxcmmdpqwo" path="res://assets/ui/slider_grabber_highlight.svg" id="4_grabber_highlight"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_focus"]
 draw_center = false
@@ -67,6 +69,29 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider"]
+content_margin_top = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.06, 0.1, 0.14, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.85, 1, 0.35)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_fill"]
+content_margin_top = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.3, 0.85, 1, 0.6)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_separator"]
 color = Color(0.3, 0.85, 1, 0.35)
 thickness = 2
@@ -109,6 +134,13 @@ CheckBox/styles/hover_pressed = SubResource("StyleBoxFlat_button_hover")
 CheckBox/styles/normal = SubResource("StyleBoxFlat_button")
 CheckBox/styles/pressed = SubResource("StyleBoxFlat_button")
 HSeparator/constants/separation = 24
+HSlider/icons/grabber = ExtResource("3_grabber")
+HSlider/icons/grabber_disabled = ExtResource("3_grabber")
+HSlider/icons/grabber_highlight = ExtResource("4_grabber_highlight")
+HSlider/styles/focus = SubResource("StyleBoxFlat_focus")
+HSlider/styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+HSlider/styles/slider = SubResource("StyleBoxFlat_slider")
 HSeparator/styles/separator = SubResource("StyleBoxLine_separator")
 Label/colors/font_color = Color(0.78, 0.9, 1, 1)
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")

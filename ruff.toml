@@ -1,4 +1,5 @@
-# ruff config for the Python scripts (Blender asset scripts in assets/*/source/, tools/blender/):
+# ruff config for the Python scripts (Blender asset scripts in assets/*/source/, tools/blender/; the
+# sound synthesis in assets/audio/source/):
 # ruff's default rules, only overrides here. Files ignored by git (tmp/, local/, .venv/) are skipped.
 extend-exclude = ["addons"]
 # Wider than gdformat's 100: the asset scripts are full of coordinate and color tables
@@ -17,5 +18,5 @@ ignore = [
 
 [lint.isort]
 # The shared helpers in tools/blender/ and the ore kit's geometry module, put on sys.path by the
-# scripts that import them
-known-first-party = ["bake", "common", "creature", "ore_geo"]
+# scripts that import them; the sound recipes next to assets/audio/source/build.py
+known-first-party = ["bake", "common", "creature", "ore_geo", "synth", "player", "weapons"]

@@ -8,3 +8,7 @@ extends Resource
 @export var stagger: float = 7.0
 ## How hard each hit pushes an alien back, in m/s (it fades within a fraction of a second).
 @export var push: float = 0.5
+
+@export_group("Sounds")
+## Each attack (a shot, a swing).
+@export var attack_sound: Sound

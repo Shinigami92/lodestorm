@@ -37,7 +37,9 @@ const TRANSLATIONS_SETTING := "internationalization/locale/translations"
 const CONTEXT_SEPARATOR := "\u0004"
 
 
-func _init() -> void:
+func _initialize() -> void:
+	# Scenes load scripts that refer to autoloads (`Sfx`), which exist from the first frame on.
+	await process_frame
 	var entries: Array[Dictionary] = extract()
 	_write(TEMPLATE_PATH, template(entries))
 	print("%s: %d texts" % [TEMPLATE_PATH, entries.size()])

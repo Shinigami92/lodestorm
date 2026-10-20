@@ -970,6 +970,18 @@ msgstr "Groß"
 msgid "Always show"
 msgstr "Immer zeigen"
 
+#: game/ui/settings_list.tscn
+msgid "Volume"
+msgstr "Lautstärke"
+
+#: game/ui/settings_list.tscn
+msgid "Effects"
+msgstr "Effekte"
+
+#: game/ui/settings_list.tscn
+msgid "Ambience"
+msgstr "Umgebung"
+
 #: game/ui/settings_menu.gd
 msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
 msgstr "Das löscht deinen gesamten Fortschritt: Frachtraum, Waffen, Upgrades. Das lässt sich nicht rückgängig machen."

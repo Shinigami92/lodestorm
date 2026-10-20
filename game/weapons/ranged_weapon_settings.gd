@@ -34,3 +34,9 @@ enum ReloadMode { MAGAZINE, SINGLE }
 ## this share of the reload time, up to `max_chain_speedup`.
 @export var chain_speedup: float = 0.1
 @export var max_chain_speedup: float = 0.3
+
+@export_group("Sounds")
+## A reload starting.
+@export var reload_sound: Sound
+## The rounds going in: the magazine at the end of a reload, or each single round.
+@export var load_sound: Sound

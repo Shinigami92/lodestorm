@@ -2,11 +2,16 @@ class_name SettingsList
 extends GridContainer
 ## The player's settings, the same wherever they're changed (the pause panel and the settings
 ## terminal in cabin 1, see GAME_DESIGN.md, UI): the language (picking one switches the game's
-## texts right away) and the suit ring's size and "Always show", each saved at once (see
-## `GameSettings`). The sound volumes join it with their feature.
+## texts right away), the suit ring's size and "Always show", and a volume per sound bus (a slider
+## in 10 % steps; changing it plays a sample on that bus, once it has sounds), each saved at once
+## (see `GameSettings`).
 
 ## Each language's name, written in that language.
 const LANGUAGE_NAMES: Dictionary[String, String] = {"en": "English", "de": "Deutsch"}
+## What a volume slider plays when it changes: a shot on the Master and Effects buses (Ambience
+## has no sounds yet).
+const SAMPLE: Sound = preload("res://assets/audio/sfx/weapons/blaster_shot.tres")
+const SAMPLED: Array[StringName] = [&"Master", &"Effects"]
 
 @onready var _languages: HBoxContainer = %Languages
 @onready var _ring_sizes: HBoxContainer = %RingSizes
@@ -38,10 +43,27 @@ func _ready() -> void:
 	var ring_row: Array[Control] = []
 	ring_row.assign(_ring_sizes.get_children())
 	ring_row.append(_always_show)
+	for bus: StringName in Sfx.BUSES:
+		var row := get_node("%" + bus) as HBoxContainer
+		var slider := row.get_node(^"Slider") as HSlider
+		slider.value = GameSettings.volume(bus)
+		_show_volume(row, slider.value)
+		slider.value_changed.connect(_on_volume_changed.bind(bus, row))
 	var language_row: Array[Control] = []
 	language_row.assign(_languages.get_children())
 	_chain(language_row)
 	_chain(ring_row)
+
+
+func _on_volume_changed(level: float, bus: StringName, row: HBoxContainer) -> void:
+	GameSettings.set_volume(bus, level)
+	_show_volume(row, level)
+	if bus in SAMPLED:
+		Sfx.play_ui(SAMPLE, bus)
+
+
+static func _show_volume(row: HBoxContainer, level: float) -> void:
+	(row.get_node(^"Value") as Label).text = "%d %%" % roundi(level * 100.0)
 
 
 ## Makes left and right step along `row` (else a button in the row below may be nearer).

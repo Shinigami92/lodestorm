@@ -5,7 +5,10 @@
 [ext_resource type="Resource" uid="uid://bcy70upxk1eyk" path="res://game/weapons/types/harl/harl.tres" id="3_harl"]
 [ext_resource type="Resource" uid="uid://7jm5s1jr48n5" path="res://game/weapons/types/brask/brask.tres" id="4_brask"]
 [ext_resource type="Resource" uid="uid://bpp6gvbope5wb" path="res://game/weapons/types/dray/dray.tres" id="5_dray"]
+[ext_resource type="Resource" uid="uid://d4cuowvffvo10" path="res://game/weapons/types/pinner/pinner.tres" id="6_pinner"]
+[ext_resource type="Resource" uid="uid://d3jfjybt3jg4y" path="res://game/weapons/types/grindle/grindle.tres" id="7_grindle"]
+[ext_resource type="Resource" uid="uid://bk2kh2wolr5iw" path="res://game/weapons/types/quill/quill.tres" id="8_quill"]
 
 [resource]
 script = ExtResource("1_script")
-weapons = Array[ExtResource("2_weapon_type")]([ExtResource("3_harl"), ExtResource("4_brask"), ExtResource("5_dray")])
+weapons = Array[ExtResource("2_weapon_type")]([ExtResource("3_harl"), ExtResource("4_brask"), ExtResource("6_pinner"), ExtResource("7_grindle"), ExtResource("8_quill"), ExtResource("5_dray")])

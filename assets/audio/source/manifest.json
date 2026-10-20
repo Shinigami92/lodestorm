@@ -221,6 +221,16 @@
       "variants": 2,
       "recordings": []
     },
+    "weapons/grindle_shot": {
+      "made_by": "build.py",
+      "variants": 4,
+      "recordings": []
+    },
+    "weapons/grindle_spin": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "weapons/harl_shot": {
       "made_by": "build.py",
       "variants": 4,
@@ -229,6 +239,31 @@
     "weapons/magazine_in": {
       "made_by": "build.py",
       "variants": 2,
+      "recordings": []
+    },
+    "weapons/pinner_charged": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/pinner_shot": {
+      "made_by": "build.py",
+      "variants": 4,
+      "recordings": []
+    },
+    "weapons/quill_charge": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/quill_full": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/quill_shot": {
+      "made_by": "build.py",
+      "variants": 3,
       "recordings": []
     },
     "weapons/reload_start": {

@@ -4,8 +4,9 @@ extends MeshInstance3D
 ## UI): everything a player reads in a fight. Its halves stay fixed to the screen: the health arc
 ## on the left (green, amber below half, red and blinking below a quarter, flashing white on
 ## damage, a red mark on the outer edge towards where a hit came from), the equipped ammo
-## weapon's ammo arc on the right in its ammo color (reloads with their timing window, a red flash
-## when a reload can't start, a white one when a timed press finishes it), the spare magazines as
+## weapon's ammo arc on the right in its ammo color (reloads and a drained battery recharging with
+## their timing window, a charge filling it and turning white when full, a red flash when a reload
+## can't start, a white one when a timed press finishes it), the spare magazines as
 ## ticks inside the ammo arc, the dash as a thin inner ring while it recharges, a green outer
 ## band while the player hands a teammate ammo, and the pointers as arrows on its edge (the way
 ## back to the ship from `ShipPointer`, the nearest ore from `OreScanner`). Both arcs fill from the
@@ -72,7 +73,7 @@ var _ammo_lit: float = 0.0
 var _spares_lit: float = 0.0
 var _dash_lit: float = 0.0
 var _last_health: float = -1.0
-var _last_ammo: MagazineAmmo
+var _last_ammo: WeaponAmmo
 var _last_rounds: int = -1
 var _last_spares: int = -1
 var _was_reloading: bool = false
@@ -127,7 +128,7 @@ func shown(parameter: StringName) -> Variant:
 
 ## Whether the ammo arc shows (a fed weapon is drawn, on the local player's ring).
 func shows_ammo() -> bool:
-	var ammo := _player.get_ammo() as MagazineAmmo
+	var ammo: WeaponAmmo = _player.get_ammo()
 	return ammo != null and _player.weapon.visible and _player.local
 
 
@@ -183,7 +184,7 @@ func _update_health(delta: float, blink_on: bool) -> void:
 
 
 func _update_ammo(delta: float, blink_on: bool) -> void:
-	var ammo := _player.get_ammo() as MagazineAmmo
+	var ammo: WeaponAmmo = _player.get_ammo()
 	var drawn: bool = shows_ammo()
 	_material.set_shader_parameter(&"ammo_alpha", 1.0 if drawn else 0.0)
 	if not drawn:
@@ -193,17 +194,19 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 		_material.set_shader_parameter(&"spare_alpha", 0.0)
 		return
 	var capacity: int = ammo.capacity()
-	if ammo != _last_ammo or ammo.rounds != _last_rounds or ammo.reloading:
+	var refilling: bool = ammo.refilling()
+	var charge: float = _player.weapon.charge()
+	if ammo != _last_ammo or ammo.rounds != _last_rounds or refilling or charge > 0.0:
 		_ammo_lit = lit_time
-	var started: bool = ammo.reloading and not _was_reloading
+	var started: bool = refilling and not _was_reloading
 	if ammo != _last_ammo or ammo.spare_rounds != _last_spares or started:
 		_spares_lit = lit_time
-	if ammo.reloading:
+	if refilling:
 		_spares_lit = maxf(_spares_lit, FADE_TIME)
 	_last_ammo = ammo
 	_last_rounds = ammo.rounds
 	_last_spares = ammo.spare_rounds
-	_was_reloading = ammo.reloading
+	_was_reloading = refilling
 	_ammo_lit = maxf(_ammo_lit - delta, 0.0)
 	_spares_lit = maxf(_spares_lit - delta, 0.0)
 
@@ -212,23 +215,22 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 	var gauge: AmmoGauge = _player.weapon.get_gauge()
 	var color: Color = gauge.color if gauge else Color.WHITE
 	color.a = FILL_ALPHA
-	var feed: MagazineFeed = ammo.feed
 	var single: bool = ammo.is_single()
 	var segments: int = capacity if capacity <= MAX_SEGMENTS else 0
 	var fill: float = share
 	var window := Vector2(1.0, 0.0)
 	var loading: int = -1
 	var loading_color := color
-	if ammo.reloading and not single:
-		fill = ammo.reload_share()
+	if refilling and not single:
+		fill = ammo.refill_share()
 		segments = 0
 		if ammo.fumbled:
 			color = FUMBLE_COLOR
 		else:
-			window = Vector2(feed.sweet_spot_start, feed.sweet_spot_start + feed.sweet_spot_width)
-	elif ammo.reloading and ammo.rounds < capacity:
-		var reload_share: float = ammo.reload_share()
-		var in_window: bool = feed.in_window(reload_share)
+			window = ammo.timing_window()
+	elif refilling and ammo.rounds < capacity:
+		var reload_share: float = ammo.refill_share()
+		var in_window: bool = ammo.in_window(reload_share)
 		loading = ammo.rounds
 		loading_color = (
 			FUMBLE_COLOR if ammo.fumbled else (AmmoGauge.TIMING if in_window else color)
@@ -242,6 +244,13 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 		fill = 1.0
 		color = AmmoGauge.EMPTY if blink_on else AmmoGauge.EMPTY.darkened(1.0 - BLINK_DIM)
 		color.a = FILL_ALPHA * 0.6
+	elif charge > 0.0:
+		# The charge fills the arc like a reload, white once it's full.
+		fill = charge
+		segments = 0
+		if charge >= 1.0:
+			color = AmmoGauge.TIMING
+			color.a = FILL_ALPHA
 	elif low and ammo.rounds > 0:
 		color = AmmoGauge.WARNING if blink_on else AmmoGauge.WARNING.darkened(1.0 - BLINK_DIM)
 		color.a = FILL_ALPHA
@@ -263,7 +272,9 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 	_material.set_shader_parameter(&"loading_segment", loading)
 	_material.set_shader_parameter(&"loading_color", loading_color)
 	_material.set_shader_parameter(&"spare_alpha", spares_alpha)
-	_material.set_shader_parameter(&"spare_slots", _player.spare_magazines)
+	_material.set_shader_parameter(
+		&"spare_slots", _player.spare_magazines if ammo.uses_spares() else 0
+	)
 	_material.set_shader_parameter(&"spare_fill", float(ammo.spare_rounds) / capacity)
 	_material.set_shader_parameter(&"spare_color", spare_color)
 

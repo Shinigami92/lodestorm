@@ -285,9 +285,28 @@ const WEAPON_TUNING: Dictionary[String, Array] = {
 		["chain_speedup", 0.0, 0.5, 0.05],
 		["max_chain_speedup", 0.0, 0.9, 0.05],
 	],
+	"BatteryFeed":
+	[
+		["cells", 1.0, 60.0, 1.0],
+		["recharge_delay", 0.0, 5.0, 0.05],
+		["recharge_rate", 0.5, 30.0, 0.5],
+		["drained_recharge_time", 0.1, 10.0, 0.1],
+	],
+	"SpinTrigger":
+	[
+		["spin_up", 0.0, 3.0, 0.05],
+		["keep_spinning", 0.0, 5.0, 0.1],
+		["spin_down", 0.0, 3.0, 0.05],
+		["spinning_move_share", 0.0, 1.0, 0.05],
+	],
+	"ChargeTrigger":
+	[
+		["charge_time", 0.1, 5.0, 0.05],
+		["min_power", 0.0, 1.0, 0.05],
+	],
 	"ProjectileDelivery":
 	[
-		["speed", 5.0, 100.0, 1.0],
+		["speed", 5.0, 150.0, 1.0],
 		["reach", 5.0, 60.0, 1.0],
 		["pellets", 1.0, 20.0, 1.0],
 		["spread", 0.0, 90.0, 1.0],
@@ -708,7 +727,9 @@ func _build() -> void:
 		for row: Array in TUNING[path]:
 			_add_slider(rows, resource, path, row)
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
-		var parts: Array[Resource] = [weapon_type, weapon_type.feed, weapon_type.delivery]
+		var parts: Array[Resource] = [
+			weapon_type, weapon_type.feed, weapon_type.trigger, weapon_type.delivery
+		]
 		parts.append_array(weapon_type.effects)
 		for resource: Resource in parts:
 			var rows_of: Array = WEAPON_TUNING.get(_class_of(resource), [])

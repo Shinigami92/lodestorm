@@ -1,9 +1,11 @@
 class_name WeaponType
 extends Resource
 ## One weapon of the game, composed of Resources: what feeds it (`feed`: its ammo; melee weapons
-## have none), how an attack reaches its targets (`delivery`: projectiles, a swing) and what a hit
-## does to them (`effects`), plus the parts the workbench upgrades (`parts`) and its model
-## (`scene`), so most weapons are data plus a greybox scene. `create` makes one to hold or show.
+## have none), how holding the button attacks (`trigger`: per press, spinning up, charging; none:
+## at its rate while held), how an attack reaches its targets (`delivery`: projectiles, a swing)
+## and what a hit does to them (`effects`), plus the parts the workbench upgrades (`parts`) and its
+## model (`scene`), so most weapons are data plus a greybox scene. `create` makes one to hold or
+## show.
 ## Players own weapon types (`Arsenal`): the first ones from the start, the others built at the
 ## workbench from their blueprint for ore (`build_cost`), and take some into a mission
 ## (`Loadout`). `game/weapons/all_weapons.tres` lists every weapon of the game.
@@ -28,6 +30,8 @@ enum Origin { COLONY, TOOL, PROTOTYPE }
 @export var draw_time: float = 0.3
 ## Its ammo; null for melee weapons.
 @export var feed: WeaponFeed
+## How holding the attack button attacks; null: at `attack_rate` while it's held.
+@export var trigger: WeaponTrigger
 @export var delivery: WeaponDelivery
 ## What every hit does (damage, ...), in order.
 @export var effects: Array[WeaponEffect] = []

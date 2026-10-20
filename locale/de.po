@@ -1004,7 +1004,10 @@ msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
 
 #: game/weapons/types/brask/mk_damage.tres
 #: game/weapons/types/dray/mk_damage.tres
+#: game/weapons/types/grindle/mk_damage.tres
 #: game/weapons/types/harl/mk_damage.tres
+#: game/weapons/types/pinner/mk_damage.tres
+#: game/weapons/types/quill/mk_damage.tres
 msgid "Damage"
 msgstr "Schaden"
 
@@ -1056,6 +1059,37 @@ msgstr "Schlagtempo"
 msgid "More swings per second"
 msgstr "Mehr Schläge pro Sekunde"
 
+#: game/weapons/types/grindle/grindle.tres
+msgid "Rotary gun"
+msgstr "Rotorkanone"
+
+#: game/weapons/types/grindle/grindle.tres
+msgid "Spins up, then a storm of shots."
+msgstr "Läuft an, dann ein Hagel aus Schüssen."
+
+#: game/weapons/types/grindle/mk_belt.tres
+msgid "Belt"
+msgstr "Gurt"
+
+#: game/weapons/types/grindle/mk_belt.tres
+msgid "More rounds per belt"
+msgstr "Mehr Schuss pro Gurt"
+
+#: game/weapons/types/grindle/mk_damage.tres
+#: game/weapons/types/harl/mk_damage.tres
+#: game/weapons/types/pinner/mk_damage.tres
+#: game/weapons/types/quill/mk_damage.tres
+msgid "More damage per shot"
+msgstr "Mehr Schaden pro Schuss"
+
+#: game/weapons/types/grindle/mk_spin.tres
+msgid "Spin-up"
+msgstr "Anlauf"
+
+#: game/weapons/types/grindle/mk_spin.tres
+msgid "The barrels spin up faster"
+msgstr "Die Läufe drehen schneller hoch"
+
 #: game/weapons/types/harl/harl.tres
 msgid "Assault rifle"
 msgstr "Sturmgewehr"
@@ -1064,15 +1098,13 @@ msgstr "Sturmgewehr"
 msgid "Rapid shots that reach far."
 msgstr "Schnelle Schüsse mit großer Reichweite."
 
-#: game/weapons/types/harl/mk_damage.tres
-msgid "More damage per shot"
-msgstr "Mehr Schaden pro Schuss"
-
 #: game/weapons/types/harl/mk_magazine.tres
+#: game/weapons/types/quill/mk_magazine.tres
 msgid "Magazine"
 msgstr "Magazin"
 
 #: game/weapons/types/harl/mk_magazine.tres
+#: game/weapons/types/quill/mk_magazine.tres
 msgid "More rounds per magazine"
 msgstr "Mehr Schuss pro Magazin"
 
@@ -1083,6 +1115,46 @@ msgstr "Feuerrate"
 #: game/weapons/types/harl/mk_rate.tres
 msgid "More shots per second"
 msgstr "Mehr Schüsse pro Sekunde"
+
+#: game/weapons/types/pinner/mk_battery.tres
+msgid "Battery"
+msgstr "Batterie"
+
+#: game/weapons/types/pinner/mk_battery.tres
+msgid "More shots per battery"
+msgstr "Mehr Schüsse pro Batterie"
+
+#: game/weapons/types/pinner/mk_recharge.tres
+msgid "Recharge"
+msgstr "Aufladen"
+
+#: game/weapons/types/pinner/mk_recharge.tres
+msgid "The battery recharges faster"
+msgstr "Die Batterie lädt schneller auf"
+
+#: game/weapons/types/pinner/pinner.tres
+msgid "Rivet pistol"
+msgstr "Nietpistole"
+
+#: game/weapons/types/pinner/pinner.tres
+msgid "Weak single shots from a battery that recharges itself."
+msgstr "Schwache Einzelschüsse aus einer Batterie, die sich selbst auflädt."
+
+#: game/weapons/types/quill/mk_charge.tres
+msgid "Charge time"
+msgstr "Ladezeit"
+
+#: game/weapons/types/quill/mk_charge.tres
+msgid "Charges faster"
+msgstr "Lädt schneller"
+
+#: game/weapons/types/quill/quill.tres
+msgid "Rail rifle"
+msgstr "Schienengewehr"
+
+#: game/weapons/types/quill/quill.tres
+msgid "Hold to charge. A full charge pierces a line."
+msgstr "Halten zum Laden. Voll geladen trifft es eine ganze Reihe."
 
 #: game/world/celestial_body.gd
 msgid "Moon"

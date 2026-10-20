@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="SpinTrigger" format=3 uid="uid://b8wxa1ciwj4ba"]
+
+[ext_resource type="Script" uid="uid://bbknvp78q4h67" path="res://game/weapons/triggers/spin_trigger.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://b0kpng5cby5w" path="res://assets/audio/sfx/weapons/grindle_spin.tres" id="2_sound"]
+
+[resource]
+script = ExtResource("1_script")
+spin_sound = ExtResource("2_sound")

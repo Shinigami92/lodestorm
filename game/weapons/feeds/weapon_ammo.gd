@@ -4,7 +4,8 @@ extends RefCounted
 ## reloads. The weapon asks it before each attack (`can_attack`, `use`) and ticks it
 ## (`process`); the holder reloads it (`reload`), fills it for a run (`fill`) and hands a teammate
 ## ammo (`receive_ammo`). Rounds beyond the spares are paid with ore by the `supplier` (see
-## `OreAmmo`); aboard (`Player.ammo_free`) they're free.
+## `OreAmmo`); aboard (`Player.ammo_free`) they're free. The weapon's gauge and the suit ring show
+## it the same way for every feed: the rounds, and a refill (`refilling`) with its timing window.
 
 ## Emitted when a reload can't start although it isn't full (nothing pays more rounds).
 @warning_ignore("unused_signal")
@@ -21,7 +22,10 @@ var supplier: Player
 var rounds: int = 0
 ## Rounds in spare (spare magazines, spare shells); reloads use them before ore.
 var spare_rounds: int = 0
+## Whether the holder is reloading it by hand (they walk slower meanwhile).
 var reloading: bool = false
+## Whether the current reload (round) had a timing press outside the window.
+var fumbled: bool = false
 
 
 func _init(fed: Weapon) -> void:
@@ -52,6 +56,38 @@ func _init(fed: Weapon) -> void:
 ## Loads ammo `giver` makes from their carried ore (a teammate handing it over). Returns whether it
 ## got more than it had.
 @abstract func receive_ammo(giver: Player) -> bool
+
+## Whether a refill could start now; false when it's empty and nothing pays more rounds.
+@abstract func can_reload() -> bool
+
+## How far the current refill (a reload, its round) is, as a share of it.
+@abstract func refill_share() -> float
+
+
+## Whether it's refilling and can't attack meanwhile: a magazine reload, a drained battery.
+func refilling() -> bool:
+	return reloading
+
+
+## Whether a refill loads one round after another (they show one by one).
+func is_single() -> bool:
+	return false
+
+
+## The window of the timing press during a refill, as shares of it (from x to y); none when x > y.
+func timing_window() -> Vector2:
+	return Vector2(1.0, 0.0)
+
+
+## Whether a press `share` of the way through a refill is within its timing window.
+func in_window(share: float) -> bool:
+	var window: Vector2 = timing_window()
+	return share >= window.x and share <= window.y
+
+
+## Whether it has spares (spare magazines, shells) from the ship's stock.
+func uses_spares() -> bool:
+	return true
 
 
 ## Called after the weapon's MK levels changed: no more rounds than it holds now, and its gauge

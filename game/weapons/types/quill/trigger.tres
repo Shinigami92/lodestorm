@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ChargeTrigger" format=3 uid="uid://8y4k0f04dlna"]
+
+[ext_resource type="Script" uid="uid://w3wvrj54jx03" path="res://game/weapons/triggers/charge_trigger.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cbgjjxvn20w6h" path="res://assets/audio/sfx/weapons/quill_charge.tres" id="2_sound"]
+[ext_resource type="Resource" uid="uid://c7rdr3u4hjncu" path="res://assets/audio/sfx/weapons/quill_full.tres" id="3_sound"]
+
+[resource]
+script = ExtResource("1_script")
+charge_sound = ExtResource("2_sound")
+full_sound = ExtResource("3_sound")

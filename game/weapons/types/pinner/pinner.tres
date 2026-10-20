@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://d4cuowvffvo10"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://crl4cb5a0qoup" path="res://game/weapons/types/pinner/pinner.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://cgwl2chalc8ey" path="res://game/weapons/types/pinner/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://baqw3csypato1" path="res://game/weapons/types/pinner/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://blxki4smb3fmg" path="res://assets/audio/sfx/weapons/pinner_shot.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://grw43qx4ytse" path="res://game/weapons/types/pinner/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://cqyqvqb0nu0mb" path="res://game/weapons/types/pinner/trigger.tres" id="9_trigger"]
+[ext_resource type="Resource" uid="uid://b6werasb6umm8" path="res://game/weapons/types/pinner/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://cqu1dl2acl71n" path="res://game/weapons/types/pinner/mk_battery.tres" id="mk_battery"]
+[ext_resource type="Resource" uid="uid://bv3nh75nk4pkc" path="res://game/weapons/types/pinner/mk_recharge.tres" id="mk_recharge"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Pinner"
+class_word = "Rivet pistol"
+description = "Weak single shots from a battery that recharges itself."
+scene = ExtResource("2_scene")
+attack_rate = 6
+draw_time = 0.2
+feed = ExtResource("8_feed")
+trigger = ExtResource("9_trigger")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_battery"), ExtResource("mk_recharge")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 120, ExtResource("ore_meridine"): 40
+})
+attack_sound = ExtResource("7_sound")

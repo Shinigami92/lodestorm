@@ -3,9 +3,10 @@ extends Node3D
 ## Shows a fed weapon's ammo on the weapon itself, in segments that glow (a child named
 ## `AmmoGauge`, updated by the weapon every frame): the loaded share of the magazine, the last
 ## segment blinking amber when it's nearly empty, all of them blinking red when it's empty and
-## nothing pays a reload. During a magazine reload the segments fill up like a bar, the one in the
-## timing window white (red after a press outside it); during a single-round reload each segment is
-## a round and the one being loaded brightens, white within the window.
+## nothing pays a reload. During a magazine reload (or a drained battery recharging) the segments
+## fill up like a bar, the one in the timing window white (red after a press outside it); during a
+## single-round reload each segment is a round and the one being loaded brightens, white within the
+## window.
 
 const WARNING := Color(1.0, 0.55, 0.08)
 const EMPTY := Color(1.0, 0.12, 0.08)
@@ -23,21 +24,23 @@ const BLINK_RATE: float = 3.0
 ## tree, so the holder can mark the materials together with the weapon's.
 @abstract func build(capacity: int) -> void
 
-## Shows the state of `ammo` (so far a `MagazineAmmo`).
+## Shows the state of `ammo`.
 @abstract func show_state(ammo: WeaponAmmo) -> void
 
 
 ## The glow (color times energy, black: dark) of each of `count` segments for `ammo`'s state.
-func segment_glow(ammo: MagazineAmmo, count: int) -> Array[Color]:
+func segment_glow(ammo: WeaponAmmo, count: int) -> Array[Color]:
 	var glow: Array[Color] = []
 	glow.resize(count)
 	glow.fill(DARK)
 	var blink_on: bool = fmod(Time.get_ticks_msec() * 0.001 * BLINK_RATE, 1.0) < 0.5
-	var feed: MagazineFeed = ammo.feed
-	if ammo.reloading and not ammo.is_single():
-		var share: float = ammo.reload_share()
+	var timing: Vector2 = ammo.timing_window()
+	if ammo.refilling() and not ammo.is_single():
+		var share: float = ammo.refill_share()
 		var bar: Color = EMPTY if ammo.fumbled else color
-		var window: int = _segment_at(feed.sweet_spot_start + feed.sweet_spot_width * 0.5, count)
+		var window: int = -1
+		if timing.x <= timing.y:
+			window = _segment_at((timing.x + timing.y) * 0.5, count)
 		for i: int in count:
 			var reached: bool = (i + 0.5) / count <= share
 			if i == window and not ammo.fumbled:
@@ -48,10 +51,10 @@ func segment_glow(ammo: MagazineAmmo, count: int) -> Array[Color]:
 	var lit: int = ceili(float(ammo.rounds) / ammo.capacity() * count)
 	for i: int in mini(lit, count):
 		glow[i] = color * energy
-	if ammo.reloading and ammo.rounds < count:
+	if ammo.refilling() and ammo.rounds < count:
 		# The round being loaded brightens; white within the window, red after a fumble.
-		var share: float = ammo.reload_share()
-		var loading: Color = EMPTY if ammo.fumbled else (TIMING if feed.in_window(share) else color)
+		var share: float = ammo.refill_share()
+		var loading: Color = EMPTY if ammo.fumbled else (TIMING if ammo.in_window(share) else color)
 		glow[ammo.rounds] = loading * energy * clampf(share, 0.15, 1.0)
 	elif ammo.rounds == 0 and not ammo.can_reload():
 		glow.fill(EMPTY * energy * 0.4 if blink_on else DARK)

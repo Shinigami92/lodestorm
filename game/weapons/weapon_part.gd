@@ -6,8 +6,9 @@ extends Upgrade
 ## `DamagePips`), if it has one.
 
 ## The value a part improves: the damage per hit, the capacity (rounds per magazine, shells per
-## load), attacks per second (melee: swing speed), pellets per shot, a swing's arc.
-enum Stat { DAMAGE, CAPACITY, RATE, PELLETS, ARC }
+## load, shots per battery), attacks per second (melee: swing speed), pellets per shot, a swing's
+## arc, how quickly barrels spin up, a charge fills and a battery recharges.
+enum Stat { DAMAGE, CAPACITY, RATE, PELLETS, ARC, SPIN, CHARGE, RECHARGE }
 
 @export var stat: Stat = Stat.DAMAGE
 

@@ -33,7 +33,7 @@ func build(_capacity: int) -> void:
 func show_state(ammo: WeaponAmmo) -> void:
 	if not _image:
 		return
-	var glow: Array[Color] = segment_glow(ammo as MagazineAmmo, segments)
+	var glow: Array[Color] = segment_glow(ammo, segments)
 	for i: int in segments:
 		_image.set_pixel(i, 0, glow[i])
 	_texture.update(_image)

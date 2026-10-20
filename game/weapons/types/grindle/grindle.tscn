@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://c01eocrqpgr5h"]
+
+[ext_resource type="Script" uid="uid://wqy8q2v67cpr" path="res://game/weapons/weapon.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://0wsme0mqs3x1" path="res://game/weapons/spinning_part.gd" id="2_spin"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://game/progression/upgrades/mk_pips.gd" id="9_pips"]
+[ext_resource type="Script" uid="uid://3611pxyg528a" path="res://game/weapons/shell_strip.gd" id="10_gauge"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.13, 0.135, 0.145, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.07, 0.07, 0.075, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_receiver"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.16, 0.17, 0.4)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
+material = SubResource("StandardMaterial3D_metal")
+top_radius = 0.018
+bottom_radius = 0.018
+height = 0.5
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_clamp"]
+material = SubResource("StandardMaterial3D_grip")
+top_radius = 0.08
+bottom_radius = 0.08
+height = 0.04
+radial_segments = 16
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_drum"]
+material = SubResource("StandardMaterial3D_grip")
+top_radius = 0.11
+bottom_radius = 0.11
+height = 0.12
+radial_segments = 20
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_handle"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.04, 0.05, 0.2)
+
+[node name="Grindle" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Receiver" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, -0.02)
+mesh = SubResource("BoxMesh_receiver")
+
+[node name="Barrels" type="Node3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.22)
+script = ExtResource("2_spin")
+
+[node name="Barrel1" type="MeshInstance3D" parent="Model/Barrels"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.045, 0, -0.25)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="Barrel2" type="MeshInstance3D" parent="Model/Barrels"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0225, 0.039, -0.25)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="Barrel3" type="MeshInstance3D" parent="Model/Barrels"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0225, 0.039, -0.25)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="Barrel4" type="MeshInstance3D" parent="Model/Barrels"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.045, 0, -0.25)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="Barrel5" type="MeshInstance3D" parent="Model/Barrels"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0225, -0.039, -0.25)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="Barrel6" type="MeshInstance3D" parent="Model/Barrels"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0225, -0.039, -0.25)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="Clamp" type="MeshInstance3D" parent="Model/Barrels"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.4)
+mesh = SubResource("CylinderMesh_clamp")
+
+[node name="Drum" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -0.14, 0.06, -0.02)
+mesh = SubResource("CylinderMesh_drum")
+
+[node name="Handle" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, -0.04)
+mesh = SubResource("BoxMesh_handle")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.74)
+
+[node name="AmmoGauge" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -0.201, 0.06, -0.02)
+script = ExtResource("10_gauge")
+color = Color(1, 0.66, 0.25, 1)
+energy = 3.0
+size = Vector3(0.03, 0.004, 0.16)
+segments = 10
+
+[node name="DamagePips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.05, 0.196, 0.1)
+script = ExtResource("9_pips")
+
+[node name="CapacityPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.05, 0.196, -0.06)
+script = ExtResource("9_pips")
+lit_color = Color(1, 0.66, 0.25, 1)
+
+[node name="SpinPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.05, 0.196, -0.2)
+script = ExtResource("9_pips")

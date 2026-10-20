@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://djssm0jfxc1pt"]
+
+[ext_resource type="Script" uid="uid://wqy8q2v67cpr" path="res://game/weapons/weapon.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://twsywklvuos7" path="res://game/weapons/landing_ring.gd" id="2_ring"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://game/progression/upgrades/mk_pips.gd" id="9_pips"]
+[ext_resource type="Script" uid="uid://3611pxyg528a" path="res://game/weapons/shell_strip.gd" id="10_gauge"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.13, 0.135, 0.145, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.07, 0.07, 0.075, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hazard"]
+albedo_color = Color(0.5, 0.38, 0.08, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.14, 0.14, 0.34)
+
+[sub_resource type="BoxMesh" id="BoxMesh_snout"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.12, 0.09, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_band"]
+material = SubResource("StandardMaterial3D_hazard")
+size = Vector3(0.126, 0.096, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hopper"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.1, 0.08, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_grip"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.05, 0.13, 0.06)
+
+[node name="Wick" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.08)
+mesh = SubResource("BoxMesh_body")
+
+[node name="Snout" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.32)
+mesh = SubResource("BoxMesh_snout")
+
+[node name="Band" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.37)
+mesh = SubResource("BoxMesh_band")
+
+[node name="Hopper" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.21, -0.06)
+mesh = SubResource("BoxMesh_hopper")
+
+[node name="Grip" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.342, 0, -0.342, 0.94, 0, -0.02, 0.04)
+mesh = SubResource("BoxMesh_grip")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.42)
+
+[node name="LandingRing" type="MeshInstance3D" parent="."]
+script = ExtResource("2_ring")
+color = Color(1, 0.78, 0.35, 1)
+
+[node name="AmmoGauge" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.051, 0.21, -0.06)
+script = ExtResource("10_gauge")
+color = Color(1, 0.78, 0.35, 1)
+energy = 3.0
+size = Vector3(0.004, 0.05, 0.18)
+gap = 0.008
+
+[node name="DamagePips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.03, 0.172, 0.06)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032
+
+[node name="CapacityPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.03, 0.172, -0.18)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032
+lit_color = Color(1, 0.78, 0.35, 1)
+
+[node name="ChargesPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.252, -0.06)
+script = ExtResource("9_pips")
+pip_size = Vector3(0.024, 0.012, 0.024)
+spacing = 0.032

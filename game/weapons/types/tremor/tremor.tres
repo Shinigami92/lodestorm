@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://bmok8vjpnghnr"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bsncluk81qf55" path="res://game/weapons/types/tremor/tremor.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://b1c0rq1alnu2m" path="res://game/weapons/types/tremor/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://derspvy5cvcem" path="res://game/weapons/types/tremor/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://g44yevtmpotu" path="res://assets/audio/sfx/weapons/tremor_shot.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://dlrm6v1l46way" path="res://game/weapons/types/tremor/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://b1lo3xmhpvkqs" path="res://game/weapons/types/tremor/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://5j8irjpjwhyy" path="res://game/weapons/types/tremor/mk_magazine.tres" id="mk_magazine"]
+[ext_resource type="Resource" uid="uid://dwo4nbxo6dd11" path="res://game/weapons/types/tremor/mk_blast.tres" id="mk_blast"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Tremor"
+class_word = "Seismic launcher"
+description = "Lobs shells over cover. They blast where they land."
+origin = 1
+scene = ExtResource("2_scene")
+attack_rate = 1.2
+draw_time = 0.6
+feed = ExtResource("8_feed")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_magazine"), ExtResource("mk_blast")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 360, ExtResource("ore_selyx"): 160
+})
+attack_sound = ExtResource("7_sound")

@@ -261,6 +261,7 @@ func _physics_process(delta: float) -> void:
 	if weapon:
 		weapon.aim_direction = aim.direction
 		weapon.aim_target = aim.target
+		weapon.aim_point = aim.ground_point
 		weapon.trigger_held = (
 			weapon_allowed and _action_held(&"attack") and not aim.is_mouse_over_ui()
 		)

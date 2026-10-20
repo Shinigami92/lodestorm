@@ -20,6 +20,10 @@ var holder: Player
 var direction: Vector3 = Vector3.FORWARD
 ## The alien or the `Destructible` locked on, or null.
 var target: Node3D
+## The spot the mouse cursor points at on the ground (or the one locked on stands at): a lobbed
+## shot lands there (see `LobDelivery`). `Vector3.INF` while it aims by a direction only (the
+## stick, the movement, a VR hand).
+var ground_point: Vector3 = Vector3.INF
 
 ## Whether the mouse was used for aiming more recently than the right stick.
 var _with_mouse: bool = false
@@ -34,6 +38,7 @@ func _unhandled_input(event: InputEvent) -> void:
 ## movement direction (`move`, camera-relative).
 func update(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
 	var stick: Vector2 = Input.get_vector(&"aim_left", &"aim_right", &"aim_forward", &"aim_back")
+	ground_point = Vector3.INF
 	if stick != Vector2.ZERO:
 		_with_mouse = false
 		with_stick(IsoInput.camera_relative(stick, camera_basis))
@@ -56,8 +61,10 @@ func at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
 	target = _near_screen_position(camera, screen_position, _aliens())
 	if not target:
 		target = _near_screen_position(camera, screen_position, _destructibles())
+	ground_point = Vector3.INF
 	if target:
-		towards(target.global_position)
+		ground_point = target.global_position
+		towards(ground_point)
 		return
 	var from: Vector3 = holder.global_position
 	var origin: Vector3 = camera.project_ray_origin(screen_position)
@@ -75,7 +82,8 @@ func at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
 		if not ground.is_empty():
 			hit = ground[&"position"]
 	if hit != null:
-		towards(hit as Vector3)
+		ground_point = hit as Vector3
+		towards(ground_point)
 
 
 ## Aims along `along` (horizontal) and locks on the nearest alien close to it, or else the

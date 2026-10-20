@@ -1006,6 +1006,8 @@ msgstr ""
 #: game/weapons/types/harl/mk_damage.tres
 #: game/weapons/types/pinner/mk_damage.tres
 #: game/weapons/types/quill/mk_damage.tres
+#: game/weapons/types/tremor/mk_damage.tres
+#: game/weapons/types/wick/mk_damage.tres
 msgid "Damage"
 msgstr ""
 
@@ -1098,11 +1100,14 @@ msgstr ""
 
 #: game/weapons/types/harl/mk_magazine.tres
 #: game/weapons/types/quill/mk_magazine.tres
+#: game/weapons/types/tremor/mk_magazine.tres
+#: game/weapons/types/wick/mk_magazine.tres
 msgid "Magazine"
 msgstr ""
 
 #: game/weapons/types/harl/mk_magazine.tres
 #: game/weapons/types/quill/mk_magazine.tres
+#: game/weapons/types/tremor/mk_magazine.tres
 msgid "More rounds per magazine"
 msgstr ""
 
@@ -1152,6 +1157,47 @@ msgstr ""
 
 #: game/weapons/types/quill/quill.tres
 msgid "Hold to charge. A full charge pierces a line."
+msgstr ""
+
+#: game/weapons/types/tremor/mk_blast.tres
+msgid "Blast"
+msgstr ""
+
+#: game/weapons/types/tremor/mk_blast.tres
+msgid "A wider blast"
+msgstr ""
+
+#: game/weapons/types/tremor/mk_damage.tres
+#: game/weapons/types/wick/mk_damage.tres
+msgid "More damage per blast"
+msgstr ""
+
+#: game/weapons/types/tremor/tremor.tres
+msgid "Seismic launcher"
+msgstr ""
+
+#: game/weapons/types/tremor/tremor.tres
+msgid "Lobs shells over cover. They blast where they land."
+msgstr ""
+
+#: game/weapons/types/wick/mk_charges.tres
+msgid "Charges"
+msgstr ""
+
+#: game/weapons/types/wick/mk_charges.tres
+msgid "More charges out at once"
+msgstr ""
+
+#: game/weapons/types/wick/mk_magazine.tres
+msgid "More charges per magazine"
+msgstr ""
+
+#: game/weapons/types/wick/wick.tres
+msgid "Charge layer"
+msgstr ""
+
+#: game/weapons/types/wick/wick.tres
+msgid "Tosses charges that blast when aliens come close."
 msgstr ""
 
 #: game/world/celestial_body.gd

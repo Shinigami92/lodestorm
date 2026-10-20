@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ChargeDelivery" format=3 uid="uid://cxtj2jk2aoera"]
+
+[ext_resource type="Script" uid="uid://cnrwo7nxymu1k" path="res://game/weapons/deliveries/charge_delivery.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bxle8jjbw20em" path="res://game/weapons/types/wick/charge.tscn" id="2_shot"]
+[ext_resource type="Resource" uid="uid://csy3g1raqojsk" path="res://assets/audio/sfx/weapons/blast.tres" id="3_sound"]
+[ext_resource type="Resource" uid="uid://bbgjfj8pb34te" path="res://assets/audio/sfx/weapons/wick_armed.tres" id="4_sound"]
+[ext_resource type="Resource" uid="uid://cvb3fsew6abct" path="res://assets/audio/sfx/weapons/wick_tripped.tres" id="5_sound"]
+
+[resource]
+script = ExtResource("1_script")
+reach = 6.0
+stick_reach = 4.0
+speed = 8.0
+min_flight_time = 0.35
+arc_per_meter = 0.3
+min_arc = 0.6
+blast_radius = 3.0
+charges = 3
+trigger_radius = 2.5
+arm_time = 1.0
+trip_time = 0.35
+shot_scene = ExtResource("2_shot")
+blast_sound = ExtResource("3_sound")
+arm_sound = ExtResource("4_sound")
+trip_sound = ExtResource("5_sound")

@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://bsncluk81qf55"]
+
+[ext_resource type="Script" uid="uid://wqy8q2v67cpr" path="res://game/weapons/weapon.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://twsywklvuos7" path="res://game/weapons/landing_ring.gd" id="2_ring"]
+[ext_resource type="Script" uid="uid://5ax7n7l867j5" path="res://game/progression/upgrades/mk_pips.gd" id="9_pips"]
+[ext_resource type="Script" uid="uid://3611pxyg528a" path="res://game/weapons/shell_strip.gd" id="10_gauge"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.13, 0.135, 0.145, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.07, 0.07, 0.075, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hazard"]
+albedo_color = Color(0.5, 0.38, 0.08, 1)
+roughness = 0.7
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tube"]
+material = SubResource("StandardMaterial3D_metal")
+top_radius = 0.075
+bottom_radius = 0.075
+height = 0.62
+radial_segments = 16
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_band"]
+material = SubResource("StandardMaterial3D_hazard")
+top_radius = 0.082
+bottom_radius = 0.082
+height = 0.07
+radial_segments = 16
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_breech"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.16, 0.16, 0.22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_grip"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.05, 0.13, 0.06)
+
+[sub_resource type="BoxMesh" id="BoxMesh_stock"]
+material = SubResource("StandardMaterial3D_grip")
+size = Vector3(0.08, 0.1, 0.22)
+
+[node name="Tremor" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Tube" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.13, -0.38)
+mesh = SubResource("CylinderMesh_tube")
+
+[node name="Band" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.13, -0.64)
+mesh = SubResource("CylinderMesh_band")
+
+[node name="Breech" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.02)
+mesh = SubResource("BoxMesh_breech")
+
+[node name="Grip" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.342, 0, -0.342, 0.94, 0, 0, 0.04)
+mesh = SubResource("BoxMesh_grip")
+
+[node name="Stock" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0.22)
+mesh = SubResource("BoxMesh_stock")
+
+[node name="Muzzle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, -0.72)
+
+[node name="LandingRing" type="MeshInstance3D" parent="."]
+script = ExtResource("2_ring")
+color = Color(1, 0.5, 0.18, 1)
+
+[node name="AmmoGauge" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.081, 0.12, -0.02)
+script = ExtResource("10_gauge")
+color = Color(1, 0.5, 0.18, 1)
+energy = 3.0
+size = Vector3(0.004, 0.06, 0.18)
+gap = 0.01
+
+[node name="DamagePips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.206, 0.06)
+script = ExtResource("9_pips")
+
+[node name="CapacityPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.206, -0.06)
+script = ExtResource("9_pips")
+lit_color = Color(1, 0.5, 0.18, 1)
+
+[node name="BlastPips" type="Node3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.21, -0.2)
+script = ExtResource("9_pips")

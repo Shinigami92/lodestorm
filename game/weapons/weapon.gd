@@ -1,14 +1,14 @@
 class_name Weapon
 extends Node3D
-## A weapon of a `WeaponType` (made by `WeaponType.create`), held by a player or shown on a
-## station. While the trigger is held and it's drawn, it attacks at its attack rate, or as its
-## type's trigger says (`WeaponTrigger`: per press, after spinning up, a charge let go): a fed
-## weapon uses a round of its `ammo` (see `WeaponAmmo`), then its type's delivery reaches the
-## targets (`WeaponDelivery`: projectiles, a swing) and its effects make the hits (`make_hit`). The
-## holder sets `trigger_held`, `aim_direction` and `aim_target`; weapons don't read input. The MK
-## levels of its parts (`apply_upgrades`) scale its values (`multiplier`) and light their pips.
-## After a switch it's drawn (`draw`): the model swings up from the hip for the type's draw time.
-## Each attack plays the type's `attack_sound` at the weapon.
+## A weapon of a `WeaponType` (made by `WeaponType.create`), held by a player or shown on a station.
+## While the trigger is held and it's drawn, it attacks at its attack rate, or as its type's trigger
+## says (`WeaponTrigger`: per press, after spinning up, a charge let go): a fed weapon uses a round
+## of its `ammo` (see `WeaponAmmo`), then its type's delivery reaches the targets (`WeaponDelivery`:
+## projectiles, lobbed shells and charges, a swing) and its effects make the hits (`make_hit`). The
+## holder sets `trigger_held`, `aim_direction`, `aim_target` and `aim_point`; weapons don't read
+## input. The MK levels of its parts (`apply_upgrades`) scale its values (`multiplier`) and light
+## their pips. After a switch it's drawn (`draw`): the model swings up from the hip for the type's
+## draw time. Each attack plays the type's `attack_sound` at the weapon.
 
 ## Emitted after every swing (a melee delivery) with the aliens it hit.
 @warning_ignore("unused_signal")
@@ -30,6 +30,9 @@ var aim_direction: Vector3 = Vector3.FORWARD
 ## The alien or `Destructible` the holder locked on, or null: attacks go straight at it, up or
 ## down slopes too (see `PlayerAim`).
 var aim_target: Node3D
+## The spot on the ground the holder points at (the mouse cursor), or `Vector3.INF` when it aims by
+## a direction only: a lobbed shot lands there (see `LobDelivery`).
+var aim_point: Vector3 = Vector3.INF
 ## How far its trigger has wound up, 0 to 1: barrels spinning, a charge (see `WeaponTrigger`).
 var wind: float = 0.0
 ## Share of a full attack's power of the attack being made (a partial charge), scaling its hits.

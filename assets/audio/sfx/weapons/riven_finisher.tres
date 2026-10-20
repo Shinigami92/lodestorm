@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://brwhxg7wgpquh"]
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://b4c70fwkvvsq6"]
 
 [ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
-[ext_resource type="AudioStream" uid="uid://dg3fica3saufd" path="res://assets/audio/sfx/weapons/riven_lunge_1.wav" id="2_variant"]
-[ext_resource type="AudioStream" uid="uid://50jj52qjstmc" path="res://assets/audio/sfx/weapons/riven_lunge_2.wav" id="3_variant"]
+[ext_resource type="AudioStream" uid="uid://tp4te0piofyc" path="res://assets/audio/sfx/weapons/riven_finisher_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://cxs1rqcjbqkaf" path="res://assets/audio/sfx/weapons/riven_finisher_2.wav" id="3_variant"]
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
 random_pitch = 1.04

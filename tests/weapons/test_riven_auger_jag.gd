@@ -1,6 +1,6 @@
 extends GutTest
-## Riven (a chain of slashes, the last lunging), Auger (a thrust through a line, then drilling into
-## the first alien) and Jag (a held saw staggering and slowing what it touches).
+## Riven (a chain of slashes, the last a heavy one), Auger (a thrust through a line, then drilling
+## into the first alien) and Jag (a held saw staggering and slowing what it touches).
 
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
@@ -34,24 +34,26 @@ func after_each() -> void:
 	Input.action_release(&"attack")
 
 
-func test_riven_slashes_twice_then_lunges_for_double() -> void:
+func test_riven_slashes_twice_then_hits_hard() -> void:
 	var riven: Weapon = await _drawn(RIVEN)
 	var alien := _add_alien(Vector3(0.0, 0.0, -1.5))
+	alien.strain.stagger_threshold = 1000.0
 	var aside := _add_alien(Vector3(2.0, 0.0, -0.5))
 	await wait_physics_frames(1)
+	var start: Vector3 = _player.global_position
 	_slash(riven)
 	_slash(riven)
 	var full: float = RIVEN_DAMAGE.damage
 	assert_almost_eq(_dealt(alien), full * 2.0, 0.01, "two slashes")
-	assert_eq(_dealt(aside), 0.0, "a narrow arc")
 	assert_eq(riven.chain, 2)
-	var start: Vector3 = _player.global_position
 	_slash(riven)
-	assert_almost_eq(_dealt(alien), full * (2.0 + CHAIN.lunge_power), 0.01, "the lunge hits harder")
-	await wait_seconds(CHAIN.lunge_time + 0.2)
-	var moved: float = _flat_distance(_player.global_position, start)
-	assert_gt(moved, 0.3, "it lunged")
-	assert_lt(moved, 1.5 - SwingDelivery.LUNGE_STOP + 0.3, "stopping short of the alien")
+	var power: float = CHAIN.finisher_power
+	assert_almost_eq(_dealt(alien), full * (2.0 + power), 0.01, "the third hits harder")
+	var stagger: float = RIVEN_DAMAGE.stagger * (2.0 + power * CHAIN.finisher_stagger)
+	assert_almost_eq(alien.stagger, stagger, 0.5, "and staggers much more")
+	assert_eq(_dealt(aside), 0.0, "the same narrow arc")
+	await wait_physics_frames(5)
+	assert_lt(_flat_distance(_player.global_position, start), 0.01, "the player stays")
 	_slash(riven)
 	assert_eq(riven.chain, 1, "the chain starts over")
 
@@ -65,31 +67,7 @@ func test_riven_chain_starts_over_after_a_pause() -> void:
 	riven.since_attack = CHAIN.combo_gap + 0.1
 	_slash(riven)
 	assert_eq(riven.chain, 1)
-	assert_almost_eq(_dealt(alien), RIVEN_DAMAGE.damage * 3.0, 0.01, "no lunge")
-
-
-func test_riven_lunges_its_distance_hitting_along_the_way_but_not_past_rock() -> void:
-	var riven: Weapon = await _drawn(RIVEN)
-	var far := _add_alien(Vector3(0.6, 0.0, -CHAIN.lunge - 1.2))
-	var behind := _add_alien(Vector3(0.0, 0.0, 2.0))
-	await wait_physics_frames(1)
-	var start: Vector3 = _player.global_position
-	riven.chain = CHAIN.combo - 1
-	riven.since_attack = 0.0
-	_slash(riven)
-	assert_almost_eq(_dealt(far), RIVEN_DAMAGE.damage * CHAIN.lunge_power, 0.01)
-	assert_eq(_dealt(behind), 0.0)
-	await wait_seconds(CHAIN.lunge_time + 0.2)
-	var moved: float = _flat_distance(_player.global_position, start)
-	assert_gt(moved, CHAIN.lunge - SwingDelivery.LUNGE_STOP - 0.5, "nearly up to the alien")
-	_add_box(_player.global_position + Vector3(0.0, 1.5, -1.5), Vector3(4.0, 3.0, 0.4))
-	await wait_physics_frames(2)
-	start = _player.global_position
-	riven.chain = CHAIN.combo - 1
-	riven.since_attack = 0.0
-	_slash(riven)
-	await wait_seconds(CHAIN.lunge_time + 0.2)
-	assert_lt(_flat_distance(_player.global_position, start), 0.8, "rock stops it short")
+	assert_almost_eq(_dealt(alien), RIVEN_DAMAGE.damage * 3.0, 0.01, "no heavy slash")
 
 
 func test_auger_thrust_pierces_a_line_up_to_its_reach() -> void:
@@ -99,11 +77,17 @@ func test_auger_thrust_pierces_a_line_up_to_its_reach() -> void:
 	var aside := _add_alien(Vector3(1.6, 0.0, -2.0))
 	var beyond := _add_alien(Vector3(0.0, 0.0, -THRUST.reach - 1.0))
 	await wait_physics_frames(1)
+	var auger: Weapon = _player.weapon
+	var model := auger.get_node(^"Model") as Node3D
 	await _attack_once()
+	assert_gt(auger.wind, 0.9, "the bit spins up")
+	assert_eq(model.position, Vector3.ZERO, "it doesn't poke")
 	assert_almost_eq(_dealt(first), AUGER_DAMAGE.damage, 0.01)
 	assert_almost_eq(_dealt(second), AUGER_DAMAGE.damage, 0.01, "pierced")
 	assert_eq(_dealt(aside), 0.0, "a narrow line")
 	assert_eq(_dealt(beyond), 0.0, "out of reach")
+	await wait_seconds(DRILL.spin_down + 0.1)
+	assert_eq(auger.wind, 0.0, "and spins down")
 
 
 func test_auger_thrust_stops_at_rock() -> void:

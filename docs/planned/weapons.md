@@ -1,6 +1,6 @@
 # Weapons (planned)
 
-Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (steps 10 A, B, C, D and E1, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens), [Upgrade stations](../GAME_DESIGN.md#upgrade-stations) and the armory in [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)): the framework (a weapon composed of its feed, trigger, delivery, effects and parts as Resources), Harl, Brask, Dray, Pinner, Grindle, Quill, Tremor, Wick, Scald, Kith, Zenith, Fulgen, Nadir, Riven, Auger and Jag with three parts each, the heat feed, the chain, the gravity well, the chain of slashes with its lunge, the thrust that drills and the held saw with its slow, the draw time, blueprints and building a weapon at the workbench; the armory's weapon wall and the workbench rack in rows by origin, for any number.
+Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the aliens (see [`aliens.md`](aliens.md)), whose strains these weapons are tuned against. All values **TBD (playtest)**; greybox meshes until the art pass. Built so far (steps 10 A, B, C, D and E1, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens), [Upgrade stations](../GAME_DESIGN.md#upgrade-stations) and the armory in [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)): the framework (a weapon composed of its feed, trigger, delivery, effects and parts as Resources), Harl, Brask, Dray, Pinner, Grindle, Quill, Tremor, Wick, Scald, Kith, Zenith, Fulgen, Nadir, Riven, Auger and Jag with three parts each, the heat feed, the chain, the gravity well, the chain of slashes ending in a heavy one, the thrust that drills and the held saw with its slow, the draw time, blueprints and building a weapon at the workbench; the armory's weapon wall and the workbench rack in rows by origin, for any number.
 
 ## The roster
 
@@ -26,7 +26,7 @@ Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the
 | **Nadir** | gravity projector (Gravitationswerfer) | prototype | a well that pulls aliens into one spot and holds them, then bursts; battery | setting up the other weapons |
 | **Zenith** | star lance (Sternlanze) | prototype | a continuous piercing beam; heat; the campaign's last weapon | everything, at a price in rare ore |
 | **Dray** | hammer (Hammer) | tool | a wide arc, several aliens at once | crowds |
-| **Riven** | blade (Klinge) | tool | a fast, narrow combo; the third hit lunges forward | single fast aliens |
+| **Riven** | blade (Klinge) | tool | a fast, narrow combo; the third hit is a heavy slash | single fast aliens |
 | **Auger** | drill lance (Bohrlanze) | tool | a 4 m thrust that pierces a line; holding drills into one target with rising damage | armored aliens |
 | **Jag** | rock saw (Gesteinssäge) | tool | held, continuous, staggers what it touches | holding a choke point |
 | **Clout** | power fist (Kraftfaust) | prototype | hold to charge a punch that throws aliens into others | knockback, crowd control |
@@ -54,7 +54,7 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 
 ## Upgrades and getting them
 
-- **Upgrade parts:** three per weapon at the workbench (built for every ranged weapon, Dray, Riven, Auger and Jag): **damage**, **capacity** (magazine, belt, battery, cell, heat; for melee: swing speed) and a **part of its own** (built: Pinner's recharge, Grindle's spin-up, Quill's charge time, Tremor's blast radius, Wick's charges out at once, Scald's burn, Kith's range (its heal rate in place of damage), Zenith's cooling, Fulgen's jumps, Nadir's well radius, Riven's lunge, Auger's drill ramp, Jag's width), for the coming weapons e.g. Mantle: block angle.
+- **Upgrade parts:** three per weapon at the workbench (built for every ranged weapon, Dray, Riven, Auger and Jag): **damage**, **capacity** (magazine, belt, battery, cell, heat; for melee: swing speed) and a **part of its own** (built: Pinner's recharge, Grindle's spin-up, Quill's charge time, Tremor's blast radius, Wick's charges out at once, Scald's burn, Kith's range (its heal rate in place of damage), Zenith's cooling, Fulgen's jumps, Nadir's well radius, Riven's stagger, Auger's drill ramp, Jag's width), for the coming weapons e.g. Mantle: block angle.
 - **Getting them:** blueprints from quests (see [`quests.md`](quests.md)): colony arms and tools from the crew's quest chains, the six prototypes from the lost expedition's sites (story). Building one from its blueprint at the workbench for a fixed ore cost is built; later weapons cost the planet's signature ore, the prototypes also alloys (see [`refinery.md`](refinery.md)). In co-op everyone in the session gets the blueprint and builds it from their own hold (own holds: step 11 A). The debug overlay gives the blueprints until then.
 
 ## Loadout and switching
@@ -62,6 +62,10 @@ The spare magazine rules and skills apply to every weapon fed with ore (cells, b
 - **Draw time** (built, also Grindle's 0.8 s and switching cancelling Quill's charge).
 - **Slots stay 2;** a third one comes later as a skill deep in a tree (rare ores), since choosing from many weapons is the point.
 
+## Player animations for melee
+
+Decided 2026-10-20, built right after step 10 E1, before E2: melee weapons need the player's arms to swing, not only the weapon model (ranged weapons don't). Upper-body attack clips in `assets/player/source/player_build.py` (a slash one way and back, an overhead blow, a thrust, a two-handed hold for the saw and the drill), played per attack by the delivery's stroke; the weapon-model motions stay as a small extra. E2's punch (Clout) and bash (Mantle) get their clips with them.
+
 ## Data and tests
 
-The composition is built (feeds: magazine, single, battery, heat; triggers: held, per press, spin, charge, press to thrust and hold to drill; deliveries: projectile, also piercing, lobbed with a blast, placed charge, gravity well (pull and hold), cone, beam, chain, swing (also a chain with a lunge, and a held saw), thrust (also drilling); effects: damage (Fulgen's shock is its stagger), burn, heal, slow). Still to come with Clout and Mantle (step 10 E2): the delivery block and the effect knockback. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.
+The composition is built (feeds: magazine, single, battery, heat; triggers: held, per press, spin, charge, press to thrust and hold to drill; deliveries: projectile, also piercing, lobbed with a blast, placed charge, gravity well (pull and hold), cone, beam, chain, swing (also a chain ending in a heavy slash, and a held saw), thrust (also drilling); effects: damage (Fulgen's shock is its stagger), burn, heal, slow). Still to come with Clout and Mantle (step 10 E2): the delivery block and the effect knockback. The tests go over every weapon in `all_weapons.tres`: it attacks, reloads (vents, recharges), has a display, and its card fits in every language.

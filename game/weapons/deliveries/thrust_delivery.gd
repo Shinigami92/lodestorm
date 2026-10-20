@@ -6,15 +6,14 @@ extends WeaponDelivery
 ## trigger is held on (`DrillTrigger`), every attack drills into that one at `drill_rate`, each hit
 ## a share of a thrust's and harder the longer it stays on, up to `ramp` times after `ramp_time`
 ## seconds (quicker with the MK level of the weapon's ramp), so armor takes less off; the drill
-## lets go when its target dies or gets out of reach. The model thrusts forward, its bit spinning
-## faster as the drill ramps up (`Weapon.wind`). A thrust that hits plays `hit_sound`. All values
-## TBD (playtest).
+## lets go when its target dies or gets out of reach. The bit spins (`Weapon.wind`): up at once
+## with a thrust, then winding down, and while drilling the faster the more the drill ramped up.
+## A thrust that hits plays `hit_sound`. All values TBD (playtest).
 
 ## How far to either side of an alien's center the line still hits it (its body, m).
 const BODY: float = 0.35
-## How far the model thrusts forward, and how far it shakes while drilling (m).
-const THRUST_LENGTH: float = 0.45
-const DRILL_SHAKE: float = 0.06
+## How fast the bit spins while drilling, from no ramp to a full one (`Weapon.wind`).
+const DRILL_SPIN_MIN: float = 0.4
 
 ## How far the thrust reaches, from the holder (horizontally, m).
 @export var reach: float = 4.0
@@ -91,8 +90,7 @@ func _thrust(weapon: Weapon) -> void:
 	if first:
 		weapon.play(hit_sound)
 	weapon.latch(first)
-	weapon.wind = 0.0
-	weapon.thrust(THRUST_LENGTH, minf(interval(weapon), 0.4))
+	weapon.wind = 1.0
 	weapon.swung.emit(hits)
 
 
@@ -101,11 +99,10 @@ func _drill(weapon: Weapon) -> void:
 	var target: Node3D = weapon.latched
 	if not _can_drill(weapon, target):
 		weapon.latch(null)
-		weapon.wind = 0.0
 		return
 	weapon.latched_for += 1.0 / drill_rate
 	var share: float = ramped(weapon)
-	weapon.wind = lerpf(0.4, 1.0, share)
+	weapon.wind = lerpf(DRILL_SPIN_MIN, 1.0, share)
 	var direction: Vector3 = target.global_position - weapon.holder.global_position
 	direction.y = 0.0
 	if direction.length() < 0.01:
@@ -117,7 +114,6 @@ func _drill(weapon: Weapon) -> void:
 	hit.push = 0.0
 	hit.spray = randf() < drill_spray
 	hit.land_on(target)
-	weapon.thrust(DRILL_SHAKE, 1.0 / drill_rate)
 
 
 ## Whether `target` is still there to drill: alive, hittable and within reach (a nest's edge).

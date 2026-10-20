@@ -1313,16 +1313,16 @@ msgstr ""
 msgid "More damage per slash"
 msgstr ""
 
-#: game/weapons/types/riven/mk_lunge.tres
-msgid "Lunge"
-msgstr ""
-
-#: game/weapons/types/riven/mk_lunge.tres
-msgid "The third slash lunges farther"
-msgstr ""
-
 #: game/weapons/types/riven/mk_rate.tres
 msgid "More slashes per second"
+msgstr ""
+
+#: game/weapons/types/riven/mk_stagger.tres
+msgid "Stagger"
+msgstr ""
+
+#: game/weapons/types/riven/mk_stagger.tres
+msgid "Slashes stagger more"
 msgstr ""
 
 #: game/weapons/types/riven/riven.tres
@@ -1330,7 +1330,7 @@ msgid "Blade"
 msgstr ""
 
 #: game/weapons/types/riven/riven.tres
-msgid "Fast slashes. Every third one lunges forward."
+msgid "Fast slashes. Every third one hits hard."
 msgstr ""
 
 #: game/weapons/types/scald/mk_burn.tres

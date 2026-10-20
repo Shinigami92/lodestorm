@@ -336,14 +336,14 @@
       "variants": 2,
       "recordings": []
     },
+    "weapons/riven_finisher": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
     "weapons/riven_hit": {
       "made_by": "build.py",
       "variants": 3,
-      "recordings": []
-    },
-    "weapons/riven_lunge": {
-      "made_by": "build.py",
-      "variants": 2,
       "recordings": []
     },
     "weapons/riven_swing": {

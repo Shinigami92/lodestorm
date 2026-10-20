@@ -1,8 +1,7 @@
 class_name SuitDash
 extends Node
 ## The dash (a skill): a short burst along the direction the player moves (else where they aim),
-## then a cooldown. A weapon's lunge (Riven) moves the player the same way, without the skill or a
-## cooldown (`lunge`). The `holder` asks it for its velocity every physics step (`step`). Distance,
+## then a cooldown. The `holder` asks it for its velocity every physics step (`step`). Distance,
 ## time and cooldown are in `PlayerSettings`.
 
 ## Emitted when a dash starts.
@@ -34,17 +33,6 @@ func dash(direction: Vector3 = Vector3.ZERO) -> bool:
 	cooldown = settings.dash_cooldown
 	dashed.emit()
 	return true
-
-
-## Darts the holder `distance` m along `direction` (horizontal) within `seconds` (a weapon's
-## lunge): like a dash, but it needs no skill, doesn't wait for or start the cooldown and makes no
-## sound of its own.
-func lunge(direction: Vector3, distance: float, seconds: float) -> void:
-	if not holder or holder.dead or distance <= 0.0 or seconds <= 0.0:
-		return
-	direction.y = 0.0
-	_velocity = direction.normalized() * distance / seconds
-	_left = seconds
 
 
 ## Whether a dash is underway.

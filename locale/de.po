@@ -1315,25 +1315,25 @@ msgstr "Halten zum Laden. Voll geladen trifft es eine ganze Reihe."
 msgid "More damage per slash"
 msgstr "Mehr Schaden pro Hieb"
 
-#: game/weapons/types/riven/mk_lunge.tres
-msgid "Lunge"
-msgstr "Ausfall"
-
-#: game/weapons/types/riven/mk_lunge.tres
-msgid "The third slash lunges farther"
-msgstr "Der dritte Hieb stößt weiter vor"
-
 #: game/weapons/types/riven/mk_rate.tres
 msgid "More slashes per second"
 msgstr "Mehr Hiebe pro Sekunde"
+
+#: game/weapons/types/riven/mk_stagger.tres
+msgid "Stagger"
+msgstr "Wucht"
+
+#: game/weapons/types/riven/mk_stagger.tres
+msgid "Slashes stagger more"
+msgstr "Hiebe bringen mehr ins Taumeln"
 
 #: game/weapons/types/riven/riven.tres
 msgid "Blade"
 msgstr "Klinge"
 
 #: game/weapons/types/riven/riven.tres
-msgid "Fast slashes. Every third one lunges forward."
-msgstr "Schnelle Hiebe. Jeder dritte stößt nach vorn."
+msgid "Fast slashes. Every third one hits hard."
+msgstr "Schnelle Hiebe. Jeder dritte trifft hart."
 
 #: game/weapons/types/scald/mk_burn.tres
 msgid "Burn"

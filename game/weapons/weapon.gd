@@ -236,17 +236,6 @@ func chop(arc: float, duration: float) -> void:
 	_rest_after(model)
 
 
-## Pushes the model (`Model`) `length` m forward within `duration` seconds and back, a stand-in for
-## a thrust animation.
-func thrust(length: float, duration: float) -> void:
-	var model: Node3D = _start_motion()
-	if not model:
-		return
-	model.rotation = Vector3.ZERO
-	_sweep.tween_property(model, ^"position:z", -length, duration * 0.3)
-	_sweep.tween_property(model, ^"position:z", 0.0, duration * 0.7)
-
-
 ## The model, its motion under way stopped and a new one's tween started (`_sweep`); null without a
 ## model.
 func _start_motion() -> Node3D:
@@ -255,7 +244,6 @@ func _start_motion() -> Node3D:
 		return null
 	if _sweep:
 		_sweep.kill()
-	model.position.z = 0.0
 	_sweep = create_tween()
 	return model
 

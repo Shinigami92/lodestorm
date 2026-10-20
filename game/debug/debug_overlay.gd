@@ -389,10 +389,8 @@ const WEAPON_TUNING: Dictionary[String, Array] = {
 		["reach", 0.5, 6.0, 0.1],
 		["arc", 10.0, 360.0, 5.0],
 		["combo_gap", 0.1, 3.0, 0.05],
-		["lunge", 0.0, 8.0, 0.1],
-		["lunge_time", 0.05, 1.0, 0.01],
-		["lunge_width", 0.2, 3.0, 0.1],
-		["lunge_power", 1.0, 5.0, 0.1],
+		["finisher_power", 1.0, 5.0, 0.1],
+		["finisher_stagger", 1.0, 6.0, 0.1],
 	],
 	"ThrustDelivery":
 	[
@@ -407,6 +405,7 @@ const WEAPON_TUNING: Dictionary[String, Array] = {
 	"DrillTrigger":
 	[
 		["drilling_move_share", 0.0, 1.0, 0.05],
+		["spin_down", 0.0, 3.0, 0.05],
 	],
 }
 const PANEL_WIDTH: float = 460.0

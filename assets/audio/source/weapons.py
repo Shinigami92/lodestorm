@@ -1,4 +1,4 @@
-"""Recipes of the weapons' sounds: shots, Dray's swings, Riven's slashes and lunge, Auger's thrust
+"""Recipes of the weapons' sounds: shots, Dray's swings, Riven's slashes, Auger's thrust
 and drill, Jag's saw, Grindle's spin, Quill's charge, Pinner's battery, Tremor's and Wick's blasts
 and charges, Scald's flame, Kith's and Zenith's beams, overheating and venting, Fulgen's lightning,
 Nadir's wells, reloads and the timing window."""
@@ -337,9 +337,9 @@ def riven_swing(rng: random.Random, take: str, variant: int) -> Signal:
     return mix((swish, 1.0), (whistle, 0.08))
 
 
-@sound("weapons/riven_lunge", variants=2)
-def riven_lunge(rng: random.Random, take: str, variant: int) -> Signal:
-    """Riven's lunge: a quick rush of air rising into a sharp, ringing stab."""
+@sound("weapons/riven_finisher", variants=2)
+def riven_finisher(rng: random.Random, take: str, variant: int) -> Signal:
+    """Riven's third, heavy slash: a deeper rush of air and a sharp, ringing cut."""
     j = 0.06
     rush = whoosh(rng, 0.22, glide(500, 2600, 0.22), 1.6, 0.3)
     stab = burst(rng, 0.06, 0.0003, jitter(rng, 0.03, j), "highpass", jitter(rng, 3000, j))

@@ -9,8 +9,8 @@ extends Upgrade
 ## load, shots per battery), attacks per second (melee: swing speed), pellets per shot, a swing's
 ## arc, how quickly barrels spin up, a charge fills and a battery recharges, a blast's radius and
 ## how many charges can lie on the ground at once, how long a flame burns, how much a beam heals,
-## how far it reaches, how slowly heat builds, how many times lightning jumps on, how far a lunge
-## goes and how quickly a drill's damage rises.
+## how far it reaches, how slowly heat builds, how many times lightning jumps on, how much a hit
+## staggers and how quickly a drill's damage rises.
 enum Stat {
 	DAMAGE,
 	CAPACITY,
@@ -27,7 +27,7 @@ enum Stat {
 	RANGE,
 	COOLING,
 	JUMPS,
-	LUNGE,
+	STAGGER,
 	RAMP,
 }
 

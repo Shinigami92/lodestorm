@@ -93,19 +93,19 @@ mesh = SubResource("BoxMesh_edge")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.038, 0.01, -0.62)
 mesh = SubResource("BoxMesh_spine")
 
-[node name="DamagePips" type="Node3D" parent="."]
+[node name="DamagePips" type="Node3D" parent="Model"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.025, 0.014, -0.34)
 script = ExtResource("9_pips")
 pip_size = Vector3(0.024, 0.012, 0.024)
 spacing = 0.032
 
-[node name="RatePips" type="Node3D" parent="."]
+[node name="RatePips" type="Node3D" parent="Model"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.014, -0.5)
 script = ExtResource("9_pips")
 pip_size = Vector3(0.024, 0.012, 0.024)
 spacing = 0.032
 
-[node name="StaggerPips" type="Node3D" parent="."]
+[node name="StaggerPips" type="Node3D" parent="Model"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.025, 0.014, -0.34)
 script = ExtResource("9_pips")
 pip_size = Vector3(0.024, 0.012, 0.024)

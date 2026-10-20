@@ -6,14 +6,14 @@ extends WeaponDelivery
 ## trigger is held on (`DrillTrigger`), every attack drills into that one at `drill_rate`, each hit
 ## a share of a thrust's and harder the longer it stays on, up to `ramp` times after `ramp_time`
 ## seconds (quicker with the MK level of the weapon's ramp), so armor takes less off; the drill
-## lets go when its target dies or gets out of reach. The bit spins (`Weapon.wind`): up at once
-## with a thrust, then winding down, and while drilling the faster the more the drill ramped up.
+## lets go when its target dies or gets out of reach. The bit spins (`Weapon.wind`, see
+## `DrillTrigger`): full speed with a thrust, and while drilling the faster the more it ramped up.
 ## A thrust that hits plays `hit_sound`. All values TBD (playtest).
 
 ## How far to either side of an alien's center the line still hits it (its body, m).
 const BODY: float = 0.35
 ## How fast the bit spins while drilling, from no ramp to a full one (`Weapon.wind`).
-const DRILL_SPIN_MIN: float = 0.4
+const DRILL_SPIN_MIN: float = 0.5
 
 ## How far the thrust reaches, from the holder (horizontally, m).
 @export var reach: float = 4.0

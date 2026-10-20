@@ -106,7 +106,7 @@ func apply_upgrades(upgrades: Upgrades) -> void:
 	_multipliers.clear()
 	for part: WeaponPart in type.parts:
 		_multipliers[part.stat] = upgrades.multiplier(part)
-		var pips := get_node_or_null(NodePath(part.pips_name())) as MkPips
+		var pips: MkPips = get_pips(part)
 		if pips:
 			pips.show_level(upgrades.mk(part), part.max_mk())
 	if ammo:
@@ -188,6 +188,12 @@ func make_hit(direction: Vector3, point: Vector3) -> Hit:
 	for effect: WeaponEffect in type.effects:
 		effect.add_to(hit, self)
 	return hit
+
+
+## The pips showing the MK level of `part` (named after its stat, anywhere in the scene: on the
+## `Model` when they move with it), or null.
+func get_pips(part: WeaponPart) -> MkPips:
+	return find_child(String(part.pips_name()), true, false) as MkPips
 
 
 ## Where projectiles leave it.

@@ -90,6 +90,16 @@ func test_auger_thrust_pierces_a_line_up_to_its_reach() -> void:
 	assert_eq(auger.wind, 0.0, "and spins down")
 
 
+func test_auger_bit_spins_while_the_button_is_held() -> void:
+	var auger: Weapon = await _drawn(AUGER)
+	Input.action_press(&"attack")
+	await wait_seconds(DRILL.spin_down + 0.2)
+	assert_almost_eq(auger.wind, DRILL.idle_spin, 0.01, "spinning with nothing to drill")
+	Input.action_release(&"attack")
+	await wait_seconds(DRILL.spin_down + 0.1)
+	assert_eq(auger.wind, 0.0, "still once let go")
+
+
 func test_auger_thrust_stops_at_rock() -> void:
 	await _drawn(AUGER)
 	var sheltered := _add_alien(Vector3(0.0, 0.0, -3.0))

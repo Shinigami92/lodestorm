@@ -13,6 +13,9 @@ const MIN_MOUSE_AIM_DISTANCE: float = 0.1
 ## The cursor ray looks for the ground from this high above the holder's feet (m), so ceilings and
 ## the deck above (inside the ship) don't catch it.
 const CURSOR_CEILING: float = 3.0
+## The cursor ray passes through anything steeper than this (the up part of its normal): walls,
+## also the ship's walls cut away for the camera, and rock faces, so it finds the ground or a top.
+const CURSOR_MIN_NORMAL_Y: float = 0.5
 
 ## The player aiming.
 var holder: Player
@@ -20,6 +23,13 @@ var holder: Player
 var direction: Vector3 = Vector3.FORWARD
 ## The alien or the `Destructible` locked on, or null.
 var target: Node3D
+## The spot the mouse cursor points at on the ground (or the one locked on stands at): a lobbed
+## shot lands there (see `LobDelivery`). `Vector3.INF` while it aims by a direction only (the
+## stick, the movement, a VR hand).
+var ground_point: Vector3 = Vector3.INF
+## The spot on the ground (or a top) right under the mouse cursor, also while something is locked
+## on (`AimReticle` shows it), or `Vector3.INF` without one.
+var cursor_point: Vector3 = Vector3.INF
 
 ## Whether the mouse was used for aiming more recently than the right stick.
 var _with_mouse: bool = false
@@ -34,6 +44,8 @@ func _unhandled_input(event: InputEvent) -> void:
 ## movement direction (`move`, camera-relative).
 func update(camera: Camera3D, camera_basis: Basis, move: Vector3) -> void:
 	var stick: Vector2 = Input.get_vector(&"aim_left", &"aim_right", &"aim_forward", &"aim_back")
+	ground_point = Vector3.INF
+	cursor_point = Vector3.INF
 	if stick != Vector2.ZERO:
 		_with_mouse = false
 		with_stick(IsoInput.camera_relative(stick, camera_basis))
@@ -56,9 +68,19 @@ func at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
 	target = _near_screen_position(camera, screen_position, _aliens())
 	if not target:
 		target = _near_screen_position(camera, screen_position, _destructibles())
-	if target:
-		towards(target.global_position)
-		return
+	cursor_point = _under_cursor(camera, screen_position)
+	ground_point = target.global_position if target else cursor_point
+	if ground_point.is_finite():
+		towards(ground_point)
+
+
+## Whether the mouse aims (it moved more recently than the right stick was used).
+func aims_with_mouse() -> bool:
+	return _with_mouse
+
+
+## The ground (or a top) under `screen_position`, or `Vector3.INF` when the cursor points at none.
+func _under_cursor(camera: Camera3D, screen_position: Vector2) -> Vector3:
 	var from: Vector3 = holder.global_position
 	var origin: Vector3 = camera.project_ray_origin(screen_position)
 	var normal: Vector3 = camera.project_ray_normal(screen_position)
@@ -66,16 +88,28 @@ func at_screen_position(camera: Camera3D, screen_position: Vector2) -> void:
 	# The ground under the cursor, also on a slope or hill (below the ceiling height).
 	var ceiling: Variant = Plane(Vector3.UP, from.y + CURSOR_CEILING).intersects_ray(origin, normal)
 	if ceiling != null:
-		var start: Vector3 = ceiling
-		var query := PhysicsRayQueryParameters3D.create(
-			start, origin + normal * 1000.0, PhysicsLayers.SHOTS
-		)
+		var ground: Variant = _ground_along(ceiling as Vector3, origin + normal * 1000.0)
+		if ground != null:
+			hit = ground
+	return hit as Vector3 if hit != null else Vector3.INF
+
+
+## The first ground or top along the ray from `start` to `end` (passing through walls and rock
+## faces), or null.
+func _ground_along(start: Vector3, end: Vector3) -> Variant:
+	var space: PhysicsDirectSpaceState3D = holder.get_world_3d().direct_space_state
+	var along: Vector3 = start.direction_to(end)
+	for _i: int in 8:
+		var query := PhysicsRayQueryParameters3D.create(start, end, PhysicsLayers.SHOTS)
 		query.exclude = [holder.get_rid()]
-		var ground: Dictionary = holder.get_world_3d().direct_space_state.intersect_ray(query)
-		if not ground.is_empty():
-			hit = ground[&"position"]
-	if hit != null:
-		towards(hit as Vector3)
+		var result: Dictionary = space.intersect_ray(query)
+		if result.is_empty():
+			return null
+		var at: Vector3 = result[&"position"]
+		if (result[&"normal"] as Vector3).y >= CURSOR_MIN_NORMAL_Y:
+			return at
+		start = at + along * 0.05
+	return null
 
 
 ## Aims along `along` (horizontal) and locks on the nearest alien close to it, or else the

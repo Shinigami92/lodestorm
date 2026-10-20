@@ -311,6 +311,23 @@ const WEAPON_TUNING: Dictionary[String, Array] = {
 		["pellets", 1.0, 20.0, 1.0],
 		["spread", 0.0, 90.0, 1.0],
 	],
+	"LobDelivery":
+	[
+		["reach", 2.0, 40.0, 0.5],
+		["stick_reach", 2.0, 40.0, 0.5],
+		["speed", 2.0, 40.0, 0.5],
+		["arc_per_meter", 0.0, 1.5, 0.05],
+		["blast_radius", 0.5, 10.0, 0.1],
+	],
+	"ChargeDelivery":
+	[
+		["reach", 1.0, 20.0, 0.5],
+		["blast_radius", 0.5, 10.0, 0.1],
+		["charges", 1.0, 12.0, 1.0],
+		["trigger_radius", 0.5, 6.0, 0.1],
+		["arm_time", 0.0, 5.0, 0.1],
+		["trip_time", 0.0, 2.0, 0.05],
+	],
 	"SwingDelivery":
 	[
 		["reach", 0.5, 6.0, 0.1],

@@ -6,6 +6,8 @@ const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 const QUILL: WeaponType = preload("res://game/weapons/types/quill/quill.tres")
+const PINNER: WeaponType = preload("res://game/weapons/types/pinner/pinner.tres")
+const TREMOR: WeaponType = preload("res://game/weapons/types/tremor/tremor.tres")
 
 var _map: Node3D
 var _player: Player
@@ -55,9 +57,9 @@ func test_locker_moves_over_the_wall_as_a_grid() -> void:
 	_send(&"ui_right")
 	assert_eq(locker.selected, locker.get_part(QUILL), "the end of the row")
 	_send(&"ui_down")
-	assert_eq(locker.selected, locker.get_part(DRAY), "the next row")
+	assert_eq(locker.selected, locker.get_part(TREMOR), "the nearest in the next row")
 	_send(&"ui_up")
-	assert_eq(locker.selected, locker.get_part(HARL), "the nearest above")
+	assert_eq(locker.selected, locker.get_part(PINNER), "the nearest above")
 	_send(&"ui_up")
 	assert_eq(locker.selected, locker.get_cradle_part(1), "up from the top row into the cradles")
 

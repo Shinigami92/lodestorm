@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://d0bihonjybcji"]
+
+[ext_resource type="Script" uid="uid://354bspeu4owh" path="res://game/weapons/lobbed_shot.gd" id="1_script"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shell"]
+albedo_color = Color(1, 0.5, 0.18, 1)
+emission_enabled = true
+emission = Color(1, 0.5, 0.18, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_shell"]
+material = SubResource("StandardMaterial3D_shell")
+radius = 0.12
+height = 0.24
+radial_segments = 12
+rings = 6
+
+[node name="Shell" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_shell")

@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3 uid="uid://b8wnogq750s5g"]
+
+[ext_resource type="Script" uid="uid://wudjx3g6hsbf" path="res://game/weapons/weapon_type.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://djssm0jfxc1pt" path="res://game/weapons/types/wick/wick.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://cxtj2jk2aoera" path="res://game/weapons/types/wick/delivery.tres" id="3_delivery"]
+[ext_resource type="Script" uid="uid://0l72pws3tgha" path="res://game/weapons/effects/weapon_effect.gd" id="4_effect"]
+[ext_resource type="Resource" uid="uid://y120rbgltwko" path="res://game/weapons/types/wick/damage.tres" id="5_damage"]
+[ext_resource type="Script" uid="uid://dhdqw1mpkxnpa" path="res://game/weapons/weapon_part.gd" id="6_part"]
+[ext_resource type="Resource" uid="uid://3w2ivn1hc4gk" path="res://assets/audio/sfx/weapons/wick_toss.tres" id="7_sound"]
+[ext_resource type="Resource" uid="uid://dc88hkjkjykl3" path="res://game/weapons/types/wick/feed.tres" id="8_feed"]
+[ext_resource type="Resource" uid="uid://dwibgopvbchxl" path="res://game/weapons/types/wick/trigger.tres" id="9_trigger"]
+[ext_resource type="Resource" uid="uid://de5uk35txwqyt" path="res://game/weapons/types/wick/mk_damage.tres" id="mk_damage"]
+[ext_resource type="Resource" uid="uid://djfy7cbga0lps" path="res://game/weapons/types/wick/mk_magazine.tres" id="mk_magazine"]
+[ext_resource type="Resource" uid="uid://bfsbk383km10u" path="res://game/weapons/types/wick/mk_charges.tres" id="mk_charges"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Wick"
+class_word = "Charge layer"
+description = "Tosses charges that blast when aliens come close."
+origin = 1
+scene = ExtResource("2_scene")
+attack_rate = 2
+draw_time = 0.4
+feed = ExtResource("8_feed")
+trigger = ExtResource("9_trigger")
+delivery = ExtResource("3_delivery")
+effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
+parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_magazine"), ExtResource("mk_charges")])
+build_cost = Dictionary[ExtResource("ore_type"), int]({
+ExtResource("ore_kyrite"): 260, ExtResource("ore_emerin"): 100
+})
+attack_sound = ExtResource("7_sound")

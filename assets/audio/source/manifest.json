@@ -201,6 +201,11 @@
       "variants": 6,
       "recordings": []
     },
+    "weapons/blast": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
     "weapons/brask_shot": {
       "made_by": "build.py",
       "variants": 4,
@@ -282,6 +287,26 @@
       "recordings": []
     },
     "weapons/timed_miss": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/tremor_shot": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/wick_armed": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/wick_toss": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/wick_tripped": {
       "made_by": "build.py",
       "variants": 1,
       "recordings": []

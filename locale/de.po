@@ -1008,6 +1008,8 @@ msgstr "Ein Fächer aus Schrot, stark auf kurze Distanz."
 #: game/weapons/types/harl/mk_damage.tres
 #: game/weapons/types/pinner/mk_damage.tres
 #: game/weapons/types/quill/mk_damage.tres
+#: game/weapons/types/tremor/mk_damage.tres
+#: game/weapons/types/wick/mk_damage.tres
 msgid "Damage"
 msgstr "Schaden"
 
@@ -1100,11 +1102,14 @@ msgstr "Schnelle Schüsse mit großer Reichweite."
 
 #: game/weapons/types/harl/mk_magazine.tres
 #: game/weapons/types/quill/mk_magazine.tres
+#: game/weapons/types/tremor/mk_magazine.tres
+#: game/weapons/types/wick/mk_magazine.tres
 msgid "Magazine"
 msgstr "Magazin"
 
 #: game/weapons/types/harl/mk_magazine.tres
 #: game/weapons/types/quill/mk_magazine.tres
+#: game/weapons/types/tremor/mk_magazine.tres
 msgid "More rounds per magazine"
 msgstr "Mehr Schuss pro Magazin"
 
@@ -1155,6 +1160,47 @@ msgstr "Schienengewehr"
 #: game/weapons/types/quill/quill.tres
 msgid "Hold to charge. A full charge pierces a line."
 msgstr "Halten zum Laden. Voll geladen trifft es eine ganze Reihe."
+
+#: game/weapons/types/tremor/mk_blast.tres
+msgid "Blast"
+msgstr "Sprengradius"
+
+#: game/weapons/types/tremor/mk_blast.tres
+msgid "A wider blast"
+msgstr "Ein größerer Sprengradius"
+
+#: game/weapons/types/tremor/mk_damage.tres
+#: game/weapons/types/wick/mk_damage.tres
+msgid "More damage per blast"
+msgstr "Mehr Schaden pro Explosion"
+
+#: game/weapons/types/tremor/tremor.tres
+msgid "Seismic launcher"
+msgstr "Seismikwerfer"
+
+#: game/weapons/types/tremor/tremor.tres
+msgid "Lobs shells over cover. They blast where they land."
+msgstr "Wirft Granaten über Deckung. Sie explodieren beim Aufschlag."
+
+#: game/weapons/types/wick/mk_charges.tres
+msgid "Charges"
+msgstr "Ladungen"
+
+#: game/weapons/types/wick/mk_charges.tres
+msgid "More charges out at once"
+msgstr "Mehr Ladungen gleichzeitig ausgelegt"
+
+#: game/weapons/types/wick/mk_magazine.tres
+msgid "More charges per magazine"
+msgstr "Mehr Ladungen pro Magazin"
+
+#: game/weapons/types/wick/wick.tres
+msgid "Charge layer"
+msgstr "Ladungsleger"
+
+#: game/weapons/types/wick/wick.tres
+msgid "Tosses charges that blast when aliens come close."
+msgstr "Wirft Ladungen, die explodieren, wenn Aliens nahe kommen."
 
 #: game/world/celestial_body.gd
 msgid "Moon"

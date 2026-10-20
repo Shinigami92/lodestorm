@@ -1,5 +1,5 @@
 """Recipes of the weapons' sounds: shots, Dray's swings, Grindle's spin, Quill's charge,
-Pinner's battery, reloads and the timing window."""
+Pinner's battery, Tremor's and Wick's blasts and charges, reloads and the timing window."""
 
 import random
 
@@ -8,6 +8,7 @@ from synth import (
     bandpass,
     burst,
     click,
+    crackle,
     env,
     glide,
     highpass,
@@ -121,6 +122,59 @@ def quill_full(rng: random.Random, take: str, variant: int) -> Signal:
     """Quill's charge full: a bright, short ping that cuts through the hum."""
     ping = modes(rng, [(2640, 0.25, 1.0), (5280, 0.12, 0.3), (7920, 0.06, 0.1)], 0.3)
     return mix((ping, 1.0), (click(rng, 6000, 3, 0.004), 0.3))
+
+
+@sound("weapons/tremor_shot", variants=3)
+def tremor_shot(rng: random.Random, take: str, variant: int) -> Signal:
+    """Tremor, the seismic launcher: a hollow, deep thunk out of the tube, then a short hiss."""
+    j = 0.07
+    thunk = thump(jitter(rng, 120, j), jitter(rng, 55, j), 0.02, jitter(rng, 0.12, j), 0.2)
+    pop = burst(rng, 0.1, 0.0005, jitter(rng, 0.05, j), "bandpass", jitter(rng, 500, j), 1.4)
+    hollow = shape(bandpass(noise(rng, 0.18), jitter(rng, 260, j), 6.0), env(0.18, 0.002, 0.12))
+    hiss = burst(rng, 0.35, 0.01, jitter(rng, 0.25, j), "highpass", glide(3000, 1800, 0.3))
+    return saturate(mix((thunk, 1.0), (pop, 0.7), (hollow, 0.5), (hiss, 0.2, 0.02)), 1.5)
+
+
+@sound("weapons/blast", variants=3)
+def blast(rng: random.Random, take: str, variant: int) -> Signal:
+    """A blast (Tremor's shells, Wick's charges): a hard crack, a deep boom, and rock and grit
+    raining down."""
+    j = 0.08
+    crack = burst(rng, 0.06, 0.0002, jitter(rng, 0.03, j), "highpass", jitter(rng, 1800, j))
+    boom = thump(jitter(rng, 75, j), 28, 0.04, jitter(rng, 0.55, j), 0.9)
+    roar = burst(rng, 0.9, 0.003, jitter(rng, 0.6, j), "lowpass", glide(2600, 300, 0.7))
+    grit = shape(highpass(crackle(rng, 0.9, 500), 1800), env(0.9, 0.08, 0.7))
+    return saturate(mix((crack, 0.7), (boom, 1.0), (roar, 0.8), (grit, 0.25, 0.08)), 2.2)
+
+
+@sound("weapons/wick_toss", variants=2)
+def wick_toss(rng: random.Random, take: str, variant: int) -> Signal:
+    """Wick tossing a charge: a spring's soft clack and a short swish."""
+    j = 0.08
+    clack = modes(rng, [(jitter(rng, 1900, j), 0.03, 1.0), (jitter(rng, 3100, j), 0.02, 0.5)], 0.05)
+    spring = shape(tone(glide(jitter(rng, 700, j), 400, 0.06), 0.08, "triangle"), env(0.08, 0.002, 0.06))
+    swish = whoosh(rng, 0.22, glide(1500, 2600, 0.2), 1.2)
+    return mix((clack, 0.8), (spring, 0.3), (swish, 0.5, 0.02), (click(rng, 2500, 3, 0.01), 0.4))
+
+
+@sound("weapons/wick_armed")
+def wick_armed(rng: random.Random, take: str, variant: int) -> Signal:
+    """A charge armed: two short, low beeps."""
+
+    def beep(freq: float) -> Signal:
+        return shape(mix((tone(freq, 0.06, "square"), 0.5), (tone(freq, 0.06), 1.0)), env(0.06, 0.002, 0.05))
+
+    return lowpass(mix((beep(880), 0.6), (beep(880), 0.6, 0.1)), 3500)
+
+
+@sound("weapons/wick_tripped")
+def wick_tripped(rng: random.Random, take: str, variant: int) -> Signal:
+    """A charge tripped (0.35 s until it blasts): fast rising beeps."""
+
+    def beep(freq: float) -> Signal:
+        return shape(mix((tone(freq, 0.04, "square"), 0.5), (tone(freq, 0.04), 1.0)), env(0.04, 0.001, 0.035))
+
+    return lowpass(mix(*((beep(1000 + 220 * i), 0.6, 0.065 * i) for i in range(5))), 4500)
 
 
 @sound("weapons/dray_swing", variants=3, seed="weapons/hammer_swing")

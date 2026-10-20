@@ -70,11 +70,14 @@ light_energy = 0.5
 omni_range = 3.0
 
 [node name="Rack" type="Node3D" parent="." node_paths=PackedStringArray("panel")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -1.25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, -1.25)
 script = ExtResource("6_rack")
 weapons = ExtResource("2_weapons")
 spacing = 1.3
-row_spacing = 0.5
+row_spacing = 0.45
+label_space = 0.2
+columns = 3
+grow_up = true
 margin = 0.15
 panel = NodePath("Panel")
 

@@ -93,6 +93,14 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 					card.show_upgrade(upgrade, mk, hold, true, false, false, mk)
 					await wait_process_frames(1)
 					_assert_fits(card, layout, label + " at the ship's reach")
+			# A weapon selected on the workbench's rack.
+			for weapon_type: WeaponType in ALL_WEAPONS.weapons:
+				for owned: bool in [true, false]:
+					card.show_pick(weapon_type, owned)
+					await wait_process_frames(1)
+					_assert_fits(
+						card, layout, "%s %s on the rack" % [locale, weapon_type.display_name]
+					)
 		viewport.queue_free()
 
 

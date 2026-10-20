@@ -3,10 +3,11 @@ extends Node3D
 ## Every weapon of the game (`weapons`) hanging in rows by origin: the colony's arms on top, then
 ## the converted mining tools, then the expedition's prototypes, each in the order `weapons` lists
 ## them and named above its start. An origin without weapons gets no row, and the rows grow with
-## the weapons, so it holds any number. The armory's weapon wall and the weapons room's rack are
-## one. The weapons are parts for the station using it (`StationPart.item` the `WeaponType`),
-## their barrels along +X, the rows centered on its origin and going down from it; `panel` (and
-## `collision`) are resized to cover them.
+## the weapons, so it holds any number; a row longer than `columns` wraps onto more lines. The
+## armory's weapon wall and the weapons room's rack are one. The weapons are parts for the station
+## using it (`StationPart.item` the `WeaponType`), their barrels along +X, the lines centered on its
+## origin and going down from it; `panel` (and `collision`) are resized to cover them. `neighbor`
+## and `row_start` move a keyboard or gamepad highlight over them as a grid.
 
 ## The rows' names, light like the room signs (amber is for what can be used).
 const LABEL_COLOR := Color(0.75, 0.8, 0.85)
@@ -16,6 +17,13 @@ const LABEL_COLOR := Color(0.75, 0.8, 0.85)
 ## Distance between the weapons in a row, and between the rows, in m.
 @export var spacing: float = 1.0
 @export var row_spacing: float = 0.6
+## Extra room above each row for its name, in m (tight lines need it).
+@export var label_space: float = 0.0
+## At most this many weapons per line; a longer row wraps onto the next line (0: no limit).
+@export var columns: int = 0
+## Whether its bottom line is at its origin and more lines push the top up (else the top line is
+## at its origin and they go down), e.g. a rack above a bench.
+@export var grow_up: bool = false
 ## Where the holo card floats next to a selected weapon (see `StationPart.card_offset`).
 @export var card_offset: Vector2 = Vector2(1.1, 0.1)
 ## A box behind the weapons and a box shape around them, resized to cover them with `margin`
@@ -32,8 +40,13 @@ var _displays: Array[Weapon] = []
 ## The origin of each row, top to bottom, and its name.
 var _row_origins: Array[WeaponType.Origin] = []
 var _labels: Array[Label3D] = []
+## The parts on each line, top to bottom, and the row each line belongs to.
+var _lines: Array[Array] = []
+var _line_rows: Array[int] = []
 ## The top edge of the weapons and their names with `margin`, from its origin, in m.
 var _top: float = 0.0
+## Half its width with `margin`, in m (its lines are centered on its origin).
+var _half_width: float = 0.0
 
 
 func _ready() -> void:
@@ -92,6 +105,78 @@ func get_top() -> float:
 	return _top
 
 
+## The line `part` hangs on (0: the top one), or -1.
+func get_line(part: StationPart) -> int:
+	for line: int in _lines.size():
+		if part in _lines[line]:
+			return line
+	return -1
+
+
+## The visible part next to `part` in `direction` (on screen: up is -Y): left and right along its
+## line, up and down the nearest one on the line above or below; null at the edge.
+func neighbor(part: StationPart, direction: Vector2) -> StationPart:
+	var line: int = get_line(part)
+	if line < 0:
+		return null
+	if absf(direction.x) > absf(direction.y):
+		var on_line: Array = _lines[line]
+		var step_by: int = 1 if direction.x > 0.0 else -1
+		var i: int = on_line.find(part) + step_by
+		while i >= 0 and i < on_line.size():
+			if (on_line[i] as StationPart).visible:
+				return on_line[i] as StationPart
+			i += step_by
+		return null
+	var line_step: int = 1 if direction.y > 0.0 else -1
+	var next: int = line + line_step
+	while next >= 0 and next < _lines.size():
+		var nearest: StationPart = nearest_on_line(next, part.position.x)
+		if nearest:
+			return nearest
+		next += line_step
+	return null
+
+
+## The visible part on `line` nearest to `x` (along the lines), or null.
+func nearest_on_line(line: int, x: float) -> StationPart:
+	var nearest: StationPart = null
+	for candidate: StationPart in _lines[line]:
+		if not candidate.visible:
+			continue
+		if not nearest or absf(candidate.position.x - x) < absf(nearest.position.x - x):
+			nearest = candidate
+	return nearest
+
+
+## How many lines it has.
+func get_line_count() -> int:
+	return _lines.size()
+
+
+## The first visible part of the row `step_by` rows from `part`'s (wrapping around; `part` null:
+## from before the first row), or null.
+func row_start(part: StationPart, step_by: int) -> StationPart:
+	if _row_origins.is_empty():
+		return null
+	var line: int = get_line(part) if part else -1
+	var row: int = _line_rows[line] if line >= 0 else (-1 if step_by > 0 else 0)
+	for attempt: int in _row_origins.size():
+		row = posmod(row + step_by, _row_origins.size())
+		for first: int in _lines.size():
+			if _line_rows[first] != row:
+				continue
+			for candidate: StationPart in _lines[first]:
+				if candidate.visible:
+					return candidate
+	return null
+
+
+## Half its width with `margin` (the panel's), in m: its lines are centered on its origin.
+func get_half_width() -> float:
+	return _half_width
+
+
 ## The display of `weapon_type` hanging on it, or null.
 func get_display(weapon_type: WeaponType) -> Weapon:
 	var index: int = get_order().find(weapon_type)
@@ -117,6 +202,8 @@ func build() -> void:
 	_displays.clear()
 	_labels.clear()
 	_row_origins.clear()
+	_lines.clear()
+	_line_rows.clear()
 	if not weapons:
 		return
 	var rows: Array[Array] = []
@@ -131,15 +218,30 @@ func build() -> void:
 	var longest: int = 0
 	for row: Array in rows:
 		longest = maxi(longest, row.size())
+	if columns > 0:
+		longest = mini(longest, columns)
 	var start_x: float = -(longest - 1) * spacing * 0.5
+	var line_count: int = 0
+	for row: Array in rows:
+		line_count += ceili(float(row.size()) / longest)
+	var height: float = (line_count - 1) * row_spacing + (rows.size() - 1) * label_space
+	var lift: float = height if grow_up else 0.0
 	for r: int in rows.size():
-		var y: float = -r * row_spacing
+		var y: float = lift - _lines.size() * row_spacing - r * label_space
 		for i: int in rows[r].size():
-			_hang(rows[r][i] as WeaponType, Vector3(start_x + i * spacing, y, 0.0))
+			var column: int = i % longest
+			if column == 0:
+				_lines.append([])
+				_line_rows.append(r)
+			var line_y: float = lift - (_lines.size() - 1) * row_spacing - r * label_space
+			_lines[-1].append(
+				_hang(rows[r][i] as WeaponType, Vector3(start_x + column * spacing, line_y, 0.0))
+			)
 		var label := Label3D.new()
 		label.name = "Row%d" % (r + 1)
 		label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-		label.position = Vector3(start_x - spacing * 0.45, y + row_spacing * 0.4, 0.02)
+		var label_y: float = y + row_spacing * 0.4 + label_space * 0.6
+		label.position = Vector3(start_x - spacing * 0.45, label_y, 0.02)
 		label.pixel_size = 0.0025
 		label.font_size = 40
 		label.outline_size = 8
@@ -149,10 +251,10 @@ func build() -> void:
 		add_child(label)
 		_labels.append(label)
 	_name_rows()
-	_fit(longest, rows.size())
+	_fit(longest, height, lift)
 
 
-func _hang(weapon_type: WeaponType, at: Vector3) -> void:
+func _hang(weapon_type: WeaponType, at: Vector3) -> StationPart:
 	var part := StationPart.new()
 	var file_name: String = weapon_type.resource_path.get_file().get_basename().capitalize()
 	part.name = file_name if not file_name.is_empty() else "Weapon%d" % (_parts.size() + 1)
@@ -169,6 +271,7 @@ func _hang(weapon_type: WeaponType, at: Vector3) -> void:
 	WeaponDisplay.center(display)
 	_parts.append(part)
 	_displays.append(display)
+	return part
 
 
 func _name_rows() -> void:
@@ -176,12 +279,14 @@ func _name_rows() -> void:
 		_labels[r].text = origin_name(_row_origins[r])
 
 
-## Resizes `panel` and `collision` to cover `columns` weapons in `rows` rows and their names.
-func _fit(columns: int, rows: int) -> void:
-	var width: float = maxi(columns, 1) * spacing + margin * 2.0
-	var top: float = row_spacing * 0.55 + margin
+## Resizes `panel` and `collision` to cover `across` weapons on lines `height` from the top one to
+## the bottom one and their names, the top line `lift` above its origin.
+func _fit(across: int, height: float, lift: float) -> void:
+	var width: float = maxi(across, 1) * spacing + margin * 2.0
+	_half_width = width * 0.5
+	var top: float = lift + row_spacing * 0.55 + label_space * 0.6 + margin
 	_top = top
-	var bottom: float = -(maxi(rows, 1) - 1) * row_spacing - row_spacing * 0.5 - margin
+	var bottom: float = lift - height - row_spacing * 0.5 - margin
 	if panel_to_floor:
 		bottom = -position.y
 	if panel and panel.mesh is BoxMesh:

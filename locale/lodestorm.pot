@@ -876,6 +876,10 @@ msgstr ""
 msgid "Build"
 msgstr ""
 
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Lay on the bench"
+msgstr ""
+
 #: game/stations/weapon_rack.gd
 msgid "Converted mining tools"
 msgstr ""

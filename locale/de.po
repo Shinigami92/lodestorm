@@ -878,6 +878,10 @@ msgstr "Zum Bauen fehlt noch der Bauplan."
 msgid "Build"
 msgstr "Bauen"
 
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Lay on the bench"
+msgstr "Auf die Werkbank legen"
+
 #: game/stations/weapon_rack.gd
 msgid "Converted mining tools"
 msgstr "Umgebaute Bergbaugeräte"

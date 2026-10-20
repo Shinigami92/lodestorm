@@ -38,16 +38,46 @@ func test_locker_assigns_slots() -> void:
 	assert_eq(_player.loadout.get_weapon(1), DRAY, "the card's slot buttons")
 
 
-func test_locker_tabs_between_slots() -> void:
+func test_locker_moves_over_the_wall_as_a_grid() -> void:
+	var locker: LoadoutStation = await _open_locker()
+	assert_eq(locker.selected, locker.get_cradle_part(0))
+	_send(&"ui_down")
+	assert_eq(locker.selected, locker.get_cradle_part(1))
+	assert_eq(locker.selected_slot, 1, "a cradle selects its slot")
+	_send(&"ui_down")
+	assert_eq(locker.selected, locker.get_part(HARL), "the wall's first weapon")
+	_send(&"ui_right")
+	assert_eq(locker.selected, locker.get_part(BRASK))
+	_send(&"ui_right")
+	assert_eq(locker.selected, locker.get_part(BRASK), "the end of the row")
+	_send(&"ui_down")
+	assert_eq(locker.selected, locker.get_part(DRAY), "the next row")
+	_send(&"ui_up")
+	assert_eq(locker.selected, locker.get_part(HARL), "the nearest above")
+	_send(&"ui_up")
+	assert_eq(locker.selected, locker.get_cradle_part(1), "up from the top row into the cradles")
+
+
+func test_locker_tabs_between_rows() -> void:
 	var locker: LoadoutStation = await _open_locker()
 	_send(&"tab_next")
-	assert_eq(locker.selected_slot, 1)
+	assert_eq(locker.selected, locker.get_part(HARL), "the first row")
 	_send(&"tab_next")
-	assert_eq(locker.selected_slot, 0, "wraps around")
-	_select(locker, HARL)
+	assert_eq(locker.selected, locker.get_part(DRAY), "the next row")
 	_send(&"tab_next")
+	assert_eq(locker.selected, locker.get_part(HARL), "wraps around")
+	_send(&"tab_prev")
+	assert_eq(locker.selected, locker.get_part(DRAY))
+
+
+func test_an_empty_slot_is_filled_next() -> void:
+	var locker: LoadoutStation = await _open_locker()
+	_player.arsenal.unlock(BRASK)
+	assert_true(locker.toggle(DRAY, 1))
+	assert_eq(locker.selected_slot, 1, "the empty slot")
+	_select(locker, BRASK)
 	_send(&"interact")
-	assert_eq(_player.loadout.weapons, [DRAY, HARL] as Array[WeaponType])
+	assert_eq(_player.loadout.weapons, [HARL, BRASK] as Array[WeaponType])
 
 
 func test_locker_lays_the_loadout_in_its_cradles() -> void:

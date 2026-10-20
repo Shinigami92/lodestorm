@@ -7,7 +7,13 @@ extends UpgradeStation
 ## meanwhile), where its parts are the upgrades, each at its pips (see `WeaponPart`). A weapon the
 ## player doesn't own is itself a part on the bench (`StationPart.item` the `WeaponType`): with its
 ## blueprint, the card builds it for its ore from the hold (`build`). The rack grows with the
-## weapons, and the camera follows the bench weapon's place on it.
+## weapons, and the camera follows the bench weapon's place on it. Keyboard and gamepad: up from
+## the bench's top part goes onto the rack, where the highlight moves as on a grid (its card says
+## "Lay on the bench", beside the rack so it hides no weapon) and down from its bottom line back to
+## the bench; `tab_prev`/`tab_next` lay the first weapon of the previous or next row on the bench.
+
+## Between the rack's side edge and the card beside it, in m.
+const RACK_CARD_GAP: float = 0.15
 
 ## Where the holo card floats next to the bench's parts (see `StationPart.card_offset`).
 const BENCH_CARD_OFFSET := Vector2(1.5, -0.1)
@@ -60,9 +66,11 @@ func get_rack_parts() -> Array[StationPart]:
 	return _rack.get_parts()
 
 
-## The bench, shifted halfway towards the bench weapon's empty place on the rack, so the camera
-## follows along a long rack.
+## A weapon selected on the rack and its card beside the rack; else the bench, shifted halfway
+## along the rack towards the bench weapon's empty place on it, so the camera follows a long rack.
 func get_view_center() -> Vector3:
+	if _rack.get_parts().has(selected):
+		return (selected.global_position + _beside_rack()) * 0.5
 	var center: Vector3 = super()
 	var slot: StationPart = _rack.get_part(bench_weapon)
 	if slot:
@@ -160,11 +168,45 @@ func lay_on_bench(weapon_type: WeaponType) -> void:
 		select(parts[0] if not parts.is_empty() else null)
 
 
+## `tab_prev`/`tab_next`: lays the first weapon of the previous or next row on the bench.
 func _cycle(step_by: int) -> void:
-	var order: Array[WeaponType] = _rack.get_order()
-	if order.is_empty():
-		return
-	lay_on_bench(order[posmod(order.find(bench_weapon) + step_by, order.size())])
+	var start: StationPart = _rack.row_start(_rack.get_part(bench_weapon), step_by)
+	if start:
+		lay_on_bench(start.item as WeaponType)
+
+
+## On the rack the highlight moves as on a grid, down from its bottom line back to the bench; up
+## from the bench's top part it goes onto the rack, above the bench weapon's place.
+func _neighbor(part: StationPart, direction: Vector2) -> StationPart:
+	var up: bool = direction.y < -absf(direction.x)
+	var down: bool = direction.y > absf(direction.x)
+	if part in _rack.get_parts():
+		var on_rack: StationPart = _rack.neighbor(part, direction)
+		if not on_rack and down and not get_parts().is_empty():
+			return get_parts()[0]
+		return on_rack
+	var on_bench: StationPart = super(part, direction)
+	if on_bench or not up:
+		return on_bench
+	var slot: StationPart = _rack.get_part(bench_weapon)
+	var x: float = slot.position.x if slot else 0.0
+	for line: int in range(_rack.get_line_count() - 1, -1, -1):
+		var entry: StationPart = _rack.nearest_on_line(line, x)
+		if entry:
+			return entry
+	return null
+
+
+## Beside the rack (at the selected weapon's height) for a weapon on it, so the card hides none.
+func _card_position(camera: Camera3D) -> Vector3:
+	return _beside_rack() if _rack.get_parts().has(selected) else super(camera)
+
+
+## Where the card floats for the weapon selected on the rack: right of the rack, at its height.
+func _beside_rack() -> Vector3:
+	var at: Vector3 = _rack.to_local(selected.global_position)
+	at.x = _rack.get_half_width() + RACK_CARD_GAP + card.size.x * 0.5 * _card_scale()
+	return _rack.to_global(at)
 
 
 func _picked(part: StationPart) -> void:

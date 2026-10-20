@@ -4,11 +4,13 @@ extends Station
 ## It has two cradles, slots 1 and 2, holding the weapons in the loadout; every weapon of the game
 ## hangs once on the armory's weapon wall (`wall`), the ones the player doesn't own yet
 ## see-through ("Locked"). The weapons on the wall and in the cradles are the parts, and the
-## camera follows the selected one to the wall and back. `tab_prev`/`tab_next` pick the slot (its
-## cradle's strip lights up, its number turns amber), and `interact` (or the card's slot buttons)
-## puts the selected weapon into that slot (if it's in the other one, the two swap) or takes it
-## out again, unless it's the only weapon in the loadout: one always goes along.
-## `slot_1`/`slot_2` (keys 1 and 2) put it straight into that slot. Locker `number` belongs to the
+## camera follows the selected one to the wall and back. The highlight moves over the wall as a
+## grid (up from its top line into the cradles), `tab_prev`/`tab_next` jump to the previous or next
+## row. `interact` (or the card's slot buttons) puts the selected weapon into the selected slot
+## (if it's in the other one, the two swap) or takes it out again, unless it's the only weapon in
+## the loadout: one always goes along. The selected slot (its cradle's strip lights up, its number
+## turns amber) is the cradle selected last, or an empty one; `slot_1`/`slot_2` (keys 1 and 2) put
+## the weapon straight into that slot. Locker `number` belongs to the
 ## `number`th player; nobody else can open it. While a mission is underway its door stays shut and
 ## the loadout can't change; lockers of players who aren't in the session stay shut too.
 
@@ -189,16 +191,58 @@ func _shortcut(event: InputEvent) -> bool:
 	return false
 
 
+## Selecting a weapon in a cradle selects its slot too.
+func select(part: StationPart) -> void:
+	super(part)
+	var slot: int = _cradle_parts.find(part)
+	if slot >= 0 and slot != selected_slot:
+		selected_slot = slot
+		_show_selected_slot()
+		refresh()
+
+
+## `tab_prev`/`tab_next`: the first weapon of the previous or next row on the wall.
 func _cycle(step_by: int) -> void:
-	selected_slot = posmod(selected_slot + step_by, _cradles.size())
-	_show_selected_slot()
-	refresh()
+	if wall:
+		var start: StationPart = wall.row_start(selected if is_on_wall() else null, step_by)
+		if start:
+			select(start)
+
+
+## On the wall the highlight moves as on a grid; up from its top line it goes to the lowest cradle
+## and down from there back to the wall. The cradles are one above the other.
+func _neighbor(part: StationPart, direction: Vector2) -> StationPart:
+	var cradles: Array[StationPart] = []
+	for cradle: StationPart in _cradle_parts:
+		if cradle.visible:
+			cradles.append(cradle)
+	if part in cradles:
+		return _from_cradle(cradles, cradles.find(part), direction)
+	if not wall:
+		return super(part, direction)
+	var on_wall: StationPart = wall.neighbor(part, direction)
+	if not on_wall and direction.y < -absf(direction.x) and not cradles.is_empty():
+		return cradles[-1]
+	return on_wall
+
+
+## Where the highlight goes from the `index`th of the visible `cradles` in `direction`: the
+## other cradle, or down to the first weapon of the wall's top row.
+func _from_cradle(cradles: Array[StationPart], index: int, direction: Vector2) -> StationPart:
+	if absf(direction.y) <= absf(direction.x):
+		return null
+	var next: int = index + (1 if direction.y > 0.0 else -1)
+	if next >= 0 and next < cradles.size():
+		return cradles[next]
+	if direction.y > 0.0 and wall:
+		return wall.row_start(null, 1)
+	return null
 
 
 func _opened() -> void:
 	selected_slot = 0
-	_show_selected_slot()
 	_arrange()
+	_show_selected_slot()
 	super()
 
 
@@ -230,6 +274,12 @@ func _arrange() -> void:
 	if followed and selected.item != followed:
 		var slot: int = player.loadout.slot_of(followed) if player else -1
 		select(_cradle_parts[slot] if slot >= 0 else get_part(followed))
+	# An empty slot is where the next weapon goes.
+	for slot: int in _cradle_parts.size():
+		if player and not player.loadout.get_weapon(slot):
+			selected_slot = slot
+			_show_selected_slot()
+			break
 	_arranged_for = _arrangement(player)
 
 

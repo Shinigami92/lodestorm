@@ -1,7 +1,13 @@
 [gd_resource type="Resource" script_class="RangedWeaponSettings" format=3 uid="uid://cpccmkaoknnt2"]
 
 [ext_resource type="Script" uid="uid://bwsh0mrtvqkbg" path="res://game/weapons/ranged_weapon_settings.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://0ovnp0fw1pu" path="res://assets/audio/sfx/weapons/blaster_shot.tres" id="2_blaster_shot"]
+[ext_resource type="Resource" uid="uid://7plpkh7jahnw" path="res://assets/audio/sfx/weapons/reload_start.tres" id="3_reload_start"]
+[ext_resource type="Resource" uid="uid://xyrx6kq6y8fk" path="res://assets/audio/sfx/weapons/magazine_in.tres" id="4_magazine_in"]
 
 [resource]
 script = ExtResource("1_script")
 attack_rate = 8.0
+attack_sound = ExtResource("2_blaster_shot")
+reload_sound = ExtResource("3_reload_start")
+load_sound = ExtResource("4_magazine_in")

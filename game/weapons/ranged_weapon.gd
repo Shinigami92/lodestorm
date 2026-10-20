@@ -13,6 +13,8 @@ extends Weapon
 ## Pressing `reload` again during a reload (the round being loaded) is the timing press: within the
 ## window it finishes right away, outside it the reload takes longer. Single rounds loaded within
 ## the window in a row get quicker. A display child named `AmmoGauge` shows all this on the weapon.
+## Sounds: the reload starting and the rounds going in (from the settings), an empty click when it
+## can't reload, and for the local player a tick when the window opens and whether a press hit it.
 
 ## Emitted when the loaded rounds change.
 signal rounds_changed(rounds: int)
@@ -21,6 +23,11 @@ signal rounds_changed(rounds: int)
 signal reload_denied
 ## Emitted after the timing press of a reload: whether it was within the window.
 signal reload_timed(hit: bool)
+
+const EMPTY_SOUND: Sound = preload("res://assets/audio/sfx/weapons/empty_click.tres")
+const WINDOW_SOUND: Sound = preload("res://assets/audio/sfx/weapons/window_tick.tres")
+const TIMED_HIT_SOUND: Sound = preload("res://assets/audio/sfx/weapons/timed_hit.tres")
+const TIMED_MISS_SOUND: Sound = preload("res://assets/audio/sfx/weapons/timed_miss.tres")
 
 @export var settings: RangedWeaponSettings
 @export var projectile_scene: PackedScene
@@ -60,7 +67,14 @@ var _trigger_was_held: bool = false
 
 func _physics_process(delta: float) -> void:
 	if reloading:
+		var share: float = reload_share()
 		reload_elapsed += delta
+		if (
+			not timing_pressed
+			and share < settings.sweet_spot_start
+			and reload_share() >= settings.sweet_spot_start
+		):
+			_play(WINDOW_SOUND, true, true)
 		if reload_elapsed >= reload_duration:
 			if not timing_pressed or fumbled:
 				chain = 0
@@ -185,6 +199,7 @@ func _start_reload() -> bool:
 	if not can_reload():
 		# A full magazine just needs nothing; only a missing reload is worth a warning.
 		if rounds < capacity():
+			_play(EMPTY_SOUND)
 			reload_denied.emit()
 		return false
 	if not _single() and not careful:
@@ -192,6 +207,7 @@ func _start_reload() -> bool:
 	reloading = true
 	chain = 0
 	_start_round()
+	_play(settings.reload_sound)
 	return true
 
 
@@ -219,12 +235,14 @@ func _time_press() -> bool:
 	)
 	if hit:
 		chain += 1
+		_play(TIMED_HIT_SOUND, true)
 		reload_timed.emit(true)
 		_finish_round()
 	else:
 		fumbled = true
 		chain = 0
 		reload_duration += settings.fumble_time
+		_play(TIMED_MISS_SOUND, true)
 		reload_timed.emit(false)
 	return true
 
@@ -239,12 +257,15 @@ func _finish_round() -> void:
 		_take(loaded)
 		rounds = kept + loaded
 		reloading = false
+		if loaded > 0:
+			_play(settings.load_sound)
 		return
 	if _available(1) < 1:
 		reloading = false
 		return
 	_take(1)
 	rounds += 1
+	_play(settings.load_sound)
 	if rounds < capacity() and _available(1) >= 1:
 		_start_round()
 	else:

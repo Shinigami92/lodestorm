@@ -4,6 +4,9 @@ extends Node
 ## then a cooldown. The `holder` asks it for its velocity every physics step (`step`). Distance,
 ## time and cooldown are in `PlayerSettings`.
 
+## Emitted when a dash starts.
+signal dashed
+
 ## The player dashing.
 var holder: Player
 ## Seconds until the next dash (0: ready).
@@ -28,6 +31,7 @@ func dash(direction: Vector3 = Vector3.ZERO) -> bool:
 	_velocity = direction.normalized() * settings.dash_distance / settings.dash_time
 	_left = settings.dash_time
 	cooldown = settings.dash_cooldown
+	dashed.emit()
 	return true
 
 

@@ -4,7 +4,7 @@ extends Weapon
 ## swing's arc (around the aim direction, or the direction to the locked target) takes the damage,
 ## unless something solid is in the way, and so does a destructible (a nest) whose edge is within
 ## reach and the arc. The model (`Model`) sweeps through the arc, a stand-in for
-## a swing animation.
+## a swing animation. A swing that hits something plays the settings' `hit_sound`.
 
 ## Emitted after every swing with the aliens it hit.
 signal swung(hits: Array[Alien])
@@ -49,15 +49,19 @@ func _attack() -> void:
 			holder
 		)
 		DamageNumber.show_hit(holder, alien, alien.take_hit(hit))
+	var struck: bool = not hits.is_empty()
 	for node: Node in get_tree().get_nodes_in_group(Destructible.GROUP):
 		var body := node as Destructible
 		if body.is_hittable() and _reaches(body, direction):
+			struck = true
 			var away: Vector3 = body.global_position - holder.global_position
 			away.y = 0.0
 			var along: Vector3 = away.normalized() if away.length() > 0.01 else direction
 			var point: Vector3 = body.get_aim_point() - along * body.radius()
 			var hit := Hit.new(settings.damage * damage_multiplier, 0.0, 0.0, along, point, holder)
 			DamageNumber.show_hit(holder, body, body.take_hit(hit))
+	if struck:
+		_play(settings.hit_sound)
 	_play_sweep()
 	swung.emit(hits)
 

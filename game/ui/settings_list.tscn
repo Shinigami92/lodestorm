@@ -51,3 +51,72 @@ text = "Large"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Always show"
+
+[node name="MasterLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Volume"
+
+[node name="Master" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Slider" type="HSlider" parent="Master"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.1
+value = 1.0
+
+[node name="Value" type="Label" parent="Master"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+auto_translate_mode = 2
+text = "100 %"
+
+[node name="EffectsLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Effects"
+
+[node name="Effects" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Slider" type="HSlider" parent="Effects"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.1
+value = 1.0
+
+[node name="Value" type="Label" parent="Effects"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+auto_translate_mode = 2
+text = "100 %"
+
+[node name="AmbienceLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Ambience"
+
+[node name="Ambience" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Slider" type="HSlider" parent="Ambience"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.1
+value = 1.0
+
+[node name="Value" type="Label" parent="Ambience"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+auto_translate_mode = 2
+text = "100 %"

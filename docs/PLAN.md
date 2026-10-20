@@ -56,15 +56,15 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 7 E: debug tools for the aliens: god mode (players lose no health) and switching the aliens' AI off and on, as switches on the debug overlay
 - Step 8: destroyable nests (health and armor scaled per tier and player, every weapon and the target lock reaching them, guards defending them, two bursts with their warning, cracks and a dimming glow per stage, the collapse into a husk, its hunters and raiders stopping, the hive's surge, a signal for the quests' "clear nests" goal, a debug shortcut)
 - Step 9 A: performance with many aliens, profiled in a late, frenzied tier 6 run with the cap full (46 fps before, 53–66 after with about 75 aliens, 30–40 of them on screen, on the development PC): nests at the cap no longer try to hatch every tick, a pack hatches one alien after another and the hive at most one per physics frame, aliens look up paths less often and only two per frame (a look-up costs about 0.5 ms on a generated world), burrowers and backing-off aliens no longer search the navigation mesh every tick, aliens off screen stop their legs, clips and pose, standing aliens don't move, fliers only push apart from fliers
+- Step 9 B1: the audio setup (the buses Master, Effects and Ambience with a volume slider each in the settings, the game heard from the local player, sounds with variants and a random pitch, a limit per sound dropping the farthest, critical cues ducking the rest, menu sounds while paused), the synthesis scripts with takes and a listening page, the manifest of recordings and its license test; the weapons' sounds (shots, the hammer, reloads, the empty click, the timing window's tick and result), the player's (hits, the low-health pulse, the dash, steps on the ground and on the ship's deck); the settings terminal's screen taller
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–8 and 9 A are done).
+Each step builds on the ones before it (steps 1–8, 9 A and 9 B1 are done).
 
-- [ ] **Step 9 — sound effects** ([`planned/sfx.md`](planned/sfx.md); A, performance with many aliens, is done)
-  - [ ] **B1** the audio setup (buses, the listener at the player, volumes on the settings terminal, randomizers, the synthesis scripts and build, the manifest and its license test) with the weapons, player and interface sounds
+- [ ] **Step 9 — sound effects** ([`planned/sfx.md`](planned/sfx.md); A, performance with many aliens, and B1, the audio setup with the weapons' and the player's sounds, are done)
   - [ ] **B2** the aliens', mining, mission, storm, vent, shard and mud sounds
 - [ ] **Step 10 — more weapons** ([`planned/weapons.md`](planned/weapons.md)); until the quests hand out blueprints, the debug overlay unlocks them; greybox meshes, models with the art pass
   - [ ] **A** the weapon framework (feed, delivery and effects as Resources, a list of upgrade parts per weapon, draw time, building a weapon from its blueprint for ore), Harl, Brask and Dray ported and renamed

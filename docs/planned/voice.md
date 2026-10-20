@@ -1,6 +1,6 @@
 # Voice-over (planned)
 
-Decided 2026-10-17, built after the art pass (see [`PLAN.md`](../PLAN.md), M5). All values **TBD (playtest)**. What's wanted (see [Localization and voice](../GAME_DESIGN.md#localization-and-voice)): English voice-over from a free AI text-to-speech model running locally, lines generated ahead of time, a license that allows selling the game, distinct voices that aren't cloned from real people without their consent; subtitles as speech bubbles, as today. The audio basics (the buses and the volume settings) come earlier, with the sound effects (M4 step 9, see [`sfx.md`](sfx.md)).
+Decided 2026-10-17, built after the art pass (see [`PLAN.md`](../PLAN.md), M5). All values **TBD (playtest)**. What's wanted (see [Localization and voice](../GAME_DESIGN.md#localization-and-voice)): English voice-over from a free AI text-to-speech model running locally, lines generated ahead of time, a license that allows selling the game, distinct voices that aren't cloned from real people without their consent; subtitles as speech bubbles, as today. The audio basics (the buses and the volume settings) are built (see [Sound](../GAME_DESIGN.md#sound)); voice adds its Voice and Radio buses.
 
 ## The spike
 

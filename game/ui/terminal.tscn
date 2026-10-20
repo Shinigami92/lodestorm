@@ -21,11 +21,11 @@ size = Vector3(0.9, 1.05, 0.45)
 
 [sub_resource type="BoxMesh" id="BoxMesh_frame"]
 material = SubResource("StandardMaterial3D_body")
-size = Vector3(1.3, 0.95, 0.06)
+size = Vector3(1.3, 1.2, 0.06)
 
 [sub_resource type="BoxMesh" id="BoxMesh_highlight"]
 material = SubResource("StandardMaterial3D_highlight")
-size = Vector3(1.36, 1.01, 0.03)
+size = Vector3(1.36, 1.26, 0.03)
 
 [node name="Terminal" type="Node3D"]
 script = ExtResource("1_script")
@@ -43,12 +43,12 @@ mesh = SubResource("BoxMesh_pedestal")
 transform = Transform3D(1, 0, 0, 0, 0.816497, 0.57735, 0, -0.57735, 0.816497, 0, 1.39, 0)
 
 [node name="Frame" type="MeshInstance3D" parent="Head"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.032)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.032)
 mesh = SubResource("BoxMesh_frame")
 
 [node name="Panel" parent="Head" instance=ExtResource("2_panel")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.002)
-size = Vector2(1.2, 0.85)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, 0.002)
+size = Vector2(1.2, 1.1)
 
 [node name="Light" type="OmniLight3D" parent="Head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.4)
@@ -57,7 +57,7 @@ light_energy = 0.4
 omni_range = 2.5
 
 [node name="Highlight" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.816497, 0.57735, 0, -0.57735, 0.816497, 0, 1.3669, -0.0327)
+transform = Transform3D(1, 0, 0, 0, 0.816497, 0.57735, 0, -0.57735, 0.816497, 0, 1.46896, -0.10487)
 visible = false
 cast_shadow = 0
 mesh = SubResource("BoxMesh_highlight")

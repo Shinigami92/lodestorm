@@ -27,7 +27,8 @@ extends CharacterBody3D
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
 ## `pause` with no menu open shows its pause panel (`pause_panel`).
 ## Each player has a `number` (1–4) and its color; only the `local` one (the one this machine plays
-## and its camera follows) reads the input, teammates' rings show only their health.
+## and its camera follows) reads the input, teammates' rings show only their health. Its `sounds`
+## play its hits, death and dash, and the local player's are where the game is heard from.
 
 ## Emitted when the carried amount of an ore type changes.
 signal cargo_changed(ore_type: OreType, amount: float)
@@ -118,6 +119,8 @@ var spare_magazines: int:
 		return settings.spare_magazines + roundi(skills.value(Skill.Effect.SPARE_MAGAZINES))
 ## The dash (a skill).
 var suit_dash := SuitDash.new()
+## Its own sounds and, for the local player, the ears.
+var sounds := PlayerSounds.new()
 ## The ground hazards it stands in (slick ice).
 var ground_contact := GroundContact.new()
 ## The pause panel beside it (`pause`: resume, settings, quit).
@@ -196,6 +199,9 @@ func _ready() -> void:
 	vitals.died.connect(_on_died)
 	add_child(vitals)
 	vitals.revive()
+	sounds.name = "Sounds"
+	sounds.holder = self
+	add_child(sounds)
 	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()
 	arsenal.weapons = arsenal.weapons.duplicate()
 	loadout = loadout.duplicate() if loadout else Loadout.new()

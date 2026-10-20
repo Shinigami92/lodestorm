@@ -1,0 +1,85 @@
+{
+  "recordings": {},
+  "sounds": {
+    "player/dash": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "player/hit_taken": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "player/low_health": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "player/step_deck": {
+      "made_by": "build.py",
+      "variants": 6,
+      "recordings": []
+    },
+    "player/step_ground": {
+      "made_by": "build.py",
+      "variants": 6,
+      "recordings": []
+    },
+    "weapons/blaster_shot": {
+      "made_by": "build.py",
+      "variants": 4,
+      "recordings": []
+    },
+    "weapons/empty_click": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/hammer_hit": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/hammer_swing": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/magazine_in": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/reload_start": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "weapons/shell_in": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "weapons/shotgun_shot": {
+      "made_by": "build.py",
+      "variants": 4,
+      "recordings": []
+    },
+    "weapons/timed_hit": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/timed_miss": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "weapons/window_tick": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    }
+  }
+}

@@ -26,6 +26,7 @@ func after_each() -> void:
 	for action: StringName in [&"interact", &"move_right", &"attack"]:
 		Input.action_release(action)
 	TranslationServer.set_locale("en")
+	GameSettings.volumes.clear()
 
 
 func test_using_the_terminal_opens_its_menu() -> void:
@@ -60,6 +61,15 @@ func test_movement_and_interact_steer_the_menu() -> void:
 		if _focused().name != &"AlwaysShow":
 			_send(&"move_right")
 	assert_eq(_focused().name, &"AlwaysShow", "right along the row")
+	_send(&"move_back")
+	assert_eq(_focused().get_parent().name, &"Master", "the volumes")
+	_send(&"move_left")
+	assert_almost_eq(GameSettings.volume(&"Master"), 0.9, 0.001, "left and right change it")
+	_send(&"move_right")
+	assert_almost_eq(GameSettings.volume(&"Master"), 1.0, 0.001)
+	for bus: StringName in [&"Effects", &"Ambience"]:
+		_send(&"move_back")
+		assert_eq(_focused().get_parent().name, bus)
 	_send(&"move_back")
 	assert_eq(_focused().name, &"ResetProgress")
 	_send(&"move_back")

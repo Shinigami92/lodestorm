@@ -1,9 +1,13 @@
 [gd_resource type="Resource" script_class="MeleeWeaponSettings" format=3 uid="uid://bmvaidn1vcbd7"]
 
 [ext_resource type="Script" uid="uid://bfbxcrlc3di4i" path="res://game/weapons/melee_weapon_settings.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://lay3okicjhoa" path="res://assets/audio/sfx/weapons/hammer_swing.tres" id="2_hammer_swing"]
+[ext_resource type="Resource" uid="uid://cncejdve756sp" path="res://assets/audio/sfx/weapons/hammer_hit.tres" id="3_hammer_hit"]
 
 [resource]
 script = ExtResource("1_script")
 attack_rate = 1.5
 stagger = 40.0
 push = 6.0
+attack_sound = ExtResource("2_hammer_swing")
+hit_sound = ExtResource("3_hammer_hit")

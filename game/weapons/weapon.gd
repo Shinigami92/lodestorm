@@ -2,6 +2,7 @@
 extends Node3D
 ## Base of all weapons (ranged and melee): attacks while the trigger is held, limited by the
 ## attack rate. The holder sets `trigger_held` and `aim_direction`; weapons don't read input.
+## Each attack plays the settings' `attack_sound` at the weapon.
 
 ## The body carrying the weapon, set when it's equipped.
 var holder: CollisionObject3D
@@ -25,6 +26,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if trigger_held and _can_attack():
 		_attack()
+		_play(_get_settings().attack_sound)
 		_cooldown += 1.0 / _get_settings().attack_rate
 	else:
 		_cooldown = 0.0
@@ -44,6 +46,15 @@ func _show_pips(path: NodePath, upgrades: Upgrades, upgrade: Upgrade) -> void:
 	var pips := get_node_or_null(path) as MkPips
 	if pips:
 		pips.show_level(upgrades.mk(upgrade), upgrade.max_mk() if upgrade else 1)
+
+
+## Plays `sound` at the weapon. A `cue` (the reload's timing) is only for the local player
+## holding it, and a `critical` one always plays and ducks the rest (see `Sfx`).
+func _play(sound: Sound, cue: bool = false, critical: bool = false) -> void:
+	var local: bool = holder is Player and (holder as Player).local
+	if cue and not local:
+		return
+	Sfx.play_at(sound, global_position, critical and local)
 
 
 ## Whether it can attack right now (e.g. a ranged weapon needs ammo).

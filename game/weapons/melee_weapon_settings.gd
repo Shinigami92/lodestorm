@@ -8,3 +8,7 @@ extends WeaponSettings
 @export var reach: float = 2.5
 ## Width of the swing around the attack direction, in degrees.
 @export var arc: float = 120.0
+
+@export_group("Sounds")
+## A swing that hits something.
+@export var hit_sound: Sound

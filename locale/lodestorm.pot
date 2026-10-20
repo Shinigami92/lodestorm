@@ -968,6 +968,18 @@ msgstr ""
 msgid "Always show"
 msgstr ""
 
+#: game/ui/settings_list.tscn
+msgid "Volume"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Effects"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Ambience"
+msgstr ""
+
 #: game/ui/settings_menu.gd
 msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
 msgstr ""

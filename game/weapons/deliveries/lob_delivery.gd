@@ -3,12 +3,16 @@ extends WeaponDelivery
 ## Lobs a shot in an arc (Tremor, see `LobbedShot`) that blasts where it lands (see `Blast`): on
 ## the locked alien or nest, else at the spot the mouse cursor points at, else (the stick, a VR
 ## hand) `stick_reach` m along the aim; never farther than `reach`. The arc rises with the
-## distance, so it clears rocks and cliffs. A `LandingRing` on the weapon shows where it lands.
+## distance, so it clears rocks and cliffs; under a ceiling (aboard the ship, the shooting range) it
+## stays flat enough to pass beneath it. A `LandingRing` on the weapon shows where it lands.
 ## All values TBD (playtest).
 
 ## How high the landing spot is looked for above the holder's feet without a spot to aim at (m),
 ## as high as the cursor finds the ground (so a deck above doesn't catch it).
 const GROUND_CEILING: float = PlayerAim.CURSOR_CEILING
+## How far the arc's top stays below a ceiling (m), and the flattest arc under one (m).
+const CEILING_MARGIN: float = 0.5
+const MIN_CEILING_ARC: float = 0.2
 
 ## Farthest landing spot (horizontally, m).
 @export var reach: float = 22.0
@@ -40,7 +44,9 @@ func attack(weapon: Weapon) -> void:
 	shot.start = muzzle
 	shot.landing = landing
 	shot.flight_time = maxf(distance / speed, min_flight_time)
-	shot.arc_height = maxf(distance * arc_per_meter, min_arc)
+	shot.arc_height = arc_under_ceiling(
+		weapon, muzzle, landing, maxf(distance * arc_per_meter, min_arc)
+	)
 	shot.hit = weapon.make_hit(landing - muzzle, landing)
 	shot.blast_radius = blast_radius_of(weapon)
 	shot.blast_sound = blast_sound
@@ -49,6 +55,22 @@ func attack(weapon: Weapon) -> void:
 	holder.get_parent().add_child(shot)
 	shot.global_position = muzzle
 	shot.reset_physics_interpolation()
+
+
+## `arc` (m above the line from `start` to `landing`), lowered so its top stays under a ceiling
+## above the middle of the flight, if there's one.
+func arc_under_ceiling(weapon: Weapon, start: Vector3, landing: Vector3, arc: float) -> float:
+	var middle: Vector3 = start.lerp(landing, 0.5)
+	var space: PhysicsDirectSpaceState3D = weapon.holder.get_world_3d().direct_space_state
+	var query := PhysicsRayQueryParameters3D.create(
+		middle, middle + Vector3.UP * (arc + CEILING_MARGIN), PhysicsLayers.WORLD
+	)
+	query.exclude = [weapon.holder.get_rid()]
+	var result: Dictionary = space.intersect_ray(query)
+	if result.is_empty() or (result["collider"] is Player or result["collider"] is Alien):
+		return arc
+	var room: float = (result["position"] as Vector3).y - middle.y - CEILING_MARGIN
+	return clampf(room, MIN_CEILING_ARC, arc)
 
 
 ## The radius of `weapon`'s blast with its MK level (m).

@@ -86,6 +86,29 @@ func test_tremor_blasts_where_it_lands_less_towards_the_edge_and_not_behind_rock
 	assert_eq(_dealt(outside), 0.0)
 
 
+func test_tremor_stays_under_a_ceiling() -> void:
+	_equip(TREMOR)
+	_add_box(Vector3(0.0, 4.0, 0.0), Vector3(60.0, 0.2, 60.0))
+	var spot := Vector3(0.0, 0.0, -LOB.stick_reach)
+	var alien := _add_alien(spot, 1000.0)
+	var shots: Array[LobbedShot] = []
+	_arena.child_entered_tree.connect(
+		func(node: Node) -> void:
+			if node is LobbedShot:
+				shots.append(node as LobbedShot)
+	)
+	await wait_seconds(TREMOR.draw_time + 0.05)
+	await _attack_once()
+	assert_eq(shots.size(), 1)
+	var shot: LobbedShot = shots[0]
+	var middle: float = lerpf(shot.start.y, shot.landing.y, 0.5)
+	assert_lt(
+		middle + shot.arc_height, 3.9 - LobDelivery.CEILING_MARGIN + 0.01, "under the ceiling"
+	)
+	await wait_seconds(LOB.stick_reach / LOB.speed + 0.3)
+	assert_gt(_dealt(alien), TREMOR_DAMAGE.damage * 0.5, "it landed on the ground, not the ceiling")
+
+
 func test_blast_hurts_no_player() -> void:
 	var alien := _add_alien(_player.global_position + Vector3(1.5, 0.0, 0.0), 1000.0)
 	await wait_physics_frames(1)

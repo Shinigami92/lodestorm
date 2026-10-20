@@ -3,17 +3,17 @@ extends WeaponDelivery
 ## Swings at everything in front of the holder: every alien within reach and the swing's arc
 ## (around the aim direction, or the direction to the locked target; wider with the MK level of
 ## the weapon's arc) takes a hit, unless something solid is in the way, and so does a destructible
-## (a nest) whose edge is within reach and the arc. The weapon's model moves as its `stroke` says
-## (a stand-in for a swing animation), and it emits `Weapon.swung`. A swing that hits something
-## plays `hit_sound`. A saw (Jag) doesn't stroke: it hits many times a second, only some of them
-## spraying.
+## (a nest) whose edge is within reach and the arc. The holder's arms and the weapon's model move
+## as its `stroke` says (`Weapon.sweep`, `Weapon.chop`), and it emits `Weapon.swung`. A swing that
+## hits something plays `hit_sound`. A saw (Jag) doesn't stroke: it hits many times a second, only
+## some of them spraying.
 ## A chain (`combo`, Riven) counts the swings made in a row, each within `combo_gap` of the last
-## (`Weapon.chain`): they sweep one way, then back, and the last one is a heavy slash: its hits
-## are `finisher_power` times a swing's, with `finisher_stagger` times its stagger on top. All
+## (`Weapon.chain`): they sweep from the right, then back, and the last one is a heavy slash: its
+## hits are `finisher_power` times a swing's, with `finisher_stagger` times its stagger on top. All
 ## values TBD (playtest).
 
-## How the model moves with a swing: across the arc (`Weapon.sweep`), an overhead blow
-## (`Weapon.chop`), or not at all (a saw's blade spins instead).
+## How the arms and the model move with a swing: across the arc (`Weapon.sweep`), an overhead
+## blow (`Weapon.chop`), or not at all (a saw's blade spins instead).
 enum Stroke { SWEEP, OVERHEAD, NONE }
 
 ## Share of the time between swings the stroke takes.

@@ -9,21 +9,31 @@ extends Node3D
 ## weapons don't read input. The MK levels of its parts (`apply_upgrades`) scale its values
 ## (`multiplier`) and light their pips. After a switch it's drawn (`draw`): the model swings up from
 ## the hip for the type's draw time. Each attack plays the type's `attack_sound` at the weapon.
+## A melee attack asks the holder to move its arms (`motion_started`, see `PlayerAnimator`); the
+## model's own motions (`sweep`, `chop`) are a small extra on top.
 
 ## Emitted after every swing or thrust (a melee delivery) with the aliens it hit.
 @warning_ignore("unused_signal")
 signal swung(hits: Array[Alien])
+## Emitted when an attack moves the holder's arms (`motion`), its stroke taking `duration` seconds.
+signal motion_started(motion: Motion, duration: float)
+
+## The holder's arm motions of melee attacks: a slash from the right to the left and one back, an
+## overhead blow, a thrust.
+enum Motion { SLASH, SLASH_BACK, OVERHEAD, THRUST }
 
 ## How the model starts when drawn: tipped down and lower, as from the hip (radians around X, m).
 const DRAW_TILT: float = -1.1
 const DRAW_DROP := Vector3(0.0, -0.15, 0.1)
-## Swing motions (`sweep`, `chop`): seconds to turn to the start, to stay at the end, and to return
-## to rest; how far up a hammer is raised and how far down it comes (radians around X).
+## Swing motions (`sweep`, `chop`, on top of the holder's arms): seconds to turn to the start, to
+## stay at the end, and to return to rest; the share of the arc the model turns through itself;
+## how far up a hammer tips and how far down (radians around X).
 const MOTION_WIND_UP: float = 0.05
 const MOTION_HOLD: float = 0.25
 const MOTION_REST: float = 0.25
-const CHOP_RAISE: float = 1.2
-const CHOP_DOWN: float = -0.45
+const SWEEP_SHARE: float = 0.3
+const CHOP_RAISE: float = 0.4
+const CHOP_DOWN: float = -0.3
 
 ## What it is; set by `WeaponType.create`.
 var type: WeaponType
@@ -206,15 +216,17 @@ func get_gauge() -> AmmoGauge:
 	return get_node_or_null(^"AmmoGauge") as AmmoGauge
 
 
-## Sweeps the model (`Model`) through `arc` radians around the grip, from one side to the other
-## (a negative `arc` the other way), a stand-in for a swing animation: a quick turn to the start
-## side, the stroke within `duration` seconds, then it stays at the end for a moment (where the
-## next swing of a chain starts back from) before it returns to rest.
+## Slashes through `arc` radians in front, from the right to the left (a negative `arc` the other
+## way), the stroke within `duration` seconds: the holder's arms swing (`motion_started`), and the
+## model (`Model`) turns through a share of the arc around the grip on top: a quick turn to the
+## start side, the stroke, then it stays at the end for a moment (where the next swing of a chain
+## starts back from) before it returns to rest.
 func sweep(arc: float, duration: float) -> void:
+	motion_started.emit(Motion.SLASH if arc >= 0.0 else Motion.SLASH_BACK, duration)
 	var model: Node3D = _start_motion()
 	if not model:
 		return
-	var start := Vector3(0.0, arc * 0.5, 0.0)
+	var start := Vector3(0.0, -arc * 0.5 * SWEEP_SHARE, 0.0)
 	_sweep.tween_property(model, ^"rotation", start, minf(MOTION_WIND_UP, duration * 0.2))
 	(
 		_sweep
@@ -225,19 +237,21 @@ func sweep(arc: float, duration: float) -> void:
 	_rest_after(model)
 
 
-## Brings the model (`Model`) down in an overhead blow within `duration` seconds, a stand-in for a
-## hammer's swing: raised up and back with its head a little to one side, then slammed down and
-## across `arc` radians in front, accelerating, then it returns to rest.
+## An overhead blow within `duration` seconds: the holder's arms bring it down
+## (`motion_started`), and the model (`Model`) tips back, then down and across a share of `arc`
+## radians in front on top, fastest at first (the hit lands as it starts), then it returns to rest.
 func chop(arc: float, duration: float) -> void:
+	motion_started.emit(Motion.OVERHEAD, duration)
 	var model: Node3D = _start_motion()
 	if not model:
 		return
-	_sweep.tween_property(model, ^"rotation", Vector3(CHOP_RAISE, arc * 0.25, 0.0), MOTION_WIND_UP)
+	var across: float = arc * 0.25 * SWEEP_SHARE
+	_sweep.tween_property(model, ^"rotation", Vector3(CHOP_RAISE, across, 0.0), MOTION_WIND_UP)
 	(
 		_sweep
-		. tween_property(model, ^"rotation", Vector3(CHOP_DOWN, -arc * 0.25, 0.0), duration)
+		. tween_property(model, ^"rotation", Vector3(CHOP_DOWN, -across, 0.0), duration)
 		. set_trans(Tween.TRANS_QUAD)
-		. set_ease(Tween.EASE_IN)
+		. set_ease(Tween.EASE_OUT)
 	)
 	_rest_after(model)
 

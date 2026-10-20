@@ -20,6 +20,7 @@ origin = 1
 scene = ExtResource("2_scene")
 attack_rate = 1.5
 draw_time = 0.6
+hold = 2
 delivery = ExtResource("3_delivery")
 effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
 parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_rate"), ExtResource("mk_arc")])

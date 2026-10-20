@@ -24,6 +24,7 @@ origin = 1
 scene = ExtResource("2_scene")
 attack_rate = 1.2
 draw_time = 0.5
+hold = 3
 trigger = ExtResource("9_trigger")
 delivery = ExtResource("3_delivery")
 effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])

@@ -6,9 +6,9 @@ extends WeaponDelivery
 ## distance, so it clears rocks and cliffs. A `LandingRing` on the weapon shows where it lands.
 ## All values TBD (playtest).
 
-## How high the landing spot is looked for above the holder's feet (m): a cliff top up to this high
-## catches it.
-const GROUND_CEILING: float = 6.0
+## How high the landing spot is looked for above the holder's feet without a spot to aim at (m),
+## as high as the cursor finds the ground (so a deck above doesn't catch it).
+const GROUND_CEILING: float = PlayerAim.CURSOR_CEILING
 
 ## Farthest landing spot (horizontally, m).
 @export var reach: float = 22.0
@@ -62,20 +62,22 @@ func ring_radius(weapon: Weapon) -> float:
 
 
 ## Where `weapon`'s next shot lands (global): at the locked target, else the spot the holder
-## points at, else `stick_reach` m along the aim; at most `reach` m away, on the ground there.
+## points at, else `stick_reach` m along the aim; at most `reach` m away (on the ground there).
 func landing_point(weapon: Weapon) -> Vector3:
 	var from: Vector3 = weapon.holder.global_position
 	var spot: Vector3 = from + weapon.aim_direction * stick_reach
-	var on_target: bool = PlayerAim.is_lockable(weapon.aim_target)
-	if on_target:
+	var exact: bool = true
+	if PlayerAim.is_lockable(weapon.aim_target):
 		spot = weapon.aim_target.global_position
 	elif weapon.aim_point.is_finite():
 		spot = weapon.aim_point
+	else:
+		exact = false
 	var offset := Vector3(spot.x - from.x, 0.0, spot.z - from.z)
 	if offset.length() > reach:
 		offset = offset.normalized() * reach
-		on_target = false
-	if on_target:
+		exact = false
+	if exact:
 		return spot
 	return ground_at(weapon, from + offset)
 

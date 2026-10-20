@@ -81,6 +81,8 @@ const ARMOR_PIPS_BONE: StringName = &"Head"
 
 ## Where the player aims and the alien it locked on.
 var aim := PlayerAim.new()
+## The in-game cursor where the mouse points (the local player's).
+var reticle := AimReticle.new()
 ## Health, regeneration and death.
 var vitals := PlayerVitals.new()
 ## The equipped weapon, or null with an empty loadout.
@@ -192,6 +194,9 @@ func _ready() -> void:
 	aim.name = "Aim"
 	aim.holder = self
 	add_child(aim)
+	reticle.name = "Reticle"
+	reticle.holder = self
+	add_child(reticle)
 	vitals.name = "Vitals"
 	vitals.holder = self
 	vitals.light = _suit_light

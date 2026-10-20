@@ -54,12 +54,16 @@ func test_tremor_lands_on_the_target_else_the_cursor_else_along_the_aim() -> voi
 	)
 
 
-func test_tremor_lands_on_a_rock_top() -> void:
+func test_tremor_lands_on_a_rock_top_along_the_aim_but_not_on_a_deck_above() -> void:
 	var tremor: Weapon = _equip(TREMOR)
-	_add_box(Vector3(0.0, 1.5, -8.0), Vector3(3.0, 3.0, 3.0))
+	_add_box(Vector3(0.0, 1.25, -LOB.stick_reach), Vector3(3.0, 2.5, 3.0))
+	_add_box(Vector3(LOB.stick_reach, 4.5, 0.0), Vector3(3.0, 0.2, 3.0))
 	await wait_physics_frames(1)
-	tremor.aim_point = Vector3(0.0, 0.0, -8.0)
-	assert_almost_eq(LOB.landing_point(tremor).y, 3.0, 0.01)
+	tremor.aim_point = Vector3.INF
+	tremor.aim_direction = Vector3.FORWARD
+	assert_almost_eq(LOB.landing_point(tremor).y, 2.5, 0.01, "the rock's top")
+	tremor.aim_direction = Vector3.RIGHT
+	assert_almost_eq(LOB.landing_point(tremor).y, 0.0, 0.01, "under the deck")
 
 
 func test_tremor_blasts_where_it_lands_less_towards_the_edge_and_not_behind_rock() -> void:

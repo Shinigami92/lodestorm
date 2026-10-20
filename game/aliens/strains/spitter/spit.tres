@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienSpit" format=3 uid="uid://cvxsgme2jaguh"]
 
 [ext_resource type="Script" uid="uid://bac6kqjisq6qv" path="res://game/aliens/attacks/alien_spit.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://c1qgwtgjrbt7i" path="res://assets/audio/sfx/aliens/windup_spit.tres" id="2_windup_spit"]
 
 [resource]
 script = ExtResource("1_script")
@@ -10,3 +11,4 @@ cooldown = 3.5
 wind_up = 0.6
 recovery = 0.5
 mouth = Vector3(0, 0.85, -0.65)
+wind_up_sound = ExtResource("2_windup_spit")

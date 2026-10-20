@@ -57,15 +57,14 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 8: destroyable nests (health and armor scaled per tier and player, every weapon and the target lock reaching them, guards defending them, two bursts with their warning, cracks and a dimming glow per stage, the collapse into a husk, its hunters and raiders stopping, the hive's surge, a signal for the quests' "clear nests" goal, a debug shortcut)
 - Step 9 A: performance with many aliens, profiled in a late, frenzied tier 6 run with the cap full (46 fps before, 53–66 after with about 75 aliens, 30–40 of them on screen, on the development PC): nests at the cap no longer try to hatch every tick, a pack hatches one alien after another and the hive at most one per physics frame, aliens look up paths less often and only two per frame (a look-up costs about 0.5 ms on a generated world), burrowers and backing-off aliens no longer search the navigation mesh every tick, aliens off screen stop their legs, clips and pose, standing aliens don't move, fliers only push apart from fliers
 - Step 9 B1: the audio setup (the buses Master, Effects and Ambience with a volume slider each in the settings, the game heard from the local player, sounds with variants and a random pitch, a limit per sound dropping the farthest, critical cues ducking the rest, menu sounds while paused), the synthesis scripts with takes and a listening page, the manifest of recordings and its license test; the weapons' sounds (shots, the hammer, reloads, the empty click, the timing window's tick and result), the player's (hits, the low-health pulse, the dash, steps on the ground and on the ship's deck); the settings terminal's screen taller
+- Step 9 B2: the aliens' sounds (a chitter on noticing and while chasing, strikes, hits in the flesh and on armor, death, in each strain's voice), a telegraph sound for every heavy attack's wind-up and the shrieker's scream; the nests' pulse growing with the escalation, hatching, the burst's warning and the collapse; mining (placing, the drill, the hose, full, breakdown, repair); the ramp, the storm's warning as a critical cue, the last minute's countdown beeps, the storm hitting and the storm all around on the Ambience bus; the vents' rumble and burst, steps on shards and in mud; seamless loops (loop points in the WAV)
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–8, 9 A and 9 B1 are done).
+Each step builds on the ones before it (steps 1–9 are done).
 
-- [ ] **Step 9 — sound effects** ([`planned/sfx.md`](planned/sfx.md); A, performance with many aliens, and B1, the audio setup with the weapons' and the player's sounds, are done)
-  - [ ] **B2** the aliens', mining, mission, storm, vent, shard and mud sounds
 - [ ] **Step 10 — more weapons** ([`planned/weapons.md`](planned/weapons.md)); until the quests hand out blueprints, the debug overlay unlocks them; greybox meshes, models with the art pass
   - [ ] **A** the weapon framework (feed, delivery and effects as Resources, a list of upgrade parts per weapon, draw time, building a weapon from its blueprint for ore), Harl, Brask and Dray ported and renamed
   - [ ] **B** the armory's weapon wall and the workbench rack in rows by origin, for any number

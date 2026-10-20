@@ -16,4 +16,5 @@ stagger_threshold = 30.0
 knockback = 0.7
 move_speed = 5.0
 burrows = true
+voice_pitch = 0.85
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_eruption"), ExtResource("5_bite")])

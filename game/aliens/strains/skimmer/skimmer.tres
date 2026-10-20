@@ -23,4 +23,5 @@ keep_away = 10.0
 circles = true
 flight_height = 5.0
 dive_height = 5.0
+voice_pitch = 1.2
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_spit")])

@@ -23,4 +23,5 @@ turn_speed = 4.0
 detection_range = 14.0
 chase_range = 25.0
 leash = 25.0
+voice_pitch = 0.75
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_slam")])

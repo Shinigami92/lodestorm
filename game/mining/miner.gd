@@ -7,6 +7,8 @@ extends StaticBody3D
 ## health it breaks down: it stops mining and the hose disconnects, so its ore can't be taken out
 ## (it keeps it). The frame blinks red until a player standing within `settings.repair_range` has
 ## repaired it completely. Players repair damaged miners that still work too.
+## Its sounds: set down with a thud, the drill's loop while it mines, the hose's while ore flows,
+## a chime when full, an alarm when it breaks down and the repair's loop while a player mends it.
 ## The upgrades of the player who placed it (`upgrades`) raise its fill rate (`drill_upgrade`),
 ## capacity (`tank_upgrade`), hose range and transfer rate (`hose_upgrade`); for now they apply to
 ## every miner that player places.
@@ -43,6 +45,13 @@ const FLASH_DURATION: float = 0.1
 ## Blinks per second while broken.
 const BLINK_RATE: float = 2.0
 
+const PLACE_SOUND: Sound = preload("res://assets/audio/sfx/mining/miner_place.tres")
+const DRILL_SOUND: Sound = preload("res://assets/audio/sfx/mining/drill.tres")
+const HOSE_SOUND: Sound = preload("res://assets/audio/sfx/mining/hose.tres")
+const FULL_SOUND: Sound = preload("res://assets/audio/sfx/mining/miner_full.tres")
+const BREAKDOWN_SOUND: Sound = preload("res://assets/audio/sfx/mining/breakdown.tres")
+const REPAIR_SOUND: Sound = preload("res://assets/audio/sfx/mining/repair.tres")
+
 @export var settings: MinerSettings
 @export var drill_upgrade: Upgrade
 @export var tank_upgrade: Upgrade
@@ -66,6 +75,10 @@ var body_radius: float
 var _flash_left: float = 0.0
 var _time: float = 0.0
 var _frame_overlay := StandardMaterial3D.new()
+## The loops playing (null: off).
+var _drill: AudioStreamPlayer3D
+var _flow: AudioStreamPlayer3D
+var _repairing: AudioStreamPlayer3D
 
 @onready var _model: Node3D = $Model
 @onready var _fill: Node3D = _model.find_child("Fill", true, false)
@@ -99,21 +112,32 @@ func _ready() -> void:
 	_hose.visible = false
 	_update_gauge()
 	_update_frame()
+	Sfx.play_at(PLACE_SOUND, global_position)
 
 
 func _physics_process(delta: float) -> void:
-	if not broken and not is_full():
+	var mining: bool = not broken and not is_full()
+	if mining:
 		amount = minf(amount + fill_rate() * delta, capacity())
 		_update_gauge()
 		if is_full():
 			filled.emit()
+			Sfx.play_at(FULL_SOUND, global_position)
 
+	var mending: bool = false
 	if Player.nearest(get_tree(), global_position, settings.repair_range):
+		mending = health < settings.max_health
 		repair(settings.repair_rate * delta)
 
 	hose_target = (null if broken else Player.nearest(get_tree(), global_position, hose_range()))
+	var flowing: bool = false
 	if hose_target:
-		hose_target.add_cargo(ore_type, take(transfer_rate() * delta))
+		var taken: float = take(transfer_rate() * delta)
+		flowing = taken > 0.0
+		hose_target.add_cargo(ore_type, taken)
+	_drill = _loop(_drill, DRILL_SOUND, mining)
+	_flow = _loop(_flow, HOSE_SOUND, flowing)
+	_repairing = _loop(_repairing, REPAIR_SOUND, mending)
 
 
 func _process(delta: float) -> void:
@@ -170,6 +194,7 @@ func take_damage(amount_lost: float) -> void:
 	if health == 0.0:
 		broken = true
 		broke.emit()
+		Sfx.play_at(BREAKDOWN_SOUND, global_position)
 
 
 ## Restores `amount_repaired` health; a broken miner mines again once it's back to full health.
@@ -183,6 +208,16 @@ func repair(amount_repaired: float) -> void:
 ## Whether any miner in `tree` is still mining (or full), i.e. not broken.
 static func any_working(tree: SceneTree) -> bool:
 	return tree.get_nodes_in_group(GROUP).any(func(miner: Miner) -> bool: return not miner.broken)
+
+
+## `playing` with `sound` started or stopped as `on` says.
+func _loop(playing: AudioStreamPlayer3D, sound: Sound, on: bool) -> AudioStreamPlayer3D:
+	if on and not playing:
+		return Sfx.play_loop_at(sound, self)
+	if not on and playing:
+		Sfx.stop_loop(playing)
+		return null
+	return playing
 
 
 func _update_gauge() -> void:

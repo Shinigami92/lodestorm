@@ -12,7 +12,7 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 | [`menu-pause.md`](menu-pause.md) | what's left of the title view and the pause panel: co-op sessions, the Steam overlay, more settings, VR | M6, M7, M8 |
 | [`biomes.md`](biomes.md) | around the biomes' geography: the aliens' leanings, weather, a generic part per biome, the biomes' assets | M4, step 7 B (leanings), M5 |
 | [`aliens.md`](aliens.md) | eleven strains and the Ravager, roles, armor and stagger, hatch tables, hit feedback | M4, steps 7, 9 A |
-| [`sfx.md`](sfx.md) | the aliens', mining, mission, storm and biome sounds, recordings where synthesis isn't enough, the menus' sounds later | M4, step 9 B2 |
+| [`sfx.md`](sfx.md) | recordings where synthesis isn't enough, the menus' and the death's sounds later, the sounds still to come | later rounds, the art pass (M5) |
 | [`weapons.md`](weapons.md) | 18 weapons with names, feeds, upgrade parts, the armory's weapon wall | M4, step 10 |
 | [`refinery.md`](refinery.md) | alloys and furnaces, crafted miners, drill hardness, upgrades and skills taking real time | M4, step 11 |
 | [`station.md`](station.md) | Waypost Ostra: docking, the map, the ore exchange, its NPCs | M4, step 12 |

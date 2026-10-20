@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://dpw6230kxiac7"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://3vdeqldpbvs" path="res://assets/audio/sfx/player/step_shards_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://c73uhgg3amfva" path="res://assets/audio/sfx/player/step_shards_2.wav" id="3_variant"]
+[ext_resource type="AudioStream" uid="uid://dfn86ox24db7b" path="res://assets/audio/sfx/player/step_shards_3.wav" id="4_variant"]
+[ext_resource type="AudioStream" uid="uid://ktxkh77j3vb6" path="res://assets/audio/sfx/player/step_shards_4.wav" id="5_variant"]
+[ext_resource type="AudioStream" uid="uid://dowl2cfjhxxgh" path="res://assets/audio/sfx/player/step_shards_5.wav" id="6_variant"]
+[ext_resource type="AudioStream" uid="uid://86gqs3am3biv" path="res://assets/audio/sfx/player/step_shards_6.wav" id="7_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.06
+streams_count = 6
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+stream_2/stream = ExtResource("4_variant")
+stream_3/stream = ExtResource("5_variant")
+stream_4/stream = ExtResource("6_variant")
+stream_5/stream = ExtResource("7_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -14.0
+unit_size = 5.0
+max_distance = 25.0

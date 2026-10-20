@@ -1,6 +1,171 @@
 {
   "recordings": {},
   "sounds": {
+    "aliens/chitter": {
+      "made_by": "build.py",
+      "variants": 4,
+      "recordings": []
+    },
+    "aliens/death": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "aliens/hit": {
+      "made_by": "build.py",
+      "variants": 4,
+      "recordings": []
+    },
+    "aliens/hit_armor": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "aliens/nest_destroyed": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/nest_hatch": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "aliens/nest_pulse": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "aliens/nest_swell": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/scream": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/strike": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "aliens/windup_burst": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/windup_charge": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "aliens/windup_dive": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/windup_eruption": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/windup_hook": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/windup_pounce": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "aliens/windup_scream": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/windup_shed": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "aliens/windup_slam": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "aliens/windup_spit": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "biomes/vent_burst": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "biomes/vent_rumble": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "mining/breakdown": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mining/drill": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mining/hose": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mining/miner_full": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mining/miner_place": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
+    "mining/repair": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mission/countdown_beep": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mission/ramp": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mission/storm": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mission/storm_hit": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mission/storm_warning": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "player/dash": {
       "made_by": "build.py",
       "variants": 3,
@@ -22,6 +187,16 @@
       "recordings": []
     },
     "player/step_ground": {
+      "made_by": "build.py",
+      "variants": 6,
+      "recordings": []
+    },
+    "player/step_mud": {
+      "made_by": "build.py",
+      "variants": 6,
+      "recordings": []
+    },
+    "player/step_shards": {
       "made_by": "build.py",
       "variants": 6,
       "recordings": []

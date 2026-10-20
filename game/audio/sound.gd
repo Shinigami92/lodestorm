@@ -9,7 +9,8 @@ extends Resource
 @export var stream: AudioStream
 @export_enum("Effects", "Ambience") var bus: String = "Effects"
 @export_range(-40.0, 12.0, 0.5, "suffix:dB") var volume_db: float = 0.0
-## How many may play at once (when more start, the farthest ones are dropped); 0: no limit.
+## How many may play at once (when more start, the farthest ones are dropped); 0: no limit. Loops
+## (`Sfx.play_loop_at`, `play_loop`) play outside it.
 @export var limit: int = 4
 ## Up to this distance in m a sound in the world is as loud as close by; beyond, it fades.
 @export var unit_size: float = 10.0

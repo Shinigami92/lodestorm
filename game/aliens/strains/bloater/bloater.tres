@@ -20,4 +20,5 @@ acceleration = 8.0
 turn_speed = 3.0
 detection_range = 20.0
 chase_range = 24.0
+voice_pitch = 0.8
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_burst")])

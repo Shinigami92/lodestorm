@@ -25,9 +25,12 @@ import wave
 import zlib
 from pathlib import Path
 
-import player  # noqa: F401  (registers its recipes)
+import aliens  # noqa: F401  (registers its recipes)
+import mining  # noqa: F401
+import mission  # noqa: F401
+import player  # noqa: F401
 import weapons  # noqa: F401
-from synth import RATE, RECIPES, Recipe, Signal, finish
+from synth import RATE, RECIPES, Recipe, Signal, finish, finish_loop
 
 SOURCE = Path(__file__).resolve().parent
 SFX = SOURCE.parent / "sfx"
@@ -38,10 +41,13 @@ ALLOWED_LICENSES = ("CC0-1.0", "CC-BY-4.0")
 
 def render(recipe: Recipe, take: str, variant: int) -> Signal:
     rng = random.Random(zlib.crc32(f"{recipe.name}/{take}/{variant}".encode()))
-    return finish(recipe.make(rng, take, variant), recipe.peak_db)
+    signal = recipe.make(rng, take, variant)
+    return finish_loop(signal, recipe.peak_db) if recipe.loop else finish(signal, recipe.peak_db)
 
 
-def write_wav(path: Path, signal: Signal) -> None:
+def write_wav(path: Path, signal: Signal, loop: bool = False) -> None:
+    """A 16-bit mono WAV; a `loop` gets a sampler chunk looping it whole, which Godot's importer
+    reads (its loop mode "Detect From WAV", the default)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     frames = b"".join(struct.pack("<h", max(-32767, min(32767, round(s * 32767)))) for s in signal)
     with wave.open(str(path), "wb") as file:
@@ -49,6 +55,15 @@ def write_wav(path: Path, signal: Signal) -> None:
         file.setsampwidth(2)
         file.setframerate(RATE)
         file.writeframes(frames)
+    if loop:
+        # smpl: manufacturer, product, sample period (ns), MIDI note and fraction, SMPTE format and
+        # offset, one loop, no sampler data; the loop: id, forward, start, end, fraction, forever.
+        # Godot takes the end as the sample after the loop (the format's last sample would drop one).
+        period = round(1e9 / RATE)
+        chunk = struct.pack("<9I", 0, 0, period, 60, 0, 0, 0, 1, 0)
+        chunk += struct.pack("<6I", 0, 0, 0, len(signal), 0, 0)
+        data = path.read_bytes() + b"smpl" + struct.pack("<I", len(chunk)) + chunk
+        path.write_bytes(data[:4] + struct.pack("<I", len(data) - 8) + data[8:])
 
 
 def load_manifest() -> dict:
@@ -90,7 +105,7 @@ def build(recipes: list[Recipe], manifest: dict) -> None:
             print(f"kept {recipe.name} (made by {kept[recipe.name].get('made_by')})")
             continue
         for variant in range(1, recipe.variants + 1):
-            write_wav(SFX / f"{recipe.name}_{variant}.wav", render(recipe, recipe.take, variant))
+            write_wav(SFX / f"{recipe.name}_{variant}.wav", render(recipe, recipe.take, variant), recipe.loop)
         # Variants the recipe no longer has
         for stale in SFX.glob(f"{recipe.name}_*.wav"):
             number = stale.stem.rsplit("_", 1)[1]
@@ -118,8 +133,8 @@ def build_takes(recipes: list[Recipe], directory: Path) -> None:
             players = []
             for variant in range(1, recipe.variants + 1):
                 file = f"{recipe.name}/{take}_{variant}.wav"
-                write_wav(directory / file, render(recipe, take, variant))
-                players.append(f'<audio controls preload="none" src="{file}"></audio>')
+                write_wav(directory / file, render(recipe, take, variant), recipe.loop)
+                players.append(f'<audio controls preload="none"{" loop" if recipe.loop else ""} src="{file}"></audio>')
             used = " (in the game)" if take == recipe.take else ""
             takes.append(
                 f'<label class="take"><input type="radio" name="{recipe.name}" value="{take}">'

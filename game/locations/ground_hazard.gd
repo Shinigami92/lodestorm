@@ -9,6 +9,8 @@ extends Area3D
 @export_range(0.0, 1.0) var grip: float = 1.0
 ## How fast bodies walk here: the share of their usual speed (1: as usual).
 @export_range(0.0, 1.0) var speed: float = 1.0
+## How a player's steps sound here (see `PlayerSounds`); null: like the ground around.
+@export var step_sound: Sound
 
 ## The bodies standing in it, and their contacts.
 var _bodies: Array[Node3D] = []

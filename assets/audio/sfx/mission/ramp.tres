@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://cfpsltbdjsvxr"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://c5xccnf4rblws" path="res://assets/audio/sfx/mission/ramp_1.wav" id="2_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+streams_count = 1
+stream_0/stream = ExtResource("2_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -6.0
+limit = 1

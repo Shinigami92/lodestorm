@@ -92,6 +92,17 @@ extends Resource
 ## its feet with every step (m); 0: it doesn't.
 @export var tremor: float = 0.0
 
+@export_group("Sounds")
+## Plays its sounds this many times higher (see `AlienSounds`): bigger strains lower.
+@export_range(0.3, 2.0, 0.05) var voice_pitch: float = 1.0
+## Its own chitter, strike, hits (in the flesh, on the armor) and death; null: the hive's (the
+## swarmer's).
+@export var chitter_sound: Sound
+@export var strike_sound: Sound
+@export var hit_sound: Sound
+@export var armor_hit_sound: Sound
+@export var death_sound: Sound
+
 @export_group("Attacks")
 ## Tried in order: the first one that is ready and has the target in its range starts.
 @export var attacks: Array[AlienAttack] = []

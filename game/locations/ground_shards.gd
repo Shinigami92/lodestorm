@@ -3,8 +3,7 @@ extends GroundHazard
 ## A patch of glass shards on the ground (the Glass plains' hazard, see
 ## `LocationBiome.Hazard.SHARDS`): it hurts every player and alien walking over it, a little every
 ## `TICK` s. Readable and avoidable: the ground under it has its own tint and splinters lie on it.
-## Greybox: thin slivers lying around; the crunch underfoot comes with the sound effects. All values
-## TBD (playtest).
+## Steps on it crunch (`step_sound`). Greybox: thin slivers lying around. All values TBD (playtest).
 
 ## How often it hurts, in s.
 const TICK: float = 0.5
@@ -23,6 +22,8 @@ var _until_hurt: float = TICK
 
 func _ready() -> void:
 	super()
+	if not step_sound:
+		step_sound = preload("res://assets/audio/sfx/player/step_shards.tres")
 	_build()
 
 

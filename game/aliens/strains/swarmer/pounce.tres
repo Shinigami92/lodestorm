@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienPounce" format=3 uid="uid://bxrh5uecwwpep"]
 
 [ext_resource type="Script" uid="uid://bgkwpebf4727d" path="res://game/aliens/attacks/alien_pounce.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bkcikg5ryjq2l" path="res://assets/audio/sfx/aliens/windup_pounce.tres" id="2_windup_pounce"]
 
 [resource]
 script = ExtResource("1_script")
@@ -9,3 +10,4 @@ cooldown = 4.0
 wind_up = 0.4
 recovery = 0.8
 against_miners = false
+wind_up_sound = ExtResource("2_windup_pounce")

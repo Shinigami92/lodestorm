@@ -36,6 +36,8 @@ class Recipe:
     recordings: tuple[str, ...] = field(default_factory=tuple)
     # Peak level of the built files in dBFS
     peak_db: float = -1.0
+    # A loop (the drill, the storm): its end crossfades into its start, with loop points in the WAV
+    loop: bool = False
 
     @property
     def description(self) -> str:
@@ -351,3 +353,35 @@ def finish(signal: Signal, peak_db: float) -> Signal:
         signal[-1 - i] *= i / fade_out
     scale = 10.0 ** (peak_db / 20.0) / peak
     return [s * scale for s in signal]
+
+
+LOOP_LEAD = 0.25
+LOOP_CROSSFADE = 0.2
+
+
+def finish_loop(signal: Signal, peak_db: float) -> Signal:
+    """Makes a seamless loop: removes DC rumble, drops the first `LOOP_LEAD` s (the filters
+    settling, so a recipe makes that much more), crossfades the last `LOOP_CROSSFADE` s into the
+    start (equal power) and scales the peak to `peak_db`. Plays from the start to the end, again
+    and again, without a click."""
+    signal = highpass(signal, 25.0)[count(LOOP_LEAD) :]
+    fade = count(LOOP_CROSSFADE)
+    assert len(signal) > 2 * fade, "a loop must be longer than twice its crossfade"
+    head, body, tail = signal[:fade], signal[fade:-fade], signal[-fade:]
+    joined = []
+    for i in range(fade):
+        x = 0.5 * math.pi * i / fade
+        joined.append(tail[i] * math.cos(x) + head[i] * math.sin(x))
+    signal = joined + body
+    peak = max((abs(s) for s in signal), default=0.0)
+    if peak <= 0.0:
+        return signal
+    scale = 10.0 ** (peak_db / 20.0) / peak
+    return [s * scale for s in signal]
+
+
+def loop_seconds(seconds: float) -> float:
+    """How long a loop's recipe makes it, to play `seconds` per round: plus the lead
+    `finish_loop` drops and its crossfade. A steady tone joins without a dip when it fits
+    `seconds` a whole number of times (e.g. 2 s: multiples of 0.5 Hz)."""
+    return seconds + LOOP_LEAD + LOOP_CROSSFADE

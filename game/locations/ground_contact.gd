@@ -33,6 +33,15 @@ func grip() -> float:
 	return least
 
 
+## How steps sound here: the first hazard's that has its own sound (`GroundHazard.step_sound`);
+## null: like ordinary ground.
+func step_sound() -> Sound:
+	for hazard: GroundHazard in _hazards:
+		if hazard.step_sound:
+			return hazard.step_sound
+	return null
+
+
 ## Holds it to `share` of its walking speed for `seconds` (a stalker's hooks); a stronger snare
 ## under way stays, an equal one lasts the longer of the two.
 func snare(share: float, seconds: float) -> void:

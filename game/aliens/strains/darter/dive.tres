@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienDive" format=3 uid="uid://bi6dgvigj2e5n"]
 
 [ext_resource type="Script" uid="uid://dcil02nf2e11" path="res://game/aliens/attacks/alien_dive.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cw52w0hagdhrm" path="res://assets/audio/sfx/aliens/windup_dive.tres" id="2_windup_dive"]
 
 [resource]
 script = ExtResource("1_script")
@@ -18,3 +19,4 @@ width = 1.0
 daze = 0.0
 max_height_difference = 5.0
 sting_height = 1.8
+wind_up_sound = ExtResource("2_windup_dive")

@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="AlienBurst" format=3 uid="uid://bpf3bkw051t2s"]
 
 [ext_resource type="Script" uid="uid://cp3u4uk0sxqwc" path="res://game/aliens/attacks/alien_burst.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://dn0yol0xjw6s6" path="res://assets/audio/sfx/aliens/windup_burst.tres" id="2_windup_burst"]
 
 [resource]
 script = ExtResource("1_script")
@@ -13,3 +14,4 @@ against_miners = false
 radius = 3.0
 cloud_time = 4.0
 cloud_damage = 8.0
+wind_up_sound = ExtResource("2_windup_burst")

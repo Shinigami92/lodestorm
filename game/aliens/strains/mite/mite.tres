@@ -18,4 +18,5 @@ move_speed = 5.6
 acceleration = 40.0
 turn_speed = 14.0
 detection_range = 16.0
+voice_pitch = 1.5
 attacks = Array[ExtResource("3_attack")]([ExtResource("4_bite")])

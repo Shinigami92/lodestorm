@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://c1qgwtgjrbt7i"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://do1vtuivf7a8g" path="res://assets/audio/sfx/aliens/windup_spit_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://iwhdp0skkx42" path="res://assets/audio/sfx/aliens/windup_spit_2.wav" id="3_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.04
+streams_count = 2
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -4.0
+limit = 3
+max_distance = 40.0

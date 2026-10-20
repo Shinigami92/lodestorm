@@ -57,6 +57,8 @@ const WARNING_BLINK_RATE: float = 2.0
 const RAMP_CLOSED_ANGLE: float = PI * 0.5
 ## asin(2.5 / 5): the 5 m ramp reaches 2.5 m down from the door to the ground (30°).
 const RAMP_OPEN_ANGLE: float = -0.523599
+## The ramp moving (as long as `ramp_duration`): latches, hydraulics, the clunk at the end.
+const RAMP_SOUND: Sound = preload("res://assets/audio/sfx/mission/ramp.tres")
 
 ## Seconds the ramp takes to go down or up. TBD (playtest).
 @export var ramp_duration: float = 2.0
@@ -94,6 +96,8 @@ var _armed: Array[Player] = []
 ## What the cutaway shows right now.
 var _view: View = View.OUTSIDE
 var _ramp_angle: float = RAMP_CLOSED_ANGLE
+## Where the ramp last set off to (it sounds each time it sets off).
+var _ramp_heading: float = NAN
 var _button_material := StandardMaterial3D.new()
 
 @onready var ramp_button: Interactable = $RampButton
@@ -132,8 +136,13 @@ func _physics_process(delta: float) -> void:
 	var target: float = RAMP_OPEN_ANGLE if ramp_open else RAMP_CLOSED_ANGLE
 	var speed: float = (RAMP_CLOSED_ANGLE - RAMP_OPEN_ANGLE) / ramp_duration
 	if _ramp_angle != target:
+		if target != _ramp_heading and not is_nan(_ramp_heading):
+			Sfx.play_at(RAMP_SOUND, _ramp.global_position)
+		_ramp_heading = target
 		_ramp_angle = move_toward(_ramp_angle, target, speed * delta)
 		_ramp.rotation.z = _ramp_angle
+	elif is_nan(_ramp_heading):
+		_ramp_heading = target
 	_update_view()
 
 

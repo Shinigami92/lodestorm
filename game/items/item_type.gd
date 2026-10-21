@@ -1,9 +1,10 @@
 class_name ItemType
 extends Resource
-## Anything a player keeps in their hold: ores (`OreType`), later the refinery's alloys. Each is
-## recognizable at a glance by its color, its shape (an ore's crystal, its badge's icon) and its
-## glow pattern (`glow`) together, so telling them apart never depends on color alone. Costs, the
-## hold (`PlayerHold`), cards (`ItemBadge`, `ItemCost`) and tests handle every kind the same way.
+## Anything a player keeps in their hold: ores (`OreType`) and the refinery's alloys (`AlloyType`).
+## Each is recognizable at a glance by its color, its shape (an ore's crystal, an alloy's ingot, its
+## badge's icon) and its glow pattern (`glow`) together, so telling them apart never depends on
+## color alone. Costs, the hold (`PlayerHold`), cards (`ItemBadge`, `ItemCost`) and tests handle
+## every kind the same way.
 
 ## How its glow changes over time (and over the crystal). Nothing flashes faster than 3 times a
 ## second (photosensitivity).
@@ -38,6 +39,11 @@ func get_glow_material() -> Material:
 	if not _glow_material:
 		_glow_material = OreGlow.fill_material(self)
 	return _glow_material
+
+
+## The icon its badge shows (`ItemBadge`), or null for the badge's drawn crystal.
+func get_badge_icon() -> Texture2D:
+	return icon
 
 
 ## Its translated name.

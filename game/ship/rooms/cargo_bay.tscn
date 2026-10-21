@@ -34,7 +34,7 @@ spot_angle = 64.2
 spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -3.6, 0.02, 5.5)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -3.6, 0.02, 12.4)
 pixel_size = 0.01
 text = "Cargo bay"
 font_size = 96

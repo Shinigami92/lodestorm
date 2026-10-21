@@ -5,9 +5,10 @@ extends CanvasLayer
 ## in exported builds (debug ones too) it removes itself at start. Tuning changes the settings
 ## resources live, so every scene using them sees the new values right away; they last until the
 ## game stops and aren't written to the files. Also shows the mission and flight state and has
-## shortcuts for testing the flight, storm, death, fights, weapons, ammo, upgrades and the heat
-## shield, and teammates standing still (to see their rings before co-op, and hurt to heal them),
-## and switches for god mode (players take no damage) and the aliens' AI (off: they stand still).
+## shortcuts for testing the flight, storm, death, fights, weapons, ammo, upgrades, the heat
+## shield and the furnaces, and teammates standing still (to see their rings before co-op, and hurt
+## to heal them), and switches for god mode (players take no damage) and the aliens' AI (off: they
+## stand still).
 ## Integer settings get whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
@@ -267,8 +268,11 @@ const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
 const SKILL_TREE: SkillTree = preload("res://game/progression/skills/tree/skill_tree.tres")
 ## Every ore of the game: `fill_hold` and `give_ore` add each of them.
 const ALL_ORES: OreCatalog = preload("res://game/ores/all_ores.tres")
-## How much `fill_hold` adds of each ore.
+## Every alloy of the game: `fill_hold` adds bars of each of them.
+const ALL_ALLOYS: AlloyCatalog = preload("res://game/refinery/all_alloys.tres")
+## How much `fill_hold` adds of each ore, and how many bars of each alloy.
 const HOLD_FILL: float = 900.0
+const ALLOY_FILL: float = 30.0
 const CARGO_FILL: float = 60.0
 const PLAYER_SCENE_PATH: String = "res://game/player/player.tscn"
 ## Loaded when the panel is built: it refers to every strain's scene.
@@ -550,11 +554,26 @@ func _hurt_teammates() -> void:
 			player.take_damage(player.vitals.maximum() * 0.5)
 
 
-## Adds `HOLD_FILL` units of every ore type to every player's hold, to test the upgrade stations.
+## Adds `HOLD_FILL` units of every ore type and `ALLOY_FILL` bars of every alloy to every player's
+## hold, to test the upgrade stations, the furnaces and the ingot rack.
 func fill_hold() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		for ore_type: OreType in ALL_ORES.ores:
 			player.hold.add(ore_type, HOLD_FILL)
+		for alloy: AlloyType in ALL_ALLOYS.alloys:
+			player.hold.add(alloy, ALLOY_FILL)
+
+
+## Unlocks the next of every ship's furnaces (until the quests do).
+func _unlock_furnace() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		ship.furnaces.unlock()
+
+
+## Finishes every bar of every player's batches in the furnaces now.
+func _finish_refining() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		player.refining.finish_all(player.hold)
 
 
 ## Deletes the save (the dev save in the editor) and reloads the map, without asking (only while
@@ -660,6 +679,8 @@ func _build() -> void:
 	_button(progress, "Unlock weapons", unlock_weapons)
 	_button(progress, "Learn skills", learn_skills)
 	_button(progress, "Fill hold", fill_hold)
+	_button(progress, "Unlock furnace", _unlock_furnace)
+	_button(progress, "Finish refining", _finish_refining)
 	_button(progress, "Install shield", install_shield)
 	_button(progress, "Open all", open_all_bodies)
 	_button(progress, "Reset save", reset_save)

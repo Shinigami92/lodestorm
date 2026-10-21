@@ -201,6 +201,26 @@
       "variants": 6,
       "recordings": []
     },
+    "refinery/bar_clink": {
+      "made_by": "build.py",
+      "variants": 3,
+      "recordings": []
+    },
+    "refinery/furnace_ignite": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "refinery/furnace_roar": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "refinery/furnace_stop": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "weapons/auger_drill": {
       "made_by": "build.py",
       "variants": 1,

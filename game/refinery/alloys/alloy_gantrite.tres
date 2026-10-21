@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AlloyType" format=3 uid="uid://dvkvf6q0x7p5x"]
+
+[ext_resource type="Script" uid="uid://clssy2q7i261w" path="res://game/refinery/alloy_type.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="2_ore_type"]
+[ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="3_olvane"]
+[ext_resource type="Resource" uid="uid://1uonnxu85sni" path="res://game/ores/types/ore_halcyne.tres" id="4_halcyne"]
+
+[resource]
+script = ExtResource("1_script")
+tier = 1
+recipe = Dictionary[ExtResource("2_ore_type"), int]({ExtResource("3_olvane"): 10, ExtResource("4_halcyne"): 5})
+seconds_per_bar = 60.0
+display_name = "Gantrite"
+color = Color(0.95, 0.82, 0.45, 1)
+glow = 1

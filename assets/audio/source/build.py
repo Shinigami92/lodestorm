@@ -29,6 +29,7 @@ import aliens  # noqa: F401  (registers its recipes)
 import mining  # noqa: F401
 import mission  # noqa: F401
 import player  # noqa: F401
+import refinery  # noqa: F401
 import weapons  # noqa: F401
 from synth import RATE, RECIPES, Recipe, Signal, finish, finish_loop
 

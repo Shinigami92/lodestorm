@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AlloyType" format=3 uid="uid://bfxngh48jlfwu"]
+
+[ext_resource type="Script" uid="uid://clssy2q7i261w" path="res://game/refinery/alloy_type.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="2_ore_type"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="3_kyrite"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="4_vyrel"]
+
+[resource]
+script = ExtResource("1_script")
+tier = 1
+recipe = Dictionary[ExtResource("2_ore_type"), int]({ExtResource("3_kyrite"): 10, ExtResource("4_vyrel"): 5})
+seconds_per_bar = 60.0
+display_name = "Cobrel"
+color = Color(1.0, 0.5, 0.18, 1)

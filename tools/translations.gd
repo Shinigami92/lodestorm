@@ -17,6 +17,7 @@ const TEXT_PROPERTIES: Array[StringName] = [&"text", &"placeholder_text", &"tool
 ## Resource types (script class names) with player-facing texts, and their text properties.
 const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"AlienStrain": [&"display_name"],
+	"AlloyType": [&"display_name"],
 	"CelestialBody": [&"display_name"],
 	"Dialogue": [&"prompt"],
 	"LocationBiome": [&"display_name"],

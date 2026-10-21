@@ -1,8 +1,9 @@
 class_name SaveGame
 extends Node
 ## Keeps the progress between sessions in one save: the host's (the ship's heat shield, where it
-## is and the story's flags, later crew and quests) in `ship.json` and the local player's (their
-## hold, owned weapons and blueprints, loadout, upgrade levels, skill ranks) in `player.json`,
+## is, the story's flags and the furnaces unlocked, later crew and quests) in `ship.json` and the
+## local player's (their hold, their batches in the furnaces, owned weapons and blueprints, loadout,
+## upgrade levels, skill ranks) in `player.json`,
 ## both in `save/` under `directory`. It loads
 ## them when the map starts and saves whenever progress changes while no mission is underway;
 ## what changes during a mission is saved once it's over (returned or lost), so quitting
@@ -95,8 +96,10 @@ func _ready() -> void:
 	if ship:
 		ship.story.changed.connect(_on_progress_changed)
 		ship.heat_shield.changed.connect(_on_progress_changed)
+		ship.furnaces.changed.connect(_on_progress_changed)
 	if player:
 		player.hold.changed.connect(_on_progress_changed)
+		player.refining.changed.connect(_on_progress_changed)
 		player.arsenal.changed.connect(_on_progress_changed)
 		player.loadout.changed.connect(_on_progress_changed)
 		player.upgrades.changed.connect(_on_progress_changed)
@@ -156,8 +159,8 @@ func reset_progress() -> bool:
 
 
 ## What's saved of `ship`: the story's flags, the heat shield (its MK level, whether the next
-## plate is the ship's project and what's paid into it) and the body the ship is at (its id; none
-## before the first flight).
+## plate is the ship's project and what's paid into it), the furnaces unlocked and the body the
+## ship is at (its id; none before the first flight).
 static func ship_data(of_ship: Ship) -> Dictionary:
 	var flags: Array = []
 	for flag: StringName in of_ship.story.flags:
@@ -171,14 +174,16 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 		"version": VERSION,
 		"story": flags,
 		"shield": {"mk": shield.mk, "project": shield.project, "paid": paid},
+		"furnaces": of_ship.furnaces.unlocked,
 	}
 	if of_ship.mission and of_ship.mission.at_body:
 		data["at"] = String(of_ship.mission.at_body.id)
 	return data
 
 
-## What's saved of `of_player`: its hold (units per item, the items ever in it), the weapons it
-## owns and its blueprints, its loadout (null: empty
+## What's saved of `of_player`: its hold (units per item, the items ever in it), its batches in
+## the furnaces (per batch its furnace slot, the alloy, the bars, how many are done and when it
+## started in Unix seconds), the weapons it owns and its blueprints, its loadout (null: empty
 ## slot), the MK level of each upgrade it bought and the rank of each skill it learned.
 static func player_data(of_player: Player) -> Dictionary:
 	var hold: Dictionary = {}
@@ -188,6 +193,22 @@ static func player_data(of_player: Player) -> Dictionary:
 	for item: ItemType in of_player.hold.found:
 		found.append(_reference(item))
 	found.sort()
+	var refining: Array = []
+	for slot: int in Refining.SLOTS:
+		var batch: AlloyBatch = of_player.refining.get_batch(slot)
+		if batch:
+			(
+				refining
+				. append(
+					{
+						"slot": slot,
+						"alloy": _reference(batch.alloy),
+						"bars": batch.bars,
+						"done": batch.done,
+						"started": batch.started,
+					}
+				)
+			)
 	var weapons: Array = []
 	for weapon_type: WeaponType in of_player.arsenal.weapons:
 		weapons.append(_reference(weapon_type))
@@ -210,6 +231,7 @@ static func player_data(of_player: Player) -> Dictionary:
 		"version": VERSION,
 		"hold": hold,
 		"found": found,
+		"refining": refining,
 		"arsenal": weapons,
 		"blueprints": blueprints,
 		"loadout": loadout,
@@ -234,6 +256,12 @@ func _apply_ship(data: Dictionary) -> void:
 		ship.story.emit_changed()
 	if data.get("shield") is Dictionary:
 		_apply_shield(data["shield"] as Dictionary)
+	if data.has("furnaces"):
+		var count: float = _number(data["furnaces"], -1.0)
+		if count < 0.0 or count > Refining.SLOTS:
+			_outdated = true
+			push_warning("Save: skipped furnaces %s" % data["furnaces"])
+		ship.furnaces.restore(roundi(clampf(count, 0.0, Refining.SLOTS)))
 	if data.has("at"):
 		_apply_position(data["at"])
 
@@ -280,6 +308,8 @@ func _apply_player(data: Dictionary) -> void:
 		data = data.duplicate()
 		data.merge(_ship_hold)
 	_apply_hold(data)
+	if data.get("refining") is Array:
+		_apply_refining(data["refining"] as Array)
 	if data.get("arsenal") is Array:
 		var weapons: Array[WeaponType] = []
 		for path: Variant in data["arsenal"] as Array:
@@ -369,6 +399,32 @@ func _apply_hold(data: Dictionary) -> void:
 			else:
 				_outdated = true
 				push_warning("Save: skipped found item %s" % path)
+
+
+## Reads a player's batches in the furnaces and puts every bar finished since into the hold.
+func _apply_refining(batches: Array) -> void:
+	for entry: Variant in batches:
+		var batch: AlloyBatch = null
+		var slot: int = -1
+		if entry is Dictionary:
+			var saved: Dictionary = entry
+			var alloy := _resource(saved.get("alloy")) as AlloyType
+			var bars: int = roundi(_number(saved.get("bars"), 0.0))
+			var done: int = roundi(_number(saved.get("done"), -1.0))
+			var started: float = _number(saved.get("started"), NAN)
+			slot = roundi(_number(saved.get("slot"), -1.0))
+			var free: bool = (
+				slot >= 0 and slot < Refining.SLOTS and not player.refining.get_batch(slot)
+			)
+			if alloy and free and bars >= 1 and done >= 0 and done < bars and not is_nan(started):
+				batch = AlloyBatch.new(alloy, bars, started)
+				batch.done = done
+		if batch:
+			player.refining.restore(slot, batch)
+		else:
+			_outdated = true
+			push_warning("Save: skipped refining batch %s" % entry)
+	player.refining.update(player.hold, Time.get_unix_time_from_system())
 
 
 ## How a save names `resource`: its UID (its path if it has none).

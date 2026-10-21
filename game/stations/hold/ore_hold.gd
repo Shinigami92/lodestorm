@@ -18,7 +18,8 @@ extends Station
 ## A silo is used directly (`interact` next to it): the hold opens as a station with it selected,
 ## the camera follows the selected silo, and the card shows the ore's name, how much the hold has
 ## and where it's found. `tab_prev`/`tab_next` step through the silos in reading order (rows from
-## the back, each from left to right), the directions to the nearest silo on screen.
+## the back, each from left to right), the directions to the nearest silo, furnace or ingot rack
+## shelf on screen (the cargo bay's `room`).
 
 const CATALOG: OreCatalog = preload("res://game/ores/all_ores.tres")
 ## Silo size per band: radius, height (m) and the units it shows as full (TBD (playtest)).
@@ -176,17 +177,10 @@ func _enable_uses(enabled: bool) -> void:
 		tank.use_point.enabled = enabled
 
 
-## Whose hold the silos show while nobody uses them: the ship's viewer, else the first local
-## player.
+## Whose hold the silos show while nobody uses them (see `Ship.get_viewing_player`).
 func _viewer() -> Player:
 	var ship := get_parent() as Ship
-	var viewer := ship.viewer as Player if ship else null
-	if viewer:
-		return viewer
-	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
-		if player.local:
-			return player
-	return null
+	return ship.get_viewing_player() if ship else Player.first_local(get_tree())
 
 
 func _on_item_changed(item: ItemType, amount: float) -> void:

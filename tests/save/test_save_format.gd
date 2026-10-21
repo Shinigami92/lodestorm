@@ -12,6 +12,8 @@ const DASH: Skill = preload("res://game/progression/skills/tree/dash.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")
 const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
+const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
+const COBREL: AlloyType = preload("res://game/refinery/alloys/alloy_cobrel.tres")
 const DIRECTORY: String = "user://test_save_format/"
 
 var _map: Node3D
@@ -237,6 +239,76 @@ func test_save_without_a_known_weapon_keeps_the_defaults() -> void:
 	assert_eq(_player.loadout.get_weapon(0), HARL)
 	assert_eq(_player.loadout.get_weapon(1), DRAY)
 	assert_eq(_player.get_weapon_type(), HARL)
+
+
+func test_furnaces_and_batches_are_saved() -> void:
+	_ship.furnaces.unlock()
+	_ship.furnaces.unlock()
+	_player.hold.add(KYRITE, 100.0)
+	_player.hold.add(VYREL, 100.0)
+	var now: float = Time.get_unix_time_from_system()
+	assert_true(_player.refining.start(1, COBREL, 4, _player.hold, now))
+	await wait_process_frames(1)
+	var furnaces: float = _saved(SaveGame.SHIP_FILE)["furnaces"]
+	assert_eq(furnaces, 2.0)
+	var batches: Array = _saved(SaveGame.PLAYER_FILE)["refining"]
+	assert_eq(batches.size(), 1)
+	var batch: Dictionary = batches[0]
+	var slot: float = batch["slot"]
+	var alloy: String = batch["alloy"]
+	var bars: float = batch["bars"]
+	var done: float = batch["done"]
+	var started: float = batch["started"]
+	assert_eq(slot, 1.0)
+	assert_eq(alloy, _uid(COBREL))
+	assert_eq(bars, 4.0)
+	assert_eq(done, 0.0)
+	assert_almost_eq(started, now, 0.001)
+	await _restart()
+	assert_eq(_ship.furnaces.unlocked, 2)
+	var loaded: AlloyBatch = _player.refining.get_batch(1)
+	assert_eq(loaded.alloy, COBREL)
+	assert_eq(loaded.bars, 4)
+	assert_almost_eq(loaded.started, now, 0.001)
+	assert_eq(_player.hold.amount(KYRITE), 60.0, "paid once")
+
+
+func test_bars_finished_while_away_are_in_the_hold_on_loading() -> void:
+	var started: float = Time.get_unix_time_from_system() - COBREL.seconds_per_bar * 2.5
+	var player_data: Dictionary = {
+		"version": SaveGame.VERSION,
+		"refining":
+		[
+			{"slot": 0, "alloy": _uid(COBREL), "bars": 5, "done": 1, "started": started},
+		],
+	}
+	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
+	await _restart()
+	assert_eq(_player.hold.amount(COBREL), 1.0, "the second bar; the first was in the hold already")
+	assert_eq(_player.refining.get_batch(0).done, 2)
+
+
+func test_damaged_batches_are_skipped() -> void:
+	_write(SaveGame.SHIP_FILE, JSON.stringify({"version": SaveGame.VERSION, "furnaces": 9}))
+	var now: float = Time.get_unix_time_from_system()
+	var player_data: Dictionary = {
+		"version": SaveGame.VERSION,
+		"refining":
+		[
+			{"slot": 0, "alloy": _uid(KYRITE), "bars": 5, "done": 0, "started": now},
+			{"slot": 7, "alloy": _uid(COBREL), "bars": 5, "done": 0, "started": now},
+			{"slot": 1, "alloy": _uid(COBREL), "bars": 5, "done": 5, "started": now},
+			{"slot": 2, "alloy": _uid(COBREL), "bars": 5, "done": 0},
+			"x",
+			{"slot": 3, "alloy": _uid(COBREL), "bars": 5, "done": 0, "started": now},
+		],
+	}
+	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
+	await _restart()
+	assert_eq(_ship.furnaces.unlocked, Refining.SLOTS, "clamped")
+	for slot: int in 3:
+		assert_null(_player.refining.get_batch(slot), "slot %d" % slot)
+	assert_not_null(_player.refining.get_batch(3))
 
 
 func before_each() -> void:

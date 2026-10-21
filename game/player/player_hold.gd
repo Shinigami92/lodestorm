@@ -1,10 +1,10 @@
 class_name PlayerHold
 extends Resource
 ## A player's own hold: what they brought back over all runs and haven't spent yet, in units per
-## item (ores, later alloys), and which items were ever in it. Each player has their own, in their
-## own save (like their `Upgrades`), also when they play on someone else's ship: every run's haul
-## goes to every player in the session whole (see `Ship.store_haul`), and each pays for their own
-## gear from it. The silos in the cargo bay show it (`OreHold`).
+## item (ores, the alloys' bars), and which items were ever in it. Each player has their own, in
+## their own save (like their `Upgrades`), also when they play on someone else's ship: every run's
+## haul goes to every player in the session whole (see `Ship.store_haul`), and each pays for their
+## own gear from it. The silos in the cargo bay show it (`OreHold`).
 
 ## Emitted when the amount of `item` changes (a haul stored, a cost paid).
 signal item_changed(item: ItemType, amount: float)

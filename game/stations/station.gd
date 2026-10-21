@@ -6,9 +6,10 @@ extends WorldMenu
 ## selectable:
 ## - mouse: the cursor points at them (outlined while hovered), a click selects one;
 ## - gamepad and keyboard: `move_*` and the ui_* directions move the highlight to the nearest part
-##   in that direction on screen, `tab_prev`/`tab_next` switch between groups (`_cycle`, e.g. the
-##   next weapon on the rack), `interact` and `ui_accept` press the card's main action, `pause` and
-##   `ui_cancel` step back (`_back`) or close.
+##   in that direction on screen (for stations sharing a `room`, among the parts of all of them,
+##   handing the user over to the station of the part it lands on), `tab_prev`/`tab_next` switch
+##   between groups (`_cycle`, e.g. the next weapon on the rack), `interact` and `ui_accept` press
+##   the card's main action, `pause` and `ui_cancel` step back (`_back`) or close.
 ## The holo card (`Card`, a transparent `WorldPanel` showing a `StationCard`, which keeps to the
 ## middle of it and only takes the height it needs) floats beside the selected part,
 ## faces the camera and draws over everything; the mouse uses its buttons like on a screen. An
@@ -31,9 +32,15 @@ const CARD_SPEED: float = 14.0
 ## Width of the leader line and size of its dot on the part, in m.
 const LEADER_WIDTH: float = 0.012
 const LEADER_DOT: float = 0.035
+## How far to either side of a direction (on screen) the highlight looks for the next part first.
+const CONE: float = deg_to_rad(60.0)
 
 ## Where the player using it stands, looking along its -Z.
 @export var user_spot: Node3D
+## The room it shares with other stations (e.g. `&"cargo_bay"`: the silos, the furnaces and the
+## ingot rack): the directions move the highlight across all of them (never into another room).
+## Empty: only its own parts.
+@export var room: StringName = &""
 
 ## The selected part, or null.
 var selected: StationPart
@@ -112,6 +119,40 @@ func get_parts() -> Array[StationPart]:
 	return parts
 
 
+## The parts of every station in its `room` that `player` can use (not one someone else is
+## using), for moving the highlight across them; only its own parts outside a room.
+func room_parts(player: Player) -> Array[StationPart]:
+	if room.is_empty():
+		return get_parts()
+	var parts: Array[StationPart] = []
+	for menu: WorldMenu in get_tree().get_nodes_in_group(GROUP):
+		var station := menu as Station
+		if not station or station.room != room or not station.is_visible_in_tree():
+			continue
+		if not station.can_use(player) or (station.user and station.user != player):
+			continue
+		parts.append_array(station.get_parts())
+	return parts
+
+
+## The station `part` belongs to (its nearest `Station` ancestor), or null.
+static func of(part: Node) -> Station:
+	var node: Node = part.get_parent() if part else null
+	while node and not node is Station:
+		node = node.get_parent()
+	return node as Station
+
+
+## Hands the user over to `station` with `part` selected (moving the highlight across a room).
+func hand_over(station: Station, part: StationPart) -> void:
+	var player: Player = user
+	if not player or station == self:
+		return
+	close()
+	station.select(part)
+	station.open(player)
+
+
 ## The parts the mouse can point at right now: `get_parts` and maybe more (e.g. the weapons on
 ## the rack).
 func get_pickable_parts() -> Array[StationPart]:
@@ -137,18 +178,29 @@ func step(direction: Vector2) -> void:
 	if not selected:
 		return
 	var best: StationPart = _neighbor(selected, direction)
-	if best:
+	if not best:
+		return
+	# A part of another station of the room hands the user over; any other is its own (a locker's
+	# wall is a node of its own).
+	var station: Station = Station.of(best)
+	if station and station != self and not room.is_empty() and station.room == room:
+		hand_over(station, best)
+	else:
 		select(best)
 
 
 ## The part the highlight moves to from `part` in `direction` (on screen: up is -Y), or null. By
-## default the nearest of `get_parts` in that direction on screen; a station with a grid of parts
-## (the weapon racks) moves along it instead.
+## default the nearest of `room_parts` in that direction on screen (a part of another station of
+## the room hands the user over to it); a station with a grid of parts (the weapon racks) moves
+## along it instead.
 func _neighbor(part: StationPart, direction: Vector2) -> StationPart:
-	return _nearest_on_screen(part, direction, get_parts())
+	return _nearest_on_screen(part, direction, room_parts(user) if user else get_parts())
 
 
-## The one of `parts` nearest to `part` in `direction` on screen, or null.
+## The one of `parts` nearest to `part` in `direction` on screen, or null: the nearest within
+## `CONE` of the direction (a part close by and a bit to the side beats one straight on but far
+## away, like the next row of silos), else the most nearly straight on of the ones that lie that
+## way at all.
 func _nearest_on_screen(
 	part: StationPart, direction: Vector2, parts: Array[StationPart]
 ) -> StationPart:
@@ -156,8 +208,11 @@ func _nearest_on_screen(
 	if not camera:
 		return null
 	var from: Vector2 = camera.unproject_position(part.global_position)
+	var spread: float = tan(CONE)
 	var best: StationPart = null
 	var best_score: float = INF
+	var fallback: StationPart = null
+	var fallback_score: float = INF
 	for candidate: StationPart in parts:
 		if candidate == part:
 			continue
@@ -165,12 +220,17 @@ func _nearest_on_screen(
 		var along: float = offset.dot(direction)
 		if along <= 0.0:
 			continue
-		# Straight in that direction counts more than off to the side.
-		var score: float = along + 2.0 * absf(offset.cross(direction))
-		if score < best_score:
+		var aside: float = absf(offset.cross(direction))
+		var score: float = along + 0.5 * aside
+		if aside <= along * spread and score < best_score:
 			best = candidate
 			best_score = score
-	return best
+		# Straight in that direction counts more than off to the side.
+		var wide: float = along + 2.0 * aside
+		if wide < fallback_score:
+			fallback = candidate
+			fallback_score = wide
+	return best if best else fallback
 
 
 ## Shows or hides the card and its leader line (e.g. while the bed's player falls asleep).

@@ -6,6 +6,7 @@
 
 [node name="OreHold" type="Node3D"]
 script = ExtResource("1_script")
+room = &"cargo_bay"
 view_height = 7.0
 
 [node name="Card" parent="." instance=ExtResource("2_panel")]

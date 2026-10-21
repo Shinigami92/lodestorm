@@ -1,4 +1,4 @@
-class_name OreCost
+class_name ItemCost
 extends HFlowContainer
 ## A cost in ore on a holo card: per ore type its badge with its name and "cost / in the hold",
 ## red where the hold is short (an upgrade's next level, a skill's next rank).
@@ -21,7 +21,7 @@ func show_cost(cost: Dictionary[OreType, int], hold: Dictionary[OreType, float])
 		for ore_type: OreType in cost:
 			var item := HBoxContainer.new()
 			item.add_theme_constant_override(&"separation", 8)
-			item.add_child(OreBadge.new(ore_type))
+			item.add_child(ItemBadge.new(ore_type))
 			var amount := Label.new()
 			# Numbers only: nothing to translate.
 			amount.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED

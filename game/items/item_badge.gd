@@ -1,8 +1,8 @@
-class_name OreBadge
+class_name ItemBadge
 extends HBoxContainer
-## An ore on a holo card: its icon tinted in its color and glowing in its pattern
-## (`assets/shaders/ore_badge.gdshader`), optionally followed by its translated name. An ore
-## without an icon yet gets a faceted crystal drawn in code instead.
+## An item (an ore, later an alloy) on a holo card: its icon tinted in its color and glowing in its
+## pattern (`assets/shaders/ore_badge.gdshader`), optionally followed by its translated name. An
+## item without an icon yet gets a faceted crystal drawn in code instead.
 
 const SHADER: Shader = preload("res://assets/shaders/ore_badge.gdshader")
 ## Edge length of the icon, in the card's pixels (a bit taller than the body text).
@@ -13,10 +13,10 @@ const FALLBACK_SIZE: int = 96
 ## The fallback icon, made once.
 static var _fallback: ImageTexture
 
-## The ore shown, or null.
-var ore_type: OreType:
+## The item shown, or null.
+var item: ItemType:
 	set(value):
-		ore_type = value
+		item = value
 		_update()
 ## Shows its name next to the icon.
 var show_name: bool = true:
@@ -29,7 +29,7 @@ var _name := Label.new()
 var _material := ShaderMaterial.new()
 
 
-func _init(shown: OreType = null, with_name: bool = true) -> void:
+func _init(shown: ItemType = null, with_name: bool = true) -> void:
 	add_theme_constant_override(&"separation", 4)
 	_material.shader = SHADER
 	_icon.material = _material
@@ -45,7 +45,7 @@ func _init(shown: OreType = null, with_name: bool = true) -> void:
 	_name.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	add_child(_name)
 	show_name = with_name
-	ore_type = shown
+	item = shown
 
 
 func _notification(what: int) -> void:
@@ -69,15 +69,15 @@ func get_shown_name() -> String:
 
 
 func _update() -> void:
-	visible = ore_type != null
-	if not ore_type:
+	visible = item != null
+	if not item:
 		return
-	_icon.texture = ore_type.icon if ore_type.icon else fallback_icon()
-	_material.set_shader_parameter(&"color", ore_type.color)
-	_material.set_shader_parameter(&"glow", int(ore_type.glow))
-	_material.set_shader_parameter(&"dark_body", ore_type.dark_body)
+	_icon.texture = item.icon if item.icon else fallback_icon()
+	_material.set_shader_parameter(&"color", item.color)
+	_material.set_shader_parameter(&"glow", int(item.glow))
+	_material.set_shader_parameter(&"dark_body", item.dark_body)
 	_name.visible = show_name
-	_name.text = ore_type.get_display_name()
+	_name.text = item.get_display_name()
 
 
 ## A crystal for ores without an icon: a kite of four grey facets on transparent, like the icons

@@ -1,8 +1,8 @@
 class_name SaveGame
 extends Node
-## Keeps the progress between sessions in one save: the host's (the ship's hold, its heat shield,
-## where it is and the story's flags, later crew and quests) in `ship.json` and the local
-## player's (owned weapons and blueprints, loadout, upgrade levels, skill ranks) in `player.json`,
+## Keeps the progress between sessions in one save: the host's (the ship's heat shield, where it
+## is and the story's flags, later crew and quests) in `ship.json` and the local player's (their
+## hold, owned weapons and blueprints, loadout, upgrade levels, skill ranks) in `player.json`,
 ## both in `save/` under `directory`. It loads
 ## them when the map starts and saves whenever progress changes while no mission is underway;
 ## what changes during a mission is saved once it's over (returned or lost), so quitting
@@ -11,11 +11,12 @@ extends Node
 ## Resources (ore types, weapons, upgrades, skills) are saved by their UID, so they can be moved
 ## and renamed; saves of version 1 named them by path, which `MOVED` follows. Unknown entries are
 ## skipped, and a save without a known weapon keeps the default arsenal and loadout; a file that
-## can't be read is kept as `<name>.corrupt` and the game starts from the defaults.
+## can't be read is kept as `<name>.corrupt` and the game starts from the defaults. Up to version 2
+## the hold was the ship's: it moves from `ship.json` into `player.json`.
 
 const GROUP: StringName = &"save_games"
 ## The save format; raise it (and convert older saves in `_read`) when the format changes.
-const VERSION: int = 2
+const VERSION: int = 3
 const SHIP_FILE: String = "ship.json"
 const PLAYER_FILE: String = "player.json"
 ## Where resources named by path in version 1 saves went: a file, or a folder (ending in "/") and
@@ -44,7 +45,7 @@ const MOVED: Dictionary[String, String] = {
 ## nothing is loaded or saved (the tests, `tests/support/pre_run.gd`).
 static var directory: String = "user://dev/" if OS.has_feature("editor") else "user://"
 
-## The ship whose hold is saved.
+## The ship whose state is saved.
 @export var ship: Ship
 ## The player whose gear is saved (the local one).
 @export var player: Player
@@ -57,6 +58,8 @@ var _save_queued: bool = false
 var _active: bool = true
 ## Whether the save just read was older or had to be repaired, so it's written again right away.
 var _outdated: bool = false
+## The hold a `ship.json` before version 3 had (`hold`, `found`), for the player's save to take.
+var _ship_hold: Dictionary = {}
 
 
 ## The folder of the save (empty when saving is off).
@@ -90,10 +93,10 @@ func _ready() -> void:
 		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
 	load_progress()
 	if ship:
-		ship.hold_changed.connect(_on_progress_changed.unbind(2))
 		ship.story.changed.connect(_on_progress_changed)
 		ship.heat_shield.changed.connect(_on_progress_changed)
 	if player:
+		player.hold.changed.connect(_on_progress_changed)
 		player.arsenal.changed.connect(_on_progress_changed)
 		player.loadout.changed.connect(_on_progress_changed)
 		player.upgrades.changed.connect(_on_progress_changed)
@@ -152,17 +155,10 @@ func reset_progress() -> bool:
 	return true
 
 
-## What's saved of `ship`: the hold, in units per ore type, the ores ever brought aboard, the
-## story's flags, the heat shield (its MK level, whether the next plate is the ship's project and
-## what's paid into it) and the body the ship is at (its id; none before the first flight).
+## What's saved of `ship`: the story's flags, the heat shield (its MK level, whether the next
+## plate is the ship's project and what's paid into it) and the body the ship is at (its id; none
+## before the first flight).
 static func ship_data(of_ship: Ship) -> Dictionary:
-	var hold: Dictionary = {}
-	for ore_type: OreType in of_ship.hold:
-		hold[_reference(ore_type)] = of_ship.hold[ore_type]
-	var found: Array = []
-	for ore_type: OreType in of_ship.found_ores:
-		found.append(_reference(ore_type))
-	found.sort()
 	var flags: Array = []
 	for flag: StringName in of_ship.story.flags:
 		flags.append(String(flag))
@@ -173,8 +169,6 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 		paid[_reference(ore_type)] = shield.paid[ore_type]
 	var data: Dictionary = {
 		"version": VERSION,
-		"hold": hold,
-		"found": found,
 		"story": flags,
 		"shield": {"mk": shield.mk, "project": shield.project, "paid": paid},
 	}
@@ -183,9 +177,17 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 	return data
 
 
-## What's saved of `of_player`: the weapons it owns and its blueprints, its loadout (null: empty
+## What's saved of `of_player`: its hold (units per item, the items ever in it), the weapons it
+## owns and its blueprints, its loadout (null: empty
 ## slot), the MK level of each upgrade it bought and the rank of each skill it learned.
 static func player_data(of_player: Player) -> Dictionary:
+	var hold: Dictionary = {}
+	for item: ItemType in of_player.hold.items:
+		hold[_reference(item)] = of_player.hold.items[item]
+	var found: Array = []
+	for item: ItemType in of_player.hold.found:
+		found.append(_reference(item))
+	found.sort()
 	var weapons: Array = []
 	for weapon_type: WeaponType in of_player.arsenal.weapons:
 		weapons.append(_reference(weapon_type))
@@ -206,6 +208,8 @@ static func player_data(of_player: Player) -> Dictionary:
 		ranks[_reference(skill)] = of_player.skills.ranks[skill]
 	return {
 		"version": VERSION,
+		"hold": hold,
+		"found": found,
 		"arsenal": weapons,
 		"blueprints": blueprints,
 		"loadout": loadout,
@@ -215,23 +219,11 @@ static func player_data(of_player: Player) -> Dictionary:
 
 
 func _apply_ship(data: Dictionary) -> void:
-	var hold: Dictionary = data.get("hold", {})
-	for path: Variant in hold:
-		var ore_type := _resource(path) as OreType
-		var amount: float = _number(hold[path], -1.0)
-		if ore_type and amount >= 0.0:
-			ship.add_to_hold(ore_type, amount)
-		else:
-			_outdated = true
-			push_warning("Save: skipped hold entry %s" % path)
-	if data.get("found") is Array:
-		for path: Variant in data["found"] as Array:
-			var ore_type := _resource(path) as OreType
-			if ore_type:
-				ship.mark_found(ore_type)
-			else:
-				_outdated = true
-				push_warning("Save: skipped found ore %s" % path)
+	_ship_hold = {}
+	if data.has("hold") or data.has("found"):
+		# Before version 3 the hold was the ship's: the player's save takes it.
+		_outdated = true
+		_ship_hold = {"hold": data.get("hold", {}), "found": data.get("found", [])}
 	if data.get("story") is Array:
 		for flag: Variant in data["story"] as Array:
 			if flag is String and not (flag as String).is_empty():
@@ -284,6 +276,10 @@ func _apply_position(id: Variant) -> void:
 
 
 func _apply_player(data: Dictionary) -> void:
+	if not data.has("hold") and not _ship_hold.is_empty():
+		data = data.duplicate()
+		data.merge(_ship_hold)
+	_apply_hold(data)
 	if data.get("arsenal") is Array:
 		var weapons: Array[WeaponType] = []
 		for path: Variant in data["arsenal"] as Array:
@@ -350,6 +346,29 @@ func _apply_player(data: Dictionary) -> void:
 				_outdated = true
 				push_warning("Save: skipped skill %s" % path)
 		player.skills.emit_changed()
+
+
+## Reads a player's hold: units per item (`hold`) and the items ever in it (`found`).
+func _apply_hold(data: Dictionary) -> void:
+	var hold: Dictionary = {}
+	if data.get("hold") is Dictionary:
+		hold = data["hold"]
+	for path: Variant in hold:
+		var item := _resource(path) as ItemType
+		var amount: float = _number(hold[path], -1.0)
+		if item and amount >= 0.0:
+			player.hold.add(item, amount)
+		else:
+			_outdated = true
+			push_warning("Save: skipped hold entry %s" % path)
+	if data.get("found") is Array:
+		for path: Variant in data["found"] as Array:
+			var item := _resource(path) as ItemType
+			if item:
+				player.hold.mark_found(item)
+			else:
+				_outdated = true
+				push_warning("Save: skipped found item %s" % path)
 
 
 ## How a save names `resource`: its UID (its path if it has none).

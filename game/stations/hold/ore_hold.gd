@@ -1,6 +1,6 @@
 class_name OreHold
 extends Station
-## The ship's hold in the cargo bay (greybox until the cargo bay's art pass): an industrial silo
+## The hold in the cargo bay (greybox until the cargo bay's art pass): an industrial silo
 ## per ore of the game (`OreTank`, from `OreCatalog`), in fixed spots ordered by rarity, its window
 ## glowing with what the hold has. The silos stand in clusters, one per band, each around a pump
 ## hub with pipes to the silos' tops: the common and mid clusters behind the main lane (from the
@@ -12,7 +12,9 @@ extends Station
 ## stay clear: the main lane (`LANE_WIDTH`), the way between the clusters (`WALK_WIDTH`), the way
 ## to the lift (back, by the lower deck's door), the ramp button and the refinery's corner (front,
 ## by the door).
-## Ores never brought aboard show as dark "?" silos.
+## Every player has their own hold (`PlayerHold`): the silos show the one of the player using them,
+## else the viewer's (the ship's `viewer`, or the first local player). Ores never brought aboard
+## show as dark "?" silos.
 ## A silo is used directly (`interact` next to it): the hold opens as a station with it selected,
 ## the camera follows the selected silo, and the card shows the ore's name, how much the hold has
 ## and where it's found. `tab_prev`/`tab_next` step through the silos in reading order (rows from
@@ -54,6 +56,8 @@ const HUB_RADIUS: float = 0.38
 var mission: Mission
 
 var _tanks: Dictionary[OreType, OreTank] = {}
+## The hold the silos show right now.
+var _shown: PlayerHold
 var _clusters: Array[Array] = []
 ## The silos in reading order (for `tab_prev`/`tab_next`).
 var _reading: Array[StationPart] = []
@@ -70,6 +74,27 @@ func _process(delta: float) -> void:
 	super(delta)
 	if not mission:
 		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
+	var shown: Player = user if user else _viewer()
+	show_hold(shown.hold if shown else null)
+
+
+## Shows `hold` in the silos (null: all empty and unknown), and its changes from then on.
+func show_hold(hold: PlayerHold) -> void:
+	if hold == _shown:
+		return
+	if _shown:
+		_shown.item_changed.disconnect(_on_item_changed)
+	_shown = hold
+	if hold:
+		hold.item_changed.connect(_on_item_changed)
+	for ore_type: OreType in _tanks:
+		var amount: float = hold.amount(ore_type) if hold else 0.0
+		show_amount(ore_type, amount, hold != null and hold.has_found(ore_type))
+
+
+## The hold the silos show (null: none yet).
+func get_shown_hold() -> PlayerHold:
+	return _shown
 
 
 ## Shows `amount` units of `ore_type` in its silo; `found`: it was ever brought aboard.
@@ -149,6 +174,25 @@ func _cycle(step_by: int) -> void:
 func _enable_uses(enabled: bool) -> void:
 	for tank: OreTank in _tanks.values():
 		tank.use_point.enabled = enabled
+
+
+## Whose hold the silos show while nobody uses them: the ship's viewer, else the first local
+## player.
+func _viewer() -> Player:
+	var ship := get_parent() as Ship
+	var viewer := ship.viewer as Player if ship else null
+	if viewer:
+		return viewer
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if player.local:
+			return player
+	return null
+
+
+func _on_item_changed(item: ItemType, amount: float) -> void:
+	var ore_type := item as OreType
+	if ore_type:
+		show_amount(ore_type, amount, _shown.has_found(ore_type))
 
 
 func _on_tank_used(player: Player, tank: OreTank) -> void:

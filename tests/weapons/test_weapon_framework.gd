@@ -119,14 +119,14 @@ func test_building_a_weapon_takes_its_blueprint_and_its_ore() -> void:
 	station.refresh()
 	assert_true(card.get_buy_button().disabled, "nothing in the hold")
 	for ore_type: OreType in BRASK.build_cost:
-		_ship.add_to_hold(ore_type, BRASK.build_cost[ore_type] + 5.0)
+		_player.hold.add(ore_type, BRASK.build_cost[ore_type] + 5.0)
 	station.refresh()
 	assert_false(card.get_buy_button().disabled)
 	assert_true(card.press_primary())
 	assert_true(_player.arsenal.owns(BRASK))
 	assert_false(_player.arsenal.has_blueprint(BRASK), "the blueprint is used up")
 	for ore_type: OreType in BRASK.build_cost:
-		assert_eq(_ship.hold[ore_type], 5.0, "paid from the hold")
+		assert_eq(_player.hold.amount(ore_type), 5.0, "paid from the hold")
 	assert_false(build.visible)
 	assert_eq(station.selected.item, BRASK.parts[0], "on to its upgrades")
 	assert_false(station.build(BRASK), "only once")

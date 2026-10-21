@@ -40,18 +40,18 @@ func test_learning_pays_from_the_hold() -> void:
 	await _open()
 	assert_false(_station.can_learn(DASH), "the hold is empty")
 	assert_false(_station.learn(DASH))
-	_ship.add_to_hold(KYRITE, 1000.0)
+	_player.hold.add(KYRITE, 1000.0)
 	_send(&"interact")
 	assert_eq(_player.skills.rank(DASH), 1)
-	assert_eq(_ship.hold[KYRITE], 1000.0 - DASH.ranks[0].cost[KYRITE])
+	assert_eq(_player.hold.amount(KYRITE), 1000.0 - DASH.ranks[0].cost[KYRITE])
 	assert_false(_station.can_learn(DASH), "single rank: learned")
 	assert_eq(_station.user, _player, "learning doesn't close it")
 
 
 func test_a_skill_opens_once_the_one_before_is_learned() -> void:
-	_ship.add_to_hold(KYRITE, 5000.0)
-	_ship.add_to_hold(OLVANE, 5000.0)
-	_ship.add_to_hold(VYREL, 5000.0)
+	_player.hold.add(KYRITE, 5000.0)
+	_player.hold.add(OLVANE, 5000.0)
+	_player.hold.add(VYREL, 5000.0)
 	await _open()
 	assert_false(_station.can_learn(RELOAD_ON_THE_MOVE))
 	assert_true(_station.learn(DASH))
@@ -59,8 +59,8 @@ func test_a_skill_opens_once_the_one_before_is_learned() -> void:
 
 
 func test_ranked_skills_learn_rank_by_rank() -> void:
-	_ship.add_to_hold(KYRITE, 5000.0)
-	_ship.add_to_hold(OLVANE, 5000.0)
+	_player.hold.add(KYRITE, 5000.0)
+	_player.hold.add(OLVANE, 5000.0)
 	await _open()
 	assert_true(_station.learn(SUIT))
 	assert_true(_station.learn(SUIT))
@@ -69,14 +69,14 @@ func test_ranked_skills_learn_rank_by_rank() -> void:
 
 
 func test_nothing_can_be_learned_during_a_mission() -> void:
-	_ship.add_to_hold(KYRITE, 1000.0)
+	_player.hold.add(KYRITE, 1000.0)
 	await _open()
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	await wait_process_frames(2)
 	assert_true(_station.is_locked())
 	assert_false(_station.learn(DASH))
-	assert_eq(_ship.hold[KYRITE], 1000.0, "nothing paid")
+	assert_eq(_player.hold.amount(KYRITE), 1000.0, "nothing paid")
 	assert_true((_station.card_menu as SkillCard).get_learn_button().disabled)
 
 

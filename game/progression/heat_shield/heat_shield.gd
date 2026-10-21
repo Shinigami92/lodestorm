@@ -4,7 +4,7 @@ extends Resource
 ## bare core; every further MK level is a plate (`plates`) that opens the next planet inwards, so
 ## the ship reaches every body whose tier is at most its MK level (`reaches`). The next plate is
 ## paid in ore, bit by bit: while it's the ship's `project`, every haul pays into it first (see
-## `Ship.store_haul`), and the host can pay what's missing from the hold any time
+## `Ship.store_haul`), and the host can pay what's missing from their own hold any time
 ## (`Ship.pay_shield`). It's installed as soon as it's paid (at once, not timed). Every plate also
 ## raises the highest MK level of the upgrades (`upgrade_cap`). It's the host's (the ship's), saved
 ## with the ship.

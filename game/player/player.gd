@@ -18,6 +18,8 @@ extends CharacterBody3D
 ## to use there, hands them a magazine for their equipped weapon, paid from its ore. Its `upgrades`
 ## (bought at the upgrade stations) raise its weapons' parts (damage, capacity, ...), its armor
 ## (`armor_upgrade`: more health, shown by pips on the helmet) and the miners it places. Its
+## Its own `hold` keeps the ore brought back over all runs (every haul goes to every player in the
+## session) and pays for its gear. Its
 ## `skills` (learned at the skill graph) add health, regeneration, the dash (`suit_dash`, its
 ## cooldown shown on the suit ring), more spare magazines, reloading at full speed,
 ## careful reloads, the ore scanner's arrow (`OreScanner`) and the damage readout
@@ -104,6 +106,8 @@ var weapon_allowed: bool = true:
 			weapon.stop()
 ## Units carried per ore type; no carry limit.
 var cargo: Dictionary[OreType, float] = {}
+## What it brought back over all runs and hasn't spent yet (saved with the player).
+var hold := PlayerHold.new()
 ## Whether reloads cost nothing (aboard: from the ship's stock).
 var ammo_free: bool = false
 ## The teammate `interact` hands ammo to while it's held, or null; and for how long it's held (s).

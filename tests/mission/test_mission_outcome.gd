@@ -73,7 +73,7 @@ func test_dying_in_storm_loses_mission_and_cargo() -> void:
 	assert_signal_emit_count(_mission, "lost", 1)
 	assert_signal_not_emitted(_mission, "returned")
 	assert_true(_player.cargo.is_empty())
-	assert_false(_ship.hold.has(KYRITE), "nothing reached the hold")
+	assert_false(_player.hold.items.has(KYRITE), "nothing reached the hold")
 
 
 func test_respawn_aboard_after_lost_mission() -> void:
@@ -134,7 +134,7 @@ func test_returning_stores_cargo_in_hold() -> void:
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	assert_true(_player.cargo.is_empty())
-	assert_eq(_ship.hold[KYRITE], 150.0)
+	assert_eq(_player.hold.amount(KYRITE), 150.0)
 	var hold: OreHold = _ship.get_node("OreHold")
 	assert_gt(hold.get_tank(KYRITE).fill_level(), 0.0, "its tank shows it")
 
@@ -146,7 +146,7 @@ func test_hold_keeps_cargo_over_runs() -> void:
 		await _move(_player, _outside())
 		_player.add_cargo(KYRITE, 100.0)
 		await _move(_player, _inside())
-	assert_eq(_ship.hold[KYRITE], 200.0)
+	assert_eq(_player.hold.amount(KYRITE), 200.0)
 
 
 ## While the heat shield's next plate is the ship's project, the haul pays into it first.
@@ -159,9 +159,9 @@ func test_returning_pays_the_ships_project_first() -> void:
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	assert_eq(_ship.heat_shield.paid[MERIDINE], 120.0)
-	var stored: float = _ship.hold.get(MERIDINE, 0.0)
+	var stored: float = _player.hold.amount(MERIDINE)
 	assert_eq(stored, 0.0, "the plate took all of it")
-	assert_eq(_ship.hold[KYRITE], 30.0)
+	assert_eq(_player.hold.amount(KYRITE), 30.0)
 
 
 func test_next_run_heals_players() -> void:
@@ -189,7 +189,7 @@ func test_mission_won_when_the_living_are_aboard() -> void:
 	assert_eq(_mission.state, Mission.State.RUNNING, "one player is still alive outside")
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
-	assert_eq(_ship.hold[KYRITE], 80.0, "the dead player's cargo is lost")
+	assert_eq(_player.hold.amount(KYRITE), 80.0, "the dead player's cargo is lost")
 	assert_false(other.dead, "the dead respawn aboard")
 	await wait_physics_frames(3)
 	assert_true(_ship.is_aboard(other))

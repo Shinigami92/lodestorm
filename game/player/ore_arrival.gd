@@ -4,7 +4,7 @@ extends Node3D
 ## delivers, a line with each arriving ore's badge and its amount ("+180") shows above the player,
 ## counting up; once the ore stops coming (slower than `SETTLE_RATE`), it rises and fades over
 ## `RISE_TIME`. A slow trickle (a miner filling while the player stands by) shows once it adds up
-## to `MIN_AMOUNT`. Several ores share one line. The line is a card (`OreBadge`s and labels)
+## to `MIN_AMOUNT`. Several ores share one line. The line is a card (`ItemBadge`s and labels)
 ## rendered in a SubViewport onto a sprite facing the camera, drawn over everything like the
 ## damage numbers.
 
@@ -129,7 +129,7 @@ func _update_labels() -> void:
 func _add_item(ore_type: OreType) -> void:
 	var item := HBoxContainer.new()
 	item.add_theme_constant_override(&"separation", 6)
-	var badge := OreBadge.new(ore_type, false)
+	var badge := ItemBadge.new(ore_type, false)
 	item.add_child(badge)
 	var label := Label.new()
 	# Numbers only: nothing to translate.

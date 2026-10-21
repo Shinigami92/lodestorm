@@ -90,15 +90,15 @@ func test_levels_start_at_mk1_and_rise_to_the_highest() -> void:
 
 func test_hold_pays_only_what_it_has() -> void:
 	var cost: Dictionary[OreType, int] = {KYRITE: 200, OLVANE: 100}
-	assert_false(_ship.can_pay(cost))
-	_ship.add_to_hold(KYRITE, 300.0)
-	assert_false(_ship.can_pay(cost), "no olvane yet")
-	assert_false(_ship.pay(cost))
-	assert_eq(_ship.hold[KYRITE], 300.0, "nothing taken")
-	_ship.add_to_hold(OLVANE, 100.0)
-	assert_true(_ship.pay(cost))
-	assert_eq(_ship.hold[KYRITE], 100.0)
-	assert_eq(_ship.hold[OLVANE], 0.0)
+	assert_false(_player.hold.can_pay(cost))
+	_player.hold.add(KYRITE, 300.0)
+	assert_false(_player.hold.can_pay(cost), "no olvane yet")
+	assert_false(_player.hold.pay(cost))
+	assert_eq(_player.hold.amount(KYRITE), 300.0, "nothing taken")
+	_player.hold.add(OLVANE, 100.0)
+	assert_true(_player.hold.pay(cost))
+	assert_eq(_player.hold.amount(KYRITE), 100.0)
+	assert_eq(_player.hold.amount(OLVANE), 0.0)
 	var hold := _ship.get_node("OreHold") as OreHold
 	assert_eq(hold.get_tank(OLVANE).fill_level(), 0.0, "the tanks show what's left")
 	assert_gt(hold.get_tank(KYRITE).fill_level(), 0.0)
@@ -244,17 +244,17 @@ func test_station_buys_with_ore_from_the_hold() -> void:
 	assert_eq(card.upgrade, ARMOR)
 	var button: Button = card.get_buy_button()
 	assert_true(button.disabled, "the hold is empty")
-	_ship.add_to_hold(KYRITE, 1000.0)
-	_ship.add_to_hold(VYREL, 1000.0)
+	_player.hold.add(KYRITE, 1000.0)
+	_player.hold.add(VYREL, 1000.0)
 	await wait_process_frames(1)
 	assert_false(button.disabled)
 	button.pressed.emit()
 	assert_eq(_player.upgrades.mk(ARMOR), 2)
-	assert_eq(_ship.hold[KYRITE], 1000.0 - ARMOR.cost_of(2)[KYRITE])
+	assert_eq(_player.hold.amount(KYRITE), 1000.0 - ARMOR.cost_of(2)[KYRITE])
 	await wait_process_frames(1)
 	assert_true(button.disabled, "MK3 needs olvane and meridine")
-	_ship.add_to_hold(OLVANE, 1000.0)
-	_ship.add_to_hold(MERIDINE, 1000.0)
+	_player.hold.add(OLVANE, 1000.0)
+	_player.hold.add(MERIDINE, 1000.0)
 	await wait_process_frames(1)
 	assert_true(card.press_primary(), "interact buys too")
 	assert_eq(_player.upgrades.mk(ARMOR), 3)
@@ -268,7 +268,7 @@ func test_station_sells_higher_levels_once_the_ship_reaches_further() -> void:
 	var station: UpgradeStation = await _open_station("Armor")
 	_player.upgrades.levels[ARMOR] = 3
 	for ore_type: OreType in OreCatalog.all().ores:
-		_ship.add_to_hold(ore_type, 10000.0)
+		_player.hold.add(ore_type, 10000.0)
 	await wait_process_frames(1)
 	assert_false(station.can_buy(ARMOR), "MK3 is the highest with the bare core")
 	assert_false(station.buy(ARMOR))
@@ -290,8 +290,8 @@ func test_station_sells_higher_levels_once_the_ship_reaches_further() -> void:
 
 func test_station_locks_weapons_the_player_does_not_own() -> void:
 	var station := await _open_station("Weapons") as WeaponStation
-	_ship.add_to_hold(KYRITE, 1000.0)
-	_ship.add_to_hold(VYREL, 1000.0)
+	_player.hold.add(KYRITE, 1000.0)
+	_player.hold.add(VYREL, 1000.0)
 	await wait_process_frames(1)
 	assert_false(station.can_buy(BRASK.get_part(WeaponPart.Stat.DAMAGE)), "no brask yet")
 	assert_false(station.buy(BRASK.get_part(WeaponPart.Stat.DAMAGE)))
@@ -303,7 +303,7 @@ func test_station_locks_weapons_the_player_does_not_own() -> void:
 
 func test_station_locks_while_a_mission_is_underway() -> void:
 	var station: UpgradeStation = await _open_station("Miners")
-	_ship.add_to_hold(KYRITE, 1000.0)
+	_player.hold.add(KYRITE, 1000.0)
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	await wait_process_frames(2)
@@ -311,7 +311,7 @@ func test_station_locks_while_a_mission_is_underway() -> void:
 	assert_false(station.can_buy(DRILL))
 	assert_false(station.buy(DRILL))
 	assert_eq(_player.upgrades.mk(DRILL), 1)
-	assert_eq(_ship.hold[KYRITE], 1000.0, "nothing paid")
+	assert_eq(_player.hold.amount(KYRITE), 1000.0, "nothing paid")
 	assert_true((station.card_menu as UpgradeCard).get_buy_button().disabled)
 
 
@@ -319,7 +319,7 @@ func test_debug_overlay_fills_the_hold() -> void:
 	var overlay: CanvasLayer = get_tree().root.get_node("DebugOverlay") as CanvasLayer
 	overlay.call(&"fill_hold")
 	for ore_type: OreType in [KYRITE, OLVANE, VYREL] as Array[OreType]:
-		var stored: float = _ship.hold.get(ore_type, 0.0)
+		var stored: float = _player.hold.amount(ore_type)
 		assert_gt(stored, 0.0)
 
 

@@ -1,8 +1,9 @@
 extends GutTest
-## The ship's hold in the cargo bay: a silo per ore in clusters, unknown ones dark, used directly,
-## and its station card.
+## The hold in the cargo bay: a silo per ore in clusters, unknown ones dark, used directly, and its
+## station card; it shows the hold of the player using it, else the viewer's.
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
+const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const CATALOG: OreCatalog = preload("res://game/ores/all_ores.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
@@ -133,24 +134,47 @@ func test_unknown_until_brought_aboard() -> void:
 	var tank: OreTank = _hold.get_tank(KYRITE)
 	assert_false(tank.found)
 	assert_eq((tank.get_node("Plate") as Label3D).text, "?")
-	_ship.add_to_hold(KYRITE, 1500.0)
+	_player.hold.add(KYRITE, 1500.0)
 	assert_true(tank.found)
 	assert_almost_eq(tank.fill_level(), 0.5, 0.001)
 	assert_string_contains((tank.get_node("Plate") as Label3D).text, "1500")
-	assert_true(_ship.pay({KYRITE: 1500}))
+	assert_true(_player.hold.pay({KYRITE: 1500}))
 	assert_eq(tank.fill_level(), 0.0)
 	assert_true(tank.found, "stays known when emptied")
 
 
+func test_silos_show_the_users_hold() -> void:
+	var other: Player = PLAYER_SCENE.instantiate() as Player
+	other.local = false
+	_map.add_child(other)
+	await wait_physics_frames(1)
+	_player.hold.add(KYRITE, 10.0)
+	other.hold.add(KYRITE, 500.0)
+	other.hold.add(MERIDINE, 20.0)
+	await wait_process_frames(1)
+	assert_eq(_hold.get_shown_hold(), _player.hold, "the viewer's while nobody uses them")
+	assert_eq(_hold.get_tank(KYRITE).amount, 10.0)
+	assert_false(_hold.get_tank(MERIDINE).found)
+	_hold.select(_hold.get_tank(KYRITE))
+	_hold.open(other)
+	await wait_process_frames(1)
+	assert_eq(_hold.get_tank(KYRITE).amount, 500.0, "the user's")
+	assert_true(_hold.get_tank(MERIDINE).found)
+	_hold.close()
+	await wait_process_frames(1)
+	assert_eq(_hold.get_tank(KYRITE).amount, 10.0, "the viewer's again")
+	assert_false(_hold.get_tank(MERIDINE).found)
+
+
 func test_found_ores_are_saved() -> void:
-	_ship.add_to_hold(MERIDINE, 10.0)
-	assert_true(_ship.pay({MERIDINE: 10}))
-	var data: Dictionary = SaveGame.ship_data(_ship)
+	_player.hold.add(MERIDINE, 10.0)
+	assert_true(_player.hold.pay({MERIDINE: 10}))
+	var data: Dictionary = SaveGame.player_data(_player)
 	assert_has(data["found"] as Array, ResourceUID.path_to_uid(MERIDINE.resource_path))
 
 
 func test_card_shows_the_selected_ore() -> void:
-	_ship.add_to_hold(KYRITE, 42.0)
+	_player.hold.add(KYRITE, 42.0)
 	assert_true(_hold.open(_player))
 	_hold.select(_hold.get_tank(KYRITE))
 	var card := _hold.card_menu as HoldCard
@@ -181,7 +205,7 @@ func test_camera_follows_the_selected_tank() -> void:
 
 func test_card_fits_and_reads_in_every_language() -> void:
 	for ore_type: OreType in CATALOG.ores:
-		_ship.add_to_hold(ore_type, 123456.0)
+		_player.hold.add(ore_type, 123456.0)
 	assert_true(_hold.open(_player))
 	var panel: WorldPanel = _hold.card
 	var layout := Vector2(panel.size * panel.pixels_per_meter)

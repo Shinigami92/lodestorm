@@ -1,6 +1,6 @@
 class_name OreTank
 extends StationPart
-## One ore's silo in the ship's hold (`OreHold`), greybox until the cargo bay's art pass: an
+## One ore's silo in the hold (`OreHold`), greybox until the cargo bay's art pass: an
 ## opaque metal silo on a base ring, with bands, a conical top with a hatch and a window strip
 ## facing the camera's side (+Z), where the ore glows up to `amount` of `capacity` (full beyond
 ## it). A name plate on the base shows the exact amount. Rarer ores get smaller silos. Until the ore

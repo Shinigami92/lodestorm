@@ -177,7 +177,7 @@ func _show_ores(ores: Array[OreType]) -> void:
 		node.queue_free()
 	for ore_type: OreType in ores:
 		if ore_type:
-			_ores.add_child(OreBadge.new(ore_type))
+			_ores.add_child(ItemBadge.new(ore_type))
 		else:
 			var unknown := Label.new()
 			unknown.text = "?"
@@ -209,7 +209,7 @@ func _show_needed(plate: ShieldPlate) -> void:
 		_needs.remove_child(node)
 		node.queue_free()
 	for ore_type: OreType in ores:
-		_needs.add_child(OreBadge.new(ore_type))
+		_needs.add_child(ItemBadge.new(ore_type))
 
 
 ## `text` followed by `of_body`'s tier ("Dust flats · Tier 2").

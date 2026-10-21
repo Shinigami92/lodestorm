@@ -182,7 +182,7 @@ static func groups() -> Array[Group]:
 			. new("Menus", false)
 			. add("Frames, text", SkillStation.FRAME_COLOR)
 			. add("Highlight", StationPart.SELECTED_COLOR)
-			. add("Missing, warning", OreCost.MISSING_COLOR)
+			. add("Missing, warning", ItemCost.MISSING_COLOR)
 			. add("MK pips", MkPips.COLOR_LIT)
 			. add("Heat", HeatShieldStation.HEAT_COLOR)
 			. add("Plate installed", HeatShieldCard.INSTALLED_COLOR)

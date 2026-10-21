@@ -532,7 +532,7 @@ func _return(players: Array[Player]) -> void:
 		for ore_type: OreType in cargo:
 			var so_far: float = haul.get(ore_type, 0.0)
 			haul[ore_type] = so_far + cargo[ore_type]
-	ship.store_haul(haul)
+	ship.store_haul(haul, _players())
 	_respawn_dead()
 	_takeoff_left = flight.settings.takeoff_delay
 	roll_offers()

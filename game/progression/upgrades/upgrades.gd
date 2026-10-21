@@ -31,7 +31,7 @@ func next_cost(upgrade: Upgrade) -> Dictionary[OreType, int]:
 
 
 ## Raises `upgrade` by one MK level unless it's at its highest. Returns whether it rose.
-## Paying for it is up to the caller (see `Ship.pay`).
+## Paying for it is up to the caller (see `PlayerHold.pay`).
 func raise(upgrade: Upgrade) -> bool:
 	if not next_level(upgrade):
 		return false

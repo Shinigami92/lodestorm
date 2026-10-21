@@ -29,7 +29,7 @@ var picking: bool = false
 @onready var _pips: HBoxContainer = %Pips
 @onready var _description: Label = %Description
 @onready var _effect: Label = %Effect
-@onready var _cost: OreCost = %Cost
+@onready var _cost: ItemCost = %Cost
 @onready var _cost_row: HFlowContainer = %CostRow
 @onready var _status: Label = %Status
 @onready var _buy: Button = %Buy
@@ -44,8 +44,8 @@ func _ready() -> void:
 func show_part(part: StationPart) -> void:
 	var upgrade_station := station as UpgradeStation
 	var hold: Dictionary[OreType, float] = {}
-	if upgrade_station and upgrade_station.ship:
-		hold = upgrade_station.ship.hold
+	if upgrade_station and upgrade_station.user:
+		hold = upgrade_station.user.hold.ores()
 	var weapon_station := station as WeaponStation
 	var to_build := part.item as WeaponType if part else null
 	if to_build and weapon_station and part in weapon_station.get_rack_parts():

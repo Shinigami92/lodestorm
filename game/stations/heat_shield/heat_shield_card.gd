@@ -44,8 +44,8 @@ func show_part(part: StationPart) -> void:
 		show_plate(null, 0)
 		return
 	var hold: Dictionary[OreType, float] = {}
-	if shield_station.ship:
-		hold = shield_station.ship.hold
+	if shield_station.user:
+		hold = shield_station.user.hold.ores()
 	show_plate(
 		shield,
 		level,
@@ -143,7 +143,7 @@ func _show_cost(
 		_paid_labels.clear()
 		_hold_labels.clear()
 		for ore_type: OreType in cost:
-			_cost_grid.add_child(OreBadge.new(ore_type))
+			_cost_grid.add_child(ItemBadge.new(ore_type))
 			_paid_labels[ore_type] = _amount_label()
 			_cost_grid.add_child(_paid_labels[ore_type])
 			_hold_labels[ore_type] = _amount_label()

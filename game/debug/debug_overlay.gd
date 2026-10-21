@@ -543,7 +543,6 @@ func _remove_teammates() -> void:
 			player.queue_free()
 
 
-## Adds `HOLD_FILL` units of every ore type to each ship's hold, to test the upgrade stations.
 ## Takes half the health of every teammate (to try healing them, Kith).
 func _hurt_teammates() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -551,10 +550,11 @@ func _hurt_teammates() -> void:
 			player.take_damage(player.vitals.maximum() * 0.5)
 
 
+## Adds `HOLD_FILL` units of every ore type to every player's hold, to test the upgrade stations.
 func fill_hold() -> void:
-	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		for ore_type: OreType in ALL_ORES.ores:
-			ship.add_to_hold(ore_type, HOLD_FILL)
+			player.hold.add(ore_type, HOLD_FILL)
 
 
 ## Deletes the save (the dev save in the editor) and reloads the map, without asking (only while

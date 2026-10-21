@@ -1,4 +1,5 @@
-"""Player: a bulky, dark armored suit with a glowing collar band (concept: player_batch2_rimlit), rigged and animated.
+"""Player: a bulky, dark armored suit with a glowing collar band, generated (TRELLIS.2, source/trellis/), rigged
+and animated.
 
 Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
     tools/blender.sh assets/player/source/player_build.py wip r1     # quick renders of the poses
@@ -8,12 +9,12 @@ Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
 Everything it writes goes to tmp/assets/player/; player_bake.py turns player_procedural.blend into the game asset.
 
 Layout (Blender Z-up meters; the character faces -Y, its left is +X; glTF turns -Y into Godot's +Z, so the game
-turns the model by 180 degrees to face the player's -Z). T-pose rest, feet on the ground at the origin, 1.8 m.
+turns the model by 180 degrees to face the player's -Z). T-pose rest, feet on the ground at the origin, 1.89 m.
 
 Skeleton "Skeleton": Godot's humanoid bone names (SkeletonProfileHumanoid, without fingers), so the animations
-could be retargeted later. Meshes: "Suit" (one skinned object, rigid parts weighted 100 % to their bone, the
-undersuit limbs blended across the joints) and "SuitLight" (the collar band, constant emissive; the game drives its
-color by health). Empties on bones: "WeaponGrip" (RightHand, Harl's origin in the aim pose; Godot axes:
+could be retargeted later; its joints and bone lengths are the generated suit's. Meshes: "Suit" (the generated
+mesh, skinned: each part weighted to its nearest bone, blended across the joints, see "suit" below) and
+"SuitLight" (the collar band cut out of it, constant emissive; the game drives its color by health). Empties on bones: "WeaponGrip" (RightHand, Harl's origin in the aim pose; Godot axes:
 -Z forward), "ShieldGrip" (LeftLowerArm, Mantle's plate on the forearm, facing forward in "ReadyShield"),
 "CargoRack" and "HosePort" (UpperChest, on the backpack).
 
@@ -39,7 +40,9 @@ sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
 import itertools
 
+import bmesh
 import bpy
+import numpy as np
 from mathutils import Matrix, Vector
 
 import common as C
@@ -56,39 +59,92 @@ RUN_FRAMES = 20  # one stride (two steps) in 0.67 s
 I3 = Matrix.Identity(3)
 
 # --- skeleton -------------------------------------------------------------------------------------
+# Fitted to the generated suit (see "suit" below): its joints in its A-pose, measured on the mesh normalized to
+# 1.8 m (centered, feet at 0; left side, the right mirrors it), then fit() to the skeleton's size and place.
 
-SHOULDER_X, ELBOW_X, WRIST_X, HAND_X, ARM_Z = 0.20, 0.52, 0.80, 0.93, 1.44
-HIP_X, HIP_Z, KNEE_Z, ANKLE_Z = 0.11, 0.94, 0.52, 0.10
-HIPS_Z = 0.96
+SUIT_SOURCE = ROOT / "assets" / "player" / "source" / "trellis" / "player_trellis.glb"
+SUIT_SCALE = 1.05  # at this size the suit's body matches the clips' proportions (1.89 m to the helmet's top)
+SUIT_SHIFT_Y = 0.03  # moves the normalized mesh's spine onto the skeleton's (y = 0)
+SUIT_SPINE = {
+    "Hips": (0, -0.03, 0.95),
+    "Spine": (0, -0.03, 1.07),
+    "Chest": (0, -0.03, 1.19),
+    "UpperChest": (0, -0.03, 1.31),
+    "Neck": (0, -0.04, 1.46),
+    "Head": (0, -0.05, 1.54),
+    "HeadTop": (0, -0.05, 1.80),
+}
+SUIT_LIMBS = {
+    "Shoulder": (0.05, -0.03, 1.42),
+    "UpperArm": (0.26, 0.0, 1.40),
+    "LowerArm": (0.41, 0.03, 1.15),
+    "Hand": (0.50, -0.05, 0.93),
+    "HandTip": (0.52, -0.10, 0.74),
+    "UpperLeg": (0.12, -0.05, 0.88),
+    "LowerLeg": (0.21, -0.05, 0.46),
+    "Foot": (0.25, -0.02, 0.14),
+    "Toes": (0.28, -0.13, 0.05),
+    "ToesTip": (0.29, -0.22, 0.04),
+}
+SIDES = (("Left", 1.0), ("Right", -1.0))
+
+
+def fit(p) -> Vector:
+    return Vector((p[0], p[1] + SUIT_SHIFT_Y, p[2])) * SUIT_SCALE
+
+
+J = {name: fit(p) for name, p in SUIT_SPINE.items()}  # the suit's joints (A-pose), skeleton space
+for _side, _s in SIDES:
+    J |= {f"{_side}{name}": fit((_s * x, y, z)) for name, (x, y, z) in SUIT_LIMBS.items()}
+
+# The T rest pose: arms along X at the shoulders' height, legs straight down, bone lengths the suit's.
+UPPER_ARM_LEN = (J["LeftLowerArm"] - J["LeftUpperArm"]).length
+LOWER_ARM_LEN = (J["LeftHand"] - J["LeftLowerArm"]).length
+UPPER_LEG_LEN = (J["LeftLowerLeg"] - J["LeftUpperLeg"]).length
+LOWER_LEG_LEN = (J["LeftFoot"] - J["LeftLowerLeg"]).length
+SHOULDER_X, ARM_Z = J["LeftUpperArm"].x, J["LeftUpperArm"].z
+ELBOW_X = SHOULDER_X + UPPER_ARM_LEN
+WRIST_X = ELBOW_X + LOWER_ARM_LEN
+HAND_X = WRIST_X + 0.13
+HIP_X, ANKLE_Z = J["LeftUpperLeg"].x, J["LeftFoot"].z  # the ankle as high as in the suit: soles on the ground
+KNEE_Z = ANKLE_Z + LOWER_LEG_LEN
+HIP_Z = KNEE_Z + UPPER_LEG_LEN
+HIPS_Z = HIP_Z + 0.02
+TOES = J["LeftToes"] - J["LeftFoot"]  # the feet keep the suit's shape (without turning out)
+TOES_TIP = J["LeftToesTip"] - J["LeftToes"]
+SPINE_Z = {name: J[name].z for name in ("Spine", "Chest", "UpperChest", "Neck", "Head", "HeadTop")}
 
 BONES = [  # name, head, tail, parent
     ("Root", (0, 0, 0), (0, 0.2, 0), None),
-    ("Hips", (0, 0, HIPS_Z), (0, 0, 1.08), "Root"),
-    ("Spine", (0, 0, 1.08), (0, 0, 1.20), "Hips"),
-    ("Chest", (0, 0, 1.20), (0, 0, 1.32), "Spine"),
-    ("UpperChest", (0, 0, 1.32), (0, 0, 1.50), "Chest"),
-    ("Neck", (0, 0, 1.50), (0, 0, 1.58), "UpperChest"),
-    ("Head", (0, 0, 1.58), (0, 0, 1.82), "Neck"),
+    ("Hips", (0, 0, HIPS_Z), (0, 0, SPINE_Z["Spine"]), "Root"),
+    ("Spine", (0, 0, SPINE_Z["Spine"]), (0, 0, SPINE_Z["Chest"]), "Hips"),
+    ("Chest", (0, 0, SPINE_Z["Chest"]), (0, 0, SPINE_Z["UpperChest"]), "Spine"),
+    ("UpperChest", (0, 0, SPINE_Z["UpperChest"]), (0, 0, SPINE_Z["Neck"]), "Chest"),
+    ("Neck", (0, 0, SPINE_Z["Neck"]), (0, 0, SPINE_Z["Head"]), "UpperChest"),
+    ("Head", (0, 0, SPINE_Z["Head"]), (0, 0, SPINE_Z["HeadTop"]), "Neck"),
 ]
-SIDES = (("Left", 1.0), ("Right", -1.0))
 for _side, _s in SIDES:
+    _ankle = Vector((_s * HIP_X, 0, ANKLE_Z))
+    _toes = _ankle + Vector((0, TOES.y, TOES.z))
     BONES += [
         (f"{_side}Shoulder", (_s * 0.04, 0, ARM_Z), (_s * SHOULDER_X, 0, ARM_Z), "UpperChest"),
         (f"{_side}UpperArm", (_s * SHOULDER_X, 0, ARM_Z), (_s * ELBOW_X, 0, ARM_Z), f"{_side}Shoulder"),
         (f"{_side}LowerArm", (_s * ELBOW_X, 0, ARM_Z), (_s * WRIST_X, 0, ARM_Z), f"{_side}UpperArm"),
         (f"{_side}Hand", (_s * WRIST_X, 0, ARM_Z), (_s * HAND_X, 0, ARM_Z), f"{_side}LowerArm"),
         (f"{_side}UpperLeg", (_s * HIP_X, 0, HIP_Z), (_s * HIP_X, 0, KNEE_Z), "Hips"),
-        (f"{_side}LowerLeg", (_s * HIP_X, 0, KNEE_Z), (_s * HIP_X, 0, ANKLE_Z), f"{_side}UpperLeg"),
-        (f"{_side}Foot", (_s * HIP_X, 0, ANKLE_Z), (_s * HIP_X, -0.12, 0.03), f"{_side}LowerLeg"),
-        (f"{_side}Toes", (_s * HIP_X, -0.12, 0.03), (_s * HIP_X, -0.21, 0.03), f"{_side}Foot"),
+        (f"{_side}LowerLeg", (_s * HIP_X, 0, KNEE_Z), tuple(_ankle), f"{_side}UpperLeg"),
+        (f"{_side}Foot", tuple(_ankle), tuple(_toes), f"{_side}LowerLeg"),
+        (f"{_side}Toes", tuple(_toes), tuple(_toes + Vector((0, TOES_TIP.y, TOES_TIP.z))), f"{_side}Foot"),
     ]
 HEAD = {n: Vector(h) for n, h, _t, _p in BONES}
 PARENT = {n: p for n, _h, _t, p in BONES}
-BONE_INDEX = {n: i for i, (n, *_r) in enumerate(BONES)}
-UPPER_ARM_LEN = ELBOW_X - SHOULDER_X
-LOWER_ARM_LEN = WRIST_X - ELBOW_X
-UPPER_LEG_LEN = HIP_Z - KNEE_Z
-LOWER_LEG_LEN = KNEE_Z - ANKLE_Z
+NEXT_JOINT = {"Hips": "Spine", "Spine": "Chest", "Chest": "UpperChest", "UpperChest": "Neck", "Neck": "Head"}
+NEXT_JOINT["Head"] = "HeadTop"
+for _side, _s in SIDES:
+    for _a, _b in itertools.pairwise(("Shoulder", "UpperArm", "LowerArm", "Hand", "HandTip")):
+        NEXT_JOINT[f"{_side}{_a}"] = f"{_side}{_b}"
+    for _a, _b in itertools.pairwise(("UpperLeg", "LowerLeg", "Foot", "Toes", "ToesTip")):
+        NEXT_JOINT[f"{_side}{_a}"] = f"{_side}{_b}"
 
 
 def build_skeleton(root: bpy.types.Object) -> bpy.types.Object:
@@ -110,211 +166,378 @@ def build_skeleton(root: bpy.types.Object) -> bpy.types.Object:
     return arm
 
 
-# --- mesh -------------------------------------------------------------------------------------------
+# --- suit -------------------------------------------------------------------------------------------
+# The suit is generated (source/trellis/: the concept image, the mesh TRELLIS.2 made of it, trellis.json with how):
+# one textured mesh in an A-pose. It's fitted to the skeleton here: the skeleton is posed into the mesh's A-pose,
+# every vertex belongs to the bone nearest to it (distance to the bone's segment minus the bone's radius), blended
+# with the neighbor bone within a band across each joint, faces joining parts that move apart are cut, and the
+# mesh is moved into the T rest pose (the inverse of the skinning). The collar's glowing band becomes "SuitLight";
+# the other glowing cyan parts (backpack panel, lamps) get an emission map from the base color.
+
+WEIGHTED = [name for name, *_r in BONES if name != "Root"]
+BONE_RADIUS = {"Hips": 0.17, "Spine": 0.19, "Chest": 0.21, "UpperChest": 0.21, "Neck": 0.08, "Head": 0.2}
+BLEND_BAND = {"Spine": 0.06, "Chest": 0.06, "UpperChest": 0.06, "Neck": 0.03, "Head": 0.03}  # half-width at the head
+for _side, _s in SIDES:
+    BONE_RADIUS |= {
+        f"{_side}Shoulder": 0.07,
+        f"{_side}UpperArm": 0.08,
+        f"{_side}LowerArm": 0.07,
+        f"{_side}Hand": 0.05,
+        f"{_side}UpperLeg": 0.10,
+        f"{_side}LowerLeg": 0.08,
+        f"{_side}Foot": 0.06,
+        f"{_side}Toes": 0.05,
+    }
+    BLEND_BAND |= {
+        f"{_side}UpperArm": 0.05,
+        f"{_side}LowerArm": 0.04,
+        f"{_side}Hand": 0.03,
+        f"{_side}UpperLeg": 0.05,
+        f"{_side}LowerLeg": 0.04,
+        f"{_side}Foot": 0.03,
+        f"{_side}Toes": 0.02,
+    }
+TORSO = ("Hips", "Spine", "Chest", "UpperChest")
+BACKPACK_Y = fit((0, 0.17, 0)).y  # behind this and above the hips only the torso owns vertices
+CUT = (  # faces joining a bone of one group to one of the other are cut: they would stretch
+    [f"{s}{n}" for s, _ in SIDES for n in ("UpperArm", "LowerArm", "Hand")],
+    ["Hips", "Spine", "Chest"] + [f"{s}{n}" for s, _ in SIDES for n in ("UpperLeg", "LowerLeg")],
+)
+SUIT_LIGHT_Z = (1.5, 1.68)  # the collar's glowing ring: glowing faces in this height, in front of the backpack
+SUIT_LIGHT_Y = 0.16
+SUIT_LIGHT_HEIGHT = 0.03  # the band lighting it
+GLOW_STRENGTH = 4.0
 
 
-class Skin(C.Part):
-    """Part with vertex weights: rigid(verts, bone) or blend(verts, bone_a, bone_b, p0, p1) (bone_a at p0 fading
-    to bone_b at p1, along the segment)."""
-
-    def __init__(self, name: str, mats: list, bevel=(0.006, 2)):
-        super().__init__(name, mats, bevel)
-        self.dl = self.bm.verts.layers.deform.verify()
-
-    def rigid(self, verts, bone: str):
-        for v in verts:
-            v[self.dl].clear()
-            v[self.dl][BONE_INDEX[bone]] = 1.0
-        return verts
-
-    def blend(self, verts, a: str, b: str, p0, p1):
-        p0, p1 = Vector(p0), Vector(p1)
-        d = p1 - p0
-        for v in verts:
-            t = min(max((v.co - p0).dot(d) / d.length_squared, 0.0), 1.0)
-            t = t * t * (3 - 2 * t)
-            v[self.dl].clear()
-            v[self.dl][BONE_INDEX[a]] = 1.0 - t
-            if t > 0:
-                v[self.dl][BONE_INDEX[b]] = t
-        return verts
-
-    def tube(self, p0, p1, r0, r1, seg=12, rings=6, mi=0, squash=(1.0, 1.0), hint=(0, 0, 1)):
-        """Capped tube from p0 (radius r0) to p1 (r1) with `rings` loops for smooth bending; squash scales the
-        cross-section along the hint axis and the other one."""
-        p0, p1 = Vector(p0), Vector(p1)
-        m = C.basis(p1 - p0, Vector(hint))
-        loops = []
-        for i in range(rings + 1):
-            t = i / rings
-            c = p0.lerp(p1, t)
-            r = r0 + (r1 - r0) * t
-            loops.append(
-                [
-                    self.bm.verts.new(c + m @ Vector((math.cos(a) * r * squash[0], math.sin(a) * r * squash[1], 0)))
-                    for a in (2 * math.pi * k / seg for k in range(seg))
-                ]
-            )
-        faces = []
-        for a, b in itertools.pairwise(loops):
-            for k in range(seg):
-                faces.append(self.bm.faces.new((a[k], a[(k + 1) % seg], b[(k + 1) % seg], b[k])))
-        faces.append(self.bm.faces.new(list(reversed(loops[0]))))
-        faces.append(self.bm.faces.new(loops[-1]))
-        for f in faces:
-            f.normal_update()
-        return self._tag([v for lp in loops for v in lp], mi)
-
-    def finish(self, parent) -> bpy.types.Object:
-        obj = super().finish(parent)
-        for name, *_r in BONES:
-            obj.vertex_groups.new(name=name)
-        return obj
+def glow_mask(rgb: np.ndarray) -> np.ndarray:
+    """0..1 per pixel of how glowing-cyan the (sRGB) base color is (saturated: pale blue-grey paint doesn't glow)."""
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    hi = np.maximum(g, b)
+    cyan = np.clip((np.minimum(g, b) - r - 0.1) / 0.12, 0, 1)
+    saturated = np.clip(((hi - r) / np.maximum(hi, 1e-3) - 0.3) / 0.15, 0, 1)
+    bright = np.clip((hi - 0.2) / 0.2, 0, 1)
+    return cyan * saturated * bright
 
 
-def mat_fabric(name: str = "Undersuit") -> bpy.types.Material:
-    """Dark padded fabric: fine ribbing in the bump, slight color variation."""
-    mat, nt, bsdf = C._new_material(name)
-    noise = C._noise(nt, 30.0, 4.0, 0.6)
-    nt.links.new(
-        C._mix_color(nt, noise.outputs["Fac"], (0.022, 0.024, 0.027), (0.045, 0.045, 0.048)), bsdf.inputs["Base Color"]
-    )
-    bsdf.inputs["Roughness"].default_value = 0.88
-    wave = nt.nodes.new("ShaderNodeTexWave")
-    wave.inputs["Scale"].default_value = 90.0
-    nt.links.new(nt.nodes.new("ShaderNodeTexCoord").outputs["Object"], wave.inputs["Vector"])
-    C._bump(nt, bsdf, wave.outputs["Fac"], 0.25, 0.002)
-    return mat
+def load_suit(root: bpy.types.Object) -> bpy.types.Object:
+    """The generated mesh, welded, normalized (1.8 m, centered, feet at 0) and fitted (fit()); still in its A-pose."""
+    bpy.ops.import_scene.gltf(filepath=str(SUIT_SOURCE))
+    obj = next(o for o in bpy.context.selected_objects if o.type == "MESH")
+    for o in [o for o in bpy.context.selected_objects if o is not obj]:
+        bpy.data.objects.remove(o)
+    obj.parent = None
+    me = obj.data
+    me.transform(obj.matrix_world)
+    obj.matrix_world = Matrix.Identity(4)
+    for coll in list(obj.users_collection):
+        coll.objects.unlink(obj)
+    C.link(obj, root)
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+    bm.to_mesh(me)
+    bm.free()
+    co = vertex_array(me)
+    lo, hi = co.min(0), co.max(0)
+    co = (co - [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, lo[2]]) * (1.8 / (hi[2] - lo[2]))
+    co[:, 1] += SUIT_SHIFT_Y
+    me.vertices.foreach_set("co", (co * SUIT_SCALE).ravel())
+    me.update()
+    obj.name = me.name = "Suit"
+    return obj
 
 
-def mat_visor(name: str = "Visor") -> bpy.types.Material:
-    mat, _nt, bsdf = C._new_material(name)
-    bsdf.inputs["Base Color"].default_value = (0.03, 0.022, 0.016, 1.0)
-    bsdf.inputs["Metallic"].default_value = 0.7
-    bsdf.inputs["Roughness"].default_value = 0.08
-    return mat
+def vertex_array(me: bpy.types.Mesh) -> np.ndarray:
+    co = np.empty(len(me.vertices) * 3)
+    me.vertices.foreach_get("co", co)
+    return co.reshape(-1, 3)
+
+
+def pose_a(arm: bpy.types.Object) -> None:
+    """Lower the hips onto the suit's (its legs are spread, the rest pose's straight), turn the arms and legs, each
+    bone about its head, parents first, to point at the suit's joints (the shoulders along the suit's own), and the
+    feet flat, only turned out like the suit's (the toes follow)."""
+    hips = arm.pose.bones["Hips"]
+    hips.location = hips.bone.matrix_local.to_3x3().transposed() @ Vector((0, 0, J["LeftUpperLeg"].z - HIP_Z))
+    bpy.context.view_layer.update()
+    for side, _s in SIDES:
+        for n in ("Shoulder", "UpperArm", "LowerArm", "Hand", "UpperLeg", "LowerLeg", "Foot"):
+            pb = arm.pose.bones[f"{side}{n}"]
+            head = pb.head.copy()
+            want = J[NEXT_JOINT[pb.name]] - (J[pb.name] if n == "Shoulder" else head)
+            if n == "Foot":
+                rest = pb.bone.matrix_local.to_3x3()
+                d = rest.col[1]
+                yaw = math.atan2(want.y, want.x) - math.atan2(d.y, d.x)
+                m = (Matrix.Rotation(yaw, 3, "Z") @ rest).to_4x4()
+                m.translation = head
+                pb.matrix = m
+            else:
+                turn = (pb.tail - pb.head).rotation_difference(want).to_matrix().to_4x4()
+                pb.matrix = Matrix.Translation(head) @ turn @ Matrix.Translation(-head) @ pb.matrix
+            bpy.context.view_layer.update()
+
+
+def segments(arm: bpy.types.Object) -> dict:
+    """Each weighted bone's segment in the posed armature: its head to the next joint (or the mesh's tip)."""
+    seg = {}
+    for name in WEIGHTED:
+        pb = arm.pose.bones[name]
+        nxt = NEXT_JOINT[name]
+        end = (
+            arm.pose.bones[nxt].head
+            if nxt in arm.pose.bones
+            else pb.head + (pb.tail - pb.head).normalized() * (J[nxt] - J[name]).length
+        )
+        seg[name] = (np.array(pb.head[:]), np.array(end[:]))
+    return seg
+
+
+def smoothstep(a: float, b: float, x: np.ndarray) -> np.ndarray:
+    t = np.clip((x - a) / (b - a), 0, 1)
+    return t * t * (3 - 2 * t)
+
+
+def weights(co: np.ndarray, seg: dict) -> tuple:
+    """The owning bone per vertex and the weights (vertices x WEIGHTED)."""
+    n, nb = len(co), len(WEIGHTED)
+    score, along = np.empty((n, nb)), np.empty((n, nb))
+    for i, name in enumerate(WEIGHTED):
+        h, e = seg[name]
+        length = np.linalg.norm(e - h)
+        u = (e - h) / length
+        t = (co - h) @ u
+        nearest = h + np.clip(t, 0, length)[:, None] * u
+        score[:, i] = np.linalg.norm(co - nearest, axis=1) - BONE_RADIUS[name]
+        along[:, i] = t
+    behind = (co[:, 1] > BACKPACK_Y) & (co[:, 2] > HIP_Z)
+    for i, name in enumerate(WEIGHTED):
+        if name not in TORSO:
+            score[behind, i] = np.inf
+        if name in ("Spine", "Chest", "UpperChest", "Neck", "Head"):  # nothing below its blend band (the collar)
+            score[along[:, i] < -BLEND_BAND[name], i] = np.inf
+    owner = score.argmin(1)
+    w = np.zeros((n, nb))
+    w[np.arange(n), owner] = 1.0
+    index = {b: i for i, b in enumerate(WEIGHTED)}
+    for child, band in BLEND_BAND.items():
+        parent = PARENT[child]
+        c, p = index[child], index[parent]
+        lp = np.linalg.norm(seg[parent][1] - seg[parent][0])
+        near_child = (owner == c) & (along[:, c] < band)
+        near_parent = (owner == p) & (along[:, p] > lp - band)
+        if parent == "UpperChest":  # its end is the neck: only the middle blends there
+            near_parent &= np.abs(co[:, 0]) < 0.1
+        for m, t in ((near_child, along[:, c]), (near_parent, along[:, p] - lp)):
+            f = smoothstep(-band, band, t[m])
+            w[m] = 0.0
+            w[m, c] = f
+            w[m, p] = 1.0 - f
+    return owner, w
+
+
+def cut_bridges(me: bpy.types.Mesh, owner: np.ndarray) -> None:
+    a, b = ({WEIGHTED.index(n) for n in group} for group in CUT)
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    cut = []
+    for f in bm.faces:
+        owners = {int(owner[v.index]) for v in f.verts}
+        if owners & a and owners & b:
+            cut.append(f)
+    bmesh.ops.delete(bm, geom=cut, context="FACES_ONLY")
+    filled = bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=64)["faces"]
+    bm.to_mesh(me)
+    bm.free()
+    print("SUIT cut", len(cut), "faces, filled", len(filled), "holes")
+
+
+def unskin(obj: bpy.types.Object, arm: bpy.types.Object, w: np.ndarray) -> None:
+    """Move the A-pose mesh into the rest pose: each vertex by the inverse of its blended bone matrices."""
+    me = obj.data
+    co = vertex_array(me)
+    mats = np.array([np.array(arm.pose.bones[b].matrix @ arm.data.bones[b].matrix_local.inverted()) for b in WEIGHTED])
+    blend = np.einsum("nb,bij->nij", w, mats)
+    rest = np.einsum("nij,nj->ni", np.linalg.inv(blend), np.column_stack((co, np.ones(len(co)))))[:, :3]
+    me.vertices.foreach_set("co", rest.ravel())
+    me.update()
+    print("SUIT soles at", round(float(rest[:, 2].min()), 3))
+    set_weights(obj, w)
+
+
+def set_weights(obj: bpy.types.Object, w: np.ndarray) -> None:
+    for b in WEIGHTED:
+        obj.vertex_groups.new(name=b)
+    for vi, row in enumerate(w):
+        for bi in np.nonzero(row > 1e-4)[0]:
+            obj.vertex_groups[WEIGHTED[bi]].add([vi], float(row[bi]), "REPLACE")
+
+
+def base_color_image(mat: bpy.types.Material) -> bpy.types.Image:
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    return bsdf.inputs["Base Color"].links[0].from_node.image
+
+
+def collar_faces(me: bpy.types.Mesh, glow: np.ndarray) -> list:
+    """The collar band's glowing faces (in the rest pose)."""
+    size = glow.shape[0]
+    uv = me.uv_layers.active.data
+    co = vertex_array(me)
+    faces = []
+    for p in me.polygons:
+        u = sum(uv[i].uv[0] for i in p.loop_indices) / p.loop_total
+        v = sum(uv[i].uv[1] for i in p.loop_indices) / p.loop_total
+        c = co[list(p.vertices)].mean(0)
+        lit = glow[min(int(v * size), size - 1), min(int(u * size), size - 1)] > 0.5
+        if lit and SUIT_LIGHT_Z[0] < c[2] < SUIT_LIGHT_Z[1] and c[1] < SUIT_LIGHT_Y:
+            faces.append(p)
+    return faces
+
+
+def uv_cover(me: bpy.types.Mesh, faces: list, size: int, grow: int = 3) -> np.ndarray:
+    """Pixels the faces cover in the texture (rasterized UV triangles, grown by a few pixels)."""
+    cover = np.zeros((size, size), dtype=bool)
+    uv = me.uv_layers.active.data
+    for p in faces:
+        pts = np.array([uv[i].uv[:] for i in p.loop_indices]) * size
+        for k in range(1, len(pts) - 1):
+            tri = pts[[0, k, k + 1]]
+            x0, y0 = np.floor(tri.min(0)).astype(int)
+            x1, y1 = np.ceil(tri.max(0)).astype(int)
+            xs, ys = np.meshgrid(np.arange(x0, x1 + 1) + 0.5, np.arange(y0, y1 + 1) + 0.5)
+            (ax, ay), (bx, by), (cx, cy) = tri
+            d = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
+            if abs(d) < 1e-12:
+                continue
+            l1 = ((by - cy) * (xs - cx) + (cx - bx) * (ys - cy)) / d
+            l2 = ((cy - ay) * (xs - cx) + (ax - cx) * (ys - cy)) / d
+            inside = (l1 >= 0) & (l2 >= 0) & (l1 + l2 <= 1)
+            yy, xx = ys[inside].astype(int), xs[inside].astype(int)
+            ok = (yy >= 0) & (yy < size) & (xx >= 0) & (xx < size)
+            cover[yy[ok], xx[ok]] = True
+    for _ in range(grow):
+        cover[1:] |= cover[:-1].copy()
+        cover[:-1] |= cover[1:].copy()
+        cover[:, 1:] |= cover[:, :-1].copy()
+        cover[:, :-1] |= cover[:, 1:].copy()
+    return cover
+
+
+def add_glow(suit: bpy.types.Object) -> list:
+    """The glowing cyan of the base color becomes emission (packed images, so the .blend keeps them), except on
+    the collar, which "SuitLight" lights: there it's painted over in the collar's dark. Returns the collar's faces."""
+    mat = suit.data.materials[0]
+    base = base_color_image(mat)
+    size = base.size[0]
+    rgba = np.array(base.pixels[:], dtype=np.float32).reshape(size, size, 4)
+    glow = glow_mask(rgba[..., :3])
+    collar = collar_faces(suit.data, glow)
+    cover = uv_cover(suit.data, collar, size)
+    unlit = cover & (glow < 0.1)
+    grey = float(np.median(rgba[unlit, :3])) if unlit.any() else 0.08
+    dark = np.full(3, grey)  # neutral: the collar's own paint is tinted by the glow
+    painted = rgba.copy()
+    k = (glow * cover)[..., None]
+    painted[..., :3] = painted[..., :3] * (1 - k) + dark * k
+    glow = glow * ~cover
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    for name, pixels, socket in (("SuitBase", painted, "Base Color"), ("SuitGlow", rgba * glow[..., None], None)):
+        img = bpy.data.images.new(name, size, size)
+        px = pixels.copy()
+        px[..., 3] = 1.0
+        img.pixels.foreach_set(px.ravel())
+        img.pack()
+        if socket:
+            bsdf.inputs[socket].links[0].from_node.image = img
+        else:
+            tex = nt.nodes.new("ShaderNodeTexImage")
+            tex.image = img
+            nt.links.new(tex.outputs["Color"], bsdf.inputs["Emission Color"])
+    bsdf.inputs["Emission Strength"].default_value = GLOW_STRENGTH
+    return collar
+
+
+def collar_band(suit: bpy.types.Object, collar: list, w: np.ndarray, root: bpy.types.Object) -> bpy.types.Object:
+    """ "SuitLight": a thin band hugging the collar where its glowing ring was (radius and height per direction
+    around the neck, from the collar's faces: the ring tilts), weighted like the suit under it."""
+    co = vertex_array(suit.data)
+    pts = np.array([co[list(p.vertices)].mean(0) for p in collar])
+    centre = np.array([0.0, J["Neck"].y])
+    rel = pts[:, :2] - centre
+    ang = np.arctan2(rel[:, 1], rel[:, 0])
+    rad = np.linalg.norm(rel, axis=1)
+    bins = 24
+    radius, height = np.full(bins, np.nan), np.full(bins, np.nan)
+    which = ((ang + np.pi) * bins / (2 * np.pi)).astype(int) % bins
+    for i in range(bins):
+        m = which == i
+        if m.sum() >= 3:
+            radius[i] = np.percentile(rad[m], 80)
+            height[i] = np.percentile(pts[m, 2], 60)
+    known = np.flatnonzero(~np.isnan(radius))
+    radius = np.interp(np.arange(bins), known, radius[known], period=bins)
+    height = np.interp(np.arange(bins), known, height[known], period=bins)
+    # Smooth both around the ring (a few passes of neighbour averaging).
+    for _ in range(3):
+        radius = (np.roll(radius, 1) + 2 * radius + np.roll(radius, -1)) / 4
+        height = (np.roll(height, 1) + 2 * height + np.roll(height, -1)) / 4
+    seg = 64
+    verts = []
+    for half, dr in ((-1, 0.012), (1, -0.004)):  # bottom ring out, top ring in: slanted like the collar's top
+        for k in range(seg):
+            a = -np.pi + 2 * np.pi * k / seg
+            x = (a + np.pi) * bins / (2 * np.pi)
+            r = np.interp(x, np.arange(bins + 1), np.append(radius, radius[0])) + 0.006 + dr
+            z = np.interp(x, np.arange(bins + 1), np.append(height, height[0]))
+            verts.append((centre[0] + r * np.cos(a), centre[1] + r * np.sin(a), z + half * SUIT_LIGHT_HEIGHT / 2))
+    faces = [(k, (k + 1) % seg, seg + (k + 1) % seg, seg + k) for k in range(seg)]
+    me = bpy.data.meshes.new("SuitLight")
+    me.from_pydata(verts, [], faces)
+    me.update()
+    band = C.link(bpy.data.objects.new("SuitLight", me), root)
+    me.materials.append(C.mat_emissive("SuitLight", (0.3, 1.0, 0.45), 6.0))
+    near = np.array([np.argmin(np.linalg.norm(co - v, axis=1)) for v in verts])
+    set_weights(band, w[near])
+    print("SUIT light from", len(collar), "collar faces, height", height.round(3).tolist())
+    return band
 
 
 def build_suit(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
-    armor = C.mat_painted_metal("Armor", (0.07, 0.075, 0.082), wear=0.35, grime=0.55, roughness=0.5)
-    C.bevel_wear(armor, lo=0.01, hi=0.05, radius=0.006)
-    fabric = mat_fabric()
-    rubber = C.mat_rubber("Rubber", (0.02, 0.02, 0.022))
-    visor = mat_visor()
-    trim = C.mat_bare_metal("Trim", (0.32, 0.2, 0.11), roughness=0.45)
-    light = C.mat_emissive("ChestLight", (0.15, 0.45, 1.0), 6.0)
-    ARMOR, FABRIC, RUBBER, VISOR, TRIM, LIGHT = range(6)
-    sk = Skin("Suit", [armor, fabric, rubber, visor, trim, light])
-    R = sk.rigid
-
-    # Head: helmet shell, visor bulging out of the front, ear discs, crest.
-    R(sk.sphere((0, 0.01, 1.67), 0.165, 20, 10, scale=(1.0, 1.05, 1.0)), "Head")
-    R(sk.sphere((0, -0.045, 1.655), 0.14, 20, 10, scale=(0.98, 0.9, 0.82), mi=VISOR), "Head")
-    R(sk.box((0, -0.005, 1.83), (0.05, 0.26, 0.025), rx(-8)), "Head")
-    for s in (1, -1):
-        R(sk.cyl((s * 0.16, 0.0, 1.66), 0.055, 0.05, 16, ry(90), mi=TRIM), "Head")
-        R(sk.cyl((s * 0.18, 0.0, 1.66), 0.03, 0.03, 12, ry(90), mi=ARMOR), "Head")
-    R(sk.cyl((0, 0.0, 1.565), 0.13, 0.06, 20), "Neck")  # neck seal under the collar
-
-    # Collar ring (the light band is its own object), chest plate, abdomen plates, backpack.
-    R(sk.cyl((0, 0.0, 1.52), 0.2, 0.07, 24, mi=ARMOR, r2=0.17), "UpperChest")
-    R(sk.box((0, -0.02, 1.37), (0.46, 0.3, 0.24)), "UpperChest")
-    R(sk.sphere((0, -0.07, 1.36), 0.22, 20, 10, scale=(1.0, 0.45, 0.6)), "UpperChest")
-    R(sk.cyl((0.09, -0.175, 1.39), 0.05, 0.03, 16, rx(90), mi=TRIM), "UpperChest")
-    R(sk.cyl((0.09, -0.19, 1.39), 0.032, 0.012, 16, rx(90), mi=LIGHT), "UpperChest")
-    R(sk.box((-0.09, -0.165, 1.33), (0.12, 0.03, 0.06), mi=TRIM), "UpperChest")
-    for s in (1, -1):  # straps over the shoulders
-        R(sk.box((s * 0.13, -0.02, 1.47), (0.07, 0.33, 0.03), mi=TRIM), "UpperChest")
-    R(sk.tube((0, 0, 1.19), (0, 0, 1.32), 0.165, 0.18, 16, 2, FABRIC, (1.15, 0.85), hint=(1, 0, 0)), "Chest")
-    R(sk.box((0, -0.1, 1.27), (0.3, 0.06, 0.09)), "Chest")
-    R(sk.box((0, -0.095, 1.18), (0.26, 0.06, 0.08)), "Spine")
-    R(sk.tube((0, 0, 1.03), (0, 0, 1.19), 0.15, 0.16, 16, 2, FABRIC, (1.15, 0.85), hint=(1, 0, 0)), "Spine")
-    # Backpack: shell, frame rails (the game hangs the cargo canisters below it), status lights.
-    R(sk.box((0, 0.2, 1.32), (0.38, 0.16, 0.36)), "UpperChest")
-    R(sk.box((0, 0.21, 1.52), (0.3, 0.12, 0.06), mi=RUBBER), "UpperChest")
-    for s in (1, -1):
-        R(sk.box((s * 0.17, 0.25, 1.17), (0.03, 0.05, 0.62), mi=TRIM), "UpperChest")
-        R(sk.box((s * 0.12, 0.285, 1.42), (0.04, 0.012, 0.03), mi=LIGHT), "UpperChest")
-    R(sk.box((0, 0.27, 0.9), (0.37, 0.07, 0.03), mi=TRIM), "UpperChest")
-
-    # Belt and hips.
-    R(sk.tube((0, 0, 0.97), (0, 0, 1.05), 0.185, 0.185, 20, 1, RUBBER, (1.05, 0.82), hint=(1, 0, 0)), "Hips")
-    R(sk.box((0, -0.16, 1.01), (0.09, 0.03, 0.06), mi=TRIM), "Hips")
-    R(sk.box((0, 0, 0.92), (0.32, 0.24, 0.12), mi=FABRIC), "Hips")
-    for s in (1, -1):
-        R(sk.box((s * 0.12, -0.15, 0.99), (0.08, 0.05, 0.09), mi=RUBBER), "Hips")  # pouches
-        R(sk.box((s * 0.2, 0.0, 0.92), (0.06, 0.2, 0.17), ry(s * 12)), "Hips")  # hip plates
-
-    for side, s in SIDES:
-        b = lambda n, side=side: f"{side}{n}"
-        # Shoulder: pauldron over the joint.
-        R(sk.sphere((s * 0.27, 0.0, 1.47), 0.13, 16, 8, scale=(1.05, 1.0, 0.8)), b("UpperArm"))
-        R(sk.cyl((s * 0.3, 0.0, 1.425), 0.13, 0.025, 16, ry(s * 18), mi=TRIM), b("UpperArm"))
-        # Upper arm: undersuit (blends into the forearm across the elbow), bicep plate, elbow pad.
-        sh, el, wr = Vector((s * 0.2, 0, ARM_Z)), Vector((s * ELBOW_X, 0, ARM_Z)), Vector((s * WRIST_X, 0, ARM_Z))
-        sk.blend(
-            sk.tube(sh, el + Vector((s * 0.06, 0, 0)), 0.07, 0.06, 12, 6, FABRIC),
-            b("UpperArm"),
-            b("LowerArm"),
-            el - Vector((s * 0.05, 0, 0)),
-            el + Vector((s * 0.04, 0, 0)),
-        )
-        R(sk.box((s * 0.4, 0, ARM_Z + 0.01), (0.16, 0.13, 0.1)), b("UpperArm"))
-        R(sk.sphere(el + Vector((0, 0.05, 0)), 0.06, 12, 6, scale=(1, 0.8, 1)), b("LowerArm"))
-        # Forearm: gauntlet with a trim band.
-        R(
-            sk.tube(
-                el + Vector((s * 0.04, 0, 0)), wr - Vector((s * 0.01, 0, 0)), 0.075, 0.065, 14, 1, ARMOR, (1.0, 0.85)
-            ),
-            b("LowerArm"),
-        )
-        R(sk.cyl(wr - Vector((s * 0.06, 0, 0)), 0.071, 0.025, 14, ry(90), mi=TRIM), b("LowerArm"))
-        # Hand: a fist in a heavy glove, thumb.
-        R(sk.box((s * 0.865, 0, ARM_Z - 0.005), (0.12, 0.095, 0.07), mi=RUBBER), b("Hand"))
-        R(sk.box((s * 0.84, -0.055, ARM_Z - 0.01), (0.06, 0.03, 0.04), rz(s * 20), mi=RUBBER), b("Hand"))
-        R(sk.tube(wr - Vector((s * 0.02, 0, 0)), wr + Vector((s * 0.03, 0, 0)), 0.05, 0.05, 12, 1, RUBBER), b("Hand"))
-        # Leg: thigh undersuit (blends into the shin across the knee), thigh plate, knee pad, greave, boot.
-        hip, knee, ankle = (
-            Vector((s * HIP_X, 0, HIP_Z)),
-            Vector((s * HIP_X, 0, KNEE_Z)),
-            Vector((s * HIP_X, 0, ANKLE_Z)),
-        )
-        sk.blend(
-            sk.tube(hip + Vector((0, 0, 0.04)), knee - Vector((0, 0, 0.06)), 0.1, 0.08, 14, 6, FABRIC),
-            b("UpperLeg"),
-            b("LowerLeg"),
-            knee + Vector((0, 0, 0.06)),
-            knee - Vector((0, 0, 0.04)),
-        )
-        R(sk.box((s * HIP_X, -0.08, 0.74), (0.15, 0.06, 0.26), rx(-4)), b("UpperLeg"))
-        R(sk.box((s * (HIP_X + 0.085), 0.0, 0.76), (0.04, 0.14, 0.22)), b("UpperLeg"))
-        R(sk.sphere((s * HIP_X, -0.06, KNEE_Z), 0.08, 14, 7, scale=(1.0, 0.85, 1.05)), b("LowerLeg"))
-        R(
-            sk.tube(knee - Vector((0, 0, 0.04)), ankle + Vector((0, 0, 0.08)), 0.085, 0.072, 14, 1, ARMOR, (1.0, 0.9)),
-            b("LowerLeg"),
-        )
-        R(sk.box((s * HIP_X, -0.07, 0.33), (0.1, 0.04, 0.24), rx(-3)), b("LowerLeg"))
-        R(sk.tube(ankle + Vector((0, 0, 0.02)), ankle + Vector((0, 0, 0.12)), 0.088, 0.085, 14, 1, TRIM), b("LowerLeg"))
-        R(sk.box((s * HIP_X, -0.03, 0.075), (0.13, 0.22, 0.12)), b("Foot"))
-        R(sk.box((s * HIP_X, -0.03, 0.015), (0.14, 0.25, 0.03), mi=RUBBER), b("Foot"))
-        R(sk.box((s * HIP_X, -0.17, 0.045), (0.125, 0.1, 0.08)), b("Toes"))
-        R(sk.box((s * HIP_X, -0.175, 0.012), (0.135, 0.1, 0.025), mi=RUBBER), b("Toes"))
-    suit = sk.finish(root)
-
-    light = Skin("SuitLight", [C.mat_emissive("SuitLight", (0.3, 1.0, 0.45), 6.0)], bevel=None)
-    light.rigid(light.cyl((0, 0.0, 1.548), 0.182, 0.022, 32), "UpperChest")
-    band = light.finish(root)
+    suit = load_suit(root)
+    pose_a(arm)
+    owner, w = weights(vertex_array(suit.data), segments(arm))
+    print("SUIT owners", {b: int((owner == i).sum()) for i, b in enumerate(WEIGHTED)})
+    cut_bridges(suit.data, owner)
+    unskin(suit, arm, w)
+    rest_pose(arm)
+    if suit.data.has_custom_normals:  # the generator's normals don't fit the moved vertices
+        bpy.context.view_layer.objects.active = suit
+        bpy.ops.mesh.customdata_custom_splitnormals_clear()
+    for p in suit.data.polygons:
+        p.use_smooth = True
+    suit.data.materials[0].name = "Suit"
+    band = collar_band(suit, add_glow(suit), w, root)
     for obj in (suit, band):
         obj.modifiers.new("Armature", "ARMATURE").object = arm
     return suit, band
 
 
-def markers(arm: bpy.types.Object) -> None:
+def backpack(suit: bpy.types.Object) -> tuple:
+    """The backpack's back face (y) and bottom (z), measured on the rest mesh's middle."""
+    co = vertex_array(suit.data)
+    pack = co[(np.abs(co[:, 0]) < 0.15) & (co[:, 1] > BACKPACK_Y) & (co[:, 2] > HIP_Z)]
+    return float(np.percentile(pack[:, 1], 95)), float(pack[:, 2].min())
+
+
+def markers(arm: bpy.types.Object, suit: bpy.types.Object) -> None:
     """Empties on bones the game attaches to (their Godot -Z = the player's forward, see docstring)."""
     turn = rz(180)
+    back, bottom = backpack(suit)
+    print("BACKPACK back", round(back, 3), "bottom", round(bottom, 3))
     for name, bone, loc in (
-        ("CargoRack", "UpperChest", (0, 0.31, 0.95)),
-        ("HosePort", "UpperChest", (0, 0.29, 1.08)),
+        ("CargoRack", "UpperChest", (0, back + 0.03, bottom)),  # the tubes stand on it, up the backpack's back
+        ("HosePort", "UpperChest", (0, back + 0.01, bottom + 0.13)),
         ("WeaponGrip", "RightHand", GRIP),  # placed in the aim pose
         ("ShieldGrip", "LeftLowerArm", _shield_grip()),  # placed in the shield's hold
     ):
@@ -424,7 +647,7 @@ def rest_pose(arm: bpy.types.Object) -> None:
 
 # --- clips ------------------------------------------------------------------------------------------
 
-GRIP = Vector((-0.17, -0.25, 1.1))  # Harl's origin (pistol grip) in the aim pose; muzzle ~1.25 m up
+GRIP = Vector((-0.17, -0.3, 1.1))  # Harl's origin (pistol grip) in the aim pose; muzzle ~1.25 m up
 FOREGRIP = GRIP + Vector((0, -0.35, 0.086))  # harl.glb "Foregrip"
 
 
@@ -433,10 +656,14 @@ def smooth(t: float) -> float:
     return t * t * (3 - 2 * t)
 
 
+FOOT_X = 0.17  # the feet's distance from the middle when standing (the boots are wide)
+WRIST_X_HANGING = 0.4  # the hanging arms' wrists, clear of the bulky hips
+
+
 def relaxed_arms(p: Pose, swing: dict | None = None) -> None:
     for side, s in SIDES:
         f = (swing or {}).get(side, 0.0)
-        wrist = Vector((s * 0.3, -0.02 - f, 0.93 + 0.12 * abs(f)))
+        wrist = Vector((s * WRIST_X_HANGING, -0.02 - f, 0.93 + 0.12 * abs(f)))
         p.arm(side, wrist, Vector((s * 0.3, 1, 0)), Vector((s * 0.15, -0.25, -1)), Vector((-s, 0, 0)))
 
 
@@ -463,7 +690,7 @@ def idle(t: float, aim: bool = False) -> Pose:
     else:
         relaxed_arms(p)
     for side, s in SIDES:
-        p.leg(side, Vector((s * 0.13, -0.01, ANKLE_Z)), Vector((s * 0.15, -1, 0)), 0.0, s * 6)
+        p.leg(side, Vector((s * FOOT_X, -0.01, ANKLE_Z)), Vector((s * 0.15, -1, 0)), 0.0, s * 6)
     return p
 
 
@@ -496,7 +723,7 @@ def run(t: float, move: Vector) -> Pose:
             lift = 0.3 * math.sin(math.pi * min(w * 1.15, 1.0))
             pitch = 50 * math.sin(math.pi * w) * (1 - w) - 12 * smooth((w - 0.75) / 0.25)
         # Keep the feet apart when stepping sideways.
-        base = Vector((s * (0.12 + 0.04 * abs(side_share)), 0.03 * s * side_share, 0))
+        base = Vector((s * (FOOT_X - 0.01 + 0.04 * abs(side_share)), 0.03 * s * side_share, 0))
         pitch *= 1 if fwd >= -0.5 else -0.6
         # The foot rolls over its toes (heel up) or its heel (toes up), not around the ankle.
         lift += 0.14 * math.sin(math.radians(max(pitch, 0))) + 0.07 * math.sin(math.radians(max(-pitch, 0)))
@@ -517,9 +744,9 @@ def die(t: float) -> Pose:
     p = Pose(hips, rx(10 * k + 70 * f))
     p.spine(spine=lean, chest=lean, upper=lean, neck=lean @ rz(25 * f), head=lean @ rz(40 * f))
     for side, s in SIDES:
-        ankle = Vector((s * 0.13, -0.01 + 0.45 * f, ANKLE_Z - 0.02 * f))
+        ankle = Vector((s * FOOT_X, -0.01 + 0.45 * f, ANKLE_Z - 0.02 * f))
         p.leg(side, ankle, Vector((s * 0.2, -1 + 0.6 * f, -1.6 * f)), 165 * f)  # ends with the soles up
-        wrist = Vector((s * (0.3 + 0.12 * f), -0.05 - 0.75 * f, 0.93 - 0.85 * f))
+        wrist = Vector((s * (WRIST_X_HANGING + 0.12 * f), -0.05 - 0.75 * f, 0.93 - 0.85 * f))
         p.arm(
             side,
             wrist,
@@ -961,8 +1188,8 @@ def main() -> None:
     C.reset(ASSET)
     root = C.asset_root(ASSET)
     arm = build_skeleton(root)
-    _suit, _band = build_suit(root, arm)
-    markers(arm)
+    suit, _band = build_suit(root, arm)
+    markers(arm, suit)
     print("STATS", C.stats(), C.tris_per_object())
     if MODE == "clips":
         preview_clips(arm, ARGV[1:])

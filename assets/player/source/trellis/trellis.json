@@ -1,0 +1,29 @@
+{
+  "made_by": "TRELLIS.2 (image to 3D) on a concept image made with Z-Image Turbo, both run locally in ComfyUI",
+  "concept": {
+    "file": "player_concept.png",
+    "model": "Z-Image Turbo (z_image_turbo_bf16, Tongyi-MAI, Apache-2.0)",
+    "text_encoder": "qwen_3_4b",
+    "size": [
+      1024,
+      1024
+    ],
+    "seed": 4,
+    "steps": 8,
+    "cfg": 1.0,
+    "sampler": "res_multistep / simple, shift 3",
+    "prompt": "photorealistic AAA sci-fi game character render, detailed weathered PBR materials, dark moody low-key lighting with a strong cool rim light, plain dark grey studio background. Subject: a space miner in a bulky dark weathered armored spacesuit: a rounded helmet with a dark reflective visor, a glowing cyan-white light ring around the collar, chunky rounded shoulder pauldrons, segmented armored arms and gloves, a plain belt, clean smooth armored thigh plates with nothing strapped or attached to the legs, round knee pads, heavy boots, a compact backpack with two round glowing cyan ore canisters, standing in a relaxed A-pose, both arms held out and away from the body at 45 degrees with a clear gap between the arms and the torso, empty open hands with spread fingers, unarmed, legs slightly apart, feet flat, full body visible from helmet to boots, centered, single character, front view, facing the camera."
+  },
+  "mesh": {
+    "file": "player_trellis.glb",
+    "tool": "tools/trellis.py",
+    "model": "TRELLIS.2 (trellis_2_bf16, Microsoft, MIT)",
+    "image_encoder": "DINOv3 ViT-L (dino_v3_vit_l, Meta, DINOv3 License)",
+    "background_removal": "BiRefNet (birefnet, MIT)",
+    "comfyui": "0.42.0",
+    "seed": 42,
+    "faces": 20000,
+    "texture_size": 2048,
+    "date": "2026-10-21"
+  }
+}

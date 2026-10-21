@@ -8,7 +8,8 @@ Writes the game asset assets/player/player.glb (textures, skeleton and animation
 assets/player/source/player.blend; the separate PNGs and check renders go to tmp/assets/player/game/.
 
 The shared flow (tools/blender/bake.py) bakes "Suit" into one 2048 texture set with one "Suit" PBR material
-(the chest and backpack lights baked into its emission). "SuitLight" keeps its constant emissive material (the game
+(its glowing lamps and panels baked into its emission), keeping the generated mesh's UV layout (same size: its
+textures aren't resampled). "SuitLight" keeps its constant emissive material (the game
 drives its color by health). The armature modifiers are taken off for the bake (the rest pose is baked) and put
 back before the export. Texture size 2048 per the asset budget, TBD (playtest).
 """
@@ -38,6 +39,12 @@ def prepare(job: B.Job) -> list:
     return [B.bake_plane("BakeGround", scale=(4, 4, 1))]
 
 
+def keep_uvs(job: B.Job, objs: list) -> None:
+    """The generated suit comes unwrapped and textured: bake into its own layout."""
+    for o in objs:
+        o.data.uv_layers.active.name = "UVMap"
+
+
 def finish(job: B.Job, objs: list) -> None:
     for name in SKINNED:
         obj = bpy.data.objects[name]
@@ -54,7 +61,7 @@ JOB = B.Job(
     atlas=["Suit"],
     material="Suit",
     size=2048,  # final texture size (budget: one 2048 set, TBD (playtest))
-    island_margin=0.003,
+    unwrap=keep_uvs,
     ao_distance=0.06,  # the suit is small: only close cavities darken
     emission_strength=6.0,
     prepare=prepare,

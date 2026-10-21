@@ -40,12 +40,12 @@ sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
 import itertools
 
-import bmesh
 import bpy
 import numpy as np
 from mathutils import Matrix, Vector
 
 import common as C
+import generated as G
 from common import T, rx, ry, rz
 
 ARGV = C.args()
@@ -220,37 +220,14 @@ def glow_mask(rgb: np.ndarray) -> np.ndarray:
 
 
 def load_suit(root: bpy.types.Object) -> bpy.types.Object:
-    """The generated mesh, welded, normalized (1.8 m, centered, feet at 0) and fitted (fit()); still in its A-pose."""
-    bpy.ops.import_scene.gltf(filepath=str(SUIT_SOURCE))
-    obj = next(o for o in bpy.context.selected_objects if o.type == "MESH")
-    for o in [o for o in bpy.context.selected_objects if o is not obj]:
-        bpy.data.objects.remove(o)
-    obj.parent = None
-    me = obj.data
-    me.transform(obj.matrix_world)
-    obj.matrix_world = Matrix.Identity(4)
-    for coll in list(obj.users_collection):
-        coll.objects.unlink(obj)
-    C.link(obj, root)
-    bm = bmesh.new()
-    bm.from_mesh(me)
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
-    bm.to_mesh(me)
-    bm.free()
-    co = vertex_array(me)
+    """The generated mesh, normalized (1.8 m, centered, feet at 0) and fitted (fit()); still in its A-pose."""
+    obj = G.load(SUIT_SOURCE, root, "Suit")
+    co = G.vertices(obj.data)
     lo, hi = co.min(0), co.max(0)
     co = (co - [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, lo[2]]) * (1.8 / (hi[2] - lo[2]))
     co[:, 1] += SUIT_SHIFT_Y
-    me.vertices.foreach_set("co", (co * SUIT_SCALE).ravel())
-    me.update()
-    obj.name = me.name = "Suit"
+    G.set_vertices(obj.data, co * SUIT_SCALE)
     return obj
-
-
-def vertex_array(me: bpy.types.Mesh) -> np.ndarray:
-    co = np.empty(len(me.vertices) * 3)
-    me.vertices.foreach_get("co", co)
-    return co.reshape(-1, 3)
 
 
 def pose_a(arm: bpy.types.Object) -> None:
@@ -289,171 +266,60 @@ def segments(arm: bpy.types.Object) -> dict:
             if nxt in arm.pose.bones
             else pb.head + (pb.tail - pb.head).normalized() * (J[nxt] - J[name]).length
         )
-        seg[name] = (np.array(pb.head[:]), np.array(end[:]))
+        seg[name] = (pb.head[:], end[:])
     return seg
-
-
-def smoothstep(a: float, b: float, x: np.ndarray) -> np.ndarray:
-    t = np.clip((x - a) / (b - a), 0, 1)
-    return t * t * (3 - 2 * t)
 
 
 def weights(co: np.ndarray, seg: dict) -> tuple:
     """The owning bone per vertex and the weights (vertices x WEIGHTED)."""
-    n, nb = len(co), len(WEIGHTED)
-    score, along = np.empty((n, nb)), np.empty((n, nb))
-    for i, name in enumerate(WEIGHTED):
-        h, e = seg[name]
-        length = np.linalg.norm(e - h)
-        u = (e - h) / length
-        t = (co - h) @ u
-        nearest = h + np.clip(t, 0, length)[:, None] * u
-        score[:, i] = np.linalg.norm(co - nearest, axis=1) - BONE_RADIUS[name]
-        along[:, i] = t
+    score, along = G.capsules(co, WEIGHTED, seg, BONE_RADIUS)
     behind = (co[:, 1] > BACKPACK_Y) & (co[:, 2] > HIP_Z)
     for i, name in enumerate(WEIGHTED):
         if name not in TORSO:
             score[behind, i] = np.inf
         if name in ("Spine", "Chest", "UpperChest", "Neck", "Head"):  # nothing below its blend band (the collar)
             score[along[:, i] < -BLEND_BAND[name], i] = np.inf
-    owner = score.argmin(1)
-    w = np.zeros((n, nb))
-    w[np.arange(n), owner] = 1.0
-    index = {b: i for i, b in enumerate(WEIGHTED)}
-    for child, band in BLEND_BAND.items():
-        parent = PARENT[child]
-        c, p = index[child], index[parent]
-        lp = np.linalg.norm(seg[parent][1] - seg[parent][0])
-        near_child = (owner == c) & (along[:, c] < band)
-        near_parent = (owner == p) & (along[:, p] > lp - band)
-        if parent == "UpperChest":  # its end is the neck: only the middle blends there
-            near_parent &= np.abs(co[:, 0]) < 0.1
-        for m, t in ((near_child, along[:, c]), (near_parent, along[:, p] - lp)):
-            f = smoothstep(-band, band, t[m])
-            w[m] = 0.0
-            w[m, c] = f
-            w[m, p] = 1.0 - f
-    return owner, w
-
-
-def cut_bridges(me: bpy.types.Mesh, owner: np.ndarray) -> None:
-    a, b = ({WEIGHTED.index(n) for n in group} for group in CUT)
-    bm = bmesh.new()
-    bm.from_mesh(me)
-    cut = []
-    for f in bm.faces:
-        owners = {int(owner[v.index]) for v in f.verts}
-        if owners & a and owners & b:
-            cut.append(f)
-    bmesh.ops.delete(bm, geom=cut, context="FACES_ONLY")
-    filled = bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=64)["faces"]
-    bm.to_mesh(me)
-    bm.free()
-    print("SUIT cut", len(cut), "faces, filled", len(filled), "holes")
+    # The upper chest's end is the neck: only its middle blends there.
+    return G.weights(score, along, WEIGHTED, seg, BLEND_BAND, PARENT, {"UpperChest": np.abs(co[:, 0]) < 0.1})
 
 
 def unskin(obj: bpy.types.Object, arm: bpy.types.Object, w: np.ndarray) -> None:
     """Move the A-pose mesh into the rest pose: each vertex by the inverse of its blended bone matrices."""
-    me = obj.data
-    co = vertex_array(me)
+    co = G.vertices(obj.data)
     mats = np.array([np.array(arm.pose.bones[b].matrix @ arm.data.bones[b].matrix_local.inverted()) for b in WEIGHTED])
     blend = np.einsum("nb,bij->nij", w, mats)
     rest = np.einsum("nij,nj->ni", np.linalg.inv(blend), np.column_stack((co, np.ones(len(co)))))[:, :3]
-    me.vertices.foreach_set("co", rest.ravel())
-    me.update()
+    G.set_vertices(obj.data, rest)
     print("SUIT soles at", round(float(rest[:, 2].min()), 3))
-    set_weights(obj, w)
-
-
-def set_weights(obj: bpy.types.Object, w: np.ndarray) -> None:
-    for b in WEIGHTED:
-        obj.vertex_groups.new(name=b)
-    for vi, row in enumerate(w):
-        for bi in np.nonzero(row > 1e-4)[0]:
-            obj.vertex_groups[WEIGHTED[bi]].add([vi], float(row[bi]), "REPLACE")
-
-
-def base_color_image(mat: bpy.types.Material) -> bpy.types.Image:
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    return bsdf.inputs["Base Color"].links[0].from_node.image
-
-
-def collar_faces(me: bpy.types.Mesh, glow: np.ndarray) -> list:
-    """The collar band's glowing faces (in the rest pose)."""
-    size = glow.shape[0]
-    uv = me.uv_layers.active.data
-    co = vertex_array(me)
-    faces = []
-    for p in me.polygons:
-        u = sum(uv[i].uv[0] for i in p.loop_indices) / p.loop_total
-        v = sum(uv[i].uv[1] for i in p.loop_indices) / p.loop_total
-        c = co[list(p.vertices)].mean(0)
-        lit = glow[min(int(v * size), size - 1), min(int(u * size), size - 1)] > 0.5
-        if lit and SUIT_LIGHT_Z[0] < c[2] < SUIT_LIGHT_Z[1] and c[1] < SUIT_LIGHT_Y:
-            faces.append(p)
-    return faces
-
-
-def uv_cover(me: bpy.types.Mesh, faces: list, size: int, grow: int = 3) -> np.ndarray:
-    """Pixels the faces cover in the texture (rasterized UV triangles, grown by a few pixels)."""
-    cover = np.zeros((size, size), dtype=bool)
-    uv = me.uv_layers.active.data
-    for p in faces:
-        pts = np.array([uv[i].uv[:] for i in p.loop_indices]) * size
-        for k in range(1, len(pts) - 1):
-            tri = pts[[0, k, k + 1]]
-            x0, y0 = np.floor(tri.min(0)).astype(int)
-            x1, y1 = np.ceil(tri.max(0)).astype(int)
-            xs, ys = np.meshgrid(np.arange(x0, x1 + 1) + 0.5, np.arange(y0, y1 + 1) + 0.5)
-            (ax, ay), (bx, by), (cx, cy) = tri
-            d = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
-            if abs(d) < 1e-12:
-                continue
-            l1 = ((by - cy) * (xs - cx) + (cx - bx) * (ys - cy)) / d
-            l2 = ((cy - ay) * (xs - cx) + (ax - cx) * (ys - cy)) / d
-            inside = (l1 >= 0) & (l2 >= 0) & (l1 + l2 <= 1)
-            yy, xx = ys[inside].astype(int), xs[inside].astype(int)
-            ok = (yy >= 0) & (yy < size) & (xx >= 0) & (xx < size)
-            cover[yy[ok], xx[ok]] = True
-    for _ in range(grow):
-        cover[1:] |= cover[:-1].copy()
-        cover[:-1] |= cover[1:].copy()
-        cover[:, 1:] |= cover[:, :-1].copy()
-        cover[:, :-1] |= cover[:, 1:].copy()
-    return cover
+    G.set_weights(obj, WEIGHTED, w)
 
 
 def add_glow(suit: bpy.types.Object) -> list:
     """The glowing cyan of the base color becomes emission (packed images, so the .blend keeps them), except on
-    the collar, which "SuitLight" lights: there it's painted over in the collar's dark. Returns the collar's faces."""
-    mat = suit.data.materials[0]
-    base = base_color_image(mat)
-    size = base.size[0]
-    rgba = np.array(base.pixels[:], dtype=np.float32).reshape(size, size, 4)
+    the collar, which "SuitLight" lights: there it's painted over in the collar's dark. Returns the collar's faces
+    (the glowing ones in its height, in front of the backpack)."""
+    me = suit.data
+    bsdf = me.materials[0].node_tree.nodes["Principled BSDF"]
+    base = G.base_color_image(me.materials[0])
+    rgba = G.image_pixels(base)
     glow = glow_mask(rgba[..., :3])
-    collar = collar_faces(suit.data, glow)
-    cover = uv_cover(suit.data, collar, size)
+    lit = G.face_values(me, glow) > 0.5
+    co = G.vertices(me)
+    collar = []
+    for p in me.polygons:
+        c = co[list(p.vertices)].mean(0)
+        if lit[p.index] and SUIT_LIGHT_Z[0] < c[2] < SUIT_LIGHT_Z[1] and c[1] < SUIT_LIGHT_Y:
+            collar.append(p)
+    cover = G.uv_cover(me, collar, base.size[0])
     unlit = cover & (glow < 0.1)
     grey = float(np.median(rgba[unlit, :3])) if unlit.any() else 0.08
-    dark = np.full(3, grey)  # neutral: the collar's own paint is tinted by the glow
     painted = rgba.copy()
     k = (glow * cover)[..., None]
-    painted[..., :3] = painted[..., :3] * (1 - k) + dark * k
-    glow = glow * ~cover
-    nt = mat.node_tree
-    bsdf = nt.nodes["Principled BSDF"]
-    for name, pixels, socket in (("SuitBase", painted, "Base Color"), ("SuitGlow", rgba * glow[..., None], None)):
-        img = bpy.data.images.new(name, size, size)
-        px = pixels.copy()
-        px[..., 3] = 1.0
-        img.pixels.foreach_set(px.ravel())
-        img.pack()
-        if socket:
-            bsdf.inputs[socket].links[0].from_node.image = img
-        else:
-            tex = nt.nodes.new("ShaderNodeTexImage")
-            tex.image = img
-            nt.links.new(tex.outputs["Color"], bsdf.inputs["Emission Color"])
+    painted[..., :3] = painted[..., :3] * (1 - k) + grey * k  # neutral: the collar's own paint is tinted by the glow
+    bsdf.inputs["Base Color"].links[0].from_node.image = G.packed_image("SuitBase", painted)
+    tex = me.materials[0].node_tree.nodes.new("ShaderNodeTexImage")
+    tex.image = G.packed_image("SuitGlow", rgba * (glow * ~cover)[..., None])
+    me.materials[0].node_tree.links.new(tex.outputs["Color"], bsdf.inputs["Emission Color"])
     bsdf.inputs["Emission Strength"].default_value = GLOW_STRENGTH
     return collar
 
@@ -461,7 +327,7 @@ def add_glow(suit: bpy.types.Object) -> list:
 def collar_band(suit: bpy.types.Object, collar: list, w: np.ndarray, root: bpy.types.Object) -> bpy.types.Object:
     """ "SuitLight": a thin band hugging the collar where its glowing ring was (radius and height per direction
     around the neck, from the collar's faces: the ring tilts), weighted like the suit under it."""
-    co = vertex_array(suit.data)
+    co = G.vertices(suit.data)
     pts = np.array([co[list(p.vertices)].mean(0) for p in collar])
     centre = np.array([0.0, J["Neck"].y])
     rel = pts[:, :2] - centre
@@ -497,8 +363,7 @@ def collar_band(suit: bpy.types.Object, collar: list, w: np.ndarray, root: bpy.t
     me.update()
     band = C.link(bpy.data.objects.new("SuitLight", me), root)
     me.materials.append(C.mat_emissive("SuitLight", (0.3, 1.0, 0.45), 6.0))
-    near = np.array([np.argmin(np.linalg.norm(co - v, axis=1)) for v in verts])
-    set_weights(band, w[near])
+    G.set_weights(band, WEIGHTED, G.nearest_weights(co, verts, w))
     print("SUIT light from", len(collar), "collar faces, height", height.round(3).tolist())
     return band
 
@@ -506,16 +371,12 @@ def collar_band(suit: bpy.types.Object, collar: list, w: np.ndarray, root: bpy.t
 def build_suit(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
     suit = load_suit(root)
     pose_a(arm)
-    owner, w = weights(vertex_array(suit.data), segments(arm))
+    owner, w = weights(G.vertices(suit.data), segments(arm))
     print("SUIT owners", {b: int((owner == i).sum()) for i, b in enumerate(WEIGHTED)})
-    cut_bridges(suit.data, owner)
+    print("SUIT cut", G.cut_bridges(suit.data, owner, WEIGHTED, CUT), "faces")
     unskin(suit, arm, w)
     rest_pose(arm)
-    if suit.data.has_custom_normals:  # the generator's normals don't fit the moved vertices
-        bpy.context.view_layer.objects.active = suit
-        bpy.ops.mesh.customdata_custom_splitnormals_clear()
-    for p in suit.data.polygons:
-        p.use_smooth = True
+    G.smooth_shading(suit)
     suit.data.materials[0].name = "Suit"
     band = collar_band(suit, add_glow(suit), w, root)
     for obj in (suit, band):
@@ -525,7 +386,7 @@ def build_suit(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
 
 def backpack(suit: bpy.types.Object) -> tuple:
     """The backpack's back face (y) and bottom (z), measured on the rest mesh's middle."""
-    co = vertex_array(suit.data)
+    co = G.vertices(suit.data)
     pack = co[(np.abs(co[:, 0]) < 0.15) & (co[:, 1] > BACKPACK_Y) & (co[:, 2] > HIP_Z)]
     return float(np.percentile(pack[:, 1], 95)), float(pack[:, 2].min())
 

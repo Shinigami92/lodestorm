@@ -1,0 +1,29 @@
+{
+  "made_by": "TRELLIS.2 (image to 3D) on a concept image made with Z-Image Turbo, both run locally in ComfyUI",
+  "concept": {
+    "file": "swarmer_concept.png",
+    "model": "Z-Image Turbo (z_image_turbo_bf16, Tongyi-MAI, Apache-2.0)",
+    "text_encoder": "qwen_3_4b",
+    "size": [
+      1024,
+      1024
+    ],
+    "seed": 7,
+    "steps": 8,
+    "cfg": 1.0,
+    "sampler": "res_multistep / simple, shift 3",
+    "prompt": "photorealistic AAA sci-fi game creature render, detailed wet organic PBR materials, dark moody low-key lighting with a strong cool rim light, plain dark grey studio background. Subject: a lean alien hunter beast the size of a large dog: a body of dark crimson glossy chitin plates over sinewy dark red flesh, visible ribs, four sturdy medium-length clawed digitigrade legs with muscular haunches, a flat wedge-shaped head like a crocodile or wolf skull with a long toothed jaw and two short bone horns sweeping back, no domed or elongated cranium, no tubes or ribbed biomechanical texture, two small glowing yellow-green slit eyes on the sides of the head, two long pale bone scythe blades rising from its shoulders and arching forward over its back, a long thin whip tail with chitin rings, standing still in a neutral pose, all four legs straight and apart, every paw flat on the ground, the head held forward level with the back, the mouth slightly open, the tail stretched straight back, the blades raised clear of the body, full body visible, centered, single creature, clean side view in profile."
+  },
+  "mesh": {
+    "file": "swarmer_trellis.glb",
+    "tool": "tools/trellis.py",
+    "model": "TRELLIS.2 (trellis_2_bf16, Microsoft, MIT)",
+    "image_encoder": "DINOv3 ViT-L (dino_v3_vit_l, Meta, DINOv3 License)",
+    "background_removal": "BiRefNet (birefnet, MIT)",
+    "comfyui": "0.42.0",
+    "seed": 42,
+    "faces": 10000,
+    "texture_size": 2048,
+    "date": "2026-10-21"
+  }
+}

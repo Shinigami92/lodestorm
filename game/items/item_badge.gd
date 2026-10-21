@@ -1,8 +1,9 @@
 class_name ItemBadge
 extends HBoxContainer
-## An item (an ore, later an alloy) on a holo card: its icon tinted in its color and glowing in its
+## An item (an ore, an alloy) on a holo card: its icon tinted in its color and glowing in its
 ## pattern (`assets/shaders/ore_badge.gdshader`), optionally followed by its translated name. An
-## item without an icon yet gets a faceted crystal drawn in code instead.
+## item without an icon yet gets a faceted crystal drawn in code instead (an alloy its ingot, see
+## `ItemType.get_badge_icon`).
 
 const SHADER: Shader = preload("res://assets/shaders/ore_badge.gdshader")
 ## Edge length of the icon, in the card's pixels (a bit taller than the body text).
@@ -72,7 +73,8 @@ func _update() -> void:
 	visible = item != null
 	if not item:
 		return
-	_icon.texture = item.icon if item.icon else fallback_icon()
+	var texture: Texture2D = item.get_badge_icon()
+	_icon.texture = texture if texture else fallback_icon()
 	_material.set_shader_parameter(&"color", item.color)
 	_material.set_shader_parameter(&"glow", int(item.glow))
 	_material.set_shader_parameter(&"dark_body", item.dark_body)

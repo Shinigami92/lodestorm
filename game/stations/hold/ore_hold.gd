@@ -176,17 +176,10 @@ func _enable_uses(enabled: bool) -> void:
 		tank.use_point.enabled = enabled
 
 
-## Whose hold the silos show while nobody uses them: the ship's viewer, else the first local
-## player.
+## Whose hold the silos show while nobody uses them (see `Ship.get_viewing_player`).
 func _viewer() -> Player:
 	var ship := get_parent() as Ship
-	var viewer := ship.viewer as Player if ship else null
-	if viewer:
-		return viewer
-	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
-		if player.local:
-			return player
-	return null
+	return ship.get_viewing_player() if ship else Player.first_local(get_tree())
 
 
 func _on_item_changed(item: ItemType, amount: float) -> void:

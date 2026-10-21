@@ -1,0 +1,179 @@
+[gd_scene format=3 uid="uid://cp1apl8xd04cg"]
+
+[ext_resource type="Script" uid="uid://c2en2gd4hfn24" path="res://game/stations/refinery/furnace_card.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://3cpi3icxde12" path="res://game/ui/item_cost.gd" id="3_cost"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 18.0
+bg_color = Color(0.025, 0.04, 0.055, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.3, 0.85, 1, 0.6)
+
+[node name="FurnaceCard" type="PanelContainer"]
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+script = ExtResource("1_script")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Head" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Badge" type="CenterContainer" parent="Layout/Head"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Layout/Head"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"Title"
+theme_override_font_sizes/font_size = 34
+autowrap_mode = 3
+
+[node name="Info" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+autowrap_mode = 3
+
+[node name="Picker" type="VBoxContainer" parent="Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Recipe" type="HBoxContainer" parent="Layout/Picker"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RecipePrev" type="Button" parent="Layout/Picker/Recipe"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+focus_mode = 0
+text = "<"
+
+[node name="RecipeName" type="Label" parent="Layout/Picker/Recipe"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="RecipeNext" type="Button" parent="Layout/Picker/Recipe"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+focus_mode = 0
+text = ">"
+
+[node name="Found" type="HFlowContainer" parent="Layout/Picker"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 4
+alignment = 1
+
+[node name="BarCount" type="HBoxContainer" parent="Layout/Picker"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BarsPrev" type="Button" parent="Layout/Picker/BarCount"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+focus_mode = 0
+text = "<"
+
+[node name="Bars" type="Label" parent="Layout/Picker/BarCount"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="BarsNext" type="Button" parent="Layout/Picker/BarCount"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+focus_mode = 0
+text = ">"
+
+[node name="CostRow" type="HFlowContainer" parent="Layout/Picker"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 4
+
+[node name="CostLabel" type="Label" parent="Layout/Picker/CostRow"]
+modulate = Color(1, 1, 1, 0.75)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Cost / hold"
+
+[node name="Cost" type="HFlowContainer" parent="Layout/Picker/CostRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 4
+script = ExtResource("3_cost")
+
+[node name="Time" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+
+[node name="Status" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+theme_override_font_sizes/font_size = 26
+autowrap_mode = 3
+
+[node name="Buttons" type="HFlowContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 8
+alignment = 2
+
+[node name="Close" type="Button" parent="Layout/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Close"
+
+[node name="Action" type="Button" parent="Layout/Buttons"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+focus_mode = 0
+text = "Start"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AlloyCatalog" format=3 uid="uid://dx1c0fgtoyvlq"]
+
+[ext_resource type="Script" uid="uid://bajtoboqlfg3g" path="res://game/refinery/alloy_catalog.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://clssy2q7i261w" path="res://game/refinery/alloy_type.gd" id="1_alloy_type"]
+[ext_resource type="Resource" uid="uid://bfxngh48jlfwu" path="res://game/refinery/alloys/alloy_cobrel.tres" id="2_cobrel"]
+[ext_resource type="Resource" uid="uid://dvkvf6q0x7p5x" path="res://game/refinery/alloys/alloy_gantrite.tres" id="3_gantrite"]
+[ext_resource type="Resource" uid="uid://cyl735aw0m2ag" path="res://game/refinery/alloys/alloy_merisk.tres" id="4_merisk"]
+[ext_resource type="Resource" uid="uid://bphoegvfa7p8i" path="res://game/refinery/alloys/alloy_verdan.tres" id="5_verdan"]
+[ext_resource type="Resource" uid="uid://cbxygrksotx5d" path="res://game/refinery/alloys/alloy_indite.tres" id="6_indite"]
+[ext_resource type="Resource" uid="uid://1qwit167j0g0" path="res://game/refinery/alloys/alloy_sylith.tres" id="7_sylith"]
+[ext_resource type="Resource" uid="uid://dv28iu6yg3hdo" path="res://game/refinery/alloys/alloy_noxar.tres" id="8_noxar"]
+[ext_resource type="Resource" uid="uid://bi0noykyil7gp" path="res://game/refinery/alloys/alloy_auralt.tres" id="9_auralt"]
+
+[resource]
+script = ExtResource("1_script")
+alloys = Array[ExtResource("1_alloy_type")]([ExtResource("2_cobrel"), ExtResource("3_gantrite"), ExtResource("4_merisk"), ExtResource("5_verdan"), ExtResource("6_indite"), ExtResource("7_sylith"), ExtResource("8_noxar"), ExtResource("9_auralt")])

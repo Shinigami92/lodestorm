@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AlloyType" format=3 uid="uid://cyl735aw0m2ag"]
+
+[ext_resource type="Script" uid="uid://clssy2q7i261w" path="res://game/refinery/alloy_type.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="2_ore_type"]
+[ext_resource type="Resource" uid="uid://cgxpfq8uqcagh" path="res://game/ores/types/ore_pallin.tres" id="3_pallin"]
+[ext_resource type="Resource" uid="uid://dfy3xlckv7gf7" path="res://game/ores/types/ore_duskine.tres" id="4_duskine"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="5_meridine"]
+
+[resource]
+script = ExtResource("1_script")
+tier = 2
+recipe = Dictionary[ExtResource("2_ore_type"), int]({ExtResource("3_pallin"): 10, ExtResource("4_duskine"): 5, ExtResource("5_meridine"): 3})
+seconds_per_bar = 180.0
+display_name = "Merisk"
+color = Color(1.0, 0.3, 0.4, 1)
+glow = 8

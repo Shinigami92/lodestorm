@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://cfp2hlhi1noj6" path="res://game/ship/ship_flight.gd" id="13_flight"]
 [ext_resource type="Resource" uid="uid://ldovtj8kwgqc" path="res://game/ship/flight_settings.tres" id="14_flight_settings"]
 [ext_resource type="PackedScene" uid="uid://d08cgpg47au8u" path="res://game/stations/hold/ore_hold.tscn" id="40_ore_hold"]
+[ext_resource type="PackedScene" uid="uid://1h2fjsrbugii" path="res://game/stations/refinery/refinery.tscn" id="90_refinery"]
 [ext_resource type="PackedScene" uid="uid://ddy8vwia8viwq" path="res://game/ship/hull.tscn" id="60_hull"]
 [ext_resource type="PackedScene" uid="uid://bgkql5ud28cj7" path="res://game/ship/rooms/upper/cockpit.tscn" id="61_cockpit"]
 [ext_resource type="PackedScene" uid="uid://m0p5ps2frbfx" path="res://game/ship/rooms/upper/bridge.tscn" id="62_bridge"]
@@ -661,6 +662,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -8.75)
 
 [node name="OreHold" parent="." unique_id=1339607864 instance=ExtResource("40_ore_hold")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
+
+[node name="Refinery" parent="." node_paths=PackedStringArray("hold") instance=ExtResource("90_refinery")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.35, 2.5, 9)
+hold = NodePath("../OreHold")
 
 [node name="Countdown" type="Label3D" parent="." unique_id=1573614227]
 auto_translate_mode = 2

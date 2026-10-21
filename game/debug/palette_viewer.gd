@@ -7,8 +7,8 @@ extends Control
 ## The list on the right (one vision at a time) names the pairs that look closest: colors of the
 ## same group, or of two groups seen together during a run (`Group.on_ground`), that look nearly
 ## the same with that vision; with a color blindness only the ones that look apart normally (what
-## that vision loses). Ores also differ by crystal shape and glow pattern, players by their number,
-## so a close pair there is a hint, not an error.
+## that vision loses). Ores and alloys also differ by shape (crystal, ingot with tier ticks) and
+## glow pattern, players by their number, so a close pair there is a hint, not an error.
 ## Keys: 0 all four visions, 1–4 one vision with names and the close pairs, S save a picture
 ## (`user://palette_viewer/`). The mouse over a tile names it.
 ## From the command line it saves one picture and quits:
@@ -114,6 +114,10 @@ static func groups() -> Array[Group]:
 	for ore_type: OreType in OreCatalog.all().ores:
 		ores.add(ore_type.display_name, ore_type.color)
 	result.append(ores)
+	var alloys := Group.new("Alloys", false)
+	for alloy: AlloyType in AlloyCatalog.all().alloys:
+		alloys.add(alloy.display_name, alloy.color)
+	result.append(alloys)
 	result.append(
 		(
 			Group

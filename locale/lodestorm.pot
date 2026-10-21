@@ -453,6 +453,38 @@ msgstr ""
 msgid "Miners hold more ore"
 msgstr ""
 
+#: game/refinery/alloys/alloy_auralt.tres
+msgid "Auralt"
+msgstr ""
+
+#: game/refinery/alloys/alloy_cobrel.tres
+msgid "Cobrel"
+msgstr ""
+
+#: game/refinery/alloys/alloy_gantrite.tres
+msgid "Gantrite"
+msgstr ""
+
+#: game/refinery/alloys/alloy_indite.tres
+msgid "Indite"
+msgstr ""
+
+#: game/refinery/alloys/alloy_merisk.tres
+msgid "Merisk"
+msgstr ""
+
+#: game/refinery/alloys/alloy_noxar.tres
+msgid "Noxar"
+msgstr ""
+
+#: game/refinery/alloys/alloy_sylith.tres
+msgid "Sylith"
+msgstr ""
+
+#: game/refinery/alloys/alloy_verdan.tres
+msgid "Verdan"
+msgstr ""
+
 #: game/ship/rooms/cargo_bay.tscn
 msgid "Cargo bay"
 msgstr ""
@@ -635,6 +667,8 @@ msgstr ""
 #: game/stations/hold/hold_card.tscn
 #: game/stations/loadout/loadout_card.tscn
 #: game/stations/navigator/navigator_card.tscn
+#: game/stations/refinery/furnace_card.tscn
+#: game/stations/refinery/rack_card.tscn
 #: game/stations/skill_graph/skill_card.tscn
 #: game/stations/upgrade/upgrade_card.tscn
 #: game/ui/settings_menu.tscn
@@ -659,6 +693,7 @@ msgstr ""
 #: game/stations/heat_shield/heat_shield_card.gd
 #: game/stations/loadout/loadout_card.gd
 #: game/stations/navigator/navigator_card.gd
+#: game/stations/refinery/furnace_card.gd
 #: game/stations/skill_graph/skill_card.gd
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Locked until everyone is back aboard."
@@ -823,6 +858,92 @@ msgstr ""
 msgid "Tier %d"
 msgstr ""
 
+#: game/stations/refinery/furnace_card.gd
+msgid "Furnace"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "This furnace is cold."
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Bars done: %d / %d"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Bar in the furnace: %d %%"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Time left: %s"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Stop? The bars done stay, the ore of the others goes back to the hold."
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Stop for sure"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Stop"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "%s (tier %d)"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Unknown alloy (tier %d)"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "As many as the hold pays for: %d"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Bars: %d"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Takes %s"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Its recipe shows once all its ores were in the hold."
+msgstr ""
+
+#: game/stations/refinery/furnace_card.gd
+msgid "Start"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.tscn
+#: game/stations/skill_graph/skill_card.tscn
+#: game/stations/upgrade/upgrade_card.tscn
+msgid "Cost / hold"
+msgstr ""
+
+#: game/stations/refinery/rack_card.gd
+msgid "Tier %d alloy"
+msgstr ""
+
+#: game/stations/refinery/rack_card.gd
+msgid "Unknown alloy"
+msgstr ""
+
+#: game/stations/refinery/rack_card.gd
+msgid "Ores found so far:"
+msgstr ""
+
+#: game/stations/refinery/rack_card.gd
+msgid "In the rack: %d"
+msgstr ""
+
+#: game/stations/refinery/rack_card.gd
+msgid "Per bar:"
+msgstr ""
+
 #: game/stations/skill_graph/skill_card.gd
 msgid "Learn %s first"
 msgstr ""
@@ -841,11 +962,6 @@ msgstr ""
 
 #: game/stations/skill_graph/skill_card.gd
 msgid "Learn"
-msgstr ""
-
-#: game/stations/skill_graph/skill_card.tscn
-#: game/stations/upgrade/upgrade_card.tscn
-msgid "Cost / hold"
 msgstr ""
 
 #: game/stations/upgrade/upgrade_card.gd

@@ -19,7 +19,7 @@ extends CharacterBody3D
 ## (bought at the upgrade stations) raise its weapons' parts (damage, capacity, ...), its armor
 ## (`armor_upgrade`: more health, shown by pips on the helmet) and the miners it places. Its
 ## Its own `hold` keeps the ore brought back over all runs (every haul goes to every player in the
-## session) and pays for its gear. Its
+## session) and pays for its gear; its `refining` are its batches in the refinery's furnaces. Its
 ## `skills` (learned at the skill graph) add health, regeneration, the dash (`suit_dash`, its
 ## cooldown shown on the suit ring), more spare magazines, reloading at full speed,
 ## careful reloads, the ore scanner's arrow (`OreScanner`) and the damage readout
@@ -108,6 +108,8 @@ var weapon_allowed: bool = true:
 var cargo: Dictionary[OreType, float] = {}
 ## What it brought back over all runs and hasn't spent yet (saved with the player).
 var hold := PlayerHold.new()
+## Its batches in the refinery's furnaces (saved with the player).
+var refining := Refining.new()
 ## Whether reloads cost nothing (aboard: from the ship's stock).
 var ammo_free: bool = false
 ## The teammate `interact` hands ammo to while it's held, or null; and for how long it's held (s).
@@ -460,6 +462,14 @@ func get_hose_port_position() -> Vector3:
 ## The player's color (see `COLORS`).
 func color() -> Color:
 	return COLORS[clampi(number, 1, COLORS.size()) - 1]
+
+
+## The first local player (the one playing on this machine), or null.
+static func first_local(tree: SceneTree) -> Player:
+	for player: Player in tree.get_nodes_in_group(GROUP):
+		if player.local:
+			return player
+	return null
 
 
 ## The living player closest to `from` within `max_distance` (horizontally), or null.

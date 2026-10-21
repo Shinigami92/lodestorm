@@ -159,6 +159,20 @@ func test_install_shield_opens_the_next_planet() -> void:
 	assert_gt(_mission.offers.size(), before)
 
 
+func test_refinery_shortcuts() -> void:
+	var ship: Ship = _mission.ship
+	var cobrel: AlloyType = AlloyCatalog.all().alloys[0]
+	_overlay.call(&"_unlock_furnace")
+	assert_eq(ship.furnaces.unlocked, 1)
+	_overlay.call(&"fill_hold")
+	assert_gt(_player.hold.amount(cobrel), 0.0, "the rack too")
+	var before: float = _player.hold.amount(cobrel)
+	_player.refining.start(0, cobrel, 3, _player.hold, Time.get_unix_time_from_system())
+	_overlay.call(&"_finish_refining")
+	assert_eq(_player.hold.amount(cobrel), before + 3.0)
+	assert_null(_player.refining.get_batch(0))
+
+
 func test_open_all_offers_every_region() -> void:
 	var system: StarSystem = _mission.settings.system
 	var regions: int = 0

@@ -23,7 +23,8 @@ extends Node3D
 ## and grey when the mission is lost.
 ## Returned cargo goes into every player's own hold (`PlayerHold`, shown by the silos in the cargo
 ## bay), after the heat shield's plate took what it still needs while it's the ship's project
-## (`store_haul`). Dead players respawn at
+## (`store_haul`); the refinery at the bay's far end turns it into alloys (`Refinery`). Dead
+## players respawn at
 ## `Respawn` in the medical bay.
 
 ## Emitted when a player steps out of the ship.
@@ -83,6 +84,8 @@ var ramp_open: bool = false
 var story := Story.new()
 ## The heat shield around the drive core: how far inwards the ship can fly, saved with the ship.
 var heat_shield := HeatShield.new()
+## How many of the refinery's furnaces it has, saved with the ship.
+var furnaces := Furnaces.new()
 
 var _aboard: Array[Player] = []
 ## Players in the shooting range's weapon zone.
@@ -205,6 +208,13 @@ func pay_shield(hold: PlayerHold) -> bool:
 ## The location doesn't need to be in the tree: locations stand where the ship stands.
 func show_preview(location: Node3D) -> void:
 	_holo_table.show_location(location, [_floor], global_transform)
+
+
+## Whose things the ship's stations show while nobody uses them (the silos, the furnaces, the
+## ingot rack): the `viewer`, else the first local player.
+func get_viewing_player() -> Player:
+	var player := viewer as Player
+	return player if player else Player.first_local(get_tree())
 
 
 ## The ship closest to `from` (horizontally), or null.

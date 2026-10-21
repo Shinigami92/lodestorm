@@ -90,17 +90,18 @@ func test_haul_pays_the_project_first() -> void:
 	var map := TEST_MAP.instantiate() as Node3D
 	add_child_autofree(map)
 	var ship := map.get_node("Ship") as Ship
+	var player := map.get_node("Player") as Player
 	await wait_physics_frames(2)
 	# Not the project: everything goes into the hold.
-	ship.store_haul({MERIDINE: 100.0})
-	assert_eq(ship.hold[MERIDINE], 100.0)
+	ship.store_haul({MERIDINE: 100.0}, [player])
+	assert_eq(player.hold.amount(MERIDINE), 100.0)
 	assert_true(ship.heat_shield.set_project())
 	# The example from the design: the plate takes all 200, the next run the last 100.
-	ship.store_haul({MERIDINE: 200.0, KYRITE: 40.0})
-	assert_eq(ship.hold[MERIDINE], 100.0, "the plate took all of it")
-	assert_eq(ship.hold[KYRITE], 40.0, "what it doesn't need is stored")
-	ship.store_haul({MERIDINE: 150.0})
-	assert_eq(ship.hold[MERIDINE], 150.0, "the last 100 went to the plate")
+	ship.store_haul({MERIDINE: 200.0, KYRITE: 40.0}, [player])
+	assert_eq(player.hold.amount(MERIDINE), 100.0, "the plate took all of it")
+	assert_eq(player.hold.amount(KYRITE), 40.0, "what it doesn't need is stored")
+	ship.store_haul({MERIDINE: 150.0}, [player])
+	assert_eq(player.hold.amount(MERIDINE), 150.0, "the last 100 went to the plate")
 	assert_eq(ship.heat_shield.paid[MERIDINE], 300.0)
 	assert_eq(ship.heat_shield.mk, 1, "still needs Vyrel")
 
@@ -109,25 +110,27 @@ func test_haul_taken_by_the_plate_still_counts_as_found() -> void:
 	var map := TEST_MAP.instantiate() as Node3D
 	add_child_autofree(map)
 	var ship := map.get_node("Ship") as Ship
+	var player := map.get_node("Player") as Player
 	await wait_physics_frames(2)
 	ship.heat_shield.set_project()
-	ship.store_haul({VYREL: 50.0})
-	assert_true(ship.found_ores.has(VYREL))
+	ship.store_haul({VYREL: 50.0}, [player])
+	assert_true(player.hold.found.has(VYREL))
 
 
 func test_paying_from_the_hold() -> void:
 	var map := TEST_MAP.instantiate() as Node3D
 	add_child_autofree(map)
 	var ship := map.get_node("Ship") as Ship
+	var player := map.get_node("Player") as Player
 	await wait_physics_frames(2)
-	assert_false(ship.pay_shield(), "nothing in the hold")
-	ship.add_to_hold(MERIDINE, 1000.0)
-	ship.add_to_hold(VYREL, 100.0)
-	assert_true(ship.pay_shield())
-	assert_eq(ship.hold[MERIDINE], 700.0)
-	assert_eq(ship.hold[VYREL], 0.0, "as far as the hold has it")
+	assert_false(ship.pay_shield(player.hold), "nothing in the hold")
+	player.hold.add(MERIDINE, 1000.0)
+	player.hold.add(VYREL, 100.0)
+	assert_true(ship.pay_shield(player.hold))
+	assert_eq(player.hold.amount(MERIDINE), 700.0)
+	assert_eq(player.hold.amount(VYREL), 0.0, "as far as the hold has it")
 	assert_eq(ship.heat_shield.mk, 1)
-	ship.add_to_hold(VYREL, 500.0)
-	assert_true(ship.pay_shield())
-	assert_eq(ship.hold[VYREL], 200.0)
+	player.hold.add(VYREL, 500.0)
+	assert_true(ship.pay_shield(player.hold))
+	assert_eq(player.hold.amount(VYREL), 200.0)
 	assert_eq(ship.heat_shield.mk, 2, "installed")

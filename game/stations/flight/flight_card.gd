@@ -65,7 +65,7 @@ func _show_ores(ores: Array[OreType]) -> void:
 		_ores.remove_child(node)
 		node.queue_free()
 	for ore_type: OreType in ores:
-		_ores.add_child(OreBadge.new(ore_type))
+		_ores.add_child(ItemBadge.new(ore_type))
 
 
 func press_primary() -> bool:

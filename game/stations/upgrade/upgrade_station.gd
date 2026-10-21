@@ -3,14 +3,14 @@ extends Station
 ## An upgrade station (see GAME_DESIGN.md, Upgrade stations): a station whose parts are upgrades
 ## (each `StationPart.item` an `Upgrade`), e.g. the fitting frame (the suit) or the miners'
 ## maintenance pad (drill, ore tank, hose reel). Its card (`UpgradeCard`) shows the selected
-## upgrade and buys its next level for the player using the station, with ore from the ship's hold.
+## upgrade and buys its next level for the player using the station, with ore from their own hold.
 ## Upgrades of weapons the player doesn't own yet are locked, levels above the ship's reach wait for
 ## the next heat shield plate (`upgrade_cap`), and nothing can be bought while a mission is
 ## underway.
 
 ## The mission that locks it while underway; found in the scene tree when not set.
 var mission: Mission
-## The ship whose hold pays; the one it stands in when not set.
+## The ship whose heat shield caps the levels; the one it stands in when not set.
 var ship: Ship
 
 
@@ -73,16 +73,16 @@ func can_buy(upgrade: Upgrade) -> bool:
 	return (
 		user.upgrades.next_level(upgrade) != null
 		and mk < upgrade_cap()
-		and ship.can_pay(user.upgrades.next_cost(upgrade))
+		and user.hold.can_pay(user.upgrades.next_cost(upgrade))
 	)
 
 
-## Buys the next level of `upgrade` for the player using it, paid from the hold. Returns whether
+## Buys the next level of `upgrade` for the player using it, paid from their hold. Returns whether
 ## it did.
 func buy(upgrade: Upgrade) -> bool:
 	if not can_buy(upgrade):
 		return false
-	if not ship.pay(user.upgrades.next_cost(upgrade)):
+	if not user.hold.pay(user.upgrades.next_cost(upgrade)):
 		return false
 	user.upgrades.raise(upgrade)
 	_bought(upgrade)

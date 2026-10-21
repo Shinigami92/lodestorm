@@ -13,7 +13,7 @@ var skill: Skill
 @onready var _state: Label = %State
 @onready var _pips: HBoxContainer = %Pips
 @onready var _cost_row: HFlowContainer = %CostRow
-@onready var _cost: OreCost = %Cost
+@onready var _cost: ItemCost = %Cost
 @onready var _status: Label = %Status
 @onready var _learn: Button = %Learn
 @onready var _close: Button = %Close
@@ -31,8 +31,8 @@ func show_part(part: StationPart) -> void:
 		show_skill(null)
 		return
 	var hold: Dictionary[OreType, float] = {}
-	if skill_station.ship:
-		hold = skill_station.ship.hold
+	if skill_station.user:
+		hold = skill_station.user.hold.ores()
 	var skills: Skills = skill_station.user.skills
 	show_skill(
 		shown,

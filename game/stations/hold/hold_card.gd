@@ -60,7 +60,7 @@ func _set_badge(ore_type: OreType) -> void:
 		_badge.remove_child(node)
 		node.queue_free()
 	if ore_type:
-		_badge.add_child(OreBadge.new(ore_type, false))
+		_badge.add_child(ItemBadge.new(ore_type, false))
 	_badge.visible = ore_type != null
 
 

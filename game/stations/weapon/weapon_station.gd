@@ -111,13 +111,13 @@ func can_build(weapon_type: WeaponType) -> bool:
 		and user != null
 		and ship != null
 		and user.arsenal.has_blueprint(weapon_type)
-		and ship.can_pay(weapon_type.build_cost)
+		and user.hold.can_pay(weapon_type.build_cost)
 	)
 
 
 ## Builds `weapon_type` for the player using it, paid from the hold. Returns whether it did.
 func build(weapon_type: WeaponType) -> bool:
-	if not can_build(weapon_type) or not ship.pay(weapon_type.build_cost):
+	if not can_build(weapon_type) or not user.hold.pay(weapon_type.build_cost):
 		return false
 	user.arsenal.unlock(weapon_type)
 	_show_owned()

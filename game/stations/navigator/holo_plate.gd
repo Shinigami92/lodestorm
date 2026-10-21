@@ -64,7 +64,7 @@ func _init(
 	for ore_type: OreType in ores:
 		if ore_type:
 			var badge := Sprite3D.new()
-			badge.texture = ore_type.icon if ore_type.icon else OreBadge.fallback_icon()
+			badge.texture = ore_type.icon if ore_type.icon else ItemBadge.fallback_icon()
 			badge.pixel_size = BADGE_SIZE / badge.texture.get_height()
 			_setup(badge)
 			_badges.append(badge)

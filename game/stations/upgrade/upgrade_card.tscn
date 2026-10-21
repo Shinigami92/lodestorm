@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b7if1vllna5b1" path="res://game/stations/upgrade/upgrade_card.gd" id="1_script"]
 [ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
-[ext_resource type="Script" uid="uid://3cpi3icxde12" path="res://game/ui/ore_cost.gd" id="3_cost"]
+[ext_resource type="Script" uid="uid://3cpi3icxde12" path="res://game/ui/item_cost.gd" id="3_cost"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 24.0

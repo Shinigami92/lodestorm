@@ -35,13 +35,13 @@ func after_each() -> void:
 
 func test_fresh_start_without_save() -> void:
 	assert_false(SaveGame.exists())
-	assert_true(_ship.hold.is_empty())
+	assert_true(_player.hold.items.is_empty())
 	assert_eq(_player.upgrades.mk(ARMOR), 1)
 
 
 func test_progress_survives_a_restart() -> void:
-	_ship.add_to_hold(KYRITE, 120.5)
-	_ship.add_to_hold(OLVANE, 40.0)
+	_player.hold.add(KYRITE, 120.5)
+	_player.hold.add(OLVANE, 40.0)
 	_player.arsenal.unlock(BRASK)
 	_player.loadout.assign(0, BRASK)
 	_player.loadout.assign(1, null)
@@ -51,8 +51,8 @@ func test_progress_survives_a_restart() -> void:
 	await wait_process_frames(1)
 	assert_true(SaveGame.exists(), "saved right away")
 	await _restart()
-	assert_eq(_ship.hold[KYRITE], 120.5)
-	assert_eq(_ship.hold[OLVANE], 40.0)
+	assert_eq(_player.hold.amount(KYRITE), 120.5)
+	assert_eq(_player.hold.amount(OLVANE), 40.0)
 	assert_eq(_player.arsenal.weapons, [HARL, DRAY, BRASK] as Array[WeaponType])
 	assert_eq(_player.loadout.get_weapon(0), BRASK)
 	assert_null(_player.loadout.get_weapon(1))
@@ -85,7 +85,7 @@ func test_story_survives_a_restart() -> void:
 
 
 func test_mission_progress_is_saved_when_it_is_over() -> void:
-	_ship.add_to_hold(KYRITE, 10.0)
+	_player.hold.add(KYRITE, 10.0)
 	await wait_process_frames(1)
 	_ship.ramp_duration = 0.25
 	TEST_MAP.pick_mission(_map)
@@ -94,7 +94,7 @@ func test_mission_progress_is_saved_when_it_is_over() -> void:
 	assert_true(_mission.is_underway())
 	await _move(_ship.to_global(Vector3(22.0, 0.0, 0.0)))
 	_player.add_cargo(KYRITE, 100.0)
-	_ship.add_to_hold(OLVANE, 5.0)
+	_player.hold.add(OLVANE, 5.0)
 	await wait_process_frames(1)
 	assert_eq(_saved_hold(KYRITE), 10.0, "nothing saved mid-mission")
 	await _move(_ship.to_global(Vector3(10.0, 2.5, 0.0)))
@@ -107,9 +107,9 @@ func test_quitting_mid_mission_loses_the_run() -> void:
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	await wait_physics_frames(2)
-	_ship.add_to_hold(KYRITE, 50.0)
+	_player.hold.add(KYRITE, 50.0)
 	await _restart()
-	assert_false(_ship.hold.has(KYRITE))
+	assert_false(_player.hold.items.has(KYRITE))
 
 
 func test_language_is_saved_apart_from_progress() -> void:
@@ -252,7 +252,7 @@ func _move(target: Vector3) -> void:
 
 
 func _saved_hold(ore_type: OreType) -> float:
-	var hold: Dictionary = _saved(SaveGame.SHIP_FILE)["hold"]
+	var hold: Dictionary = _saved(SaveGame.PLAYER_FILE)["hold"]
 	return hold.get(_uid(ore_type), 0.0)
 
 

@@ -12,25 +12,25 @@ const SECONDS: float = 10.0
 
 
 func test_every_pattern_stays_in_a_sane_range() -> void:
-	for glow: int in OreType.Glow.values():
+	for glow: int in ItemType.Glow.values():
 		var lowest: float = INF
 		var highest: float = -INF
-		for value: float in _samples(glow as OreType.Glow, 0.0):
+		for value: float in _samples(glow as ItemType.Glow, 0.0):
 			lowest = minf(lowest, value)
 			highest = maxf(highest, value)
-		var label: String = OreType.Glow.keys()[glow]
+		var label: String = ItemType.Glow.keys()[glow]
 		assert_gte(lowest, 0.4, "%s never goes dark" % label)
 		assert_lte(highest, 1.3, "%s doesn't blow out" % label)
 		assert_gte(highest, 0.95, "%s reaches the full glow" % label)
-		if glow not in [OreType.Glow.STEADY, OreType.Glow.SHIFTING]:
+		if glow not in [ItemType.Glow.STEADY, ItemType.Glow.SHIFTING]:
 			assert_gt(highest - lowest, 0.15, "%s is visible" % label)
 
 
 func test_no_pattern_flashes_more_than_three_times_a_second() -> void:
-	for glow: int in OreType.Glow.values():
+	for glow: int in ItemType.Glow.values():
 		for phase: float in [0.0, 3.7]:
-			var peaks: Array[float] = _peaks(_samples(glow as OreType.Glow, phase))
-			var label: String = "%s phase %s" % [OreType.Glow.keys()[glow], phase]
+			var peaks: Array[float] = _peaks(_samples(glow as ItemType.Glow, phase))
+			var label: String = "%s phase %s" % [ItemType.Glow.keys()[glow], phase]
 			var most: int = 0
 			for i: int in peaks.size():
 				var in_window: int = 0
@@ -42,19 +42,19 @@ func test_no_pattern_flashes_more_than_three_times_a_second() -> void:
 
 
 func test_patterns_differ_and_move() -> void:
-	assert_eq(OreGlow.intensity(OreType.Glow.STEADY, 3.0), 1.0)
-	var heartbeat: Array[float] = _samples(OreType.Glow.HEARTBEAT, 0.0)
+	assert_eq(OreGlow.intensity(ItemType.Glow.STEADY, 3.0), 1.0)
+	var heartbeat: Array[float] = _samples(ItemType.Glow.HEARTBEAT, 0.0)
 	# A double beat: two peaks per beat.
 	assert_almost_eq(_peaks(heartbeat).size(), roundi(2.0 * 1.1 * SECONDS), 1)
-	assert_almost_eq(_peaks(_samples(OreType.Glow.SLOW_PULSE, 0.0)).size(), 4, 1)
-	assert_gt(_peaks(_samples(OreType.Glow.FLICKER, 0.0)).size(), 5, "flickers irregularly")
+	assert_almost_eq(_peaks(_samples(ItemType.Glow.SLOW_PULSE, 0.0)).size(), 4, 1)
+	assert_gt(_peaks(_samples(ItemType.Glow.FLICKER, 0.0)).size(), 5, "flickers irregularly")
 
 
 func test_phase_shifts_the_rhythm() -> void:
-	for glow: int in OreType.Glow.values():
+	for glow: int in ItemType.Glow.values():
 		assert_almost_eq(
-			OreGlow.intensity(glow as OreType.Glow, 2.0, 1.5),
-			OreGlow.intensity(glow as OreType.Glow, 3.5),
+			OreGlow.intensity(glow as ItemType.Glow, 2.0, 1.5),
+			OreGlow.intensity(glow as ItemType.Glow, 3.5),
 			0.0001
 		)
 	var a: float = OreGlow.phase_at(Vector3(4.0, 0.0, 9.0))
@@ -107,7 +107,7 @@ func test_ore_icons_have_mipmaps() -> void:
 		assert_true(mipmaps, "%s: mipmaps/generate" % ore_type.icon.resource_path)
 
 
-func _samples(glow: OreType.Glow, phase: float) -> Array[float]:
+func _samples(glow: ItemType.Glow, phase: float) -> Array[float]:
 	var values: Array[float] = []
 	for i: int in roundi(SECONDS * SAMPLES_PER_SECOND):
 		values.append(OreGlow.intensity(glow, i / SAMPLES_PER_SECOND, phase))

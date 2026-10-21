@@ -21,16 +21,15 @@ extends Node3D
 ## table, "In flight" on the way) in its status color: green, amber after half the time, red in the
 ## warning time (the ship pointer outside blinks then), red in the storm, blue once everyone is back
 ## and grey when the mission is lost.
-## Returned cargo goes into the hold (the silos in the cargo bay), after the heat shield's plate
-## took what it still needs while it's the ship's project (`store_haul`). Dead players respawn at
+## Returned cargo goes into every player's own hold (`PlayerHold`, shown by the silos in the cargo
+## bay), after the heat shield's plate took what it still needs while it's the ship's project
+## (`store_haul`). Dead players respawn at
 ## `Respawn` in the medical bay.
 
 ## Emitted when a player steps out of the ship.
 signal player_left(player: Player)
 ## Emitted when a player comes back aboard.
 signal player_boarded(player: Player)
-## Emitted when the hold's amount of `ore_type` changes (stored cargo, paid upgrades).
-signal hold_changed(ore_type: OreType, amount: float)
 
 ## What the camera sees of the ship: its outside, or into one of its decks.
 enum View { OUTSIDE, LOWER, UPPER }
@@ -80,11 +79,6 @@ var countdown_hidden: bool = false
 var show_outside: bool = false
 ## Whether the ramp is going down (or is down); it moves there over `ramp_duration`.
 var ramp_open: bool = false
-## Ore brought back over all runs and not spent yet, in units per ore type. Upgrades are paid from
-## it (`pay`).
-var hold: Dictionary[OreType, float] = {}
-## Ores ever brought aboard (the hold shows the others as unknown).
-var found_ores: Dictionary[OreType, bool] = {}
 ## What has happened in the story so far (e.g. what the crew told), saved with the ship.
 var story := Story.new()
 ## The heat shield around the drive core: how far inwards the ship can fly, saved with the ship.
@@ -107,7 +101,6 @@ var _button_material := StandardMaterial3D.new()
 @onready var _weapon_zone: Area3D = $Rooms/Lower/ShootingRange/WeaponZone
 @onready var _boarding: Marker3D = $Boarding
 @onready var _respawn: Marker3D = $Respawn
-@onready var _ore_hold: OreHold = $OreHold
 @onready var _floor: Node3D = $Hull/Floor
 @onready var _holo_table: HoloTable = $Rooms/Upper/Bridge/HoloTable
 @onready var _lower_cut: Node3D = $Hull/LowerCut
@@ -175,60 +168,36 @@ func get_respawn_position() -> Vector3:
 	return _respawn.global_position
 
 
-## Whether the hold has at least `cost` (units per ore type).
-func can_pay(cost: Dictionary[OreType, int]) -> bool:
-	for ore_type: OreType in cost:
-		var stored: float = hold.get(ore_type, 0.0)
-		if stored < cost[ore_type]:
-			return false
-	return true
-
-
-## Takes `cost` (units per ore type) out of the hold if it's there. Returns whether it paid.
-func pay(cost: Dictionary[OreType, int]) -> bool:
-	if not can_pay(cost):
-		return false
-	for ore_type: OreType in cost:
-		var stored: float = hold[ore_type]
-		_set_hold(ore_type, stored - cost[ore_type])
-	return true
-
-
-## Adds `amount` units of `ore_type` to the hold.
-func add_to_hold(ore_type: OreType, amount: float) -> void:
-	var stored: float = hold.get(ore_type, 0.0)
-	_set_hold(ore_type, stored + amount)
-
-
 ## Stores a run's `haul` (units per ore type, everything brought aboard): while the heat shield's
-## next plate is the ship's project, it takes what it still needs first, the rest goes into the
-## hold. Returns what the plate took.
-func store_haul(haul: Dictionary[OreType, float]) -> Dictionary[OreType, float]:
+## next plate is the ship's project, it takes what it still needs first; what's left goes whole into
+## the hold of every player in `players` (the session), nothing split. Returns what the plate took.
+func store_haul(
+	haul: Dictionary[OreType, float], players: Array[Player]
+) -> Dictionary[OreType, float]:
 	var taken: Dictionary[OreType, float] = {}
 	if heat_shield.project:
 		taken = heat_shield.take_from(haul)
-	for ore_type: OreType in haul:
-		var took: float = taken.get(ore_type, 0.0)
-		var left: float = haul[ore_type] - took
-		if left > 0.0:
-			add_to_hold(ore_type, left)
-		elif haul[ore_type] > 0.0:
-			# Brought aboard, even if the plate took all of it.
-			mark_found(ore_type)
+	for player: Player in players:
+		for ore_type: OreType in haul:
+			var took: float = taken.get(ore_type, 0.0)
+			var left: float = haul[ore_type] - took
+			if left > 0.0:
+				player.hold.add(ore_type, left)
+			elif haul[ore_type] > 0.0:
+				# Brought aboard, even if the plate took all of it.
+				player.hold.mark_found(ore_type)
 	return taken
 
 
-## Pays what the heat shield's next plate still needs from the hold, as far as the hold has it.
-## Returns whether it paid anything.
-func pay_shield() -> bool:
+## Pays what the heat shield's next plate still needs from `hold` (the host's), as far as it has
+## it. Returns whether it paid anything.
+func pay_shield(hold: PlayerHold) -> bool:
 	var available: Dictionary[OreType, float] = {}
 	for ore_type: OreType in heat_shield.missing():
-		var stored: float = hold.get(ore_type, 0.0)
-		available[ore_type] = maxf(stored, 0.0)
+		available[ore_type] = maxf(hold.amount(ore_type), 0.0)
 	var taken: Dictionary[OreType, float] = heat_shield.take_from(available)
 	for ore_type: OreType in taken:
-		var stored: float = hold[ore_type]
-		_set_hold(ore_type, stored - taken[ore_type])
+		hold.take(ore_type, taken[ore_type])
 	return not taken.is_empty()
 
 
@@ -249,21 +218,6 @@ static func nearest(tree: SceneTree, from: Vector3) -> Ship:
 			nearest_ship = ship
 			nearest_distance = distance
 	return nearest_ship
-
-
-## Marks `ore_type` as brought aboard once (its tank in the hold shows it from then on).
-func mark_found(ore_type: OreType) -> void:
-	found_ores[ore_type] = true
-	var stored: float = hold.get(ore_type, 0.0)
-	_ore_hold.show_amount(ore_type, stored, true)
-
-
-func _set_hold(ore_type: OreType, amount: float) -> void:
-	hold[ore_type] = amount
-	if amount > 0.0:
-		found_ores[ore_type] = true
-	_ore_hold.show_amount(ore_type, amount, found_ores.has(ore_type))
-	hold_changed.emit(ore_type, amount)
 
 
 func _update_display() -> void:

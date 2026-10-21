@@ -26,7 +26,7 @@ func next_rank(skill: Skill) -> SkillRank:
 
 
 ## Raises `skill` by one rank if it's open and not at its highest. Returns whether it rose.
-## Paying for it is up to the caller (see `Ship.pay`).
+## Paying for it is up to the caller (see `PlayerHold.pay`).
 func raise(skill: Skill) -> bool:
 	if not is_open(skill) or not next_rank(skill):
 		return false

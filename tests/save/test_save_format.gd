@@ -37,6 +37,10 @@ func test_newer_save_is_not_read() -> void:
 func test_unknown_entries_are_skipped() -> void:
 	var ship_data: Dictionary = {
 		"version": SaveGame.VERSION,
+		"story": ["quartermaster.ammo", 3, ""],
+	}
+	var player_data: Dictionary = {
+		"version": SaveGame.VERSION,
 		"hold":
 		{
 			KYRITE.resource_path: 30.0,
@@ -45,10 +49,7 @@ func test_unknown_entries_are_skipped() -> void:
 			BRASK.resource_path: 5.0,
 			OLVANE.resource_path: -4.0,
 		},
-		"story": ["quartermaster.ammo", 3, ""],
-	}
-	var player_data: Dictionary = {
-		"version": SaveGame.VERSION,
+		"found": [OLVANE.resource_path, BRASK.resource_path],
 		"arsenal": [HARL.resource_path, "res://nothing.tres", 3, KYRITE.resource_path],
 		"loadout": [DRAY.resource_path, BRASK.resource_path],
 		"upgrades": {ARMOR.resource_path: 99, "res://nothing.tres": 2, DRILL.resource_path: "x"},
@@ -57,7 +58,8 @@ func test_unknown_entries_are_skipped() -> void:
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
 	await _restart()
-	assert_eq(_ship.hold.keys(), [KYRITE] as Array[OreType])
+	assert_eq(_player.hold.items.keys(), [KYRITE] as Array[ItemType])
+	assert_eq(_player.hold.found.keys(), [KYRITE, OLVANE] as Array[ItemType])
 	assert_eq(_ship.story.flags.keys(), [&"quartermaster.ammo"] as Array[StringName])
 	assert_eq(_player.arsenal.weapons, [HARL] as Array[WeaponType])
 	# Neither saved weapon is owned, and the loadout is never empty: the default's owned ones stay.
@@ -71,14 +73,14 @@ func test_unknown_entries_are_skipped() -> void:
 
 ## Resources are saved by UID, so moving or renaming their files keeps the save working.
 func test_resources_are_saved_by_uid() -> void:
-	_ship.add_to_hold(KYRITE, 10.0)
+	_player.hold.add(KYRITE, 10.0)
 	_player.upgrades.raise(ARMOR)
 	_player.skills.raise(DASH)
 	await wait_process_frames(1)
 	var ship_data: Dictionary = _saved(SaveGame.SHIP_FILE)
 	var player_data: Dictionary = _saved(SaveGame.PLAYER_FILE)
-	var hold: Dictionary = ship_data["hold"]
-	var found: Array = ship_data["found"]
+	var hold: Dictionary = player_data["hold"]
+	var found: Array = player_data["found"]
 	var arsenal: Array = player_data["arsenal"]
 	var loadout: Array = player_data["loadout"]
 	var upgrades: Dictionary = player_data["upgrades"]
@@ -90,6 +92,7 @@ func test_resources_are_saved_by_uid() -> void:
 	assert_eq(upgrades, {_uid(ARMOR): 2.0})
 	assert_eq(skills, {_uid(DASH): 1.0})
 	assert_true(_uid(KYRITE).begins_with("uid://"))
+	assert_false(ship_data.has("hold"), "the hold is the player's")
 
 
 ## The heat shield (level, project, what's paid) and where the ship is are the host's.
@@ -164,20 +167,50 @@ func test_version_1_saves_still_load() -> void:
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
 	await _restart()
-	assert_eq(_ship.hold[KYRITE], 30.0, "renamed from cyan")
-	assert_eq(_ship.hold[load("res://game/ores/types/ore_pallin.tres") as OreType], 12.0)
-	assert_true(OLVANE in _ship.found_ores, "renamed from green")
+	assert_eq(_player.hold.amount(KYRITE), 30.0, "renamed from cyan")
+	assert_eq(_player.hold.amount(load("res://game/ores/types/ore_pallin.tres") as OreType), 12.0)
+	assert_true(OLVANE in _player.hold.found, "renamed from green")
 	assert_eq(_player.arsenal.weapons, [HARL, DRAY, BRASK] as Array[WeaponType])
 	assert_eq(_player.loadout.get_weapon(0), BRASK)
 	assert_null(_player.loadout.get_weapon(1))
 	assert_eq(_player.upgrades.mk(ARMOR), 3)
 	assert_eq(_player.skills.rank(DASH), 1)
 	await wait_process_frames(1)
-	var saved: Dictionary = _saved(SaveGame.SHIP_FILE)
+	var saved: Dictionary = _saved(SaveGame.PLAYER_FILE)
 	var hold: Dictionary = saved["hold"]
 	var version: float = saved["version"]
 	assert_eq(version, float(SaveGame.VERSION), "written again in the current format")
 	assert_has(hold, _uid(KYRITE))
+
+
+## Up to version 2 the hold was the ship's: it moves into the player's save, nothing lost.
+func test_version_2_hold_moves_to_the_player() -> void:
+	var ship_data: Dictionary = {
+		"version": 2,
+		"hold": {_uid(KYRITE): 40.0, _uid(MERIDINE): 0.0},
+		"found": [_uid(KYRITE), _uid(MERIDINE), _uid(OLVANE)],
+		"story": ["quartermaster.ammo"],
+	}
+	var player_data: Dictionary = {"version": 2, "arsenal": [_uid(HARL)]}
+	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
+	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
+	await _restart()
+	assert_eq(_player.hold.amount(KYRITE), 40.0)
+	assert_true(_player.hold.has_found(MERIDINE), "found, though spent")
+	assert_true(_player.hold.has_found(OLVANE))
+	assert_true(_ship.story.is_set(&"quartermaster.ammo"))
+	await wait_process_frames(1)
+	var ship_saved: Dictionary = _saved(SaveGame.SHIP_FILE)
+	var player_saved: Dictionary = _saved(SaveGame.PLAYER_FILE)
+	var hold: Dictionary = player_saved["hold"]
+	var version: float = ship_saved["version"]
+	assert_eq(version, float(SaveGame.VERSION), "written again in the current format")
+	assert_false(ship_saved.has("hold"), "gone from the ship's save")
+	assert_false(ship_saved.has("found"))
+	var kyrite: float = hold[_uid(KYRITE)]
+	assert_eq(kyrite, 40.0)
+	await _restart()
+	assert_eq(_player.hold.amount(KYRITE), 40.0, "not doubled on the next load")
 
 
 ## Every place a version 1 path moved to is there.

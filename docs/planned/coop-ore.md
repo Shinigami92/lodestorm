@@ -1,13 +1,6 @@
 # Whose ore (planned)
 
-Decided 2026-10-17. Built in parts: the ship's project with the heat shield (done, M4 step 4 A, see [Opening planets](../GAME_DESIGN.md#6-missions)), the players' own holds with the refinery (M4 step 11), quest deliveries with the quests (M4 step 16), the rest with co-op (M7); see [`PLAN.md`](../PLAN.md). All values **TBD (playtest)**. Today the hold is the ship's and lives in the host's save (`ship.json`); solo, the player is the host, so it doesn't show. Co-op rules so far: see [Co-op progression](../GAME_DESIGN.md#co-op-progression).
-
-## Every player has their own hold
-
-- **In their own save:** the hold moves from `ship.json` into each player's `player.json`, with the ores they've found (the silos' "?"). What a player mines, they spend on their own gear (upgrades, skills, the refinery, the ore exchange, building weapons), also when they play on someone else's ship; back home it's all still there. The host's save keeps what belongs to the ship: the heat shield's level, where the ship is, the story, the crew, the quests.
-- **Nothing is split:** at the end of a run everyone gets the whole team's haul (all the ore brought aboard, by anyone) into their own hold, so nobody fights over a miner's hose or who carries what. What a player loses by dying is lost for everyone (it never got aboard). Co-op progresses faster than solo; aliens already scale with the player count, and the tier sync caps the gear.
-- **The silos** show the hold of the player looking at them: each client sees their own player's amounts and "?" silos. With several players on one machine (local tests), the card shows the hold of the player using it.
-- **Saving:** the save version goes up; an old save moves its hold and found ores from `ship.json` into `player.json` (solo, so nothing is lost).
+Decided 2026-10-17. Built in parts: the ship's project with the heat shield (done, M4 step 4 A, see [Opening planets](../GAME_DESIGN.md#6-missions)), every player's own hold in their own save with the whole haul for everyone (done, M4 step 11 A1, see [Co-op progression](../GAME_DESIGN.md#co-op-progression)), quest deliveries with the quests (M4 step 16), the rest with co-op (M7); see [`PLAN.md`](../PLAN.md). All values **TBD (playtest)**.
 
 ## Ship and quest costs come out of the haul
 

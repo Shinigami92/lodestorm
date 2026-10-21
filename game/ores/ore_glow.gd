@@ -1,6 +1,6 @@
 class_name OreGlow
-## The ores' glowing materials (see `OreType.get_material`, `OreType.get_glow_material`): shaders
-## that glow in the ore's color and its glow pattern (`OreType.Glow`). The rhythms are in
+## The ores' glowing materials (see `OreType.get_material`, `ItemType.get_glow_material`): shaders
+## that glow in the ore's color and its glow pattern (`ItemType.Glow`). The rhythms are in
 ## `assets/shaders/ore_glow.gdshaderinc`; `intensity` is the same in GDScript (change both
 ## together). Nothing flashes faster than 3 times a second (photosensitivity). Rates and depths
 ## are TBD (playtest).
@@ -23,32 +23,32 @@ static func crystal_material(ore_type: OreType) -> Material:
 	return _material(CRYSTAL_SHADER, ore_type, CRYSTAL_VEIN_DENSITY)
 
 
-## Material for what's filled with `ore_type` (miner column, hose, canisters).
-static func fill_material(ore_type: OreType) -> Material:
-	return _material(FILL_SHADER, ore_type, FILL_VEIN_DENSITY)
+## Material for what's filled with `item` (an ore's miner column, hose, canisters).
+static func fill_material(item: ItemType) -> Material:
+	return _material(FILL_SHADER, item, FILL_VEIN_DENSITY)
 
 
 ## Brightness of `glow` at `time` seconds, `phase` seconds ahead, 1.0 being the ore's full glow
 ## (at the bottom of a wave; the crystals add patterns over their facets).
-static func intensity(glow: OreType.Glow, time: float, phase: float = 0.0) -> float:
+static func intensity(glow: ItemType.Glow, time: float, phase: float = 0.0) -> float:
 	var t: float = time + phase
 	match glow:
-		OreType.Glow.SLOW_PULSE:
+		ItemType.Glow.SLOW_PULSE:
 			return 0.775 + 0.225 * sin(TAU * 0.4 * t)
-		OreType.Glow.FAST_PULSE:
+		ItemType.Glow.FAST_PULSE:
 			return 0.88 + 0.12 * sin(TAU * 2.5 * t)
-		OreType.Glow.FLICKER:
+		ItemType.Glow.FLICKER:
 			var flicker: float = _value_noise(t * 3.5)
 			var dip: float = smoothstep(0.65, 0.9, _value_noise(t * 0.6 + 31.7))
 			return (0.8 + 0.25 * flicker) * (1.0 - 0.4 * dip)
-		OreType.Glow.WAVE:
+		ItemType.Glow.WAVE:
 			var wave: float = 0.5 + 0.5 * sin(TAU * WAVE_RATE * t)
 			return 0.6 + 0.55 * wave * wave * wave
-		OreType.Glow.SPARKLE:
+		ItemType.Glow.SPARKLE:
 			return 0.85 + 0.08 * sin(TAU * 1.3 * t) + 0.07 * sin(TAU * 1.9 * t + 1.0)
-		OreType.Glow.BREATHING:
+		ItemType.Glow.BREATHING:
 			return 0.5 + 0.55 * (0.5 - 0.5 * cos(TAU * 0.25 * t))
-		OreType.Glow.HEARTBEAT:
+		ItemType.Glow.HEARTBEAT:
 			var x: float = fposmod(t * 1.1, 1.0) / 1.1
 			var lub: float = (x - 0.15) / 0.06
 			var dub: float = (x - 0.38) / 0.07
@@ -68,12 +68,12 @@ static func set_phase(geometry: GeometryInstance3D, phase: float) -> void:
 	geometry.set_instance_shader_parameter(&"phase", phase)
 
 
-static func _material(shader: Shader, ore_type: OreType, vein_density: float) -> ShaderMaterial:
+static func _material(shader: Shader, item: ItemType, vein_density: float) -> ShaderMaterial:
 	var material := ShaderMaterial.new()
 	material.shader = shader
-	material.set_shader_parameter(&"color", ore_type.color)
-	material.set_shader_parameter(&"glow", int(ore_type.glow))
-	material.set_shader_parameter(&"dark_body", ore_type.dark_body)
+	material.set_shader_parameter(&"color", item.color)
+	material.set_shader_parameter(&"glow", int(item.glow))
+	material.set_shader_parameter(&"dark_body", item.dark_body)
 	material.set_shader_parameter(&"energy", ENERGY)
 	material.set_shader_parameter(&"vein_density", vein_density)
 	return material

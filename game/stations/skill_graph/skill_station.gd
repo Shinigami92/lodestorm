@@ -6,7 +6,7 @@ extends Station
 ## `Skill`), linked to the skill they require; a link lights up once its skill is learned. Learned
 ## skills glow fully, ones the player can learn right now pulse, ones that open later stay dim.
 ## Its card (`SkillCard`) learns the selected skill's next rank for the player using it, with ore
-## from the ship's hold; nothing can be learned while a mission is underway.
+## from their own hold; nothing can be learned while a mission is underway.
 ## The mouse pans (dragging) and zooms (wheel, around the cursor); `zoom_in`/`zoom_out` (triggers,
 ## +/-) zoom too. Directions select the nearest skill (the view follows it), `tab_prev`/`tab_next`
 ## jump between clusters. The camera frames `Graph/Focus` (moved by panning) at `view_height`
@@ -58,8 +58,6 @@ const HOLOGRAM_PRIORITY: int = 2
 
 ## The mission that locks it while underway; found in the scene tree when not set.
 var mission: Mission
-## The ship whose hold pays; the one it stands in when not set.
-var ship: Ship
 ## How far it's zoomed (1: the whole graph, down to `MIN_ZOOM`).
 var zoom: float = 1.0
 ## The point of the graph the view centers on, in m (x right, y up).
@@ -92,8 +90,6 @@ func _process(delta: float) -> void:
 	_time += delta
 	if not mission:
 		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
-	if not ship:
-		ship = Ship.nearest(get_tree(), global_position)
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	if camera:
 		# Faces the camera like the cards, so the graph reads from the isometric view.
@@ -131,12 +127,12 @@ func is_locked() -> bool:
 
 ## Whether the player using it can learn the next rank of `skill` right now.
 func can_learn(skill: Skill) -> bool:
-	if is_locked() or not user or not ship or not skill:
+	if is_locked() or not user or not skill:
 		return false
 	if not user.skills.is_open(skill):
 		return false
 	var next: SkillRank = user.skills.next_rank(skill)
-	return next != null and ship.can_pay(next.cost)
+	return next != null and user.hold.can_pay(next.cost)
 
 
 ## Learns the next rank of `skill` for the player using it, paid from the hold. Returns whether it
@@ -144,7 +140,7 @@ func can_learn(skill: Skill) -> bool:
 func learn(skill: Skill) -> bool:
 	if not can_learn(skill):
 		return false
-	if not ship.pay(user.skills.next_rank(skill).cost):
+	if not user.hold.pay(user.skills.next_rank(skill).cost):
 		return false
 	user.skills.raise(skill)
 	refresh()
@@ -493,7 +489,7 @@ func _show_states() -> void:
 			energy = ENERGY_LEARNED
 		elif skills and skills.is_open(skill):
 			var next: SkillRank = skills.next_rank(skill)
-			var affordable: bool = ship != null and not is_locked() and ship.can_pay(next.cost)
+			var affordable: bool = not is_locked() and player.hold.can_pay(next.cost)
 			energy = pulse if affordable else maxf(ENERGY_OPEN, ENERGY_LEARNED * float(rank > 0))
 		_materials[skill].set_shader_parameter(&"energy", energy)
 		if (

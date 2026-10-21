@@ -7,8 +7,8 @@ Run from the repo root, after swarmer_build.py final (see docs/TECHNICAL.md, Ass
 Writes the game asset assets/aliens/swarmer/swarmer.glb (textures, skeleton and animations embedded) and its source
 assets/aliens/swarmer/source/swarmer.blend; the separate PNGs and check renders go to tmp/assets/swarmer/game/.
 
-The shared flow (tools/blender/bake.py) bakes "Creature" (Sinew, Chitin, Bone, Mouth) into one 1024 texture set with one
-"Swarmer" PBR material. "Eyes" keeps its constant emissive material. The armature modifiers are taken off for the
+The shared flow (tools/blender/bake.py) bakes "Creature" (the generated mesh's textures) into one 1024 texture set with
+one "Swarmer" PBR material, keeping the generated UV layout (baked at 2048 like the source and filtered down). "Eyes" keeps its constant emissive material. The armature modifiers are taken off for the
 bake (the rest pose is baked) and put back before the export. Texture size 1024 per the asset budget (many aliens at
 once, small on screen), TBD (playtest).
 """
@@ -39,6 +39,12 @@ def prepare(job: B.Job) -> list:
     return [B.bake_plane("BakeGround", scale=(4, 4, 1))]
 
 
+def keep_uvs(job: B.Job, objs: list) -> None:
+    """The generated creature comes unwrapped and textured: bake into its own layout."""
+    for o in objs:
+        o.data.uv_layers.active.name = "UVMap"
+
+
 def finish(job: B.Job, objs: list) -> None:
     C.assign(bpy.data.objects["Eyes"], B.mat_constant("Eyes", EYE_COLOR, roughness=0.2, emission=6.0))
     for name in SKINNED:
@@ -56,8 +62,8 @@ JOB = B.Job(
     atlas=["Creature"],
     material="Swarmer",
     size=1024,  # final texture size (budget: one 1024 set, TBD (playtest))
-    supersample=2,  # teeth and claws are small in the atlas
-    island_margin=0.003,
+    supersample=2,  # the generated texture is 2048: bake at its size, filter down
+    unwrap=keep_uvs,
     ao_distance=0.05,  # small creature: only close cavities darken
     prepare=prepare,
     finish=finish,

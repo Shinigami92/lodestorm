@@ -1,15 +1,18 @@
 class_name FurnaceCard
 extends StationCard
 ## The holo card of a furnace (`FurnaceStation`). A locked furnace's says only that it's cold. A
-## free one's picks the recipe (its alloy's badge and name and tier; an unknown one as "?" with
-## the ores of it found so far) and the number of bars, shows what they cost next to what the hold
-## has (red where it's short) and how long they take, and "Start". A running one's shows its alloy,
-## the bars done, how far the bar in the furnace is, the time left, and "Stop" (pressed twice).
+## free one's picks the recipe (its alloy's badge and name and tier; an unknown one as "?" with the
+## ores of it found so far) and the number of bars (buttons taking off or adding 10, 5 and 1 either
+## side of the number), shows what they cost next to what the hold has (red where it's short) and
+## how long they take, and "Start". A running one's shows its alloy, the bars done, how far the bar
+## in the furnace is, the time left, and "Stop" (pressed twice).
 
 const NOTE_COLOR := Color(1.0, 1.0, 1.0, 0.75)
 
 ## What `_found` shows, so it's only rebuilt when it changes.
 var _found_shown: Array[OreType] = []
+## The bar buttons, by what they add.
+var _bar_buttons: Dictionary[int, Button] = {}
 
 @onready var _badge: CenterContainer = %Badge
 @onready var _title: Label = %Title
@@ -19,9 +22,8 @@ var _found_shown: Array[OreType] = []
 @onready var _recipe_name: Label = %RecipeName
 @onready var _recipe_next: Button = %RecipeNext
 @onready var _found: HFlowContainer = %Found
-@onready var _bars_prev: Button = %BarsPrev
+@onready var _bar_count: HBoxContainer = %BarCount
 @onready var _bars: Label = %Bars
-@onready var _bars_next: Button = %BarsNext
 @onready var _cost_row: HFlowContainer = %CostRow
 @onready var _cost: ItemCost = %Cost
 @onready var _time: Label = %Time
@@ -33,8 +35,21 @@ var _found_shown: Array[OreType] = []
 func _ready() -> void:
 	_recipe_prev.pressed.connect(_on_recipe_pressed.bind(-1))
 	_recipe_next.pressed.connect(_on_recipe_pressed.bind(1))
-	_bars_prev.pressed.connect(_on_bars_pressed.bind(-1))
-	_bars_next.pressed.connect(_on_bars_pressed.bind(1))
+	for amount: int in FurnaceStation.BAR_BUTTONS:
+		var button := Button.new()
+		button.name = "Bars%s%d" % ["Plus" if amount > 0 else "Minus", absi(amount)]
+		# Numbers only: nothing to translate.
+		button.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+		button.focus_mode = Control.FOCUS_NONE
+		# The body text's size: six of them share a row with the number.
+		button.add_theme_font_size_override(&"font_size", 26)
+		button.text = "%+d" % amount
+		button.pressed.connect(_on_bars_pressed.bind(amount))
+		_bar_count.add_child(button)
+		# The minus buttons go before the number, the plus ones after it.
+		if amount < 0:
+			_bar_count.move_child(button, _bars.get_index())
+		_bar_buttons[amount] = button
 	_action.pressed.connect(press_primary)
 	_close.pressed.connect(_on_close_pressed)
 
@@ -66,6 +81,11 @@ func press_primary() -> bool:
 ## The button that starts or stops (for tests and probes).
 func get_action_button() -> Button:
 	return _action
+
+
+## The button adding `amount` bars (for tests and probes), or null.
+func get_bar_button(amount: int) -> Button:
+	return _bar_buttons.get(amount)
 
 
 ## The line saying what's in the way (for tests).
@@ -137,13 +157,10 @@ func _show_free(furnace: FurnaceStation) -> void:
 		found = alloy.found_ores(hold)
 	_show_found(found, not known)
 	var bars: int = furnace.get_bars()
-	_bars.text = (
-		(tr("As many as the hold pays for: %d") % bars)
-		if furnace.is_max_bars()
-		else tr("Bars: %d") % bars
-	)
-	_bars_prev.disabled = furnace.bar_step <= 0
-	_bars_next.disabled = furnace.is_max_bars()
+	# A number only: "Bars" stands above the row.
+	_bars.text = str(bars)
+	for amount: int in _bar_buttons:
+		_bar_buttons[amount].disabled = bars <= 1 if amount < 0 else bars >= furnace.get_max_bars()
 	_cost_row.visible = known
 	if known:
 		_cost.show_cost(alloy.cost(bars), hold.ores())

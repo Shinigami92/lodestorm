@@ -15,6 +15,7 @@ size = Vector3(1.2, 0.02, 0.08)
 
 [node name="Furnace" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
 script = ExtResource("1_script")
+room = &"cargo_bay"
 user_spot = NodePath("UserSpot")
 view_height = 3.6
 view_focus = NodePath("Focus")
@@ -36,7 +37,7 @@ visible = false
 mesh = SubResource("BoxMesh_highlight")
 
 [node name="Card" parent="." instance=ExtResource("2_panel")]
-size = Vector2(1.9, 2.1)
+size = Vector2(2.3, 2.3)
 pixels_per_meter = 300.0
 transparent = true
 menu = ExtResource("3_card")

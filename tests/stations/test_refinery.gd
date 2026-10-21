@@ -8,6 +8,8 @@ const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const ALLOYS: AlloyCatalog = preload("res://game/refinery/all_alloys.tres")
 const COBREL: AlloyType = preload("res://game/refinery/alloys/alloy_cobrel.tres")
 const MERISK: AlloyType = preload("res://game/refinery/alloys/alloy_merisk.tres")
+const GANTRITE: AlloyType = preload("res://game/refinery/alloys/alloy_gantrite.tres")
+const SELYX: OreType = preload("res://game/ores/types/ore_selyx.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
 const MIN_TEXT_HEIGHT: float = 0.02
@@ -53,12 +55,29 @@ func test_it_keeps_clear_of_the_silos_and_the_lane() -> void:
 	for spot: Node3D in spots:
 		var at: Vector3 = _ship.to_local(spot.global_position)
 		assert_gt(at.z - 1.0, OreHold.LANE_WIDTH * 0.5, "%s off the lane" % spot.name)
-		# The cargo bay starts at ship x -3; the left furnace's user stands beside it.
-		assert_gt(at.x - 1.3, -3.0, "%s inside the cargo bay" % spot.name)
 		for tank: OreTank in hold.get_parts():
 			var apart: Vector3 = tank.global_position - spot.global_position
 			var gap: float = Vector2(apart.x, apart.z).length() - tank.radius - 1.2
 			assert_gt(gap, 0.0, "%s and %s" % [spot.name, tank.name])
+
+
+func test_a_way_between_the_wall_and_the_left_furnace() -> void:
+	# The cargo bay's inner wall by the lower deck is at ship x -3.
+	var left: FurnaceStation = _refinery.get_furnaces()[0]
+	var edge: float = _ship.to_local(left.global_position).x - FurnaceStation.WIDTH * 0.5 - 0.08
+	assert_gte(edge - -3.0, OreHold.WALK_WIDTH, "room to walk past")
+	var capsule := CapsuleShape3D.new()
+	capsule.radius = 0.4
+	capsule.height = 1.8
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = capsule
+	query.exclude = [_player.get_rid()]
+	var space: PhysicsDirectSpaceState3D = _ship.get_world_3d().direct_space_state
+	var at: Vector3 = _ship.to_local(left.global_position)
+	for z: float in [at.z - 1.5, at.z, at.z + 1.5]:
+		var middle := Vector3((edge - 3.0) * 0.5, 2.5 + 1.0, z)
+		query.transform = Transform3D(Basis.IDENTITY, _ship.to_global(middle))
+		assert_eq(space.intersect_shape(query).size(), 0, "free at z %s" % z)
 
 
 func test_a_locked_furnace_is_cold() -> void:
@@ -93,8 +112,7 @@ func test_starting_a_batch() -> void:
 	assert_eq(_furnace.recipe, COBREL, "starts on a known recipe")
 	var card := _furnace.card_menu as FurnaceCard
 	assert_string_contains(_texts(card), "Cobrel")
-	_furnace.step(Vector2.RIGHT)
-	_furnace.step(Vector2.RIGHT)
+	_furnace.step_bars(4)
 	assert_eq(_furnace.get_bars(), 5)
 	assert_string_contains(_texts(card), "5:00", "takes five minutes")
 	assert_false(card.get_action_button().disabled)
@@ -108,17 +126,27 @@ func test_starting_a_batch() -> void:
 	_furnace.close()
 
 
-func test_as_many_as_the_hold_pays_for() -> void:
+func test_bars_go_up_to_what_the_hold_pays_for() -> void:
 	_ship.furnaces.unlock()
 	_player.hold.add(KYRITE, 73.0)
 	_player.hold.add(VYREL, 100.0)
 	assert_true(_furnace.open(_player))
-	for step: int in FurnaceStation.BAR_STEPS.size() + 3:
-		_furnace.step(Vector2.RIGHT)
-	assert_true(_furnace.is_max_bars())
-	assert_eq(_furnace.get_bars(), 7)
-	assert_true(_furnace.start())
-	assert_eq(_player.hold.amount(KYRITE), 3.0)
+	var card := _furnace.card_menu as FurnaceCard
+	assert_true(card.get_bar_button(-1).disabled, "at least one")
+	card.get_bar_button(5).pressed.emit()
+	assert_eq(_furnace.get_bars(), 6)
+	card.get_bar_button(10).pressed.emit()
+	assert_eq(_furnace.get_bars(), 7, "the hold pays for seven")
+	assert_true(card.get_bar_button(1).disabled)
+	card.get_bar_button(-10).pressed.emit()
+	assert_eq(_furnace.get_bars(), 1)
+	card.get_bar_button(1).pressed.emit()
+	assert_eq(_furnace.get_bars(), 2)
+	var minus := InputEventAction.new()
+	minus.action = &"zoom_out"
+	minus.pressed = true
+	assert_true(_furnace._shortcut(minus))
+	assert_eq(_furnace.get_bars(), 1, "zoom_out takes one off")
 	_furnace.close()
 
 
@@ -130,6 +158,56 @@ func test_tab_steps_through_the_recipes_by_tier() -> void:
 	assert_eq(_furnace.recipe, ALLOYS.alloys[1])
 	_furnace._cycle(-2)
 	assert_eq(_furnace.recipe, ALLOYS.alloys[-1], "wraps around")
+	_furnace.close()
+
+
+func test_wasd_moves_across_the_cargo_bay() -> void:
+	_ship.furnaces.unlock()
+	var hold := _ship.get_node("OreHold") as OreHold
+	var furnaces: Array[FurnaceStation] = _refinery.get_furnaces()
+	assert_true(_rack.open(_player))
+	_rack.select(_rack.get_shelf(GANTRITE))
+	await _settle_camera()
+	_rack.step(Vector2.LEFT)
+	assert_eq(_rack.selected, _rack.get_shelf(COBREL))
+	_rack.step(Vector2.LEFT)
+	assert_null(_rack.user, "handed over")
+	assert_eq(furnaces[-1].user, _player, "the right furnace")
+	assert_eq(_player.menu, furnaces[-1])
+	await _settle_camera()
+	furnaces[-1].step(Vector2.LEFT)
+	assert_eq(furnaces[-2].user, _player)
+	var recipe: AlloyType = furnaces[-2].recipe
+	var bars: int = furnaces[-2].get_bars()
+	await _settle_camera()
+	furnaces[-2].step(Vector2.RIGHT)
+	assert_eq(furnaces[-2].recipe, recipe, "the directions never pick a recipe")
+	assert_eq(furnaces[-2].get_bars(), bars, "nor the bars")
+	assert_eq(furnaces[-1].user, _player)
+	await _settle_camera()
+	furnaces[-1].step(Vector2.RIGHT)
+	assert_eq(_rack.user, _player, "back on the rack")
+	for shelf: AlloyType in [COBREL, GANTRITE]:
+		hold.close()
+		_rack.close()
+		assert_true(_rack.open(_player))
+		_rack.select(_rack.get_shelf(shelf))
+		await _settle_camera()
+		_rack.step(Vector2.UP)
+		assert_eq(hold.user, _player, "%s up: the silos" % shelf.display_name)
+		assert_eq(hold.selected, hold.get_tank(SELYX), "%s up: Selyx" % shelf.display_name)
+	hold.close()
+
+
+func test_wasd_skips_a_station_someone_else_uses() -> void:
+	var other: Player = PLAYER_SCENE.instantiate() as Player
+	other.local = false
+	_map.add_child(other)
+	await wait_physics_frames(1)
+	assert_true(_furnace.open(other))
+	var hold := _ship.get_node("OreHold") as OreHold
+	assert_false(hold.room_parts(_player).has(_furnace.get_parts()[0]))
+	assert_true(hold.room_parts(_player).has(_rack.get_shelf(COBREL)))
 	_furnace.close()
 
 
@@ -171,7 +249,9 @@ func test_a_running_furnace_glows_in_its_alloys_color() -> void:
 	assert_false(fill.visible)
 	_player.hold.add(KYRITE, 100.0)
 	_player.hold.add(VYREL, 100.0)
-	assert_true(_player.refining.start(0, COBREL, 2, _player.hold, Time.get_unix_time_from_system()))
+	assert_true(
+		_player.refining.start(0, COBREL, 2, _player.hold, Time.get_unix_time_from_system())
+	)
 	await wait_process_frames(1)
 	assert_true(fill.visible)
 	assert_eq(fill.material_override, COBREL.get_glow_material())
@@ -262,10 +342,10 @@ func test_cards_fit_and_read_in_every_language() -> void:
 		assert_true(_furnace.open(_player))
 		for alloy: AlloyType in ALLOYS.alloys:
 			_furnace.recipe = alloy
-			for step: int in FurnaceStation.BAR_STEPS.size() + 1:
-				_furnace.bar_step = step
+			for bars: int in [1, 50, 9999] as Array[int]:
+				_furnace.bars = bars
 				_furnace.refresh()
-				_assert_card_fits(_furnace, "%s %s %d" % [locale, alloy.display_name, step])
+				_assert_card_fits(_furnace, "%s %s %d" % [locale, alloy.display_name, bars])
 		_furnace.close()
 		assert_true(running.open(_player))
 		running.stop()
@@ -280,6 +360,12 @@ func test_cards_fit_and_read_in_every_language() -> void:
 	for station: Station in [_furnace, _rack] as Array[Station]:
 		var text_height: float = 26.0 / station.card.pixels_per_meter
 		assert_gte(text_height / station.view_height, MIN_TEXT_HEIGHT, station.name)
+
+
+## Puts the camera where it frames the menu now (it glides there while playing).
+func _settle_camera() -> void:
+	(_map.get_node("IsoCameraRig") as IsoCameraRig).snap()
+	await wait_process_frames(2)
 
 
 func _assert_card_fits(station: Station, label: String) -> void:

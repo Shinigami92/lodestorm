@@ -15,6 +15,7 @@ size = Vector3(2.0, 0.02, 0.08)
 
 [node name="IngotRack" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
 script = ExtResource("1_script")
+room = &"cargo_bay"
 user_spot = NodePath("UserSpot")
 view_height = 3.8
 view_focus = NodePath("Focus")

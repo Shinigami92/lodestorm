@@ -18,7 +18,8 @@ extends Station
 ## A silo is used directly (`interact` next to it): the hold opens as a station with it selected,
 ## the camera follows the selected silo, and the card shows the ore's name, how much the hold has
 ## and where it's found. `tab_prev`/`tab_next` step through the silos in reading order (rows from
-## the back, each from left to right), the directions to the nearest silo on screen.
+## the back, each from left to right), the directions to the nearest silo, furnace or ingot rack
+## shelf on screen (the cargo bay's `room`).
 
 const CATALOG: OreCatalog = preload("res://game/ores/all_ores.tres")
 ## Silo size per band: radius, height (m) and the units it shows as full (TBD (playtest)).

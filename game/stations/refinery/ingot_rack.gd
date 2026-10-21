@@ -1,13 +1,14 @@
 class_name IngotRack
 extends Station
-## The ingot rack beside the furnaces (greybox until the cargo bay's art pass): a steel frame with
-## a shelf per alloy of the game (`RackShelf`, from `AlloyCatalog`), a row per tier from the top,
-## the bars stacking up on them glowing in the alloy's colors. The bars are kept in the hold
+## The ingot rack beside the furnaces (greybox until the cargo bay's art pass): a steel frame with a
+## shelf per alloy of the game (`RackShelf`, from `AlloyCatalog`), a row per tier from the top, the
+## bars stacking up on them glowing in the alloy's colors. The bars are kept in the hold
 ## (`PlayerHold`), so it shows the hold of the player using it, else the viewer's (see
-## `Ship.get_viewing_player`); a bar landing from a furnace clinks on its shelf.
-## `interact` in front of it opens it as a station; `tab_prev`/`tab_next` step through the shelves
-## in reading order (rows from the top, each from left to right), the directions to the nearest
-## shelf on screen. The card (`RackCard`) shows the alloy, how many bars there are and its recipe.
+## `Ship.get_viewing_player`); a bar landing from a furnace clinks on its shelf. `interact` in front
+## of it opens it as a station; `tab_prev`/`tab_next` step through the shelves in reading order
+## (rows from the top, each from left to right), the directions to the nearest shelf, furnace or
+## silo on screen (the cargo bay's `room`). The card (`RackCard`) shows the alloy,
+## how many bars there are and its recipe.
 
 const CATALOG: AlloyCatalog = preload("res://game/refinery/all_alloys.tres")
 const COLUMNS: int = 2

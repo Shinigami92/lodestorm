@@ -899,14 +899,6 @@ msgid "Unknown alloy (tier %d)"
 msgstr ""
 
 #: game/stations/refinery/furnace_card.gd
-msgid "As many as the hold pays for: %d"
-msgstr ""
-
-#: game/stations/refinery/furnace_card.gd
-msgid "Bars: %d"
-msgstr ""
-
-#: game/stations/refinery/furnace_card.gd
 msgid "Takes %s"
 msgstr ""
 
@@ -916,6 +908,10 @@ msgstr ""
 
 #: game/stations/refinery/furnace_card.gd
 msgid "Start"
+msgstr ""
+
+#: game/stations/refinery/furnace_card.tscn
+msgid "Bars"
 msgstr ""
 
 #: game/stations/refinery/furnace_card.tscn

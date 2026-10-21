@@ -901,14 +901,6 @@ msgid "Unknown alloy (tier %d)"
 msgstr "Unbekannte Legierung (Stufe %d)"
 
 #: game/stations/refinery/furnace_card.gd
-msgid "As many as the hold pays for: %d"
-msgstr "So viele, wie das Lager hergibt: %d"
-
-#: game/stations/refinery/furnace_card.gd
-msgid "Bars: %d"
-msgstr "Barren: %d"
-
-#: game/stations/refinery/furnace_card.gd
 msgid "Takes %s"
 msgstr "Dauer: %s"
 
@@ -919,6 +911,10 @@ msgstr "Das Rezept erscheint, sobald alle seine Erze im Lager waren."
 #: game/stations/refinery/furnace_card.gd
 msgid "Start"
 msgstr "Starten"
+
+#: game/stations/refinery/furnace_card.tscn
+msgid "Bars"
+msgstr "Barren"
 
 #: game/stations/refinery/furnace_card.tscn
 #: game/stations/skill_graph/skill_card.tscn

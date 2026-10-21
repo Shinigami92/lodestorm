@@ -1,22 +1,23 @@
 class_name FurnaceStation
 extends Station
-## One of the refinery's furnaces in the cargo bay (greybox until the cargo bay's art pass): a
-## squat steel block on a plinth with a flue going up to the pipes from the silos, its door facing
-## the camera. The ship has up to four (`Furnaces`, unlocked one by one); this one is `slot`. A
-## locked one is a cold, dark shell; an unlocked one has a lit lamp over its door.
-## It shows the batch (`AlloyBatch`) of the player using it, else the viewer's (see
-## `Ship.get_viewing_player`): while one runs, its door glows in the alloy's color, filling from
-## the bottom with the batch's progress, a light flickers in front of it and it roars; the plate
-## below the door names the alloy and the bars done.
-## `interact` at it opens it as a station with the door as its one part; the card
-## (`FurnaceCard`) picks the recipe (`tab_prev`/`tab_next` or up/down, by tier) and the number of
-## bars (left/right: `BAR_STEPS`, then as many as the hold pays for), shows the cost against the
+## One of the refinery's furnaces in the cargo bay (greybox until the cargo bay's art pass): a squat
+## steel block on a plinth with a flue going up to the pipes from the silos, its door facing the
+## camera. The ship has up to four (`Furnaces`, unlocked one by one); this one is `slot`. A locked
+## one is a cold, dark shell; an unlocked one has a lit lamp over its door. It shows the batch
+## (`AlloyBatch`) of the player using it, else the viewer's (see `Ship.get_viewing_player`): while
+## one runs, its door glows in the alloy's color, filling from the bottom with the batch's progress,
+## a light flickers in front of it and it roars; the plate below the door names the alloy and the
+## bars done. `interact` at it opens it as a station with the door as its one part (the directions
+## move on to the cargo bay's other stations, its `room`); the card (`FurnaceCard`) picks the recipe
+## (`tab_prev`/`tab_next`, by tier) and the number of bars (its buttons `BAR_BUTTONS`, or
+## `zoom_out`/`zoom_in` by one; from 1 up to what the hold pays for), shows the cost against the
 ## hold and the time it takes, and starts it (paid at once); a running batch's card shows its
-## progress and the time left and stops it (pressed twice: the bars done stay, the ore of the
-## others goes back to the hold). Nothing starts or stops while a mission is underway.
+## progress and the time left and stops it (pressed twice: the bars done stay, the ore of the others
+## goes back to the hold). Nothing starts or stops while a mission is underway.
 
-## The numbers of bars to pick from; after them comes "as many as the hold pays for".
-const BAR_STEPS: Array[int] = [1, 2, 5, 10, 20, 50, 100]
+## What the card's buttons add to the number of bars (the number shows between the minus and the
+## plus ones).
+const BAR_BUTTONS: Array[int] = [-10, -5, -1, 1, 5, 10]
 const CATALOG: AlloyCatalog = preload("res://game/refinery/all_alloys.tres")
 const WIDTH: float = 1.2
 const DEPTH: float = 1.1
@@ -50,8 +51,8 @@ var mission: Mission
 var ship: Ship
 ## The recipe the card shows for starting.
 var recipe: AlloyType
-## Which of `BAR_STEPS` the card shows (`BAR_STEPS.size()`: as many as the hold pays for).
-var bar_step: int = 0
+## The number of bars the card shows for starting (see `get_bars`).
+var bars: int = 1
 
 ## Time left to press "Stop" again, in s (0: not pressed).
 var _stop_armed: float = 0.0
@@ -115,16 +116,14 @@ func get_batch() -> AlloyBatch:
 	return player.refining.get_batch(slot) if player else null
 
 
-## The number of bars the card shows: a step of `BAR_STEPS`, or as many as the hold pays for.
+## The number of bars the card shows: `bars`, at most what the user's hold pays for (at least 1).
 func get_bars() -> int:
-	if bar_step < BAR_STEPS.size():
-		return BAR_STEPS[bar_step]
-	return recipe.affordable(user.hold) if user and recipe else 0
+	return clampi(bars, 1, get_max_bars())
 
 
-## Whether the bar count shown is "as many as the hold pays for".
-func is_max_bars() -> bool:
-	return bar_step >= BAR_STEPS.size()
+## The most bars the card offers: what the user's hold pays for of the recipe shown (at least 1).
+func get_max_bars() -> int:
+	return maxi(recipe.affordable(user.hold), 1) if user and recipe else 1
 
 
 ## Whether the user can start the recipe shown now.
@@ -184,20 +183,10 @@ func step_recipe(step_by: int) -> void:
 	refresh()
 
 
-## Shows fewer (-1) or more (1) bars, stopping at either end.
+## Shows `step_by` bars more (fewer when negative), from 1 up to `get_max_bars`.
 func step_bars(step_by: int) -> void:
-	bar_step = clampi(bar_step + step_by, 0, BAR_STEPS.size())
+	bars = clampi(get_bars() + step_by, 1, get_max_bars())
 	refresh()
-
-
-## Up and down step through the recipes, left and right through the numbers of bars.
-func step(direction: Vector2) -> void:
-	if get_batch() or not is_unlocked():
-		return
-	if absf(direction.y) > absf(direction.x):
-		step_recipe(int(signf(direction.y)))
-	else:
-		step_bars(int(signf(direction.x)))
 
 
 ## The current wall clock time, in Unix seconds.
@@ -208,6 +197,17 @@ static func _now() -> float:
 func _cycle(step_by: int) -> void:
 	if is_unlocked() and not get_batch():
 		step_recipe(step_by)
+
+
+## `zoom_out`/`zoom_in` (-/+, the wheel, the triggers) take one bar off or add one.
+func _shortcut(event: InputEvent) -> bool:
+	if not is_unlocked() or get_batch():
+		return false
+	for action: StringName in [&"zoom_in", &"zoom_out"] as Array[StringName]:
+		if InputMap.has_action(action) and event.is_action_pressed(action, true):
+			step_bars(1 if action == &"zoom_in" else -1)
+			return true
+	return false
 
 
 func _opened() -> void:

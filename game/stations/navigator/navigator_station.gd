@@ -10,7 +10,8 @@ extends Station
 ## destination), `pause`/`ui_cancel` back out a step (and close at the star system);
 ## `zoom_in`/`zoom_out` (mouse wheel, gamepad triggers, +/-) zoom gradually. A landing site is only
 ## shown (`Mission.preview`); choosing it as the destination (`Mission.choose`, a new section of
-## the region) takes "Set as destination", and course is set at the cockpit's flight console.
+## the region) takes "Set as destination" (on the globe, it then zooms into the landing site), and
+## course is set at the cockpit's flight console.
 ## Stations can't be docked at yet and locked planets and regions can't be visited: zooming stops
 ## short of them. The star system shows orbit lines (spread evenly, so every body fits on the
 ## table), the star (with its name on the card), stations as station shapes, a name plate per body
@@ -239,14 +240,18 @@ func activate() -> bool:
 	return zoom_target > before + 0.5
 
 
-## Chooses the selected region (or the one whose landing site is shown) as the destination.
-## Returns whether it is the destination.
+## Chooses the selected region (or the one whose landing site is shown) as the destination; on
+## the globe, it then zooms into the region's landing site. Returns whether it is the destination.
 func choose_destination() -> bool:
 	var picked := selected.item as Region if selected else null
 	var offer: MissionBrief = get_offer(picked)
 	if not offer or not is_reachable(picked):
 		return false
-	return offer == mission.destination or mission.choose(offer)
+	if offer != mission.destination and not mission.choose(offer):
+		return false
+	if level == Level.BODY:
+		set_zoom_target(2.0)
+	return true
 
 
 ## Shows the star system.

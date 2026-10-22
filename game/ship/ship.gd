@@ -14,7 +14,8 @@ extends Node3D
 ## While the `viewer` is aboard (and `show_outside` is off), the camera sees inside: on the lower
 ## deck, the walls facing the camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`,
 ## `Rooms/Upper`, the lifts' upper gates) only cast shadows; on the upper deck, its walls facing
-## the camera and the roof (`Hull/Upper/Cut`) do.
+## the camera and the roof (`Hull/Upper/Cut`) do. What draws over everything (`OVERLAY_GROUP`)
+## only shows while the camera looks into the upper deck.
 ## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
 ## Windows in the outer walls look out from every room along them (and in from outside).
 ## A countdown above the door shows the mission time ("No mission" until one is picked at the holo
@@ -41,6 +42,9 @@ const GROUP: StringName = &"ships"
 const UPPER_DECK_HEIGHT: float = 6.5
 ## Window panes: they never cast shadows (light comes in), so they're hidden with their wall.
 const GLASS_GROUP: StringName = &"ship_glass"
+## Upper-deck nodes drawn over everything (the navigator's name plates): shown only while the
+## camera looks into the upper deck, so they don't show through the roof.
+const OVERLAY_GROUP: StringName = &"ship_overlays"
 
 const COLOR_CALM := Color(0.3, 1.0, 0.45)
 const COLOR_HALF := Color(1.0, 0.7, 0.15)
@@ -128,6 +132,7 @@ func _ready() -> void:
 	_button_material.emission_enabled = true
 	_button_face.material_override = _button_material
 	_update_display()
+	_apply_view()
 	progress_clock = ProgressClock.new()
 	progress_clock.name = "ProgressClock"
 	add_child(progress_clock)
@@ -328,6 +333,9 @@ func _apply_view() -> void:
 	for lift: Node in _lifts.get_children():
 		_show(lift.get_node(^"UpperGate"), _view != View.LOWER)
 	_show(_upper_cut, _view == View.OUTSIDE)
+	for overlay: Node in get_tree().get_nodes_in_group(OVERLAY_GROUP):
+		if is_ancestor_of(overlay):
+			(overlay as Node3D).visible = _view == View.UPPER
 
 
 ## Shows `root`'s geometry, or only lets it cast shadows; its lights, holograms and windows turn

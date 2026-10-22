@@ -106,6 +106,13 @@ var weapon_allowed: bool = true:
 		if weapon:
 			weapon.visible = value
 			weapon.stop()
+## Whether its silhouette shows behind walls (the rim light stays either way); off e.g. while the
+## title view shows the closed ship.
+var silhouette_shown: bool = true:
+	set(value):
+		silhouette_shown = value
+		if is_node_ready():
+			_update_overlay()
 ## Units carried per ore type; no carry limit.
 var cargo: Dictionary[OreType, float] = {}
 ## What it brought back over all runs and hasn't spent yet (saved with the player).
@@ -180,7 +187,7 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	_animator.setup(_model)
 	_suit_light.band = _model.find_child("SuitLight") as GeometryInstance3D
-	(_model.find_child("Suit") as GeometryInstance3D).material_overlay = body_overlay
+	_update_overlay()
 	OccludedSilhouette.mark_visible(_model)
 	RenderLayers.put(_model, RenderLayers.CHARACTERS)
 	_attach(_weapon_mount, "WeaponGrip")
@@ -512,6 +519,11 @@ static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Play
 			nearest_player = player
 			nearest_distance = distance
 	return nearest_player
+
+
+func _update_overlay() -> void:
+	var suit := _model.find_child("Suit") as GeometryInstance3D
+	suit.material_overlay = body_overlay if silhouette_shown else body_overlay.next_pass
 
 
 func _is_reloading() -> bool:

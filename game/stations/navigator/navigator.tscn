@@ -20,7 +20,7 @@ script = ExtResource("1_script")
 view_height = 3.6
 view_focus = NodePath("Focus")
 
-[node name="View" type="Node3D" parent="."]
+[node name="View" type="Node3D" parent="." groups=["ship_overlays"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 
 [node name="Focus" type="Marker3D" parent="."]

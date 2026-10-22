@@ -23,6 +23,7 @@ func _ready() -> void:
 	_material.shader = preload("res://assets/shaders/target_brackets.gdshader")
 	material_override = _material
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	layers = RenderLayers.MARKINGS
 	visible = false
 
 

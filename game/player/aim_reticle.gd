@@ -2,12 +2,12 @@ class_name AimReticle
 extends Node3D
 ## The in-game cursor (see GAME_DESIGN.md, UI): a reticle projected onto the ground or a rock's top
 ## where the local player's mouse really points (`PlayerAim.cursor_point`), in the player's color,
-## so it follows slopes and leaves players and aliens out. While it shows, the hardware cursor is
-## hidden; it comes back while a menu or station is open, the game is paused, the player is down,
-## the mouse is over a developer tool or points at no ground. Only with the mouse: a stick or a VR
-## hand aims by a direction. With something locked on, it stays under the cursor, dimmed (or, with
-## `follows_lock`, moves under the locked target). A child of the player. Greybox look, TBD
-## (playtest).
+## so it follows slopes and leaves players, aliens and the suit's markings out (`RenderLayers`).
+## While it shows, the hardware cursor is hidden; it comes back while a menu or station is open, the
+## game is paused, the player is down, the mouse is over a developer tool or points at no ground.
+## Only with the mouse: a stick or a VR hand aims by a direction. With something locked on, it
+## stays under the cursor, dimmed (or, with `follows_lock`, moves under the locked target). A child
+## of the player. Greybox look, TBD (playtest).
 
 ## Its width on the ground (m).
 const SIZE: float = 1.5

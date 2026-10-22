@@ -1,6 +1,7 @@
 extends GutTest
 ## The in-game cursor: a reticle on the ground where the mouse points, only for the local player
-## aiming with the mouse outside menus and pauses, dimmed (or following) while something is locked.
+## aiming with the mouse outside menus and pauses, dimmed (or following) while something is locked,
+## and never on the suit's markings.
 
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
@@ -62,6 +63,16 @@ func test_dims_under_the_cursor_while_locked_or_follows_the_lock() -> void:
 
 
 ## Aims the mouse at `point` on the ground and lets the reticle follow at once.
+## The suit ring and the target brackets are drawn pulled towards the camera, so the reticle (a
+## decal) leaves them out: else it paints a shifted copy of itself on the ring.
+func test_leaves_the_suits_markings_out() -> void:
+	var decal := _reticle.get_node("Decal") as Decal
+	var ring := _player.get_node("SuitRing") as SuitRing
+	var brackets := _player.get_node("TargetMarker") as TargetMarker
+	assert_eq(ring.layers & decal.cull_mask, 0, "the suit ring")
+	assert_eq(brackets.layers & decal.cull_mask, 0, "the target brackets")
+
+
 func _point_at(point: Vector3) -> void:
 	_player.aim.set(&"_with_mouse", true)
 	_player.aim.target = null

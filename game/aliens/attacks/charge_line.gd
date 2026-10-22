@@ -4,7 +4,8 @@ extends Node3D
 ## its -Z from where it stands and `width` to each side, as red dashed edges over a faint fill that
 ## grows from the alien to the end of the lane during the wind-up (`duration`), so it shows when the
 ## charge comes. Projected onto the ground (decals), so it follows slopes; players and aliens in it
-## stay as they are (`RenderLayers.CHARACTERS`). Greybox look, TBD (playtest).
+## stay as they are (`RenderLayers.CHARACTERS`), and so do the suit's markings
+## (`RenderLayers.MARKINGS`). Greybox look, TBD (playtest).
 
 ## The telegraphs' red (see `docs/planned/player-display.md`: alien telegraphs).
 const COLOR := Color(1.0, 0.16, 0.1)

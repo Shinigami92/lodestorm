@@ -4,8 +4,9 @@ extends WorldMenu
 ## drifting in space with its outside showing (`Ship.show_outside`), the game's name as a hologram
 ## beside it and "Press any button" below. Any button (a key, a mouse or gamepad button) ends it:
 ## the camera glides into the ship to the player in cabin 1. Meanwhile the view drifts slowly
-## around the ship (`drift`) and the ship's countdown hides. After `credits_delay` s without input,
-## the credits scroll beside the name instead of the prompt; any input brings the prompt back.
+## around the ship (`drift`), and the ship's countdown and the players' silhouettes (they'd show
+## through the roof) hide. After `credits_delay` s without input, the credits scroll beside the
+## name instead of the prompt; any input brings the prompt back.
 ## It's a menu the first player uses from the start, so they stand still meanwhile. It turns to
 ## face the camera, so its children are laid out on the screen's plane.
 
@@ -94,6 +95,7 @@ func _opened() -> void:
 	if ship:
 		ship.show_outside = true
 		ship.countdown_hidden = true
+	_show_silhouettes(false)
 	var rig := get_tree().get_first_node_in_group(IsoCameraRig.GROUP) as IsoCameraRig
 	if rig:
 		# Its children are laid out on the screen's plane: x right, y up.
@@ -107,6 +109,7 @@ func _closed() -> void:
 	if ship:
 		ship.show_outside = false
 		ship.countdown_hidden = false
+	_show_silhouettes(true)
 
 
 func _start() -> void:
@@ -124,3 +127,8 @@ func _show_credits(shown: bool) -> void:
 		credits.scroll_speed = credits_speed if shown else 0.0
 	if not shown:
 		idle_time = 0.0
+
+
+func _show_silhouettes(shown: bool) -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		player.silhouette_shown = shown

@@ -32,6 +32,8 @@ func test_opens_on_the_title() -> void:
 	assert_eq(_player.menu, _title)
 	assert_true(_ship.show_outside, "the ship from outside")
 	assert_true(_ship.countdown_hidden)
+	assert_false(_player.silhouette_shown, "not through the roof")
+	assert_false(_navigator_view().is_visible_in_tree(), "its name plates neither")
 	var rig: IsoCameraRig = _map.get_node("IsoCameraRig")
 	assert_almost_eq(rig.zoom, _title.view_height / rig.view_height(), 0.01, "right away")
 
@@ -42,6 +44,7 @@ func test_any_button_starts() -> void:
 	assert_null(_player.menu)
 	assert_false(_ship.show_outside, "into the ship")
 	assert_false(_ship.countdown_hidden)
+	assert_true(_player.silhouette_shown)
 	assert_false(_player.pause_panel.is_shown(), "the press doesn't do more")
 
 
@@ -82,6 +85,10 @@ func test_credits_text_reads() -> void:
 		var needed: Vector2 = panel.content.get_combined_minimum_size()
 		assert_lte(needed.x, layout.x + 0.5, "%s: %s wide" % [locale, needed.x])
 		assert_lte(needed.y, layout.y + 0.5, "%s: %s high" % [locale, needed.y])
+
+
+func _navigator_view() -> Node3D:
+	return _ship.get_node("Rooms/Upper/Bridge/Navigator/View") as Node3D
 
 
 func _press_key(keycode: Key) -> void:

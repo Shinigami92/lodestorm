@@ -65,6 +65,18 @@ func test_windows_go_with_their_wall() -> void:
 	assert_true(front.visible)
 
 
+## What draws over everything (the navigator's name plates) only shows on the upper deck, not
+## through the roof.
+func test_overlays_only_show_on_their_deck() -> void:
+	var plates: Node3D = _room("Bridge").get_node("Navigator/View")
+	assert_true(plates.is_in_group(Ship.OVERLAY_GROUP))
+	assert_false(plates.visible, "lower deck")
+	await _move(_player, _room("MessHall").global_position)
+	assert_true(plates.visible, "upper deck")
+	await _move(_player, _outside())
+	assert_false(plates.visible, "outside")
+
+
 func test_every_room_is_aboard() -> void:
 	for room: Node3D in _rooms():
 		await _move(_player, _outside())

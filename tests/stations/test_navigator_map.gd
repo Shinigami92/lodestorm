@@ -1,7 +1,8 @@
 extends GutTest
 ## The navigator as a campaign map (see GAME_DESIGN.md, Mission selection): every body fits on the
 ## table, name plates with signature ores ("?" while out of reach), the ship's marker and routes,
-## region plates with danger pips and ores on globes colored by biome, and the tier on the card.
+## region plates with danger pips and ores on globes colored by biome, the tier on the card, and
+## setting a destination from the globe zooming into its landing site.
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 
@@ -117,6 +118,23 @@ func test_card_shows_the_tier() -> void:
 	await wait_process_frames(1)
 	assert_string_ends_with((card.get_node("%Subtitle") as Label).text, "Tier 1")
 	assert_true((card.get_node("%Danger") as Label).visible)
+
+
+## "Set as destination" on the globe chooses the region and zooms into its landing site.
+func test_setting_the_destination_zooms_into_the_landing_site() -> void:
+	var card := _navigator.card_menu as NavigatorCard
+	var torvane: CelestialBody = _body("Torvane")
+	_navigator.show_body(torvane)
+	var region: Region = torvane.regions[1]
+	_navigator.select(_navigator.get_part(region))
+	await wait_process_frames(1)
+	(card.get_node("%Choose") as Button).pressed.emit()
+	assert_eq(_mission.destination, _mission.offer_for(region))
+	assert_eq(_navigator.level, NavigatorStation.Level.REGION, "zooms in")
+	assert_eq(_mission.previewed, _mission.offer_for(region), "its landing site on the table")
+	await wait_seconds(1.0)
+	assert_eq(_navigator.zoom, 2.0, "smoothly")
+	assert_eq(_navigator.selected.item, region)
 
 
 func _body(body_name: String) -> CelestialBody:

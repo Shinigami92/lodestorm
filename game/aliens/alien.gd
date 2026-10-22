@@ -608,7 +608,7 @@ func _update_target() -> void:
 		if in_way:
 			target = in_way
 		return
-	if target is Player and is_instance_valid(target) and is_prey(get_tree(), target as Player):
+	if is_instance_valid(target) and target is Player and is_prey(get_tree(), target as Player):
 		if role == Role.HUNTER or _keeps_chasing(target):
 			return
 	target = null
@@ -661,7 +661,7 @@ func _player_in_reach() -> Player:
 ## Keeps the target miner while it works, otherwise picks the nearest working one. Returns
 ## whether there is one.
 func _update_miner_target() -> bool:
-	if target is Miner and is_instance_valid(target) and not (target as Miner).broken:
+	if is_instance_valid(target) and target is Miner and not (target as Miner).broken:
 		return true
 	target = null
 	var nearest_distance: float = INF

@@ -39,6 +39,7 @@ func _ready() -> void:
 	_bolt = MultiMeshInstance3D.new()
 	_bolt.multimesh = multimesh
 	_bolt.top_level = true
+	_bolt.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_bolt.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_bolt.visible = false
 	add_child(_bolt)

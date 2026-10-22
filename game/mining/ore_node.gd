@@ -97,14 +97,17 @@ func is_free() -> bool:
 	return not is_instance_valid(miner)
 
 
-## Places a new miner from `miner_scene` on this node and returns it, or null if occupied.
-## `upgrades` are those of the player placing it (null: MK1).
-func place_miner(miner_scene: PackedScene, upgrades: Upgrades = null) -> Miner:
+## Places a new miner from `miner_scene` on this node and returns it, or null if occupied. With
+## `fleet` it's the next miner of that fleet (see `Miner.take_from`), placed by `by`; without, a
+## loose MK1 miner.
+func place_miner(miner_scene: PackedScene, fleet: MinerFleet = null, by: Player = null) -> Miner:
 	if not is_free():
 		return null
 	miner = miner_scene.instantiate() as Miner
 	miner.ore_type = ore_type
-	miner.upgrades = upgrades
+	miner.ore_node = self
+	if fleet:
+		miner.take_from(fleet, by)
 	_mount.add_child(miner)
 	return miner
 

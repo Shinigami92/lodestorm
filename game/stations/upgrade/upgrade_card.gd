@@ -63,16 +63,17 @@ func show_part(part: StationPart) -> void:
 		)
 		return
 	var shown := part.item as Upgrade if part else null
-	if not shown or not upgrade_station or not upgrade_station.user:
+	var bought: Upgrades = upgrade_station.get_levels() if upgrade_station else null
+	if not shown or not bought:
 		show_upgrade(null)
 		return
 	var weapon: WeaponType = upgrade_station.get_weapon(shown)
-	var job: TimedJob = upgrade_station.user.upgrades.get_job(shown)
+	var job: TimedJob = bought.get_job(shown)
 	# The button keeps its state while a level runs: switching it off and on again every frame
 	# would drop a mouse click on it.
 	show_upgrade(
 		shown,
-		upgrade_station.user.upgrades.mk(shown),
+		bought.mk(shown),
 		hold,
 		upgrade_station.is_available(shown),
 		upgrade_station.is_locked(),
@@ -233,7 +234,8 @@ func press_primary() -> bool:
 	var upgrade_station := station as UpgradeStation
 	if not upgrade_station:
 		return false
-	if upgrade_station.user and upgrade_station.user.upgrades.is_running(upgrade):
+	var bought: Upgrades = upgrade_station.get_levels()
+	if bought and bought.is_running(upgrade):
 		return upgrade_station.stop(upgrade)
 	return upgrade_station.buy(upgrade)
 

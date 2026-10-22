@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="Upgrade" format=3 uid="uid://bqun2qfpjbaem"]
+
+[ext_resource type="Script" uid="uid://c8jhtshxvf4c1" path="res://game/progression/upgrades/upgrade_level.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://4n5uapxvab0b" path="res://game/progression/upgrades/upgrade.gd" id="2_upgrade"]
+
+[sub_resource type="Resource" id="Mk2"]
+script = ExtResource("1_level")
+multiplier = 1.25
+seconds = 60
+
+[sub_resource type="Resource" id="Mk3"]
+script = ExtResource("1_level")
+multiplier = 1.5
+seconds = 300
+
+[sub_resource type="Resource" id="Mk4"]
+script = ExtResource("1_level")
+multiplier = 1.75
+seconds = 900
+
+[sub_resource type="Resource" id="Mk5"]
+script = ExtResource("1_level")
+multiplier = 2.0
+seconds = 2400
+
+[sub_resource type="Resource" id="Mk6"]
+script = ExtResource("1_level")
+multiplier = 2.25
+seconds = 5400
+
+[sub_resource type="Resource" id="Mk7"]
+script = ExtResource("1_level")
+multiplier = 2.5
+seconds = 10800
+
+[sub_resource type="Resource" id="Mk8"]
+script = ExtResource("1_level")
+multiplier = 2.75
+seconds = 21600
+
+[resource]
+script = ExtResource("2_upgrade")
+display_name = "Plating"
+description = "Miners take more damage before they break down"
+levels = Array[ExtResource("1_level")]([SubResource("Mk2"), SubResource("Mk3"), SubResource("Mk4"), SubResource("Mk5"), SubResource("Mk6"), SubResource("Mk7"), SubResource("Mk8")])

@@ -1,9 +1,10 @@
 class_name ProgressClock
 extends Node
-## Lets every player's upgrade levels and skill ranks under way take effect once done (see
-## `Upgrades.update`, `Skills.update`), checked every second (`TICK`) on the wall clock while no
-## mission is underway, so one finishing during a run waits until everyone is back aboard. For a
-## local player a soft chime plays at the station selling what finished. The ship has one.
+## Lets every player's upgrade levels, skill ranks and miner builds under way take effect once done
+## (see `Upgrades.update`, `Skills.update`, `MinerFleet.update`), checked every second (`TICK`) on
+## the wall clock while no mission is underway, so one finishing during a run waits until everyone
+## is back aboard. For a local player a soft chime plays at the station selling what finished. The
+## ship has one.
 
 ## Seconds between checks.
 const TICK: float = 1.0
@@ -33,12 +34,14 @@ func tick(now: float) -> void:
 		var done: Array[Resource] = []
 		done.append_array(player.upgrades.update(now))
 		done.append_array(player.skills.update(now))
+		done.append_array(player.fleet.update(now))
 		if player.local:
 			for item: Resource in done:
 				chime(item)
 
 
-## Plays the chime at the station selling `item` (an upgrade or a skill), or plainly without one.
+## Plays the chime at the station selling `item` (an upgrade, a skill or a crafted miner), or
+## plainly without one.
 func chime(item: Resource) -> void:
 	for node: Node in get_tree().get_nodes_in_group(WorldMenu.GROUP):
 		var station := node as Station

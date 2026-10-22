@@ -576,11 +576,18 @@ func _finish_refining() -> void:
 		player.refining.finish_all(player.hold)
 
 
-## Lets every player's upgrade levels and skill ranks under way take effect right now.
+## Lets every player's upgrade levels, skill ranks and miner builds under way take effect right now.
 func _finish_jobs() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.upgrades.finish_all()
 		player.skills.finish_all()
+		player.fleet.finish_all()
+
+
+## Builds a miner in every empty cradle of every player, at MK1 and for free.
+func _build_miners() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		player.fleet.build_all()
 
 
 ## Deletes the save (the dev save in the editor) and reloads the map, without asking (only while
@@ -689,6 +696,7 @@ func _build() -> void:
 	_button(progress, "Unlock furnace", _unlock_furnace)
 	_button(progress, "Finish refining", _finish_refining)
 	_button(progress, "Finish jobs", _finish_jobs)
+	_button(progress, "Build miners", _build_miners)
 	_button(progress, "Install shield", install_shield)
 	_button(progress, "Open all", open_all_bodies)
 	_button(progress, "Reset save", reset_save)

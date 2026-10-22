@@ -55,6 +55,29 @@ func pay(cost: Dictionary[OreType, int]) -> bool:
 	return true
 
 
+## Whether it has `cost` in units per item (ores and alloys, e.g. a crafted miner's build).
+func can_pay_items(cost: Dictionary[ItemType, int]) -> bool:
+	for item: ItemType in cost:
+		if amount(item) < cost[item]:
+			return false
+	return true
+
+
+## Takes `cost` (units per item) out if it's there. Returns whether it paid.
+func pay_items(cost: Dictionary[ItemType, int]) -> bool:
+	if not can_pay_items(cost):
+		return false
+	for item: ItemType in cost:
+		_set_amount(item, amount(item) - cost[item])
+	return true
+
+
+## Puts `cost` (units per item) back in (a build stopped).
+func refund_items(cost: Dictionary[ItemType, int]) -> void:
+	for item: ItemType in cost:
+		add(item, cost[item])
+
+
 ## Marks `item` as found (its silo shows it from then on) without adding any.
 func mark_found(item: ItemType) -> void:
 	if found.has(item):

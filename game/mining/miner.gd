@@ -9,9 +9,13 @@ extends StaticBody3D
 ## repaired it completely. Players repair damaged miners that still work too.
 ## Its sounds: set down with a thud, the drill's loop while it mines, the hose's while ore flows,
 ## a chime when full, an alarm when it breaks down and the repair's loop while a player mends it.
-## The upgrades of the player who placed it (`upgrades`) raise its fill rate (`drill_upgrade`),
-## capacity (`tank_upgrade`), hose range and transfer rate (`hose_upgrade`); for now they apply to
-## every miner that player places.
+## A player's miners come from their `MinerFleet` (`take_from`): a crafted one brings its own
+## levels (`upgrades`), which raise its fill rate (`drill_upgrade`), capacity (`tank_upgrade`), hose
+## range and transfer rate (`hose_upgrade`) and health (`plating_upgrade`), and wears its number
+## plate with a strip in its owner's color; a standard-issue one is MK1 in everything, mines at
+## `settings.standard_fill_share` and has a plain grey plate. Any player can pick one up with
+## `interact` within `settings.repair_range` (`pick_up`): what's in its tank goes onto their back
+## and the miner back to its owner's fleet, to place again.
 ##
 ## The look lives in the `Model` child, so a modeled asset can replace the greybox. The model
 ## provides these parts by name: `Fill` (scaled along Y from 0 to 1 with the fill level; it and its
@@ -27,12 +31,17 @@ signal filled
 signal broke
 ## Emitted when a broken miner is repaired completely and mines again.
 signal repaired
+## Emitted when `by` picks it up (it leaves the world right after).
+signal picked_up(by: Player)
 
 const GROUP: StringName = &"miners"
 
 const COLOR_RUST := Color(0.45, 0.17, 0.06)
 const COLOR_FLASH := Color(1.0, 1.0, 1.0)
 const COLOR_ALARM := Color(1.0, 0.15, 0.1)
+## The plate of a standard-issue miner (the ship's: no number, no owner's color).
+const COLOR_STANDARD_PLATE := Color(0.42, 0.44, 0.46)
+const COLOR_HIGHLIGHT := Color(1.0, 0.75, 0.3)
 ## How much the rust covers the frame at zero health (0–1).
 const RUST_MAX: float = 0.75
 ## How much a hit flash or the alarm blink covers the frame (0–1).
@@ -56,16 +65,26 @@ const REPAIR_SOUND: Sound = preload("res://assets/audio/sfx/mining/repair.tres")
 @export var drill_upgrade: Upgrade
 @export var tank_upgrade: Upgrade
 @export var hose_upgrade: Upgrade
+@export var plating_upgrade: Upgrade
 
 ## Set by the ore node before the miner enters the tree.
 var ore_type: OreType
-## The upgrades of the player who placed it (set with `ore_type`), or null: MK1.
+## Its levels (a crafted miner's, see `take_from`), or null: MK1.
 var upgrades: Upgrades
+## The ore node it stands on (set with `ore_type`), or null.
+var ore_node: OreNode
+## The fleet it came from (null: placed loose, e.g. by a test), the crafted miner it is (null:
+## standard-issue or loose) and its owner.
+var fleet: MinerFleet
+var crafted: CraftedMiner
+var owned_by: Player
+## Whether it's a standard-issue miner (the ship's).
+var standard: bool = false
 ## Units currently held, between 0 and `capacity()`.
 var amount: float = 0.0
 ## The player the hose is connected to, or null.
 var hose_target: Player
-## Current health, from 0 to `settings.max_health`.
+## Current health, from 0 to `max_health()`.
 var health: float
 ## A broken miner doesn't mine and its hose doesn't connect until it's repaired completely.
 var broken: bool = false
@@ -85,11 +104,16 @@ var _repairing: AudioStreamPlayer3D
 @onready var _full_lamp: Node3D = _model.find_child("FullLamp", true, false)
 @onready var _hose_outlet: Node3D = _model.find_child("HoseOutlet", true, false)
 @onready var _hose: Hose = $Hose
+@onready var _plate: Node3D = _model.get_node_or_null(^"Plate") as Node3D
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	health = settings.max_health
+	health = max_health()
+	if crafted and crafted.health >= 0.0:
+		# Picked up earlier in this run: its damage comes along.
+		health = minf(crafted.health, health)
+		broken = health == 0.0
 	body_radius = (($CollisionShape3D as CollisionShape3D).shape as CylinderShape3D).radius
 	_face_camera()
 	if ore_type:
@@ -110,6 +134,9 @@ func _ready() -> void:
 		(frame as MeshInstance3D).material_overlay = silhouette
 	OccludedSilhouette.mark_visible(_model)
 	_hose.visible = false
+	_show_plate()
+	if fleet:
+		_add_pickup()
 	_update_gauge()
 	_update_frame()
 	Sfx.play_at(PLACE_SOUND, global_position)
@@ -126,7 +153,7 @@ func _physics_process(delta: float) -> void:
 
 	var mending: bool = false
 	if Player.nearest(get_tree(), global_position, settings.repair_range):
-		mending = health < settings.max_health
+		mending = health < max_health()
 		repair(settings.repair_rate * delta)
 
 	hose_target = (null if broken else Player.nearest(get_tree(), global_position, hose_range()))
@@ -155,10 +182,27 @@ func is_full() -> bool:
 	return amount >= capacity()
 
 
-## Units mined per second, with the drill upgrade (rarer ores mine slower, `OreType.mine_rate`).
+## Takes the next miner out of `from_fleet` (before it enters the tree): a crafted one with its
+## levels, or a standard-issue one. `by` is the player placing it, whose fleet it is.
+func take_from(from_fleet: MinerFleet, by: Player) -> void:
+	fleet = from_fleet
+	owned_by = by
+	crafted = fleet.take_next()
+	standard = crafted == null
+	upgrades = crafted.upgrades if crafted else null
+
+
+## Units mined per second, with the drill upgrade (rarer ores mine slower, `OreType.mine_rate`;
+## standard-issue miners at `settings.standard_fill_share`).
 func fill_rate() -> float:
 	var ore_rate: float = ore_type.mine_rate if ore_type else 1.0
-	return settings.fill_rate * ore_rate * _multiplier(drill_upgrade)
+	var share: float = settings.standard_fill_share if standard else 1.0
+	return settings.fill_rate * ore_rate * share * _multiplier(drill_upgrade)
+
+
+## Health when undamaged, with the plating upgrade.
+func max_health() -> float:
+	return settings.max_health * _multiplier(plating_upgrade)
 
 
 ## Units it holds when full, with the tank upgrade.
@@ -199,10 +243,29 @@ func take_damage(amount_lost: float) -> void:
 
 ## Restores `amount_repaired` health; a broken miner mines again once it's back to full health.
 func repair(amount_repaired: float) -> void:
-	health = minf(health + amount_repaired, settings.max_health)
-	if broken and health >= settings.max_health:
+	health = minf(health + amount_repaired, max_health())
+	if broken and health >= max_health():
 		broken = false
 		repaired.emit()
+
+
+## Picks it up for `by` (anyone, also a broken one): what's in its tank goes onto their back, the
+## miner back to its owner's fleet (a crafted one with its damage, until the run ends), and it
+## leaves the world. Nothing happens once the run it was placed in has ended (it's lost then).
+## Returns whether it was picked up.
+func pick_up(by: Player) -> bool:
+	if not fleet or is_queued_for_deletion() or (crafted and not crafted.out):
+		return false
+	if amount > 0.0:
+		by.add_cargo(ore_type, take(amount))
+	if crafted:
+		crafted.health = health
+	fleet.bring_back(crafted)
+	if ore_node and ore_node.miner == self:
+		ore_node.miner = null
+	picked_up.emit(by)
+	queue_free()
+	return true
 
 
 ## Whether any miner in `tree` is still mining (or full), i.e. not broken.
@@ -238,12 +301,49 @@ func _update_frame() -> void:
 	if signaling:
 		_frame_overlay.albedo_color = Color(signal_color, SIGNAL_COVER)
 	else:
-		var damage: float = 1.0 - health / settings.max_health
+		var damage: float = 1.0 - health / max_health()
 		_frame_overlay.albedo_color = Color(COLOR_RUST, damage * RUST_MAX)
 
 
 func _multiplier(upgrade: Upgrade) -> float:
 	return upgrades.multiplier(upgrade) if upgrades else 1.0
+
+
+## Shows the number plate: a crafted miner's number above a strip in its owner's color, a
+## standard-issue miner's plain grey plate; loose miners have none.
+func _show_plate() -> void:
+	if not _plate:
+		return
+	_plate.visible = fleet != null
+	var label := _plate.get_node(^"Number") as Label3D
+	label.text = crafted.plate() if crafted else ""
+	var strip := _plate.get_node(^"Strip") as MeshInstance3D
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.albedo_color = owned_by.color() if crafted and owned_by else COLOR_STANDARD_PLATE
+	strip.material_override = material
+
+
+## The `Interactable` that picks it up (any player within the repair range), with an amber ring.
+func _add_pickup() -> void:
+	var pickup := Interactable.new()
+	pickup.name = "Pickup"
+	pickup.interact_range = settings.repair_range
+	var ring := MeshInstance3D.new()
+	ring.name = "Highlight"
+	var torus := TorusMesh.new()
+	torus.inner_radius = body_radius + 0.05
+	torus.outer_radius = body_radius + 0.12
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.albedo_color = COLOR_HIGHLIGHT
+	torus.material = material
+	ring.mesh = torus
+	ring.position.y = 0.05
+	ring.visible = false
+	pickup.add_child(ring)
+	add_child(pickup)
+	pickup.used.connect(func(player: Player) -> void: pick_up(player))
 
 
 func _face_camera() -> void:

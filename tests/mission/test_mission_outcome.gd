@@ -195,6 +195,35 @@ func test_mission_won_when_the_living_are_aboard() -> void:
 	assert_true(_ship.is_aboard(other))
 
 
+func test_crafted_miners_left_on_the_planet_are_lost() -> void:
+	_player.fleet.build_all()
+	await _open()
+	await _move(_player, _outside())
+	var nodes: Array[Node] = get_tree().get_nodes_in_group(OreNode.GROUP)
+	var left := (nodes[0] as OreNode).place_miner(_player.miner_scene, _player.fleet, _player)
+	var taken := (nodes[1] as OreNode).place_miner(_player.miner_scene, _player.fleet, _player)
+	var left_number: int = left.crafted.number
+	var taken_number: int = taken.crafted.number
+	assert_true(taken.pick_up(_player))
+	var where: String = _mission.brief.place_name(_mission.settings.system)
+	await _move(_player, _inside())
+	assert_eq(_mission.state, Mission.State.RETURNED)
+	assert_true(_player.fleet.is_empty(left_number), "left behind")
+	assert_eq(_player.fleet.lost_at[left_number], where)
+	assert_not_null(_player.fleet.get_miner(taken_number), "picked up in time")
+
+
+func test_crafted_miners_are_lost_when_everyone_dies() -> void:
+	await _open()
+	await _move(_player, _outside())
+	var node := get_tree().get_nodes_in_group(OreNode.GROUP)[0] as OreNode
+	node.place_miner(_player.miner_scene, _player.fleet, _player)
+	_player.take_damage(_player.settings.max_health)
+	await wait_physics_frames(2)
+	assert_eq(_mission.state, Mission.State.LOST)
+	assert_true(_player.fleet.is_empty(1))
+
+
 ## Presses the ramp button and waits until the ramp is down.
 func _open() -> void:
 	_ship.ramp_button.use(_player)

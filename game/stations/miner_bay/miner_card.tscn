@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://bfynp4xhvfpo7"]
+
+[ext_resource type="PackedScene" uid="uid://ceg8u4hr0vdq4" path="res://game/stations/upgrade/upgrade_card.tscn" id="1_card"]
+[ext_resource type="Script" uid="uid://0rlji2q80qg7" path="res://game/stations/miner_bay/miner_card.gd" id="2_script"]
+
+[node name="MinerCard" instance=ExtResource("1_card")]
+script = ExtResource("2_script")

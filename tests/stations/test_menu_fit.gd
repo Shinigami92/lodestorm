@@ -24,7 +24,7 @@ const MIN_TEXT_HEIGHT: float = 0.02
 const STATIONS: PackedStringArray = [
 	"Rooms/Lower/Weapons/UpgradeStation",
 	"Rooms/Lower/Armor/UpgradeStation",
-	"Rooms/Lower/Miners/UpgradeStation",
+	"Rooms/Lower/Miners/MinerBay",
 	"Rooms/Lower/Skills/SkillGraph",
 	"Rooms/Lower/Armory/Locker1",
 	"Rooms/Upper/Bridge/Navigator",
@@ -145,6 +145,43 @@ func test_every_heat_shield_card_fits_in_every_language() -> void:
 				await wait_process_frames(1)
 				_assert_fits(card, layout, label + " project")
 				shield.project = false
+
+
+func test_miner_bay_cards_fit_in_every_language() -> void:
+	var bay := _ship.get_node("Rooms/Lower/Miners/MinerBay") as MinerBayStation
+	var card := bay.card_menu as MinerCard
+	var layout := Vector2(bay.card.size * bay.card.pixels_per_meter)
+	var hold: Dictionary[ItemType, float] = {}
+	for item: ItemType in bay.settings.build_cost:
+		hold[item] = 99999.0
+	var miner := CraftedMiner.new(6)
+	miner.upgrades.start(CraftedMiner.PARTS[0], 0.0)
+	var building := CraftedMiner.new(6, TimedJob.new(1, 0.0, 21600.0))
+	# The longest place a miner can be lost at.
+	var longest: String = ""
+	for body: CelestialBody in (_map.get_node("Mission") as Mission).settings.system.bodies:
+		for region: Region in body.regions:
+			var place: String = "%s, %s" % [body.display_name, region.display_name]
+			if place.length() > longest.length():
+				longest = place
+	for locale: String in SettingsList.languages():
+		TranslationServer.set_locale(locale)
+		for along: bool in [true, false]:
+			miner.going_along = along
+			for locked: bool in [true, false]:
+				card.show_miner(miner, 3, 6, locked, 1.0, true)
+				await wait_process_frames(1)
+				_assert_fits(card, layout, "%s miner along %s locked %s" % [locale, along, locked])
+		card.show_cradle(6, bay.settings.build_cost, {}, 21600.0, longest, false, false)
+		await wait_process_frames(1)
+		_assert_fits(card, layout, "%s lost cradle" % locale)
+		card.show_cradle(6, bay.settings.build_cost, hold, 21600.0, longest, true, true)
+		await wait_process_frames(1)
+		_assert_fits(card, layout, "%s cradle locked" % locale)
+		for armed: bool in [true, false]:
+			card.show_building(building, 1.0, true, armed, false)
+			await wait_process_frames(1)
+			_assert_fits(card, layout, "%s building armed %s" % [locale, armed])
 
 
 func test_every_skill_card_fits_in_every_language() -> void:

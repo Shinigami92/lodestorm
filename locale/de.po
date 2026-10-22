@@ -447,6 +447,14 @@ msgstr "Schlauch"
 msgid "Longer hose reach, faster transfer"
 msgstr "Längerer Schlauch, schnellere Übertragung"
 
+#: game/progression/upgrades/miner_plating.tres
+msgid "Plating"
+msgstr "Panzerung"
+
+#: game/progression/upgrades/miner_plating.tres
+msgid "Miners take more damage before they break down"
+msgstr "Miner halten mehr aus, bevor sie ausfallen"
+
 #: game/progression/upgrades/miner_tank.tres
 msgid "Ore tank"
 msgstr "Erztank"
@@ -694,6 +702,7 @@ msgstr "Im Flug: Ausrüsten und zur Rampe gehen."
 #: game/stations/flight/flight_card.gd
 #: game/stations/heat_shield/heat_shield_card.gd
 #: game/stations/loadout/loadout_card.gd
+#: game/stations/miner_bay/miner_card.gd
 #: game/stations/navigator/navigator_card.gd
 #: game/stations/refinery/furnace_card.gd
 #: game/stations/skill_graph/skill_card.gd
@@ -828,6 +837,90 @@ msgstr "Platz %d"
 msgid "Loadout"
 msgstr "Ausrüstung"
 
+#: game/stations/miner_bay/miner_card.gd
+msgid "Lost only if it's left on the planet."
+msgstr "Geht nur verloren, wenn er auf dem Planeten bleibt."
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "Goes along next run"
+msgstr "Kommt nächstes Mal mit"
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "Stays aboard next run"
+msgstr "Bleibt nächstes Mal an Bord"
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "Standard-issue miners: %d"
+msgstr "Standard-Miner: %d"
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "A level under way is lost with it."
+msgstr "Eine laufende Stufe geht mit ihm verloren."
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "Leave aboard"
+msgstr "An Bord lassen"
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "Take along"
+msgstr "Mitnehmen"
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "Lost on %s."
+msgstr "Verloren auf %s."
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "An empty cradle."
+msgstr "Eine leere Halterung."
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "Build a miner"
+msgstr "Miner bauen"
+
+#: game/stations/miner_bay/miner_card.gd
+#: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Takes %s"
+msgstr "Dauer: %s"
+
+#: game/stations/miner_bay/miner_card.gd
+#: game/stations/miner_bay/miner_cradle.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Build"
+msgstr "Bauen"
+
+#: game/stations/miner_bay/miner_card.gd
+msgid "Being built."
+msgstr "Wird gebaut."
+
+#: game/stations/miner_bay/miner_card.gd
+#: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Time left: %s"
+msgstr "Restzeit: %s"
+
+#: game/stations/miner_bay/miner_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Stop? The whole cost goes back to the hold."
+msgstr "Anhalten? Die vollen Kosten gehen zurück ins Lager."
+
+#: game/stations/miner_bay/miner_card.gd
+#: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Stop for sure"
+msgstr "Wirklich anhalten"
+
+#: game/stations/miner_bay/miner_card.gd
+#: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Stop"
+msgstr "Anhalten"
+
 #: game/stations/navigator/navigator_card.gd
 msgid "Star"
 msgstr "Stern"
@@ -877,26 +970,8 @@ msgid "Bar in the furnace: %d %%"
 msgstr "Barren im Ofen: %d %%"
 
 #: game/stations/refinery/furnace_card.gd
-#: game/stations/skill_graph/skill_card.gd
-#: game/stations/upgrade/upgrade_card.gd
-msgid "Time left: %s"
-msgstr "Restzeit: %s"
-
-#: game/stations/refinery/furnace_card.gd
 msgid "Stop? The bars done stay, the ore of the others goes back to the hold."
 msgstr "Anhalten? Die fertigen Barren bleiben, das Erz der übrigen geht zurück ins Lager."
-
-#: game/stations/refinery/furnace_card.gd
-#: game/stations/skill_graph/skill_card.gd
-#: game/stations/upgrade/upgrade_card.gd
-msgid "Stop for sure"
-msgstr "Wirklich anhalten"
-
-#: game/stations/refinery/furnace_card.gd
-#: game/stations/skill_graph/skill_card.gd
-#: game/stations/upgrade/upgrade_card.gd
-msgid "Stop"
-msgstr "Anhalten"
 
 #: game/stations/refinery/furnace_card.gd
 msgid "%s (tier %d)"
@@ -905,12 +980,6 @@ msgstr "%s (Stufe %d)"
 #: game/stations/refinery/furnace_card.gd
 msgid "Unknown alloy (tier %d)"
 msgstr "Unbekannte Legierung (Stufe %d)"
-
-#: game/stations/refinery/furnace_card.gd
-#: game/stations/skill_graph/skill_card.gd
-#: game/stations/upgrade/upgrade_card.gd
-msgid "Takes %s"
-msgstr "Dauer: %s"
 
 #: game/stations/refinery/furnace_card.gd
 msgid "Its recipe shows once all its ores were in the hold."
@@ -978,11 +1047,6 @@ msgstr "Rang %d läuft"
 msgid "Learning"
 msgstr "Wird gelernt"
 
-#: game/stations/skill_graph/skill_card.gd
-#: game/stations/upgrade/upgrade_card.gd
-msgid "Stop? The whole cost goes back to the hold."
-msgstr "Anhalten? Die vollen Kosten gehen zurück ins Lager."
-
 #: game/stations/upgrade/upgrade_card.gd
 msgid "next: +%d %%"
 msgstr "nächste: +%d %%"
@@ -1010,10 +1074,6 @@ msgstr "Bauplan"
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Building it needs its blueprint."
 msgstr "Zum Bauen fehlt noch der Bauplan."
-
-#: game/stations/upgrade/upgrade_card.gd
-msgid "Build"
-msgstr "Bauen"
 
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Lay on the bench"

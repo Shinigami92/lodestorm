@@ -3,7 +3,7 @@ extends Node
 ## Keeps the progress between sessions in one save: the host's (the ship's heat shield, where it
 ## is, the story's flags and the furnaces unlocked, later crew and quests) in `ship.json` and the
 ## local player's (their hold, their batches in the furnaces, owned weapons and blueprints, loadout,
-## upgrade levels, skill ranks) in `player.json`,
+## upgrade levels, skill ranks, crafted miners) in `player.json`,
 ## both in `save/` under `directory`. It loads
 ## them when the map starts and saves whenever progress changes while no mission is underway;
 ## what changes during a mission is saved once it's over (returned or lost), so quitting
@@ -13,11 +13,12 @@ extends Node
 ## and renamed; saves of version 1 named them by path, which `MOVED` follows. Unknown entries are
 ## skipped, and a save without a known weapon keeps the default arsenal and loadout; a file that
 ## can't be read is kept as `<name>.corrupt` and the game starts from the defaults. Up to version 2
-## the hold was the ship's: it moves from `ship.json` into `player.json`.
+## the hold was the ship's: it moves from `ship.json` into `player.json`. Up to version 3 the miner
+## upgrades were the player's: their levels (and a level under way) move onto the crafted M-01.
 
 const GROUP: StringName = &"save_games"
 ## The save format; raise it (and convert older saves in `_read`) when the format changes.
-const VERSION: int = 3
+const VERSION: int = 4
 const SHIP_FILE: String = "ship.json"
 const PLAYER_FILE: String = "player.json"
 ## Where resources named by path in version 1 saves went: a file, or a folder (ending in "/") and
@@ -104,6 +105,7 @@ func _ready() -> void:
 		player.loadout.changed.connect(_on_progress_changed)
 		player.upgrades.changed.connect(_on_progress_changed)
 		player.skills.changed.connect(_on_progress_changed)
+		player.fleet.changed.connect(_on_progress_changed)
 	if mission:
 		mission.selected.connect(_on_progress_changed.unbind(1))
 		mission.returned.connect(save_progress)
@@ -184,7 +186,8 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 ## What's saved of `of_player`: its hold (units per item, the items ever in it), its batches in
 ## the furnaces (per batch its furnace slot, the alloy, the bars, how many are done and when it
 ## started in Unix seconds), the weapons it owns and its blueprints, its loadout (null: empty
-## slot), the MK level of each upgrade it bought and the rank of each skill it learned.
+## slot), the MK level of each upgrade it bought and the rank of each skill it learned, the levels
+## and ranks under way, and its crafted miners (see `_fleet_data`).
 static func player_data(of_player: Player) -> Dictionary:
 	var hold: Dictionary = {}
 	for item: ItemType in of_player.hold.items:
@@ -245,7 +248,40 @@ static func player_data(of_player: Player) -> Dictionary:
 		"skills": ranks,
 		"upgrade_jobs": upgrade_jobs,
 		"skill_jobs": skill_jobs,
+		"miners": _fleet_data(of_player.fleet),
+		"lost_miners": _lost_data(of_player.fleet),
 	}
+
+
+## The crafted miners of `fleet` as saved: per miner its number, whether it goes along, its parts'
+## levels, the levels under way and, while it's built, its build.
+static func _fleet_data(fleet: MinerFleet) -> Array:
+	var miners: Array = []
+	for number: int in range(1, MinerFleet.SLOTS + 1):
+		var miner: CraftedMiner = fleet.get_miner(number)
+		if not miner:
+			continue
+		var levels: Dictionary = {}
+		for upgrade: Upgrade in miner.upgrades.levels:
+			levels[_reference(upgrade)] = miner.upgrades.levels[upgrade]
+		var jobs: Dictionary = {}
+		for upgrade: Upgrade in miner.upgrades.jobs:
+			jobs[_reference(upgrade)] = _job_data(miner.upgrades.jobs[upgrade])
+		var entry: Dictionary = {
+			"number": number, "along": miner.going_along, "upgrades": levels, "upgrade_jobs": jobs
+		}
+		if miner.build:
+			entry["build"] = _job_data(miner.build)
+		miners.append(entry)
+	return miners
+
+
+## Where `fleet`'s lost miners were left, by their number (as a string, like every JSON key).
+static func _lost_data(fleet: MinerFleet) -> Dictionary:
+	var lost: Dictionary = {}
+	for number: int in fleet.lost_at:
+		lost[str(number)] = fleet.lost_at[number]
+	return lost
 
 
 ## A level or rank under way as saved: the level it reaches, its start and its time.
@@ -403,6 +439,93 @@ func _apply_player(data: Dictionary) -> void:
 				push_warning("Save: skipped skill %s" % path)
 		player.skills.emit_changed()
 	_apply_jobs(data)
+	if data.get("miners") is Array:
+		_apply_fleet(data)
+	elif not data.is_empty() and _number(data.get("version"), 0.0) < 4.0:
+		_move_miner_levels()
+
+
+## Reads a player's crafted miners and where the lost ones were left, and lets the builds and
+## levels done since take effect.
+func _apply_fleet(data: Dictionary) -> void:
+	var fleet: MinerFleet = player.fleet
+	fleet.clear()
+	for entry: Variant in data["miners"] as Array:
+		var miner: CraftedMiner = _crafted(entry)
+		if miner and fleet.is_empty(miner.number):
+			fleet.put(miner)
+		else:
+			_outdated = true
+			push_warning("Save: skipped miner %s" % entry)
+	if data.get("lost_miners") is Dictionary:
+		var lost: Dictionary = data["lost_miners"]
+		for key: Variant in lost:
+			var number: int = (key as String).to_int() if key is String else 0
+			if fleet.is_empty(number) and lost[key] is String:
+				fleet.lost_at[number] = lost[key]
+			else:
+				_outdated = true
+				push_warning("Save: skipped lost miner %s" % key)
+	fleet.update(Time.get_unix_time_from_system())
+
+
+## A crafted miner from `data` (see `_fleet_data`), or null when it doesn't read. Unknown parts and
+## levels under way that don't fit are skipped.
+func _crafted(data: Variant) -> CraftedMiner:
+	if not data is Dictionary:
+		return null
+	var saved: Dictionary = data
+	var number: int = roundi(_number(saved.get("number"), 0.0))
+	if number < 1 or number > MinerFleet.SLOTS:
+		return null
+	var build: TimedJob = null
+	if saved.has("build"):
+		build = _job(saved["build"])
+		if not build:
+			return null
+	var miner := CraftedMiner.new(number, build)
+	if saved.get("along") is bool:
+		miner.going_along = saved["along"]
+	var levels: Dictionary = {}
+	if saved.get("upgrades") is Dictionary:
+		levels = saved["upgrades"]
+	for path: Variant in levels:
+		var upgrade := _resource(path) as Upgrade
+		var mk: float = _number(levels[path], 0.0)
+		if upgrade in CraftedMiner.PARTS and mk >= 1.0:
+			miner.upgrades.levels[upgrade] = clampi(roundi(mk), 1, upgrade.max_mk())
+		else:
+			_outdated = true
+			push_warning("Save: skipped miner upgrade %s" % path)
+	var jobs: Dictionary = {}
+	if saved.get("upgrade_jobs") is Dictionary:
+		jobs = saved["upgrade_jobs"]
+	for path: Variant in jobs:
+		var upgrade := _resource(path) as Upgrade
+		var job: TimedJob = _job(jobs[path])
+		if upgrade not in CraftedMiner.PARTS or not job or not miner.upgrades.restore(upgrade, job):
+			_outdated = true
+			push_warning("Save: skipped miner upgrade job %s" % path)
+	return miner
+
+
+## Before version 4 the miner upgrades were the player's: their levels and the ones under way move
+## onto the crafted M-01 every player starts with.
+func _move_miner_levels() -> void:
+	_outdated = true
+	var first: CraftedMiner = player.fleet.get_miner(1)
+	if not first:
+		return
+	for upgrade: Upgrade in CraftedMiner.PARTS:
+		if player.upgrades.levels.has(upgrade):
+			first.upgrades.levels[upgrade] = player.upgrades.levels[upgrade]
+			player.upgrades.levels.erase(upgrade)
+		var job: TimedJob = player.upgrades.get_job(upgrade)
+		if job:
+			player.upgrades.jobs.erase(upgrade)
+			first.upgrades.restore(upgrade, job)
+	player.upgrades.emit_changed()
+	first.upgrades.emit_changed()
 
 
 ## Reads a player's levels and ranks under way and lets those done since take effect.

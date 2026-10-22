@@ -32,6 +32,15 @@ static func for_region(
 	return brief
 
 
+## Where it goes, e.g. "Torvane, Redscar Flats": the body (found in `system`) and the region;
+## empty without a region.
+func place_name(system: StarSystem) -> String:
+	if not region:
+		return ""
+	var body: CelestialBody = system.body_of(region) if system else null
+	return "%s, %s" % [body.display_name, region.display_name] if body else region.display_name
+
+
 ## A short name for the location: the region (or else the biome) and a sector code from the seed
 ## (e.g. "Redscar Flats K-417"), so visits read apart.
 func location_name() -> String:

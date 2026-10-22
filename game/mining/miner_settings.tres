@@ -1,6 +1,15 @@
 [gd_resource type="Resource" script_class="MinerSettings" format=3 uid="uid://dlestnicix4cf"]
 
 [ext_resource type="Script" uid="uid://bihhb212uhl2q" path="res://game/mining/miner_settings.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="2_item"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="3_kyrite"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="4_vyrel"]
+[ext_resource type="Resource" uid="uid://bfxngh48jlfwu" path="res://game/refinery/alloys/alloy_cobrel.tres" id="5_cobrel"]
 
 [resource]
 script = ExtResource("1_script")
+build_cost = Dictionary[ExtResource("2_item"), int]({
+ExtResource("3_kyrite"): 300,
+ExtResource("4_vyrel"): 120,
+ExtResource("5_cobrel"): 20
+})

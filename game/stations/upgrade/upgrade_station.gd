@@ -2,8 +2,9 @@ class_name UpgradeStation
 extends Station
 ## An upgrade station (see GAME_DESIGN.md, Upgrade stations): a station whose parts are upgrades
 ## (each `StationPart.item` an `Upgrade`), e.g. the fitting frame (the suit) or the miners'
-## maintenance pad (drill, ore tank, hose reel). Its card (`UpgradeCard`) shows the selected
-## upgrade and buys its next level for the player using the station, with ore from their own hold;
+## maintenance pad (drill, ore tank, hose reel, plating). Its card (`UpgradeCard`) shows the
+## selected upgrade and buys its next level into `get_levels` (the player using the station's, or
+## the miner on the pad's), with ore from the player's own hold;
 ## the level then runs on the wall clock (see `Upgrades.start`) and can be stopped for the whole
 ## cost back (pressed twice). Upgrades of weapons the player doesn't own yet are locked, levels
 ## above the ship's reach wait for the next heat shield plate (`upgrade_cap`), and nothing can be
@@ -47,6 +48,12 @@ func get_part(upgrade: Upgrade) -> StationPart:
 	return null
 
 
+## The levels it buys into: those of the player using it (null without one); the miners' bay
+## buys into the miner on its pad.
+func get_levels() -> Upgrades:
+	return user.upgrades if user else null
+
+
 ## The weapon `upgrade` belongs to, or null (not a weapon's).
 func get_weapon(_upgrade: Upgrade) -> WeaponType:
 	return null
@@ -73,12 +80,15 @@ func upgrade_cap() -> int:
 func can_buy(upgrade: Upgrade) -> bool:
 	if is_locked() or not user or not ship or not upgrade or not is_available(upgrade):
 		return false
-	var mk: int = user.upgrades.mk(upgrade)
+	var bought: Upgrades = get_levels()
+	if not bought:
+		return false
+	var mk: int = bought.mk(upgrade)
 	return (
-		user.upgrades.next_level(upgrade) != null
-		and not user.upgrades.is_running(upgrade)
+		bought.next_level(upgrade) != null
+		and not bought.is_running(upgrade)
 		and mk < upgrade_cap()
-		and user.hold.can_pay(user.upgrades.next_cost(upgrade))
+		and user.hold.can_pay(bought.next_cost(upgrade))
 	)
 
 
@@ -87,9 +97,10 @@ func can_buy(upgrade: Upgrade) -> bool:
 func buy(upgrade: Upgrade) -> bool:
 	if not can_buy(upgrade):
 		return false
-	if not user.hold.pay(user.upgrades.next_cost(upgrade)):
+	var bought: Upgrades = get_levels()
+	if not user.hold.pay(bought.next_cost(upgrade)):
 		return false
-	user.upgrades.start(upgrade, Time.get_unix_time_from_system())
+	bought.start(upgrade, Time.get_unix_time_from_system())
 	_bought(upgrade)
 	refresh()
 	return true
@@ -97,7 +108,8 @@ func buy(upgrade: Upgrade) -> bool:
 
 ## Whether the user's level of `upgrade` under way can be stopped now.
 func can_stop(upgrade: Upgrade) -> bool:
-	return not is_locked() and user != null and user.upgrades.is_running(upgrade)
+	var bought: Upgrades = get_levels()
+	return not is_locked() and bought != null and bought.is_running(upgrade)
 
 
 ## Stops the user's level of `upgrade` under way on the second press (`stop_press`), its whole cost
@@ -108,7 +120,7 @@ func stop(upgrade: Upgrade) -> bool:
 	if not stop_press.press(upgrade):
 		refresh()
 		return false
-	var refund: Dictionary[OreType, int] = user.upgrades.stop(upgrade)
+	var refund: Dictionary[OreType, int] = get_levels().stop(upgrade)
 	for ore_type: OreType in refund:
 		user.hold.add(ore_type, refund[ore_type])
 	_bought(upgrade)

@@ -1,14 +1,16 @@
-[gd_scene format=3 uid="uid://cjwiod2jjr10b"]
+[gd_scene format=3 uid="uid://cw2ljuck8dwf2"]
 
-[ext_resource type="Script" uid="uid://j44xepbs4uh" path="res://game/stations/upgrade/upgrade_station.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dgvh8kx5ru2tt" path="res://game/stations/miner_bay/miner_bay_station.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="2_panel"]
-[ext_resource type="PackedScene" uid="uid://ceg8u4hr0vdq4" path="res://game/stations/upgrade/upgrade_card.tscn" id="3_card"]
+[ext_resource type="PackedScene" uid="uid://bfynp4xhvfpo7" path="res://game/stations/miner_bay/miner_card.tscn" id="3_card"]
 [ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="4_use"]
 [ext_resource type="Script" uid="uid://caav7amchkty" path="res://game/stations/station_part.gd" id="5_part"]
 [ext_resource type="PackedScene" uid="uid://csdfxtj8st356" path="res://assets/miners/miner_glow.glb" id="6_model"]
 [ext_resource type="Resource" uid="uid://dd0617pvpw6aq" path="res://game/progression/upgrades/miner_drill.tres" id="7_drill"]
 [ext_resource type="Resource" uid="uid://6maon20x0hc5" path="res://game/progression/upgrades/miner_tank.tres" id="8_tank"]
 [ext_resource type="Resource" uid="uid://b1limju0chui" path="res://game/progression/upgrades/miner_hose.tres" id="9_hose"]
+[ext_resource type="Resource" uid="uid://bqun2qfpjbaem" path="res://game/progression/upgrades/miner_plating.tres" id="10_plating"]
+[ext_resource type="Resource" uid="uid://dlestnicix4cf" path="res://game/mining/miner_settings.tres" id="11_settings"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.17, 0.175, 0.185, 1)
@@ -47,10 +49,12 @@ material = SubResource("StandardMaterial3D_highlight")
 inner_radius = 1.5
 outer_radius = 1.56
 
-[node name="MinerStation" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+[node name="MinerBay" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
 script = ExtResource("1_script")
+settings = ExtResource("11_settings")
+model_scene = ExtResource("6_model")
 user_spot = NodePath("UserSpot")
-view_height = 3.6
+view_height = 6.6
 view_focus = NodePath("Focus")
 
 [node name="Pad" type="StaticBody3D" parent="."]
@@ -84,7 +88,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0)
 script = ExtResource("5_part")
 item = ExtResource("7_drill")
 pick_radius = 0.3
-card_offset = Vector2(1.6, 0.3)
+card_offset = Vector2(2.25, 0.3)
 outline = NodePath("../Model/Miner/Drill")
 
 [node name="Tank" type="Node3D" parent="." node_paths=PackedStringArray("outline")]
@@ -92,7 +96,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 0)
 script = ExtResource("5_part")
 item = ExtResource("8_tank")
 pick_radius = 0.4
-card_offset = Vector2(1.6, 0)
+card_offset = Vector2(2.25, 0)
 outline = NodePath("../Model/Miner/Glass")
 
 [node name="Hose" type="Node3D" parent="." node_paths=PackedStringArray("outline")]
@@ -100,15 +104,41 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.34, 0.42)
 script = ExtResource("5_part")
 item = ExtResource("9_hose")
 pick_radius = 0.3
-card_offset = Vector2(1.6, -0.2)
+card_offset = Vector2(2.25, -0.2)
 outline = NodePath("../Model/Miner/Cable")
+
+[node name="Plating" type="Node3D" parent="." node_paths=PackedStringArray("outline")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85, 1.35, 0)
+script = ExtResource("5_part")
+item = ExtResource("10_plating")
+pick_radius = 0.3
+card_offset = Vector2(1.7, 0.1)
+outline = NodePath("../Model/Miner/Frame_Boxes")
+
+[node name="Miner" type="Node3D" parent="." node_paths=PackedStringArray("outline")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 1.75)
+script = ExtResource("5_part")
+pick_radius = 0.35
+card_offset = Vector2(2.4, 1.7)
+outline = NodePath("../PadPlate")
+
+[node name="PadPlate" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.015, 1.75)
+auto_translate_mode = 2
+pixel_size = 0.004
+modulate = Color(0.95, 0.95, 0.9, 1)
+font_size = 64
+outline_size = 16
+
+[node name="Cradles" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.4)
 
 [node name="UserSpot" type="Marker3D" parent="."]
 rotation = Vector3(0, -1.5708, 0)
 position = Vector3(-2, 0, 0.4)
 
 [node name="Focus" type="Marker3D" parent="."]
-position = Vector3(0.4, 1.4, 0)
+position = Vector3(0.6, 1, -1.1)
 
 [node name="Use" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.8)
@@ -121,7 +151,7 @@ visible = false
 mesh = SubResource("TorusMesh_highlight")
 
 [node name="Card" parent="." instance=ExtResource("2_panel")]
-size = Vector2(1.25, 1.45)
-pixels_per_meter = 400.0
+size = Vector2(2.275, 3.0)
+pixels_per_meter = 220.0
 transparent = true
 menu = ExtResource("3_card")

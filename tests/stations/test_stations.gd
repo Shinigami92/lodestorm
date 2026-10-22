@@ -8,6 +8,7 @@ const KITH: WeaponType = preload("res://game/weapons/types/kith/kith.tres")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 const TANK: Upgrade = preload("res://game/progression/upgrades/miner_tank.tres")
 const HOSE: Upgrade = preload("res://game/progression/upgrades/miner_hose.tres")
+const PLATING: Upgrade = preload("res://game/progression/upgrades/miner_plating.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
 
@@ -31,10 +32,11 @@ func test_using_a_station_frames_it_and_selects_its_first_part() -> void:
 	assert_false(station.use_point.enabled, "nobody else can use it meanwhile")
 	assert_almost_eq(_player.global_position.x, station.user_spot.global_position.x, 0.05)
 	assert_almost_eq(_player.global_position.z, station.user_spot.global_position.z, 0.05)
-	assert_eq(station.selected.item, DRILL)
+	var bay := station as MinerBayStation
+	assert_eq(station.selected, bay.get_miner_part(), "the miner on the pad")
 	assert_eq(station.selected.highlight, StationPart.Highlight.SELECTED)
 	assert_true(station.card.visible)
-	assert_eq((station.card_menu as UpgradeCard).upgrade, DRILL)
+	assert_eq((station.card_menu as MinerCard).miner, _player.fleet.get_miner(1))
 
 
 func test_player_stands_still_while_using_a_station() -> void:
@@ -49,12 +51,19 @@ func test_player_stands_still_while_using_a_station() -> void:
 
 func test_directions_move_the_highlight_between_parts() -> void:
 	var station: UpgradeStation = await _use("Miners")
+	# Directions go by the parts' places on the screen, once the camera framed the bay.
+	await wait_seconds(0.5)
+	station.select(station.get_part(DRILL))
 	_send(&"move_forward")
 	assert_eq(station.selected.item, TANK, "up the miner")
+	_send(&"move_right")
+	assert_eq(station.selected.item, PLATING, "its side boxes")
+	station.select(station.get_part(TANK))
 	_send(&"move_forward")
 	assert_eq(station.selected.item, HOSE)
 	_send(&"move_forward")
-	assert_eq(station.selected.item, HOSE, "nothing further up")
+	assert_true(station.selected is MinerCradle, "further up: the cradles")
+	station.select(station.get_part(HOSE))
 	_send(&"move_back")
 	_send(&"move_back")
 	assert_eq(station.selected.item, DRILL)
@@ -66,12 +75,14 @@ func test_interact_buys_the_selected_upgrade() -> void:
 	var station: UpgradeStation = await _use("Miners")
 	_player.hold.add(KYRITE, 1000.0)
 	_player.hold.add(VYREL, 1000.0)
-	_send(&"move_forward")
+	station.select(station.get_part(TANK))
 	_send(&"interact")
-	assert_true(_player.upgrades.is_running(TANK))
-	_player.upgrades.finish_all()
-	assert_eq(_player.upgrades.mk(TANK), 2)
-	assert_eq(_player.upgrades.mk(DRILL), 1)
+	var levels: Upgrades = _miner_levels()
+	assert_true(levels.is_running(TANK), "into the miner on the pad")
+	levels.finish_all()
+	assert_eq(levels.mk(TANK), 2)
+	assert_eq(levels.mk(DRILL), 1)
+	assert_eq(_player.upgrades.mk(TANK), 1, "not the player's own")
 	assert_eq(station.user, _player, "buying doesn't close it")
 
 
@@ -110,9 +121,9 @@ func test_mouse_picks_parts_and_uses_the_card() -> void:
 	await wait_seconds(0.5)
 	var button: Button = (station.card_menu as UpgradeCard).get_buy_button()
 	_click(_on_card(station, button.get_global_rect().get_center()))
-	assert_true(_player.upgrades.is_running(TANK), "the card's button")
-	_player.upgrades.finish_all()
-	assert_eq(_player.upgrades.mk(TANK), 2)
+	assert_true(_miner_levels().is_running(TANK), "the card's button")
+	_miner_levels().finish_all()
+	assert_eq(_miner_levels().mk(TANK), 2)
 
 
 ## A real click spans frames, and the card refreshes every frame meanwhile.
@@ -120,15 +131,16 @@ func test_mouse_stops_a_level_under_way() -> void:
 	var station: UpgradeStation = await _use("Miners")
 	_player.hold.add(KYRITE, 1000.0)
 	_player.hold.add(VYREL, 1000.0)
+	station.select(station.get_part(DRILL))
 	await wait_seconds(0.5)
 	var card := station.card_menu as UpgradeCard
 	var button: Button = card.get_buy_button()
 	await _slow_click(_on_card(station, button.get_global_rect().get_center()))
-	assert_true(_player.upgrades.is_running(DRILL))
+	assert_true(_miner_levels().is_running(DRILL))
 	for press: int in 2:
 		await wait_process_frames(2)
 		await _slow_click(_on_card(station, button.get_global_rect().get_center()))
-	assert_false(_player.upgrades.is_running(DRILL), "pressed twice")
+	assert_false(_miner_levels().is_running(DRILL), "pressed twice")
 	assert_eq(_player.hold.amount(KYRITE), 1000.0, "the whole cost back")
 
 
@@ -169,7 +181,8 @@ func test_mouse_picks_a_weapon_from_the_rack() -> void:
 
 
 func _use(room: String) -> UpgradeStation:
-	var station := _ship.get_node("Rooms/Lower/%s/UpgradeStation" % room) as UpgradeStation
+	var station_name: String = "MinerBay" if room == "Miners" else "UpgradeStation"
+	var station := _ship.get_node("Rooms/Lower/%s/%s" % [room, station_name]) as UpgradeStation
 	var use: Interactable = station.use_point
 	_player.global_position = use.global_position + use.global_basis.z * 0.3
 	_player.reset_physics_interpolation()
@@ -177,6 +190,11 @@ func _use(room: String) -> UpgradeStation:
 	assert_eq(_player.interact(), use, room)
 	await wait_process_frames(1)
 	return station
+
+
+## The levels of M-01, the miner on the pad.
+func _miner_levels() -> Upgrades:
+	return _player.fleet.get_miner(1).upgrades
 
 
 func _rack_part(station: WeaponStation, weapon_type: WeaponType) -> StationPart:

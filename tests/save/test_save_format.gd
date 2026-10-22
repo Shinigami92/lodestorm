@@ -227,6 +227,85 @@ func test_version_2_hold_moves_to_the_player() -> void:
 	assert_eq(_player.hold.amount(KYRITE), 40.0, "not doubled on the next load")
 
 
+## Up to version 3 the miner upgrades were the player's: they move onto M-01.
+func test_version_3_miner_levels_move_onto_m01() -> void:
+	var tank: Upgrade = load("res://game/progression/upgrades/miner_tank.tres")
+	var player_data: Dictionary = {
+		"version": 3,
+		"arsenal": [_uid(HARL)],
+		"upgrades": {_uid(ARMOR): 2, _uid(DRILL): 3},
+		"upgrade_jobs": {_uid(tank): {"level": 2, "started": 1e12, "seconds": 60.0}},
+	}
+	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
+	await _restart()
+	var first: CraftedMiner = _player.fleet.get_miner(1)
+	assert_eq(first.upgrades.mk(DRILL), 3)
+	assert_true(first.upgrades.is_running(tank), "with its level under way")
+	assert_eq(_player.upgrades.mk(DRILL), 1, "no longer the player's")
+	assert_false(_player.upgrades.is_running(tank))
+	assert_eq(_player.upgrades.mk(ARMOR), 2, "the armor stays")
+	await wait_process_frames(1)
+	var saved: Dictionary = _saved(SaveGame.PLAYER_FILE)
+	assert_false((saved["upgrades"] as Dictionary).has(_uid(DRILL)))
+	await _restart()
+	assert_eq(_player.fleet.get_miner(1).upgrades.mk(DRILL), 3, "kept on the next load")
+
+
+func test_crafted_miners_are_saved() -> void:
+	_player.fleet.build_all()
+	_player.fleet.get_miner(2).going_along = false
+	_player.fleet.get_miner(4).upgrades.raise(DRILL)
+	_player.fleet.get_miner(5).upgrades.start(DRILL, 1e12)
+	_player.fleet.get_miner(3).out = true
+	_player.fleet.get_miner(6).out = true
+	_player.fleet.end_run("Torvane, Redscar Flats")
+	_player.fleet.start_build(3, 1e12, 180.0)
+	await wait_process_frames(1)
+	await _restart()
+	var fleet: MinerFleet = _player.fleet
+	assert_false(fleet.get_miner(2).going_along)
+	assert_eq(fleet.get_miner(4).upgrades.mk(DRILL), 2)
+	assert_true(fleet.get_miner(5).upgrades.is_running(DRILL))
+	assert_false(fleet.get_miner(3).is_built())
+	assert_almost_eq(fleet.get_miner(3).build.started, 1e12, 0.001)
+	assert_true(fleet.is_empty(6))
+	assert_eq(fleet.lost_at[6], "Torvane, Redscar Flats")
+
+
+func test_a_lost_m01_stays_lost() -> void:
+	_player.fleet.take_next()
+	_player.fleet.end_run("there")
+	await wait_process_frames(1)
+	await _restart()
+	assert_true(_player.fleet.is_empty(1))
+	assert_eq(_player.fleet.lost_at[1], "there")
+
+
+func test_damaged_miners_are_skipped() -> void:
+	var player_data: Dictionary = {
+		"version": SaveGame.VERSION,
+		"arsenal": [_uid(HARL)],
+		"miners":
+		[
+			{"number": 1, "upgrades": {_uid(DRILL): 2, _uid(ARMOR): 3}},
+			{"number": 1},
+			{"number": 9},
+			"x",
+			{"number": 2, "build": {"level": 1, "started": "x", "seconds": 60.0}},
+			{"number": 3, "upgrade_jobs": {_uid(DRILL): {"level": 5, "started": 0, "seconds": 1}}},
+		],
+		"lost_miners": {"1": "here", "4": "there", "x": "nowhere", "5": 3},
+	}
+	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
+	await _restart()
+	var fleet: MinerFleet = _player.fleet
+	assert_eq(fleet.miners.keys(), [1, 3] as Array[int])
+	assert_eq(fleet.get_miner(1).upgrades.mk(DRILL), 2)
+	assert_eq(fleet.get_miner(1).upgrades.levels.size(), 1, "not a miner's part")
+	assert_true(fleet.get_miner(3).upgrades.jobs.is_empty(), "not the next level")
+	assert_eq(fleet.lost_at.keys(), [4] as Array[int])
+
+
 ## Every place a version 1 path moved to is there.
 func test_moved_paths_exist() -> void:
 	for old: String in SaveGame.MOVED:

@@ -2,11 +2,12 @@ class_name Player
 extends CharacterBody3D
 ## Twin-stick player: moves relative to the camera and faces where it aims (`aim`: the mouse
 ## cursor on the ground, the right stick or else the movement direction; aliens there get locked
-## on), and attacks there with the equipped weapon while `attack` is held. Places miners on the
-## nearest free ore node in range with `place_miner`, and carries the ore that miners' hoses move
-## to it, shown in canisters on its back and as a badge rising above it (`OreArrival`). An arrow
-## on the suit ring's edge points back to the ship (`ShipPointer`). Uses the
-## nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
+## on), and attacks there with the equipped weapon while `attack` is held. Places the miners of
+## its `fleet` (up to six per run, its crafted ones first) on the nearest free ore node in range
+## with `place_miner`, picks miners up again with `interact`, and carries the ore that miners'
+## hoses move to it, shown in canisters on its back and as a badge rising above it
+## (`OreArrival`). An arrow on the suit ring's edge points back to the ship (`ShipPointer`). Uses
+## the nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
 ## the suit ring around its feet (`SuitRing`, with the ammo, the spare magazines and the dash) and
 ## the suit light; at zero health the player dies, drops everything carried and lies still until
@@ -16,8 +17,8 @@ extends CharacterBody3D
 ## holstered for the run and `reload` them with ammo the suit makes from the carried ore (`OreAmmo`;
 ## free aboard), walking slower meanwhile. Holding `interact` next to a teammate, with nothing else
 ## to use there, hands them a magazine for their equipped weapon, paid from its ore. Its `upgrades`
-## (bought at the upgrade stations) raise its weapons' parts (damage, capacity, ...), its armor
-## (`armor_upgrade`: more health, shown by pips on the helmet) and the miners it places. Its
+## (bought at the upgrade stations) raise its weapons' parts (damage, capacity, ...) and its armor
+## (`armor_upgrade`: more health, shown by pips on the helmet); each crafted miner has its own.
 ## Its own `hold` keeps the ore brought back over all runs (every haul goes to every player in the
 ## session) and pays for its gear; its `refining` are its batches in the refinery's furnaces. Its
 ## `skills` (learned at the skill graph) add health, regeneration, the dash (`suit_dash`, its
@@ -110,6 +111,8 @@ var cargo: Dictionary[OreType, float] = {}
 var hold := PlayerHold.new()
 ## Its batches in the refinery's furnaces (saved with the player).
 var refining := Refining.new()
+## Its crafted miners and the standard-issue ones filling up a run (saved with the player).
+var fleet := MinerFleet.new()
 ## Whether reloads cost nothing (aboard: from the ship's stock).
 var ammo_free: bool = false
 ## The teammate `interact` hands ammo to while it's held, or null; and for how long it's held (s).
@@ -306,12 +309,13 @@ func _process(_delta: float) -> void:
 	_scanner.reach = skills.value(Skill.Effect.ORE_SCANNER)
 
 
-## Places a miner on `miner_target` and returns it, or null without a target.
+## Places the next miner of its `fleet` on `miner_target` and returns it, or null without a
+## target or once the run's miners are all placed.
 func place_miner() -> Miner:
 	_update_miner_target()
-	if not miner_target:
+	if not miner_target or fleet.left_to_place() <= 0:
 		return null
-	var miner: Miner = miner_target.place_miner(miner_scene, upgrades)
+	var miner: Miner = miner_target.place_miner(miner_scene, fleet, self)
 	_update_miner_target()
 	return miner
 

@@ -203,12 +203,15 @@ func test_miner_upgrades_apply_to_the_miners_a_player_places() -> void:
 	plain.free()
 
 
-func test_placed_miner_gets_the_players_upgrades() -> void:
+func test_placed_crafted_miner_gets_its_own_levels() -> void:
 	var node := get_tree().get_nodes_in_group(OreNode.GROUP)[0] as OreNode
-	var miner: Miner = node.place_miner(MINER_SCENE, _player.upgrades)
-	assert_eq(miner.upgrades, _player.upgrades)
-	_player.upgrades.raise(TANK)
+	var miner: Miner = node.place_miner(MINER_SCENE, _player.fleet, _player)
+	var crafted: CraftedMiner = _player.fleet.get_miner(1)
+	assert_eq(miner.crafted, crafted, "M-01 goes first")
+	assert_eq(miner.upgrades, crafted.upgrades)
+	crafted.upgrades.raise(TANK)
 	assert_eq(miner.capacity(), miner.settings.capacity * TANK.levels[0].multiplier)
+	assert_eq(_player.upgrades.mk(TANK), 1, "not the player's")
 
 
 func test_each_player_has_their_own_upgrades() -> void:
@@ -229,7 +232,7 @@ func test_every_upgrade_room_has_a_station() -> void:
 	var stations: Dictionary[String, Array] = {
 		"Weapons": weapon_parts,
 		"Armor": [ARMOR],
-		"Miners": [DRILL, TANK, HOSE],
+		"Miners": CraftedMiner.PARTS,
 	}
 	for room: String in stations:
 		var station: UpgradeStation = await _open_station(room)
@@ -319,8 +322,11 @@ func test_station_locks_while_a_mission_is_underway() -> void:
 	assert_true(station.is_locked())
 	assert_false(station.can_buy(DRILL))
 	assert_false(station.buy(DRILL))
-	assert_eq(_player.upgrades.mk(DRILL), 1)
+	assert_eq(_player.fleet.get_miner(1).upgrades.mk(DRILL), 1)
 	assert_eq(_player.hold.amount(KYRITE), 1000.0, "nothing paid")
+	var bay := station as MinerBayStation
+	assert_false(bay.can_build(2), "building neither")
+	assert_false(bay.toggle_along(1), "nor leaving one aboard")
 	assert_true((station.card_menu as UpgradeCard).get_buy_button().disabled)
 
 
@@ -333,7 +339,8 @@ func test_debug_overlay_fills_the_hold() -> void:
 
 
 func _open_station(room: String) -> UpgradeStation:
-	var station := _ship.get_node("Rooms/Lower/%s/UpgradeStation" % room) as UpgradeStation
+	var station_name: String = "MinerBay" if room == "Miners" else "UpgradeStation"
+	var station := _ship.get_node("Rooms/Lower/%s/%s" % [room, station_name]) as UpgradeStation
 	var use: Interactable = station.use_point
 	_player.global_position = use.global_position + use.global_basis.z * 0.3
 	_player.reset_physics_interpolation()

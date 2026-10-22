@@ -23,6 +23,7 @@ extends Node
 ## It's lost (`lost`) when nobody is left alive; after `settings.respawn_delay` everyone respawns
 ## aboard. Either way the mission is done: new ones are offered, and once the ramp is up the ship
 ## takes off into space after the flight's `takeoff_delay`, unless a new course is set before.
+## Either way, crafted miners still standing on the planet are lost there (`MinerFleet.end_run`).
 ## Players who die while no mission runs (e.g. killed through the debug overlay) also respawn
 ## aboard after `settings.respawn_delay`.
 ## Changing `settings.duration` while playing (debug overlay) updates the timer: before the start
@@ -474,6 +475,7 @@ func _check_outcome() -> void:
 		_return(players)
 	else:
 		state = State.LOST
+		_leave_miners(players)
 		_respawn_left = settings.respawn_delay
 		_takeoff_left = flight.settings.takeoff_delay
 		roll_offers()
@@ -533,10 +535,19 @@ func _return(players: Array[Player]) -> void:
 			var so_far: float = haul.get(ore_type, 0.0)
 			haul[ore_type] = so_far + cargo[ore_type]
 	ship.store_haul(haul, _players())
+	_leave_miners(players)
 	_respawn_dead()
 	_takeoff_left = flight.settings.takeoff_delay
 	roll_offers()
 	returned.emit()
+
+
+## Ends the run for every player's miners: crafted ones still on the planet are lost there (see
+## `MinerFleet.end_run`).
+func _leave_miners(players: Array[Player]) -> void:
+	var where: String = brief.place_name(settings.system) if brief else ""
+	for player: Player in players:
+		player.fleet.end_run(where)
 
 
 func _respawn_dead() -> void:

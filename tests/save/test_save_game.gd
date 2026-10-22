@@ -85,7 +85,8 @@ func test_jobs_under_way_survive_a_restart() -> void:
 	assert_eq((saved["upgrade_jobs"] as Dictionary).size(), 2)
 	await _restart()
 	assert_true(_player.upgrades.is_running(ARMOR), "a minute takes longer than 10 s")
-	assert_eq(_player.upgrades.get_job(ARMOR).started, now - 10.0)
+	# JSON keeps the Unix time to well under a millisecond, not to the last bit on every platform.
+	assert_almost_eq(_player.upgrades.get_job(ARMOR).started, now - 10.0, 0.001)
 	assert_eq(_player.upgrades.get_job(ARMOR).seconds, ARMOR.levels[0].seconds)
 	assert_false(_player.upgrades.is_running(DRILL), "done while the game was closed")
 	assert_eq(_player.upgrades.mk(DRILL), 2)

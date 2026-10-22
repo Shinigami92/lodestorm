@@ -1,6 +1,6 @@
 # Refinery, crafted miners and timed upgrades (planned)
 
-Decided 2026-10-17, built in M4 step 11 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The refinery is built (see [Resources](../GAME_DESIGN.md#9-resources)); miners are unlimited and placed instantly with one shared set of upgrades, and upgrades and skills are bought instantly (see [Miners](../GAME_DESIGN.md#7-miners) and [Progression](../GAME_DESIGN.md#12-progression--upgrades)).
+Decided 2026-10-17, built in M4 step 11 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The refinery and the timed upgrades and skills are built (see [Resources](../GAME_DESIGN.md#9-resources) and [Progression](../GAME_DESIGN.md#12-progression--upgrades)); miners are unlimited and placed instantly with one shared set of upgrades (see [Miners](../GAME_DESIGN.md#7-miners)).
 
 ## Alloys
 
@@ -10,10 +10,6 @@ The alloys, the furnaces, the ingot rack and recipe discovery are built (M4 step
 - **Unlocking furnaces:** the quests unlock them (see [`quests.md`](quests.md)); until then the debug overlay does.
 - **The engineer** explains the refinery (see [`crew.md`](crew.md)).
 - **Art pass (M5):** generated models of the furnaces and the rack.
-
-## Upgrades and skills take real time
-
-Each MK level and each skill (rank) has its own time, from about 1 min for the first ones up to 6 h for the highest levels and the deepest skills. It's paid when started. There's no limit on how many run at once: a player can start as many as their hold pays for, so more mission runs are the limit, and they all run at the same time on the wall clock (also during runs and while the game is closed). One part's next level starts once the one before it is finished. A level takes effect when it's finished; one that finishes during a run takes effect when the player is back aboard. Starting is locked during a mission like buying today; running ones keep going. Shown in the world: the pip of a level under way fills slowly, the skill's point on the graph fills like a ring, and the card shows the time left; the quest board lists every running job (see [`quests.md`](quests.md)). Each player's own, in their own save. The heat shield isn't timed.
 
 ## Crafted miners
 

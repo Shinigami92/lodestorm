@@ -52,9 +52,12 @@ func test_every_upgrade_has_texts_and_rising_levels() -> void:
 		assert_ne(upgrade.description, "")
 		assert_eq(upgrade.max_mk(), 8, "MK1 to MK8, one more per planet")
 		var previous: float = 1.0
+		var slower: float = 0.0
 		for level: UpgradeLevel in upgrade.levels:
 			assert_gt(level.multiplier, previous)
 			previous = level.multiplier
+			assert_gt(level.seconds, slower, "%s: each level takes longer" % upgrade.display_name)
+			slower = level.seconds
 		assert_true(upgrade.cost_of(1).is_empty(), "MK1 is free")
 		assert_true(upgrade.cost_of(upgrade.max_mk() + 1).is_empty())
 		for mk: int in range(2, upgrade.max_mk() + 1):
@@ -249,14 +252,18 @@ func test_station_buys_with_ore_from_the_hold() -> void:
 	await wait_process_frames(1)
 	assert_false(button.disabled)
 	button.pressed.emit()
-	assert_eq(_player.upgrades.mk(ARMOR), 2)
+	assert_eq(_player.upgrades.mk(ARMOR), 1, "under way")
+	assert_true(_player.upgrades.is_running(ARMOR))
 	assert_eq(_player.hold.amount(KYRITE), 1000.0 - ARMOR.cost_of(2)[KYRITE])
+	_player.upgrades.finish_all()
+	assert_eq(_player.upgrades.mk(ARMOR), 2)
 	await wait_process_frames(1)
 	assert_true(button.disabled, "MK3 needs olvane and meridine")
 	_player.hold.add(OLVANE, 1000.0)
 	_player.hold.add(MERIDINE, 1000.0)
 	await wait_process_frames(1)
 	assert_true(card.press_primary(), "interact buys too")
+	_player.upgrades.finish_all()
 	assert_eq(_player.upgrades.mk(ARMOR), 3)
 	await wait_process_frames(1)
 	assert_true(button.disabled, "MK4 waits for the next planet")
@@ -275,12 +282,13 @@ func test_station_sells_higher_levels_once_the_ship_reaches_further() -> void:
 	_ship.heat_shield.install_next()
 	assert_eq(station.upgrade_cap(), 4)
 	assert_true(station.buy(ARMOR))
+	_player.upgrades.finish_all()
 	assert_eq(_player.upgrades.mk(ARMOR), 4)
 	assert_false(station.can_buy(ARMOR))
 	while _ship.heat_shield.install_next():
 		pass
 	while station.buy(ARMOR):
-		pass
+		_player.upgrades.finish_all()
 	assert_eq(_player.upgrades.mk(ARMOR), 8)
 	var card := station.card_menu as UpgradeCard
 	await wait_process_frames(1)
@@ -298,6 +306,7 @@ func test_station_locks_weapons_the_player_does_not_own() -> void:
 	assert_true(station.can_buy(HARL.get_part(WeaponPart.Stat.DAMAGE)))
 	_player.arsenal.unlock(BRASK)
 	assert_true(station.buy(BRASK.get_part(WeaponPart.Stat.DAMAGE)))
+	_player.upgrades.finish_all()
 	assert_eq(_player.upgrades.mk(BRASK.get_part(WeaponPart.Stat.DAMAGE)), 2)
 
 

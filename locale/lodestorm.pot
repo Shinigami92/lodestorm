@@ -875,6 +875,8 @@ msgid "Bar in the furnace: %d %%"
 msgstr ""
 
 #: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Time left: %s"
 msgstr ""
 
@@ -883,10 +885,14 @@ msgid "Stop? The bars done stay, the ore of the others goes back to the hold."
 msgstr ""
 
 #: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Stop for sure"
 msgstr ""
 
 #: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Stop"
 msgstr ""
 
@@ -960,6 +966,19 @@ msgstr ""
 msgid "Learn"
 msgstr ""
 
+#: game/stations/skill_graph/skill_card.gd
+msgid "Rank %d under way"
+msgstr ""
+
+#: game/stations/skill_graph/skill_card.gd
+msgid "Learning"
+msgstr ""
+
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Stop? The whole cost goes back to the hold."
+msgstr ""
+
 #: game/stations/upgrade/upgrade_card.gd
 msgid "next: +%d %%"
 msgstr ""
@@ -974,6 +993,10 @@ msgstr ""
 
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Max"
+msgstr ""
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "MK%d under way"
 msgstr ""
 
 #: game/stations/upgrade/upgrade_card.gd

@@ -308,6 +308,7 @@ func _arrangement(player: Player) -> Array:
 		player,
 		player.loadout.weapons.duplicate(),
 		player.upgrades.levels.duplicate(),
+		player.upgrades.jobs.keys(),
 	]
 
 

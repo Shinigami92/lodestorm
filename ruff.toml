@@ -19,4 +19,4 @@ ignore = [
 [lint.isort]
 # The shared helpers in tools/blender/ and the ore kit's geometry module, put on sys.path by the
 # scripts that import them; the sound recipes next to assets/audio/source/build.py
-known-first-party = ["bake", "common", "creature", "generated", "ore_geo", "synth", "aliens", "mining", "mission", "player", "refinery", "weapons"]
+known-first-party = ["bake", "common", "creature", "generated", "ore_geo", "synth", "aliens", "mining", "mission", "player", "refinery", "stations", "weapons"]

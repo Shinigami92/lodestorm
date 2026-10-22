@@ -42,8 +42,11 @@ func test_learning_pays_from_the_hold() -> void:
 	assert_false(_station.learn(DASH))
 	_player.hold.add(KYRITE, 1000.0)
 	_send(&"interact")
-	assert_eq(_player.skills.rank(DASH), 1)
+	assert_true(_player.skills.is_running(DASH))
 	assert_eq(_player.hold.amount(KYRITE), 1000.0 - DASH.ranks[0].cost[KYRITE])
+	assert_false(_station.can_learn(DASH), "under way")
+	_player.skills.finish_all()
+	assert_eq(_player.skills.rank(DASH), 1)
 	assert_false(_station.can_learn(DASH), "single rank: learned")
 	assert_eq(_station.user, _player, "learning doesn't close it")
 
@@ -55,6 +58,8 @@ func test_a_skill_opens_once_the_one_before_is_learned() -> void:
 	await _open()
 	assert_false(_station.can_learn(RELOAD_ON_THE_MOVE))
 	assert_true(_station.learn(DASH))
+	assert_false(_station.can_learn(RELOAD_ON_THE_MOVE), "dash is still under way")
+	_player.skills.finish_all()
 	assert_true(_station.learn(RELOAD_ON_THE_MOVE))
 
 
@@ -63,7 +68,10 @@ func test_ranked_skills_learn_rank_by_rank() -> void:
 	_player.hold.add(OLVANE, 5000.0)
 	await _open()
 	assert_true(_station.learn(SUIT))
+	assert_false(_station.learn(SUIT), "one rank at a time")
+	_player.skills.finish_all()
 	assert_true(_station.learn(SUIT))
+	_player.skills.finish_all()
 	assert_eq(_player.skills.rank(SUIT), 2)
 	assert_false(_station.can_learn(SUIT), "rank 3 needs pallin")
 

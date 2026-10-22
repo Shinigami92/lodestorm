@@ -2,8 +2,9 @@ class_name SkillCard
 extends StationCard
 ## The holo card of the `SkillStation`: the selected skill's name and what it does, its ranks as
 ## pips (like the MK pips), the next rank's cost per ore next to what the hold has of it (red where
-## it's short), and "Learn". A skill whose required skill isn't learned yet says which one to learn
-## first, and while a mission is underway it says why nothing can be learned.
+## it's short), and "Learn". A rank under way fills its pip, says the time left and offers "Stop"
+## (pressed twice, the whole cost back). A skill whose required skill isn't learned yet says which
+## one to learn first, and while a mission is underway it says why nothing can be learned.
 
 ## The skill shown, or null.
 var skill: Skill
@@ -42,6 +43,15 @@ func show_part(part: StationPart) -> void:
 		skill_station.is_locked(),
 		skill_station.can_learn(shown)
 	)
+	var job: TimedJob = skills.get_job(shown)
+	if job:
+		show_job(
+			job,
+			Time.get_unix_time_from_system(),
+			skill_station.can_stop(shown),
+			skill_station.stop_press.is_armed(shown),
+			skill_station.is_locked()
+		)
 
 
 ## Shows `shown` at `rank` (null: nothing). `hold`: what the hold has; `open`: whether the skill it
@@ -85,9 +95,36 @@ func show_skill(
 		dimmed.modulate = Color.WHITE if open else UpgradeCard.LOCKED_COLOR
 
 
+## Shows the rank `job` under way (after `show_skill`) at `now` (Unix seconds): its pip filling,
+## the time left and "Stop" (`can_stop`: whether it can be stopped now; `armed`: whether "Stop" was
+## pressed once; `locked`: whether a mission is underway).
+func show_job(
+	job: TimedJob, now: float, can_stop: bool = true, armed: bool = false, locked: bool = false
+) -> void:
+	if skill and skill.max_rank() > 1:
+		_state.text = tr("Rank %d under way") % job.level
+		UpgradeCard.show_pips(_pips, job.level - 1, skill.max_rank(), 99, job.progress(now))
+	else:
+		_state.text = tr("Learning")
+	_cost_row.visible = false
+	_status.visible = true
+	if locked:
+		_status.text = tr("Locked until everyone is back aboard.")
+	elif armed:
+		_status.text = tr("Stop? The whole cost goes back to the hold.")
+	else:
+		_status.text = tr("Time left: %s") % FurnaceCard.duration_text(job.time_left(now))
+	_learn.text = tr("Stop for sure") if armed else tr("Stop")
+	_learn.disabled = not can_stop
+
+
 func press_primary() -> bool:
 	var skill_station := station as SkillStation
-	return skill_station != null and skill_station.learn(skill)
+	if not skill_station:
+		return false
+	if skill_station.user and skill_station.user.skills.is_running(skill):
+		return skill_station.stop(skill)
+	return skill_station.learn(skill)
 
 
 ## The learn button (for tests and probes).

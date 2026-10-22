@@ -3,12 +3,13 @@ extends StationCard
 ## The holo card of an `UpgradeStation`: the selected upgrade's name and what it improves, its MK
 ## level as pips (like the pips on the weapons and the helmet), how much the next level improves
 ## (compared to MK1), the next level's cost per ore next to what the hold has of it (red where it's
-## short), and "Upgrade". A weapon's upgrade the player can't buy yet says "Locked", levels beyond
-## the ship's reach show as faint pips and the card says which heat shield plate brings the next
-## one, and while a mission is underway it says why nothing can be bought. A weapon's part is
-## titled with the weapon's name. On the workbench, a weapon the player doesn't own shows what
-## building it costs and "Build" (with its blueprint, see `WeaponStation.build`); a weapon selected
-## on the rack shows what it is and "Lay on the bench".
+## short), and "Upgrade". A level under way fills its pip, says the time left and offers "Stop"
+## (pressed twice, the whole cost back). A weapon's upgrade the player can't buy yet says
+## "Locked", levels beyond the ship's reach show as faint pips and the card says which heat shield
+## plate brings the next one, and while a mission is underway it says why nothing can be bought.
+## A weapon's part is titled with the weapon's name. On the workbench, a weapon the player doesn't
+## own shows what building it costs and "Build" (with its blueprint, see `WeaponStation.build`); a
+## weapon selected on the rack shows what it is and "Lay on the bench".
 
 ## Dims what a locked upgrade would bring (the card itself and "Locked" stay readable).
 const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
@@ -75,6 +76,15 @@ func show_part(part: StationPart) -> void:
 		upgrade_station.upgrade_cap(),
 		weapon.display_name if weapon else ""
 	)
+	var job: TimedJob = upgrade_station.user.upgrades.get_job(shown)
+	if job:
+		show_job(
+			job,
+			Time.get_unix_time_from_system(),
+			upgrade_station.can_stop(shown),
+			upgrade_station.stop_press.is_armed(shown),
+			upgrade_station.is_locked()
+		)
 
 
 ## Shows `shown` at MK `mk` (null: nothing). `hold`: what the hold has; `available`: whether the
@@ -125,6 +135,26 @@ func show_upgrade(
 	_buy.disabled = not can_buy
 	for dimmed: CanvasItem in [_title, _description, _pips, _cost_row]:
 		dimmed.modulate = Color.WHITE if available else LOCKED_COLOR
+
+
+## Shows the level `job` under way (after `show_upgrade`) at `now` (Unix seconds): its pip
+## filling, the time left (on the status line) and "Stop" (`can_stop`: whether it can be stopped
+## now; `armed`: whether "Stop" was pressed once; `locked`: whether a mission is underway).
+func show_job(
+	job: TimedJob, now: float, can_stop: bool = true, armed: bool = false, locked: bool = false
+) -> void:
+	show_pips(_pips, job.level - 1, _pips.get_child_count(), 99, job.progress(now))
+	_effect.text = tr("MK%d under way") % job.level
+	_cost_row.visible = false
+	_status.visible = true
+	if locked:
+		_status.text = tr("Locked until everyone is back aboard.")
+	elif armed:
+		_status.text = tr("Stop? The whole cost goes back to the hold.")
+	else:
+		_status.text = tr("Time left: %s") % FurnaceCard.duration_text(job.time_left(now))
+	_buy.text = tr("Stop for sure") if armed else tr("Stop")
+	_buy.disabled = not can_stop
 
 
 ## Shows building `shown`: what it costs next to what the hold has. `blueprint`: whether the
@@ -192,7 +222,11 @@ func press_primary() -> bool:
 		var weapon_station := station as WeaponStation
 		return weapon_station != null and weapon_station.build(weapon_type)
 	var upgrade_station := station as UpgradeStation
-	return upgrade_station != null and upgrade_station.buy(upgrade)
+	if not upgrade_station:
+		return false
+	if upgrade_station.user and upgrade_station.user.upgrades.is_running(upgrade):
+		return upgrade_station.stop(upgrade)
+	return upgrade_station.buy(upgrade)
 
 
 ## The buy button (for tests and probes).
@@ -206,12 +240,19 @@ func get_status() -> Label:
 
 
 ## Shows level `mk` of `max_mk` as pips in `row` (also a skill's ranks); those above `cap` are
-## faint.
-static func show_pips(row: HBoxContainer, mk: int, max_mk: int, cap: int = 99) -> void:
+## faint. With `progress` (0–1), the level after `mk` is under way: its pip fills from the left.
+static func show_pips(
+	row: HBoxContainer, mk: int, max_mk: int, cap: int = 99, progress: float = -1.0
+) -> void:
 	while row.get_child_count() < max_mk:
 		var pip := ColorRect.new()
 		pip.custom_minimum_size = PIP_SIZE
 		pip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		var fill := ColorRect.new()
+		fill.name = "Fill"
+		fill.color = PIP_LIT
+		fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pip.add_child(fill)
 		row.add_child(pip)
 	while row.get_child_count() > max_mk:
 		var last: Node = row.get_child(-1)
@@ -219,7 +260,11 @@ static func show_pips(row: HBoxContainer, mk: int, max_mk: int, cap: int = 99) -
 		last.queue_free()
 	for i: int in max_mk:
 		var color: Color = PIP_DARK if i < cap else PIP_OUT_OF_REACH
-		(row.get_child(i) as ColorRect).color = PIP_LIT if i < mk else color
+		var pip := row.get_child(i) as ColorRect
+		pip.color = PIP_LIT if i < mk else color
+		var fill := pip.get_node(^"Fill") as ColorRect
+		fill.visible = i == mk and progress >= 0.0
+		fill.size = Vector2(PIP_SIZE.x * clampf(progress, 0.0, 1.0), PIP_SIZE.y)
 
 
 func _on_close_pressed() -> void:

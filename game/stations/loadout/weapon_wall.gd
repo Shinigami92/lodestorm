@@ -69,6 +69,7 @@ func _arrangement() -> Array:
 		viewer.loadout.weapons.duplicate(),
 		viewer.arsenal.weapons.duplicate(),
 		viewer.upgrades.levels.duplicate(),
+		viewer.upgrades.jobs.keys(),
 	]
 
 

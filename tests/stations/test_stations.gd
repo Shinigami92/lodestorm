@@ -68,6 +68,8 @@ func test_interact_buys_the_selected_upgrade() -> void:
 	_player.hold.add(VYREL, 1000.0)
 	_send(&"move_forward")
 	_send(&"interact")
+	assert_true(_player.upgrades.is_running(TANK))
+	_player.upgrades.finish_all()
 	assert_eq(_player.upgrades.mk(TANK), 2)
 	assert_eq(_player.upgrades.mk(DRILL), 1)
 	assert_eq(station.user, _player, "buying doesn't close it")
@@ -108,7 +110,9 @@ func test_mouse_picks_parts_and_uses_the_card() -> void:
 	await wait_seconds(0.5)
 	var button: Button = (station.card_menu as UpgradeCard).get_buy_button()
 	_click(_on_card(station, button.get_global_rect().get_center()))
-	assert_eq(_player.upgrades.mk(TANK), 2, "the card's button")
+	assert_true(_player.upgrades.is_running(TANK), "the card's button")
+	_player.upgrades.finish_all()
+	assert_eq(_player.upgrades.mk(TANK), 2)
 
 
 func test_weapon_station_lays_the_picked_weapon_on_the_bench() -> void:

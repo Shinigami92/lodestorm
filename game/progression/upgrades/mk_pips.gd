@@ -4,13 +4,33 @@ extends Node3D
 ## MK level of the upgrade, centered on this node. Reached levels glow, the others stay dark, so
 ## the pips also show how far it can go. More than `row_levels` levels take a second row (along Z,
 ## filled after the first), and a row keeps the length of `fit_levels` pips, its pips a bit
-## narrower when it holds more. Greybox until the art pass.
+## narrower when it holds more. The pip of a level under way (see `Upgrades.jobs`) breathes dimly
+## and flashes once when it's done. Greybox until the art pass.
 
 const COLOR_LIT := Color(0.85, 0.92, 1.0)
 const COLOR_DARK := Color(0.06, 0.065, 0.07)
+## How long a level done flashes, in s.
+const FLASH_TIME: float = 0.4
+const BREATHING_SHADER: String = """
+shader_type spatial;
+
+uniform vec3 color : source_color;
+uniform vec3 dark : source_color;
+
+void fragment() {
+	float breath = 0.5 + 0.5 * sin(TIME * 2.5);
+	ALBEDO = mix(dark, color, 0.2 + 0.2 * breath);
+	EMISSION = color * (0.1 + 0.6 * breath);
+	METALLIC = 0.4;
+	ROUGHNESS = 0.5;
+}
+"""
 
 static var _lit_materials: Dictionary[Color, StandardMaterial3D] = {}
+static var _breathing_materials: Dictionary[Color, ShaderMaterial] = {}
+static var _flash_materials: Dictionary[Color, StandardMaterial3D] = {}
 static var _dark_material: StandardMaterial3D
+static var _breathing_shader: Shader
 
 ## Size of one pip in m.
 @export var pip_size := Vector3(0.036, 0.016, 0.036)
@@ -28,13 +48,21 @@ static var _dark_material: StandardMaterial3D
 ## The MK level shown and the highest one.
 var mk: int = 0
 var max_mk: int = 0
+## Whether the level after `mk` is under way.
+var under_way: bool = false
+
+var _flashing: int = -1
 
 
-## Shows MK `new_mk` of `new_max_mk` levels. Works before the node enters the tree, so a holder
-## can mark the pips' materials together with its own.
-func show_level(new_mk: int, new_max_mk: int) -> void:
+## Shows MK `new_mk` of `new_max_mk` levels, the next one under way when `new_under_way`. Works
+## before the node enters the tree, so a holder can mark the pips' materials together with its
+## own. The level that was under way flashes once when it's shown reached.
+func show_level(new_mk: int, new_max_mk: int, new_under_way: bool = false) -> void:
+	if under_way and new_mk == mk + 1 and new_max_mk == max_mk and is_inside_tree():
+		_flash(mk)
 	mk = new_mk
 	max_mk = new_max_mk
+	under_way = new_under_way and mk < max_mk
 	var rows: int = maxi(ceili(max_mk / float(row_levels)), 1)
 	var per_row: int = ceili(max_mk / float(rows))
 	# Squeezed: the step and the pips shrink by the same factor, so the gaps keep their share.
@@ -58,16 +86,49 @@ func show_level(new_mk: int, new_max_mk: int) -> void:
 		var column: float = i % per_row - (per_row - 1) * 0.5
 		var row: float = floori(i / float(per_row)) - (rows - 1) * 0.5
 		pip.position = Vector3(column * spacing * squeeze, 0.0, row * spacing)
-		pip.material_override = lit_material(lit_color) if i < mk else dark_material()
+		pip.material_override = _material(i)
 
 
-## Number of glowing pips.
+## The material of the pip for level `index` + 1.
+func _material(index: int) -> Material:
+	if index == _flashing:
+		return flash_material(lit_color)
+	if index < mk:
+		return lit_material(lit_color)
+	if under_way and index == mk:
+		return breathing_material(lit_color)
+	return dark_material()
+
+
+func _flash(index: int) -> void:
+	_flashing = index
+	get_tree().create_timer(FLASH_TIME).timeout.connect(_end_flash.bind(index))
+
+
+func _end_flash(index: int) -> void:
+	if _flashing != index:
+		return
+	_flashing = -1
+	if index < get_child_count():
+		(get_child(index) as MeshInstance3D).material_override = _material(index)
+
+
+## Number of glowing pips (a flashing one too, not one breathing).
 func lit_count() -> int:
 	var lit: int = 0
 	for pip: Node in get_children():
-		if (pip as MeshInstance3D).material_override == lit_material(lit_color):
+		var material: Material = (pip as MeshInstance3D).material_override
+		if material in [lit_material(lit_color), flash_material(lit_color)]:
 			lit += 1
 	return lit
+
+
+## Whether a pip breathes for a level under way.
+func is_breathing() -> bool:
+	for pip: Node in get_children():
+		if (pip as MeshInstance3D).material_override == breathing_material(lit_color):
+			return true
+	return false
 
 
 ## The shared material of reached levels glowing in `color`.
@@ -80,6 +141,29 @@ static func lit_material(color: Color = COLOR_LIT) -> StandardMaterial3D:
 		material.emission_energy_multiplier = 2.0
 		_lit_materials[color] = material
 	return _lit_materials[color]
+
+
+## The shared material of a level under way breathing dimly in `color`.
+static func breathing_material(color: Color = COLOR_LIT) -> ShaderMaterial:
+	if color not in _breathing_materials:
+		if not _breathing_shader:
+			_breathing_shader = Shader.new()
+			_breathing_shader.code = BREATHING_SHADER
+		var material := ShaderMaterial.new()
+		material.shader = _breathing_shader
+		material.set_shader_parameter(&"color", color)
+		material.set_shader_parameter(&"dark", COLOR_DARK)
+		_breathing_materials[color] = material
+	return _breathing_materials[color]
+
+
+## The shared material of a level just done, flashing bright in `color`.
+static func flash_material(color: Color = COLOR_LIT) -> StandardMaterial3D:
+	if color not in _flash_materials:
+		var material: StandardMaterial3D = lit_material(color).duplicate()
+		material.emission_energy_multiplier = 8.0
+		_flash_materials[color] = material
+	return _flash_materials[color]
 
 
 static func dark_material() -> StandardMaterial3D:

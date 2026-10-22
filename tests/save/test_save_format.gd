@@ -273,7 +273,7 @@ func test_crafted_miners_are_saved() -> void:
 
 
 func test_a_lost_m01_stays_lost() -> void:
-	_player.fleet.take_next()
+	_player.fleet.take(_player.fleet.get_miner(1))
 	_player.fleet.end_run("there")
 	await wait_process_frames(1)
 	await _restart()

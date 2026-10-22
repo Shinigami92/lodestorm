@@ -788,6 +788,10 @@ msgid "Hold"
 msgstr "Lager"
 
 #: game/stations/hold/hold_card.gd
+msgid "Full speed with drill MK%d."
+msgstr "Volles Tempo mit Bohrer MK%d."
+
+#: game/stations/hold/hold_card.gd
 msgid "Unknown ore"
 msgstr "Unbekanntes Erz"
 
@@ -1062,6 +1066,18 @@ msgstr "Aufrüsten"
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Max"
 msgstr "Max"
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Full speed up to:"
+msgstr "Volles Tempo bis:"
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "MK%d also:"
+msgstr "MK%d auch:"
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "MK%d mines harder ores too."
+msgstr "MK%d baut auch härtere Erze ab."
 
 #: game/stations/upgrade/upgrade_card.gd
 msgid "MK%d under way"

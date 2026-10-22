@@ -4,12 +4,13 @@ extends StationCard
 ## level as pips (like the pips on the weapons and the helmet), how much the next level improves
 ## (compared to MK1), the next level's cost per ore next to what the hold has of it (red where it's
 ## short), and "Upgrade". A level under way fills its pip, says the time left and offers "Stop"
-## (pressed twice, the whole cost back). A weapon's upgrade the player can't buy yet says
-## "Locked", levels beyond the ship's reach show as faint pips and the card says which heat shield
-## plate brings the next one, and while a mission is underway it says why nothing can be bought.
-## A weapon's part is titled with the weapon's name. On the workbench, a weapon the player doesn't
-## own shows what building it costs and "Build" (with its blueprint, see `WeaponStation.build`); a
-## weapon selected on the rack shows what it is and "Lay on the bench".
+## (pressed twice, the whole cost back). A drill says up to which ores it mines at full speed and
+## which ores its next level adds (only ores found so far). A weapon's upgrade the player can't buy
+## yet says "Locked", levels beyond the ship's reach show as faint pips and the card says which heat
+## shield plate brings the next one, and while a mission is underway it says why nothing can be
+## bought. A weapon's part is titled with the weapon's name. On the workbench, a weapon the player
+## doesn't own shows what building it costs and "Build" (with its blueprint, see
+## `WeaponStation.build`); a weapon selected on the rack shows what it is and "Lay on the bench".
 
 ## Dims what a locked upgrade would bring (the card itself and "Locked" stay readable).
 const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
@@ -33,6 +34,12 @@ var picking: bool = false
 @onready var _cost: ItemCost = %Cost
 @onready var _cost_row: HFlowContainer = %CostRow
 @onready var _time: Label = %Time
+@onready var _reach: VBoxContainer = %Reach
+@onready var _reach_label: Label = %ReachLabel
+@onready var _reach_ores: HFlowContainer = %ReachOres
+@onready var _reach_next: HFlowContainer = %ReachNext
+@onready var _reach_next_label: Label = %ReachNextLabel
+@onready var _reach_next_ores: HFlowContainer = %ReachNextOres
 @onready var _status: Label = %Status
 @onready var _buy: Button = %Buy
 @onready var _close: Button = %Close
@@ -69,6 +76,9 @@ func show_part(part: StationPart) -> void:
 		return
 	var weapon: WeaponType = upgrade_station.get_weapon(shown)
 	var job: TimedJob = bought.get_job(shown)
+	var found: Dictionary[ItemType, bool] = {}
+	if upgrade_station.user:
+		found = upgrade_station.user.hold.found
 	# The button keeps its state while a level runs: switching it off and on again every frame
 	# would drop a mouse click on it.
 	show_upgrade(
@@ -81,6 +91,7 @@ func show_part(part: StationPart) -> void:
 		upgrade_station.upgrade_cap(),
 		weapon.display_name if weapon else ""
 	)
+	show_reach(shown, bought.mk(shown), found)
 	if job:
 		show_job(
 			job,
@@ -109,6 +120,7 @@ func show_upgrade(
 	weapon_type = null
 	picking = false
 	visible = shown != null
+	hide_reach()
 	if not shown:
 		return
 	_cost_row.visible = true
@@ -145,6 +157,47 @@ func show_upgrade(
 		dimmed.modulate = Color.WHITE if available else LOCKED_COLOR
 
 
+## Shows a drill's reach at MK `mk` (after `show_upgrade`; other upgrades show none): the hardest
+## ores it mines at full speed and those its next level adds, of the ores in `found`.
+func show_reach(shown: Upgrade, mk: int, found: Dictionary[ItemType, bool]) -> void:
+	if shown.hardness < 0:
+		return
+	var known: Array[OreType] = []
+	for ore_type: OreType in OreCatalog.all().ores:
+		if found.has(ore_type):
+			known.append(ore_type)
+	var hardness: int = shown.hardness_at(mk)
+	# The hardest found ores it covers.
+	var top: int = -1
+	for ore_type: OreType in known:
+		if ore_type.hardness <= hardness:
+			top = maxi(top, ore_type.hardness)
+	var next_hardness: int = shown.hardness_at(mk + 1) if mk < shown.max_mk() else hardness
+	var covered: Array[OreType] = []
+	var added: Array[OreType] = []
+	for ore_type: OreType in known:
+		if ore_type.hardness == top:
+			covered.append(ore_type)
+		elif ore_type.hardness > hardness and ore_type.hardness <= next_hardness:
+			added.append(ore_type)
+	_reach.visible = not covered.is_empty()
+	_reach_label.text = tr("Full speed up to:")
+	_show_ores(_reach_ores, covered)
+	_reach_next.visible = next_hardness > hardness
+	_reach_next_label.text = (
+		tr("MK%d also:") % (mk + 1)
+		if not added.is_empty()
+		else tr("MK%d mines harder ores too.") % (mk + 1)
+	)
+	_show_ores(_reach_next_ores, added)
+
+
+## Hides a drill's reach (see `show_reach`).
+func hide_reach() -> void:
+	_reach.visible = false
+	_reach_next.visible = false
+
+
 ## Shows the level `job` under way (after `show_upgrade`) at `now` (Unix seconds): its pip
 ## filling, the time left and "Stop" (`can_stop`: whether it can be stopped
 ## now; `armed`: whether "Stop" was pressed once; `locked`: whether a mission is underway).
@@ -179,6 +232,7 @@ func show_build(
 	weapon_type = shown
 	picking = false
 	visible = shown != null
+	hide_reach()
 	if not shown:
 		return
 	_cost_row.visible = true
@@ -206,6 +260,7 @@ func show_pick(shown: WeaponType, owned: bool = true) -> void:
 	weapon_type = shown
 	picking = true
 	visible = shown != null
+	hide_reach()
 	if not shown:
 		return
 	_title.text = "%s — %s" % [shown.display_name, tr(shown.class_word)]
@@ -286,6 +341,20 @@ static func show_pips(
 func _on_close_pressed() -> void:
 	if station:
 		station.close()
+
+
+## Shows the badges of `ores` in `row` (made again only when they change).
+static func _show_ores(row: HFlowContainer, ores: Array[OreType]) -> void:
+	var shown: Array[OreType] = []
+	for badge: Node in row.get_children():
+		shown.append((badge as ItemBadge).item as OreType)
+	if shown == ores:
+		return
+	for node: Node in row.get_children():
+		row.remove_child(node)
+		node.queue_free()
+	for ore_type: OreType in ores:
+		row.add_child(ItemBadge.new(ore_type))
 
 
 static func _bonus(shown: Upgrade, mk: int) -> int:

@@ -23,32 +23,38 @@ func test_every_player_starts_with_m01() -> void:
 	assert_eq(_fleet.left_to_place(), MinerFleet.PER_RUN)
 
 
-func test_crafted_miners_go_first_by_number_then_standard_issue() -> void:
+func test_crafted_miners_going_along_and_standard_issue_fill_a_run() -> void:
 	_fleet.build_all()
 	_fleet.get_miner(2).going_along = false
 	assert_eq(_fleet.standard_count(), 1, "five crafted ones go along")
-	var placed: Array[int] = []
-	for i: int in MinerFleet.PER_RUN:
-		var miner: CraftedMiner = _fleet.take_next()
-		placed.append(miner.number if miner else 0)
-	assert_eq(placed, [1, 3, 4, 5, 6, 0] as Array[int])
-	assert_eq(_fleet.left_to_place(), 0)
+	var numbers: Array[int] = []
+	for miner: CraftedMiner in _fleet.waiting():
+		numbers.append(miner.number)
+	assert_eq(numbers, [1, 3, 4, 5, 6] as Array[int], "by number")
+	_fleet.take(_fleet.get_miner(4))
+	_fleet.take(null)
+	assert_eq(_fleet.waiting().size(), 4)
+	assert_eq(_fleet.standard_left(), 0)
+	assert_eq(_fleet.left_to_place(), 4)
 
 
 func test_picked_up_miners_can_be_placed_again() -> void:
-	var first: CraftedMiner = _fleet.take_next()
-	_fleet.take_next()
+	var first: CraftedMiner = _fleet.get_miner(1)
+	_fleet.take(first)
+	_fleet.take(null)
 	assert_eq(_fleet.left_to_place(), 4)
 	_fleet.bring_back(first)
 	_fleet.bring_back(null)
 	assert_eq(_fleet.left_to_place(), MinerFleet.PER_RUN)
-	assert_eq(_fleet.next_crafted(), first)
+	assert_eq(_fleet.waiting(), [first] as Array[CraftedMiner])
 
 
 func test_miners_left_on_the_planet_are_lost() -> void:
 	_fleet.build_all()
-	var first: CraftedMiner = _fleet.take_next()
-	var second: CraftedMiner = _fleet.take_next()
+	var first: CraftedMiner = _fleet.get_miner(1)
+	var second: CraftedMiner = _fleet.get_miner(2)
+	_fleet.take(first)
+	_fleet.take(second)
 	_fleet.bring_back(second)
 	first.upgrades.start(TANK, 0.0)
 	var lost: Array[int] = _fleet.end_run("Torvane, Redscar Flats")
@@ -61,8 +67,9 @@ func test_miners_left_on_the_planet_are_lost() -> void:
 
 func test_standard_issue_miners_are_never_lost() -> void:
 	_fleet.get_miner(1).going_along = false
+	assert_true(_fleet.waiting().is_empty())
 	for i: int in MinerFleet.PER_RUN:
-		assert_null(_fleet.take_next())
+		_fleet.take(null)
 	assert_eq(_fleet.left_to_place(), 0)
 	assert_eq(_fleet.end_run("there"), [] as Array[int])
 	assert_eq(_fleet.left_to_place(), MinerFleet.PER_RUN, "refilled for the next run")
@@ -70,7 +77,8 @@ func test_standard_issue_miners_are_never_lost() -> void:
 
 
 func test_damage_comes_along_until_the_run_ends() -> void:
-	var first: CraftedMiner = _fleet.take_next()
+	var first: CraftedMiner = _fleet.get_miner(1)
+	_fleet.take(first)
 	first.health = 40.0
 	_fleet.bring_back(first)
 	assert_eq(first.health, 40.0)
@@ -92,7 +100,7 @@ func test_building_runs_on_the_wall_clock() -> void:
 
 
 func test_building_again_clears_where_it_was_lost() -> void:
-	_fleet.take_next()
+	_fleet.take(_fleet.get_miner(1))
 	_fleet.end_run("there")
 	assert_true(_fleet.start_build(1, 0.0, 10.0))
 	assert_false(_fleet.lost_at.has(1))

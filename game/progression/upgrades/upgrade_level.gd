@@ -7,3 +7,5 @@ extends Resource
 @export var multiplier: float = 1.0
 ## How long reaching it takes on the wall clock once paid, in seconds (see `Upgrades.start`).
 @export var seconds: float = 0.0
+## Drills only: the hardest ore (`OreType.hardness`) it mines at full speed.
+@export var hardness: int = 0

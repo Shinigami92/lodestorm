@@ -180,9 +180,14 @@ func test_card_shows_the_selected_ore() -> void:
 	var card := _hold.card_menu as HoldCard
 	assert_string_contains(_texts(card), "Kyrite")
 	assert_string_contains(_texts(card), "42")
+	assert_false(_texts(card).contains("drill"), "any drill mines it at full speed")
 	_hold.select(_hold.get_tank(MERIDINE))
 	assert_string_contains(_texts(card), "Unknown ore")
 	assert_false(_texts(card).contains("Meridine"), "doesn't give the unknown ore away")
+	assert_false(_texts(card).contains("drill"))
+	_player.hold.add(MERIDINE, 5.0)
+	_hold.select(_hold.get_tank(MERIDINE))
+	assert_string_contains(_texts(card), "Full speed with drill MK3.")
 	_hold.close()
 
 

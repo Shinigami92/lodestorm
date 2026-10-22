@@ -18,8 +18,8 @@ enum Band { COMMON, MID, SIGNATURE }
 ## How fast miners fill up with it, relative to the commonest ore (rarer ores mine slower). TBD
 ## (playtest).
 @export var mine_rate: float = 1.0
-## How hard it is to drill. Not used yet: crafted miners with drill types will need a drill at
-## least this hard (see GAME_DESIGN.md, Miners); 0 means any miner can mine it.
+## How hard it is to drill: a miner whose drill mines up to a lower hardness (`Upgrade.hardness_at`)
+## mines it at `MinerSettings.soft_drill_share` of the speed. 0: every drill mines it at full speed.
 @export var hardness: int = 0
 ## Model kit (.glb) with the look of this type's ore nodes; the greybox stays without one.
 @export var model: PackedScene

@@ -14,9 +14,12 @@ extends StaticBody3D
 ## levels (`upgrades`), which raise its fill rate (`drill_upgrade`), capacity (`tank_upgrade`), hose
 ## range and transfer rate (`hose_upgrade`) and health (`plating_upgrade`), and wears its number
 ## plate with a strip in its owner's color; a standard-issue one is MK1 in everything, mines at
-## `settings.standard_fill_share` and has a plain grey plate. Any player can pick one up with
-## `interact` within `settings.repair_range` (`pick_up`): what's in its tank goes onto their back
-## and the miner back to its owner's fleet, to place again.
+## `settings.standard_fill_share` and has a plain grey plate. Its drill's MK level sets how hard an
+## ore it mines at full speed (`Upgrade.hardness_at`, standard-issue ones MK1); a harder one it
+## mines at `settings.soft_drill_share` of the speed, its drill turning slower and its loop
+## strained. Placing takes the miner that mines the node's ore fastest. Any player can pick one up
+## with `interact` within `settings.repair_range` (`pick_up`): what's in its tank goes onto their
+## back and the miner back to its owner's fleet, to place again.
 ## Placing and picking up take time (see `MinerHandling`): meanwhile its `carrier` moves it between
 ## their back and the node (`unfolded`): it lowers from the back and unfolds its legs, or the
 ## reverse. Only a standing miner mines, connects its hose and can be picked up.
@@ -24,7 +27,8 @@ extends StaticBody3D
 ## The look lives in the `Model` child, so a modeled asset can replace the greybox. The model
 ## provides these parts by name: `Fill` (scaled along Y from 0 to 1 with the fill level; it and its
 ## meshes get the ore material), `FullLamp`, `HoseOutlet`, and meshes named `Frame*` (the
-## structure that shows damage; `Frame_Legs` folds in towards the column). Damage is drawn as an
+## structure that shows damage; `Frame_Legs` folds in towards the column) and `Drill` (turning about
+## its Y axis while it mines). Damage is drawn as an
 ## overlay on the frame, so it works on top of any material the model brings. Parts are looked up
 ## among all descendants (also inside an instanced model scene). The model's front is +Z: when the
 ## miner is placed, the model turns its front toward the camera's view (plus `FACING_OFFSET`), so
@@ -67,6 +71,12 @@ const MODEL_MIDDLE: float = 1.8
 const STAND_TIME: float = 0.4
 ## The servos' pitch folded and standing.
 const SERVO_PITCH := Vector2(0.8, 1.2)
+## How fast the drill turns while it mines at full speed (radians per second).
+const DRILL_SPIN: float = 9.0
+## The drill's loop on an ore too hard for it: lower, wavering this much this many times a second.
+const STRAINED_PITCH: float = 0.7
+const STRAINED_WAVER: float = 0.04
+const STRAINED_WAVER_RATE: float = 3.0
 
 const PLACE_SOUND: Sound = preload("res://assets/audio/sfx/mining/miner_place.tres")
 const DRILL_SOUND: Sound = preload("res://assets/audio/sfx/mining/drill.tres")
@@ -123,6 +133,8 @@ var _facing := Basis.IDENTITY
 var _back: Vector3
 ## What picks it up (a fleet's miner), or null.
 var _pickup: Interactable
+## Whether it mined in the last physics frame.
+var _mining: bool = false
 
 @onready var _model: Node3D = $Model
 @onready var _fill: Node3D = _model.find_child("Fill", true, false)
@@ -131,6 +143,7 @@ var _pickup: Interactable
 @onready var _hose: Hose = $Hose
 @onready var _plate: Node3D = _model.get_node_or_null(^"Plate") as Node3D
 @onready var _legs: Node3D = _model.find_child("Frame_Legs", true, false) as Node3D
+@onready var _drill_bit: Node3D = _model.find_child("Drill", true, false) as Node3D
 
 
 func _ready() -> void:
@@ -178,6 +191,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	var standing: bool = is_standing()
 	var mining: bool = standing and not broken and not is_full()
+	_mining = mining
 	if mining:
 		amount = minf(amount + fill_rate() * delta, capacity())
 		_update_gauge()
@@ -201,6 +215,12 @@ func _physics_process(delta: float) -> void:
 		flowing = taken > 0.0
 		hose_target.add_cargo(ore_type, taken)
 	_drill = _loop(_drill, DRILL_SOUND, mining)
+	if _drill:
+		_drill.pitch_scale = (
+			STRAINED_PITCH + STRAINED_WAVER * sin(_time * TAU * STRAINED_WAVER_RATE)
+			if is_drill_too_soft()
+			else 1.0
+		)
 	_flow = _loop(_flow, HOSE_SOUND, flowing)
 	_repairing = _loop(_repairing, REPAIR_SOUND, mending)
 	_servo = _loop(_servo, SERVO_SOUND, not standing)
@@ -217,6 +237,9 @@ func _process(delta: float) -> void:
 			stand()
 	if unfolded < 1.0:
 		_pose()
+	if _mining and _drill_bit:
+		var spin: float = settings.soft_drill_share if is_drill_too_soft() else 1.0
+		_drill_bit.rotate_y(DRILL_SPIN * spin * delta)
 	if _pickup:
 		_pickup.enabled = is_standing()
 	_flash_left = maxf(_flash_left - delta, 0.0)
@@ -247,22 +270,28 @@ func stand() -> void:
 	Sfx.play_at(PLACE_SOUND, global_position)
 
 
-## Takes the next miner out of `from_fleet` (before it enters the tree): a crafted one with its
-## levels, or a standard-issue one. `by` is the player placing it, whose fleet it is.
+## Takes a miner out of `from_fleet` (after `ore_type` is set, before it enters the tree): the one
+## still to place that mines this ore fastest (a crafted one with its levels, the first by number on
+## a tie, or a standard-issue one). `by` is the player placing it, whose fleet it is.
 func take_from(from_fleet: MinerFleet, by: Player) -> void:
 	fleet = from_fleet
 	owned_by = by
-	crafted = fleet.take_next()
+	crafted = _fastest(fleet)
+	fleet.take(crafted)
 	standard = crafted == null
 	upgrades = crafted.upgrades if crafted else null
 
 
-## Units mined per second, with the drill upgrade (rarer ores mine slower, `OreType.mine_rate`;
-## standard-issue miners at `settings.standard_fill_share`).
+## Units mined per second, with the drill upgrade (rarer ores mine slower, `OreType.mine_rate`, and
+## ores too hard for the drill slower still; standard-issue miners at
+## `settings.standard_fill_share`).
 func fill_rate() -> float:
-	var ore_rate: float = ore_type.mine_rate if ore_type else 1.0
-	var share: float = settings.standard_fill_share if standard else 1.0
-	return settings.fill_rate * ore_rate * share * _multiplier(drill_upgrade)
+	return _fill_rate_with(upgrades, standard)
+
+
+## Whether its ore is harder than its drill mines at full speed.
+func is_drill_too_soft() -> bool:
+	return ore_type != null and ore_type.hardness > _drill_hardness(upgrades)
 
 
 ## Health when undamaged, with the plating upgrade.
@@ -372,6 +401,35 @@ func _update_frame() -> void:
 
 func _multiplier(upgrade: Upgrade) -> float:
 	return upgrades.multiplier(upgrade) if upgrades else 1.0
+
+
+## The fill rate with the drill of `levels` (null: MK1); `standard_issue`: at the ship's share.
+func _fill_rate_with(levels: Upgrades, standard_issue: bool) -> float:
+	var share: float = settings.standard_fill_share if standard_issue else 1.0
+	var drill: float = levels.multiplier(drill_upgrade) if levels else 1.0
+	return (
+		settings.fill_rate * share * drill * settings.ore_share(ore_type, _drill_hardness(levels))
+	)
+
+
+## The hardest ore the drill of `levels` (null: MK1) mines at full speed.
+func _drill_hardness(levels: Upgrades) -> int:
+	return drill_upgrade.hardness_at(levels.mk(drill_upgrade) if levels else 1)
+
+
+## Of the miners still to place in `from_fleet`, the crafted one that mines this ore fastest (the
+## first by number on a tie), or null when a standard-issue one is faster or no crafted one is left.
+func _fastest(from_fleet: MinerFleet) -> CraftedMiner:
+	var best: CraftedMiner = null
+	var best_rate: float = -1.0
+	for miner: CraftedMiner in from_fleet.waiting():
+		var rate: float = _fill_rate_with(miner.upgrades, false)
+		if rate > best_rate:
+			best = miner
+			best_rate = rate
+	if from_fleet.standard_left() > 0 and _fill_rate_with(null, true) > best_rate:
+		return null
+	return best
 
 
 ## Shows the number plate: a crafted miner's number above a strip in its owner's color, a

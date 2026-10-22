@@ -3,12 +3,13 @@ extends Resource
 ## A player's miners (see GAME_DESIGN.md, Miners): up to `SLOTS` crafted ones (`miners`, by their
 ## cradle's number), each built in the miners' room and kept, and the ship's standard-issue ones.
 ## Every player starts with M-01. A run takes up to `PER_RUN` miners: the crafted ones going along
-## first (by number), standard-issue ones filling up the rest. A crafted miner still standing on the
-## planet when the run ends is lost (`end_run`): its cradle empties and `lost_at` says where until
-## it's built again. Standard-issue miners are never lost. Building one runs on the wall clock like
-## an upgrade level (`start_build`), and so do its parts' levels (`CraftedMiner.upgrades`); `update`
-## lets those done take effect (the ship's `ProgressClock` calls it while no mission is underway,
-## the save on loading). Each player has their own, in their own save.
+## and standard-issue ones filling up the rest (which one is placed where: `Miner.take_from`). A
+## crafted miner still standing on the planet when the run ends is lost (`end_run`): its cradle
+## empties and `lost_at` says where until it's built again. Standard-issue miners are never lost.
+## Building one runs on the wall clock like an upgrade level (`start_build`), and so do its parts'
+## levels (`CraftedMiner.upgrades`); `update` lets those done take effect (the ship's
+## `ProgressClock` calls it while no mission is underway, the save on loading). Each player has
+## their own, in their own save.
 
 ## Cradles in the miners' room.
 const SLOTS: int = 6
@@ -70,31 +71,31 @@ func standard_count() -> int:
 
 ## How many miners are left to place in this run.
 func left_to_place() -> int:
-	var crafted: int = (
-		along().filter(func(miner: CraftedMiner) -> bool: return not miner.out).size()
-	)
-	return crafted + standard_count() - standard_out
+	return waiting().size() + standard_left()
 
 
-## The crafted miner placed next, or null when a standard-issue one is next (or none is left, see
-## `left_to_place`).
-func next_crafted() -> CraftedMiner:
+## The crafted miners going along that are still to place in this run, by number.
+func waiting() -> Array[CraftedMiner]:
+	var result: Array[CraftedMiner] = []
 	for miner: CraftedMiner in along():
 		if not miner.out:
-			return miner
-	return null
+			result.append(miner)
+	return result
 
 
-## Takes the next miner out to place it: the crafted one (marked `out`), or null for a
-## standard-issue one. Check `left_to_place` first.
-func take_next() -> CraftedMiner:
-	var miner: CraftedMiner = next_crafted()
+## How many standard-issue miners are still to place in this run.
+func standard_left() -> int:
+	return maxi(standard_count() - standard_out, 0)
+
+
+## Takes a miner out to place it: `miner` (one of `waiting`, marked `out`), or a standard-issue one
+## for null. Check `left_to_place` first.
+func take(miner: CraftedMiner) -> void:
 	if miner:
 		miner.out = true
 	else:
 		standard_out += 1
 	emit_changed()
-	return miner
 
 
 ## Brings a miner picked up back (`miner`, or null for a standard-issue one), to place it again.

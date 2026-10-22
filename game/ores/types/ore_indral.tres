@@ -11,6 +11,7 @@ band = 2
 tier = 11
 ammo_yield = 2
 mine_rate = 0.7
+hardness = 3
 color = Color(0.45, 0.3, 1, 1)
 glow = 2
 icon = ExtResource("3_icon")

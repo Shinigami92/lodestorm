@@ -1,15 +1,18 @@
 class_name HoldCard
 extends StationCard
 ## The holo card of the hold (`OreHold`): the selected tank's ore, how much the hold has of it and
-## the open regions where it's found. An ore never brought aboard shows as unknown.
+## the open regions where it's found, and for an ore too hard for a miner's first drill the drill
+## level that mines it at full speed. An ore never brought aboard shows as unknown.
 
 const NOTE_COLOR := Color(1.0, 1.0, 1.0, 0.75)
+const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 
 @onready var _badge: Control = %Badge
 @onready var _title: Label = %Title
 @onready var _band: Label = %Band
 @onready var _amount: Label = %Amount
 @onready var _found_in: Label = %FoundIn
+@onready var _drill: Label = %Drill
 @onready var _close: Button = %Close
 
 
@@ -25,6 +28,9 @@ func show_part(part: StationPart) -> void:
 		return
 	var ore_type: OreType = tank.ore_type
 	_set_badge(ore_type if tank.found else null)
+	var drill_mk: int = DRILL.mk_for_hardness(ore_type.hardness)
+	_drill.visible = tank.found and drill_mk > 1
+	_drill.text = tr("Full speed with drill MK%d.") % drill_mk
 	if not tank.found:
 		_title.text = tr("Unknown ore")
 		_band.text = band_name(ore_type.band)

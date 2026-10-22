@@ -17,6 +17,9 @@ const COSTS: MkCosts = preload("res://game/progression/upgrades/mk_costs.tres")
 @export var levels: Array[UpgradeLevel] = []
 ## How much its levels cost compared to the standard (`COSTS`, e.g. 0.5: half the ore).
 @export var cost_scale: float = 1.0
+## Drills only: the hardest ore (`OreType.hardness`) MK1 mines at full speed; the levels raise it
+## (`UpgradeLevel.hardness`). -1: not a drill.
+@export var hardness: int = -1
 
 
 ## The highest MK level.
@@ -32,6 +35,19 @@ func level_after(mk: int) -> UpgradeLevel:
 ## How much MK `mk` improves the values (1 at MK1).
 func multiplier(mk: int) -> float:
 	return levels[mk - 2].multiplier if mk >= 2 and mk <= max_mk() else 1.0
+
+
+## Drills only: the hardest ore MK `mk` mines at full speed.
+func hardness_at(mk: int) -> int:
+	return levels[mk - 2].hardness if mk >= 2 and mk <= max_mk() else hardness
+
+
+## Drills only: the lowest MK level that mines ores of `ore_hardness` at full speed, or 0 if none.
+func mk_for_hardness(ore_hardness: int) -> int:
+	for mk: int in range(1, max_mk() + 1):
+		if hardness_at(mk) >= ore_hardness:
+			return mk
+	return 0
 
 
 ## What raising it to MK `mk` costs, in units per ore type (empty for MK1 or beyond the highest).

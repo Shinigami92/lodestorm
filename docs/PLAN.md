@@ -72,6 +72,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 11 B: upgrade levels and skill ranks taking real time (paid when started, each time set by hand per level and rank, 1 min to 6 h on the first ladder; one per part at a time, any number at once; running on the wall clock, also during runs and while the game is closed, taking effect once done and the mission is over), the card's filling pip, time left and "Stop" (pressed twice, the whole cost back), the breathing pip on the weapons and the helmet, the ring on the skill graph, a chime when one finishes, the jobs in each player's save, and the debug overlay finishing them
 - Step 11 C1: crafted miners, kept and upgraded one by one (each player's fleet in their save, M-01 for everyone, old miner levels moved onto it), the miners' bay (six cradles, building on the wall clock, the pad's parts per miner with the plating, going along or staying aboard), six miners per run with standard-issue ones filling up, picking up with `interact`, miners left on the planet lost, number plates in the owner's color, and the debug overlay building them
 - Step 11 C2: placing and picking up miners taking time (3 / 5 s, standing still with the weapon lowered, cancelled by moving, dashing or attacking, not by damage), the greybox fold and unfold (lowering from the back, the legs folding in), the servos' and the latch's sounds, the run's miners as ticks under the suit ring
+- Step 11 D1: drill hardness (each ore's hardness, each drill level's set by hand; a drill too soft mining at a quarter of the speed, turning slower with a strained loop), placing taking the miner that mines the node's ore fastest, the drill's card showing the ores it mines at full speed and what the next level adds, the silo's card naming the drill level
 
 ## Todo
 
@@ -80,7 +81,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 Each step builds on the ones before it (steps 1–10 are done).
 
 - [ ] **Step 11 — refinery, crafted miners, timed upgrades** ([`planned/refinery.md`](planned/refinery.md))
-  - [ ] **D** drill hardness, alloys in the MK4+ costs and the prototypes' build cost
+  - [ ] **D2** alloys in the MK4+ costs and the prototypes' build cost (the cards, the rack's "Used for", jobs keeping what was paid, costs as items)
 - [ ] **Step 12 — the station** ([`planned/station.md`](planned/station.md)); concept images first
   - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs
   - [ ] **B** the named NPCs with their first topics, ambient colonists

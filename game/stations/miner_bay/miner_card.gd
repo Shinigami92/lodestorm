@@ -198,5 +198,6 @@ func _reset(shown: bool) -> void:
 	_cost_row.visible = false
 	_time.visible = false
 	_status.visible = false
+	hide_reach()
 	for dimmed: CanvasItem in [_title, _description, _pips, _cost_row]:
 		dimmed.modulate = Color.WHITE

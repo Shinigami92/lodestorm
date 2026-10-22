@@ -103,11 +103,7 @@ func show_miner(
 		return
 	_title.text = shown.plate()
 	_description.text = tr("Lost only if it's left on the planet.")
-	_effect.text = (
-		tr("Goes along next run")
-		if shown.going_along
-		else tr("Stays aboard next run")
-	)
+	_effect.text = (tr("Goes along next run") if shown.going_along else tr("Stays aboard next run"))
 	_parts.visible = true
 	for part: Upgrade in _part_rows:
 		var job: TimedJob = shown.upgrades.get_job(part)

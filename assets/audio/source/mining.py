@@ -1,5 +1,5 @@
 """Recipes of the mining sounds: placing a miner, its drill, the full chime, the hose, the
-breakdown and the repair."""
+breakdown, the repair, the servos folding and unfolding it and the latch when it's folded."""
 
 import math
 import random
@@ -124,3 +124,42 @@ def repair(rng: random.Random, take: str, variant: int) -> Signal:
     layers.append((mix((torch, 1.0), (highpass(crackle(rng, 0.5, 400), 3000), 0.6)), 0.25, 0.75))
     signal = mix(*layers)
     return signal + [0.0] * max(0, round(seconds * 44100) - len(signal))
+
+
+@sound("mining/miner_servo", loop=True, takes="abc")
+def miner_servo(rng: random.Random, take: str, variant: int) -> Signal:
+    """A miner's servos folding or unfolding its legs (a loop, 1 s; the game raises its pitch
+    while it unfolds and lowers it while it folds): a whining motor, its gears whirring and a soft
+    hydraulic hiss. a: a thin, high whine; b: a lower, heavier drive; c: a geared whir with a
+    stepping ratchet."""
+    seconds = loop_seconds(1.0)
+    hz = {"a": 520.0, "b": 260.0, "c": 380.0}[take]
+    whine = mix((tone(hz, seconds, "saw"), 1.0), (tone(hz * 1.5, seconds), 0.35), (tone(hz * 2.0, seconds), 0.2))
+    whine = tremolo(bandpass(whine, hz * 2.2, 0.9), 9.0, 0.15)
+    gears = bandpass(noise(rng, seconds), hz * 4.0, 2.5)
+    hiss = highpass(noise(rng, seconds), 5000)
+    layers: list = [(whine, 0.55), (gears, 0.3 if take != "b" else 0.15), (hiss, 0.06)]
+    if take == "b":
+        layers.append((lowpass(tone(hz * 0.5, seconds, "square"), 300), 0.35))
+    if take == "c":
+        for k in range(12):
+            layers.append((click(rng, jitter(rng, 3400, 0.05), 6, 0.008), 0.3, k / 12.0))
+    return saturate(mix(*layers), 1.2)
+
+
+@sound("mining/miner_latch", takes="abc")
+def miner_latch(rng: random.Random, take: str, variant: int) -> Signal:
+    """A miner folded up on the back: its legs' latches snapping shut, a short clack of steel and
+    a sigh of the hydraulics settling. a: one firm clack; b: two quick latches; c: a heavy clunk
+    with a ring."""
+    j = 0.05
+    clack = mix((click(rng, jitter(rng, 2600, j), 4, 0.02), 1.0), (thump(420, 240, 0.004, 0.05, 0.06), 0.7))
+    steel = modes(rng, [(jitter(rng, 1250, j), 0.12, 1.0), (jitter(rng, 2900, j), 0.08, 0.5)], 0.15)
+    sigh = burst(rng, 0.3, 0.02, 0.18, "highpass", 3000)
+    layers: list = [(clack, 1.0), (steel, 0.25), (sigh, 0.1, 0.05)]
+    if take == "b":
+        layers.append((clack, 0.8, 0.09))
+    if take == "c":
+        layers.append((thump(150, 70, 0.01, 0.15, 0.2), 0.9))
+        layers.append((modes(rng, [(jitter(rng, 640, j), 0.5, 1.0), (1530, 0.3, 0.4)], 0.5), 0.15))
+    return saturate(mix(*layers), 1.2)

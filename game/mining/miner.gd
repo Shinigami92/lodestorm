@@ -7,8 +7,9 @@ extends StaticBody3D
 ## health it breaks down: it stops mining and the hose disconnects, so its ore can't be taken out
 ## (it keeps it). The frame blinks red until a player standing within `settings.repair_range` has
 ## repaired it completely. Players repair damaged miners that still work too.
-## Its sounds: set down with a thud, the drill's loop while it mines, the hose's while ore flows,
-## a chime when full, an alarm when it breaks down and the repair's loop while a player mends it.
+## Its sounds: set down with a thud, the servos' loop while it folds or unfolds (higher as it
+## unfolds), the drill's loop while it mines, the hose's while ore flows, a chime when full, an
+## alarm when it breaks down and the repair's loop while a player mends it.
 ## A player's miners come from their `MinerFleet` (`take_from`): a crafted one brings its own
 ## levels (`upgrades`), which raise its fill rate (`drill_upgrade`), capacity (`tank_upgrade`), hose
 ## range and transfer rate (`hose_upgrade`) and health (`plating_upgrade`), and wears its number
@@ -16,14 +17,18 @@ extends StaticBody3D
 ## `settings.standard_fill_share` and has a plain grey plate. Any player can pick one up with
 ## `interact` within `settings.repair_range` (`pick_up`): what's in its tank goes onto their back
 ## and the miner back to its owner's fleet, to place again.
+## Placing and picking up take time (see `MinerHandling`): meanwhile its `carrier` moves it between
+## their back and the node (`unfolded`): it lowers from the back and unfolds its legs, or the
+## reverse. Only a standing miner mines, connects its hose and can be picked up.
 ##
 ## The look lives in the `Model` child, so a modeled asset can replace the greybox. The model
 ## provides these parts by name: `Fill` (scaled along Y from 0 to 1 with the fill level; it and its
 ## meshes get the ore material), `FullLamp`, `HoseOutlet`, and meshes named `Frame*` (the
-## structure that shows damage). Damage is drawn as an overlay on the frame, so it works on top of
-## any material the model brings. Parts are looked up among all descendants (also inside an
-## instanced model scene). The model's front is +Z: when the miner is placed, the model turns its
-## front toward the camera's view (plus `FACING_OFFSET`), so the fill column stays in view.
+## structure that shows damage; `Frame_Legs` folds in towards the column). Damage is drawn as an
+## overlay on the frame, so it works on top of any material the model brings. Parts are looked up
+## among all descendants (also inside an instanced model scene). The model's front is +Z: when the
+## miner is placed, the model turns its front toward the camera's view (plus `FACING_OFFSET`), so
+## the fill column stays in view.
 
 ## Emitted once each time the miner becomes full.
 signal filled
@@ -53,6 +58,15 @@ const FACING_OFFSET: float = 25.0
 const FLASH_DURATION: float = 0.1
 ## Blinks per second while broken.
 const BLINK_RATE: float = 2.0
+## Its size folded up on a player's back, and how far its legs reach out folded (shares).
+const BACK_SCALE: float = 0.25
+const FOLDED_LEGS: float = 0.3
+## Height of the model's middle (m), which sits at the carrier's hose port while folded.
+const MODEL_MIDDLE: float = 1.8
+## Seconds it takes to stand again when a pickup is cancelled.
+const STAND_TIME: float = 0.4
+## The servos' pitch folded and standing.
+const SERVO_PITCH := Vector2(0.8, 1.2)
 
 const PLACE_SOUND: Sound = preload("res://assets/audio/sfx/mining/miner_place.tres")
 const DRILL_SOUND: Sound = preload("res://assets/audio/sfx/mining/drill.tres")
@@ -60,6 +74,7 @@ const HOSE_SOUND: Sound = preload("res://assets/audio/sfx/mining/hose.tres")
 const FULL_SOUND: Sound = preload("res://assets/audio/sfx/mining/miner_full.tres")
 const BREAKDOWN_SOUND: Sound = preload("res://assets/audio/sfx/mining/breakdown.tres")
 const REPAIR_SOUND: Sound = preload("res://assets/audio/sfx/mining/repair.tres")
+const SERVO_SOUND: Sound = preload("res://assets/audio/sfx/mining/miner_servo.tres")
 
 @export var settings: MinerSettings
 @export var drill_upgrade: Upgrade
@@ -90,6 +105,10 @@ var health: float
 var broken: bool = false
 ## Horizontal radius of the body (its collision shape): attackers reach it at its surface.
 var body_radius: float
+## How far it stands: 0 folded on its `carrier`'s back, 1 standing on its node.
+var unfolded: float = 1.0
+## The player placing or picking it up (see `MinerHandling`), or null.
+var carrier: Player
 
 var _flash_left: float = 0.0
 var _time: float = 0.0
@@ -98,6 +117,12 @@ var _frame_overlay := StandardMaterial3D.new()
 var _drill: AudioStreamPlayer3D
 var _flow: AudioStreamPlayer3D
 var _repairing: AudioStreamPlayer3D
+var _servo: AudioStreamPlayer3D
+## The model's turn towards the camera, and where its carrier's back was last.
+var _facing := Basis.IDENTITY
+var _back: Vector3
+## What picks it up (a fleet's miner), or null.
+var _pickup: Interactable
 
 @onready var _model: Node3D = $Model
 @onready var _fill: Node3D = _model.find_child("Fill", true, false)
@@ -105,6 +130,7 @@ var _repairing: AudioStreamPlayer3D
 @onready var _hose_outlet: Node3D = _model.find_child("HoseOutlet", true, false)
 @onready var _hose: Hose = $Hose
 @onready var _plate: Node3D = _model.get_node_or_null(^"Plate") as Node3D
+@onready var _legs: Node3D = _model.find_child("Frame_Legs", true, false) as Node3D
 
 
 func _ready() -> void:
@@ -115,7 +141,11 @@ func _ready() -> void:
 		health = minf(crafted.health, health)
 		broken = health == 0.0
 	body_radius = (($CollisionShape3D as CollisionShape3D).shape as CylinderShape3D).radius
+	# Posed every frame while it folds, not between physics steps.
+	_model.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_face_camera()
+	_facing = _model.global_basis
+	_back = global_position
 	if ore_type:
 		# In sync with the deposit it stands on (see `OreGlow.phase_at`).
 		var phase: float = OreGlow.phase_at(global_position)
@@ -139,11 +169,15 @@ func _ready() -> void:
 		_add_pickup()
 	_update_gauge()
 	_update_frame()
-	Sfx.play_at(PLACE_SOUND, global_position)
+	if is_standing():
+		Sfx.play_at(PLACE_SOUND, global_position)
+	else:
+		_pose()
 
 
 func _physics_process(delta: float) -> void:
-	var mining: bool = not broken and not is_full()
+	var standing: bool = is_standing()
+	var mining: bool = standing and not broken and not is_full()
 	if mining:
 		amount = minf(amount + fill_rate() * delta, capacity())
 		_update_gauge()
@@ -156,7 +190,11 @@ func _physics_process(delta: float) -> void:
 		mending = health < max_health()
 		repair(settings.repair_rate * delta)
 
-	hose_target = (null if broken else Player.nearest(get_tree(), global_position, hose_range()))
+	hose_target = (
+		Player.nearest(get_tree(), global_position, hose_range())
+		if standing and not broken
+		else null
+	)
 	var flowing: bool = false
 	if hose_target:
 		var taken: float = take(transfer_rate() * delta)
@@ -165,10 +203,22 @@ func _physics_process(delta: float) -> void:
 	_drill = _loop(_drill, DRILL_SOUND, mining)
 	_flow = _loop(_flow, HOSE_SOUND, flowing)
 	_repairing = _loop(_repairing, REPAIR_SOUND, mending)
+	_servo = _loop(_servo, SERVO_SOUND, not standing)
+	if _servo:
+		_servo.pitch_scale = lerpf(SERVO_PITCH.x, SERVO_PITCH.y, unfolded)
 
 
 func _process(delta: float) -> void:
 	_time += delta
+	if not is_instance_valid(carrier) and unfolded < 1.0:
+		# A pickup cancelled: it stands again.
+		unfolded = move_toward(unfolded, 1.0, delta / STAND_TIME)
+		if unfolded >= 1.0:
+			stand()
+	if unfolded < 1.0:
+		_pose()
+	if _pickup:
+		_pickup.enabled = is_standing()
 	_flash_left = maxf(_flash_left - delta, 0.0)
 	_update_frame()
 	_hose.visible = hose_target != null
@@ -180,6 +230,21 @@ func _process(delta: float) -> void:
 
 func is_full() -> bool:
 	return amount >= capacity()
+
+
+## Whether it stands on its node, nobody placing or picking it up: only then it mines, connects
+## its hose and can be picked up.
+func is_standing() -> bool:
+	return unfolded >= 1.0 and not is_instance_valid(carrier)
+
+
+## Sets it down for good (placing done, or standing again after a cancelled pickup): it stands
+## and lands with a thud.
+func stand() -> void:
+	unfolded = 1.0
+	carrier = null
+	_pose()
+	Sfx.play_at(PLACE_SOUND, global_position)
 
 
 ## Takes the next miner out of `from_fleet` (before it enters the tree): a crafted one with its
@@ -326,9 +391,9 @@ func _show_plate() -> void:
 
 ## The `Interactable` that picks it up (any player within the repair range), with an amber ring.
 func _add_pickup() -> void:
-	var pickup := Interactable.new()
-	pickup.name = "Pickup"
-	pickup.interact_range = settings.repair_range
+	_pickup = Interactable.new()
+	_pickup.name = "Pickup"
+	_pickup.interact_range = settings.repair_range
 	var ring := MeshInstance3D.new()
 	ring.name = "Highlight"
 	var torus := TorusMesh.new()
@@ -341,9 +406,25 @@ func _add_pickup() -> void:
 	ring.mesh = torus
 	ring.position.y = 0.05
 	ring.visible = false
-	pickup.add_child(ring)
-	add_child(pickup)
-	pickup.used.connect(func(player: Player) -> void: pick_up(player))
+	_pickup.add_child(ring)
+	add_child(_pickup)
+	_pickup.used.connect(func(player: Player) -> void: player.handling.pick_up(self))
+
+
+## Between its carrier's back (folded, small) and its node (standing): the first half of `unfolded`
+## lowers it from the back, the second unfolds its legs.
+func _pose() -> void:
+	if is_instance_valid(carrier):
+		_back = carrier.get_hose_port_position() + Vector3.DOWN * BACK_SCALE * MODEL_MIDDLE
+	var lowered: float = smoothstep(0.0, 1.0, clampf(unfolded * 2.0, 0.0, 1.0))
+	var spread: float = smoothstep(0.0, 1.0, clampf(unfolded * 2.0 - 1.0, 0.0, 1.0))
+	_model.global_transform = Transform3D(
+		_facing.scaled(Vector3.ONE * lerpf(BACK_SCALE, 1.0, lowered)),
+		_back.lerp(global_position, lowered)
+	)
+	if _legs:
+		var reach: float = lerpf(FOLDED_LEGS, 1.0, spread)
+		_legs.scale = Vector3(reach, 1.0, reach)
 
 
 func _face_camera() -> void:

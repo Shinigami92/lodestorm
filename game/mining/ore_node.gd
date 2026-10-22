@@ -99,8 +99,11 @@ func is_free() -> bool:
 
 ## Places a new miner from `miner_scene` on this node and returns it, or null if occupied. With
 ## `fleet` it's the next miner of that fleet (see `Miner.take_from`), placed by `by`; without, a
-## loose MK1 miner.
-func place_miner(miner_scene: PackedScene, fleet: MinerFleet = null, by: Player = null) -> Miner:
+## loose MK1 miner. `unfolding`: it starts folded on `by`'s back, which sets it down (see
+## `MinerHandling`); else it stands at once.
+func place_miner(
+	miner_scene: PackedScene, fleet: MinerFleet = null, by: Player = null, unfolding: bool = false
+) -> Miner:
 	if not is_free():
 		return null
 	miner = miner_scene.instantiate() as Miner
@@ -108,6 +111,9 @@ func place_miner(miner_scene: PackedScene, fleet: MinerFleet = null, by: Player 
 	miner.ore_node = self
 	if fleet:
 		miner.take_from(fleet, by)
+	if unfolding and by:
+		miner.carrier = by
+		miner.unfolded = 0.0
 	_mount.add_child(miner)
 	return miner
 

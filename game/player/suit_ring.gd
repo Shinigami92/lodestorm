@@ -17,10 +17,11 @@ extends MeshInstance3D
 ## unless its value is low (health below half, a nearly empty magazine) or the player set "Always
 ## show"; the spare ticks show on a reload and when a spare is used. Aboard (weapon holstered) the
 ## outline hides too. The miners' ticks show for `lit_time` when one is placed or picked up,
-## while the player places or picks one up and while it stands next to one. Its size is a setting
-## (`GameSettings.ring_scale`); while the player's pause panel is open it stays shown and lit (also
-## while the world is paused), so a change of size shows right away. A teammate's ring (a player
-## that isn't `local`) shows only the health arc inside an outline in their player color.
+## while the player places or picks one up, while it stands next to one, and always with "Always
+## show". Its size is a setting (`GameSettings.ring_scale`); while the player's pause panel is open
+## it stays shown and lit (also while the world is paused), so a change of size shows right away.
+## A teammate's ring (a player that isn't `local`) shows only the health arc inside an outline in
+## their player color.
 ## Tilts with the ground under the player; drawn over the ground and low plants, hidden by cliffs
 ## and props.
 
@@ -340,8 +341,8 @@ func _update_miners(delta: float) -> void:
 	_miners_lit = maxf(_miners_lit - delta, 0.0)
 	var showing: bool = (
 		_player.local
-		and _player.weapon_allowed
-		and (_miners_lit > 0.0 or _player.handling.busy() or _next_to_miner())
+		and (_player.weapon_allowed or previewing())
+		and (_miners_lit > 0.0 or _player.handling.busy() or _next_to_miner() or _always())
 	)
 	miners_alpha = _fade(miners_alpha, showing, delta)
 	_material.set_shader_parameter(&"miner_alpha", miners_alpha)
@@ -474,7 +475,8 @@ func previewing() -> bool:
 	return _player.menu != null and _player.menu == _player.pause_panel
 
 
-## Whether the arcs stay lit (the "Always show" setting, or the pause panel's preview).
+## Whether the arcs, the spare ticks and the miners' ticks stay lit (the "Always show" setting,
+## or the pause panel's preview).
 func _always() -> bool:
 	return GameSettings.ring_always_show or previewing()
 

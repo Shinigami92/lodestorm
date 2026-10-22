@@ -28,6 +28,7 @@ func before_each() -> void:
 func after_each() -> void:
 	Sfx.played.disconnect(_on_played)
 	Sfx.stop_all()
+	GameSettings.ring_always_show = false
 	for action: StringName in [&"move_right", &"attack"]:
 		Input.action_release(action)
 
@@ -176,6 +177,15 @@ func test_the_ring_ticks_hide_away_from_miners() -> void:
 	_player.reset_physics_interpolation()
 	await wait_seconds(SuitRing.FADE_TIME + 0.2)
 	assert_eq(ring.miners_alpha, 0.0)
+
+
+func test_always_show_keeps_the_ring_ticks_shown() -> void:
+	var ring := _player.get_node("SuitRing") as SuitRing
+	GameSettings.ring_always_show = true
+	_player.global_position = _node.global_position + Vector3(20.0, 0.0, 0.0)
+	_player.reset_physics_interpolation()
+	await wait_seconds(SuitRing.FADE_TIME + 0.2)
+	assert_eq(ring.miners_alpha, 1.0)
 
 
 ## A standing miner of the player's fleet on `_node`.

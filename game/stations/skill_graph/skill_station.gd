@@ -6,7 +6,9 @@ extends Station
 ## `Skill`), linked to the skill they require; a link lights up once its skill is learned. Learned
 ## skills glow fully, ones the player can learn right now pulse, ones that open later stay dim.
 ## Its card (`SkillCard`) learns the selected skill's next rank for the player using it, with ore
-## from their own hold; nothing can be learned while a mission is underway.
+## from their own hold; the rank then runs on the wall clock (see `Skills.start`), a ring filling
+## around its point, and can be stopped for the whole cost back (pressed twice). Nothing can be
+## learned or stopped while a mission is underway.
 ## The mouse pans (dragging) and zooms (wheel, around the cursor); `zoom_in`/`zoom_out` (triggers,
 ## +/-) zoom too. Directions select the nearest skill (the view follows it), `tab_prev`/`tab_next`
 ## jump between clusters. The camera frames `Graph/Focus` (moved by panning) at `view_height`
@@ -34,6 +36,29 @@ const ENERGY_LINK_LIT: float = 0.8
 const ENERGY_LINK_DARK: float = 0.18
 ## Pulses per second of the skills that can be learned now.
 const PULSE_RATE: float = 1.2
+## The ring around a skill under way: its radius and width, in m.
+const RING_RADIUS: float = 0.1
+const RING_WIDTH: float = 0.018
+const RING_SHADER: String = """
+shader_type spatial;
+render_mode unshaded, cull_disabled, depth_draw_never;
+
+uniform vec3 color : source_color;
+uniform float fill = 0.0;
+uniform float inner = 0.8;
+
+void fragment() {
+	vec2 at = UV * 2.0 - 1.0;
+	float reach = length(at);
+	if (reach > 1.0 || reach < inner) {
+		discard;
+	}
+	// Clockwise from the top, like a clock hand.
+	float turn = fract(atan(at.x, -at.y) / 6.28318 + 1.0);
+	ALBEDO = color;
+	ALPHA = turn <= fill ? 0.95 : 0.2;
+}
+"""
 ## Where the card may sit beside the selected skill, shifted up or down (in half card heights),
 ## in the order they're tried.
 const CARD_SHIFTS: Array[float] = [0.0, -1.0, 1.0]
@@ -58,6 +83,8 @@ const HOLOGRAM_PRIORITY: int = 2
 
 ## The mission that locks it while underway; found in the scene tree when not set.
 var mission: Mission
+## "Stop" waiting for its second press.
+var stop_press := ConfirmPress.new()
 ## How far it's zoomed (1: the whole graph, down to `MIN_ZOOM`).
 var zoom: float = 1.0
 ## The point of the graph the view centers on, in m (x right, y up).
@@ -66,6 +93,9 @@ var pan: Vector2 = Vector2.ZERO
 var _parts: Dictionary[Skill, StationPart] = {}
 var _materials: Dictionary[Skill, ShaderMaterial] = {}
 var _pips: Dictionary[Skill, MkPips] = {}
+## The ring around each skill's point, shown while a rank of it is under way.
+var _rings: Dictionary[Skill, MeshInstance3D] = {}
+var _ring_shader: Shader
 ## The link of each skill that requires another, from that one to it.
 var _links: Dictionary[Skill, ShaderMaterial] = {}
 var _time: float = 0.0
@@ -129,22 +159,46 @@ func is_locked() -> bool:
 func can_learn(skill: Skill) -> bool:
 	if is_locked() or not user or not skill:
 		return false
-	if not user.skills.is_open(skill):
+	if not user.skills.is_open(skill) or user.skills.is_running(skill):
 		return false
 	var next: SkillRank = user.skills.next_rank(skill)
 	return next != null and user.hold.can_pay(next.cost)
 
 
-## Learns the next rank of `skill` for the player using it, paid from the hold. Returns whether it
-## did.
+## Learns the next rank of `skill` for the player using it, paid from the hold, and starts it on
+## the wall clock. Returns whether it did.
 func learn(skill: Skill) -> bool:
 	if not can_learn(skill):
 		return false
 	if not user.hold.pay(user.skills.next_rank(skill).cost):
 		return false
-	user.skills.raise(skill)
+	user.skills.start(skill, Time.get_unix_time_from_system())
 	refresh()
 	return true
+
+
+## Whether the user's rank of `skill` under way can be stopped now.
+func can_stop(skill: Skill) -> bool:
+	return not is_locked() and user != null and user.skills.is_running(skill)
+
+
+## Stops the user's rank of `skill` under way on the second press (`stop_press`), its whole cost
+## back into their hold. Returns whether it stopped.
+func stop(skill: Skill) -> bool:
+	if not can_stop(skill):
+		return false
+	if not stop_press.press(skill):
+		refresh()
+		return false
+	var refund: Dictionary[OreType, int] = user.skills.stop(skill)
+	for ore_type: OreType in refund:
+		user.hold.add(ore_type, refund[ore_type])
+	refresh()
+	return true
+
+
+func sells(item: Resource) -> bool:
+	return item is Skill and _parts.has(item as Skill)
 
 
 ## Zooms to `value` (clamped), keeping the graph point `around` where it is on screen.
@@ -183,6 +237,8 @@ func selected_cluster() -> SkillCluster:
 
 
 func select(part: StationPart) -> void:
+	if part != selected:
+		stop_press.reset()
 	super(part)
 	if part and user:
 		_follow(part)
@@ -446,9 +502,32 @@ func _add_skill(skill: Skill, cluster: SkillCluster) -> void:
 		pips.position = Vector3(0.0, -NODE_SIZE * 0.95, 0.0)
 		part.add_child(pips)
 		_pips[skill] = pips
+	var ring := MeshInstance3D.new()
+	ring.name = "Ring"
+	var quad := QuadMesh.new()
+	quad.size = Vector2.ONE * (RING_RADIUS * 2.0)
+	ring.mesh = quad
+	ring.material_override = _ring_material(cluster.color)
+	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	ring.visible = false
+	part.add_child(ring)
+	_rings[skill] = ring
 	_graph.add_child(part)
 	_parts[skill] = part
 	_materials[skill] = material
+
+
+## The ring's material in `color`, its fill at 0.
+func _ring_material(color: Color) -> ShaderMaterial:
+	if not _ring_shader:
+		_ring_shader = Shader.new()
+		_ring_shader.code = RING_SHADER
+	var material := ShaderMaterial.new()
+	material.shader = _ring_shader
+	material.set_shader_parameter(&"color", color)
+	material.set_shader_parameter(&"inner", 1.0 - RING_WIDTH / RING_RADIUS)
+	material.render_priority = HOLOGRAM_PRIORITY
+	return material
 
 
 ## A thin hologram bar from the skill `skill` requires to it.
@@ -482,6 +561,7 @@ func _show_states() -> void:
 	var pulse: float = lerpf(
 		ENERGY_PULSE_LOW, ENERGY_LEARNED, 0.5 + 0.5 * cos(_time * TAU * PULSE_RATE)
 	)
+	var now: float = Time.get_unix_time_from_system()
 	for skill: Skill in _parts:
 		var rank: int = skills.rank(skill) if skills else 0
 		var energy: float = ENERGY_CLOSED
@@ -491,12 +571,23 @@ func _show_states() -> void:
 			var next: SkillRank = skills.next_rank(skill)
 			var affordable: bool = not is_locked() and player.hold.can_pay(next.cost)
 			energy = pulse if affordable else maxf(ENERGY_OPEN, ENERGY_LEARNED * float(rank > 0))
+		var job: TimedJob = skills.get_job(skill) if skills else null
+		if job:
+			energy = maxf(ENERGY_OPEN, ENERGY_LEARNED * float(rank > 0))
 		_materials[skill].set_shader_parameter(&"energy", energy)
+		_rings[skill].visible = job != null
+		if job:
+			var ring := _rings[skill].material_override as ShaderMaterial
+			ring.set_shader_parameter(&"fill", job.progress(now))
 		if (
 			_pips.has(skill)
-			and (_pips[skill].mk != rank or _pips[skill].max_mk != skill.max_rank())
+			and (
+				_pips[skill].mk != rank
+				or _pips[skill].max_mk != skill.max_rank()
+				or _pips[skill].under_way != (job != null)
+			)
 		):
-			_pips[skill].show_level(rank, skill.max_rank())
+			_pips[skill].show_level(rank, skill.max_rank(), job != null)
 		if _links.has(skill):
 			_links[skill].set_shader_parameter(
 				&"energy", ENERGY_LINK_LIT if rank > 0 else ENERGY_LINK_DARK

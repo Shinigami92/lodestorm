@@ -227,6 +227,12 @@ static func player_data(of_player: Player) -> Dictionary:
 	var ranks: Dictionary = {}
 	for skill: Skill in of_player.skills.ranks:
 		ranks[_reference(skill)] = of_player.skills.ranks[skill]
+	var upgrade_jobs: Dictionary = {}
+	for upgrade: Upgrade in of_player.upgrades.jobs:
+		upgrade_jobs[_reference(upgrade)] = _job_data(of_player.upgrades.jobs[upgrade])
+	var skill_jobs: Dictionary = {}
+	for skill: Skill in of_player.skills.jobs:
+		skill_jobs[_reference(skill)] = _job_data(of_player.skills.jobs[skill])
 	return {
 		"version": VERSION,
 		"hold": hold,
@@ -237,7 +243,27 @@ static func player_data(of_player: Player) -> Dictionary:
 		"loadout": loadout,
 		"upgrades": levels,
 		"skills": ranks,
+		"upgrade_jobs": upgrade_jobs,
+		"skill_jobs": skill_jobs,
 	}
+
+
+## A level or rank under way as saved: the level it reaches, its start and its time.
+static func _job_data(job: TimedJob) -> Dictionary:
+	return {"level": job.level, "started": job.started, "seconds": job.seconds}
+
+
+## A level or rank under way from `data` (see `_job_data`), or null when it doesn't read.
+static func _job(data: Variant) -> TimedJob:
+	if not data is Dictionary:
+		return null
+	var saved: Dictionary = data
+	var level: float = _number(saved.get("level"), 0.0)
+	var started: float = _number(saved.get("started"), NAN)
+	var seconds: float = _number(saved.get("seconds"), -1.0)
+	if level < 1.0 or is_nan(started) or seconds < 0.0:
+		return null
+	return TimedJob.new(roundi(level), started, seconds)
 
 
 func _apply_ship(data: Dictionary) -> void:
@@ -376,6 +402,30 @@ func _apply_player(data: Dictionary) -> void:
 				_outdated = true
 				push_warning("Save: skipped skill %s" % path)
 		player.skills.emit_changed()
+	_apply_jobs(data)
+
+
+## Reads a player's levels and ranks under way and lets those done since take effect.
+func _apply_jobs(data: Dictionary) -> void:
+	if data.get("upgrade_jobs") is Dictionary:
+		var jobs: Dictionary = data["upgrade_jobs"]
+		for path: Variant in jobs:
+			var upgrade := _resource(path) as Upgrade
+			var job: TimedJob = _job(jobs[path])
+			if not upgrade or not job or not player.upgrades.restore(upgrade, job):
+				_outdated = true
+				push_warning("Save: skipped upgrade job %s" % path)
+	if data.get("skill_jobs") is Dictionary:
+		var jobs: Dictionary = data["skill_jobs"]
+		for path: Variant in jobs:
+			var skill := _resource(path) as Skill
+			var job: TimedJob = _job(jobs[path])
+			if not skill or not job or not player.skills.restore(skill, job):
+				_outdated = true
+				push_warning("Save: skipped skill job %s" % path)
+	var now: float = Time.get_unix_time_from_system()
+	player.upgrades.update(now)
+	player.skills.update(now)
 
 
 ## Reads a player's hold: units per item (`hold`) and the items ever in it (`found`).

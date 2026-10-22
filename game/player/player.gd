@@ -540,7 +540,9 @@ func _add_armor_pips() -> void:
 	_armor_pips.spacing = 0.06
 	add_child(_armor_pips)
 	_follow(marker, _armor_pips)
-	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
+	_armor_pips.show_level(
+		upgrades.mk(armor_upgrade), _armor_max_mk(), upgrades.is_running(armor_upgrade)
+	)
 	OccludedSilhouette.mark_visible(_armor_pips)
 
 
@@ -684,13 +686,15 @@ func _on_reload_timed(hit: bool, ammo: WeaponAmmo) -> void:
 		_ring.flash(AmmoGauge.TIMING)
 
 
-## Applies new MK levels to the equipped weapon (a stronger armor adds its extra health).
-## Upgrades are bought aboard, so the magazines are filled to their new size.
+## Applies new MK levels to the equipped weapon (a stronger armor adds its extra health) and shows
+## the levels under way. Levels take effect aboard, so the magazines are filled to their new size.
 func _on_upgrades_changed() -> void:
 	if weapon:
 		weapon.apply_upgrades(upgrades)
 	refill_ammo()
-	_armor_pips.show_level(upgrades.mk(armor_upgrade), _armor_max_mk())
+	_armor_pips.show_level(
+		upgrades.mk(armor_upgrade), _armor_max_mk(), upgrades.is_running(armor_upgrade)
+	)
 	vitals.update_maximum()
 
 

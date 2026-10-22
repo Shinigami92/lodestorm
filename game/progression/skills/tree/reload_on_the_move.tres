@@ -13,6 +13,7 @@ cost = Dictionary[ExtResource("2_ore_type"), int]({
 ExtResource("ore_olvane"): 240,
 ExtResource("ore_vyrel"): 120
 })
+seconds = 300
 
 [resource]
 script = ExtResource("9_skill")

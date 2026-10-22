@@ -877,6 +877,8 @@ msgid "Bar in the furnace: %d %%"
 msgstr "Barren im Ofen: %d %%"
 
 #: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Time left: %s"
 msgstr "Restzeit: %s"
 
@@ -885,10 +887,14 @@ msgid "Stop? The bars done stay, the ore of the others goes back to the hold."
 msgstr "Anhalten? Die fertigen Barren bleiben, das Erz der übrigen geht zurück ins Lager."
 
 #: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Stop for sure"
 msgstr "Wirklich anhalten"
 
 #: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Stop"
 msgstr "Anhalten"
 
@@ -901,6 +907,8 @@ msgid "Unknown alloy (tier %d)"
 msgstr "Unbekannte Legierung (Stufe %d)"
 
 #: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Takes %s"
 msgstr "Dauer: %s"
 
@@ -962,6 +970,19 @@ msgstr "Noch nicht gelernt"
 msgid "Learn"
 msgstr "Lernen"
 
+#: game/stations/skill_graph/skill_card.gd
+msgid "Rank %d under way"
+msgstr "Rang %d läuft"
+
+#: game/stations/skill_graph/skill_card.gd
+msgid "Learning"
+msgstr "Wird gelernt"
+
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "Stop? The whole cost goes back to the hold."
+msgstr "Anhalten? Die vollen Kosten gehen zurück ins Lager."
+
 #: game/stations/upgrade/upgrade_card.gd
 msgid "next: +%d %%"
 msgstr "nächste: +%d %%"
@@ -977,6 +998,10 @@ msgstr "Aufrüsten"
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Max"
 msgstr "Max"
+
+#: game/stations/upgrade/upgrade_card.gd
+msgid "MK%d under way"
+msgstr "MK%d läuft"
 
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Blueprint"

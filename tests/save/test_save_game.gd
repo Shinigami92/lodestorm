@@ -74,6 +74,26 @@ func test_skills_survive_a_restart() -> void:
 	assert_eq(_player.health, _player.max_health(), "full health with the saved skills")
 
 
+func test_jobs_under_way_survive_a_restart() -> void:
+	var now: float = Time.get_unix_time_from_system()
+	_player.upgrades.start(ARMOR, now - 10.0)
+	_player.upgrades.start(DRILL, now - 3600.0)
+	_player.skills.start(DASH, now)
+	_player.skills.jobs[DASH].seconds = 600.0
+	await wait_process_frames(1)
+	var saved: Dictionary = _saved("player.json")
+	assert_eq((saved["upgrade_jobs"] as Dictionary).size(), 2)
+	await _restart()
+	assert_true(_player.upgrades.is_running(ARMOR), "a minute takes longer than 10 s")
+	# JSON keeps the Unix time to well under a millisecond, not to the last bit on every platform.
+	assert_almost_eq(_player.upgrades.get_job(ARMOR).started, now - 10.0, 0.001)
+	assert_eq(_player.upgrades.get_job(ARMOR).seconds, ARMOR.levels[0].seconds)
+	assert_false(_player.upgrades.is_running(DRILL), "done while the game was closed")
+	assert_eq(_player.upgrades.mk(DRILL), 2)
+	assert_eq(_player.skills.get_job(DASH).seconds, 600.0, "its time as it started")
+	assert_eq(_player.skills.rank(DASH), 0)
+
+
 func test_story_survives_a_restart() -> void:
 	_ship.story.set_flag(&"quartermaster.greeting")
 	_ship.story.set_flag(&"quartermaster.ammo")

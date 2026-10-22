@@ -3,15 +3,19 @@ extends Station
 ## An upgrade station (see GAME_DESIGN.md, Upgrade stations): a station whose parts are upgrades
 ## (each `StationPart.item` an `Upgrade`), e.g. the fitting frame (the suit) or the miners'
 ## maintenance pad (drill, ore tank, hose reel). Its card (`UpgradeCard`) shows the selected
-## upgrade and buys its next level for the player using the station, with ore from their own hold.
-## Upgrades of weapons the player doesn't own yet are locked, levels above the ship's reach wait for
-## the next heat shield plate (`upgrade_cap`), and nothing can be bought while a mission is
-## underway.
+## upgrade and buys its next level for the player using the station, with ore from their own hold;
+## the level then runs on the wall clock (see `Upgrades.start`) and can be stopped for the whole
+## cost back (pressed twice). Upgrades of weapons the player doesn't own yet are locked, levels
+## above the ship's reach wait for the next heat shield plate (`upgrade_cap`), and nothing can be
+## bought or stopped while a mission is underway.
 
 ## The mission that locks it while underway; found in the scene tree when not set.
 var mission: Mission
 ## The ship whose heat shield caps the levels; the one it stands in when not set.
 var ship: Ship
+
+## "Stop" waiting for its second press.
+var stop_press := ConfirmPress.new()
 
 
 func _process(delta: float) -> void:
@@ -72,24 +76,57 @@ func can_buy(upgrade: Upgrade) -> bool:
 	var mk: int = user.upgrades.mk(upgrade)
 	return (
 		user.upgrades.next_level(upgrade) != null
+		and not user.upgrades.is_running(upgrade)
 		and mk < upgrade_cap()
 		and user.hold.can_pay(user.upgrades.next_cost(upgrade))
 	)
 
 
-## Buys the next level of `upgrade` for the player using it, paid from their hold. Returns whether
-## it did.
+## Buys the next level of `upgrade` for the player using it, paid from their hold, and starts it on
+## the wall clock. Returns whether it did.
 func buy(upgrade: Upgrade) -> bool:
 	if not can_buy(upgrade):
 		return false
 	if not user.hold.pay(user.upgrades.next_cost(upgrade)):
 		return false
-	user.upgrades.raise(upgrade)
+	user.upgrades.start(upgrade, Time.get_unix_time_from_system())
 	_bought(upgrade)
 	refresh()
 	return true
 
 
-## Called after buying a level of `upgrade` (e.g. to light the pips on what's shown).
+## Whether the user's level of `upgrade` under way can be stopped now.
+func can_stop(upgrade: Upgrade) -> bool:
+	return not is_locked() and user != null and user.upgrades.is_running(upgrade)
+
+
+## Stops the user's level of `upgrade` under way on the second press (`stop_press`), its whole cost
+## back into their hold. Returns whether it stopped.
+func stop(upgrade: Upgrade) -> bool:
+	if not can_stop(upgrade):
+		return false
+	if not stop_press.press(upgrade):
+		refresh()
+		return false
+	var refund: Dictionary[OreType, int] = user.upgrades.stop(upgrade)
+	for ore_type: OreType in refund:
+		user.hold.add(ore_type, refund[ore_type])
+	_bought(upgrade)
+	refresh()
+	return true
+
+
+func sells(item: Resource) -> bool:
+	return item is Upgrade and item in get_upgrades()
+
+
+func select(part: StationPart) -> void:
+	if part != selected:
+		stop_press.reset()
+	super(part)
+
+
+## Called after buying or stopping a level of `upgrade` (e.g. to show it on the pips of what's
+## shown).
 func _bought(_upgrade: Upgrade) -> void:
 	pass

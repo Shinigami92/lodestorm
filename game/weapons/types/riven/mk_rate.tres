@@ -6,30 +6,37 @@
 [sub_resource type="Resource" id="Mk2"]
 script = ExtResource("1_level")
 multiplier = 1.1
+seconds = 60
 
 [sub_resource type="Resource" id="Mk3"]
 script = ExtResource("1_level")
 multiplier = 1.2
+seconds = 300
 
 [sub_resource type="Resource" id="Mk4"]
 script = ExtResource("1_level")
 multiplier = 1.3
+seconds = 900
 
 [sub_resource type="Resource" id="Mk5"]
 script = ExtResource("1_level")
 multiplier = 1.4
+seconds = 2400
 
 [sub_resource type="Resource" id="Mk6"]
 script = ExtResource("1_level")
 multiplier = 1.5
+seconds = 5400
 
 [sub_resource type="Resource" id="Mk7"]
 script = ExtResource("1_level")
 multiplier = 1.6
+seconds = 10800
 
 [sub_resource type="Resource" id="Mk8"]
 script = ExtResource("1_level")
 multiplier = 1.7
+seconds = 21600
 
 
 [resource]

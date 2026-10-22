@@ -83,6 +83,13 @@ theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 4
 script = ExtResource("3_cost")
 
+[node name="Time" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+modulate = Color(1, 1, 1, 0.75)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+
 [node name="Status" type="Label" parent="Layout"]
 unique_name_in_owner = true
 auto_translate_mode = 2

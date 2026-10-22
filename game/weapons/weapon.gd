@@ -130,7 +130,7 @@ func apply_upgrades(upgrades: Upgrades) -> void:
 		_multipliers[part.stat] = upgrades.multiplier(part)
 		var pips: MkPips = get_pips(part)
 		if pips:
-			pips.show_level(upgrades.mk(part), part.max_mk())
+			pips.show_level(upgrades.mk(part), part.max_mk(), upgrades.is_running(part))
 	if ammo:
 		ammo.upgraded()
 

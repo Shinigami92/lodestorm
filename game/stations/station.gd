@@ -274,6 +274,12 @@ func can_use(_player: Player) -> bool:
 	return true
 
 
+## Whether `item` (an upgrade, a skill) is bought here; finished jobs chime at the station that
+## sells them (see `ProgressClock`).
+func sells(_item: Resource) -> bool:
+	return false
+
+
 ## Switches to the previous (-1) or next (1) group of parts; nothing by default.
 func _cycle(_step: int) -> void:
 	pass

@@ -11,6 +11,7 @@ cost = Dictionary[ExtResource("2_ore_type"), int]({
 ExtResource("ore_kyrite"): 180
 })
 value = 40
+seconds = 60
 
 [resource]
 script = ExtResource("9_skill")

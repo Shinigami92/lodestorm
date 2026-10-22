@@ -28,6 +28,8 @@ var _bench_display: Weapon
 var _bench_parts: Array[StationPart] = []
 ## The weapon on the bench as a part, to build it; shown while the player doesn't own it.
 var _build_part: StationPart
+## The levels of the player using it, watched for levels finishing.
+var _watched: Upgrades
 
 ## The weapons hang and lie with their barrels along +X.
 @onready var _rack: WeaponRack = $Rack
@@ -220,11 +222,29 @@ func _picked(part: StationPart) -> void:
 
 func _opened() -> void:
 	_show_owned()
+	# A level finishing meanwhile shows on the bench and the rack.
+	if _watched:
+		_watched.changed.disconnect(_show_owned)
+	_watched = user.upgrades if user else null
+	if _watched:
+		_watched.changed.connect(_show_owned)
+	super()
+
+
+func _closed() -> void:
+	if _watched:
+		_watched.changed.disconnect(_show_owned)
+		_watched = null
 	super()
 
 
 func _bought(_upgrade: Upgrade) -> void:
 	_show_owned()
+
+
+## Every weapon's parts, also those of weapons not on the bench.
+func sells(item: Resource) -> bool:
+	return item is WeaponPart
 
 
 ## Shows the player's levels on the bench's weapon, and the weapons they don't own see-through

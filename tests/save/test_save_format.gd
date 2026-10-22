@@ -56,6 +56,16 @@ func test_unknown_entries_are_skipped() -> void:
 		"loadout": [DRAY.resource_path, BRASK.resource_path],
 		"upgrades": {ARMOR.resource_path: 99, "res://nothing.tres": 2, DRILL.resource_path: "x"},
 		"skills": {SUIT.resource_path: 99, ARMOR.resource_path: 1, DASH.resource_path: 0},
+		"upgrade_jobs":
+		{
+			ARMOR.resource_path: {"level": 9, "started": 0.0, "seconds": 60.0},
+			DRILL.resource_path: {"level": 2, "started": "x", "seconds": 60.0},
+		},
+		"skill_jobs":
+		{
+			DASH.resource_path: {"level": 1, "started": 1e12, "seconds": 60.0},
+			SUIT.resource_path: {"level": 2, "started": 0.0, "seconds": 60.0},
+		},
 	}
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
@@ -71,6 +81,8 @@ func test_unknown_entries_are_skipped() -> void:
 	assert_eq(_player.upgrades.mk(DRILL), 1)
 	assert_eq(_player.skills.rank(SUIT), SUIT.max_rank(), "clamped")
 	assert_eq(_player.skills.ranks.size(), 1, "not a skill, rank 0")
+	assert_true(_player.upgrades.jobs.is_empty(), "beyond the highest, a start that isn't a time")
+	assert_eq(_player.skills.jobs.keys(), [DASH] as Array[Skill], "the rank after the current")
 
 
 ## Resources are saved by UID, so moving or renaming their files keeps the save working.

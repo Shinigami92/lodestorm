@@ -86,6 +86,8 @@ var story := Story.new()
 var heat_shield := HeatShield.new()
 ## How many of the refinery's furnaces it has, saved with the ship.
 var furnaces := Furnaces.new()
+## Lets the levels and skill ranks under way take effect once done.
+var progress_clock: ProgressClock
 
 var _aboard: Array[Player] = []
 ## Players in the shooting range's weapon zone.
@@ -126,6 +128,9 @@ func _ready() -> void:
 	_button_material.emission_enabled = true
 	_button_face.material_override = _button_material
 	_update_display()
+	progress_clock = ProgressClock.new()
+	progress_clock.name = "ProgressClock"
+	add_child(progress_clock)
 
 
 func _physics_process(delta: float) -> void:

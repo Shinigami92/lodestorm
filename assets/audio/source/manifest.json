@@ -221,6 +221,11 @@
       "variants": 1,
       "recordings": []
     },
+    "stations/job_done": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "weapons/auger_drill": {
       "made_by": "build.py",
       "variants": 1,

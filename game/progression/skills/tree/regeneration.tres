@@ -14,6 +14,7 @@ ExtResource("ore_olvane"): 240,
 ExtResource("ore_vyrel"): 120
 })
 value = 5
+seconds = 300
 
 [resource]
 script = ExtResource("9_skill")

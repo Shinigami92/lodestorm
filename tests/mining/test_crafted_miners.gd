@@ -77,6 +77,8 @@ func test_interact_picks_a_miner_up_with_its_ore() -> void:
 	await wait_physics_frames(3)
 	assert_eq(_player.interact_target.get_parent(), miner, "its pickup")
 	_player.interact()
+	assert_false(miner.is_queued_for_deletion(), "it takes time")
+	_player.handling.update(miner.settings.pick_up_time)
 	assert_true(miner.is_queued_for_deletion())
 	assert_true(_nodes[0].is_free())
 	assert_almost_eq(_player.cargo[miner.ore_type], 40.0, 1.0)

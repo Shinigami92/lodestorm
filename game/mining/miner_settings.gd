@@ -18,6 +18,9 @@ extends Resource
 @export var repair_rate: float = 25.0
 ## How close (horizontally, in m) a player must be to repair the miner.
 @export var repair_range: float = 2.5
+## Seconds a player takes to place a miner and to pick one up (standing still meanwhile).
+@export var place_time: float = 3.0
+@export var pick_up_time: float = 5.0
 ## Share of the fill rate a standard-issue miner mines at (the ship's, never upgraded).
 @export var standard_fill_share: float = 0.75
 ## What building a crafted miner costs, in units per item (ores and alloys); the same for every

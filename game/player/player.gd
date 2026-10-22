@@ -4,8 +4,9 @@ extends CharacterBody3D
 ## cursor on the ground, the right stick or else the movement direction; aliens there get locked
 ## on), and attacks there with the equipped weapon while `attack` is held. Places the miners of
 ## its `fleet` (up to six per run, its crafted ones first) on the nearest free ore node in range
-## with `place_miner`, picks miners up again with `interact`, and carries the ore that miners'
-## hoses move to it, shown in canisters on its back and as a badge rising above it
+## with `place_miner`, picks miners up again with `interact`, both taking a few seconds of
+## standing still (`handling`; moving, dashing or attacking cancels), and carries the ore that
+## miners' hoses move to it, shown in canisters on its back and as a badge rising above it
 ## (`OreArrival`). An arrow on the suit ring's edge points back to the ship (`ShipPointer`). Uses
 ## the nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
@@ -132,6 +133,8 @@ var spare_magazines: int:
 		return settings.spare_magazines + roundi(skills.value(Skill.Effect.SPARE_MAGAZINES))
 ## The dash (a skill).
 var suit_dash := SuitDash.new()
+## Placing and picking up miners, which take time.
+var handling := MinerHandling.new()
 ## Its own sounds and, for the local player, the ears.
 var sounds := PlayerSounds.new()
 ## The ground hazards it stands in (slick ice).
@@ -199,6 +202,9 @@ func _ready() -> void:
 	suit_dash.name = "SuitDash"
 	suit_dash.holder = self
 	add_child(suit_dash)
+	handling.name = "MinerHandling"
+	handling.holder = self
+	add_child(handling)
 	# Loaded here, not preloaded: its scripts refer back to the player's.
 	pause_panel = (load(PAUSE_PANEL_PATH) as PackedScene).instantiate() as PausePanel
 	pause_panel.name = "PausePanel"
@@ -241,6 +247,11 @@ func _physics_process(delta: float) -> void:
 	var move_input: Vector2 = Vector2.ZERO
 	if acting:
 		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
+	if handling.busy() and _cancels_handling(move_input):
+		handling.cancel()
+	var handling_miner: bool = handling.busy()
+	if handling_miner:
+		move_input = Vector2.ZERO
 	var move: Vector3 = IsoInput.camera_relative(move_input, camera_basis)
 	ground_contact.tick(delta)
 	var speed: float = settings.move_speed * ground_contact.speed()
@@ -248,7 +259,7 @@ func _physics_process(delta: float) -> void:
 		speed *= settings.reload_move_speed
 	if weapon:
 		speed *= weapon.move_share()
-	if acting and _action_just_pressed(&"dash"):
+	if acting and not handling_miner and _action_just_pressed(&"dash"):
 		suit_dash.dash(move)
 	var horizontal: Vector3 = suit_dash.step(
 		Vector3(velocity.x, 0.0, velocity.z).move_toward(
@@ -267,6 +278,9 @@ func _physics_process(delta: float) -> void:
 	if menu:
 		aim.target = null
 		aim.towards(menu.get_look_target())
+	elif handling_miner:
+		aim.target = null
+		aim.towards(handling.miner.global_position)
 	elif local:
 		aim.update(camera, camera_basis, move)
 	var target_yaw: float = atan2(-aim.direction.x, -aim.direction.z)
@@ -274,7 +288,8 @@ func _physics_process(delta: float) -> void:
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.
 	basis = Basis(Vector3.UP, yaw)
 	_animator.local_velocity = Vector2(velocity.dot(basis.x), -velocity.dot(basis.z))
-	_animator.aiming = weapon != null and weapon_allowed
+	# Lowered while placing or picking up a miner.
+	_animator.aiming = weapon != null and weapon_allowed and not handling_miner
 
 	if weapon:
 		_animator.hold = weapon.type.hold
@@ -284,9 +299,13 @@ func _physics_process(delta: float) -> void:
 		weapon.aim_target = aim.target
 		weapon.aim_point = aim.ground_point
 		weapon.trigger_held = (
-			weapon_allowed and _action_held(&"attack") and not aim.is_mouse_over_ui()
+			weapon_allowed
+			and not handling_miner
+			and _action_held(&"attack")
+			and not aim.is_mouse_over_ui()
 		)
 
+	handling.update(delta)
 	_update_miner_target()
 	if _action_just_pressed(&"place_miner"):
 		place_miner()
@@ -309,20 +328,24 @@ func _process(_delta: float) -> void:
 	_scanner.reach = skills.value(Skill.Effect.ORE_SCANNER)
 
 
-## Places the next miner of its `fleet` on `miner_target` and returns it, or null without a
-## target or once the run's miners are all placed.
+## Starts placing the next miner of its `fleet` on `miner_target` (see `handling`) and returns
+## it, or null without a target, while placing or picking up one, or once the run's miners are all
+## placed.
 func place_miner() -> Miner:
 	_update_miner_target()
 	if not miner_target or fleet.left_to_place() <= 0:
 		return null
-	var miner: Miner = miner_target.place_miner(miner_scene, fleet, self)
+	var miner: Miner = handling.place(miner_target)
 	_update_miner_target()
 	return miner
 
 
-## Uses `interact_target` and returns it, or null without a target.
+## Uses `interact_target` and returns it, or null without a target (or while placing or picking
+## up a miner).
 func interact() -> Interactable:
 	_update_interact_target()
+	if handling.busy():
+		return null
 	if interact_target:
 		interact_target.use(self)
 	return interact_target
@@ -505,6 +528,13 @@ func _action_just_pressed(action: StringName) -> bool:
 	return _action_held(action) and Input.is_action_just_pressed(action)
 
 
+## Whether the input cancels placing or picking up a miner: moving, dashing or attacking.
+func _cancels_handling(move_input: Vector2) -> bool:
+	if move_input.length() > 0.1 or _action_just_pressed(&"dash"):
+		return true
+	return _action_held(&"attack") and not aim.is_mouse_over_ui()
+
+
 ## Drops everything and lies still until `respawn`.
 func _on_died() -> void:
 	if menu:
@@ -518,6 +548,7 @@ func _on_died() -> void:
 		get_ammo().cancel_reload()
 	give_ammo_target = null
 	give_ammo_time = 0.0
+	handling.cancel()
 	if is_instance_valid(miner_target):
 		miner_target.highlighted = false
 	if is_instance_valid(interact_target):

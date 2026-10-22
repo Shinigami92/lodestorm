@@ -131,9 +131,19 @@
       "variants": 1,
       "recordings": []
     },
+    "mining/miner_latch": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "mining/miner_place": {
       "made_by": "build.py",
       "variants": 2,
+      "recordings": []
+    },
+    "mining/miner_servo": {
+      "made_by": "build.py",
+      "variants": 1,
       "recordings": []
     },
     "mining/repair": {

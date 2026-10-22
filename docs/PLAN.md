@@ -71,6 +71,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 11 A2: the eight alloys as data (`AlloyType` on `ItemType`, ingot badges with tier ticks), the refinery in the cargo bay (four furnaces unlocked one by one, one alloy in any amount each on the wall clock, started and stopped at their cards; the ingot rack; recipe discovery; pipes from the silo hubs; the batches in each player's save, the furnaces in the ship's), their sounds, and the debug overlay unlocking furnaces, finishing batches and filling the rack
 - Step 11 B: upgrade levels and skill ranks taking real time (paid when started, each time set by hand per level and rank, 1 min to 6 h on the first ladder; one per part at a time, any number at once; running on the wall clock, also during runs and while the game is closed, taking effect once done and the mission is over), the card's filling pip, time left and "Stop" (pressed twice, the whole cost back), the breathing pip on the weapons and the helmet, the ring on the skill graph, a chime when one finishes, the jobs in each player's save, and the debug overlay finishing them
 - Step 11 C1: crafted miners, kept and upgraded one by one (each player's fleet in their save, M-01 for everyone, old miner levels moved onto it), the miners' bay (six cradles, building on the wall clock, the pad's parts per miner with the plating, going along or staying aboard), six miners per run with standard-issue ones filling up, picking up with `interact`, miners left on the planet lost, number plates in the owner's color, and the debug overlay building them
+- Step 11 C2: placing and picking up miners taking time (3 / 5 s, standing still with the weapon lowered, cancelled by moving, dashing or attacking, not by damage), the greybox fold and unfold (lowering from the back, the legs folding in), the servos' and the latch's sounds, the run's miners as ticks under the suit ring
 
 ## Todo
 
@@ -79,7 +80,6 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 Each step builds on the ones before it (steps 1–10 are done).
 
 - [ ] **Step 11 — refinery, crafted miners, timed upgrades** ([`planned/refinery.md`](planned/refinery.md))
-  - [ ] **C2** crafted miners: placing and picking up taking time (3 / 5 s, cancelled by moving), the greybox fold and unfold, their two sounds, the suit ring's miner ticks
   - [ ] **D** drill hardness, alloys in the MK4+ costs and the prototypes' build cost
 - [ ] **Step 12 — the station** ([`planned/station.md`](planned/station.md)); concept images first
   - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs

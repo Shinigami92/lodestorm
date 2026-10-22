@@ -1,6 +1,6 @@
 # The player during a mission (planned)
 
-Decided 2026-10-17, built in M4 step 5 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The suit ring (health and ammo arcs, spare magazine ticks, the dash, hit marks, the pointers on its edge, its settings, teammates' reduced rings), the target lock's brackets and ore arriving are built (see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)); this file keeps what comes with later features.
+Decided 2026-10-17, built in M4 step 5 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The suit ring (health and ammo arcs, spare magazine ticks, the dash, hit marks, the pointers on its edge, its settings, teammates' reduced rings), the miners' ticks, the target lock's brackets and ore arriving are built (see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)); this file keeps what comes with later features.
 
 ## Why
 
@@ -19,7 +19,6 @@ The camera shows about 21 m of height, so the player (1.86 m) is about 100 px ta
 
 - **Right arc, other feeds:** the heat of the planned weapons (see [`weapons.md`](weapons.md)) shows on the ammo arc the way a reload does (built for a drained battery and a charge, see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)).
 - **Outer edge:** the tracked quest's pointer (see [`quests.md`](quests.md)), an arrow like the ship's and the ore scanner's.
-- **Miners left:** show as ticks for 3 s when one is placed or picked up, and while the player stands next to a miner (see [`refinery.md`](refinery.md)).
 
 ## Around the ring
 

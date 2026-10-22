@@ -11,14 +11,16 @@ extends MeshInstance3D
 ## while it vents), the spare magazines as ticks inside the ammo arc, the dash as a thin inner
 ## ring while it recharges, a green outer band while the player hands a teammate ammo, and the
 ## pointers as arrows on its edge (the way back to the ship from `ShipPointer`, the nearest ore
-## from `OreScanner`). Both arcs fill from the bottom up.
+## from `OreScanner`), and the run's six miners as ticks just outside its bottom (crafted ones
+## bright, standard-issue ones dimmer, placed ones as outlines). Both arcs fill from the bottom up.
 ## Quiet when nothing goes on: an arc dims to a faint outline `lit_time` after its last change,
 ## unless its value is low (health below half, a nearly empty magazine) or the player set "Always
 ## show"; the spare ticks show on a reload and when a spare is used. Aboard (weapon holstered) the
-## outline hides too. Its size is a setting (`GameSettings.ring_scale`); while the player's pause
-## panel is open it stays shown and lit (also while the world is paused), so a change of size shows
-## right away. A teammate's ring (a
-## player that isn't `local`) shows only the health arc inside an outline in their player color.
+## outline hides too. The miners' ticks show for `lit_time` when one is placed or picked up,
+## while the player places or picks one up and while it stands next to one. Its size is a setting
+## (`GameSettings.ring_scale`); while the player's pause panel is open it stays shown and lit (also
+## while the world is paused), so a change of size shows right away. A teammate's ring (a player
+## that isn't `local`) shows only the health arc inside an outline in their player color.
 ## Tilts with the ground under the player; drawn over the ground and low plants, hidden by cliffs
 ## and props.
 
@@ -52,6 +54,11 @@ const SHIP_ARROW := Vector2(1.04, 0.38)
 const SCANNER_ARROW := Vector2(0.84, 0.26)
 ## Distance from the ship arrow's tip to the countdown's center (m).
 const COUNTDOWN_GAP: float = 0.25
+## The miners' ticks: a standard-issue miner's tick, and a crafted one's, aboard (negative:
+## placed); and how bright a standard-issue one is.
+const STANDARD_TICK: float = 1.0
+const CRAFTED_TICK: float = 2.0
+const STANDARD_DIM: float = 0.55
 
 ## Outer radius of the arcs (m); the plane reaches a little farther for the marks. TBD (playtest).
 @export var radius: float = 1.36
@@ -64,6 +71,9 @@ var ammo_glow: float = 1.0
 ## How much the spare ticks and the dash ring show (0: hidden).
 var spares_alpha: float = 0.0
 var dash_alpha: float = 0.0
+## How much the miners' ticks show (0: hidden), and what each tick shows (see `CRAFTED_TICK`).
+var miners_alpha: float = 0.0
+var miner_ticks := PackedFloat32Array()
 ## Where the hits' marks point (shares of the circle clockwise from the screen's top) and how
 ## strong they still are.
 var hits: PackedVector2Array = []
@@ -76,6 +86,7 @@ var _health_lit: float = 0.0
 var _ammo_lit: float = 0.0
 var _spares_lit: float = 0.0
 var _dash_lit: float = 0.0
+var _miners_lit: float = 0.0
 var _last_health: float = -1.0
 var _last_ammo: WeaponAmmo
 var _last_rounds: int = -1
@@ -110,6 +121,9 @@ func _ready() -> void:
 	_material.set_shader_parameter(&"hit_band", Vector2(radius + 0.06, radius + 0.24))
 	_material.set_shader_parameter(&"team_band", Vector2(radius + 0.03, radius + 0.1))
 	_material.set_shader_parameter(&"heat_band", Vector2(radius + 0.025, radius + 0.075))
+	_material.set_shader_parameter(&"miner_band", Vector2(radius + 0.06, radius + 0.24))
+	_material.set_shader_parameter(&"miner_color", Color(OccludedSilhouette.MINER_COLOR, 1.0))
+	_material.set_shader_parameter(&"standard_dim", STANDARD_DIM)
 	_material.set_shader_parameter(&"pointer_base", radius + POINTER_BASE)
 	_material.set_shader_parameter(&"dash_color", DASH_COLOR)
 	_material.set_shader_parameter(&"give_color", GIVE_COLOR)
@@ -156,6 +170,7 @@ func _process(delta: float) -> void:
 	_update_health(delta, blink_on)
 	_update_ammo(delta, blink_on)
 	_update_dash(delta)
+	_update_miners(delta)
 	_update_give()
 	_update_hits(delta)
 	_update_pointers()
@@ -307,6 +322,40 @@ func _update_dash(delta: float) -> void:
 	dash_alpha = 1.0 if _dash_lit > 0.0 else 0.0
 	_material.set_shader_parameter(&"dash_alpha", dash_alpha)
 	_material.set_shader_parameter(&"dash_fill", ratio)
+
+
+## The run's miners: crafted ones going along first (by number), then standard-issue ones.
+func _update_miners(delta: float) -> void:
+	var fleet: MinerFleet = _player.fleet
+	var ticks := PackedFloat32Array()
+	for miner: CraftedMiner in fleet.along():
+		ticks.append(-CRAFTED_TICK if miner.out else CRAFTED_TICK)
+	for index: int in fleet.standard_count():
+		ticks.append(-STANDARD_TICK if index < fleet.standard_out else STANDARD_TICK)
+	ticks.resize(MinerFleet.PER_RUN)
+	if ticks != miner_ticks:
+		if not miner_ticks.is_empty():
+			_miners_lit = lit_time
+		miner_ticks = ticks
+	_miners_lit = maxf(_miners_lit - delta, 0.0)
+	var showing: bool = (
+		_player.local
+		and _player.weapon_allowed
+		and (_miners_lit > 0.0 or _player.handling.busy() or _next_to_miner())
+	)
+	miners_alpha = _fade(miners_alpha, showing, delta)
+	_material.set_shader_parameter(&"miner_alpha", miners_alpha)
+	_material.set_shader_parameter(&"miner_ticks", miner_ticks)
+
+
+## Whether a miner stands within its repair range of the player.
+func _next_to_miner() -> bool:
+	for node: Node in get_tree().get_nodes_in_group(Miner.GROUP):
+		var miner := node as Miner
+		var offset: Vector3 = miner.global_position - _player.global_position
+		if Vector2(offset.x, offset.z).length() <= miner.settings.repair_range:
+			return true
+	return false
 
 
 func _update_give() -> void:

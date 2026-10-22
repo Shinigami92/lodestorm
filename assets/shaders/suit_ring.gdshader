@@ -1,6 +1,7 @@
 // The suit ring on the ground around the player (on a PlaneMesh, see SuitRing): the health arc on
 // the screen's left, the ammo arc on its right (both filling from the bottom up) with a heat-fed
-// weapon's heat as a thin band outside it, the spare magazine ticks inside the ammo arc, the dash's thin inner ring, the green outer band while
+// weapon's heat as a thin band outside it, the spare magazine ticks inside the ammo arc, the dash's
+// thin inner ring, the run's miners as ticks outside its bottom, the green outer band while
 // handing over ammo, short red marks on the outer edge where hits came from, and the pointers'
 // arrows beyond them. A dimmed arc shows as a faint outline. A teammate's ring shows only the
 // health arc inside an outline in their color. Lines keep `min_line` pixels on screen. Pulled
@@ -64,6 +65,16 @@ uniform vec4 heat_color : source_color = vec4(1.0, 0.6, 0.15, 0.9);
 uniform float dash_alpha = 0.0;
 uniform float dash_fill = 1.0;
 uniform vec4 dash_color : source_color = vec4(1.0, 0.93, 0.8, 0.9);
+
+// The run's miners, left to right outside the ring's bottom (in front of the body, which hides
+// its top gap): 0 none, 1 standard-issue, 2 crafted; negative: placed (an outline).
+// Standard-issue ones at `standard_dim`. `miner_span`: the share of the circle they take.
+uniform float miner_alpha = 0.0;
+uniform float miner_ticks[6];
+uniform vec2 miner_band = vec2(1.42, 1.6);
+uniform float miner_span = 0.1;
+uniform vec4 miner_color : source_color = vec4(1.0, 0.7, 0.2, 1.0);
+uniform float standard_dim = 0.55;
 
 uniform float give_alpha = 0.0;
 uniform float give_fill = 0.0;
@@ -215,6 +226,27 @@ void fragment() {
 		vec4 c = s <= dash_fill ? dash_color : track_color;
 		c.a *= in_dash;
 		color = over(color, c);
+	}
+
+	float in_miners = band(r, miner_band, fw, edge) * miner_alpha;
+	if (in_miners > 0.0) {
+		// Clockwise is right to left at the bottom.
+		float slot = miner_span / 6.0;
+		float from_left = (miner_span * 0.5 - (s - 0.5)) / slot;
+		float index = floor(from_left);
+		if (index >= 0.0 && index < 6.0) {
+			float state = miner_ticks[int(index)];
+			float half_tick = slot * 0.3 * TAU * r;
+			float to_middle = abs(fract(from_left) - 0.5) * slot * TAU * r;
+			float tick = 1.0 - smoothstep(half_tick - fw, half_tick, to_middle);
+			float side = smoothstep(half_tick - 2.5 * fw, half_tick - fw, to_middle);
+			vec4 c = miner_color;
+			c.rgb *= abs(state) > 1.5 ? 1.0 : standard_dim;
+			// Placed: only its outline.
+			c.a *= state < 0.0 ? max(edge, side) : 1.0;
+			c.a *= in_miners * tick * step(0.5, abs(state));
+			color = over(color, c);
+		}
 	}
 
 	float in_give = band(r, give_band, fw, edge) * give_alpha;

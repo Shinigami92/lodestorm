@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://ces5jmc8c36qu"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://03m4r1wpacc8" path="res://assets/audio/sfx/mining/miner_servo_1.wav" id="2_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+streams_count = 1
+stream_0/stream = ExtResource("2_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -12.0
+limit = 0
+unit_size = 5.0
+max_distance = 25.0

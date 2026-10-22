@@ -1,11 +1,12 @@
 class_name Upgrade
 extends Resource
 ## Something the upgrade stations in the ship improve in MK levels: a weapon, the suit's armor,
-## the miners' drill, ... MK1 is what a new player has; each further level costs ore from the
-## player's hold (the same rule for every upgrade, `COSTS`, scaled by `cost_scale`) and multiplies
-## the values it improves. What it improves is up to its user (e.g. a weapon's `WeaponPart` raises
-## one of its values). The levels a player bought are in their `Upgrades`; how high they can go
-## depends on the planets the ship has opened (see `HeatShield.upgrade_cap`).
+## the miners' drill, ... MK1 is what a new player has; each further level costs ore (from MK4 on
+## also alloy bars) from the player's hold (the same rule for every upgrade, `COSTS`, scaled by
+## `cost_scale`) and multiplies the values it improves. What it improves is up to its user (e.g.
+## a weapon's `WeaponPart` raises one of its values). The levels a player bought are in their
+## `Upgrades`; how high they can go depends on the planets the ship has opened (see
+## `HeatShield.upgrade_cap`).
 
 const COSTS: MkCosts = preload("res://game/progression/upgrades/mk_costs.tres")
 
@@ -50,8 +51,8 @@ func mk_for_hardness(ore_hardness: int) -> int:
 	return 0
 
 
-## What raising it to MK `mk` costs, in units per ore type (empty for MK1 or beyond the highest).
-func cost_of(mk: int) -> Dictionary[OreType, int]:
+## What raising it to MK `mk` costs, in units per item (empty for MK1 or beyond the highest).
+func cost_of(mk: int) -> Dictionary[ItemType, int]:
 	if mk > max_mk():
 		return {}
 	return COSTS.cost_of(mk, cost_scale)

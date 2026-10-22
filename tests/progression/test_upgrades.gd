@@ -61,11 +61,13 @@ func test_every_upgrade_has_texts_and_rising_levels() -> void:
 		assert_true(upgrade.cost_of(1).is_empty(), "MK1 is free")
 		assert_true(upgrade.cost_of(upgrade.max_mk() + 1).is_empty())
 		for mk: int in range(2, upgrade.max_mk() + 1):
-			var cost: Dictionary[OreType, int] = upgrade.cost_of(mk)
-			assert_eq(cost.size(), 2 if mk == 2 else 3, "%s MK%d" % [upgrade.display_name, mk])
-			for ore_type: OreType in cost:
-				assert_gt(cost[ore_type], 0)
-				assert_eq(cost[ore_type] % 10, 0, "rounded to tens")
+			var cost: Dictionary[ItemType, int] = upgrade.cost_of(mk)
+			# Two ores, the signature ore from MK3 on, an alloy from MK4 on.
+			assert_eq(cost.size(), mini(mk, 4), "%s MK%d" % [upgrade.display_name, mk])
+			for item: ItemType in cost:
+				assert_gt(cost[item], 0)
+				if item is OreType:
+					assert_eq(cost[item] % 10, 0, "rounded to tens")
 
 
 func test_levels_start_at_mk1_and_rise_to_the_highest() -> void:
@@ -92,7 +94,7 @@ func test_levels_start_at_mk1_and_rise_to_the_highest() -> void:
 
 
 func test_hold_pays_only_what_it_has() -> void:
-	var cost: Dictionary[OreType, int] = {KYRITE: 200, OLVANE: 100}
+	var cost: Dictionary[ItemType, int] = {KYRITE: 200, OLVANE: 100}
 	assert_false(_player.hold.can_pay(cost))
 	_player.hold.add(KYRITE, 300.0)
 	assert_false(_player.hold.can_pay(cost), "no olvane yet")
@@ -280,6 +282,11 @@ func test_station_sells_higher_levels_once_the_ship_reaches_further() -> void:
 	for ore_type: OreType in OreCatalog.all().ores:
 		_player.hold.add(ore_type, 10000.0)
 	await wait_process_frames(1)
+	_ship.heat_shield.install_next()
+	assert_false(station.can_buy(ARMOR), "MK4 takes Merisk")
+	_ship.heat_shield.restore(1, false, {})
+	for alloy: AlloyType in AlloyCatalog.all().alloys:
+		_player.hold.add(alloy, 100.0)
 	assert_false(station.can_buy(ARMOR), "MK3 is the highest with the bare core")
 	assert_false(station.buy(ARMOR))
 	_ship.heat_shield.install_next()

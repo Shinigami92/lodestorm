@@ -55,9 +55,7 @@ func stop(slot: int, hold: PlayerHold, now: float) -> bool:
 	var batch: AlloyBatch = get_batch(slot)
 	if not batch:
 		return false
-	var refund: Dictionary[OreType, int] = batch.unfinished_cost()
-	for ore_type: OreType in refund:
-		hold.add(ore_type, refund[ore_type])
+	hold.refund(batch.unfinished_cost())
 	batches[slot] = null
 	emit_changed()
 	return true

@@ -138,7 +138,7 @@ func show_cradle(
 	_description.text = (tr("Lost on %s.") % lost_where if lost_where else tr("An empty cradle."))
 	_effect.text = tr("Build a miner")
 	_cost_row.visible = true
-	_cost.show_items(cost, hold)
+	_cost.show_cost(cost, hold)
 	_time.visible = not locked
 	_time.text = tr("Takes %s") % FurnaceCard.duration_text(seconds)
 	_status.visible = locked

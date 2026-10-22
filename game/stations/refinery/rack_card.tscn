@@ -72,6 +72,13 @@ layout_mode = 2
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 4
 
+[node name="UsedFor" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+autowrap_mode = 3
+
 [node name="Buttons" type="HFlowContainer" parent="Layout"]
 layout_mode = 2
 theme_override_constants/h_separation = 12

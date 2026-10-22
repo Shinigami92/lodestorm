@@ -134,16 +134,17 @@ func can_build(number: int) -> bool:
 		not is_locked()
 		and user != null
 		and user.fleet.is_empty(number)
-		and user.hold.can_pay_items(settings.build_cost)
+		and user.hold.can_pay(settings.build_cost)
 	)
 
 
 ## Builds a miner in cradle `number` for the player using it, paid from the hold, on the wall clock.
 ## Returns whether it started.
 func build(number: int) -> bool:
-	if not can_build(number) or not user.hold.pay_items(settings.build_cost):
+	if not can_build(number) or not user.hold.pay(settings.build_cost):
 		return false
-	user.fleet.start_build(number, Time.get_unix_time_from_system(), settings.build_seconds)
+	var now: float = Time.get_unix_time_from_system()
+	user.fleet.start_build(number, now, settings.build_seconds, settings.build_cost)
 	refresh()
 	return true
 
@@ -156,16 +157,17 @@ func can_stop_build(number: int) -> bool:
 	return miner != null and not miner.is_built()
 
 
-## Stops building the miner in cradle `number` on the second press (`stop_press`), its whole cost
-## back into the hold. Returns whether it stopped.
+## Stops building the miner in cradle `number` on the second press (`stop_press`), what was paid
+## for it back into the hold. Returns whether it stopped.
 func stop_build(number: int) -> bool:
 	if not can_stop_build(number):
 		return false
 	if not stop_press.press(user.fleet.get_miner(number)):
 		refresh()
 		return false
+	var paid: Dictionary[ItemType, int] = user.fleet.get_miner(number).build.paid
 	user.fleet.stop_build(number)
-	user.hold.refund_items(settings.build_cost)
+	user.hold.refund(paid)
 	refresh()
 	return true
 

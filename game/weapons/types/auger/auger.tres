@@ -11,7 +11,7 @@
 [ext_resource type="Resource" uid="uid://b8pfanscv1yuq" path="res://game/weapons/types/auger/mk_damage.tres" id="mk_damage"]
 [ext_resource type="Resource" uid="uid://c4whuntbhj2ai" path="res://game/weapons/types/auger/mk_rate.tres" id="mk_rate"]
 [ext_resource type="Resource" uid="uid://j1bdigqgvctq" path="res://game/weapons/types/auger/mk_ramp.tres" id="mk_ramp"]
-[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="item_type"]
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
 [ext_resource type="Resource" uid="uid://dsspev82ieiuo" path="res://game/ores/types/ore_indral.tres" id="ore_indral"]
 
@@ -29,7 +29,7 @@ trigger = ExtResource("9_trigger")
 delivery = ExtResource("3_delivery")
 effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
 parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_rate"), ExtResource("mk_ramp")])
-build_cost = Dictionary[ExtResource("ore_type"), int]({
+build_cost = Dictionary[ExtResource("item_type"), int]({
 ExtResource("ore_kyrite"): 300, ExtResource("ore_indral"): 150
 })
 attack_sound = ExtResource("7_sound")

@@ -7,6 +7,7 @@ const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")
 const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
+const MERISK: AlloyType = preload("res://game/refinery/alloys/alloy_merisk.tres")
 
 
 func test_adds_takes_and_pays() -> void:
@@ -37,11 +38,19 @@ func test_remembers_what_was_ever_in_it() -> void:
 	assert_eq(hold.amount(MERIDINE), 0.0)
 
 
-func test_ores_lists_the_ores() -> void:
+func test_pays_and_refunds_ores_and_alloys() -> void:
 	var hold := PlayerHold.new()
-	hold.add(KYRITE, 5.0)
-	hold.add(OLVANE, 7.0)
-	assert_eq(hold.ores(), {KYRITE: 5.0, OLVANE: 7.0} as Dictionary[OreType, float])
+	hold.add(KYRITE, 50.0)
+	hold.add(MERISK, 3.0)
+	var cost: Dictionary[ItemType, int] = {KYRITE: 40, MERISK: 4}
+	assert_false(hold.pay(cost), "a bar short")
+	hold.add(MERISK, 1.0)
+	assert_true(hold.pay(cost))
+	assert_eq(hold.amount(KYRITE), 10.0)
+	assert_eq(hold.amount(MERISK), 0.0)
+	hold.refund(cost)
+	assert_eq(hold.amount(KYRITE), 50.0)
+	assert_eq(hold.amount(MERISK), 4.0)
 
 
 ## Nothing is split: everyone in the session gets the whole haul into their own hold.

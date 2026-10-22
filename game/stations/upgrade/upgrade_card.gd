@@ -52,9 +52,9 @@ func _ready() -> void:
 
 func show_part(part: StationPart) -> void:
 	var upgrade_station := station as UpgradeStation
-	var hold: Dictionary[OreType, float] = {}
+	var hold: Dictionary[ItemType, float] = {}
 	if upgrade_station and upgrade_station.user:
-		hold = upgrade_station.user.hold.ores()
+		hold = upgrade_station.user.hold.items
 	var weapon_station := station as WeaponStation
 	var to_build := part.item as WeaponType if part else null
 	if to_build and weapon_station and part in weapon_station.get_rack_parts():
@@ -109,7 +109,7 @@ func show_part(part: StationPart) -> void:
 func show_upgrade(
 	shown: Upgrade,
 	mk: int = 1,
-	hold: Dictionary[OreType, float] = {},
+	hold: Dictionary[ItemType, float] = {},
 	available: bool = true,
 	locked: bool = false,
 	can_buy: bool = false,
@@ -223,7 +223,7 @@ func show_job(
 ## be built right now.
 func show_build(
 	shown: WeaponType,
-	hold: Dictionary[OreType, float] = {},
+	hold: Dictionary[ItemType, float] = {},
 	blueprint: bool = false,
 	locked: bool = false,
 	can_build: bool = false

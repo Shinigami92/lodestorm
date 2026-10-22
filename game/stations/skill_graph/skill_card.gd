@@ -32,9 +32,9 @@ func show_part(part: StationPart) -> void:
 	if not shown or not skill_station or not skill_station.user:
 		show_skill(null)
 		return
-	var hold: Dictionary[OreType, float] = {}
+	var hold: Dictionary[ItemType, float] = {}
 	if skill_station.user:
-		hold = skill_station.user.hold.ores()
+		hold = skill_station.user.hold.items
 	var skills: Skills = skill_station.user.skills
 	var job: TimedJob = skills.get_job(shown)
 	# The button keeps its state while a rank runs: switching it off and on again every frame
@@ -63,7 +63,7 @@ func show_part(part: StationPart) -> void:
 func show_skill(
 	shown: Skill,
 	rank: int = 0,
-	hold: Dictionary[OreType, float] = {},
+	hold: Dictionary[ItemType, float] = {},
 	open: bool = true,
 	locked: bool = false,
 	can_learn: bool = false
@@ -85,7 +85,7 @@ func show_skill(
 		_state.text = tr("Not learned yet")
 	_pips.visible = shown.max_rank() > 1
 	UpgradeCard.show_pips(_pips, rank, shown.max_rank())
-	var cost: Dictionary[OreType, int] = {}
+	var cost: Dictionary[ItemType, int] = {}
 	if next:
 		cost = next.cost
 	_cost_row.visible = next != null

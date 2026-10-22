@@ -11,9 +11,10 @@
 [ext_resource type="Resource" uid="uid://b2hc7je1pevuj" path="res://game/weapons/types/kith/mk_heal.tres" id="mk_heal"]
 [ext_resource type="Resource" uid="uid://dbwswkvp461q1" path="res://game/weapons/types/kith/mk_cell.tres" id="mk_cell"]
 [ext_resource type="Resource" uid="uid://bha7ea0b7yiei" path="res://game/weapons/types/kith/mk_range.tres" id="mk_range"]
-[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="item_type"]
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
 [ext_resource type="Resource" uid="uid://dsspev82ieiuo" path="res://game/ores/types/ore_indral.tres" id="ore_indral"]
+[ext_resource type="Resource" uid="uid://cbxygrksotx5d" path="res://game/refinery/alloys/alloy_indite.tres" id="alloy_indite"]
 
 [resource]
 script = ExtResource("1_script")
@@ -28,6 +29,6 @@ feed = ExtResource("8_feed")
 delivery = ExtResource("3_delivery")
 effects = Array[ExtResource("4_effect")]([ExtResource("5_damage"), ExtResource("5_heal")])
 parts = Array[ExtResource("6_part")]([ExtResource("mk_heal"), ExtResource("mk_cell"), ExtResource("mk_range")])
-build_cost = Dictionary[ExtResource("ore_type"), int]({
-ExtResource("ore_kyrite"): 300, ExtResource("ore_indral"): 180
+build_cost = Dictionary[ExtResource("item_type"), int]({
+ExtResource("ore_kyrite"): 300, ExtResource("ore_indral"): 180, ExtResource("alloy_indite"): 8
 })

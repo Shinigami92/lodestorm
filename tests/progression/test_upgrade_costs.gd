@@ -3,6 +3,11 @@ extends GutTest
 
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
 const SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
+const MERISK: AlloyType = preload("res://game/refinery/alloys/alloy_merisk.tres")
+## The alloy bars of MK4 to MK8 at scale 1 (TBD (playtest)).
+const BARS: Array[int] = [4, 6, 8, 10, 12]
+## Their alloys' tiers.
+const TIERS: Array[int] = [2, 2, 3, 3, 4]
 
 
 func test_each_level_costs_a_common_a_mid_and_its_planets_signature_ore() -> void:
@@ -31,6 +36,29 @@ func test_each_level_costs_a_common_a_mid_and_its_planets_signature_ore() -> voi
 			if previous.signature:
 				assert_gt(level.signature_amount, previous.signature_amount)
 		previous = level
+
+
+## From MK4 on a level also takes the alloy of the previous level's signature ore (refined before
+## the level opens), tier 2 for MK4–5, 3 for MK6–7, 4 for MK8, more bars each level.
+func test_from_mk4_a_level_takes_the_previous_planets_alloy() -> void:
+	var costs: MkCosts = Upgrade.COSTS
+	for i: int in costs.levels.size():
+		var mk: int = i + 2
+		var level: MkCost = costs.levels[i]
+		if mk < 4:
+			assert_null(level.alloy, "MK%d: ores only" % mk)
+			continue
+		var before: OreType = costs.levels[i - 1].signature
+		assert_true(level.alloy.recipe.has(before), "MK%d: made of %s" % [mk, before.display_name])
+		assert_eq(level.alloy.tier, TIERS[mk - 4], "MK%d" % mk)
+		assert_eq(level.alloy_bars, BARS[mk - 4], "MK%d" % mk)
+
+
+func test_alloy_bars_scale_to_whole_bars() -> void:
+	assert_eq(Upgrade.COSTS.cost_of(4)[MERISK], 4)
+	assert_eq(Upgrade.COSTS.cost_of(4, 0.6)[MERISK], 2, "2.4 rounds to 2")
+	assert_eq(Upgrade.COSTS.cost_of(4, 0.05)[MERISK], 1, "at least one")
+	assert_eq(ARMOR.cost_of(4)[MERISK], roundi(4 * ARMOR.cost_scale))
 
 
 func test_the_heat_shield_raises_the_highest_level() -> void:

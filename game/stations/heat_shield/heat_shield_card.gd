@@ -43,9 +43,9 @@ func show_part(part: StationPart) -> void:
 	if not shield or level < 2:
 		show_plate(null, 0)
 		return
-	var hold: Dictionary[OreType, float] = {}
+	var hold: Dictionary[ItemType, float] = {}
 	if shield_station.user:
-		hold = shield_station.user.hold.ores()
+		hold = shield_station.user.hold.items
 	show_plate(
 		shield,
 		level,
@@ -63,7 +63,7 @@ func show_plate(
 	shield: HeatShield,
 	level: int,
 	opens: PackedStringArray = [],
-	hold: Dictionary[OreType, float] = {},
+	hold: Dictionary[ItemType, float] = {},
 	locked: bool = false,
 	host: bool = true
 ) -> void:
@@ -132,7 +132,7 @@ func get_project_button() -> Button:
 func _show_cost(
 	cost: Dictionary[OreType, int],
 	paid: Dictionary[OreType, float],
-	hold: Dictionary[OreType, float]
+	hold: Dictionary[ItemType, float]
 ) -> void:
 	if cost != _cost:
 		_cost = cost.duplicate()
@@ -169,7 +169,7 @@ func _amount_label() -> Label:
 
 ## Whether the hold has anything of what's `missing`.
 static func _hold_covers_any(
-	missing: Dictionary[OreType, float], hold: Dictionary[OreType, float]
+	missing: Dictionary[OreType, float], hold: Dictionary[ItemType, float]
 ) -> bool:
 	for ore_type: OreType in missing:
 		var in_hold: float = hold.get(ore_type, 0.0)

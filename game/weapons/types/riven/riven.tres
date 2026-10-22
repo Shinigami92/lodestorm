@@ -10,7 +10,7 @@
 [ext_resource type="Resource" uid="uid://c4a2dqtxddeap" path="res://game/weapons/types/riven/mk_damage.tres" id="mk_damage"]
 [ext_resource type="Resource" uid="uid://dtmu4vcl10rvh" path="res://game/weapons/types/riven/mk_rate.tres" id="mk_rate"]
 [ext_resource type="Resource" uid="uid://bmfbyg08emcoe" path="res://game/weapons/types/riven/mk_stagger.tres" id="mk_stagger"]
-[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="item_type"]
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
 [ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
 
@@ -27,7 +27,7 @@ hold = 1
 delivery = ExtResource("3_delivery")
 effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
 parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_rate"), ExtResource("mk_stagger")])
-build_cost = Dictionary[ExtResource("ore_type"), int]({
+build_cost = Dictionary[ExtResource("item_type"), int]({
 ExtResource("ore_kyrite"): 200, ExtResource("ore_vyrel"): 80
 })
 attack_sound = ExtResource("7_sound")

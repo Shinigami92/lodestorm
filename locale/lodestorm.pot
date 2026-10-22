@@ -522,6 +522,7 @@ msgid "Medical bay"
 msgstr ""
 
 #: game/ship/rooms/lower/miners.tscn
+#: game/stations/refinery/rack_card.gd
 msgid "Miners"
 msgstr ""
 
@@ -1019,6 +1020,14 @@ msgstr ""
 
 #: game/stations/refinery/rack_card.gd
 msgid "Per bar:"
+msgstr ""
+
+#: game/stations/refinery/rack_card.gd
+msgid "Used for: %s"
+msgstr ""
+
+#: game/stations/refinery/rack_card.gd
+msgid "Upgrades %s"
 msgstr ""
 
 #: game/stations/skill_graph/skill_card.gd

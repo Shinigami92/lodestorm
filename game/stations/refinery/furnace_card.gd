@@ -163,7 +163,7 @@ func _show_free(furnace: FurnaceStation) -> void:
 		_bar_buttons[amount].disabled = bars <= 1 if amount < 0 else bars >= furnace.get_max_bars()
 	_cost_row.visible = known
 	if known:
-		_cost.show_cost(alloy.cost(bars), hold.ores())
+		_cost.show_cost(alloy.cost(bars), hold.items)
 	_time.visible = known
 	_time.text = tr("Takes %s") % duration_text(bars * alloy.seconds_per_bar)
 	_status.visible = furnace.is_locked() or not known

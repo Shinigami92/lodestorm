@@ -182,17 +182,15 @@ func can_stop(skill: Skill) -> bool:
 	return not is_locked() and user != null and user.skills.is_running(skill)
 
 
-## Stops the user's rank of `skill` under way on the second press (`stop_press`), its whole cost
-## back into their hold. Returns whether it stopped.
+## Stops the user's rank of `skill` under way on the second press (`stop_press`), what was
+## paid for it back into their hold. Returns whether it stopped.
 func stop(skill: Skill) -> bool:
 	if not can_stop(skill):
 		return false
 	if not stop_press.press(skill):
 		refresh()
 		return false
-	var refund: Dictionary[OreType, int] = user.skills.stop(skill)
-	for ore_type: OreType in refund:
-		user.hold.add(ore_type, refund[ore_type])
+	user.hold.refund(user.skills.stop(skill))
 	refresh()
 	return true
 

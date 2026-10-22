@@ -17,9 +17,9 @@ static var _ingots: Dictionary[int, Texture2D] = {}
 @export var seconds_per_bar: float = 60.0
 
 
-## What `bars` bars take, in units per ore.
-func cost(bars: int) -> Dictionary[OreType, int]:
-	var total: Dictionary[OreType, int] = {}
+## What `bars` bars take, in units per item (ores).
+func cost(bars: int) -> Dictionary[ItemType, int]:
+	var total: Dictionary[ItemType, int] = {}
 	for ore_type: OreType in recipe:
 		total[ore_type] = recipe[ore_type] * bars
 	return total

@@ -221,6 +221,17 @@ func test_raider_attacks_the_miner_until_it_breaks() -> void:
 	assert_eq(_alien.target, _player, "goes for players close by once no miner works")
 
 
+func test_raider_lets_go_of_a_miner_picked_up() -> void:
+	var miner: Miner = _add_miner(Vector3(3.0, 0.0, -40.0))
+	_alien.role = Alien.Role.RAIDER
+	await _place_alien(3.0)
+	await wait_physics_frames(2)
+	assert_eq(_alien.target, miner)
+	miner.free()
+	await wait_physics_frames(2)
+	assert_true(_alien.target == null or is_instance_valid(_alien.target), "forgets it")
+
+
 func test_others_ignore_miners() -> void:
 	_add_miner(Vector3(-40.0, 0.0, 0.0))
 	_alien.role = Alien.Role.HUNTER

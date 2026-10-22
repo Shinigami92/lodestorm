@@ -50,7 +50,9 @@ trap 'rm -rf "$logs"' EXIT
 scripts="$(grep -rl --include='test_*.gd' '^extends GutTest' tests | sort)"
 
 # Longest first, each to the process with the least work so far, over the processes of all shards
-# (scripts missing from the timings count as 10 s). Prints "<process> <script>".
+# (scripts missing from the timings count as 10 s). Prints "<process> <script>". Process p runs in
+# shard p % shard_count, so the longest scripts go to different runners instead of slowing each
+# other down on one.
 balance() {
 	{
 		if [ -f "$timings" ]; then grep -v '^#' "$timings"; fi
@@ -74,7 +76,7 @@ fi
 processes=""
 i=0
 while [ "$i" -lt "$jobs" ]; do
-	process=$(((shard_index - 1) * jobs + i))
+	process=$((i * shard_count + shard_index - 1))
 	selected="$(echo "$assigned" | awk -v p="$process" \
 		'$1 == p { printf "%sres://%s", sep, $2; sep = "," }')"
 	if [ -n "$selected" ]; then

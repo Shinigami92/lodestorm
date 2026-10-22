@@ -38,25 +38,8 @@ func take(item: ItemType, units: float) -> float:
 	return taken
 
 
-## Whether it has `cost` (units per ore type).
-func can_pay(cost: Dictionary[OreType, int]) -> bool:
-	for ore_type: OreType in cost:
-		if amount(ore_type) < cost[ore_type]:
-			return false
-	return true
-
-
-## Takes `cost` (units per ore type) out if it's there. Returns whether it paid.
-func pay(cost: Dictionary[OreType, int]) -> bool:
-	if not can_pay(cost):
-		return false
-	for ore_type: OreType in cost:
-		_set_amount(ore_type, amount(ore_type) - cost[ore_type])
-	return true
-
-
-## Whether it has `cost` in units per item (ores and alloys, e.g. a crafted miner's build).
-func can_pay_items(cost: Dictionary[ItemType, int]) -> bool:
+## Whether it has `cost`, in units per item (ores and alloys).
+func can_pay(cost: Dictionary[ItemType, int]) -> bool:
 	for item: ItemType in cost:
 		if amount(item) < cost[item]:
 			return false
@@ -64,16 +47,16 @@ func can_pay_items(cost: Dictionary[ItemType, int]) -> bool:
 
 
 ## Takes `cost` (units per item) out if it's there. Returns whether it paid.
-func pay_items(cost: Dictionary[ItemType, int]) -> bool:
-	if not can_pay_items(cost):
+func pay(cost: Dictionary[ItemType, int]) -> bool:
+	if not can_pay(cost):
 		return false
 	for item: ItemType in cost:
 		_set_amount(item, amount(item) - cost[item])
 	return true
 
 
-## Puts `cost` (units per item) back in (a build stopped).
-func refund_items(cost: Dictionary[ItemType, int]) -> void:
+## Puts `cost` (units per item) back in (a job or a build stopped).
+func refund(cost: Dictionary[ItemType, int]) -> void:
 	for item: ItemType in cost:
 		add(item, cost[item])
 
@@ -85,15 +68,6 @@ func mark_found(item: ItemType) -> void:
 	found[item] = true
 	item_changed.emit(item, amount(item))
 	emit_changed()
-
-
-## The ores in it, in units per ore type (for the cards, which show ore costs).
-func ores() -> Dictionary[OreType, float]:
-	var result: Dictionary[OreType, float] = {}
-	for item: ItemType in items:
-		if item is OreType:
-			result[item as OreType] = items[item]
-	return result
 
 
 func _set_amount(item: ItemType, units: float) -> void:

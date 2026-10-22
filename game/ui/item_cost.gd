@@ -10,19 +10,8 @@ var _cost: Dictionary[ItemType, int] = {}
 var _labels: Dictionary[ItemType, Label] = {}
 
 
-## Shows `cost` (empty: nothing) next to what `hold` has of each ore.
-func show_cost(cost: Dictionary[OreType, int], hold: Dictionary[OreType, float]) -> void:
-	var items: Dictionary[ItemType, int] = {}
-	for ore_type: OreType in cost:
-		items[ore_type] = cost[ore_type]
-	var stored: Dictionary[ItemType, float] = {}
-	for ore_type: OreType in hold:
-		stored[ore_type] = hold[ore_type]
-	show_items(items, stored)
-
-
 ## Shows `cost` in units per item (ores and alloys; empty: nothing) next to what `hold` has of each.
-func show_items(cost: Dictionary[ItemType, int], hold: Dictionary[ItemType, float]) -> void:
+func show_cost(cost: Dictionary[ItemType, int], hold: Dictionary[ItemType, float]) -> void:
 	if cost != _cost:
 		_cost = cost.duplicate()
 		for node: Node in get_children():

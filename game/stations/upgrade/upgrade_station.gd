@@ -112,17 +112,15 @@ func can_stop(upgrade: Upgrade) -> bool:
 	return not is_locked() and bought != null and bought.is_running(upgrade)
 
 
-## Stops the user's level of `upgrade` under way on the second press (`stop_press`), its whole cost
-## back into their hold. Returns whether it stopped.
+## Stops the user's level of `upgrade` under way on the second press (`stop_press`), what was
+## paid for it back into their hold. Returns whether it stopped.
 func stop(upgrade: Upgrade) -> bool:
 	if not can_stop(upgrade):
 		return false
 	if not stop_press.press(upgrade):
 		refresh()
 		return false
-	var refund: Dictionary[OreType, int] = get_levels().stop(upgrade)
-	for ore_type: OreType in refund:
-		user.hold.add(ore_type, refund[ore_type])
+	user.hold.refund(get_levels().stop(upgrade))
 	_bought(upgrade)
 	refresh()
 	return true

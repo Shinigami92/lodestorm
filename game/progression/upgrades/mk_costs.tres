@@ -16,6 +16,11 @@
 [ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
 [ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="ore_noctile"]
 [ext_resource type="Resource" uid="uid://1v26qj8f1fdi" path="res://game/ores/types/ore_aethrine.tres" id="ore_aethrine"]
+[ext_resource type="Resource" uid="uid://cyl735aw0m2ag" path="res://game/refinery/alloys/alloy_merisk.tres" id="alloy_merisk"]
+[ext_resource type="Resource" uid="uid://bphoegvfa7p8i" path="res://game/refinery/alloys/alloy_verdan.tres" id="alloy_verdan"]
+[ext_resource type="Resource" uid="uid://cbxygrksotx5d" path="res://game/refinery/alloys/alloy_indite.tres" id="alloy_indite"]
+[ext_resource type="Resource" uid="uid://1qwit167j0g0" path="res://game/refinery/alloys/alloy_sylith.tres" id="alloy_sylith"]
+[ext_resource type="Resource" uid="uid://dv28iu6yg3hdo" path="res://game/refinery/alloys/alloy_noxar.tres" id="alloy_noxar"]
 
 [sub_resource type="Resource" id="Mk2"]
 script = ExtResource("2_cost")
@@ -41,6 +46,8 @@ mid = ExtResource("ore_duskine")
 mid_amount = 240
 signature = ExtResource("ore_emerin")
 signature_amount = 90
+alloy = ExtResource("alloy_merisk")
+alloy_bars = 4
 
 [sub_resource type="Resource" id="Mk5"]
 script = ExtResource("2_cost")
@@ -50,6 +57,8 @@ mid = ExtResource("ore_halcyne")
 mid_amount = 300
 signature = ExtResource("ore_indral")
 signature_amount = 120
+alloy = ExtResource("alloy_verdan")
+alloy_bars = 6
 
 [sub_resource type="Resource" id="Mk6"]
 script = ExtResource("2_cost")
@@ -59,6 +68,8 @@ mid = ExtResource("ore_ressa")
 mid_amount = 360
 signature = ExtResource("ore_selyx")
 signature_amount = 150
+alloy = ExtResource("alloy_indite")
+alloy_bars = 8
 
 [sub_resource type="Resource" id="Mk7"]
 script = ExtResource("2_cost")
@@ -68,6 +79,8 @@ mid = ExtResource("ore_ressa")
 mid_amount = 420
 signature = ExtResource("ore_noctile")
 signature_amount = 180
+alloy = ExtResource("alloy_sylith")
+alloy_bars = 10
 
 [sub_resource type="Resource" id="Mk8"]
 script = ExtResource("2_cost")
@@ -77,6 +90,8 @@ mid = ExtResource("ore_ressa")
 mid_amount = 480
 signature = ExtResource("ore_aethrine")
 signature_amount = 210
+alloy = ExtResource("alloy_noxar")
+alloy_bars = 12
 
 [resource]
 script = ExtResource("1_costs")

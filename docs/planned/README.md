@@ -14,7 +14,7 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 | [`aliens.md`](aliens.md) | eleven strains and the Ravager, roles, armor and stagger, hatch tables, hit feedback | M4, steps 7, 9 A |
 | [`sfx.md`](sfx.md) | recordings where synthesis isn't enough, the menus' and the death's sounds later, the sounds still to come | later rounds, the art pass (M5) |
 | [`weapons.md`](weapons.md) | 18 weapons with names, feeds, upgrade parts, the armory's weapon wall | M4, step 10 |
-| [`refinery.md`](refinery.md) | crafted miners, drill hardness, what the alloys are for | M4, step 11 |
+| [`refinery.md`](refinery.md) | the station's alloy requests, furnaces through the quests, the engineer, later drill heads, the art pass | M4 steps 12–16, M5 |
 | [`station.md`](station.md) | Waypost Ostra: docking, the map, the ore exchange, its NPCs | M4, step 12 |
 | [`crew.md`](crew.md) | the eight crew members, health carrying over, the med bed | M4, step 13 |
 | [`risk-reward.md`](risk-reward.md) | nodes running dry, rich ore by the nests, the late meteor, banking ore at a cargo hatch | M4, step 14 |

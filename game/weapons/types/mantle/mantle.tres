@@ -13,9 +13,10 @@
 [ext_resource type="Resource" uid="uid://c4o61ygxive8w" path="res://game/weapons/types/mantle/mk_damage.tres" id="mk_damage"]
 [ext_resource type="Resource" uid="uid://ben4s2fbtmbkk" path="res://game/weapons/types/mantle/mk_capacity.tres" id="mk_capacity"]
 [ext_resource type="Resource" uid="uid://cxawma8v3gijp" path="res://game/weapons/types/mantle/mk_arc.tres" id="mk_arc"]
-[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="item_type"]
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
 [ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
+[ext_resource type="Resource" uid="uid://1qwit167j0g0" path="res://game/refinery/alloys/alloy_sylith.tres" id="alloy_sylith"]
 
 [resource]
 script = ExtResource("1_script")
@@ -33,7 +34,7 @@ delivery = ExtResource("delivery")
 guard = ExtResource("guard")
 effects = Array[ExtResource("3_effect")]([ExtResource("fx_damage")])
 parts = Array[ExtResource("4_part")]([ExtResource("mk_damage"), ExtResource("mk_capacity"), ExtResource("mk_arc")])
-build_cost = Dictionary[ExtResource("ore_type"), int]({
-ExtResource("ore_kyrite"): 380, ExtResource("ore_selyx"): 170
+build_cost = Dictionary[ExtResource("item_type"), int]({
+ExtResource("ore_kyrite"): 380, ExtResource("ore_selyx"): 170, ExtResource("alloy_sylith"): 10
 })
 attack_sound = ExtResource("attack_sound")

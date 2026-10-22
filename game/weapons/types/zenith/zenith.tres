@@ -10,9 +10,10 @@
 [ext_resource type="Resource" uid="uid://35gydblvrnar" path="res://game/weapons/types/zenith/mk_damage.tres" id="mk_damage"]
 [ext_resource type="Resource" uid="uid://cpf21vjt0gsoe" path="res://game/weapons/types/zenith/mk_cell.tres" id="mk_cell"]
 [ext_resource type="Resource" uid="uid://b5m6mrgjsre2o" path="res://game/weapons/types/zenith/mk_cooling.tres" id="mk_cooling"]
-[ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="ore_type"]
+[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="item_type"]
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
 [ext_resource type="Resource" uid="uid://1v26qj8f1fdi" path="res://game/ores/types/ore_aethrine.tres" id="ore_aethrine"]
+[ext_resource type="Resource" uid="uid://bi0noykyil7gp" path="res://game/refinery/alloys/alloy_auralt.tres" id="alloy_auralt"]
 
 [resource]
 script = ExtResource("1_script")
@@ -27,6 +28,6 @@ feed = ExtResource("8_feed")
 delivery = ExtResource("3_delivery")
 effects = Array[ExtResource("4_effect")]([ExtResource("5_damage")])
 parts = Array[ExtResource("6_part")]([ExtResource("mk_damage"), ExtResource("mk_cell"), ExtResource("mk_cooling")])
-build_cost = Dictionary[ExtResource("ore_type"), int]({
-ExtResource("ore_kyrite"): 500, ExtResource("ore_aethrine"): 300
+build_cost = Dictionary[ExtResource("item_type"), int]({
+ExtResource("ore_kyrite"): 500, ExtResource("ore_aethrine"): 300, ExtResource("alloy_auralt"): 15
 })

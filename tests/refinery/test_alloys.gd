@@ -72,7 +72,7 @@ func test_higher_tiers_take_longer() -> void:
 
 
 func test_cost_and_what_the_hold_pays_for() -> void:
-	assert_eq(COBREL.cost(3), {KYRITE: 30, VYREL: 15} as Dictionary[OreType, int])
+	assert_eq(COBREL.cost(3), {KYRITE: 30, VYREL: 15} as Dictionary[ItemType, int])
 	var hold := PlayerHold.new()
 	assert_eq(COBREL.affordable(hold), 0)
 	hold.add(KYRITE, 45.0)

@@ -73,15 +73,14 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 11 C1: crafted miners, kept and upgraded one by one (each player's fleet in their save, M-01 for everyone, old miner levels moved onto it), the miners' bay (six cradles, building on the wall clock, the pad's parts per miner with the plating, going along or staying aboard), six miners per run with standard-issue ones filling up, picking up with `interact`, miners left on the planet lost, number plates in the owner's color, and the debug overlay building them
 - Step 11 C2: placing and picking up miners taking time (3 / 5 s, standing still with the weapon lowered, cancelled by moving, dashing or attacking, not by damage), the greybox fold and unfold (lowering from the back, the legs folding in), the servos' and the latch's sounds, the run's miners as ticks under the suit ring
 - Step 11 D1: drill hardness (each ore's hardness, each drill level's set by hand; a drill too soft mining at a quarter of the speed, turning slower with a strained loop), placing taking the miner that mines the node's ore fastest, the drill's card showing the ores it mines at full speed and what the next level adds, the silo's card naming the drill level
+- Step 11 D2: alloys in the costs: every MK level from MK4 on also takes bars of the alloy of the previous planet's signature ore (MK4 4 Merisk up to MK8 12 Noxar, scaled per upgrade, the miners' parts too), the six prototypes bars of their own signature ore's alloy, the heat shield staying ores only; the ingot badge in the cost rows, the ingot rack's "Used for" line, jobs and builds under way keeping what was paid (saved, old saves giving back the ores), every cost in units per item
 
 ## Todo
 
 ### M4 — Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–10 are done).
+Each step builds on the ones before it (steps 1–11 are done).
 
-- [ ] **Step 11 — refinery, crafted miners, timed upgrades** ([`planned/refinery.md`](planned/refinery.md))
-  - [ ] **D2** alloys in the MK4+ costs and the prototypes' build cost (the cards, the rack's "Used for", jobs keeping what was paid, costs as items)
 - [ ] **Step 12 — the station** ([`planned/station.md`](planned/station.md)); concept images first
   - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs
   - [ ] **B** the named NPCs with their first topics, ambient colonists

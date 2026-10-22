@@ -2,8 +2,9 @@ class_name TimedJob
 extends RefCounted
 ## An upgrade level or a skill rank under way (see `Upgrades.jobs`, `Skills.jobs`): it reaches
 ## `level` once `seconds` have passed since `started` on the wall clock (Unix seconds), also during
-## runs and while the game is closed. Its time is kept as it was when it started, so retuning the
-## data doesn't shift a running job. A clock set back makes it wait, never undoes it.
+## runs and while the game is closed. Its time and what was paid for it are kept as they were
+## when it started, so retuning the data doesn't shift a running job or what stopping it gives back.
+## A clock set back makes it wait, never undoes it.
 
 ## The MK level or rank it reaches.
 var level: int = 1
@@ -11,12 +12,20 @@ var level: int = 1
 var started: float = 0.0
 ## How long it takes, in seconds.
 var seconds: float = 0.0
+## What was paid for it, in units per item (what stopping it gives back).
+var paid: Dictionary[ItemType, int] = {}
 
 
-func _init(to_level: int = 1, start_time: float = 0.0, duration: float = 0.0) -> void:
+func _init(
+	to_level: int = 1,
+	start_time: float = 0.0,
+	duration: float = 0.0,
+	paid_for: Dictionary[ItemType, int] = {}
+) -> void:
 	level = to_level
 	started = start_time
 	seconds = duration
+	paid = paid_for.duplicate()
 
 
 ## Whether it's done at `now` (Unix seconds).

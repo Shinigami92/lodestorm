@@ -7,7 +7,7 @@ extends Resource
 ## model (`scene`), so most weapons are data plus a greybox scene. `create` makes one to hold or
 ## show.
 ## Players own weapon types (`Arsenal`): the first ones from the start, the others built at the
-## workbench from their blueprint for ore (`build_cost`), and take some into a mission
+## workbench from their blueprint for ore and alloy (`build_cost`), and take some into a mission
 ## (`Loadout`). `game/weapons/all_weapons.tres` lists every weapon of the game.
 
 ## Where a weapon comes from: the militia's standard issue, the prospectors' converted mining
@@ -44,9 +44,10 @@ enum Hold { AIM, BLADE, HAMMER, BRACE, FIST, SHIELD }
 @export var guard: WeaponGuard
 ## The parts the workbench upgrades, in the order it lists them.
 @export var parts: Array[WeaponPart] = []
-## The ore building it from its blueprint takes, from the hold; empty: nothing (the starting
-## weapons are owned anyway). All amounts TBD (playtest).
-@export var build_cost: Dictionary[OreType, int] = {}
+## What building it from its blueprint takes from the hold, in units per item (ores, and for the
+## prototypes bars of the alloy of their own signature ore); empty: nothing (the starting weapons
+## are owned anyway). All amounts TBD (playtest).
+@export var build_cost: Dictionary[ItemType, int] = {}
 
 @export_group("Sounds")
 ## Each attack (a shot, a swing).

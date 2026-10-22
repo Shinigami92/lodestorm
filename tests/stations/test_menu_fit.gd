@@ -59,11 +59,11 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 	var upgrades: Array[Upgrade] = UPGRADES.duplicate()
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		upgrades.append_array(weapon_type.get_upgrades())
-	var hold: Dictionary[OreType, float] = {}
+	var hold: Dictionary[ItemType, float] = {}
 	for upgrade: Upgrade in upgrades:
 		for mk: int in range(2, upgrade.max_mk() + 1):
-			for ore_type: OreType in upgrade.cost_of(mk):
-				hold[ore_type] = 99999.0
+			for item: ItemType in upgrade.cost_of(mk):
+				hold[item] = 99999.0
 	for path: String in STATIONS:
 		if not _ship.get_node(path) is UpgradeStation:
 			continue
@@ -110,7 +110,7 @@ func test_every_heat_shield_card_fits_in_every_language() -> void:
 	var panel: WorldPanel = core.card
 	var layout := Vector2(panel.size * panel.pixels_per_meter)
 	var shield := HeatShield.new()
-	var hold: Dictionary[OreType, float] = {}
+	var hold: Dictionary[ItemType, float] = {}
 	for plate: ShieldPlate in shield.plates:
 		for ore_type: OreType in plate.cost:
 			hold[ore_type] = 99999.0
@@ -192,11 +192,11 @@ func test_every_skill_card_fits_in_every_language() -> void:
 	add_child_autofree(viewport)
 	var card := SKILL_CARD_SCENE.instantiate() as SkillCard
 	viewport.add_child(card)
-	var hold: Dictionary[OreType, float] = {}
+	var hold: Dictionary[ItemType, float] = {}
 	for skill: Skill in SKILL_TREE.get_skills():
 		for rank: SkillRank in skill.ranks:
-			for ore_type: OreType in rank.cost:
-				hold[ore_type] = 99999.0
+			for item: ItemType in rank.cost:
+				hold[item] = 99999.0
 	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		for skill: Skill in SKILL_TREE.get_skills():

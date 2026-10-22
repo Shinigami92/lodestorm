@@ -10,7 +10,7 @@ extends Resource
 
 ## The cost of raising an upgrade to MK `mk`, scaled by `scale` (empty for MK1 or beyond the
 ## highest).
-func cost_of(mk: int, scale: float = 1.0) -> Dictionary[OreType, int]:
+func cost_of(mk: int, scale: float = 1.0) -> Dictionary[ItemType, int]:
 	if mk < 2 or mk > levels.size() + 1:
 		return {}
 	return levels[mk - 2].cost(scale)

@@ -42,5 +42,5 @@ func time_left(now: float) -> float:
 
 
 ## What its unfinished bars took from the hold, in units per ore.
-func unfinished_cost() -> Dictionary[OreType, int]:
+func unfinished_cost() -> Dictionary[ItemType, int]:
 	return alloy.cost(bars - done)

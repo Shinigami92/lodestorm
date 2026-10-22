@@ -131,12 +131,15 @@ func is_empty(number: int) -> bool:
 	return number >= 1 and number <= SLOTS and not miners.has(number)
 
 
-## Starts building a miner in the empty cradle `number` at `now` (Unix seconds), taking `seconds`.
-## Returns whether it started. Paying for it is up to the caller (see `PlayerHold.pay_items`).
-func start_build(number: int, now: float, seconds: float) -> bool:
+## Starts building a miner in the empty cradle `number` at `now` (Unix seconds), taking `seconds`;
+## the build keeps `paid` (what stopping it gives back). Returns whether it started. Paying for it
+## is up to the caller (see `PlayerHold.pay`).
+func start_build(
+	number: int, now: float, seconds: float, paid: Dictionary[ItemType, int] = {}
+) -> bool:
 	if not is_empty(number):
 		return false
-	put(CraftedMiner.new(number, TimedJob.new(1, now, seconds)))
+	put(CraftedMiner.new(number, TimedJob.new(1, now, seconds, paid)))
 	return true
 
 

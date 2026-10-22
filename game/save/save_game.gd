@@ -14,11 +14,14 @@ extends Node
 ## skipped, and a save without a known weapon keeps the default arsenal and loadout; a file that
 ## can't be read is kept as `<name>.corrupt` and the game starts from the defaults. Up to version 2
 ## the hold was the ship's: it moves from `ship.json` into `player.json`. Up to version 3 the miner
-## upgrades were the player's: their levels (and a level under way) move onto the crafted M-01.
+## upgrades were the player's: their levels (and a level under way) move onto the crafted M-01. Up
+## to version 4 the jobs under way didn't keep what was paid: stopping one gives back the ores of
+## its cost (the alloys in the costs came later), a miner's build its whole cost.
 
 const GROUP: StringName = &"save_games"
 ## The save format; raise it (and convert older saves in `_read`) when the format changes.
-const VERSION: int = 4
+const VERSION: int = 5
+const MINER_SETTINGS: MinerSettings = preload("res://game/mining/miner_settings.tres")
 const SHIP_FILE: String = "ship.json"
 const PLAYER_FILE: String = "player.json"
 ## Where resources named by path in version 1 saves went: a file, or a folder (ending in "/") and
@@ -284,13 +287,18 @@ static func _lost_data(fleet: MinerFleet) -> Dictionary:
 	return lost
 
 
-## A level or rank under way as saved: the level it reaches, its start and its time.
+## A level or rank under way as saved: the level it reaches, its start, its time and what was paid.
 static func _job_data(job: TimedJob) -> Dictionary:
-	return {"level": job.level, "started": job.started, "seconds": job.seconds}
+	var paid: Dictionary = {}
+	for item: ItemType in job.paid:
+		paid[_reference(item)] = job.paid[item]
+	return {"level": job.level, "started": job.started, "seconds": job.seconds, "paid": paid}
 
 
-## A level or rank under way from `data` (see `_job_data`), or null when it doesn't read.
-static func _job(data: Variant) -> TimedJob:
+## A level or rank under way from `data` (see `_job_data`), or null when it doesn't read. A job
+## saved before it kept what was paid (up to version 4) gets `before` (the level it reaches ->
+## what it gives back).
+func _job(data: Variant, before: Callable) -> TimedJob:
 	if not data is Dictionary:
 		return null
 	var saved: Dictionary = data
@@ -299,7 +307,42 @@ static func _job(data: Variant) -> TimedJob:
 	var seconds: float = _number(saved.get("seconds"), -1.0)
 	if level < 1.0 or is_nan(started) or seconds < 0.0:
 		return null
-	return TimedJob.new(roundi(level), started, seconds)
+	var job := TimedJob.new(roundi(level), started, seconds)
+	if not saved.get("paid") is Dictionary:
+		job.paid = before.call(job.level)
+		return job
+	var paid: Dictionary = saved["paid"]
+	for path: Variant in paid:
+		var item := _resource(path) as ItemType
+		var amount: float = _number(paid[path], -1.0)
+		if item and amount >= 0.0:
+			job.paid[item] = roundi(amount)
+		else:
+			_outdated = true
+			push_warning("Save: skipped paid entry %s" % path)
+	return job
+
+
+## What an upgrade's level `level` under way from a save before version 5 gives back: the ores of
+## its cost (the alloys in the costs came later).
+static func _ores_paid(level: int, upgrade: Upgrade) -> Dictionary[ItemType, int]:
+	var ores: Dictionary[ItemType, int] = {}
+	var cost: Dictionary[ItemType, int] = upgrade.cost_of(level) if upgrade else {}
+	for item: ItemType in cost:
+		if item is OreType:
+			ores[item] = cost[item]
+	return ores
+
+
+## What a skill's rank `level` under way from a save before version 5 gives back: its cost.
+static func _rank_paid(level: int, skill: Skill) -> Dictionary[ItemType, int]:
+	var rank: SkillRank = skill.rank_after(level - 1) if skill else null
+	return rank.cost.duplicate() if rank else {}
+
+
+## What a miner's build from a save before version 5 gives back: its whole cost.
+static func _build_paid(_level: int) -> Dictionary[ItemType, int]:
+	return MINER_SETTINGS.build_cost.duplicate()
 
 
 func _apply_ship(data: Dictionary) -> void:
@@ -480,7 +523,7 @@ func _crafted(data: Variant) -> CraftedMiner:
 		return null
 	var build: TimedJob = null
 	if saved.has("build"):
-		build = _job(saved["build"])
+		build = _job(saved["build"], _build_paid)
 		if not build:
 			return null
 	var miner := CraftedMiner.new(number, build)
@@ -502,7 +545,7 @@ func _crafted(data: Variant) -> CraftedMiner:
 		jobs = saved["upgrade_jobs"]
 	for path: Variant in jobs:
 		var upgrade := _resource(path) as Upgrade
-		var job: TimedJob = _job(jobs[path])
+		var job: TimedJob = _job(jobs[path], _ores_paid.bind(upgrade))
 		if upgrade not in CraftedMiner.PARTS or not job or not miner.upgrades.restore(upgrade, job):
 			_outdated = true
 			push_warning("Save: skipped miner upgrade job %s" % path)
@@ -534,7 +577,7 @@ func _apply_jobs(data: Dictionary) -> void:
 		var jobs: Dictionary = data["upgrade_jobs"]
 		for path: Variant in jobs:
 			var upgrade := _resource(path) as Upgrade
-			var job: TimedJob = _job(jobs[path])
+			var job: TimedJob = _job(jobs[path], _ores_paid.bind(upgrade))
 			if not upgrade or not job or not player.upgrades.restore(upgrade, job):
 				_outdated = true
 				push_warning("Save: skipped upgrade job %s" % path)
@@ -542,7 +585,7 @@ func _apply_jobs(data: Dictionary) -> void:
 		var jobs: Dictionary = data["skill_jobs"]
 		for path: Variant in jobs:
 			var skill := _resource(path) as Skill
-			var job: TimedJob = _job(jobs[path])
+			var job: TimedJob = _job(jobs[path], _rank_paid.bind(skill))
 			if not skill or not job or not player.skills.restore(skill, job):
 				_outdated = true
 				push_warning("Save: skipped skill job %s" % path)

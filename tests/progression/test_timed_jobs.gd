@@ -96,6 +96,7 @@ func test_station_starts_and_stops_a_level() -> void:
 	_player.hold.add(KYRITE, 1000.0)
 	_player.hold.add(VYREL, 1000.0)
 	await wait_process_frames(1)
+	assert_eq(card.get_time().text, "Takes %s" % FurnaceCard.duration_text(ARMOR.levels[0].seconds))
 	assert_true(card.press_primary())
 	assert_true(_player.upgrades.is_running(ARMOR))
 	assert_true(_player.get_armor_pips().is_breathing())
@@ -124,8 +125,8 @@ func test_card_shows_the_time_left() -> void:
 	await wait_process_frames(1)
 	var effect := card.find_child("Effect", true, false) as Label
 	assert_string_contains(effect.text, "MK2")
-	assert_true(card.get_status().visible)
-	assert_string_contains(card.get_status().text, "1:01:")
+	assert_string_contains(card.get_time().text, "1:01:")
+	assert_false(card.get_status().visible)
 	var pips := card.find_child("Pips", true, false) as HBoxContainer
 	var fill := pips.get_child(1).get_node(^"Fill") as ColorRect
 	assert_true(fill.visible, "the pip of MK2 fills")

@@ -115,6 +115,23 @@ func test_mouse_picks_parts_and_uses_the_card() -> void:
 	assert_eq(_player.upgrades.mk(TANK), 2)
 
 
+## A real click spans frames, and the card refreshes every frame meanwhile.
+func test_mouse_stops_a_level_under_way() -> void:
+	var station: UpgradeStation = await _use("Miners")
+	_player.hold.add(KYRITE, 1000.0)
+	_player.hold.add(VYREL, 1000.0)
+	await wait_seconds(0.5)
+	var card := station.card_menu as UpgradeCard
+	var button: Button = card.get_buy_button()
+	await _slow_click(_on_card(station, button.get_global_rect().get_center()))
+	assert_true(_player.upgrades.is_running(DRILL))
+	for press: int in 2:
+		await wait_process_frames(2)
+		await _slow_click(_on_card(station, button.get_global_rect().get_center()))
+	assert_false(_player.upgrades.is_running(DRILL), "pressed twice")
+	assert_eq(_player.hold.amount(KYRITE), 1000.0, "the whole cost back")
+
+
 func test_weapon_station_lays_the_picked_weapon_on_the_bench() -> void:
 	var station := await _use("Weapons") as WeaponStation
 	assert_eq(station.bench_weapon, HARL)
@@ -195,6 +212,20 @@ func _click(at: Vector2) -> void:
 		click.pressed = pressed
 		click.position = at
 		get_viewport().push_input(click, true)
+
+
+## A click held for a few frames, like a player's.
+func _slow_click(at: Vector2) -> void:
+	var move := InputEventMouseMotion.new()
+	move.position = at
+	get_viewport().push_input(move, true)
+	for pressed: bool in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = pressed
+		click.position = at
+		get_viewport().push_input(click, true)
+		await wait_process_frames(3)
 
 
 ## Where a pixel of the station's card (layout size) shows on the screen.

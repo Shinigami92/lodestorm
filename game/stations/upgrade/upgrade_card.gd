@@ -32,6 +32,7 @@ var picking: bool = false
 @onready var _effect: Label = %Effect
 @onready var _cost: ItemCost = %Cost
 @onready var _cost_row: HFlowContainer = %CostRow
+@onready var _time: Label = %Time
 @onready var _status: Label = %Status
 @onready var _buy: Button = %Buy
 @onready var _close: Button = %Close
@@ -66,17 +67,19 @@ func show_part(part: StationPart) -> void:
 		show_upgrade(null)
 		return
 	var weapon: WeaponType = upgrade_station.get_weapon(shown)
+	var job: TimedJob = upgrade_station.user.upgrades.get_job(shown)
+	# The button keeps its state while a level runs: switching it off and on again every frame
+	# would drop a mouse click on it.
 	show_upgrade(
 		shown,
 		upgrade_station.user.upgrades.mk(shown),
 		hold,
 		upgrade_station.is_available(shown),
 		upgrade_station.is_locked(),
-		upgrade_station.can_buy(shown),
+		upgrade_station.can_stop(shown) if job else upgrade_station.can_buy(shown),
 		upgrade_station.upgrade_cap(),
 		weapon.display_name if weapon else ""
 	)
-	var job: TimedJob = upgrade_station.user.upgrades.get_job(shown)
 	if job:
 		show_job(
 			job,
@@ -124,6 +127,10 @@ func show_upgrade(
 	_cost.show_cost(shown.cost_of(mk + 1), hold)
 	var beyond_reach: bool = next != null and available and mk >= cap
 	_status.visible = locked or beyond_reach
+	# Only what can be started says how long it takes (the card keeps its height).
+	_time.visible = next != null and available and not _status.visible
+	if next:
+		_time.text = tr("Takes %s") % FurnaceCard.duration_text(next.seconds)
 	if locked:
 		_status.text = tr("Locked until everyone is back aboard.")
 	elif beyond_reach:
@@ -138,7 +145,7 @@ func show_upgrade(
 
 
 ## Shows the level `job` under way (after `show_upgrade`) at `now` (Unix seconds): its pip
-## filling, the time left (on the status line) and "Stop" (`can_stop`: whether it can be stopped
+## filling, the time left and "Stop" (`can_stop`: whether it can be stopped
 ## now; `armed`: whether "Stop" was pressed once; `locked`: whether a mission is underway).
 func show_job(
 	job: TimedJob, now: float, can_stop: bool = true, armed: bool = false, locked: bool = false
@@ -146,13 +153,13 @@ func show_job(
 	show_pips(_pips, job.level - 1, _pips.get_child_count(), 99, job.progress(now))
 	_effect.text = tr("MK%d under way") % job.level
 	_cost_row.visible = false
-	_status.visible = true
+	_time.visible = true
+	_time.text = tr("Time left: %s") % FurnaceCard.duration_text(job.time_left(now))
+	_status.visible = locked or armed
 	if locked:
 		_status.text = tr("Locked until everyone is back aboard.")
 	elif armed:
 		_status.text = tr("Stop? The whole cost goes back to the hold.")
-	else:
-		_status.text = tr("Time left: %s") % FurnaceCard.duration_text(job.time_left(now))
 	_buy.text = tr("Stop for sure") if armed else tr("Stop")
 	_buy.disabled = not can_stop
 
@@ -177,6 +184,7 @@ func show_build(
 	_title.text = "%s — %s" % [shown.display_name, tr(shown.class_word)]
 	_description.text = tr(shown.description)
 	_pips.visible = false
+	_time.visible = false
 	_effect.text = tr("Blueprint") if blueprint else tr("Locked")
 	_cost.show_cost(shown.build_cost, hold)
 	_status.visible = locked or not blueprint
@@ -204,6 +212,7 @@ func show_pick(shown: WeaponType, owned: bool = true) -> void:
 	_pips.visible = false
 	_effect.text = "" if owned else tr("Locked")
 	_cost_row.visible = false
+	_time.visible = false
 	_status.visible = false
 	_buy.text = tr("Lay on the bench")
 	_buy.disabled = false
@@ -232,6 +241,11 @@ func press_primary() -> bool:
 ## The buy button (for tests and probes).
 func get_buy_button() -> Button:
 	return _buy
+
+
+## The line saying how long the next level takes, or the time left of one under way (for tests).
+func get_time() -> Label:
+	return _time
 
 
 ## The line saying why nothing can be bought (for tests).

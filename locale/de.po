@@ -907,6 +907,8 @@ msgid "Unknown alloy (tier %d)"
 msgstr "Unbekannte Legierung (Stufe %d)"
 
 #: game/stations/refinery/furnace_card.gd
+#: game/stations/skill_graph/skill_card.gd
+#: game/stations/upgrade/upgrade_card.gd
 msgid "Takes %s"
 msgstr "Dauer: %s"
 

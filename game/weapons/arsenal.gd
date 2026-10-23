@@ -6,6 +6,10 @@ extends Resource
 ## ones. `game/weapons/all_weapons.tres` is the arsenal with every weapon in the game, in the order
 ## the armory lists them.
 
+## Emitted when a weapon is added (built, or a debug shortcut), or a blueprint found.
+signal unlocked(weapon_type: WeaponType)
+signal learned(weapon_type: WeaponType)
+
 @export var weapons: Array[WeaponType] = []
 ## Blueprints of weapons not built yet.
 @export var blueprints: Array[WeaponType] = []
@@ -27,6 +31,7 @@ func learn(weapon_type: WeaponType) -> bool:
 		return false
 	blueprints.append(weapon_type)
 	emit_changed()
+	learned.emit(weapon_type)
 	return true
 
 
@@ -38,4 +43,5 @@ func unlock(weapon_type: WeaponType) -> bool:
 	weapons.append(weapon_type)
 	blueprints.erase(weapon_type)
 	emit_changed()
+	unlocked.emit(weapon_type)
 	return true

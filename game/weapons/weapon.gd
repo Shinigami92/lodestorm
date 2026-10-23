@@ -109,6 +109,7 @@ func _physics_process(delta: float) -> void:
 			ammo.use()
 		type.delivery.attack(self)
 		play(type.attack_sound)
+		GameEvents.bus.weapon_attacked.emit(GameEvents.player_of(holder), type)
 		_cooldown += type.delivery.interval(self)
 		since_attack = 0.0
 	else:
@@ -208,7 +209,7 @@ func shot_direction() -> Vector3:
 
 ## A hit along `direction` landing at `point`, made by the type's effects.
 func make_hit(direction: Vector3, point: Vector3) -> Hit:
-	var hit := Hit.new(0.0, 0.0, 0.0, direction, point, holder)
+	var hit := Hit.new(0.0, 0.0, 0.0, direction, point, holder, type)
 	for effect: WeaponEffect in type.effects:
 		effect.add_to(hit, self)
 	return hit

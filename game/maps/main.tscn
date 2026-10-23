@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://bk77ctab6xxa0" path="res://game/mission/weather.gd" id="7_weather"]
 [ext_resource type="Script" uid="uid://b4p7dojarbr0f" path="res://game/save/save_game.gd" id="8_save_game"]
 [ext_resource type="PackedScene" uid="uid://khm8tyaekg2n" path="res://game/ui/title/title_view.tscn" id="9_title"]
+[ext_resource type="Script" uid="uid://4xjpoesn2w8" path="res://game/stats/stats_recorder.gd" id="10_stats"]
 
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1
@@ -59,6 +60,12 @@ mission = NodePath("../Mission")
 environment = NodePath("../WorldEnvironment")
 sun = NodePath("../Sun")
 viewer = NodePath("../Player")
+
+[node name="StatsRecorder" type="Node" parent="." node_paths=PackedStringArray("player", "ship", "mission")]
+script = ExtResource("10_stats")
+player = NodePath("../Player")
+ship = NodePath("../Ship")
+mission = NodePath("../Mission")
 
 [node name="SaveGame" type="Node" parent="." node_paths=PackedStringArray("ship", "player", "mission")]
 script = ExtResource("8_save_game")

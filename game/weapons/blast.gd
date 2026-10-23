@@ -158,7 +158,13 @@ func _hit(target: Node3D, hit: Hit, distance: float) -> void:
 		else (target as Destructible).get_aim_point()
 	)
 	var struck := Hit.new(
-		hit.damage * share, hit.stagger * share, hit.push * share, direction, point, hit.attacker
+		hit.damage * share,
+		hit.stagger * share,
+		hit.push * share,
+		direction,
+		point,
+		hit.attacker,
+		hit.weapon_type
 	)
 	var dealt: float = 0.0
 	if target is Alien:

@@ -36,7 +36,7 @@ func hurt(amount: float) -> void:
 		if not is_instance_valid(body):
 			continue
 		if body is Player:
-			(body as Player).take_damage(amount, global_position)
+			(body as Player).take_damage(amount, global_position, null, false, self)
 		elif body is Alien:
 			(body as Alien).take_damage(amount)
 

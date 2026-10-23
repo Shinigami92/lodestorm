@@ -15,6 +15,8 @@ var direction: Vector3
 var point: Vector3
 ## Who dealt it (e.g. for the damage readout), or null.
 var attacker: Node
+## The weapon that made it (for the statistics), or null.
+var weapon_type: WeaponType
 ## Whether it sprays ichor or sparks where it lands; a continuous weapon's hits mostly don't, so
 ## ten hits a second don't fill the air.
 var spray: bool = true
@@ -39,7 +41,8 @@ func _init(
 	hit_push: float,
 	hit_direction: Vector3,
 	hit_point: Vector3,
-	hit_attacker: Node = null
+	hit_attacker: Node = null,
+	hit_weapon_type: WeaponType = null
 ) -> void:
 	damage = hit_damage
 	stagger = hit_stagger
@@ -47,6 +50,7 @@ func _init(
 	direction = Vector3(hit_direction.x, 0.0, hit_direction.z).normalized()
 	point = hit_point
 	attacker = hit_attacker
+	weapon_type = hit_weapon_type
 
 
 ## Lands on `target` (an alien or a destructible): its damage past their armor, the damage readout
@@ -61,5 +65,5 @@ func land_on(target: Node3D) -> float:
 		return 0.0
 	DamageNumber.show_hit(attacker, target, dealt)
 	if burn_time > 0.0 and burn_damage > 0.0:
-		Burning.ignite(target, burn_damage, burn_time, attacker)
+		Burning.ignite(target, burn_damage, burn_time, attacker, weapon_type)
 	return dealt

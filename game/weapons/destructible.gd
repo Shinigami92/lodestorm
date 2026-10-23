@@ -24,6 +24,9 @@ const GROUP: StringName = &"destructibles"
 var health: float
 ## Whether its health reached zero; it then takes no more hits and can't be locked on.
 var dead: bool = false
+## The player who dealt its last damage and their weapon (for the statistics), or null.
+var last_by: Player
+var last_weapon: WeaponType
 
 @onready var _collision: CollisionShape3D = $CollisionShape3D
 
@@ -42,16 +45,19 @@ func take_hit(hit: Hit) -> float:
 		dealt = maxf(hit.damage - armor, hit.damage * Alien.MIN_DAMAGE_SHARE)
 	if hit.spray and is_inside_tree():
 		HitSpray.spawn(get_parent(), hit.point, hit.direction, false)
-	take_damage(dealt, hit.attacker)
+	take_damage(dealt, hit.attacker, hit.weapon_type)
 	return dealt
 
 
-## Loses `amount` health, past its armor, dealt `by` someone (or null); it's destroyed at zero.
-func take_damage(amount: float, by: Node = null) -> void:
+## Loses `amount` health, past its armor, dealt `by` someone (or null) `with` a weapon (or null);
+## it's destroyed at zero.
+func take_damage(amount: float, by: Node = null, with: WeaponType = null) -> void:
 	if dead or amount <= 0.0:
 		return
 	amount = minf(amount, health)
 	health -= amount
+	last_by = GameEvents.player_of(by)
+	last_weapon = with
 	damaged.emit(amount, by)
 	if health <= 0.0:
 		dead = true

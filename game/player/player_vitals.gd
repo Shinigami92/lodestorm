@@ -45,8 +45,9 @@ func maximum() -> float:
 	)
 
 
-## Loses `amount` health (from an attacker at `from`, if it has one); dies at zero.
-func damage(amount: float, from: Vector3 = Vector3.INF) -> void:
+## Loses `amount` health (from an attacker at `from`, if it has one) to `cause` (what dealt it, for
+## the statistics); dies at zero.
+func damage(amount: float, from: Vector3 = Vector3.INF, cause: Node = null) -> void:
 	if dead or amount <= 0.0:
 		return
 	if god_mode:
@@ -54,8 +55,10 @@ func damage(amount: float, from: Vector3 = Vector3.INF) -> void:
 		light.flash()
 		return
 	_since_damage = 0.0
+	var lost: float = minf(amount, health)
 	_set_health(health - amount)
 	hurt.emit(amount, from)
+	GameEvents.bus.player_hurt.emit(holder, lost, cause)
 	if health > 0.0:
 		light.flash()
 		return
@@ -63,12 +66,15 @@ func damage(amount: float, from: Vector3 = Vector3.INF) -> void:
 	regenerating = false
 	light.regenerating = false
 	died.emit()
+	GameEvents.bus.player_died.emit(holder, cause)
 
 
 ## Restores `amount` health, all of it by default (not when dead).
 func heal(amount: float = INF) -> void:
 	if not dead:
+		var before: float = health
 		_set_health(minf(health + amount, maximum()))
+		_report_healed(before)
 
 
 ## Sets the health to `value`, up to the maximum (not when dead): e.g. what a save kept.
@@ -101,7 +107,14 @@ func update(delta: float) -> void:
 	)
 	light.regenerating = regenerating
 	if regenerating:
+		var before: float = health
 		_set_health(health + rate * delta)
+		_report_healed(before)
+
+
+func _report_healed(before: float) -> void:
+	if health > before:
+		GameEvents.bus.player_healed.emit(holder, health - before)
 
 
 func _set_health(value: float) -> void:

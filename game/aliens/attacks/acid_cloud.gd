@@ -96,4 +96,4 @@ func _hurt_one(node: Node3D, amount: float) -> void:
 	if node is Alien:
 		(node as Alien).take_damage(amount)
 	else:
-		Alien.hurt(node, amount, global_position)
+		Alien.hurt(node, amount, global_position, null, false, self)

@@ -32,6 +32,7 @@ func dash(direction: Vector3 = Vector3.ZERO) -> bool:
 	_left = settings.dash_time
 	cooldown = settings.dash_cooldown
 	dashed.emit()
+	GameEvents.bus.dashed.emit(holder)
 	return true
 
 

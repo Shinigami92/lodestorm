@@ -18,8 +18,9 @@ var exclude: Array[RID] = []
 var damage: float = 0.0
 var stagger: float = 0.0
 var push: float = 0.0
-## Who fired it (e.g. for the damage readout), or null.
+## Who fired it (e.g. for the damage readout), or null, and with what.
 var shooter: Node
+var weapon_type: WeaponType
 ## Whether it flies on through the aliens it hits (each one is hit once).
 var pierce: bool = false
 
@@ -47,7 +48,9 @@ func move_to(target: Vector3) -> bool:
 		_travelled += global_position.distance_to(at)
 		global_position = at
 		var collider: Object = result["collider"]
-		var hitting := Hit.new(damage, stagger, push, velocity, global_position, shooter)
+		var hitting := Hit.new(
+			damage, stagger, push, velocity, global_position, shooter, weapon_type
+		)
 		if collider is Alien:
 			var alien := collider as Alien
 			DamageNumber.show_hit(shooter, alien, alien.take_hit(hitting))

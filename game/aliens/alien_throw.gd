@@ -127,7 +127,8 @@ func _pass_on(alien: Alien, target: Node3D) -> void:
 		effect.aside * Alien.PUSH_DECAY,
 		aside if target is Alien else direction,
 		point,
-		hit.attacker
+		hit.attacker,
+		hit.weapon_type
 	)
 	passed.land_on(target)
 
@@ -147,7 +148,8 @@ func _land(alien: Alien, crashed: bool) -> void:
 		0.0,
 		direction,
 		alien.get_aim_point() + direction * 0.3,
-		hit.attacker
+		hit.attacker,
+		hit.weapon_type
 	)
 	wall.land_on(alien)
 	if alien.dead:

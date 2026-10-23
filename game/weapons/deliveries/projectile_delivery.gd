@@ -56,6 +56,7 @@ func _fire(weapon: Weapon, direction: Vector3) -> void:
 	projectile.pierce = pierce and weapon.power >= 1.0
 	projectile.exclude = [holder.get_rid()]
 	projectile.shooter = holder
+	projectile.weapon_type = weapon.type
 	holder.get_parent().add_child(projectile)
 	projectile.global_position = Vector3(
 		holder.global_position.x, muzzle.y, holder.global_position.z

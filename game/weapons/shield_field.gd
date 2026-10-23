@@ -160,6 +160,9 @@ func _absorb(amount: float, point: Vector3, heavy: bool) -> float:
 	var through: float = (weapon.ammo as FieldAmmo).absorb(amount)
 	if through >= amount:
 		return through
+	GameEvents.bus.shield_blocked.emit(
+		GameEvents.player_of(weapon.holder), weapon.type, amount - through
+	)
 	_flare = 1.0
 	_ring_at(point, 1.0 if heavy else clampf(amount / 15.0, 0.4, 1.0))
 	Sfx.play_at(guard.heavy_sound if heavy else guard.block_sound, point)

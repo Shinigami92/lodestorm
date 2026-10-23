@@ -149,6 +149,7 @@ func _start_reload() -> bool:
 		if rounds < capacity():
 			weapon.play(EMPTY_SOUND)
 			reload_denied.emit()
+			GameEvents.bus.reload_denied.emit(GameEvents.player_of(weapon.holder), weapon.type)
 		return false
 	if not is_single() and not careful:
 		rounds = 0
@@ -156,6 +157,7 @@ func _start_reload() -> bool:
 	chain = 0
 	_start_round()
 	weapon.play(feed.reload_sound)
+	GameEvents.bus.reload_started.emit(GameEvents.player_of(weapon.holder), weapon.type, false)
 	return true
 
 
@@ -180,6 +182,7 @@ func _time_press() -> bool:
 		chain += 1
 		weapon.play(TIMED_HIT_SOUND, true)
 		reload_timed.emit(true)
+		GameEvents.bus.reload_timed.emit(GameEvents.player_of(weapon.holder), weapon.type, true)
 		_finish_round()
 	else:
 		fumbled = true
@@ -187,6 +190,7 @@ func _time_press() -> bool:
 		reload_duration += feed.fumble_time
 		weapon.play(TIMED_MISS_SOUND, true)
 		reload_timed.emit(false)
+		GameEvents.bus.reload_timed.emit(GameEvents.player_of(weapon.holder), weapon.type, false)
 	return true
 
 

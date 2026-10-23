@@ -37,6 +37,7 @@ func open(player: Player) -> bool:
 	player.menu = self
 	_opened()
 	opened.emit(player)
+	GameEvents.bus.menu_opened.emit(player, self)
 	return true
 
 

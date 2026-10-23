@@ -218,6 +218,7 @@ func _ready() -> void:
 		home = global_position
 	add_to_group(GROUP)
 	health = max_health()
+	GameEvents.bus.alien_appeared.emit(self)
 	_animator.run_speed = strain.move_speed
 	_animator.setup(_model)
 	_legs.step_distance *= strain.stride
@@ -425,16 +426,18 @@ func play_attack() -> void:
 
 ## Hurts `victim` (a player or a miner) by `amount`, coming from `from` (for a player's hit marks).
 ## A blow of an `attacker` (`heavy`: a charge, a slam) may be stopped by a player's shield; shots
-## and acid aren't blows (shots stop at a shield's field on their way, see `ShieldField`).
+## and acid aren't blows (shots stop at a shield's field on their way, see `ShieldField`). `cause`
+## dealt it when it's not a blow (acid, a hook; for the statistics).
 static func hurt(
 	victim: Node3D,
 	amount: float,
 	from: Vector3 = Vector3.INF,
 	attacker: Alien = null,
-	heavy: bool = false
+	heavy: bool = false,
+	cause: Node = null
 ) -> void:
 	if victim is Player:
-		(victim as Player).take_damage(amount, from, attacker, heavy)
+		(victim as Player).take_damage(amount, from, attacker, heavy, cause)
 	elif victim is Miner:
 		(victim as Miner).take_damage(amount)
 
@@ -552,7 +555,10 @@ func take_hit(hit: Hit) -> float:
 		if stagger >= strain.stagger_threshold:
 			_stagger()
 	hit_taken.emit(hit, dealt, armored)
-	take_damage(dealt)
+	GameEvents.bus.alien_hit.emit(
+		GameEvents.player_of(hit.attacker), hit.weapon_type, self, armored
+	)
+	take_damage(dealt, hit.attacker, hit.weapon_type)
 	if hit.throw and not dead:
 		thrown.start(self, hit)
 	return dealt
@@ -566,14 +572,18 @@ func stagger_for(seconds: float) -> void:
 	_end_attack()
 
 
-## Loses `amount` health, past its armor (burning ground, the debug overlay); dies at zero.
-func take_damage(amount: float) -> void:
+## Loses `amount` health, past its armor (burning ground, the debug overlay), dealt `by` someone
+## (or null) `with` a weapon (or null); dies at zero, its death credited to them.
+func take_damage(amount: float, by: Node = null, with: WeaponType = null) -> void:
 	if dead or amount <= 0.0:
 		return
+	var player: Player = GameEvents.player_of(by)
+	GameEvents.bus.alien_damaged.emit(player, with, self, minf(amount, health))
 	health = maxf(health - amount, 0.0)
 	_flash_left = FLASH_DURATION
 	if health == 0.0:
 		_die()
+		GameEvents.bus.alien_killed.emit(player, with, self)
 
 
 ## Whether `player` can be hunted: alive and not aboard a ship.

@@ -89,7 +89,7 @@ func covers(node: Node3D) -> bool:
 func _hurt(amount: float) -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		if covers(player):
-			Alien.hurt(player, amount, global_position)
+			Alien.hurt(player, amount, global_position, null, false, self)
 	for miner: Miner in get_tree().get_nodes_in_group(Miner.GROUP):
 		if covers(miner):
 			Alien.hurt(miner, amount, global_position)

@@ -19,7 +19,7 @@
   .top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px 16px 6px; }
   .top .grow { flex: 1; }
   #status { color: var(--muted); font-size: 13px; }
-  #about { color: var(--muted); font-size: 13px; padding: 0 16px 6px; }
+  #about { color: var(--muted); font-size: 13px; padding: 0 16px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tabs { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 16px 10px; }
   .tabs button { color: var(--muted); }
   .tabs button.on { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
@@ -27,22 +27,27 @@
   .tabs button.tie::after { content: " ⚔"; color: var(--amber); }
   .tabs button.on.tie::after { color: var(--bg); }
   .tabs .best { color: var(--amber); }
-  .bar { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
-  .bar textarea { flex: 1; }
-  main { padding: 16px; }
+  .bar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .bar input { flex: 1; padding: 4px 8px; }
+  main { padding: 12px 16px 16px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--cell)), 1fr)); gap: 16px; }
-  .card { background: var(--panel); border-radius: 6px; overflow: hidden; outline: 2px solid transparent; }
+  .grid.fit { justify-content: center; }
+  .card { position: relative; background: var(--panel); border-radius: 6px; overflow: hidden; outline: 2px solid transparent; }
   .card.hot { outline-color: #3a4250; }
   .card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; cursor: zoom-in; background: #0b0c0f; }
-  .row { display: flex; gap: 6px; padding: 8px 10px 0; align-items: center; }
+  .row { display: flex; gap: 4px; height: 36px; padding: 0 8px; align-items: center; }
   .row b { margin-right: auto; color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .badge { color: var(--bg); background: var(--amber); border-radius: 3px; padding: 0 6px; font-size: 13px; font-weight: 600; }
   .badge.tie { background: none; color: var(--amber); border: 1px solid var(--amber); }
-  .star { background: none; border: 0; color: #444b57; font-size: 22px; padding: 0 2px; line-height: 1; }
+  .star { background: none; border: 0; color: #444b57; font-size: 21px; padding: 0 1px; line-height: 1; }
+  .ib { background: none; border: 0; color: #5a616d; font-size: 15px; padding: 0 4px; }
+  .ib:hover { color: var(--text); }
+  .ib.has { color: var(--cyan); }
+  .pop { position: absolute; left: 0; right: 0; bottom: 36px; display: none; max-height: 70%; overflow: auto;
+    padding: 8px 10px; background: #0d0f12f2; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+  .card.showprompt .ppop, .card.shownote .npop { display: block; }
   .star.on { color: var(--amber); }
-  textarea { width: 100%; min-height: 2.6em; padding: 4px 6px; }
-  .card textarea { width: calc(100% - 20px); margin: 8px 10px 4px; }
-  details { margin: 0 10px 10px; color: var(--muted); font-size: 13px; }
+  textarea { width: 100%; min-height: 4.5em; padding: 4px 6px; display: block; }
   .empty { color: var(--muted); padding: 40px 0; text-align: center; }
   #loose { color: var(--muted); margin-bottom: 16px; }
   .overlay { position: fixed; inset: 0; background: #07080a; display: none; z-index: 3; }
@@ -83,7 +88,7 @@
       <option value="all">All</option><option value="unrated">Unrated</option>
       <option value="5">★5</option><option value="4">★4+</option><option value="3">★3 and less</option>
     </select>
-    <select id="size" aria-label="Image size"><option value="300px">Small</option><option value="460px">Medium</option><option value="720px">Large</option></select>
+    <select id="size" aria-label="Image size" title="Fit: all images of a subject on one screen"><option value="fit">Fit</option><option value="300px">Small</option><option value="460px">Medium</option><option value="720px">Large</option></select>
     <span class="grow"></span>
     <span id="status"></span>
     <button id="helpbtn" title="Keyboard keys (?)">?</button>
@@ -94,7 +99,7 @@
 <main>
   <div id="loose" style="display:none"></div>
   <div class="bar" id="subjbar">
-    <textarea id="subjnote" placeholder="Notes for this whole subject"></textarea>
+    <input id="subjnote" placeholder="Notes for this whole subject">
     <button id="duelbtn" title="Pick the better of two among the tied best images (D)">Duel</button>
   </div>
   <div class="grid" id="grid"></div>
@@ -117,7 +122,8 @@
     <tr><td><kbd>1</kbd>–<kbd>5</kbd>, <kbd>0</kbd></td><td>rate the image under the mouse or in the viewer, clear</td></tr>
     <tr><td>click an image</td><td>open the viewer</td></tr>
     <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>viewer: previous / next image (on into the next subject); duel: pick left / right</td></tr>
-    <tr><td><kbd>N</kbd></td><td>viewer: write a note</td></tr>
+    <tr><td><kbd>N</kbd></td><td>write a note (viewer, or the image under the mouse)</td></tr>
+    <tr><td><kbd>I</kbd></td><td>show the prompt of the image under the mouse</td></tr>
     <tr><td><kbd>[</kbd> <kbd>]</kbd></td><td>previous / next subject</td></tr>
     <tr><td><kbd>B</kbd></td><td>the Best view: each subject's top image</td></tr>
     <tr><td><kbd>D</kbd></td><td>duel the tied best images of this subject</td></tr>
@@ -233,11 +239,13 @@ function render() {
   $("grid").innerHTML = files.length ? files.map((f) => {
     const e = state[subject]?.files[f] ?? { note: "" };
     const rank = d.ranked && f in d.wins ? `<span class="badge">#${d.order.indexOf(f) + 1}</span>` : "";
-    const prompt = e.prompt ? `<details><summary>prompt</summary>${esc(e.prompt)}</details>` : "";
+    const prompt = e.prompt ? `<button class="ib" data-pop="prompt" title="Prompt (I)">ⓘ</button>` : "";
     return `<div class="card" data-s="${esc(subject)}" data-f="${esc(f)}"><img src="/img/${batch}/${subject}/${f}" alt="${esc(f)}" loading="lazy">
-      <div class="row"><b>${esc(f.replace(".png", ""))}</b>${rank}${starButtons(subject, f)}</div>
-      <textarea data-f="${esc(f)}" placeholder="Note">${esc(e.note)}</textarea>${prompt}</div>`;
+      <div class="pop ppop">${esc(e.prompt ?? "")}</div>
+      <div class="pop npop"><textarea data-f="${esc(f)}" placeholder="Note">${esc(e.note)}</textarea></div>
+      <div class="row"><b title="${esc(f)}">${esc(f.replace(".png", ""))}</b>${rank}${prompt}<button class="ib ${e.note ? "has" : ""}" data-pop="note" title="${esc(e.note || "Note (N)")}">✎</button>${starButtons(subject, f)}</div></div>`;
   }).join("") : `<div class="empty">No images match this filter.</div>`;
+  fit();
 }
 
 function renderBest() {
@@ -252,8 +260,31 @@ function renderBest() {
     const n = stars(s, b.file);
     const badge = b.tie ? `<span class="badge tie" title="tied: duel to decide">tie</span>` : n ? `<span class="badge">${"★".repeat(n)}</span>` : "";
     return `<div class="card" data-s="${esc(s)}" data-f="${esc(b.file)}" data-jump="1"><img src="/img/${batch}/${s}/${b.file}" alt="${esc(s)}" loading="lazy">
-      <div class="row" style="padding-bottom:10px"><b>${esc(s)} · ${esc(b.file.replace(".png", ""))}</b>${badge}</div></div>`;
+      <div class="row"><b>${esc(s)} · ${esc(b.file.replace(".png", ""))}</b>${badge}</div></div>`;
   }).join("");
+  fit();
+}
+
+// Fit: the biggest square cells that put every card of the view on one screen (at least 240 px, else scroll)
+const ROW = 36, GAP = 16, MIN_FIT = 240;
+function fit() {
+  const grid = $("grid"), n = grid.querySelectorAll(".card").length;
+  grid.classList.toggle("fit", $("size").value === "fit");
+  if ($("size").value !== "fit" || !n) { grid.style.gridTemplateColumns = ""; return; }
+  const w = grid.clientWidth;
+  const h = innerHeight - (grid.getBoundingClientRect().top + window.scrollY) - 16;
+  let size = 0, cols = 1;
+  for (let c = 1; c <= n; c++) {
+    const r = Math.ceil(n / c);
+    const s = Math.floor(Math.min((w - (c - 1) * GAP) / c, (h - (r - 1) * GAP) / r - ROW));
+    if (s > size) { size = s; cols = c; }
+  }
+  grid.style.gridTemplateColumns = size >= MIN_FIT ? `repeat(${cols}, ${size}px)` : `repeat(auto-fill, minmax(${MIN_FIT}px, 1fr))`;
+}
+function togglePop(card, kind) {
+  const cls = kind === "note" ? "shownote" : "showprompt";
+  card.classList.toggle(cls);
+  if (kind === "note" && card.classList.contains(cls)) card.querySelector("textarea").focus();
 }
 
 // The viewer walks the visible images of the subject, then on into the next subject.
@@ -315,11 +346,17 @@ function goSubject(dir) {
 
 $("batch").onchange = (ev) => { batch = ev.target.value; openBatch(); };
 $("filter").onchange = (ev) => { store.set("filter", ev.target.value); render(); };
-$("size").onchange = (ev) => { store.set("size", ev.target.value); document.documentElement.style.setProperty("--cell", ev.target.value); };
+$("size").onchange = (ev) => { store.set("size2", ev.target.value); applySize(); };
+function applySize() {
+  if ($("size").value !== "fit") document.documentElement.style.setProperty("--cell", $("size").value);
+  fit();
+}
+window.addEventListener("resize", fit);
 $("tabs").onclick = (ev) => { if (ev.target.dataset.s) { subject = ev.target.dataset.s; render(); } };
 $("grid").onclick = (ev) => {
   const t = ev.target, card = t.closest(".card");
-  if (t.classList.contains("star")) {
+  if (t.dataset.pop && card) togglePop(card, t.dataset.pop);
+  else if (t.classList.contains("star")) {
     const n = +t.dataset.n;
     rate(t.dataset.s, t.dataset.f, stars(t.dataset.s, t.dataset.f) === n ? 0 : n);
     render();
@@ -334,7 +371,13 @@ $("grid").onmouseover = (ev) => {
 };
 $("grid").oninput = (ev) => {
   const f = ev.target.dataset.f;
-  if (f) { const e = entry(subject, f); e.note = ev.target.value; post(subject, { kind: "rating", file: f, stars: e.stars, note: e.note }); }
+  if (!f) return;
+  const e = entry(subject, f);
+  e.note = ev.target.value;
+  post(subject, { kind: "rating", file: f, stars: e.stars, note: e.note });
+  const pen = ev.target.closest(".card").querySelector('[data-pop="note"]');
+  pen.classList.toggle("has", !!e.note);
+  pen.title = e.note || "Note (N)";
 };
 $("subjnote").oninput = (ev) => { st(subject).note = ev.target.value; post(subject, { kind: "note", note: ev.target.value }); };
 $("vstars").onclick = (ev) => {
@@ -357,6 +400,8 @@ document.addEventListener("keydown", (ev) => {
   const typing = ["TEXTAREA", "INPUT"].includes(document.activeElement?.tagName);
   if (ev.key === "Escape") {
     if (typing) { document.activeElement.blur(); return; }
+    const popped = document.querySelectorAll(".card.shownote, .card.showprompt");
+    if (popped.length) { popped.forEach((c) => c.classList.remove("shownote", "showprompt")); return; }
     if ($("help").classList.contains("open")) $("help").classList.remove("open");
     else if (pair) closeDuel(); else if (view) closeViewer();
     return;
@@ -370,6 +415,11 @@ document.addEventListener("keydown", (ev) => {
   } else if (view && ev.key === "ArrowLeft") step(-1);
   else if (view && ev.key === "ArrowRight") step(1);
   else if (view && ev.key.toLowerCase() === "n") { ev.preventDefault(); $("vnote").focus(); }
+  else if (!view && hot && "ni".includes(ev.key.toLowerCase())) {
+    ev.preventDefault();
+    const card = [...document.querySelectorAll(".card")].find((c) => c.dataset.f === hot.f);
+    if (card) togglePop(card, ev.key.toLowerCase() === "n" ? "note" : "prompt");
+  }
   else if (!view && ev.key === "[") goSubject(-1);
   else if (!view && ev.key === "]") goSubject(1);
   else if (!view && ev.key.toLowerCase() === "b") { subject = BEST; render(); }
@@ -384,8 +434,9 @@ window.addEventListener("hashchange", () => {
   if (b !== batch && b in info) { batch = b; openBatch(s); } else if (s === BEST || subjects().includes(s)) { subject = s; render(); }
 });
 $("filter").value = store.get("filter", "all");
-$("size").value = store.get("size", "460px");
-document.documentElement.style.setProperty("--cell", $("size").value);
+$("size").value = store.get("size2", "fit");
+if (!$("size").value) $("size").value = "fit";
+applySize();
 setInterval(async () => {
   const fresh = await (await fetch("/api/batches")).json();
   const shape = (o) => JSON.stringify(Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v.subjects])));
@@ -394,7 +445,7 @@ setInterval(async () => {
   info = fresh;
   if (!known) return load();
   state = await (await fetch(`/api/state/${batch}`)).json();
-  if (document.activeElement?.tagName !== "TEXTAREA" && !pair && !view) render(); else renderHeader();
+  if (!["TEXTAREA", "INPUT"].includes(document.activeElement?.tagName) && !pair && !view) render(); else renderHeader();
 }, 10000);
 load();
 </script>

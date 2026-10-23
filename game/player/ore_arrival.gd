@@ -1,19 +1,23 @@
 class_name OreArrival
 extends Node3D
 ## Ore arriving (a child of the player, above its head; see GAME_DESIGN.md, UI): while a hose
-## delivers, a line with each arriving ore's badge and its amount ("+180") shows above the player,
-## counting up; once the ore stops coming (slower than `SETTLE_RATE`), it rises and fades over
-## `RISE_TIME`. A slow trickle (a miner filling while the player stands by) shows once it adds up
-## to `MIN_AMOUNT`. Several ores share one line. The line is a card (`ItemBadge`s and labels)
+## delivers, a line with each arriving ore's badge and its amount ("+180") shows above the player
+## from its first whole unit, counting up; once the ore stops coming (slower than `SETTLE_RATE` for
+## `SETTLE_TIME`), it rises and fades over `RISE_TIME`. A slow trickle (a miner filling while the
+## player stands by) shows once it adds up to `MIN_AMOUNT`; one that stops before that, or that a
+## hose starts over, is forgotten (it doesn't join the next miner's line). Several ores share one
+## line. The line is a card (`ItemBadge`s and labels)
 ## rendered in a SubViewport onto a sprite facing the camera, drawn over everything like the
 ## damage numbers.
 
-## A delivery shows once it reaches this many units. TBD (playtest).
+## A trickle shows once it reaches this many units. TBD (playtest).
 const MIN_AMOUNT: float = 10.0
-## Units per second below which a delivery counts as done and rises. TBD (playtest).
+## Units per second from which ore comes from a hose (it shows at once); slower is a trickle.
+## TBD (playtest).
 const SETTLE_RATE: float = 5.0
-## Seconds over which the arrival rate is averaged.
-const RATE_TIME: float = 0.4
+## Seconds the ore comes slower than `SETTLE_RATE` until a delivery counts as done and rises, or
+## doesn't come at all until a trickle not shown yet is forgotten.
+const SETTLE_TIME: float = 0.4
 ## How long a finished delivery rises (s) and how far (m).
 const RISE_TIME: float = 2.0
 const RISE: float = 0.7
@@ -31,10 +35,14 @@ var rising: bool = false
 
 ## Ore arriving while the last delivery rises: the next one.
 var _next: Dictionary[OreType, float] = {}
+## Whether a hose delivered to the delivery forming (`_next` while rising, else `amounts`).
+var _streamed: bool = false
+## Ore arrived since the last physics step.
+var _step: Dictionary[OreType, float] = {}
+## Seconds the ore came slower than `SETTLE_RATE`, and seconds none came.
+var _slow: float = 0.0
+var _idle: float = 0.0
 var _age: float = 0.0
-## Units per second arriving lately, and what arrived since the last frame.
-var _rate: float = 0.0
-var _arrived: float = 0.0
 var _viewport := SubViewport.new()
 var _row := HBoxContainer.new()
 var _sprite := Sprite3D.new()
@@ -67,17 +75,34 @@ func _ready() -> void:
 	_show(false)
 
 
+## Ore arrives in physics steps (the hoses): measured per step, a hose is told from a trickle at
+## once.
+func _physics_process(delta: float) -> void:
+	var arrived: float = _total(_step)
+	var hose: bool = arrived >= SETTLE_RATE * delta
+	_slow = 0.0 if hose else _slow + delta
+	_idle = 0.0 if arrived > 0.0 else _idle + delta
+	var batch: Dictionary[OreType, float] = _next if rising else amounts
+	if not _shows(batch) and (hose or _idle >= SETTLE_TIME):
+		# A trickle not shown yet: not part of a hose starting, and forgotten once it stopped.
+		batch.clear()
+	_streamed = _streamed or hose
+	for ore_type: OreType in _step:
+		batch[ore_type] = batch.get(ore_type, 0.0) + _step[ore_type]
+	_step.clear()
+
+
 func _process(delta: float) -> void:
-	_rate = lerpf(_arrived / maxf(delta, 0.0001), _rate, exp(-delta / RATE_TIME))
-	_arrived = 0.0
 	if rising:
 		_age += delta
-		if _age >= RISE_TIME or _total(_next) >= MIN_AMOUNT:
+		if _age >= RISE_TIME or (_shows(_next) and _has_whole(_next)):
 			_begin(_next)
-	elif _total(amounts) >= MIN_AMOUNT and _rate < SETTLE_RATE:
+	elif _shows(amounts) and _slow >= SETTLE_TIME:
 		rising = true
 		_age = 0.0
-	var shown: bool = rising or _total(amounts) >= MIN_AMOUNT
+		# The next delivery forms in `_next`.
+		_streamed = false
+	var shown: bool = (rising or _shows(amounts)) and _has_whole(amounts)
 	_show(shown)
 	if not shown:
 		return
@@ -90,9 +115,10 @@ func _process(delta: float) -> void:
 ## Forgets what arrived (the player died and dropped it).
 func clear() -> void:
 	_begin({})
-	_next.clear()
-	_rate = 0.0
-	_arrived = 0.0
+	_step.clear()
+	_streamed = false
+	_slow = 0.0
+	_idle = 0.0
 
 
 ## The text shown for `ore_type`, or "" when it isn't in the line.
@@ -101,12 +127,10 @@ func shown_text(ore_type: OreType) -> String:
 
 
 func _on_cargo_added(ore_type: OreType, amount: float) -> void:
-	var batch: Dictionary[OreType, float] = _next if rising else amounts
-	batch[ore_type] = batch.get(ore_type, 0.0) + amount
-	_arrived += amount
+	_step[ore_type] = _step.get(ore_type, 0.0) + amount
 
 
-## Starts showing `batch` as the delivery (empty: nothing).
+## Starts showing `batch` as the delivery (empty: nothing); `_streamed` stays its own.
 func _begin(batch: Dictionary[OreType, float]) -> void:
 	amounts = batch.duplicate()
 	_next = {}
@@ -122,6 +146,9 @@ func _begin(batch: Dictionary[OreType, float]) -> void:
 func _update_labels() -> void:
 	for ore_type: OreType in amounts:
 		if ore_type not in _labels:
+			if amounts[ore_type] < 1.0:
+				# No "+0".
+				continue
 			_add_item(ore_type)
 		_labels[ore_type].text = "+%d" % floori(amounts[ore_type])
 
@@ -161,6 +188,18 @@ func _show(shown: bool) -> void:
 	_viewport.render_target_update_mode = (
 		SubViewport.UPDATE_ALWAYS if shown else SubViewport.UPDATE_DISABLED
 	)
+
+
+## Whether the delivery forming, `batch`, shows: a hose delivered to it, or it adds up.
+func _shows(batch: Dictionary[OreType, float]) -> bool:
+	return _streamed or _total(batch) >= MIN_AMOUNT
+
+
+static func _has_whole(batch: Dictionary[OreType, float]) -> bool:
+	for ore_type: OreType in batch:
+		if batch[ore_type] >= 1.0:
+			return true
+	return false
 
 
 static func _total(batch: Dictionary[OreType, float]) -> float:

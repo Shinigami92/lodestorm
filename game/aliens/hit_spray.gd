@@ -22,6 +22,7 @@ static var _spark_mesh: Mesh
 ## Sprays at `point`, back against `along` (the way the hit travelled): sparks if it hit armor.
 static func spawn(parent: Node, point: Vector3, along: Vector3, armored: bool) -> HitSpray:
 	var spray := HitSpray.new()
+	spray.layers = RenderLayers.EFFECTS
 	spray._setup(armored)
 	parent.add_child(spray)
 	# Level with the world, so `direction` is too.

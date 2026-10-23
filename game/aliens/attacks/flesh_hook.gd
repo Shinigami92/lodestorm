@@ -83,6 +83,7 @@ func _ready() -> void:
 	_head.mesh = sphere
 	_head.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_head)
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _physics_process(delta: float) -> void:

@@ -28,6 +28,7 @@ spot_angle = 70.9
 spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
+layers = 4
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
 text = "Armory"

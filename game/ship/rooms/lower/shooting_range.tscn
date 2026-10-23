@@ -74,6 +74,7 @@ spot_angle = 76.8
 spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
+layers = 4
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
 pixel_size = 0.01
 text = "Shooting range"
@@ -155,5 +156,6 @@ collision_mask = 0
 shape = SubResource("BoxShape3D_n_2x3x0_5")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Barrier"]
+layers = 8
 cast_shadow = 0
 mesh = SubResource("BoxMesh_barrier")

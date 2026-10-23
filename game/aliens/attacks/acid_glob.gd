@@ -77,6 +77,7 @@ func _ready() -> void:
 	_ring = _make_ring()
 	add_child(_ring)
 	add_child(_fill())
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _physics_process(delta: float) -> void:

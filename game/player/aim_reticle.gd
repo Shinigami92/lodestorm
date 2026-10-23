@@ -2,12 +2,13 @@ class_name AimReticle
 extends Node3D
 ## The in-game cursor (see GAME_DESIGN.md, UI): a reticle projected onto the ground or a rock's top
 ## where the local player's mouse really points (`PlayerAim.cursor_point`), in the player's color,
-## so it follows slopes and leaves players and aliens out. While it shows, the hardware cursor is
-## hidden; it comes back while a menu or station is open, the game is paused, the player is down,
-## the mouse is over a developer tool or points at no ground. Only with the mouse: a stick or a VR
-## hand aims by a direction. With something locked on, it stays under the cursor, dimmed (or, with
-## `follows_lock`, moves under the locked target). A child of the player. Greybox look, TBD
-## (playtest).
+## so it follows slopes; it leaves out what isn't ground (players, aliens, markings, effects: see
+## `RenderLayers`).
+## While it shows, the hardware cursor is hidden; it comes back while a menu or station is open, the
+## game is paused, the player is down, the mouse is over a developer tool or points at no ground.
+## Only with the mouse: a stick or a VR hand aims by a direction. With something locked on, it
+## stays under the cursor, dimmed (or, with `follows_lock`, moves under the locked target). A child
+## of the player. Greybox look, TBD (playtest).
 
 ## Its width on the ground (m).
 const SIZE: float = 1.5
@@ -18,6 +19,9 @@ const ALPHA: float = 1.0
 const LOCKED_ALPHA: float = 0.3
 ## How strongly it glows.
 const GLOW: float = 2.0
+## Fades it out on steep surfaces (the side of a table, a cliff), where it would smear down: from
+## 0.5 (walls hidden) to 1 (only flat ground). Slopes of 45° keep about 70 %.
+const NORMAL_FADE: float = 0.6
 
 ## Shared by every reticle: the crosshair ring.
 static var _texture: ImageTexture
@@ -42,6 +46,7 @@ func _ready() -> void:
 	_decal.emission_energy = GLOW
 	_decal.upper_fade = 0.0
 	_decal.lower_fade = 0.0
+	_decal.normal_fade = NORMAL_FADE
 	_decal.cull_mask = RenderLayers.WORLD
 	add_child(_decal)
 	visible = false

@@ -217,6 +217,9 @@ func _ready() -> void:
 	pause_panel.name = "PausePanel"
 	pause_panel.holder = self
 	add_child(pause_panel)
+	# What floats around the player: decals projected onto the ground leave it out.
+	for part: Node3D in [_ship_pointer, $OreArrival as Node3D, pause_panel]:
+		RenderLayers.put(part, RenderLayers.CHARACTERS)
 	aim.name = "Aim"
 	aim.holder = self
 	add_child(aim)
@@ -591,6 +594,7 @@ func _add_armor_pips() -> void:
 		upgrades.mk(armor_upgrade), _armor_max_mk(), upgrades.is_running(armor_upgrade)
 	)
 	OccludedSilhouette.mark_visible(_armor_pips)
+	RenderLayers.put(_armor_pips, RenderLayers.CHARACTERS)
 
 
 ## A marker following `bone`, at `in_model` (in the model's rest pose). The marker is placed from
@@ -718,6 +722,7 @@ func _equip(weapon_type: WeaponType) -> void:
 		ammo.reload_timed.connect(_on_reload_timed.bind(ammo))
 	weapon.visible = weapon_allowed and not dead
 	OccludedSilhouette.mark_visible(weapon)
+	RenderLayers.put(weapon, RenderLayers.CHARACTERS)
 	var shield: bool = weapon_type.hold == WeaponType.Hold.SHIELD
 	(_shield_mount if shield else _weapon_mount).add_child(weapon)
 

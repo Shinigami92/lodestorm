@@ -48,6 +48,7 @@ func _ready() -> void:
 	_light.omni_range = 6.0
 	_light.light_energy = 0.0
 	add_child(_light)
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _process(delta: float) -> void:

@@ -130,6 +130,7 @@ func _ready() -> void:
 	_material.set_shader_parameter(&"give_color", GIVE_COLOR)
 	material_override = _material
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	layers = RenderLayers.MARKINGS
 	_player.vitals.hurt.connect(_on_hurt)
 	visible = false
 

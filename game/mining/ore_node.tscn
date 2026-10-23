@@ -54,6 +54,7 @@ transform = Transform3D(0.5, 0, 0.866025, 0.324419, 0.927184, -0.187303, -0.8029
 mesh = SubResource("PrismMesh_crystal")
 
 [node name="Highlight" type="MeshInstance3D" parent="."]
+layers = 4
 transform = Transform3D(1, 0, 0, 0, 0.3, 0, 0, 0, 1, 0, 0.05, 0)
 visible = false
 cast_shadow = 0

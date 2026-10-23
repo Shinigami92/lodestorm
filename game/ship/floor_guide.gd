@@ -30,6 +30,7 @@ var _english_reach: float
 
 
 func _ready() -> void:
+	RenderLayers.put(self, RenderLayers.MARKINGS)
 	_source = _text.text
 	# The guide translates and wraps the text itself.
 	_text.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED

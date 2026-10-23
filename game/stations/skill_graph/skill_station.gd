@@ -430,6 +430,7 @@ func _build() -> void:
 		if skill.requires and _parts.has(skill.requires):
 			_add_link(skill)
 	_add_backdrop()
+	RenderLayers.put(_graph, RenderLayers.EFFECTS)
 
 
 ## A dark, see-through panel with a thin frame behind the skills, so the room doesn't show through.

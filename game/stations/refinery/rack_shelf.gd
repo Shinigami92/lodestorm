@@ -87,6 +87,7 @@ func _ready() -> void:
 	_plate.position = Vector3(0.0, -0.075, depth * 0.5 + 0.01)
 	# Names and numbers: the name is translated by `ItemType.get_display_name`.
 	_plate.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	_plate.layers = RenderLayers.EFFECTS
 	add_child(_plate)
 	_update()
 

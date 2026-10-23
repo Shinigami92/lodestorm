@@ -64,6 +64,7 @@ func _ready() -> void:
 	_light.shadow_enabled = false
 	_light.visible = false
 	add_child(_light)
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _show(on: bool, _delta: float) -> void:

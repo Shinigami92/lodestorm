@@ -102,6 +102,7 @@ func _ready() -> void:
 	if hum_sound:
 		_hum = Sfx.play_loop_at(hum_sound, self)
 	_update()
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _physics_process(delta: float) -> void:

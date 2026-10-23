@@ -20,6 +20,11 @@ func before_each() -> void:
 func test_shows_mission_location() -> void:
 	var meshes: int = _mission.location.find_children("*", "MeshInstance3D", true, false).size()
 	assert_gt(_content.get_child_count(), meshes / 2.0)
+	var hologram: Node = _table.get_node("Hologram")
+	var parts: Array[Node] = hologram.find_children("*", "VisualInstance3D", true, false)
+	assert_gt(parts.size(), 0)
+	for part: VisualInstance3D in parts:
+		assert_eq(part.layers, RenderLayers.EFFECTS, "decals (the aim reticle) leave it out")
 
 
 func test_hologram_fits_above_table() -> void:

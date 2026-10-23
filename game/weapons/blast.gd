@@ -78,6 +78,7 @@ func _ready() -> void:
 	_light.position = Vector3.UP
 	add_child(_light)
 	_update()
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _process(delta: float) -> void:

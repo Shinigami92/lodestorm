@@ -39,6 +39,7 @@ var _hum: AudioStreamPlayer3D
 
 func _ready() -> void:
 	top_level = true
+	layers = RenderLayers.EFFECTS
 	add_to_group(GROUP)
 	_material.shader = SHADER
 	material_override = _material

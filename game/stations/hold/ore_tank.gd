@@ -151,6 +151,7 @@ func _ready() -> void:
 	_plate.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	# Names and numbers: the name is translated by `OreType.get_display_name`.
 	_plate.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	_plate.layers = RenderLayers.EFFECTS
 	add_child(_plate)
 	_update()
 

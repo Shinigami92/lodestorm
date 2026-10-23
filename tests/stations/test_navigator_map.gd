@@ -120,6 +120,20 @@ func test_card_shows_the_tier() -> void:
 	assert_true((card.get_node("%Danger") as Label).visible)
 
 
+## The star system and the globes are holograms and the amber ring around the table is a marking:
+## decals (the aim reticle) leave them out.
+func test_holograms_catch_no_decals() -> void:
+	var ring := _navigator.get_node("Use/Highlight") as VisualInstance3D
+	assert_eq(ring.layers, RenderLayers.MARKINGS, "the ring around the table")
+	_navigator.show_body(_body("Torvane"))
+	await wait_process_frames(1)
+	var view: Node3D = _navigator.get_node("View")
+	var visuals: Array[Node] = view.find_children("*", "VisualInstance3D", true, false)
+	assert_gt(visuals.size(), 10)
+	for visual: VisualInstance3D in visuals:
+		assert_eq(visual.layers, RenderLayers.EFFECTS, str(view.get_path_to(visual)))
+
+
 ## "Set as destination" on the globe chooses the region and zooms into its landing site.
 func test_setting_the_destination_zooms_into_the_landing_site() -> void:
 	var card := _navigator.card_menu as NavigatorCard

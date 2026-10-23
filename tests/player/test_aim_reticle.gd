@@ -1,9 +1,11 @@
 extends GutTest
 ## The in-game cursor: a reticle on the ground where the mouse points, only for the local player
-## aiming with the mouse outside menus and pauses, dimmed (or following) while something is locked.
+## aiming with the mouse outside menus and pauses, dimmed (or following) while something is locked,
+## and never on the player.
 
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
+const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 
 var _arena: Node3D
 var _player: Player
@@ -59,6 +61,21 @@ func test_dims_under_the_cursor_while_locked_or_follows_the_lock() -> void:
 	_reticle._process(0.0)
 	assert_almost_eq(_reticle.global_position, alien.global_position, Vector3.ONE * 0.001)
 	assert_eq(decal.albedo_mix, unlocked)
+
+
+## Nothing on the player catches the reticle (a decal): not the suit and what it carries (the
+## weapon, the cargo tubes, the armor pips), and not the suit ring and the target brackets, which
+## are drawn pulled towards the camera (it would paint a shifted copy of itself on them).
+func test_leaves_the_player_out() -> void:
+	# Enough for canisters beside the backpack.
+	_player.add_cargo(KYRITE, 2000.0)
+	await wait_process_frames(1)
+	var decal := _reticle.get_node("Decal") as Decal
+	assert_not_null(_player.weapon, "with a weapon")
+	for node: Node in _player.find_children("*", "VisualInstance3D", true, false):
+		if node != decal:
+			var visual := node as VisualInstance3D
+			assert_eq(visual.layers & decal.cull_mask, 0, str(_player.get_path_to(visual)))
 
 
 ## Aims the mouse at `point` on the ground and lets the reticle follow at once.

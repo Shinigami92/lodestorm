@@ -18,6 +18,7 @@ var _torus := TorusMesh.new()
 
 func _ready() -> void:
 	top_level = true
+	layers = RenderLayers.MARKINGS
 	_material.albedo_color = Color(color, 0.6)
 	_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED

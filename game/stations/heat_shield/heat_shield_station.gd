@@ -244,6 +244,7 @@ func _build_plates(plates: Array[ShieldPlate]) -> void:
 			edge.mesh = torus
 			edge.material_override = _outline_material
 			edge.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			edge.layers = RenderLayers.EFFECTS
 			edge.position.y = side * PLATE_HEIGHT
 			outlined.add_child(edge)
 			edges.append(edge)

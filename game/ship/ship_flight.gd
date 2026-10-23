@@ -78,6 +78,8 @@ func _ready() -> void:
 	add_child(_clouds)
 	_body_view = _make_body_view()
 	add_child(_body_view)
+	for effect: GeometryInstance3D in [_streaks, _clouds, _body_view]:
+		effect.layers = RenderLayers.EFFECTS
 	_update_look()
 
 

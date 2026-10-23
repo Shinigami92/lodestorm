@@ -32,6 +32,7 @@ spot_angle = 65.7
 spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
+layers = 4
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
 pixel_size = 0.01
 text = "Miners"

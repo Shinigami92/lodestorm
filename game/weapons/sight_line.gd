@@ -17,6 +17,7 @@ var _material := StandardMaterial3D.new()
 
 func _ready() -> void:
 	top_level = true
+	layers = RenderLayers.MARKINGS
 	var box := BoxMesh.new()
 	box.size = Vector3(width, width, 1.0)
 	mesh = box

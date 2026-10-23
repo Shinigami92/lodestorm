@@ -74,6 +74,7 @@ cast_shadow = 0
 mesh = SubResource("TorusMesh_highlight")
 
 [node name="NamePlate" type="Label3D" parent="."]
+layers = 8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
 pixel_size = 0.006
 billboard = 1
@@ -88,6 +89,7 @@ auto_translate_mode = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
 
 [node name="Diamond" type="MeshInstance3D" parent="NewMarker"]
+layers = 8
 transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_new")

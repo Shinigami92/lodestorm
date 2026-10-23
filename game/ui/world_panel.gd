@@ -81,6 +81,7 @@ func _ready() -> void:
 	_material.albedo_texture = _viewport.get_texture()
 	_material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
 	_screen.material_override = _material
+	_screen.layers = RenderLayers.EFFECTS
 
 
 func _process(_delta: float) -> void:

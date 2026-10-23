@@ -66,6 +66,7 @@ func _ready() -> void:
 	haze.scale_amount_max = 2.2
 	haze.position.y = 0.8
 	haze.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	haze.layers = RenderLayers.EFFECTS
 	add_child(haze)
 	_puffs = haze
 

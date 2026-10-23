@@ -71,6 +71,7 @@ shape = SubResource("CylinderShape3D_miner")
 mesh = SubResource("CylinderMesh_pad")
 
 [node name="Ring" type="MeshInstance3D" parent="Pad"]
+layers = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.065, 0)
 mesh = SubResource("TorusMesh_ring")
 
@@ -123,6 +124,7 @@ card_offset = Vector2(2.4, 1.7)
 outline = NodePath("../PadPlate")
 
 [node name="PadPlate" type="Label3D" parent="."]
+layers = 8
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.015, 1.75)
 auto_translate_mode = 2
 pixel_size = 0.004

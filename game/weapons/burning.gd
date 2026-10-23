@@ -46,6 +46,7 @@ static func is_burning(target: Node3D) -> bool:
 
 
 func _init() -> void:
+	layers = RenderLayers.EFFECTS
 	amount = 18
 	lifetime = 0.55
 	local_coords = false

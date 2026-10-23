@@ -96,6 +96,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.64, 1.15, 0.31)
 mesh = SubResource("BoxMesh_strip")
 
 [node name="Number" type="Label3D" parent="."]
+layers = 8
 auto_translate_mode = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.42, 0.31)
 pixel_size = 0.008
@@ -104,6 +105,7 @@ font_size = 48
 outline_size = 8
 
 [node name="LoadoutSign" type="Label3D" parent="."]
+layers = 8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.75, 0.2)
 pixel_size = 0.0035
 modulate = Color(1, 0.75, 0.3, 1)
@@ -114,6 +116,7 @@ horizontal_alignment = 0
 uppercase = true
 
 [node name="Divider" type="MeshInstance3D" parent="LoadoutSign"]
+layers = 8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, -0.08, 0)
 mesh = SubResource("BoxMesh_divider")
 
@@ -125,6 +128,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.12)
 mesh = SubResource("BoxMesh_cradle")
 
 [node name="Label" type="Label3D" parent="Cradle1"]
+layers = 8
 auto_translate_mode = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0.12)
 pixel_size = 0.006
@@ -140,6 +144,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.12)
 mesh = SubResource("BoxMesh_cradle")
 
 [node name="Label" type="Label3D" parent="Cradle2"]
+layers = 8
 auto_translate_mode = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0.12)
 pixel_size = 0.006

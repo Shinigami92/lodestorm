@@ -43,6 +43,7 @@ func build() -> void:
 		tag.font_size = 40
 		tag.outline_size = 8
 		tag.visible = false
+		tag.layers = RenderLayers.EFFECTS
 		part.add_child(tag)
 		_tags.append(tag)
 	_shown_for = []

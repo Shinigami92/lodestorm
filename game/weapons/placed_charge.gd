@@ -129,6 +129,7 @@ func _land(point: Vector3) -> void:
 	_settled = true
 	_arm_left = arm_time
 	_ring = _make_ring()
+	_ring.layers = RenderLayers.MARKINGS
 	add_child(_ring)
 
 

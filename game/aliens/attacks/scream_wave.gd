@@ -42,6 +42,7 @@ func _ready() -> void:
 	_ring.position.y = 0.15
 	add_child(_ring)
 	_update()
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _process(delta: float) -> void:

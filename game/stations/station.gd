@@ -77,6 +77,7 @@ func _ready() -> void:
 	_leader.material_override = material
 	_leader.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_leader.top_level = true
+	_leader.layers = RenderLayers.EFFECTS
 	_leader.visible = false
 	add_child(_leader, false, Node.INTERNAL_MODE_BACK)
 

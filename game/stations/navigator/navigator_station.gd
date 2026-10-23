@@ -635,7 +635,7 @@ func _build_routes() -> void:
 		route.set_meta(&"to", other)
 		route.set_meta(&"chosen", chosen)
 		_routes.add_child(route)
-	RenderLayers.put(_view, RenderLayers.HOLOGRAMS)
+	RenderLayers.put(_view, RenderLayers.EFFECTS)
 
 
 ## A dotted arc from `start` to `end` (bright for the destination's route).
@@ -756,7 +756,7 @@ func _build_globe() -> void:
 	_globe_material.set_shader_parameter(&"region_count", body.regions.size())
 	sphere.material_override = _globe_material
 	_globe.add_child(sphere)
-	RenderLayers.put(_view, RenderLayers.HOLOGRAMS)
+	RenderLayers.put(_view, RenderLayers.EFFECTS)
 
 
 ## Shows the selected and the hovered region on the globe.

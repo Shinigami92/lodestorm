@@ -67,6 +67,7 @@ cast_shadow = 0
 mesh = SubResource("CylinderMesh_lens")
 
 [node name="Ring" type="MeshInstance3D" parent="."]
+layers = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 cast_shadow = 0
 mesh = SubResource("TorusMesh_ring")

@@ -54,6 +54,7 @@ func _ready() -> void:
 		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(mesh)
 		_strands.append(mesh)
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _exit_tree() -> void:

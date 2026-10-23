@@ -75,7 +75,7 @@ func show_location(
 	for part: MeshInstance3D in parts:
 		_content.add_child(part)
 	_add_markers(location)
-	RenderLayers.put($Hologram, RenderLayers.HOLOGRAMS)
+	RenderLayers.put($Hologram, RenderLayers.EFFECTS)
 
 
 ## Shows or hides the location hologram (the navigator shows the star system or a globe instead).

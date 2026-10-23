@@ -131,7 +131,7 @@ func test_holograms_catch_no_decals() -> void:
 	var visuals: Array[Node] = view.find_children("*", "VisualInstance3D", true, false)
 	assert_gt(visuals.size(), 10)
 	for visual: VisualInstance3D in visuals:
-		assert_eq(visual.layers, RenderLayers.HOLOGRAMS, str(view.get_path_to(visual)))
+		assert_eq(visual.layers, RenderLayers.EFFECTS, str(view.get_path_to(visual)))
 
 
 ## "Set as destination" on the globe chooses the region and zooms into its landing site.

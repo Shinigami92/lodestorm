@@ -248,6 +248,7 @@ func build() -> void:
 		label.modulate = LABEL_COLOR
 		label.uppercase = true
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		label.layers = RenderLayers.EFFECTS
 		add_child(label)
 		_labels.append(label)
 	_name_rows()

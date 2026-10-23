@@ -13,6 +13,7 @@ view_focus = NodePath("Focus")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 
 [node name="Name" type="Label3D" parent="."]
+layers = 8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 26, 0)
 auto_translate_mode = 2
 pixel_size = 0.05
@@ -23,6 +24,7 @@ font_size = 160
 outline_size = 24
 
 [node name="Prompt" type="Label3D" parent="."]
+layers = 8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 19, 0)
 pixel_size = 0.04
 modulate = Color(1, 0.8, 0.4, 1)

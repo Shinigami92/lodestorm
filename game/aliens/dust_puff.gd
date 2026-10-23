@@ -42,6 +42,7 @@ func _ready() -> void:
 	_cloud.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_cloud)
 	_update()
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 func _process(delta: float) -> void:

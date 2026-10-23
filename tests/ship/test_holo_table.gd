@@ -24,7 +24,7 @@ func test_shows_mission_location() -> void:
 	var parts: Array[Node] = hologram.find_children("*", "VisualInstance3D", true, false)
 	assert_gt(parts.size(), 0)
 	for part: VisualInstance3D in parts:
-		assert_eq(part.layers, RenderLayers.HOLOGRAMS, "decals (the aim reticle) leave it out")
+		assert_eq(part.layers, RenderLayers.EFFECTS, "decals (the aim reticle) leave it out")
 
 
 func test_hologram_fits_above_table() -> void:

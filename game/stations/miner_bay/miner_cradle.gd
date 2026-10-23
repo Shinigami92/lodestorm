@@ -55,6 +55,7 @@ func setup(cradle: int, model_scene: PackedScene) -> void:
 	_plate.outline_size = 12
 	_plate.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_plate.position.y = MODEL_HEIGHT + 0.35
+	_plate.layers = RenderLayers.EFFECTS
 	add_child(_plate)
 	position.y = 0.0
 	show_look(Look.EMPTY)
@@ -66,6 +67,7 @@ func show_look(shown: Look, progress: float = 0.0) -> void:
 	if shown != look or ghost:
 		for mesh: MeshInstance3D in _meshes():
 			mesh.material_override = _ghost if ghost else null
+			mesh.layers = RenderLayers.EFFECTS if ghost else RenderLayers.WORLD
 			mesh.cast_shadow = (
 				GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				if ghost

@@ -48,6 +48,7 @@ func _ready() -> void:
 		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh.visible = false
 		add_child(mesh)
+	RenderLayers.put(self, RenderLayers.EFFECTS)
 
 
 ## Counts `seconds` more of the beam on `target`, this attack; returns how long it has stayed on.

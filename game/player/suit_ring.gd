@@ -55,6 +55,10 @@ const SHIP_ARROW := Vector2(1.04, 0.38)
 const SCANNER_ARROW := Vector2(0.84, 0.26)
 ## Distance from the ship arrow's tip to the countdown's center (m).
 const COUNTDOWN_GAP: float = 0.25
+## How far its outermost marks reach beyond `radius` (the hit marks, the miners' ticks; m).
+const MARKS_REACH: float = 0.24
+## Points along the edge of its marks in `outline`.
+const OUTLINE_POINTS: int = 32
 ## The miners' ticks: a standard-issue miner's tick, and a crafted one's, aboard (negative:
 ## placed); and how bright a standard-issue one is.
 const STANDARD_TICK: float = 1.0
@@ -119,10 +123,10 @@ func _ready() -> void:
 	_material.set_shader_parameter(&"spare_band", Vector2(radius - 0.35, radius - 0.24))
 	_material.set_shader_parameter(&"dash_band", Vector2(radius - 0.44, radius - 0.4))
 	_material.set_shader_parameter(&"give_band", Vector2(radius + 0.06, radius + 0.14))
-	_material.set_shader_parameter(&"hit_band", Vector2(radius + 0.06, radius + 0.24))
+	_material.set_shader_parameter(&"hit_band", Vector2(radius + 0.06, radius + MARKS_REACH))
 	_material.set_shader_parameter(&"team_band", Vector2(radius + 0.03, radius + 0.1))
 	_material.set_shader_parameter(&"heat_band", Vector2(radius + 0.025, radius + 0.075))
-	_material.set_shader_parameter(&"miner_band", Vector2(radius + 0.06, radius + 0.24))
+	_material.set_shader_parameter(&"miner_band", Vector2(radius + 0.06, radius + MARKS_REACH))
 	_material.set_shader_parameter(&"miner_color", Color(OccludedSilhouette.MINER_COLOR, 1.0))
 	_material.set_shader_parameter(&"standard_dim", STANDARD_DIM)
 	_material.set_shader_parameter(&"pointer_base", radius + POINTER_BASE)
@@ -156,6 +160,20 @@ func shows_ammo() -> bool:
 ## How far the ship arrow's tip reaches from the player (m, with the size setting).
 func pointer_reach() -> float:
 	return (radius + SHIP_ARROW.x) * GameSettings.ring_scale()
+
+
+## Where it draws (global points): the edge of its marks all around and its pointers' tips, so
+## the pause panel's view keeps all of it on screen.
+func outline() -> PackedVector3Array:
+	var points := PackedVector3Array()
+	for index: int in OUTLINE_POINTS:
+		var angle: float = TAU * index / OUTLINE_POINTS
+		points.append(to_global(Vector3(cos(angle), 0.0, sin(angle)) * (radius + MARKS_REACH)))
+	for pointer: Vector4 in pointers:
+		# Clockwise from the screen's top (-Z), seen from above.
+		var angle: float = pointer.x * TAU
+		points.append(to_global(Vector3(sin(angle), 0.0, -cos(angle)) * pointer.z))
+	return points
 
 
 func _process(delta: float) -> void:

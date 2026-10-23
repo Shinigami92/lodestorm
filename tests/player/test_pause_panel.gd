@@ -1,6 +1,7 @@
 extends GutTest
 ## The pause panel: `pause` with no menu open shows a holo card beside the player (resume,
-## settings, quit); solo the game stops meanwhile; the camera moves in while it's open.
+## settings, quit); solo the game stops meanwhile; the camera moves in while it's open, framing the
+## card and the whole suit ring.
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
@@ -26,6 +27,7 @@ func before_each() -> void:
 
 func after_each() -> void:
 	TranslationServer.set_locale("en")
+	GameSettings.ring_size = GameSettings.RING_MEDIUM
 	PausePanel.pause_on_focus_loss = false
 	get_tree().paused = false
 	process_mode = Node.PROCESS_MODE_INHERIT
@@ -216,9 +218,40 @@ func test_text_is_big_enough() -> void:
 	var theme: Theme = load("res://assets/ui/terminal_theme.tres")
 	var text: float = Credits.SMALL_FONT_SIZE / _panel.pixels_per_meter
 	assert_lte(Credits.SMALL_FONT_SIZE, theme.default_font_size, "the smallest text")
-	assert_gte(text / _panel.view_height, MIN_TEXT_HEIGHT)
+	assert_gte(text / _panel.card_view_height, MIN_TEXT_HEIGHT)
 	assert_gte(
-		_panel.view_height, _panel.size.y + 0.5, "the view frames the card with room around it"
+		_panel.card_view_height, _panel.size.y + 0.5, "the view frames the card with room around it"
+	)
+
+
+func test_frames_the_whole_ring_beside_the_card() -> void:
+	var ship: Ship = _map.get_node("Ship")
+	_player.global_position = ship.to_global(Vector3(45.0, 1.0, 0.0))
+	_player.reset_physics_interpolation()
+	await wait_physics_frames(10)
+	var pointer: ShipPointer = _player.get_node("ShipPointer")
+	assert_true(pointer.visible, "the way back shows, with the countdown")
+	GameSettings.ring_size = GameSettings.RING_SCALES.size() - 1
+	_panel.open(_player)
+	await wait_seconds(1.5)
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	var screen := Rect2(Vector2.ZERO, get_viewport().get_visible_rect().size)
+	var card := Rect2(camera.unproject_position(_card_corner(-1.0, 1.0)), Vector2.ZERO)
+	card = card.expand(camera.unproject_position(_card_corner(1.0, -1.0)))
+	assert_true(screen.encloses(card), "the card is on screen: %s in %s" % [card, screen])
+	var ring: SuitRing = _player.get_node("SuitRing")
+	var shown: PackedVector3Array = ring.outline()
+	shown.append_array(pointer.countdown_corners())
+	assert_eq(shown.size(), SuitRing.OUTLINE_POINTS + 1 + 4, "with the arrow and the countdown")
+	for spot: Vector3 in shown:
+		var at: Vector2 = camera.unproject_position(spot)
+		assert_true(screen.has_point(at), "%s on screen" % at)
+		assert_false(card.has_point(at), "%s beside the card" % at)
+	var text: float = Credits.SMALL_FONT_SIZE / _panel.pixels_per_meter
+	assert_gte(
+		text * _panel.global_basis.get_scale().x / _panel.view_height,
+		MIN_TEXT_HEIGHT,
+		"the card grows with the view: its text stays readable"
 	)
 
 
@@ -246,3 +279,10 @@ func _click(card: PauseCard, at: Vector2) -> void:
 		click.position = at
 		click.global_position = at
 		card.get_viewport().push_input(click, true)
+
+
+## A corner of the card (global; `side` -1 or 1 per axis).
+func _card_corner(side_x: float, side_y: float) -> Vector3:
+	return _panel.to_global(
+		Vector3(side_x, side_y, 0.0) * Vector3(_panel.size.x, _panel.size.y, 0.0) * 0.5
+	)

@@ -13,4 +13,4 @@ menu = ExtResource("3_card")
 size = Vector2(1.6, 1.6)
 pixels_per_meter = 450.0
 transparent = true
-view_height = 2.6
+card_view_height = 2.6

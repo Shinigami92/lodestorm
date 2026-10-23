@@ -23,3 +23,4 @@ func set_flag(flag: StringName) -> void:
 		return
 	flags[flag] = true
 	emit_changed()
+	GameEvents.bus.story_flag_set.emit(flag)

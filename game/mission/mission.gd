@@ -149,6 +149,7 @@ func _physics_process(delta: float) -> void:
 			if time_left == 0.0:
 				state = State.STORM
 				time_up.emit()
+				GameEvents.bus.storm_started.emit()
 		State.STORM:
 			storm_time += delta
 			_storm_damage(delta)
@@ -458,7 +459,7 @@ func _storm_damage(delta: float) -> void:
 	var damage: float = storm_damage_per_second() * delta
 	for player: Player in _players():
 		if not ship.is_aboard(player):
-			player.take_damage(damage)
+			player.take_damage(damage, Vector3.INF, null, false, self)
 
 
 func _check_outcome() -> void:
@@ -481,6 +482,7 @@ func _check_outcome() -> void:
 		_takeoff_left = flight.settings.takeoff_delay
 		roll_offers()
 		lost.emit()
+		GameEvents.bus.mission_ended.emit(brief, false)
 
 
 func _follow_duration() -> void:
@@ -533,6 +535,7 @@ func _return(players: Array[Player]) -> void:
 			continue
 		var cargo: Dictionary[OreType, float] = player.take_cargo()
 		for ore_type: OreType in cargo:
+			GameEvents.bus.ore_hauled.emit(player, ore_type, cargo[ore_type])
 			var so_far: float = haul.get(ore_type, 0.0)
 			haul[ore_type] = so_far + cargo[ore_type]
 	ship.store_haul(haul, _players())
@@ -541,6 +544,7 @@ func _return(players: Array[Player]) -> void:
 	_takeoff_left = flight.settings.takeoff_delay
 	roll_offers()
 	returned.emit()
+	GameEvents.bus.mission_ended.emit(brief, true)
 
 
 ## Ends the run for every player's miners: crafted ones still on the planet are lost there (see
@@ -601,6 +605,7 @@ func _on_player_left(_player: Player) -> void:
 	if state == State.OPEN:
 		state = State.RUNNING
 		started.emit()
+		GameEvents.bus.mission_started.emit(brief)
 
 
 ## High above the old location: it's left behind, and the run that was there is over. Without a

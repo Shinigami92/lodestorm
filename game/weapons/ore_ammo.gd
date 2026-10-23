@@ -33,3 +33,4 @@ static func spend(player: Player, amount: float) -> void:
 		var used: float = minf(player.cargo[ore_type], amount / ore_type.ammo_yield)
 		amount -= used * ore_type.ammo_yield
 		player.take_ore(ore_type, used)
+		GameEvents.bus.ammo_paid.emit(player, ore_type, used)

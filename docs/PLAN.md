@@ -78,6 +78,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 14 A1: ore nodes running dry (amounts by the ore's band, the miner taking its ore out of the node, the crystals shrinking into the rock one after another down to the bare rock, the miner's amber blink on a dry node, dry nodes taking no miner and the scanner skipping them)
 - Miners placed as holograms: placing projects the miner onto its node as a hologram turning real from the bottom up (picking up the reverse), the player moving and fighting freely meanwhile within the miner's hose range (out of it, it waits; placing or picking up another gives a waiting one up); every miner's ring on the ground with its health, fill, hose range and that progress
 - Silo displays: each silo's exact amount in big digits in the ore's color at the top of its body, readable from the normal camera over the silo in front ("?" for unknown ores); the ramp's countdown running outwards from the door, clear of them
+- Statistics **A**: every game event as a signal on one bus (`GameEvents`: combat with the weapon credited, damage taken with its cause, reloads and timing presses, mining, ore, unlocks, runs), the local player's counters over all sessions (`stats/totals.json`) and a log per session (`stats/sessions/*.jsonl`, each run with its brief, gear and counters), for playtesting and tuning
 
 ## Todo
 
@@ -103,6 +104,10 @@ Each step builds on the ones before it (steps 1–11 are done).
   - [ ] **B** quest sites in regions, the goals clear nests, recover fragments, recover an item and hunt, the navigator's diamonds, amber beams, radio lines
   - [ ] **C** first content: the quartermaster's chain ending in Brask's blueprint, the engineer's first furnace (the other furnaces through later quests), the depot master's requests, reputation pips
   - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first), the expedition's logs
+
+Alongside, any time:
+
+- [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)
 
@@ -136,7 +141,8 @@ Each step builds on the ones before it (steps 1–11 are done).
 ### M8: Platform services & release
 
 - `PlatformService` abstraction + GodotSteam backend
-- Achievements (in-game list + Steam)
+- Achievements (in-game list + Steam), counted from the statistics; Steam Stats from the same counters
+- Statistics **C**: the statistics station aboard ([`planned/stats.md`](planned/stats.md))
 - `release.yml` (GitHub Releases on tag) and `steam-deploy.yml`
 - Steam store page / Early Access preparation (see [`TECHNICAL.md`](TECHNICAL.md#steam-publishing-first-timer-checklist))
 

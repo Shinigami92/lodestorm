@@ -103,7 +103,7 @@ func _land() -> void:
 	var parent: Node = get_parent()
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		if _splashes(player):
-			Alien.hurt(player, damage, from)
+			Alien.hurt(player, damage, from, null, false, self)
 	for miner: Miner in get_tree().get_nodes_in_group(Miner.GROUP):
 		if _splashes(miner):
 			Alien.hurt(miner, damage, from)

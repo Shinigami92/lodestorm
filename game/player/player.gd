@@ -249,6 +249,7 @@ func _ready() -> void:
 	loadout.weapons = loadout.weapons.duplicate()
 	loadout.changed.connect(_on_loadout_changed)
 	_on_loadout_changed()
+	_report_progress()
 
 
 func _physics_process(delta: float) -> void:
@@ -432,6 +433,7 @@ func add_cargo(ore_type: OreType, amount: float) -> void:
 	cargo[ore_type] = carried
 	cargo_changed.emit(ore_type, carried)
 	cargo_added.emit(ore_type, amount)
+	GameEvents.bus.ore_collected.emit(self, ore_type, amount)
 
 
 ## Removes up to `amount` units of `ore_type` from the cargo (e.g. made into ammo).
@@ -457,13 +459,18 @@ func take_cargo() -> Dictionary[OreType, float]:
 
 ## Loses `amount` health (from an attacker at `from`, if it has one: the suit ring marks where
 ## the hit came from); dies at zero. A blow of an `attacker` (`heavy`: a charge, a slam) may be
-## stopped by the field of a shield the player holds (see `ShieldField.block`).
+## stopped by the field of a shield the player holds (see `ShieldField.block`). `cause` dealt it
+## (for the statistics; the attacker without one).
 func take_damage(
-	amount: float, from: Vector3 = Vector3.INF, attacker: Node3D = null, heavy: bool = false
+	amount: float,
+	from: Vector3 = Vector3.INF,
+	attacker: Node3D = null,
+	heavy: bool = false,
+	cause: Node = null
 ) -> void:
 	if attacker and weapon and weapon.field:
 		amount = weapon.field.block(amount, attacker, heavy)
-	vitals.damage(amount, from)
+	vitals.damage(amount, from, cause if cause else attacker)
 
 
 ## Restores `amount` health (all of it by default; not when dead).
@@ -488,6 +495,7 @@ func lie_on(spot: Node3D) -> void:
 ## Brings a dead player back at `at` with full health.
 func respawn(at: Vector3) -> void:
 	vitals.revive()
+	GameEvents.bus.player_respawned.emit(self)
 	_animator.dead = false
 	weapon_allowed = weapon_allowed
 	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
@@ -550,6 +558,29 @@ func _action_just_pressed(action: StringName) -> bool:
 
 
 ## Drops everything and lies still until `respawn`.
+## Passes what it achieves (weapons, blueprints, upgrade levels, skill ranks, bars refined) on to
+## `GameEvents`.
+func _report_progress() -> void:
+	var events: GameEvents = GameEvents.bus
+	arsenal.unlocked.connect(
+		func(weapon_type: WeaponType) -> void: events.weapon_unlocked.emit(self, weapon_type)
+	)
+	arsenal.learned.connect(
+		func(weapon_type: WeaponType) -> void: events.blueprint_learned.emit(self, weapon_type)
+	)
+	upgrades.finished.connect(
+		func(upgrade: Upgrade) -> void:
+			events.upgrade_finished.emit(self, upgrade, upgrades.mk(upgrade))
+	)
+	skills.finished.connect(
+		func(skill: Skill) -> void: events.skill_finished.emit(self, skill, skills.rank(skill))
+	)
+	refining.bars_finished.connect(
+		func(_slot: int, alloy: AlloyType, count: int) -> void:
+			events.bars_refined.emit(self, alloy, count)
+	)
+
+
 func _on_died() -> void:
 	if menu:
 		menu.close()
@@ -569,7 +600,9 @@ func _on_died() -> void:
 		interact_target.highlighted = false
 	miner_target = null
 	interact_target = null
-	take_cargo()
+	var dropped: Dictionary[OreType, float] = take_cargo()
+	for ore_type: OreType in dropped:
+		GameEvents.bus.ore_lost.emit(self, ore_type, dropped[ore_type])
 	# Falls and lies still; the collision shape stays, so the ship still knows where the body is.
 	_animator.local_velocity = Vector2.ZERO
 	_animator.dead = true

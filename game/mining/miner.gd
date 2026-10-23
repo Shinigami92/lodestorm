@@ -225,6 +225,7 @@ func _physics_process(delta: float) -> void:
 			Sfx.play_at(FULL_SOUND, global_position)
 		elif is_dry():
 			ran_dry.emit()
+			GameEvents.bus.miner_ran_dry.emit(self)
 			Sfx.play_at(FULL_SOUND, global_position)
 
 	var mending: bool = false
@@ -369,6 +370,7 @@ func take_damage(amount_lost: float) -> void:
 	if health == 0.0:
 		broken = true
 		broke.emit()
+		GameEvents.bus.miner_broke.emit(self)
 		Sfx.play_at(BREAKDOWN_SOUND, global_position)
 
 
@@ -378,6 +380,7 @@ func repair(amount_repaired: float) -> void:
 	if broken and health >= max_health():
 		broken = false
 		repaired.emit()
+		GameEvents.bus.miner_repaired.emit(self)
 
 
 ## Picks it up for `by` (anyone, also a broken one): what's in its tank goes onto their back, the

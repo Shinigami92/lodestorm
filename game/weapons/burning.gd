@@ -18,15 +18,18 @@ static var _flame_mesh: Mesh
 ## Damage per second, and the seconds it burns on.
 var damage_per_second: float = 0.0
 var time_left: float = 0.0
-## Who set it burning (for the damage readout), or null.
+## Who set it burning (for the damage readout), or null, and with what.
 var by: Node
+var weapon_type: WeaponType
 
 var _since_tick: float = 0.0
 
 
 ## Sets `target` (an alien or a destructible) burning for `seconds` at `damage` per second, set by
-## `by`, or refreshes the fire on it.
-static func ignite(target: Node3D, damage: float, seconds: float, by_whom: Node) -> void:
+## `by_whom` with `with_weapon`, or refreshes the fire on it.
+static func ignite(
+	target: Node3D, damage: float, seconds: float, by_whom: Node, with_weapon: WeaponType = null
+) -> void:
 	if _is_out(target):
 		return
 	var burning := target.get_node_or_null(NodePath(NODE_NAME)) as Burning
@@ -38,6 +41,7 @@ static func ignite(target: Node3D, damage: float, seconds: float, by_whom: Node)
 	burning.damage_per_second = maxf(burning.damage_per_second, damage)
 	burning.time_left = maxf(burning.time_left, seconds)
 	burning.by = by_whom
+	burning.weapon_type = with_weapon
 
 
 ## Whether `target` is burning right now.
@@ -90,9 +94,9 @@ func _physics_process(delta: float) -> void:
 
 func _burn(target: Node3D, amount_dealt: float) -> void:
 	if target is Alien:
-		(target as Alien).take_damage(amount_dealt)
+		(target as Alien).take_damage(amount_dealt, by, weapon_type)
 	elif target is Destructible:
-		(target as Destructible).take_damage(amount_dealt, by)
+		(target as Destructible).take_damage(amount_dealt, by, weapon_type)
 	DamageNumber.show_hit(by, target, amount_dealt)
 
 

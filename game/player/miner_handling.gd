@@ -100,9 +100,11 @@ func update(delta: float) -> void:
 	if placing:
 		done.stand()
 		placed.emit(done)
+		GameEvents.bus.miner_placed.emit(holder, done)
 	elif done.pick_up(holder):
 		Sfx.play_at(LATCH_SOUND, holder.global_position)
 		picked_up.emit(done)
+		GameEvents.bus.miner_picked_up.emit(holder, done)
 	else:
 		# Left behind meanwhile (the run ended): it stays.
 		done.handled_by = null

@@ -523,8 +523,9 @@ func _on_called_for_help(at: Vector3, boost: float, seconds: float) -> void:
 
 ## A hit (or other damage) on its body: its guards go for the attacker, and passing a burst's
 ## share of its health starts that burst's warning.
-func _on_damaged(_amount: float, by: Node) -> void:
+func _on_damaged(amount: float, by: Node) -> void:
 	var attacker := by as Player
+	GameEvents.bus.nest_damaged.emit(body.last_by, body.last_weapon, self, amount)
 	if attacker:
 		for child: Node in get_children():
 			var guard := child as Alien
@@ -575,6 +576,7 @@ func _on_destroyed() -> void:
 		if child is Alien:
 			(child as Alien).status.defending = null
 	destroyed.emit()
+	GameEvents.bus.nest_destroyed.emit(body.last_by, body.last_weapon, self)
 	for nest: AlienNest in get_tree().get_nodes_in_group(GROUP):
 		nest.surge()
 	Sfx.play_at(DESTROYED_SOUND, _mouth_position())

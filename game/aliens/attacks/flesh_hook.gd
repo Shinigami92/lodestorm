@@ -163,7 +163,7 @@ func _fly(delta: float) -> void:
 func _catch(player: Player) -> void:
 	_caught = player
 	_hold_left = hook.snare_time
-	Alien.hurt(player, hook.damage * alien.damage_factor, alien.global_position)
+	Alien.hurt(player, hook.damage * alien.damage_factor, alien.global_position, null, false, alien)
 	player.ground_contact.snare(hook.snare, hook.snare_time)
 	global_position = player.global_position + Vector3.UP * CHEST_HEIGHT
 

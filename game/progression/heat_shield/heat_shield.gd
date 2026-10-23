@@ -132,3 +132,4 @@ func _install() -> void:
 	project = false
 	emit_changed()
 	level_changed.emit(mk)
+	GameEvents.bus.heat_shield_raised.emit(mk)

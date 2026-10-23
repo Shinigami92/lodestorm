@@ -26,3 +26,4 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 | [`art.md`](art.md) | each body's light, how dark, the storm's light, four player colors with numbers | M5, M7 |
 | [`vr-view.md`](vr-view.md) | the VR head on the desktop camera's line, the haze, the sky per body, the land beyond the map | M5 (sky, far ring), M6 |
 | [`coop-revive.md`](coop-revive.md) | going down before dying in co-op, reviving by standing close, respawning after 30 s | M7 |
+| [`stats.md`](stats.md) | the statistics' live `/metrics` endpoint for Prometheus, the statistics station aboard | M4 (alongside), M8 |

@@ -113,6 +113,7 @@ func _start_vent() -> void:
 	timing_pressed = false
 	fumbled = false
 	weapon.play(heat_feed.vent_sound)
+	GameEvents.bus.reload_started.emit(GameEvents.player_of(weapon.holder), weapon.type, true)
 
 
 func _time_vent() -> bool:
@@ -123,11 +124,13 @@ func _time_vent() -> bool:
 		weapon.play(TIMED_HIT_SOUND, true)
 		_finish_vent()
 		reload_timed.emit(true)
+		GameEvents.bus.reload_timed.emit(GameEvents.player_of(weapon.holder), weapon.type, true)
 	else:
 		fumbled = true
 		_vent_duration += feed.fumble_time
 		weapon.play(TIMED_MISS_SOUND, true)
 		reload_timed.emit(false)
+		GameEvents.bus.reload_timed.emit(GameEvents.player_of(weapon.holder), weapon.type, false)
 	return true
 
 

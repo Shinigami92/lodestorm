@@ -1,4 +1,4 @@
-# Lodestorm — Technical Guidelines
+# Lodestorm: Technical Guidelines
 
 ## 1. Source-available & licensing
 
@@ -16,17 +16,17 @@
 
 | Tool | Purpose |
 |---|---|
-| [godot-gdscript-toolkit](https://github.com/Scony/godot-gdscript-toolkit) `gdlint` | Linting (naming, complexity, ordering) — config in `gdlintrc` (only overrides of the defaults) |
-| `gdformat` (same toolkit) | Formatting, checked with `gdformat --check` — config in `gdformatrc` |
+| [godot-gdscript-toolkit](https://github.com/Scony/godot-gdscript-toolkit) `gdlint` | Linting (naming, complexity, ordering); config in `gdlintrc` (only overrides of the defaults) |
+| `gdformat` (same toolkit) | Formatting, checked with `gdformat --check`; config in `gdformatrc` |
 | Godot GDScript warnings | **Every warning is an error** in the project settings (`debug/gdscript/warnings/*`), so a script with one fails to load and `tests/project/test_scripts_parse.gd` fails in CI: the default warnings (shadowing, integer division, unused variables, ...) and the typing ones Godot ignores by default (`untyped_declaration`, `unsafe_property_access`, `unsafe_method_access`, `unsafe_call_argument`). Where integer division is meant, say so with `@warning_ignore("integer_division")`. `addons/` is exempt (Godot's default `directory_rules`) |
 | Unit tests | [GUT](https://github.com/bitwes/Gut) in `addons/gut/` (version in its `plugin.cfg`, must support the pinned Godot version), tests in `tests/` (`test_*.gd`, config `.gutconfig.json`), run headless |
-| [ruff](https://docs.astral.sh/ruff/) | Formatting and linting of the Python scripts (Blender asset scripts, `tools/blender/`, the sound synthesis in `assets/audio/source/`) — config in `ruff.toml` (ruff's default rules, only overrides; line length 120 because the asset scripts are full of coordinate tables; target: Blender's bundled Python) |
+| [ruff](https://docs.astral.sh/ruff/) | Formatting and linting of the Python scripts (Blender asset scripts, `tools/blender/`, the sound synthesis in `assets/audio/source/`); config in `ruff.toml` (ruff's default rules, only overrides; line length 120 because the asset scripts are full of coordinate tables; target: Blender's bundled Python) |
 | `.editorconfig` | Consistent whitespace/line endings across editors |
 
 All checks are enforced by CI on every pull request (failing jobs block the merge), not by local git hooks. The same scripts run locally and in CI:
 
-- `tools/lint.sh` — `gdformat --check` + `gdlint` over the project (`addons/`, `local/`, `tmp/` excluded in the rc files), then `ruff format --check` + `ruff check` (ruff skips what git ignores, and `addons/`) and whether the generated ship hull matches its generator (`game/ship/hull_build.py --check`); `tools/lint.sh gdscript` or `tools/lint.sh python` runs only one half. gdtoolkit and ruff are pinned in `requirements-dev.txt`: `pip install -r requirements-dev.txt`, ideally in a `.venv/` (gitignored).
-- `tools/test.sh` — imports the project (`tools/import.sh`: fails if the import prints any `ERROR`, e.g. an LFS pointer instead of a file), then runs GUT headless with `$GODOT4_EDITOR`, spread over `TEST_JOBS` parallel processes (default 4; each one's output is printed when all are done). `TEST_SHARD=k/n` runs only the k-th of n shares (CI runs four on parallel runners). The scripts are balanced over the processes of all shares by their durations in `tests/timings.txt`, longest first (a script missing there counts as 10 s); `TEST_REPORTS=<dir>` keeps each process's GUT JUnit report in that directory (CI uploads them as the `test-reports-<share>` artifacts, kept 30 days). `tools/timings.sh` rewrites `tests/timings.txt` from those reports: local directories, CI run IDs, or without an argument the latest three successful CI runs on `main` (needs `gh`); CI's numbers fit CI's runners best. Each script's time is its mean over the runs, since one run's times swing a lot with what shares its runner (the slowest location script took 48–87 s), and scripts that no longer exist are left out. JUnit reports leave out `before_all`, so a script that shares slow work between its tests does it in the first test that needs it. Refresh the timings after adding or splitting slow scripts. Extra arguments go to GUT in a single process instead (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
+- `tools/lint.sh`: `gdformat --check` + `gdlint` over the project (`addons/`, `local/`, `tmp/` excluded in the rc files), then `ruff format --check` + `ruff check` (ruff skips what git ignores, and `addons/`) and whether the generated ship hull matches its generator (`game/ship/hull_build.py --check`); `tools/lint.sh gdscript` or `tools/lint.sh python` runs only one half. gdtoolkit and ruff are pinned in `requirements-dev.txt`: `pip install -r requirements-dev.txt`, ideally in a `.venv/` (gitignored).
+- `tools/test.sh`: imports the project (`tools/import.sh`: fails if the import prints any `ERROR`, e.g. an LFS pointer instead of a file), then runs GUT headless with `$GODOT4_EDITOR`, spread over `TEST_JOBS` parallel processes (default 4; each one's output is printed when all are done). `TEST_SHARD=k/n` runs only the k-th of n shares (CI runs four on parallel runners). The scripts are balanced over the processes of all shares by their durations in `tests/timings.txt`, longest first (a script missing there counts as 10 s); `TEST_REPORTS=<dir>` keeps each process's GUT JUnit report in that directory (CI uploads them as the `test-reports-<share>` artifacts, kept 30 days). `tools/timings.sh` rewrites `tests/timings.txt` from those reports: local directories, CI run IDs, or without an argument the latest three successful CI runs on `main` (needs `gh`); CI's numbers fit CI's runners best. Each script's time is its mean over the runs, since one run's times swing a lot with what shares its runner (the slowest location script took 48–87 s), and scripts that no longer exist are left out. JUnit reports leave out `before_all`, so a script that shares slow work between its tests does it in the first test that needs it. Refresh the timings after adding or splitting slow scripts. Extra arguments go to GUT in a single process instead (e.g. `-gselect=test_foo.gd`). Exits non-zero on failures.
 - The slowest tests (sweeps over many generated locations) are split over several scripts so they run in parallel: their planning is in `tests/support/location_sweep.gd`, and the sweep over every region's set pieces (`tests/locations/set_piece_sweep.gd`) takes a share of the locations in each `test_set_pieces_<part>.gd` (`PARTS` of them). A script that takes much longer than the others sets the floor for the whole run: split it.
 - Tests run with `--fixed-fps 60` (the physics tick rate): every frame advances exactly one physics tick and simulated time doesn't wait for the wall clock, so `wait_seconds` / `wait_physics_frames` only take as long as computing the frames. Anything that runs in real time (worker threads like location planning, the background bake of the walkable area) must be waited for with `tests/support/real_time.gd` (`await REAL_TIME.wait_until(condition, seconds)`, a wall-clock timeout; assert its result), not GUT's `wait_until`, whose seconds are simulated and run out long before a busy CI runner finishes the work. Wait for the real end state (e.g. the navigation map synced with the baked region, which also can't be queried before its first sync), not for a side effect.
 - GUT fails a test on any engine error or warning logged while it runs. Engine warnings that say nothing about the code under test are let through by `tests/support/expected_engine_warnings.gd` (registered in `pre_run.gd`), only by their exact text: so far Jolt's "job system exceeded the maximum number of jobs", which it logs and waits out when every worker thread is busy (four test processes on CI's four cores, physics stepped back to back).
@@ -79,7 +79,7 @@ The layout (each room's position and size) is defined in `hull_build.py`: moving
 - Static typing everywhere (`var speed: float = 5.0`, typed function signatures).
 - Follow the official GDScript style guide (snake_case files/functions, PascalCase classes/nodes).
 - Gameplay logic separated from presentation where it helps testing (e.g. miner fill logic, resource inventory, upgrade math as plain testable classes/resources).
-- Tunable values live in `Resource` files (`.tres`), not hardcoded — needed for playtest tuning anyway.
+- Tunable values live in `Resource` files (`.tres`), not hardcoded (needed for playtest tuning anyway).
 
 ### Cross-platform development
 
@@ -117,7 +117,7 @@ Development must work on Windows (Git Bash), Linux and macOS.
   | `switch_weapon` | Q | Y / Triangle |
   | `reload` | R | RB / R1 |
   | `pause` | Escape | Menu / Options |
-  | `debug_overlay` | F3 | — |
+  | `debug_overlay` | F3 | - |
 
 - **Navigation:** 0.5 m cells (`navigation/3d/default_cell_size`; navigation meshes must use the same), so baking the generated outside world stays under a second; `merge_rasterizer_cell_scale` is 0.01, which avoids most edge merge errors on its terrain; the few left on some worlds (a handful of unlinked edges among about 12,000 polygons) are harmless, so their warning is off (`navigation/3d/warnings/navmesh_edge_merge_errors`). The map takes a baked mesh over in the background, so paths exist a few frames after the bake. The generated world bakes on its own `WorkerThreadPool` task (`LocationNavigation`), not with `bake_from_source_geometry_data_async`: a region freed mid-bake waits for the task, since quitting while a bake still runs crashes the engine on exit (the async bake can't be waited for, its end is only noticed on the main thread). Aliens search the whole navigation mesh for a path (`path_search_max_polygons = 0` on their agent): around the rock of a generated location, the default limit (4096 polygons) ran out on long ways around, and Godot's fallback search then logged "It's not expect to not find the most reachable polygons" every frame. **Queries are expensive:** Godot 4.7 finds the polygon closest to a point by going through every polygon of every region, so `map_get_closest_point` takes about 0.35 ms and a path look-up (both ends) about 0.5 ms on a generated world (10,000–15,000 polygons), short ways too; baking the world in tiles (one region each) didn't help. So aliens look a path up again only once its end moved 1 m or a fifth of the way, at most two per physics frame (`AlienPathing`), and nothing calls `map_get_closest_point` per frame (burrowers follow the ground with a short ray, backing off holds its spot for half a second).
 - **Many aliens** (M4 step 9 A, measured in a late, frenzied tier 6 run with the cap full and the player running): each alien costs about 100–150 µs a frame on screen (leg IK, its `AnimationTree`, skinning and drawing) and its AI, `move_and_slide` and avoidance on top while it moves. A `VisibleOnScreenNotifier3D` (its body's box, grown by 1.5 m for shadows and legs) switches off an alien's `AlienLegs` (`culled`), `AnimationTree` and `_process` (pose, glow) off screen, except the Ravager's (its steps shake the ground); headless nothing is on screen, so `Alien.culls_off_screen` is off there (tests). An alien standing on the ground skips `move_and_slide`, its material is only touched on a change, and fliers push apart only from fliers (`AlienFlight.GROUP`). Setting an alien up costs about 1 ms (the first stalker or tender of a session 12–20 ms), so nests hatch from a queue: one alien per pack every `hatch_gap`, the hive at most one per physics frame; nests at the cap look again every `CAP_RETRY` instead of every tick. Watch out when measuring on Windows: tools polling the GPU driver (e.g. an `nvidia-smi` based exporter) cause 30–50 ms hitches every few seconds, even in an empty scene.
@@ -245,9 +245,9 @@ Vendored addons without a server counterpart (GUT) are updated by hand: GUT rele
 
 A `PlatformService` layer (autoload) with backends:
 
-- `NullPlatform` — GitHub/itch builds, development, CI (no-op)
-- `SteamPlatform` — via [GodotSteam](https://godotsteam.com/) (GDExtension)
-- `EpicPlatform` / `GogPlatform` — later, via EOS / GOG Galaxy plugins (to be evaluated)
+- `NullPlatform`: GitHub/itch builds, development, CI (no-op)
+- `SteamPlatform`: via [GodotSteam](https://godotsteam.com/) (GDExtension)
+- `EpicPlatform` / `GogPlatform`: later, via EOS / GOG Galaxy plugins (to be evaluated)
 
 Gameplay only calls e.g. `PlatformService.unlock_achievement(&"first_miner")`; the game must run fully without any store client.
 
@@ -257,7 +257,7 @@ Gameplay only calls e.g. `PlatformService.unlock_achievement(&"first_miner")`; t
 - Optional in-game achievement list so non-Steam builds have them too.
 - During development Steam's test App ID `480` (Spacewar) is used until the real App ID exists.
 
-### Steam publishing — first-timer checklist
+### Steam publishing: first-timer checklist
 
 1. Create a Steamworks partner account (identity, tax and bank info).
 2. Pay the Steam Direct fee per game (currently USD 100, recoupable after USD 1,000 gross revenue). After payment there is a mandatory waiting period (~30 days) before release.
@@ -272,4 +272,4 @@ These rules may change; re-verify on the Steamworks documentation when we get th
 
 ### Other stores
 
-Epic Games Store and GOG have their own submission processes and SDKs — evaluated once the game approaches release.
+Epic Games Store and GOG have their own submission processes and SDKs, to be evaluated once the game approaches release.

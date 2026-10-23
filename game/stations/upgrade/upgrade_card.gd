@@ -126,7 +126,7 @@ func show_upgrade(
 	_cost_row.visible = true
 	_title.text = tr(shown.display_name)
 	if weapon_name:
-		_title.text = "%s — %s" % [weapon_name, _title.text]
+		_title.text = "%s · %s" % [weapon_name, _title.text]
 	_description.text = tr(shown.description)
 	_pips.visible = true
 	show_pips(_pips, mk if available else 0, shown.max_mk(), cap)
@@ -236,7 +236,7 @@ func show_build(
 	if not shown:
 		return
 	_cost_row.visible = true
-	_title.text = "%s — %s" % [shown.display_name, tr(shown.class_word)]
+	_title.text = "%s · %s" % [shown.display_name, tr(shown.class_word)]
 	_description.text = tr(shown.description)
 	_pips.visible = false
 	_time.visible = false
@@ -263,7 +263,7 @@ func show_pick(shown: WeaponType, owned: bool = true) -> void:
 	hide_reach()
 	if not shown:
 		return
-	_title.text = "%s — %s" % [shown.display_name, tr(shown.class_word)]
+	_title.text = "%s · %s" % [shown.display_name, tr(shown.class_word)]
 	_description.text = tr(shown.description)
 	_pips.visible = false
 	_effect.text = "" if owned else tr("Locked")

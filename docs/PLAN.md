@@ -1,4 +1,4 @@
-# Lodestorm — Development Plan
+# Lodestorm: Development Plan
 
 Goal: reach a playable, fun core loop as early as possible with greybox visuals, then layer hub, art, VR and co-op on top. Each milestone ends with something playable.
 
@@ -6,7 +6,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 
 ## Done
 
-### M0 — Project setup ✓
+### M0: Project setup ✓
 
 - Git repo + Godot `.gitignore`, `.gitattributes` (LFS), `.editorconfig`, LICENSE (CC BY-NC-SA 4.0), CONTRIBUTING + CLA, README
 - Godot project (version pinned in `.godot-version`), folder structure (one folder per feature in `game/`, `assets/`, `docs/`, `tests/`, see [Project layout](TECHNICAL.md#project-layout))
@@ -14,24 +14,24 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - GUT tests, run headless; GitHub Actions `ci.yml` (lint, tests) and `build.yml` (Windows/Linux exports); Renovate for dependency updates
 - Input map: keyboard/mouse + gamepad actions; rendering settings with the performance targets in mind
 
-### M1 — Outside loop (greybox) ✓
+### M1: Outside loop (greybox) ✓
 
 - Player movement, twin-stick aiming, the isometric camera; one ranged weapon on a weapon base class ready for more, incl. melee
 - Miners on ore nodes filling over time; the hose transferring while moving
 - The ship with its ramp on the right and the ramp button; the mission (and its timer) from the first player stepping out to everyone back aboard; the storm when the timer runs out; win (resources kept) and lose (resources lost)
 - Feedback in the world, no 2D HUD: miner fill level, carried resources, timer and storm; the debug overlay for tuning
 
-### M2 — Aliens ✓
+### M2: Aliens ✓
 
 - The swarmer chasing and attacking players; nests with hunters escalating over a run; raiders going for the miners; health, death and respawn
 
-### M3 — Ship hub ✓
+### M3: Ship hub ✓
 
 - The greybox ship interior with its rooms, lifts and floor signs; the outside world generated per run from a seed and a biome
 - 3D menus (screens and stations); mission selection at the holo table; the loadout at the armory's lockers (blaster, shotgun, hammer, switching); ship states (space, flight, landed, take-off)
 - Medical bay respawn; localization (English and German); upgrade stations (MK1–MK3 from the hold, MK pips); saving and "Reset progress"
 
-### M4 — Progression & quests (so far)
+### M4: Progression & quests (so far)
 
 - Ammo made from carried ore, spare magazines, the timing reload, magazine upgrades, handing a teammate ammo; loadout slots for any weapon type
 - The skill graph with the first eight skills in four clusters (dash, reload on the move, reinforced suit, regeneration, spare magazines, careful reload, ore scanner, damage readout)
@@ -58,7 +58,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 9 A: performance with many aliens, profiled in a late, frenzied tier 6 run with the cap full (46 fps before, 53–66 after with about 75 aliens, 30–40 of them on screen, on the development PC): nests at the cap no longer try to hatch every tick, a pack hatches one alien after another and the hive at most one per physics frame, aliens look up paths less often and only two per frame (a look-up costs about 0.5 ms on a generated world), burrowers and backing-off aliens no longer search the navigation mesh every tick, aliens off screen stop their legs, clips and pose, standing aliens don't move, fliers only push apart from fliers
 - Step 9 B1: the audio setup (the buses Master, Effects and Ambience with a volume slider each in the settings, the game heard from the local player, sounds with variants and a random pitch, a limit per sound dropping the farthest, critical cues ducking the rest, menu sounds while paused), the synthesis scripts with takes and a listening page, the manifest of recordings and its license test; the weapons' sounds (shots, the hammer, reloads, the empty click, the timing window's tick and result), the player's (hits, the low-health pulse, the dash, steps on the ground and on the ship's deck); the settings terminal's screen taller
 - Step 9 B2: the aliens' sounds (a chitter on noticing and while chasing, strikes, hits in the flesh and on armor, death, in each strain's voice), a telegraph sound for every heavy attack's wind-up and the shrieker's scream; the nests' pulse growing with the escalation, hatching, the burst's warning and the collapse; mining (placing, the drill, the hose, full, breakdown, repair); the ramp, the storm's warning as a critical cue, the last minute's countdown beeps, the storm hitting and the storm all around on the Ambience bus; the vents' rumble and burst, steps on shards and in mud; seamless loops (loop points in the WAV)
-- Step 10 A: the weapon framework: a weapon composed of Resources (its feed: magazines or single rounds; its delivery: projectiles or a swing; its effects: damage with stagger and push; its upgrade parts as a list; its origin and draw time), one folder per weapon; the blaster, the shotgun and the hammer renamed Harl, Brask and Dray with their class words ("Harl — Assault rifle"), three parts each (damage, capacity or swing speed, and Harl's fire rate, Brask's pellets, Dray's arc width) with a pip row each; the draw after switching (the weapon swings up from the hip and can't attack meanwhile); blueprints (saved; the debug overlay's "Give blueprints") and building a weapon from its blueprint at the workbench for a fixed ore cost; Harl's ammo warm white; the debug overlay tunes every weapon's resources
+- Step 10 A: the weapon framework: a weapon composed of Resources (its feed: magazines or single rounds; its delivery: projectiles or a swing; its effects: damage with stagger and push; its upgrade parts as a list; its origin and draw time), one folder per weapon; the blaster, the shotgun and the hammer renamed Harl, Brask and Dray with their class words ("Harl · Assault rifle"), three parts each (damage, capacity or swing speed, and Harl's fire rate, Brask's pellets, Dray's arc width) with a pip row each; the draw after switching (the weapon swings up from the hip and can't attack meanwhile); blueprints (saved; the debug overlay's "Give blueprints") and building a weapon from its blueprint at the workbench for a fixed ore cost; Harl's ammo warm white; the debug overlay tunes every weapon's resources
 - Step 10 B: the armory's weapon wall (free-standing in the middle of the armory; every weapon once in rows by origin, each row named, an origin without weapons gets no row; the player's slot numbers under their loadout's weapons) and the lockers keeping only their two cradles, the camera following the selected weapon to the wall and back, the card floating above the wall; the workbench rack in rows by origin too, right of the weapons room's door, three weapons to a line and growing up; the keyboard and gamepad moving over both racks as a grid, `tab_prev`/`tab_next` jumping a row, the cradle selected last (or an empty one) the slot filled next; for any number of weapons
 - Step 10 C1: Pinner (rivet pistol: one shot per press, a battery recharging by itself for no ore, drained when run empty), Grindle (rotary gun: barrels spinning up before the first shot and on for a moment after, walking slower while they spin, a belt of 120) and Quill (rail rifle: hold to charge, let go to fire, a partial charge weaker, a full one piercing every alien in its line, a sight line while charging); the trigger as a Resource of its own (per press, spin, charge), the battery feed, piercing projectiles, the suit ring and gauges the same for every feed (a drained battery, a charge), greybox models, their sounds, parts (recharge, spin-up, charge time) and build costs; the debug overlay tunes them
 - Step 10 C2: Tremor (seismic launcher: shells lobbed in an arc onto the locked target, the cursor's spot or along the aim, blasting where they land, a ring showing where) and Wick (charge layer: proximity charges tossed a short way, armed after a moment, tripped by aliens close to them, three out at once, the oldest removed by one more); the blast (falling off to the edge, sheltered by rock, no friendly fire, a flash, dust and a shake), the lob and charge deliveries, the aim's spot on the ground, greybox models, their sounds, parts (blast radius, charges out) and build costs; the debug overlay tunes them
@@ -77,30 +77,30 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 
 ## Todo
 
-### M4 — Progression & quests (the rest, in order)
+### M4: Progression & quests (the rest, in order)
 
 Each step builds on the ones before it (steps 1–11 are done).
 
-- [ ] **Step 12 — the station** ([`planned/station.md`](planned/station.md)); concept images first
+- [ ] **Step 12: the station** ([`planned/station.md`](planned/station.md)); concept images first
   - [ ] **A** docking (the navigator, the flight's docking end, the ramp into the hangar, the saved position) and the greybox station map with the camera cut-away and floor signs
   - [ ] **B** the named NPCs with their first topics, ambient colonists
   - [ ] **C** the ore exchange counter (deliveries and requests come with the quests, step 16)
-- [ ] **Step 13 — more crew** ([`planned/crew.md`](planned/crew.md))
+- [ ] **Step 13: more crew** ([`planned/crew.md`](planned/crew.md))
   - [ ] **A** the seven new crew members at their posts (profiles, greybox accessories, greetings and first topics, the engineer's on the refinery)
   - [ ] **B** health carrying over, the med bed, the medic's topics, the ramp card's hint
   - [ ] **C** reactions to events and the pilot's two radio lines (crew joining through the story waits for the quests)
-- [ ] **Step 14 — reasons to move on** ([`planned/risk-reward.md`](planned/risk-reward.md)); after the crafted miners (dry nodes matter once miners are picked up again) and the nests (the rich fields between them)
+- [ ] **Step 14: reasons to move on** ([`planned/risk-reward.md`](planned/risk-reward.md)); after the crafted miners (dry nodes matter once miners are picked up again) and the nests (the rich fields between them)
   - [ ] **A** nodes running dry (amounts, three stages, the dry look, the miner's amber blink, the scanner skipping them) and the rich fields in nest hollows
   - [ ] **B** the late deposit (timing, the meteor's streak, boom and beam, the impact site reserved at generation, the radio line, the nest's pack)
   - [ ] **C** the cargo hatch at the ramp (independent: can come any time earlier)
-- [ ] **Step 15 — more skills** ([`planned/skills.md`](planned/skills.md)): one PR with the rescue drone, the hardened canister, rebuilding spares and the miner radar (its amber pointer shows dry nodes too; the sentries with co-op, M7)
-- [ ] **Step 16 — quests** ([`planned/quests.md`](planned/quests.md))
+- [ ] **Step 15: more skills** ([`planned/skills.md`](planned/skills.md)): one PR with the rescue drone, the hardened canister, rebuilding spares and the miner radar (its amber pointer shows dry nodes too; the sentries with co-op, M7)
+- [ ] **Step 16: quests** ([`planned/quests.md`](planned/quests.md))
   - [ ] **A** quests as data (quest, steps, goals, rewards, story flags), offering with the diamond marker, accepting, hand-ins, the goals deliver (filled from the hauls), reach a site, mine and build, the quest board on the bridge (quests, logs, jobs), tracking
   - [ ] **B** quest sites in regions, the goals clear nests, recover fragments, recover an item and hunt, the navigator's diamonds, amber beams, radio lines
   - [ ] **C** first content: the quartermaster's chain ending in Brask's blueprint, the engineer's first furnace (the other furnaces through later quests), the depot master's requests, reputation pips
   - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first), the expedition's logs
 
-### M5 — Art pass (Blender MCP)
+### M5: Art pass (Blender MCP)
 
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, placing and pickup animations with the player kneeling, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
 - Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<ore>_wall` in `assets/ores/<ore>.glb`), which needs placement along the cliff edges
@@ -112,14 +112,14 @@ Each step builds on the ones before it (steps 1–11 are done).
 - Basic VFX for mining, shooting, reloading, storm (the sound effects come earlier, M4 step 9)
 - Voice-over, after the models ([`planned/voice.md`](planned/voice.md)): **A** the spike (the candidates rendered, the listening page, the comparison and decision written into `TECHNICAL.md`); **B** the pipeline tool, the Voice and Radio buses and "Voice on/off", playback from the bubbles and the radio filter, Brannik voiced; the other NPCs with the tool
 
-### M6 — VR
+### M6: VR
 
 - OpenXR setup for Steam Frame
 - The VR viewpoint ([`planned/vr-view.md`](planned/vr-view.md)): the head on the desktop camera's line, following the character (with the comfort options), the haze around the character, the surrounding flight effects, the ship's cut edges capped
 - VR controller mapping onto existing input actions
 - 90 FPS profiling; what M4 step 9 A left: with about 100 aliens (many mites) and 60 of them on screen a late frenzy still drops to 44–51 fps on the development PC, mostly what each alien on screen costs (leg IK, animation, rendering) and every moving one (physics, avoidance). Options then: a limit on living bodies besides the cap shares, no leg IK for tiny aliens, far aliens off screen thinking less often
 
-### M7 — Co-op
+### M7: Co-op
 
 - Godot high-level multiplayer (host + up to 3 clients), drop-in: friends join a player's session any time, no separate solo mode
 - Comms station on the bridge: invites through the platform (Steam overlay), and the comms log (radio lines to listen to again)
@@ -129,12 +129,12 @@ Each step builds on the ones before it (steps 1–11 are done).
 - Shared ship hub
 - Co-op progression: host save plus each player's own gear, tier sync (see [Co-op progression](GAME_DESIGN.md#co-op-progression))
 
-### M8 — Platform services & release
+### M8: Platform services & release
 
 - `PlatformService` abstraction + GodotSteam backend
 - Achievements (in-game list + Steam)
 - `release.yml` (GitHub Releases on tag) and `steam-deploy.yml`
-- Steam store page / Early Access preparation (see [`TECHNICAL.md`](TECHNICAL.md#steam-publishing--first-timer-checklist))
+- Steam store page / Early Access preparation (see [`TECHNICAL.md`](TECHNICAL.md#steam-publishing-first-timer-checklist))
 
 ### Afterwards
 

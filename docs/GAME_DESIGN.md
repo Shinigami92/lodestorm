@@ -1,4 +1,4 @@
-# Lodestorm — Game Design Document
+# Lodestorm: Game Design Document
 
 > Status: draft / pre-production. Values marked **TBD (playtest)** are intentionally left open and will be tuned once the systems are playable.
 >
@@ -32,7 +32,7 @@ A 3D isometric action/mining game with a dark, realistic sci-fi look. The player
 | Asset pipeline | Blender (via Blender MCP) → glTF → Godot |
 | License | CC BY-NC-SA 4.0 (own code + assets; third-party addons keep their licenses), CLA for contributors |
 | Distribution | Source-available on GitHub (Releases via CI); later Steam, possibly Epic and GOG |
-| Achievements | Yes — Steam achievements + in-game list (see [`TECHNICAL.md`](TECHNICAL.md)) |
+| Achievements | Yes: Steam achievements + in-game list (see [`TECHNICAL.md`](TECHNICAL.md)) |
 
 ### Architecture implications
 
@@ -371,7 +371,7 @@ Standing at one spot until the timer runs low must not pay off.
 ## 10. Combat & aliens
 
 - Aliens outside the ship try to kill the player; player fights back with weapons.
-- **Weapons:** a fixed set of unique weapons, ranged and melee, each with its own in-game name (untranslated, like the ores and places) and a plain class word under it on the cards (translated: "Harl — Assault rifle"); all 18 (see [`planned/weapons.md`](planned/weapons.md)). New ones come as blueprints from quests and the story and are built at the workbench (see [Upgrade stations](#upgrade-stations)). Ranged weapons use **ammo** made from carried ore (see [Ammo and reloading](#ammo-and-reloading)). The player can't carry all of them: before a mission they pick a **loadout** of a few weapons in the ship and play the mission with it.
+- **Weapons:** a fixed set of unique weapons, ranged and melee, each with its own in-game name (untranslated, like the ores and places) and a plain class word under it on the cards (translated: "Harl · Assault rifle"); all 18 (see [`planned/weapons.md`](planned/weapons.md)). New ones come as blueprints from quests and the story and are built at the workbench (see [Upgrade stations](#upgrade-stations)). Ranged weapons use **ammo** made from carried ore (see [Ammo and reloading](#ammo-and-reloading)). The player can't carry all of them: before a mission they pick a **loadout** of a few weapons in the ship and play the mission with it.
 - **Enemies:** only aliens for now, one species in several strains and roles: eleven hunting strains, a guard, a raider and the apex, the Ravager (more guards and raiders may come, see [`planned/aliens.md`](planned/aliens.md)). A **strain** is the body (how it moves, what it takes, its attacks), a **role** what it goes for: **guards** stay by their nest, **hunters** go for players, **raiders** for miners. Every strain plays one role, so the body tells the role: the warden guards, the gnawer raids, the swarmer, the mite, the spitter, the burrower, the brute, the shrieker, the bloater, the tender, the darter, the stalker and the skimmer hunt. A group of aliens that hatches together is a **pack** (hunters only). The Ravager isn't hatched by nests: it roams some locations on its own.
 - **No drops:** aliens drop nothing; ore only comes from mining. Killing is about safety, not loot, so the miners stay central.
 - **Attacking:** one attack button; the equipped weapon decides what it does (shoot, swing). Melee stays on it: a separate melee button would make the melee weapons pointless.

@@ -1,9 +1,8 @@
 class_name Npc
 extends Station
-## A crew member aboard (see GAME_DESIGN.md, Spaceship: NPCs), who `profile` says. Greybox: the
-## suit model in a darker tint with the collar light in their own color, standing at their spot
-## and turning towards the nearest player close by. Their name plate shows while a player is near,
-## and an amber marker above their head while they have something the players haven't heard yet.
+## A crew member aboard (see GAME_DESIGN.md, Spaceship: NPCs), who `profile` says, standing at
+## their spot: their `Body` (an `NpcBody`: the look, turning towards players, the name plate) and
+## an amber marker above their head while they have something the players haven't heard yet.
 ##
 ## Talking to them is a station (`interact`): the camera frames them and the player, their lines
 ## show in a speech bubble above their head (`Bubble`, a `SpeechBubble`), and the card beside
@@ -12,14 +11,6 @@ extends Station
 ## next line), `pause` steps back from a topic to the list and closes from there. What's been heard
 ## is a flag in the ship's `Story`.
 
-## How close (in m) a player must be for them to turn towards them.
-const NOTICE_RANGE: float = 3.0
-## How close (in m) a player must be to see their name plate.
-const PLATE_RANGE: float = 4.0
-## How fast they turn (per s, smoothed).
-const TURN_SPEED: float = 5.0
-## Where the top of the head is, in m above their feet: the speech bubble sits above it.
-const HEAD_HEIGHT: float = 1.9
 ## Gap between the head and the bubble's tail, in m.
 const BUBBLE_GAP: float = 0.05
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
@@ -42,34 +33,25 @@ var _own_story := Story.new()
 var _new_marker_time: float = 0.0
 
 @onready var bubble: WorldPanel = $Bubble
-@onready var _body: Node3D = $Body
-@onready var _model: Node3D = $Body/Model
-@onready var _animator: PlayerAnimator = $Animator
-@onready var _plate: Label3D = $NamePlate
+@onready var body: NpcBody = $Body
 @onready var _new_marker: Node3D = $NewMarker
 
 
 func _ready() -> void:
 	super()
-	_animator.aiming = false
-	_animator.setup(_model)
-	_dress()
+	body.profile = profile
 	bubble.visible = false
-	_plate.visible = false
 
 
 func _process(delta: float) -> void:
 	super(delta)
-	_turn(delta)
-	var near: Player = Player.nearest(get_tree(), global_position, PLATE_RANGE)
-	_plate.visible = near != null and not user
-	if _plate.visible:
-		_plate.text = get_plate_text()
+	body.faces = user
+	body.plate_allowed = not user
 	_new_marker.visible = not user and has_news(_listener())
 	if _new_marker.visible:
 		_new_marker_time += delta
 		_new_marker.rotation.y = _new_marker_time * 1.5
-		_new_marker.position.y = HEAD_HEIGHT + 0.5 + 0.04 * sin(_new_marker_time * 3.0)
+		_new_marker.position.y = NpcBody.HEAD_HEIGHT + 0.5 + 0.04 * sin(_new_marker_time * 3.0)
 	if user:
 		_place_bubble()
 
@@ -81,13 +63,11 @@ func get_story() -> Story:
 
 ## Their name and role, as the name plate shows them.
 func get_plate_text() -> String:
-	if not profile:
-		return ""
-	return "%s · %s" % [profile.display_name, tr(profile.role)]
+	return body.get_plate_text()
 
 
 ## The topics open now for `listener` (the player talking to them when null), in the dialogue's
-## order: their story flags are set, and `listener` owns the weapon a topic is about.
+## order (see `Topic.is_open`).
 func get_choices(listener: Player = null) -> Array[Topic]:
 	var choices: Array[Topic] = []
 	if not profile or not profile.dialogue:
@@ -96,14 +76,8 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 		listener = user
 	var story: Story = get_story()
 	for listed: Topic in profile.dialogue.topics:
-		if not story.is_set_all(listed.requires):
-			continue
-		if (
-			listed.requires_weapon
-			and not (listener and listener.arsenal.owns(listed.requires_weapon))
-		):
-			continue
-		choices.append(listed)
+		if listed.is_open(listener, story):
+			choices.append(listed)
 	return choices
 
 
@@ -186,7 +160,7 @@ func leave_topic() -> bool:
 
 
 func get_look_target() -> Vector3:
-	return _body.global_position
+	return body.global_position
 
 
 func _back() -> bool:
@@ -256,41 +230,5 @@ func _place_bubble() -> void:
 	if not camera:
 		return
 	var view: Basis = camera.global_basis.orthonormalized()
-	var head: Vector3 = _body.global_position + Vector3.UP * HEAD_HEIGHT
+	var head: Vector3 = body.get_head_position()
 	bubble.global_transform = Transform3D(view, head + view.y * (bubble.size.y * 0.5 + BUBBLE_GAP))
-
-
-## Turns the body towards the player talking to them, else the nearest one close by, else back to
-## where they stand facing.
-func _turn(delta: float) -> void:
-	var target: Player = user if user else Player.nearest(get_tree(), global_position, NOTICE_RANGE)
-	var yaw: float = 0.0
-	if target:
-		var to_target: Vector3 = global_basis.inverse() * (target.global_position - global_position)
-		if Vector2(to_target.x, to_target.z).length() > 0.1:
-			yaw = atan2(to_target.x, to_target.z)
-	_body.rotation.y = lerp_angle(_body.rotation.y, yaw, 1.0 - exp(-TURN_SPEED * delta))
-
-
-## The suit in the crew's darker tint, the collar light in their own color.
-func _dress() -> void:
-	if not profile:
-		return
-	var suit := _model.find_child("Suit") as MeshInstance3D
-	if suit and suit.mesh:
-		for surface: int in suit.mesh.get_surface_count():
-			var material := suit.get_active_material(surface) as BaseMaterial3D
-			if not material:
-				continue
-			var tinted := material.duplicate() as BaseMaterial3D
-			tinted.albedo_color *= profile.suit_tint
-			suit.set_surface_override_material(surface, tinted)
-	var band := _model.find_child("SuitLight") as GeometryInstance3D
-	if band:
-		var light := StandardMaterial3D.new()
-		light.albedo_color = profile.accent_color
-		light.emission_enabled = true
-		light.emission = profile.accent_color
-		light.emission_energy_multiplier = 2.0
-		band.material_override = light
-		band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

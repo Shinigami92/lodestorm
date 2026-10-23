@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://vkyghej1md17"]
+
+[ext_resource type="Script" uid="uid://csbgcijbw6of8" path="res://game/npcs/npc_body.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://yj82i5sgqayt" path="res://assets/player/player.glb" id="2_model"]
+[ext_resource type="Script" uid="uid://dqnkf5jxxct5w" path="res://game/player/player_animator.gd" id="3_animator"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.8
+
+[node name="Body" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="Animator" type="AnimationTree" parent="."]
+script = ExtResource("3_animator")
+
+[node name="Collision" type="StaticBody3D" parent="."]
+
+[node name="Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="NamePlate" type="Label3D" parent="."]
+layers = 8
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+pixel_size = 0.006
+billboard = 1
+modulate = Color(0.75, 0.92, 1, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "Name · Role"
+font_size = 64
+outline_size = 16
+auto_translate_mode = 2

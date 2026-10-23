@@ -5,7 +5,8 @@ extends Resource
 ## set (and to players who own its `requires_weapon`); hearing it to the end sets its `id` as a
 ## flag.
 
-## Saved as a story flag once heard (e.g. "quartermaster.ammo"), so it never changes.
+## Saved as a story flag once heard: the NPC's `NpcProfile.id`, a dot and the topic
+## ("quartermaster.ammo", see `Story`), so it never changes.
 @export var id: StringName
 ## Its button on the talk card (the English text, translated).
 @export var title: String
@@ -15,3 +16,12 @@ extends Resource
 @export var requires: Array[StringName] = []
 ## A weapon it's about: it only shows to a player who owns it (e.g. Brask once built).
 @export var requires_weapon: WeaponType
+
+
+## Whether it shows to `listener` (null: nobody in particular) now: `story` has the flags it
+## `requires`, and `listener` owns its `requires_weapon`. Topics with more conditions (a quest's,
+## reputation) override it.
+func is_open(listener: Player, story: Story) -> bool:
+	if not story.is_set_all(requires):
+		return false
+	return not requires_weapon or (listener != null and listener.arsenal.owns(requires_weapon))

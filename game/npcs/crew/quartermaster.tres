@@ -61,6 +61,7 @@ topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResourc
 
 [resource]
 script = ExtResource("1_profile")
+id = &"quartermaster"
 display_name = "Brannik"
 role = "Quartermaster"
 accent_color = Color(0.65, 0.45, 1, 1)

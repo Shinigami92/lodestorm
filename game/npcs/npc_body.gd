@@ -1,0 +1,104 @@
+class_name NpcBody
+extends Node3D
+## Someone standing in the world (see GAME_DESIGN.md, Spaceship: NPCs), who `profile` says: the
+## suit model in their darker tint with the collar light in their own color, turning towards whom
+## it `faces` (else the nearest player close by, else back to where it stands facing), and their
+## name plate while a player is near. The crew (`Npc`, which adds talking) and the station's
+## ambient colonists share it.
+
+## How close (in m) a player must be for it to turn towards them.
+const NOTICE_RANGE: float = 3.0
+## How close (in m) a player must be to see the name plate.
+const PLATE_RANGE: float = 4.0
+## How fast it turns (per s, smoothed).
+const TURN_SPEED: float = 5.0
+## Where the top of the head is, in m above the feet (e.g. a speech bubble sits above it).
+const HEAD_HEIGHT: float = 1.9
+
+## Who it is: the name plate and the suit's look.
+@export var profile: NpcProfile:
+	set(value):
+		profile = value
+		if is_node_ready():
+			_dress()
+
+## Whom it turns towards; null: the nearest player close by.
+var faces: Node3D
+## Whether the name plate may show (e.g. hidden while someone talks to them).
+var plate_allowed: bool = true
+
+@onready var _model: Node3D = $Model
+@onready var _animator: PlayerAnimator = $Animator
+@onready var _plate: Label3D = $NamePlate
+
+
+func _ready() -> void:
+	_animator.aiming = false
+	_animator.setup(_model)
+	_dress()
+	_plate.visible = false
+
+
+func _process(delta: float) -> void:
+	_turn(delta)
+	var near: Player = Player.nearest(get_tree(), global_position, PLATE_RANGE)
+	_plate.visible = plate_allowed and near != null
+	if _plate.visible:
+		_plate.text = get_plate_text()
+
+
+## Their name and role, as the name plate shows them.
+func get_plate_text() -> String:
+	if not profile:
+		return ""
+	return "%s · %s" % [profile.display_name, tr(profile.role)]
+
+
+## Whether the name plate shows right now.
+func is_plate_shown() -> bool:
+	return _plate.visible
+
+
+## The top of the head, in world space.
+func get_head_position() -> Vector3:
+	return global_position + Vector3.UP * HEAD_HEIGHT
+
+
+## Turns towards `faces`, else the nearest player close by, else back to where it stands facing
+## (its parent's forward).
+func _turn(delta: float) -> void:
+	var target: Node3D = faces
+	if not target:
+		target = Player.nearest(get_tree(), global_position, NOTICE_RANGE)
+	var yaw: float = 0.0
+	if target:
+		var parent: Node3D = get_parent_node_3d()
+		var offset: Vector3 = target.global_position - global_position
+		var local: Vector3 = parent.global_basis.inverse() * offset if parent else offset
+		if Vector2(local.x, local.z).length() > 0.1:
+			yaw = atan2(local.x, local.z)
+	rotation.y = lerp_angle(rotation.y, yaw, 1.0 - exp(-TURN_SPEED * delta))
+
+
+## The suit in their darker tint, the collar light in their own color.
+func _dress() -> void:
+	if not profile:
+		return
+	var suit := _model.find_child("Suit") as MeshInstance3D
+	if suit and suit.mesh:
+		for surface: int in suit.mesh.get_surface_count():
+			var material := suit.mesh.surface_get_material(surface) as BaseMaterial3D
+			if not material:
+				continue
+			var tinted := material.duplicate() as BaseMaterial3D
+			tinted.albedo_color *= profile.suit_tint
+			suit.set_surface_override_material(surface, tinted)
+	var band := _model.find_child("SuitLight") as GeometryInstance3D
+	if band:
+		var light := StandardMaterial3D.new()
+		light.albedo_color = profile.accent_color
+		light.emission_enabled = true
+		light.emission = profile.accent_color
+		light.emission_energy_multiplier = 2.0
+		band.material_override = light
+		band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

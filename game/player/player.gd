@@ -122,6 +122,8 @@ var hold := PlayerHold.new()
 var refining := Refining.new()
 ## Its crafted miners and the standard-issue ones filling up a run (saved with the player).
 var fleet := MinerFleet.new()
+## The one-time hints it has seen (saved with the player).
+var hints := PlayerHints.new()
 ## Whether reloads cost nothing (aboard: from the ship's stock).
 var ammo_free: bool = false
 ## The teammate `interact` hands ammo to while it's held, or null; and for how long it's held (s).

@@ -2,10 +2,11 @@ class_name RampHint
 extends Node3D
 ## A hint above the ramp button (see GAME_DESIGN.md, Death & persistence): health carries over
 ## between runs, so the first time the local player stands at the button hurt with the ramp up, a
-## bubble says where to heal. It shows once (a story flag, saved with the ship), as long as that
-## player stays there.
+## bubble says where to heal. It shows once per player (`PlayerHints`, saved with the player), as
+## long as that player stays there.
 
-const FLAG: StringName = &"hint_medical_bay"
+## The hint in `PlayerHints`.
+const HINT: StringName = &"medical_bay"
 ## Gap between the button and the bubble's tail, in m.
 const GAP: float = 0.25
 
@@ -30,11 +31,9 @@ func _process(_delta: float) -> void:
 		else:
 			_hide()
 		return
-	if ship.story.is_set(FLAG):
-		return
 	for node: Node in get_tree().get_nodes_in_group(Player.GROUP):
 		var player := node as Player
-		if player.local and _applies_to(player):
+		if player.local and not player.hints.is_seen(HINT) and _applies_to(player):
 			_show(player)
 			return
 
@@ -51,7 +50,7 @@ func _applies_to(player: Player) -> bool:
 
 func _show(player: Player) -> void:
 	shown_for = player
-	ship.story.set_flag(FLAG)
+	player.hints.mark_seen(HINT)
 	(_bubble.content as SpeechBubble).show_line(
 		tr("Not at full health: the medical bay is at the nose.")
 	)

@@ -2077,197 +2077,197 @@ mesh = SubResource("BoxMesh_0_5x1x7")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 10.5, 4.5)
 mesh = SubResource("BoxMesh_0_5x1x7")
 
-[node name="BackWallLowerGlass1" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallLowerGlass1" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.875, 4.5, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallLowerGlass2" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallLowerGlass2" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.625, 4.5, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallLowerGlass3" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallLowerGlass3" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.5833, 4.5, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallLowerGlass4" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallLowerGlass4" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.75, 4.5, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallLowerGlass5" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallLowerGlass5" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.9167, 4.5, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallLowerGlass6" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallLowerGlass6" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 4.5, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallLowerGlass7" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallLowerGlass7" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 4.5, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallLowerGlass8" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallLowerGlass8" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 4.5, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallUpperGlass1" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass1" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallUpperGlass2" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass2" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallUpperGlass3" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass3" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallUpperGlass4" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass4" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallUpperGlass5" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass5" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_3x2x0_06")
 
-[node name="BackWallUpperGlass6" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass6" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_3x2x0_06")
 
-[node name="BackWallUpperGlass7" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass7" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_3x2x0_06")
 
-[node name="BackWallUpperGlass8" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass8" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_3x2x0_06")
 
-[node name="BackWallUpperGlass9" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass9" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="BackWallUpperGlass10" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="BackWallUpperGlass10" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 9, -14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallLowerGlass1" type="MeshInstance3D" parent="LowerCut" groups=["ship_glass"]]
+[node name="FrontWallLowerGlass1" type="MeshInstance3D" parent="LowerCut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74.875, 4.5, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallLowerGlass2" type="MeshInstance3D" parent="LowerCut" groups=["ship_glass"]]
+[node name="FrontWallLowerGlass2" type="MeshInstance3D" parent="LowerCut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.625, 4.5, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallLowerGlass3" type="MeshInstance3D" parent="LowerCut" groups=["ship_glass"]]
+[node name="FrontWallLowerGlass3" type="MeshInstance3D" parent="LowerCut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 4.5, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallLowerGlass4" type="MeshInstance3D" parent="LowerCut" groups=["ship_glass"]]
+[node name="FrontWallLowerGlass4" type="MeshInstance3D" parent="LowerCut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.6875, 4.5, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallLowerGlass5" type="MeshInstance3D" parent="LowerCut" groups=["ship_glass"]]
+[node name="FrontWallLowerGlass5" type="MeshInstance3D" parent="LowerCut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 4.5, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallLowerGlass6" type="MeshInstance3D" parent="LowerCut" groups=["ship_glass"]]
+[node name="FrontWallLowerGlass6" type="MeshInstance3D" parent="LowerCut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 4.5, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallLowerGlass7" type="MeshInstance3D" parent="LowerCut" groups=["ship_glass"]]
+[node name="FrontWallLowerGlass7" type="MeshInstance3D" parent="LowerCut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 4.5, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallLowerGlass8" type="MeshInstance3D" parent="LowerCut" groups=["ship_glass"]]
+[node name="FrontWallLowerGlass8" type="MeshInstance3D" parent="LowerCut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 4.5, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallUpperGlass1" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass1" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallUpperGlass2" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass2" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallUpperGlass3" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass3" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallUpperGlass4" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass4" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallUpperGlass5" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass5" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallUpperGlass6" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass6" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_3x2x0_06")
 
-[node name="FrontWallUpperGlass7" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass7" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_3x2x0_06")
 
-[node name="FrontWallUpperGlass8" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass8" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_3x2x0_06")
 
-[node name="FrontWallUpperGlass9" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass9" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_3x2x0_06")
 
-[node name="FrontWallUpperGlass10" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass10" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="FrontWallUpperGlass11" type="MeshInstance3D" parent="Upper/Cut" groups=["ship_glass"]]
+[node name="FrontWallUpperGlass11" type="MeshInstance3D" parent="Upper/Cut" groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 9, 14.75)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_4x2x0_06")
 
-[node name="NoseWallUpperGlass1" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="NoseWallUpperGlass1" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 9, -4.5)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_0_06x2x7")
 
-[node name="NoseWallUpperGlass2" type="MeshInstance3D" parent="." groups=["ship_glass"]]
+[node name="NoseWallUpperGlass2" type="MeshInstance3D" parent="." groups=["cutaway_hide"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80.75, 9, 4.5)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_glass_0_06x2x7")

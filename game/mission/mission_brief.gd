@@ -1,13 +1,16 @@
 class_name MissionBrief
 extends Resource
-## One mission on offer at the navigator: where it goes (a generated location of `biome` from
-## `world_seed`: a section of `region`), how long until the storm (`length`) and how many nests
-## wait there (`difficulty`). The mission offers one per open region (see `Voyage.offers`).
+## One destination on offer at the navigator: a mission (where it goes: a generated location of
+## `biome` from `world_seed`, a section of `region`; how long until the storm, `length`; how many
+## nests wait there, `difficulty`) or a `station` to dock at (no mission there). The voyage offers
+## one per open region and one per station it can dock at (see `Voyage.offers`).
 
 enum Difficulty { EASY, NORMAL, HARD }
 
-## The region it's a section of, or null (a location of `biome` anywhere).
+## The region it's a section of, or null (a location of `biome` anywhere, or a station).
 @export var region: Region
+## The station it docks at (its map is the location), or null (a mission).
+@export var station: CelestialBody
 @export var biome: LocationBiome
 ## The ores found there, commonest first (rarer ones lie farther away); empty: the biome's.
 @export var ores: Array[OreType] = []
@@ -32,9 +35,18 @@ static func for_region(
 	return brief
 
 
-## Where it goes, e.g. "Torvane, Redscar Flats": the body (found in `system`) and the region;
-## empty without a region.
+## A visit to `at_station` (docking there).
+static func for_station(at_station: CelestialBody) -> MissionBrief:
+	var brief := MissionBrief.new()
+	brief.station = at_station
+	return brief
+
+
+## Where it goes, e.g. "Torvane, Redscar Flats": the body (found in `system`) and the region, or
+## the station; empty without either.
 func place_name(system: StarSystem) -> String:
+	if station:
+		return station.display_name
 	if not region:
 		return ""
 	var body: CelestialBody = system.body_of(region) if system else null
@@ -42,8 +54,10 @@ func place_name(system: StarSystem) -> String:
 
 
 ## A short name for the location: the region (or else the biome) and a sector code from the seed
-## (e.g. "Redscar Flats K-417"), so visits read apart.
+## (e.g. "Redscar Flats K-417"), so visits read apart; a station's name.
 func location_name() -> String:
+	if station:
+		return tr(station.display_name)
 	var letter: String = String.chr(65 + absi(world_seed) % 26)
 	var sector: int = 100 + floori(absi(world_seed) / 26.0) % 900
 	var place: String = ""

@@ -12,9 +12,12 @@ extends Station
 ## shown (`Voyage.preview`); choosing it as the destination (`Voyage.choose`, a new section of
 ## the region) takes "Set as destination" (on the globe, it then zooms into the landing site), and
 ## course is set at the cockpit's flight console.
-## Stations can't be docked at yet and locked planets and regions can't be visited: zooming stops
-## short of them. Its `hologram` (`NavigatorHologram`, the `View` child) builds and places the
-## views; the star's name is on the card. The card floats beside the hologram, so it never covers
+## A station the ship can dock at is picked like a region, without a globe: zooming into it (to
+## 1) shows its map on the holo table like a landing site (`Voyage.preview`), and "Set as
+## destination" (also `interact` there) chooses the visit. A station without a map, the star and
+## locked planets and regions can't be zoomed into: zooming stops short of them.
+## Its `hologram` (`NavigatorHologram`, the `View` child) builds and places the views; the star's
+## name is on the card. The card floats beside the hologram, so it never covers
 ## a region.
 ## Players use it from anywhere around the table; walking away leaves the hologram as it is.
 
@@ -110,15 +113,24 @@ func get_plates() -> Array[HoloPlate]:
 	return plates
 
 
-## The body of the destination chosen, or null.
+## The body of the destination chosen (a station to dock at, or a region's planet or moon), or
+## null.
 func destination_body() -> CelestialBody:
 	var system: StarSystem = get_system()
 	var destination: MissionBrief = voyage.destination if voyage else null
+	if destination and destination.station:
+		return destination.station
 	return (
 		system.body_of(destination.region)
 		if system and destination and destination.region
 		else null
 	)
+
+
+## Whether `item` is a station the ship docks at (zooming into it shows its map).
+static func is_station(item: Resource) -> bool:
+	var shown_body := item as CelestialBody
+	return shown_body != null and shown_body.is_dockable()
 
 
 ## The ores a plate or card lists for `shown_region` (commonest first): the signature ores of a
@@ -165,32 +177,43 @@ func get_heat_shield() -> HeatShield:
 	return voyage.ship.heat_shield if voyage and voyage.ship else null
 
 
-## The mission on offer for `item` (a region), or null.
+## The mission on offer for `item` (a region), the visit to a station, or null.
 func get_offer(item: Resource) -> MissionBrief:
+	if not voyage:
+		return null
+	if is_station(item):
+		return voyage.offer_for_station(item as CelestialBody)
 	var shown_region := item as Region
-	return voyage.offer_for(shown_region) if voyage and shown_region else null
+	return voyage.offer_for(shown_region) if shown_region else null
 
 
 ## Zooms in a whole step: into the selected body, or into the selected region's landing site; at
-## a landing site, chooses it as the destination. Returns whether it did.
+## a landing site or a station's map, chooses it as the destination. Returns whether it did.
 func activate() -> bool:
-	if level == Level.REGION:
+	if level == Level.REGION or (level == Level.BODY and is_station(body)):
 		return choose_destination()
 	var before: float = zoom_target
 	set_zoom_target(floorf(zoom_target + 0.001) + 1.0)
 	return zoom_target > before + 0.5
 
 
-## Chooses the selected region (or the one whose landing site is shown) as the destination; on
-## the globe, it then zooms into the region's landing site. Returns whether it is the destination.
+## Chooses the selected region (or the one whose landing site is shown) or station as the
+## destination; on the globe, it then zooms into the region's landing site, at the star system into
+## the station's map. Returns whether it is the destination.
 func choose_destination() -> bool:
-	var picked := selected.item as Region if selected else null
+	var picked: Resource = selected.item if selected else null
+	if not picked is Region and not is_station(picked):
+		return false
 	var offer: MissionBrief = get_offer(picked)
 	if not offer or not is_reachable(picked):
 		return false
 	if offer != voyage.destination and not voyage.choose(offer):
 		return false
-	if level == Level.BODY:
+	if is_station(picked):
+		if level == Level.SYSTEM:
+			body = picked as CelestialBody
+			set_zoom_target(1.0)
+	elif level == Level.BODY:
 		set_zoom_target(2.0)
 	return true
 
@@ -223,8 +246,8 @@ func step_back() -> bool:
 
 
 ## Sets where the zoom eases to (zooming towards the selected body or region), stopping short of
-## what can't be reached: the star, a station or locked body, a locked region. Reaching a landing
-## site shows it (`Voyage.preview`), without choosing it.
+## what can't be reached: the star, a station without a map or a locked body, a locked region.
+## Reaching a landing site or a station's map shows it (`Voyage.preview`), without choosing it.
 func set_zoom_target(value: float) -> void:
 	value = clampf(value, 0.0, 2.0)
 	var from_level: Level = _level_of(zoom_target)
@@ -233,8 +256,15 @@ func set_zoom_target(value: float) -> void:
 			body = selected.item as CelestialBody
 		if not body or not is_reachable(body):
 			value = minf(value, UNREACHABLE_LIMIT)
+		elif is_station(body):
+			# Its map crossfades in on the way.
+			value = minf(value, 1.0)
+			if not _show_station_map():
+				value = minf(value, UNREACHABLE_LIMIT)
 		else:
 			hologram.globe_parts(body)
+	if is_station(body) and value > 1.0:
+		value = 1.0
 	if from_level == Level.BODY and value > 1.0:
 		var towards := selected.item as Region if selected else null
 		if towards:
@@ -313,10 +343,19 @@ func _show_landing_site() -> bool:
 	return offer != null and (offer == voyage.previewed or voyage.preview(offer))
 
 
-## At a landing site, keeps showing it (after a run, its region offers a new section).
+## Shows the station zoomed into's map on the holo table (just looking). Returns whether it does.
+func _show_station_map() -> bool:
+	var offer: MissionBrief = get_offer(body)
+	return offer != null and (offer == voyage.previewed or voyage.preview(offer))
+
+
+## At a landing site, keeps showing it (after a run, its region offers a new section); the same at
+## a station's map.
 func _keep_landing_site_shown() -> void:
 	if level == Level.REGION and region and get_offer(region) != voyage.previewed:
 		_show_landing_site()
+	elif level == Level.BODY and is_station(body) and get_offer(body) != voyage.previewed:
+		_show_station_map()
 
 
 ## Selects the part under the mouse cursor before the wheel zooms into it.
@@ -353,8 +392,16 @@ func _rebuild(new_level: Level) -> void:
 			_parts = hologram.system_parts()
 			focus = body
 		Level.BODY:
-			_parts = hologram.globe_parts(body)
-			focus = region
+			if is_station(body):
+				# The station's map on the holo table: one part, like a landing site.
+				_site = StationPart.new()
+				_site.item = body
+				_site.pick_radius = 0.4
+				hologram.add_child(_site)
+				_parts.append(_site)
+			else:
+				_parts = hologram.globe_parts(body)
+				focus = region
 		Level.REGION:
 			_site = StationPart.new()
 			_site.item = region
@@ -373,5 +420,8 @@ func _show_zoom() -> void:
 	if holo_table:
 		var stage: float = clampf(zoom, 0.0, 2.0)
 		var site: float = NavigatorHologram.crossfade(stage - 1.0) if stage >= 1.0 else 0.0
+		if is_station(body):
+			# A station's map takes over from the star system right away.
+			site = NavigatorHologram.crossfade(stage) if stage < 1.0 else 1.0
 		holo_table.show_hologram(site > 0.0)
 		holo_table.set_hologram_scale(lerpf(0.3, 1.0, site) * LANDING_SCALE)

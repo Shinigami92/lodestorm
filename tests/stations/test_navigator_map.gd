@@ -68,14 +68,15 @@ func test_body_plates_hide_what_cannot_be_reached() -> void:
 func test_routes_lead_from_the_ship() -> void:
 	var torvane: CelestialBody = _body("Torvane")
 	var lisk: CelestialBody = _body("Lisk")
+	var ostra: CelestialBody = _body("Waypost Ostra")
 	assert_eq(_navigator.ship_body(), torvane, "the first planet before any flight")
-	assert_eq(_routes(), {lisk: false}, "the only other body it can go to")
+	assert_eq(_routes(), {lisk: false, ostra: false}, "the other bodies it can go to")
 	assert_true(_voyage.choose(_voyage.offer_for(lisk.regions[0])))
-	assert_eq(_routes(), {lisk: true}, "the destination's route")
+	assert_eq(_routes(), {lisk: true, ostra: false}, "the destination's route")
 	assert_true(_voyage.confirm())
 	assert_eq(_voyage.at_body, lisk)
 	assert_eq(_navigator.ship_body(), lisk)
-	assert_eq(_routes(), {torvane: false}, "from the moon now")
+	assert_eq(_routes(), {torvane: false, ostra: false}, "from the moon now")
 
 
 ## Each region of a globe has a plate: its name, its danger's pips and its ores (the signature

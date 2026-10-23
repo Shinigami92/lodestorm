@@ -15,6 +15,7 @@ lint_python() {
 	ruff check . || status=1
 	# Generated scenes must match their generator
 	python game/ship/hull_build.py --check || status=1
+	python game/space_station/ostra/ostra_build.py --check || status=1
 }
 
 case "${1:-all}" in

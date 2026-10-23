@@ -1,8 +1,8 @@
 class_name CelestialBody
 extends Resource
-## A planet, moon or station of the star system, with the regions the ship can land in. Stations
-## are handcrafted maps (later); until they exist they can't be docked at. A gas giant has no
-## regions: the ship lands on its moons.
+## A planet, moon or station of the star system, with the regions the ship can land in. A station
+## is a handcrafted map (`map`) the ship docks at, from the start (no tier); one without a map
+## can't be docked at yet. A gas giant has no regions: the ship lands on its moons.
 
 ## Saved by number in resources: add new kinds at the end.
 enum Kind { PLANET, MOON, STATION, GAS_GIANT }
@@ -34,6 +34,8 @@ const MK_ABOVE_TIER: int = 2
 ## Its own rare ores (usually one), found in all its regions and nowhere else. A moon has its own
 ## or none.
 @export var signature_ores: Array[OreType] = []
+## A station's map (a `SpaceStation` scene), docked at instead of landing; null: no docking yet.
+@export var map: PackedScene
 
 
 ## The highest MK level of upgrades it brings: reaching it makes them buyable, and in co-op stronger
@@ -55,6 +57,13 @@ func kind_name() -> String:
 
 
 ## Whether the ship can go there with heat shield MK `shield_mk`: its tier is at most that, and
-## it has regions to land in (a station can't be docked at yet, a gas giant has none).
+## it has regions to land in (a gas giant has none); a station whenever it has a map to dock at.
 func is_reachable(shield_mk: int) -> bool:
-	return kind != Kind.STATION and tier <= shield_mk and not regions.is_empty()
+	if kind == Kind.STATION:
+		return map != null
+	return tier <= shield_mk and not regions.is_empty()
+
+
+## Whether the ship docks there instead of landing: a station with a map.
+func is_dockable() -> bool:
+	return kind == Kind.STATION and map != null

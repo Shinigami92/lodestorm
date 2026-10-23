@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
+[ext_resource type="PackedScene" uid="uid://dd4x4eni5bhlc" path="res://game/space_station/ostra/ostra.tscn" id="map_ostra"]
 
 [sub_resource type="Resource" id="SetPiece_redscar"]
 script = ExtResource("part_placement")
@@ -114,9 +115,11 @@ id = &"ostra"
 display_name = "Waypost Ostra"
 kind = 2
 color = Color(0.55, 0.85, 1.0, 1)
-size = 0.7
-orbit_radius = 0.93
-orbit_angle = 330.0
+size = 0.5
+orbit_radius = 0.3
+orbit_angle = 250.0
+orbits = SubResource("Body_torvane")
+map = ExtResource("map_ostra")
 
 [sub_resource type="Resource" id="SetPiece_hoarfrost"]
 script = ExtResource("part_placement")

@@ -603,6 +603,10 @@ msgid "In flight"
 msgstr ""
 
 #: game/ship/ship.gd
+msgid "Docked"
+msgstr ""
+
+#: game/ship/ship.gd
 msgid "All aboard"
 msgstr ""
 
@@ -656,6 +660,42 @@ msgstr ""
 
 #: game/ship/ship.tscn
 msgid "Cabins · Lift · Bridge"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Hangar"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Concourse · Bar · Gallery\nDepot · Council"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Supply depot"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Concourse"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Council office"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Bar"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Observation gallery"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Hangar · Ship"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
+msgid "Concourse · Hangar"
 msgstr ""
 
 #: game/stations/bed/bed_card.gd
@@ -723,7 +763,20 @@ msgid "Scanning the location..."
 msgstr ""
 
 #: game/stations/flight/flight_card.gd
+msgid "Set course to dock there."
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
 msgid "Set course to fly there."
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+msgid "Wait until everyone is back aboard."
+msgstr ""
+
+#: game/stations/flight/flight_card.gd
+#: game/stations/navigator/navigator_card.gd
+msgid "Docked: lower the ramp in the cargo bay."
 msgstr ""
 
 #: game/stations/flight/flight_card.gd

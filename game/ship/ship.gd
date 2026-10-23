@@ -1,6 +1,7 @@
 class_name Ship
 extends Node3D
-## The ship, in space or landed on its landing gear (its `flight` flies it between the two). Its
+## The ship, in space, landed on its landing gear or docked at a station (its `flight` flies it
+## between them). Its
 ## interior is the hub (`Rooms`), on two decks:
 ## the nose points left, the ramp is at the tail on the right (screen right), so players walk from
 ## the inside to the right into the mission. Upper deck: cockpit, bridge (the holo table shows the
@@ -11,7 +12,7 @@ extends Node3D
 ## button on the inner wall next to the door lowers it (see `Mission` for the flow); a hurt player
 ## standing at it is told once where to heal (`ramp_hint`). The ship tracks who is aboard and
 ## holsters their weapons inside, except in the shooting range's weapon zone (a barrier in its
-## doorway keeps the shots inside).
+## doorway keeps the shots inside), and outside too while docked at a station.
 ## While the `viewer` is aboard (and `show_outside` is off), the camera sees inside: on the lower
 ## deck, the walls facing the camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`,
 ## `Rooms/Upper`, the lifts' upper gates) only cast shadows; on the upper deck, its walls facing
@@ -20,7 +21,8 @@ extends Node3D
 ## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
 ## Windows in the outer walls look out from every room along them (and in from outside).
 ## A countdown above the door (running outwards from it, clear of the silos) shows the mission time
-## ("No mission" until one is picked at the holo table, "In flight" on the way) in its status color:
+## ("No mission" until one is picked at the holo table, "In flight" on the way, "Docked" at a
+## station) in its status color:
 ## green, amber after half the time, red in the
 ## warning time (the ship pointer outside blinks then), red in the storm, blue once everyone is back
 ## and grey when the mission is lost.
@@ -42,8 +44,6 @@ const GROUP: StringName = &"ships"
 ## Ship-local height from which the viewer counts as being on the upper deck (its floor is at 7;
 ## the lower deck's at 2.5, the hull stands on landing gear).
 const UPPER_DECK_HEIGHT: float = 6.5
-## Window panes: they never cast shadows (light comes in), so they're hidden with their wall.
-const GLASS_GROUP: StringName = &"ship_glass"
 ## Upper-deck nodes drawn over everything (the navigator's name plates): shown only while the
 ## camera looks into the upper deck, so they don't show through the roof.
 const OVERLAY_GROUP: StringName = &"ship_overlays"
@@ -134,6 +134,7 @@ func _ready() -> void:
 	_interior.body_exited.connect(_on_body_exited)
 	_weapon_zone.body_entered.connect(_on_weapon_zone_entered)
 	_weapon_zone.body_exited.connect(_on_weapon_zone_exited)
+	flight.phase_changed.connect(_update_weapons.unbind(1))
 	_ramp_angle = RAMP_OPEN_ANGLE if ramp_open else RAMP_CLOSED_ANGLE
 	_ramp.rotation.z = _ramp_angle
 	_button_material.emission_enabled = true
@@ -170,6 +171,14 @@ func _process(_delta: float) -> void:
 
 func is_aboard(player: Player) -> bool:
 	return player in _aboard
+
+
+## Whether every player in the session is aboard (e.g. before undocking from a station).
+func everyone_aboard() -> bool:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if player not in _aboard:
+			return false
+	return true
 
 
 ## Whether the ramp is all the way down.
@@ -259,6 +268,9 @@ func _update_display() -> void:
 	elif flight.is_flying():
 		status_color = COLOR_CALM
 		countdown_text = tr("In flight")
+	elif flight.is_docked():
+		status_color = COLOR_CALM
+		countdown_text = tr("Docked")
 	elif mission.state == Mission.State.RETURNED:
 		status_color = COLOR_RETURNED
 		countdown_text = tr("All aboard")
@@ -302,11 +314,17 @@ func _update_view() -> void:
 		_apply_view()
 
 
-## Weapons work outside the ship and in the shooting range; aboard, reloads come from the ship's
-## stock for free.
+## Weapons work outside the ship (not at a station) and in the shooting range; aboard, reloads
+## come from the ship's stock for free.
 func _update_weapon(player: Player) -> void:
-	player.weapon_allowed = player not in _aboard or player in _armed
+	var outside: bool = player not in _aboard and not flight.is_docked()
+	player.weapon_allowed = outside or player in _armed
 	player.ammo_free = player in _aboard
+
+
+func _update_weapons() -> void:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		_update_weapon(player)
 
 
 func _on_weapon_zone_entered(body: Node3D) -> void:
@@ -338,31 +356,15 @@ func _current_view() -> View:
 
 
 func _apply_view() -> void:
-	_show(_lower_cut, _view != View.LOWER)
-	_show(_upper_hull, _view != View.LOWER)
-	_show(_upper_rooms, _view != View.LOWER)
+	CutAway.show(_lower_cut, _view != View.LOWER)
+	CutAway.show(_upper_hull, _view != View.LOWER)
+	CutAway.show(_upper_rooms, _view != View.LOWER)
 	for lift: Node in _lifts.get_children():
-		_show(lift.get_node(^"UpperGate"), _view != View.LOWER)
-	_show(_upper_cut, _view == View.OUTSIDE)
+		CutAway.show(lift.get_node(^"UpperGate"), _view != View.LOWER)
+	CutAway.show(_upper_cut, _view == View.OUTSIDE)
 	for overlay: Node in get_tree().get_nodes_in_group(OVERLAY_GROUP):
 		if is_ancestor_of(overlay):
 			(overlay as Node3D).visible = _view == View.UPPER
-
-
-## Shows `root`'s geometry, or only lets it cast shadows; its lights, holograms and windows turn
-## off.
-static func _show(root: Node, shown: bool) -> void:
-	for child: Node in root.get_children():
-		if child is Light3D or child is HoloTable or child.is_in_group(GLASS_GROUP):
-			(child as Node3D).visible = shown
-			continue
-		if child is GeometryInstance3D:
-			(child as GeometryInstance3D).cast_shadow = (
-				GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-				if shown
-				else GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
-			)
-		_show(child, shown)
 
 
 func _on_body_entered(body: Node3D) -> void:

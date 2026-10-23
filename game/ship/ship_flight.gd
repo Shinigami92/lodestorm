@@ -1,27 +1,38 @@
 class_name ShipFlight
 extends Node3D
-## The ship's states between missions: in space, flying to a location, landed there, taking off.
+## The ship's states between missions: in space, flying to a location, landed there, taking off,
+## docking at a station, docked there, undocking.
 ## The ship itself never moves (everyone aboard stays put): the world changes around it. Flying to
 ## a location (`fly`) runs through the departure in space (stars streak past), the descent
 ## through the clouds (the location is placed under them, once it's ready) and the touchdown (the
 ## clouds clear and the ground shows); from a location, the take-off comes first (climbing through
-## the clouds into space, where the location is left behind). A flight to another planet or moon
-## stays longer in space (`FlightSettings.travel_time`), with the destination growing below the
-## ship. `take_off` only goes back to space.
-## The ramp only opens while landed. Durations in `settings`; `skip` jumps to the end (debug,
-## tests). Its look: star streaks and passing clouds around the hull, and the camera shakes in the
-## clouds; the sky and fog follow `space_amount` and `cloud_amount` (see `Weather`).
+## the clouds into space, where the location is left behind), from a station the undocking (the
+## clamps let go and the station drifts away; it's left behind then). A flight to another planet or
+## moon stays longer in space (`FlightSettings.travel_time`), with the destination growing below the
+## ship. Flying to a station (`fly` with `dock`) crosses space the same way, the station growing
+## behind the hull, and ends with the docking instead of the descent: no clouds, the station (placed
+## at the docking's start, see `reached_location`) glides in from the right until the hangar takes
+## in the ship's tail (`station_offset`), and the clamps take hold (`clamp_amount`). `take_off` only
+## goes back to space.
+## The ramp only opens while landed or docked. Durations in `settings`; `skip` jumps to the end
+## (debug, tests). Its look: star streaks and passing clouds around the hull, and the camera shakes
+## in the clouds and as the clamps take hold or let go; the sky and fog follow `space_amount` and
+## `cloud_amount` (see `Weather`).
 
 ## Emitted when the flight enters another phase.
 signal phase_changed(phase: Phase)
-## Emitted at the end of the take-off, high above the location: it's left behind now.
+## Emitted at the end of the take-off (high above the location) or of the undocking (the station
+## far behind): it's left behind now.
 signal left_location
-## Emitted when the descent is over and the location is ready: it goes under the ship now.
+## Emitted when the descent is over and the location is ready (it goes under the ship now), or when
+## the docking starts (the station comes into view).
 signal reached_location
 ## Emitted when the ship stands on the ground again.
 signal landed
+## Emitted when the clamps of a station have taken hold.
+signal docked
 
-enum Phase { SPACE, DEPARTURE, DESCENT, TOUCHDOWN, LANDED, TAKEOFF }
+enum Phase { SPACE, DEPARTURE, DESCENT, TOUCHDOWN, LANDED, TAKEOFF, DOCKING, DOCKED, UNDOCKING }
 
 ## Ship-local area (x, z) around the hull: streaks and clouds stay below its floor there, so
 ## they don't cross the rooms seen through the cut-away walls.
@@ -51,6 +62,11 @@ const SHAKE: float = 0.05
 ## way.
 const DESTINATION_CENTER := Vector3(-30.0, -260.0, -420.0)
 const DESTINATION_RADIUS := Vector2(20.0, 160.0)
+## Where a station starts gliding in from at the docking's start (and drifts off to when undocking),
+## relative to where it's docked, in m: from the right, below and behind the hull.
+const STATION_APPROACH := Vector3(320.0, -40.0, -60.0)
+## Camera shake as the clamps take hold or let go, in m.
+const CLAMP_SHAKE: float = 0.08
 
 @export var settings: FlightSettings
 @export var cloud_color := Color(0.5, 0.45, 0.42)
@@ -63,12 +79,16 @@ var destination_ready: bool = false
 
 ## Whether the flight goes on to a location after the take-off.
 var _destination: bool = false
+## Whether the flight ends docking at a station instead of landing.
+var _docking: bool = false
 ## The planet or moon the flight crosses space to, or null (a flight within the same body).
 var _destination_body: CelestialBody
 var _streaks: GPUParticles3D
 var _clouds: GPUParticles3D
 var _body_view: MeshInstance3D
 var _body_material := StandardMaterial3D.new()
+## The station seen on the way to it, before it glides in itself.
+var _station_view: Node3D
 
 
 func _ready() -> void:
@@ -78,13 +98,16 @@ func _ready() -> void:
 	add_child(_clouds)
 	_body_view = _make_body_view()
 	add_child(_body_view)
+	_station_view = _make_station_view()
+	add_child(_station_view)
 	for effect: GeometryInstance3D in [_streaks, _clouds, _body_view]:
 		effect.layers = RenderLayers.EFFECTS
+	RenderLayers.put(_station_view, RenderLayers.EFFECTS)
 	_update_look()
 
 
 func _physics_process(delta: float) -> void:
-	if phase in [Phase.SPACE, Phase.LANDED]:
+	if not is_flying():
 		return
 	phase_time += delta
 	if phase_time >= phase_duration():
@@ -96,14 +119,22 @@ func _process(_delta: float) -> void:
 
 
 ## Starts the flight to the next location: from space right away, from a location after the
-## take-off. `to_body`: the planet or moon it's on when that's another one than the ship's (a
-## longer way through space), else null. Returns whether it started (not while flying already).
-func fly(to_body: CelestialBody = null) -> bool:
+## take-off, from a station after the undocking. `to_body`: the planet, moon or station it's at when
+## that's another one than the ship's (a longer way through space), else null. `dock`: it's a
+## station, the flight ends docking there. Returns whether it started (not while flying already).
+func fly(to_body: CelestialBody = null, dock: bool = false) -> bool:
 	if is_flying():
 		return false
 	_destination = true
 	_destination_body = to_body
-	_enter(Phase.TAKEOFF if phase == Phase.LANDED else Phase.DEPARTURE)
+	_docking = dock
+	match phase:
+		Phase.LANDED:
+			_enter(Phase.TAKEOFF)
+		Phase.DOCKED:
+			_enter(Phase.UNDOCKING)
+		_:
+			_enter(Phase.DEPARTURE)
 	return true
 
 
@@ -121,7 +152,16 @@ func take_off() -> bool:
 func land_now() -> void:
 	_destination = false
 	_destination_body = null
+	_docking = false
 	_enter(Phase.LANDED)
+
+
+## Docks the ship at a station right away (a save made while docked).
+func dock_now() -> void:
+	_destination = false
+	_destination_body = null
+	_docking = false
+	_enter(Phase.DOCKED)
 
 
 ## Runs through the rest of the flight at once; the descent still waits for `destination_ready`.
@@ -134,23 +174,27 @@ func skip() -> void:
 			return
 
 
-## Whether the ship is between space and the ground.
+## Whether the ship is between space, the ground and a station.
 func is_flying() -> bool:
-	return phase not in [Phase.SPACE, Phase.LANDED]
+	return phase not in [Phase.SPACE, Phase.LANDED, Phase.DOCKED]
+
+
+## Whether the ship is docked at a station.
+func is_docked() -> bool:
+	return phase == Phase.DOCKED
 
 
 ## Seconds the current phase takes (0 for the resting ones).
 func phase_duration() -> float:
-	match phase:
-		Phase.DEPARTURE:
-			return settings.travel_time if _destination_body else settings.departure_time
-		Phase.DESCENT:
-			return settings.descent_time
-		Phase.TOUCHDOWN:
-			return settings.touchdown_time
-		Phase.TAKEOFF:
-			return settings.takeoff_time
-	return 0.0
+	var durations: Dictionary[Phase, float] = {
+		Phase.DEPARTURE: settings.travel_time if _destination_body else settings.departure_time,
+		Phase.DESCENT: settings.descent_time,
+		Phase.TOUCHDOWN: settings.touchdown_time,
+		Phase.TAKEOFF: settings.takeoff_time,
+		Phase.DOCKING: settings.docking_time,
+		Phase.UNDOCKING: settings.undocking_time,
+	}
+	return durations.get(phase, 0.0)
 
 
 ## How far the current phase is, from 0 to 1.
@@ -164,7 +208,7 @@ func progress() -> float:
 ## How much of space shows around the ship, from 0 (a planet's sky) to 1 (stars).
 func space_amount() -> float:
 	match phase:
-		Phase.SPACE, Phase.DEPARTURE:
+		Phase.SPACE, Phase.DEPARTURE, Phase.DOCKING, Phase.DOCKED, Phase.UNDOCKING:
 			return 1.0
 		Phase.DESCENT:
 			return 1.0 - smoothstep(0.0, 0.3, progress())
@@ -192,7 +236,8 @@ func get_destination_body() -> CelestialBody:
 
 
 ## How big the destination body shows below the ship, from 0 (not at all) to 1 (filling the view
-## as the descent begins): it grows over the way through space to another body.
+## as the descent begins): it grows over the way through space to another body. A station shows
+## the same way, fading out as the docking begins (the station itself glides in then).
 func destination_amount() -> float:
 	if not get_destination_body():
 		return 0.0
@@ -201,6 +246,39 @@ func destination_amount() -> float:
 			return progress()
 		Phase.DESCENT:
 			return 1.0 - smoothstep(0.0, 0.3, progress())
+		Phase.DOCKING:
+			return 1.0 - smoothstep(0.0, 0.2, progress())
+	return 0.0
+
+
+## Where the station stands relative to where it's docked, in m: it glides in from
+## `STATION_APPROACH` over the docking (slowing down; the clamps take hold over its last
+## `FlightSettings.clamp_time`) and drifts back off once the clamps let go when undocking.
+func station_offset() -> Vector3:
+	match phase:
+		Phase.DOCKING:
+			var glide: float = settings.docking_time - settings.clamp_time
+			var at: float = clampf(phase_time / maxf(glide, 0.001), 0.0, 1.0)
+			return STATION_APPROACH * pow(1.0 - at, 3.0)
+		Phase.UNDOCKING:
+			var drift: float = settings.undocking_time - settings.clamp_time
+			var at: float = clampf(
+				(phase_time - settings.clamp_time) / maxf(drift, 0.001), 0.0, 1.0
+			)
+			return STATION_APPROACH * at * at
+	return Vector3.ZERO
+
+
+## How far the station's clamps have closed around the hull, from 0 (open) to 1 (holding it).
+func clamp_amount() -> float:
+	match phase:
+		Phase.DOCKING:
+			var from: float = settings.docking_time - settings.clamp_time
+			return smoothstep(from, settings.docking_time, phase_time)
+		Phase.DOCKED:
+			return 1.0
+		Phase.UNDOCKING:
+			return 1.0 - smoothstep(0.0, settings.clamp_time, phase_time)
 	return 0.0
 
 
@@ -223,13 +301,25 @@ func shake_amount() -> float:
 			return SHAKE * (1.0 - at) + SHAKE * 2.0 * smoothstep(0.85, 0.92, at) * (1.0 - at) * 8.0
 		Phase.TAKEOFF:
 			return SHAKE * (1.0 - smoothstep(0.5, 0.9, progress()))
+		Phase.DOCKING:
+			# A jolt as the clamps take hold.
+			var clamped: float = clamp_amount()
+			return CLAMP_SHAKE * smoothstep(0.6, 0.9, clamped) * (1.0 - clamped) * 6.0
+		Phase.UNDOCKING:
+			var released: float = 1.0 - clamp_amount()
+			return CLAMP_SHAKE * smoothstep(0.0, 0.2, released) * (1.0 - released)
 	return 0.0
 
 
 func _advance() -> void:
 	match phase:
 		Phase.DEPARTURE:
-			_enter(Phase.DESCENT)
+			if _docking:
+				# A station is ready at once: it comes into view as the docking starts.
+				reached_location.emit()
+				_enter(Phase.DOCKING)
+			else:
+				_enter(Phase.DESCENT)
 		Phase.DESCENT:
 			if destination_ready:
 				reached_location.emit()
@@ -239,9 +329,15 @@ func _advance() -> void:
 			_destination_body = null
 			_enter(Phase.LANDED)
 			landed.emit()
-		Phase.TAKEOFF:
+		Phase.TAKEOFF, Phase.UNDOCKING:
 			left_location.emit()
 			_enter(Phase.DEPARTURE if _destination else Phase.SPACE)
+		Phase.DOCKING:
+			_destination = false
+			_destination_body = null
+			_docking = false
+			_enter(Phase.DOCKED)
+			docked.emit()
 
 
 func _enter(next: Phase) -> void:
@@ -264,14 +360,17 @@ func _update_look() -> void:
 	for rig: IsoCameraRig in get_tree().get_nodes_in_group(IsoCameraRig.GROUP):
 		rig.shake = shake
 	var body_amount: float = destination_amount()
-	_body_view.visible = body_amount > 0.0
-	if _body_view.visible:
-		var shown: CelestialBody = get_destination_body()
+	var shown: CelestialBody = get_destination_body()
+	var station: bool = shown != null and shown.kind == CelestialBody.Kind.STATION
+	_body_view.visible = body_amount > 0.0 and not station
+	_station_view.visible = body_amount > 0.0 and station
+	if body_amount > 0.0:
 		var grow: float = progress() if phase == Phase.DEPARTURE else 1.0
 		var radius: float = lerpf(
 			DESTINATION_RADIUS.x, DESTINATION_RADIUS.y, smoothstep(0.0, 1.0, grow)
 		)
 		_body_view.scale = Vector3.ONE * radius
+		_station_view.scale = Vector3.ONE * radius
 		_body_material.albedo_color = Color(shown.color, body_amount)
 
 
@@ -292,6 +391,37 @@ func _make_body_view() -> MeshInstance3D:
 	view.material_override = _body_material
 	view.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	view.position = DESTINATION_CENTER
+	view.visible = false
+	return view
+
+
+## A station seen on the way: a hub with a ring and two solar wings (of radius 1, scaled as it
+## grows), in the body material (the station's color).
+func _make_station_view() -> Node3D:
+	var view := Node3D.new()
+	view.name = "DestinationStation"
+	view.position = DESTINATION_CENTER
+	view.rotation = Vector3(deg_to_rad(20.0), deg_to_rad(30.0), 0.0)
+	var hub := CylinderMesh.new()
+	hub.top_radius = 0.25
+	hub.bottom_radius = 0.3
+	hub.height = 0.5
+	var ring := TorusMesh.new()
+	ring.inner_radius = 0.75
+	ring.outer_radius = 1.0
+	var wing := BoxMesh.new()
+	wing.size = Vector3(0.7, 0.02, 0.3)
+	var meshes: Array[Mesh] = [hub, ring, wing, wing]
+	var spots: Array[Vector3] = [
+		Vector3.ZERO, Vector3.ZERO, Vector3(1.4, 0, 0), Vector3(-1.4, 0, 0)
+	]
+	for i: int in meshes.size():
+		var part := MeshInstance3D.new()
+		part.mesh = meshes[i]
+		part.position = spots[i]
+		part.material_override = _body_material
+		part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		view.add_child(part)
 	view.visible = false
 	return view
 

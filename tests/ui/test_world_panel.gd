@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 ## In front of the settings terminal in cabin 1 (ship-local).
 const AT_TERMINAL := Vector3(-48.6, 7.5, -12.9)
 

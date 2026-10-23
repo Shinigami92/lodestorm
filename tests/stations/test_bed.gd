@@ -1,7 +1,7 @@
 extends GutTest
 ## The beds in the player cabins, where players quit the game ("Sleep").
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 
 var _map: Node3D
 var _player: Player

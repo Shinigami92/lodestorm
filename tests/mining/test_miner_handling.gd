@@ -2,7 +2,7 @@ extends GutTest
 ## Placing and picking up miners taking time: the hologram, moving freely within range, waiting out
 ## of it, giving up, the sounds, the miner's ring and the suit ring's miner ticks.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const SERVO: Sound = preload("res://assets/audio/sfx/mining/miner_servo.tres")
 const LATCH: Sound = preload("res://assets/audio/sfx/mining/miner_latch.tres")
 const PLACE: Sound = preload("res://assets/audio/sfx/mining/miner_place.tres")

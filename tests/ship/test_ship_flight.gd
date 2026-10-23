@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const REAL_TIME := preload("res://tests/support/real_time.gd")
 const MAP: PackedScene = preload("res://game/maps/main.tscn")
 const LOCATION: PackedScene = preload("res://game/locations/test_location.tscn")

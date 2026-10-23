@@ -1,7 +1,7 @@
 extends GutTest
 ## Every 3D menu fits its screen or card in every language, and its text reads from the camera.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const CARD_SCENE: PackedScene = preload("res://game/stations/upgrade/upgrade_card.tscn")
 const LOADOUT_CARD_SCENE: PackedScene = preload("res://game/stations/loadout/loadout_card.tscn")
 const SKILL_CARD_SCENE: PackedScene = preload("res://game/stations/skill_graph/skill_card.tscn")

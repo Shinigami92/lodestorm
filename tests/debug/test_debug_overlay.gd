@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const MINER_SETTINGS: String = "res://game/mining/miner_settings.tres"
 
 var _overlay: CanvasLayer

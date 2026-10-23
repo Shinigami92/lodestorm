@@ -1,7 +1,7 @@
 extends GutTest
 ## What a save file holds and how older or damaged ones load (see `SaveGame`).
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
@@ -83,6 +83,29 @@ func test_unknown_entries_are_skipped() -> void:
 	assert_eq(_player.skills.ranks.size(), 1, "not a skill, rank 0")
 	assert_true(_player.upgrades.jobs.is_empty(), "beyond the highest, a start that isn't a time")
 	assert_eq(_player.skills.jobs.keys(), [DASH] as Array[Skill], "the rank after the current")
+
+
+## A section holding the wrong kind of value is skipped like an unknown entry.
+func test_sections_of_the_wrong_kind_are_skipped() -> void:
+	var ship_data: Dictionary = {"version": SaveGame.VERSION, "story": "x", "shield": [1]}
+	var player_data: Dictionary = {
+		"version": SaveGame.VERSION,
+		"hold": [KYRITE.resource_path],
+		"arsenal": {HARL.resource_path: 1},
+		"upgrades": [ARMOR.resource_path],
+		"skills": "x",
+		"upgrade_jobs": [],
+		"skill_jobs": 3,
+		"miners": {},
+	}
+	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
+	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
+	await _restart()
+	assert_true(_player.hold.items.is_empty())
+	assert_eq(_player.arsenal.weapons, [HARL, DRAY] as Array[WeaponType])
+	assert_eq(_player.upgrades.mk(ARMOR), 1)
+	assert_true(_player.skills.ranks.is_empty())
+	assert_true(_ship.story.flags.is_empty())
 
 
 ## Resources are saved by UID, so moving or renaming their files keeps the save working.

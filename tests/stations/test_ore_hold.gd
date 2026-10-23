@@ -2,7 +2,7 @@ extends GutTest
 ## The hold in the cargo bay: a silo per ore in clusters, unknown ones dark, used directly, and its
 ## station card; it shows the hold of the player using it, else the viewer's.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const CATALOG: OreCatalog = preload("res://game/ores/all_ores.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")

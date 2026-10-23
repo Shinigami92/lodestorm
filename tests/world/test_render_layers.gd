@@ -4,7 +4,7 @@ extends GutTest
 ## on another layer, or the reticle paints itself onto them. Lit, opaque meshes, glowing light
 ## strips and the ship's windows (upright, the reticle fades out on them) stay on WORLD.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 ## Shaders of surfaces: decals land on them.
 const SURFACE_SHADERS: Array[String] = ["terrain.gdshader", "ore_crystal.gdshader"]
 

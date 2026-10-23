@@ -4,7 +4,7 @@ const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.
 const MINER_SCENE: PackedScene = preload("res://game/mining/miner.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const PROJECTILE: PackedScene = preload("res://game/weapons/projectile.tscn")
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 
 var _arena: Node3D
 var _player: Player

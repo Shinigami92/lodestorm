@@ -2,7 +2,7 @@ extends GutTest
 ## The med beds in the medical bay, where players heal (health carries over between runs), and the
 ## hint at the ramp button that says so.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 
 var _map: Node3D
 var _player: Player

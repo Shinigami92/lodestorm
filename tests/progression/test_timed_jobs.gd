@@ -2,7 +2,7 @@ extends GutTest
 ## Upgrade levels and skill ranks taking real time (see docs/planned/refinery.md, Upgrades and
 ## skills take real time).
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const SKILL_TREE: SkillTree = preload("res://game/progression/skills/tree/skill_tree.tres")
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")

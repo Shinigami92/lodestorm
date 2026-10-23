@@ -2,7 +2,7 @@ extends GutTest
 ## The statistics: what the recorder counts from the game's events, whose events it keeps, the
 ## session log and the totals over sessions.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
@@ -147,6 +147,20 @@ func test_returned_haul_and_totals_survive_a_restart() -> void:
 	assert_eq(_session_logs().size(), 2)
 
 
+func test_older_totals_are_kept_and_newer_ones_put_aside() -> void:
+	_map.free()
+	var path: String = StatsRecorder.stats_directory().path_join(StatsRecorder.TOTALS_FILE)
+	_write_totals(path, StatsRecorder.VERSION - 1)
+	await _start()
+	assert_eq(_recorder.totals.value("sessions"), 4.0, "three before, this one")
+	assert_false(FileAccess.file_exists(path + ".corrupt"))
+	_map.free()
+	_write_totals(path, StatsRecorder.VERSION + 1)
+	await _start()
+	assert_eq(_recorder.totals.value("sessions"), 1.0)
+	assert_true(FileAccess.file_exists(path + ".corrupt"), "kept for a newer game")
+
+
 func test_old_session_logs_are_deleted() -> void:
 	_map.free()
 	var sessions: String = _sessions_directory()
@@ -242,6 +256,13 @@ func _logged(event: String) -> Dictionary:
 		if line["e"] == event:
 			found = line
 	return found
+
+
+func _write_totals(path: String, version: int) -> void:
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(JSON.stringify({"version": version, "counters": {"sessions": 3}}))
+	file.close()
 
 
 func _clean() -> void:

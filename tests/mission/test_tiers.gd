@@ -2,7 +2,7 @@ extends GutTest
 ## Bodies farther in are harder: stronger aliens, more nests, an earlier warning and a harsher
 ## storm (see GAME_DESIGN.md, Missions, Tiers).
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const NEST_SCENE: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")
 
 var _map: Node3D

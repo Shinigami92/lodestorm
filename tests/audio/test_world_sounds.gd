@@ -2,7 +2,7 @@ extends GutTest
 ## The world's sounds (see GAME_DESIGN.md, Sound): the aliens', the nests', the miners', the
 ## ship's ramp, the mission's and the vents'.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const NEST_SCENE: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const BRUTE: AlienStrain = preload("res://game/aliens/strains/brute/brute.tres")

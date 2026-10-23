@@ -464,7 +464,7 @@ func _apply_player(data: Dictionary) -> void:
 			for slot: int in player.loadout.weapons.size():
 				if not player.arsenal.owns(player.loadout.get_weapon(slot)):
 					player.loadout.assign(slot, null)
-	if data.has("upgrades"):
+	if data.get("upgrades") is Dictionary:
 		var levels: Dictionary = data["upgrades"]
 		for path: Variant in levels:
 			var upgrade := _resource(path) as Upgrade
@@ -475,7 +475,7 @@ func _apply_player(data: Dictionary) -> void:
 				_outdated = true
 				push_warning("Save: skipped upgrade %s" % path)
 		player.upgrades.emit_changed()
-	if data.has("skills"):
+	if data.get("skills") is Dictionary:
 		var ranks: Dictionary = data["skills"]
 		for path: Variant in ranks:
 			var skill := _resource(path) as Skill

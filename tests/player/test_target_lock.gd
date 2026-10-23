@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 
 var _map: Node3D

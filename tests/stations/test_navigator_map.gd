@@ -4,7 +4,7 @@ extends GutTest
 ## region plates with danger pips and ores on globes colored by biome, the tier on the card, and
 ## setting a destination from the globe zooming into its landing site.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 
 var _map: Node3D
 var _player: Player

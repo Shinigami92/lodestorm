@@ -47,7 +47,8 @@ fi
 
 logs="$(mktemp -d)"
 trap 'rm -rf "$logs"' EXIT
-scripts="$(grep -rl --include='test_*.gd' '^extends GutTest' tests | sort)"
+# The scripts GUT runs from .gutconfig.json: every test_*.gd under tests/, whatever it extends
+scripts="$(find tests -name 'test_*.gd' | sort)"
 
 # Longest first, each to the process with the least work so far, over the processes of all shards
 # (scripts missing from the timings count as 10 s). Prints "<process> <script>".

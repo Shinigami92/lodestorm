@@ -1,7 +1,7 @@
 extends GutTest
 
 const TRANSLATIONS := preload("res://tools/translations.gd")
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 
 
 func after_each() -> void:

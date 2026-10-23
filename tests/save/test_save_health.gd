@@ -1,7 +1,7 @@
 extends GutTest
 ## Health carries over between runs and sessions (the med beds heal), so it's saved with the player.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const DIRECTORY: String = "user://test_save_health/"
 
 var _map: Node3D

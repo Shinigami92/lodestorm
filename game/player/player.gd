@@ -104,7 +104,8 @@ var weapon_allowed: bool = true:
 	set(value):
 		weapon_allowed = value
 		if weapon:
-			weapon.visible = value
+			# Put away while lying down too.
+			weapon.visible = value and not lying_on
 			weapon.stop()
 ## Whether its silhouette shows behind walls (the rim light stays either way); off e.g. while the
 ## title view shows the closed ship.
@@ -130,6 +131,8 @@ var give_ammo_time: float = 0.0
 var health: float:
 	get:
 		return vitals.health
+## Where the body lies (`lie_on`), or null while it stands.
+var lying_on: Node3D
 ## Dead players can't move or act until they respawn.
 var dead: bool:
 	get:
@@ -181,6 +184,9 @@ var _scanner := OreScanner.new()
 @onready var _animator: PlayerAnimator = $Animator
 @onready var _ship_pointer: Node3D = $ShipPointer
 @onready var _ring: SuitRing = $SuitRing
+@onready var _body: Node3D = $Body
+## The body's transform standing (turned to face the player's -Z).
+@onready var _body_rest: Transform3D = _body.transform
 
 
 func _ready() -> void:
@@ -298,8 +304,8 @@ func _physics_process(delta: float) -> void:
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.
 	basis = Basis(Vector3.UP, yaw)
 	_animator.local_velocity = Vector2(velocity.dot(basis.x), -velocity.dot(basis.z))
-	# Lowered while placing or picking up a miner.
-	_animator.aiming = weapon != null and weapon_allowed and not handling_miner
+	# Lowered while placing or picking up a miner, and put away lying down.
+	_animator.aiming = weapon != null and weapon_allowed and not handling_miner and not lying_on
 
 	if weapon:
 		_animator.hold = weapon.type.hold
@@ -477,6 +483,20 @@ func take_damage(
 ## Restores `amount` health (all of it by default; not when dead).
 func heal(amount: float = INF) -> void:
 	vitals.heal(amount)
+
+
+## Lies the body down on `spot` (e.g. a med bed: its Y is where the head points, its -Z where the
+## face looks), or stands it up again (null). The player itself (its collision shape, the suit
+## ring) stays where it stands.
+func lie_on(spot: Node3D) -> void:
+	lying_on = spot
+	weapon_allowed = weapon_allowed
+	_body.top_level = spot != null
+	if spot:
+		_body.global_transform = spot.global_transform * _body_rest
+	else:
+		_body.transform = _body_rest
+	_body.reset_physics_interpolation()
 
 
 ## Brings a dead player back at `at` with full health.

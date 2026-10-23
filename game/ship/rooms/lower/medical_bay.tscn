@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ds53bpwny3pdg"]
 
 [ext_resource type="StandardMaterial3D" uid="uid://bd4esevpwqv63" path="res://game/ship/materials/bed.tres" id="mat_bed"]
+[ext_resource type="PackedScene" uid="uid://c4cyv6r7rc7df" path="res://game/stations/med_bed/med_bed.tscn" id="med_bed"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_MedicalBay"]
 albedo_color = Color(0.4, 0.52, 0.5, 1)
@@ -97,3 +98,19 @@ shape = SubResource("BoxShape3D_n_1_2x0_7x2_2")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Bed4"]
 transform = Transform3D(1.2, 0, 0, 0, 0.7, 0, 0, 0, 2.2, 0, 0, 0)
 mesh = SubResource("BoxMesh_bed")
+
+[node name="MedBed1" parent="." node_paths=PackedStringArray("bed") instance=ExtResource("med_bed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, -4.6)
+bed = NodePath("../Bed1")
+
+[node name="MedBed2" parent="." node_paths=PackedStringArray("bed") instance=ExtResource("med_bed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4.6)
+bed = NodePath("../Bed2")
+
+[node name="MedBed3" parent="." node_paths=PackedStringArray("bed") instance=ExtResource("med_bed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4.6)
+bed = NodePath("../Bed3")
+
+[node name="MedBed4" parent="." node_paths=PackedStringArray("bed") instance=ExtResource("med_bed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -4.6)
+bed = NodePath("../Bed4")

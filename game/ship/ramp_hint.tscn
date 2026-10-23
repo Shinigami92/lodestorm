@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://crcbikmgw5682"]
+
+[ext_resource type="Script" uid="uid://d2iu7drraigv2" path="res://game/ship/ramp_hint.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://c76kk6ltt4vax" path="res://game/npcs/speech_bubble.tscn" id="3_bubble"]
+
+[node name="RampHint" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Bubble" parent="." instance=ExtResource("2_panel")]
+size = Vector2(1.8, 0.8)
+pixels_per_meter = 450.0
+transparent = true
+menu = ExtResource("3_bubble")

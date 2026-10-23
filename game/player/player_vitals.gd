@@ -71,6 +71,12 @@ func heal(amount: float = INF) -> void:
 		_set_health(minf(health + amount, maximum()))
 
 
+## Sets the health to `value`, up to the maximum (not when dead): e.g. what a save kept.
+func restore(value: float) -> void:
+	if not dead:
+		_set_health(minf(value, maximum()))
+
+
 ## Alive again with full health.
 func revive() -> void:
 	dead = false

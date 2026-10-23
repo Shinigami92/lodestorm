@@ -9,7 +9,7 @@ Decided 2026-10-17, built in M4 step 10 (see [`PLAN.md`](../PLAN.md)), after the
   - **Colony arms:** the militia's standard issue, plain and sturdy.
   - **Converted mining tools:** the prospectors' tradition; industrial, weathered, hazard paint.
   - **Expedition prototypes:** built by the lost expedition from signature ores and found along its trail; odd and glowing.
-- **Names:** a short invented name per weapon (untranslated, like the ores and places), each with its own first letter, and a plain class word under it on the card (translated: "Harl — Assault rifle" / "Harl — Sturmgewehr"). The blaster becomes Harl, the assault rifle. Nadir and Zenith, the expedition's first and last prototype, are a pair on purpose.
+- **Names:** a short invented name per weapon (untranslated, like the ores and places), each with its own first letter, and a plain class word under it on the card (translated: "Harl · Assault rifle" / "Harl · Sturmgewehr"). The blaster becomes Harl, the assault rifle. Nadir and Zenith, the expedition's first and last prototype, are a pair on purpose.
 
 | Name | Weapon (German) | Origin | How it plays | Good against |
 |---|---|---|---|---|

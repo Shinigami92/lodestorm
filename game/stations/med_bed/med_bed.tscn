@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://c4cyv6r7rc7df"]
+
+[ext_resource type="Script" uid="uid://ctxqdxea2o1gl" path="res://game/stations/med_bed/med_bed_station.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://cbbp8tyeqvmlr" path="res://game/stations/med_bed/med_bed_card.tscn" id="3_card"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="4_use"]
+[ext_resource type="Script" uid="uid://caav7amchkty" path="res://game/stations/station_part.gd" id="5_part"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+size = Vector3(1.4, 0.02, 2.4)
+
+[node name="MedBed" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+script = ExtResource("1_script")
+user_spot = NodePath("UserSpot")
+view_height = 2.6
+view_focus = NodePath("Focus")
+
+[node name="Part" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+script = ExtResource("5_part")
+pick_radius = 0.6
+card_offset = Vector2(1.3, 0.4)
+
+[node name="Lie" type="Marker3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, 0, 0.82, 1)
+
+[node name="Focus" type="Marker3D" parent="."]
+position = Vector3(0.7, 0.8, 0)
+
+[node name="UserSpot" type="Marker3D" parent="."]
+position = Vector3(0, 0, 1.5)
+
+[node name="Use" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+script = ExtResource("4_use")
+interact_range = 1.3
+
+[node name="Highlight" type="MeshInstance3D" parent="Use"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, -1.5)
+visible = false
+mesh = SubResource("BoxMesh_highlight")
+
+[node name="Card" parent="." instance=ExtResource("2_panel")]
+size = Vector2(1, 0.96)
+pixels_per_meter = 500.0
+transparent = true
+menu = ExtResource("3_card")

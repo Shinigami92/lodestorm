@@ -74,6 +74,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 11 C2: placing and picking up miners taking time (3 / 5 s, standing still with the weapon lowered, cancelled by moving, dashing or attacking, not by damage), the greybox fold and unfold (lowering from the back, the legs folding in), the servos' and the latch's sounds, the run's miners as ticks under the suit ring
 - Step 11 D1: drill hardness (each ore's hardness, each drill level's set by hand; a drill too soft mining at a quarter of the speed, turning slower with a strained loop), placing taking the miner that mines the node's ore fastest, the drill's card showing the ores it mines at full speed and what the next level adds, the silo's card naming the drill level
 - Step 11 D2: alloys in the costs: every MK level from MK4 on also takes bars of the alloy of the previous planet's signature ore (MK4 4 Merisk up to MK8 12 Noxar, scaled per upgrade, the miners' parts too), the six prototypes bars of their own signature ore's alloy, the heat shield staying ores only; the ingot badge in the cost rows, the ingot rack's "Used for" line, jobs and builds under way keeping what was paid (saved, old saves giving back the ores), every cost in units per item
+- Step 13 B, ahead of its step and without the medic: health carrying over between runs (saved with the player, full after dying), the four med beds in the medical bay (lying down with the weapon put away, healing to full, the card's health bar and "Get up"), the one-time hint at the ramp button for a hurt player
 
 ## Todo
 
@@ -87,7 +88,7 @@ Each step builds on the ones before it (steps 1–11 are done).
   - [ ] **C** the ore exchange counter (deliveries and requests come with the quests, step 16)
 - [ ] **Step 13: more crew** ([`planned/crew.md`](planned/crew.md))
   - [ ] **A** the seven new crew members at their posts (profiles, greybox accessories, greetings and first topics, the engineer's on the refinery)
-  - [ ] **B** health carrying over, the med bed, the medic's topics, the ramp card's hint
+  - [ ] **B** the medic's topics on the med beds (health carrying over, the med beds and the ramp button's hint are done)
   - [ ] **C** reactions to events and the pilot's two radio lines (crew joining through the story waits for the quests)
 - [ ] **Step 14: reasons to move on** ([`planned/risk-reward.md`](planned/risk-reward.md)); after the crafted miners (dry nodes matter once miners are picked up again) and the nests (the rich fields between them)
   - [ ] **A** nodes running dry (amounts, three stages, the dry look, the miner's amber blink, the scanner skipping them) and the rich fields in nest hollows

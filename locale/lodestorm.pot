@@ -493,6 +493,10 @@ msgstr ""
 msgid "Verdan"
 msgstr ""
 
+#: game/ship/ramp_hint.gd
+msgid "Not at full health: the medical bay is at the nose."
+msgstr ""
+
 #: game/ship/rooms/cargo_bay.tscn
 msgid "Cargo bay"
 msgstr ""
@@ -838,6 +842,22 @@ msgstr ""
 
 #: game/stations/loadout/loadout_locker.tscn
 msgid "Loadout"
+msgstr ""
+
+#: game/stations/med_bed/med_bed_card.gd
+msgid "Full health: %d / %d"
+msgstr ""
+
+#: game/stations/med_bed/med_bed_card.gd
+msgid "Healing: %d / %d"
+msgstr ""
+
+#: game/stations/med_bed/med_bed_card.tscn
+msgid "Med bed"
+msgstr ""
+
+#: game/stations/med_bed/med_bed_card.tscn
+msgid "Get up"
 msgstr ""
 
 #: game/stations/miner_bay/miner_card.gd

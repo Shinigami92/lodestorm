@@ -495,6 +495,10 @@ msgstr "Sylith"
 msgid "Verdan"
 msgstr "Verdan"
 
+#: game/ship/ramp_hint.gd
+msgid "Not at full health: the medical bay is at the nose."
+msgstr "Nicht voll bei Gesundheit: Die Krankenstation ist vorne im Bug."
+
 #: game/ship/rooms/cargo_bay.tscn
 msgid "Cargo bay"
 msgstr "Frachtraum"
@@ -841,6 +845,22 @@ msgstr "Platz %d"
 #: game/stations/loadout/loadout_locker.tscn
 msgid "Loadout"
 msgstr "Ausrüstung"
+
+#: game/stations/med_bed/med_bed_card.gd
+msgid "Full health: %d / %d"
+msgstr "Volle Gesundheit: %d / %d"
+
+#: game/stations/med_bed/med_bed_card.gd
+msgid "Healing: %d / %d"
+msgstr "Heilung: %d / %d"
+
+#: game/stations/med_bed/med_bed_card.tscn
+msgid "Med bed"
+msgstr "Medizinbett"
+
+#: game/stations/med_bed/med_bed_card.tscn
+msgid "Get up"
+msgstr "Aufstehen"
 
 #: game/stations/miner_bay/miner_card.gd
 msgid "Lost only if it's left on the planet."

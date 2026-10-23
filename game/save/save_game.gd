@@ -2,8 +2,8 @@ class_name SaveGame
 extends Node
 ## Keeps the progress between sessions in one save: the host's (the ship's heat shield, where it
 ## is, the story's flags and the furnaces unlocked, later crew and quests) in `ship.json` and the
-## local player's (their hold, their batches in the furnaces, owned weapons and blueprints, loadout,
-## upgrade levels, skill ranks, crafted miners) in `player.json`,
+## local player's (their health, their hold, their batches in the furnaces, owned weapons and
+## blueprints, loadout, upgrade levels, skill ranks, crafted miners) in `player.json`,
 ## both in `save/` under `directory`. It loads
 ## them when the map starts and saves whenever progress changes while no mission is underway;
 ## what changes during a mission is saved once it's over (returned or lost), so quitting
@@ -63,6 +63,8 @@ var _save_queued: bool = false
 var _active: bool = true
 ## Whether the save just read was older or had to be repaired, so it's written again right away.
 var _outdated: bool = false
+## Whether the player's health was full when it last changed.
+var _was_healed: bool = true
 ## The hold a `ship.json` before version 3 had (`hold`, `found`), for the player's save to take.
 var _ship_hold: Dictionary = {}
 
@@ -109,6 +111,7 @@ func _ready() -> void:
 		player.upgrades.changed.connect(_on_progress_changed)
 		player.skills.changed.connect(_on_progress_changed)
 		player.fleet.changed.connect(_on_progress_changed)
+		player.health_changed.connect(_on_health_changed)
 	if mission:
 		mission.selected.connect(_on_progress_changed.unbind(1))
 		mission.returned.connect(save_progress)
@@ -186,7 +189,8 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 	return data
 
 
-## What's saved of `of_player`: its hold (units per item, the items ever in it), its batches in
+## What's saved of `of_player`: its health (full when it's dead: it respawns with full health),
+## its hold (units per item, the items ever in it), its batches in
 ## the furnaces (per batch its furnace slot, the alloy, the bars, how many are done and when it
 ## started in Unix seconds), the weapons it owns and its blueprints, its loadout (null: empty
 ## slot), the MK level of each upgrade it bought and the rank of each skill it learned, the levels
@@ -241,6 +245,7 @@ static func player_data(of_player: Player) -> Dictionary:
 		skill_jobs[_reference(skill)] = _job_data(of_player.skills.jobs[skill])
 	return {
 		"version": VERSION,
+		"health": of_player.max_health() if of_player.dead else of_player.health,
 		"hold": hold,
 		"found": found,
 		"refining": refining,
@@ -481,6 +486,11 @@ func _apply_player(data: Dictionary) -> void:
 				_outdated = true
 				push_warning("Save: skipped skill %s" % path)
 		player.skills.emit_changed()
+	# After the upgrades and skills (they set the maximum), before the jobs (one done since adds
+	# its difference, as it would have in the game). A save without it keeps full health.
+	if data.has("health"):
+		var health: float = _number(data["health"], player.max_health())
+		player.vitals.restore(health if health > 0.0 else player.max_health())
 	_apply_jobs(data)
 	if data.get("miners") is Array:
 		_apply_fleet(data)
@@ -720,3 +730,12 @@ func _on_progress_changed() -> void:
 	if not _save_queued:
 		_save_queued = true
 		save_progress.call_deferred()
+
+
+## Health changes all the time while it heals (a med bed, regeneration), so it's saved once it's
+## full again (and with any other progress).
+func _on_health_changed(health: float) -> void:
+	var healed: bool = health >= player.max_health()
+	if healed and not _was_healed:
+		_on_progress_changed()
+	_was_healed = healed

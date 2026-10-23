@@ -25,6 +25,6 @@ One per crew cabin, each at a post, explaining what happens there. No captain: t
 - **Where they stand:** at their posts, turning towards players; the pilot moves to the cockpit during a flight. No daily routines for now.
 - **Co-op:** the crew is the host's, like the ship: anyone can talk to them; what's been heard and which reactions were shown are the host's story flags.
 
-## Health carries over, the medic heals
+## The medic and the med beds
 
-Today players are healed for each new run. Instead, health carries over between runs: a player keeps what they came back with. The **med bed** in the medical bay is a station: lying down heals to full in a few seconds (greybox 3 s), for free. The medic explains it, and that dying means waking up there with full health. The collar light shows a player is hurt; the ramp button's card says so once ("Not at full health: the medical bay is at the nose"). Respawning in the medical bay stays at full health.
+Health carrying over, the med beds and the ramp button's hint are built (see [Death & persistence](../GAME_DESIGN.md#11-death--persistence)). Left for the medic: the medic's topics explain the med beds and that dying means waking up there with full health.

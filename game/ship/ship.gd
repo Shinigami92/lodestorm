@@ -8,9 +8,10 @@ extends Node3D
 ## shooting range, armory, upgrade rooms. Lifts (`Lifts`) by the bridge and in the double-height
 ## cargo bay (by the ramp) join them.
 ## Ship and planet are one world, without loading screens. The ramp is closed by default; the
-## button on the inner wall next to the door lowers it (see `Mission` for the flow). The ship tracks
-## who is aboard and holsters their weapons inside, except in the shooting range's weapon zone (a
-## barrier in its doorway keeps the shots inside).
+## button on the inner wall next to the door lowers it (see `Mission` for the flow); a hurt player
+## standing at it is told once where to heal (`ramp_hint`). The ship tracks who is aboard and
+## holsters their weapons inside, except in the shooting range's weapon zone (a barrier in its
+## doorway keeps the shots inside).
 ## While the `viewer` is aboard (and `show_outside` is off), the camera sees inside: on the lower
 ## deck, the walls facing the camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`,
 ## `Rooms/Upper`, the lifts' upper gates) only cast shadows; on the upper deck, its walls facing
@@ -63,6 +64,7 @@ const RAMP_CLOSED_ANGLE: float = PI * 0.5
 const RAMP_OPEN_ANGLE: float = -0.523599
 ## The ramp moving (as long as `ramp_duration`): latches, hydraulics, the clunk at the end.
 const RAMP_SOUND: Sound = preload("res://assets/audio/sfx/mission/ramp.tres")
+const RAMP_HINT_SCENE: PackedScene = preload("res://game/ship/ramp_hint.tscn")
 
 ## Seconds the ramp takes to go down or up. TBD (playtest).
 @export var ramp_duration: float = 2.0
@@ -92,6 +94,8 @@ var heat_shield := HeatShield.new()
 var furnaces := Furnaces.new()
 ## Lets the levels and skill ranks under way take effect once done.
 var progress_clock: ProgressClock
+## Says once where to heal when a hurt player stands at the ramp button.
+var ramp_hint: RampHint
 
 var _aboard: Array[Player] = []
 ## Players in the shooting range's weapon zone.
@@ -131,6 +135,10 @@ func _ready() -> void:
 	_ramp.rotation.z = _ramp_angle
 	_button_material.emission_enabled = true
 	_button_face.material_override = _button_material
+	ramp_hint = RAMP_HINT_SCENE.instantiate() as RampHint
+	ramp_hint.ship = self
+	ramp_hint.position = _button_face.position
+	ramp_button.add_child(ramp_hint)
 	_update_display()
 	_apply_view()
 	progress_clock = ProgressClock.new()

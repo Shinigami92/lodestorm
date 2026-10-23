@@ -164,7 +164,7 @@ func test_returning_pays_the_ships_project_first() -> void:
 	assert_eq(_player.hold.amount(KYRITE), 30.0)
 
 
-func test_next_run_heals_players() -> void:
+func test_health_carries_over_to_the_next_run() -> void:
 	await _open()
 	await _move(_player, _outside())
 	_player.take_damage(40.0)
@@ -172,7 +172,7 @@ func test_next_run_heals_players() -> void:
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
-	assert_eq(_player.health, _player.settings.max_health)
+	assert_eq(_player.health, _player.settings.max_health - 40.0, "the med beds heal")
 
 
 func test_mission_won_when_the_living_are_aboard() -> void:

@@ -12,11 +12,12 @@ extends Node
 ## during the descent. `select` chooses and confirms at once.
 ## The game starts in space, or landed at `location` if the map has one (tests).
 ## The ramp starts closed; the ramp button inside the ship only works with a mission picked and
-## the ship landed there: it resets the timer, heals the players, lowers the ramp and locks the
-## mission. The mission starts when the first player steps out; the timer then counts down, and at
-## zero the storm hits (`time_up`) and hurts everyone outside, more with every second. Players who
-## die drop what they carried. Bodies farther in (a higher `tier`) have more and stronger aliens, an
-## earlier warning and a harsher storm.
+## the ship landed there: it resets the timer, refills the players' ammo (their health carries
+## over: the med beds heal), lowers the ramp and locks the mission. The mission starts when the
+## first player steps out; the timer then counts down, and at zero the storm hits (`time_up`) and
+## hurts everyone outside, more with every second. Players who die drop what they carried. Bodies
+## farther in (a higher `tier`) have more and stronger aliens, an earlier warning and a harsher
+## storm.
 ## The mission is won (`returned`) once every living player is back aboard, in time or during the
 ## storm: their cargo is the haul (see `Ship.store_haul`), the dead respawn aboard and the ramp
 ## goes up.
@@ -587,7 +588,6 @@ func _on_ramp_button_used(_player: Player) -> void:
 			time_left = duration()
 			storm_time = 0.0
 			for player: Player in _players():
-				player.heal()
 				player.refill_ammo()
 			state = State.OPEN
 			ship.ramp_open = true

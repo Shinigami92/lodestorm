@@ -30,6 +30,7 @@ const STATIONS: PackedStringArray = [
 	"Rooms/Upper/Bridge/Navigator",
 	"Rooms/Upper/Cockpit/FlightConsole",
 	"Rooms/Upper/Cabin1/BedStation",
+	"Rooms/Lower/MedicalBay/MedBed1",
 	"Rooms/Lower/Armory/Quartermaster",
 	"Rooms/Lower/EngineRoom/DriveCore",
 ]
@@ -313,6 +314,24 @@ func test_bed_card_fits_in_every_language() -> void:
 			await wait_process_frames(1)
 			var layout := Vector2(panel.size * panel.pixels_per_meter)
 			_assert_fits(card, layout, "%s bed, run lost %s" % [locale, loses_run])
+
+
+func test_med_bed_card_fits_in_every_language() -> void:
+	var bed := _ship.get_node("Rooms/Lower/MedicalBay/MedBed1") as MedBedStation
+	var panel: WorldPanel = bed.card
+	var card := bed.card_menu as MedBedCard
+	for locale: String in SettingsList.languages():
+		TranslationServer.set_locale(locale)
+		# Wider than any suit's health gets (MK8 armor and every health skill: under 1000).
+		for health: float in [9999.0]:
+			card.visible = true
+			card.show_health(health * 0.5, health)
+			await wait_process_frames(1)
+			var layout := Vector2(panel.size * panel.pixels_per_meter)
+			_assert_fits(card, layout, "%s med bed, healing %d" % [locale, health])
+			card.show_health(health, health)
+			await wait_process_frames(1)
+			_assert_fits(card, layout, "%s med bed, healed %d" % [locale, health])
 
 
 func test_every_crew_line_and_card_fits_in_every_language() -> void:

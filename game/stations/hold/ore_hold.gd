@@ -125,13 +125,25 @@ func get_reading_order() -> Array[StationPart]:
 ## The open regions where `ore_type` is found.
 func regions_with(ore_type: OreType) -> Array[Region]:
 	var found_in: Array[Region] = []
-	var system: StarSystem = mission.settings.system if mission and mission.settings else null
+	var system: StarSystem = _system()
 	var ship := get_parent() as Ship
 	if system:
 		for region: Region in system.open_regions(ship.heat_shield.mk if ship else 1):
 			if ore_type in system.ores_of(region):
 				found_in.append(region)
 	return found_in
+
+
+## The open bodies (planets and moons) where `ore_type` is found, in the system's order.
+func bodies_with(ore_type: OreType) -> Array[CelestialBody]:
+	var found_on: Array[CelestialBody] = []
+	var system: StarSystem = _system()
+	if system:
+		for region: Region in regions_with(ore_type):
+			var body: CelestialBody = system.body_of(region)
+			if body and body not in found_on:
+				found_on.append(body)
+	return found_on
 
 
 ## The camera follows the selected silo (the card beside it).
@@ -333,3 +345,7 @@ static func _left_to_right(row: Array[OreTank]) -> Array[StationPart]:
 	var parts: Array[StationPart] = []
 	parts.assign(sorted)
 	return parts
+
+
+func _system() -> StarSystem:
+	return mission.settings.system if mission and mission.settings else null

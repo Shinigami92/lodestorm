@@ -815,6 +815,10 @@ msgid "Found in: %s"
 msgstr ""
 
 #: game/stations/hold/hold_card.gd
+msgid "Found on: %s"
+msgstr ""
+
+#: game/stations/hold/hold_card.gd
 msgid "Mid ore"
 msgstr ""
 

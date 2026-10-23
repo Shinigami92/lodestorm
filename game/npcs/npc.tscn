@@ -1,17 +1,12 @@
 [gd_scene format=3 uid="uid://xtv7qgd52xd4"]
 
 [ext_resource type="Script" uid="uid://dhmiy6vnxbsvd" path="res://game/npcs/npc.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://yj82i5sgqayt" path="res://assets/player/player.glb" id="2_model"]
-[ext_resource type="Script" uid="uid://dqnkf5jxxct5w" path="res://game/player/player_animator.gd" id="3_animator"]
+[ext_resource type="PackedScene" uid="uid://vkyghej1md17" path="res://game/npcs/npc_body.tscn" id="2_body"]
 [ext_resource type="Script" uid="uid://caav7amchkty" path="res://game/stations/station_part.gd" id="4_part"]
 [ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="5_use"]
 [ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="6_panel"]
 [ext_resource type="PackedScene" uid="uid://6635hh8a3yeo" path="res://game/npcs/talk_card.tscn" id="7_card"]
 [ext_resource type="PackedScene" uid="uid://c76kk6ltt4vax" path="res://game/npcs/speech_bubble.tscn" id="8_bubble"]
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
-radius = 0.35
-height = 1.8
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
 shading_mode = 0
@@ -37,18 +32,7 @@ script = ExtResource("1_script")
 view_height = 3.2
 view_focus = NodePath("Focus")
 
-[node name="Body" type="Node3D" parent="."]
-
-[node name="Model" parent="Body" instance=ExtResource("2_model")]
-
-[node name="Animator" type="AnimationTree" parent="."]
-script = ExtResource("3_animator")
-
-[node name="Collision" type="StaticBody3D" parent="."]
-
-[node name="Shape" type="CollisionShape3D" parent="Collision"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-shape = SubResource("CapsuleShape3D_body")
+[node name="Body" parent="." instance=ExtResource("2_body")]
 
 [node name="Part" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
@@ -68,18 +52,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 visible = false
 cast_shadow = 0
 mesh = SubResource("TorusMesh_highlight")
-
-[node name="NamePlate" type="Label3D" parent="."]
-layers = 8
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
-pixel_size = 0.006
-billboard = 1
-modulate = Color(0.75, 0.92, 1, 1)
-outline_modulate = Color(0, 0, 0, 0.85)
-text = "Name · Role"
-font_size = 64
-outline_size = 16
-auto_translate_mode = 2
 
 [node name="NewMarker" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)

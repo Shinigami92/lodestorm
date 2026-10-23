@@ -24,6 +24,9 @@ const VERSION: int = 5
 const MINER_SETTINGS: MinerSettings = preload("res://game/mining/miner_settings.tres")
 const SHIP_FILE: String = "ship.json"
 const PLAYER_FILE: String = "player.json"
+## Hints the ship's story kept for everyone before they were each player's (`PlayerHints`): the
+## flag, and the hint it is now.
+const MOVED_HINTS: Dictionary[String, StringName] = {"hint_medical_bay": RampHint.HINT}
 ## Where resources named by path in version 1 saves went: a file, or a folder (ending in "/") and
 ## everything in it.
 const MOVED: Dictionary[String, String] = {
@@ -69,6 +72,8 @@ var _outdated: bool = false
 var _was_healed: bool = true
 ## The hold a `ship.json` before version 3 had (`hold`, `found`), for the player's save to take.
 var _ship_hold: Dictionary = {}
+## Hints a `ship.json` had among its story flags (`MOVED_HINTS`), for the player's save to take.
+var _ship_hints: Array[StringName] = []
 
 
 ## The folder of the save (empty when saving is off).
@@ -115,6 +120,7 @@ func _ready() -> void:
 		player.upgrades.changed.connect(_on_progress_changed)
 		player.skills.changed.connect(_on_progress_changed)
 		player.fleet.changed.connect(_on_progress_changed)
+		player.hints.changed.connect(_on_progress_changed)
 		player.health_changed.connect(_on_health_changed)
 	if voyage:
 		voyage.selected.connect(_on_progress_changed.unbind(1))
@@ -199,7 +205,7 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 ## the furnaces (per batch its furnace slot, the alloy, the bars, how many are done and when it
 ## started in Unix seconds), the weapons it owns and its blueprints, its loadout (null: empty
 ## slot), the MK level of each upgrade it bought and the rank of each skill it learned, the levels
-## and ranks under way, and its crafted miners (see `_fleet_data`).
+## and ranks under way, its crafted miners (see `_fleet_data`) and the hints it has seen.
 static func player_data(of_player: Player) -> Dictionary:
 	var hold: Dictionary = {}
 	for item: ItemType in of_player.hold.items:
@@ -248,6 +254,10 @@ static func player_data(of_player: Player) -> Dictionary:
 	var skill_jobs: Dictionary = {}
 	for skill: Skill in of_player.skills.jobs:
 		skill_jobs[_reference(skill)] = _job_data(of_player.skills.jobs[skill])
+	var hints: Array = []
+	for hint: StringName in of_player.hints.seen:
+		hints.append(String(hint))
+	hints.sort()
 	return {
 		"version": VERSION,
 		"health": of_player.max_health() if of_player.dead else of_player.health,
@@ -263,6 +273,7 @@ static func player_data(of_player: Player) -> Dictionary:
 		"skill_jobs": skill_jobs,
 		"miners": _fleet_data(of_player.fleet),
 		"lost_miners": _lost_data(of_player.fleet),
+		"hints": hints,
 	}
 
 
@@ -357,13 +368,18 @@ static func _build_paid(_level: int) -> Dictionary[ItemType, int]:
 
 func _apply_ship(data: Dictionary) -> void:
 	_ship_hold = {}
+	_ship_hints = []
 	if data.has("hold") or data.has("found"):
 		# Before version 3 the hold was the ship's: the player's save takes it.
 		_outdated = true
 		_ship_hold = {"hold": data.get("hold", {}), "found": data.get("found", [])}
 	if data.get("story") is Array:
 		for flag: Variant in data["story"] as Array:
-			if flag is String and not (flag as String).is_empty():
+			if flag is String and MOVED_HINTS.has(flag as String):
+				# A hint the host's story kept for everyone: the player's save takes it.
+				_outdated = true
+				_ship_hints.append(MOVED_HINTS[flag as String])
+			elif flag is String and not (flag as String).is_empty():
 				ship.story.flags[StringName(flag as String)] = true
 			else:
 				_outdated = true
@@ -423,6 +439,7 @@ func _apply_player(data: Dictionary) -> void:
 		data = data.duplicate()
 		data.merge(_ship_hold)
 	_apply_hold(data)
+	_apply_hints(data)
 	if data.get("refining") is Array:
 		_apply_refining(data["refining"] as Array)
 	if data.get("arsenal") is Array:
@@ -607,6 +624,20 @@ func _apply_jobs(data: Dictionary) -> void:
 	var now: float = Time.get_unix_time_from_system()
 	player.upgrades.update(now)
 	player.skills.update(now)
+
+
+## Reads the hints a player has seen, and the ones the ship's story kept before (`MOVED_HINTS`).
+func _apply_hints(data: Dictionary) -> void:
+	if data.get("hints") is Array:
+		for hint: Variant in data["hints"] as Array:
+			if hint is String and not (hint as String).is_empty():
+				player.hints.seen[StringName(hint as String)] = true
+			else:
+				_outdated = true
+				push_warning("Save: skipped hint %s" % hint)
+	for hint: StringName in _ship_hints:
+		player.hints.seen[hint] = true
+	player.hints.emit_changed()
 
 
 ## Reads a player's hold: units per item (`hold`) and the items ever in it (`found`).

@@ -36,12 +36,12 @@ func test_name_plate_and_marker_show_near() -> void:
 	_player.global_position = _npc.global_position + Vector3(0.0, 0.0, 10.0)
 	_player.reset_physics_interpolation()
 	await wait_process_frames(2)
-	assert_false(_npc._plate.visible, "far away")
+	assert_false(_npc.body.is_plate_shown(), "far away")
 	assert_true(_npc._new_marker.visible, "the greeting is new")
 	_player.global_position = _npc.global_position + Vector3(0.0, 0.0, 2.0)
 	_player.reset_physics_interpolation()
 	await wait_process_frames(2)
-	assert_true(_npc._plate.visible, "near")
+	assert_true(_npc.body.is_plate_shown(), "near")
 
 
 func test_first_talk_plays_the_greeting() -> void:
@@ -140,7 +140,7 @@ func test_they_face_each_other() -> void:
 	to_npc.y = 0.0
 	var player_facing: Vector3 = -_player.global_basis.z
 	assert_gt(player_facing.dot(to_npc.normalized()), 0.9, "the player faces them")
-	var npc_facing: Vector3 = _npc._body.global_basis.z
+	var npc_facing: Vector3 = _npc.body.global_basis.z
 	assert_gt(npc_facing.dot(-to_npc.normalized()), 0.9, "they face the player")
 
 

@@ -4,7 +4,8 @@ extends GridContainer
 ## terminal in cabin 1, see GAME_DESIGN.md, UI): the language (picking one switches the game's
 ## texts right away), the suit ring's size and "Always show", and a volume per sound bus (a slider
 ## in 10 % steps; changing it plays a sample on that bus), each saved at once
-## (see `GameSettings`).
+## (see `GameSettings`), and "Open folder", which shows the game's log files in the system's file
+## manager (for bug reports).
 
 ## Each language's name, written in that language.
 const LANGUAGE_NAMES: Dictionary[String, String] = {"en": "English", "de": "Deutsch"}
@@ -20,6 +21,7 @@ const SAMPLES: Dictionary[StringName, Sound] = {
 @onready var _languages: HBoxContainer = %Languages
 @onready var _ring_sizes: HBoxContainer = %RingSizes
 @onready var _always_show: CheckBox = %AlwaysShow
+@onready var _open_logs: Button = %OpenLogs
 
 
 func _ready() -> void:
@@ -57,6 +59,11 @@ func _ready() -> void:
 	language_row.assign(_languages.get_children())
 	_chain(language_row)
 	_chain(ring_row)
+	_open_logs.pressed.connect(_on_open_logs_pressed)
+
+
+func _on_open_logs_pressed() -> void:
+	OS.shell_show_in_file_manager(logs_folder())
 
 
 func _on_volume_changed(level: float, bus: StringName, row: HBoxContainer) -> void:
@@ -95,3 +102,10 @@ static func languages() -> PackedStringArray:
 static func current_language() -> String:
 	var code: String = TranslationServer.get_locale().get_slice("_", 0)
 	return code if code in languages() else "en"
+
+
+## The folder of the game's log files (Godot's file logging, `debug/file_logging/log_path`), as a
+## path of the system.
+static func logs_folder() -> String:
+	var log_path: String = ProjectSettings.get_setting("debug/file_logging/log_path")
+	return ProjectSettings.globalize_path(log_path.get_base_dir())

@@ -1,0 +1,47 @@
+name: Bug report
+description: Something in the game doesn't work, or the game crashed.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What went wrong, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What you did right before it happened. Screenshots or a video help too.
+      placeholder: |
+        1. Start a mission on ...
+        2. Place a miner next to ...
+        3. ...
+  - type: input
+    id: build
+    attributes:
+      label: Build
+      description: Where the game came from, e.g. the link to the GitHub Actions run you downloaded it from, or the commit you exported yourself.
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: System
+      description: Operating system, graphics card and whether you played on desktop or in VR.
+      placeholder: Windows 11, NVIDIA RTX 3070, desktop
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log files
+      description: |
+        Drag the newest log file(s) into this field. In the game, Settings > Log files > "Open folder" shows them (on the pause panel or the terminal in cabin 1). After a crash, open that folder without starting the game again if you can. If you did restart, the crashed run is the newest `godot<date>.log`, and `godot.log` is the run after it.
+
+        - Windows: `%APPDATA%\Lodestorm\logs`
+        - Linux: `~/.local/share/Lodestorm/logs`
+        - macOS: `~/Library/Application Support/Lodestorm/logs`
+    validations:
+      required: true

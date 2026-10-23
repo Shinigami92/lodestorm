@@ -1200,6 +1200,14 @@ msgstr "Effekte"
 msgid "Ambience"
 msgstr "Umgebung"
 
+#: game/ui/settings_list.tscn
+msgid "Log files"
+msgstr "Protokolle"
+
+#: game/ui/settings_list.tscn
+msgid "Open folder"
+msgstr "Ordner öffnen"
+
 #: game/ui/settings_menu.gd
 msgid "This wipes all your progress: hold, weapons, upgrades. It can't be undone."
 msgstr "Das löscht deinen gesamten Fortschritt: Frachtraum, Waffen, Upgrades. Das lässt sich nicht rückgängig machen."

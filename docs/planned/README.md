@@ -17,7 +17,7 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 | [`refinery.md`](refinery.md) | the station's alloy requests, furnaces through the quests, the engineer, later drill heads, the art pass | M4 steps 12–16, M5 |
 | [`station.md`](station.md) | Waypost Ostra: docking, the map, the ore exchange, its NPCs | M4, step 12 |
 | [`crew.md`](crew.md) | the eight crew members, health carrying over, the med bed | M4, step 13 |
-| [`risk-reward.md`](risk-reward.md) | nodes running dry, rich ore by the nests, the late meteor, banking ore at a cargo hatch | M4, step 14 |
+| [`risk-reward.md`](risk-reward.md) | rich ore by the nests, the late meteor, banking ore at a cargo hatch | M4, step 14 |
 | [`skills.md`](skills.md) | the rescue drone, the hardened canister, rebuilding spares, the miner radar; where the skill graph is heading | M4, step 15 |
 | [`quests.md`](quests.md) | quests as data, goals, the quest board, requests, the story's acts, first content | M4, step 16 |
 | [`story.md`](story.md) | the flare shield, the six acts, the expedition (Calder, Pell), the people's threads, after the ending | M4, step 16 D and on |

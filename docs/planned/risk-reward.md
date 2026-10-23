@@ -1,11 +1,6 @@
 # Reasons to move on (planned)
 
-Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The goal (see [Reasons to move and to stay](../GAME_DESIGN.md#reasons-to-move-and-to-stay-risk-vs-reward)): standing at one spot until the timer runs low must not pay off. Today ore nodes never run out, nest hollows have no ore, and carried ore is only safe once its carrier is aboard, which ends the mission when everyone alive is. Decided elsewhere: miners draw raiders and the hive frenzies in the storm's warning ([`aliens.md`](aliens.md)), quest and bonus goals elsewhere on the map ([`quests.md`](quests.md)), destroyable nests (built, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens)).
-
-## Nodes run dry
-
-- **Amounts:** each node holds a limited amount, counted in fills of a standard miner (180 units): common nodes 2 fills, mid 1.5, signature 1 (rarer ore, smaller deposits). A bigger tank empties a node in fewer trips, never makes it bigger. So a good spot gives 2–3 fills and then the players move on.
-- **Seeing it:** the crystals shrink in three steps as the node empties and dim a bit; a dry node turns to dark, cracked rock with a few dull stumps. A miner on a node that runs dry stops like a full one, but its lamp blinks amber instead of glowing steady (full): "move me". The ore scanner skill skips dry nodes; the navigator's hologram still shows every node (a preview before landing).
+Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The goal (see [Reasons to move and to stay](../GAME_DESIGN.md#reasons-to-move-and-to-stay-risk-vs-reward)): standing at one spot until the timer runs low must not pay off. Ore nodes run dry (built, see [Miners](../GAME_DESIGN.md#7-miners)); today nest hollows have no ore, and carried ore is only safe once its carrier is aboard, which ends the mission when everyone alive is. Decided elsewhere: miners draw raiders and the hive frenzies in the storm's warning ([`aliens.md`](aliens.md)), quest and bonus goals elsewhere on the map ([`quests.md`](quests.md)), destroyable nests (built, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens)).
 
 ## Rich ore by the nests
 

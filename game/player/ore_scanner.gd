@@ -1,9 +1,9 @@
 class_name OreScanner
 extends Node3D
 ## The ore scanner (a skill): points to the nearest ore node within `reach` (the skill's value)
-## while the local player is outside, with or without a miner on it: its -Z turns towards the
-## node, and the suit ring draws it as a small arrow on its edge in `color`, the ore's color. It
-## hides within `min_distance` of the node. Like the arrow back to the ship, but smaller.
+## that isn't dry while the local player is outside, with or without a miner on it: its -Z turns
+## towards the node, and the suit ring draws it as a small arrow on its edge in `color`, the ore's
+## color. It hides within `min_distance` of the node. Like the arrow back to the ship, but smaller.
 
 const ALPHA: float = 0.75
 
@@ -44,7 +44,7 @@ func _find_target() -> OreNode:
 	for node: OreNode in get_tree().get_nodes_in_group(OreNode.GROUP):
 		var offset: Vector3 = node.global_position - global_position
 		var distance: float = Vector2(offset.x, offset.z).length()
-		if distance <= nearest_distance:
+		if distance <= nearest_distance and not node.is_dry():
 			nearest = node
 			nearest_distance = distance
 	return nearest if nearest and nearest_distance > min_distance else null

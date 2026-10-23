@@ -2,7 +2,7 @@ class_name Interactable
 extends Node3D
 ## Something a player uses with `interact` while standing close to it (buttons, later terminals
 ## and vendors). The player shows which one it would use: an optional child `Highlight` node is
-## visible while this is the target.
+## visible while this is the target (a marking: decals leave it out, `RenderLayers.MARKINGS`).
 
 ## Emitted when a player uses it.
 signal used(player: Player)
@@ -27,6 +27,8 @@ var highlighted: bool = false:
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	if _highlight:
+		RenderLayers.put(_highlight, RenderLayers.MARKINGS)
 	highlighted = highlighted
 
 

@@ -18,6 +18,9 @@ const ALPHA: float = 1.0
 const LOCKED_ALPHA: float = 0.3
 ## How strongly it glows.
 const GLOW: float = 2.0
+## Fades it out on steep surfaces (the side of a table, a cliff), where it would smear down: from
+## 0.5 (walls hidden) to 1 (only flat ground). Slopes of 45° keep about 70 %.
+const NORMAL_FADE: float = 0.6
 
 ## Shared by every reticle: the crosshair ring.
 static var _texture: ImageTexture
@@ -42,6 +45,7 @@ func _ready() -> void:
 	_decal.emission_energy = GLOW
 	_decal.upper_fade = 0.0
 	_decal.lower_fade = 0.0
+	_decal.normal_fade = NORMAL_FADE
 	_decal.cull_mask = RenderLayers.WORLD
 	add_child(_decal)
 	visible = false

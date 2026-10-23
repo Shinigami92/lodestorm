@@ -9,9 +9,9 @@ const WORLD: int = 1
 ## and what floats around them (the ship pointer, arriving ore, the pause panel): the decals
 ## projected onto the ground (a charge's lane, the aim reticle) leave them out.
 const CHARACTERS: int = 2
-## The markings the suit draws on the ground (the suit ring, the target brackets): they're pulled
-## towards the camera (`ground_marking.gdshaderinc`), so a decal would land on them off its spot.
-## Decals leave them out.
+## Markings on the ground: the suit's (the suit ring, the target brackets: they're pulled towards
+## the camera, `ground_marking.gdshaderinc`, so a decal would land on them off its spot) and the
+## highlights of what a player would use (`Interactable`). Decals leave them out.
 const MARKINGS: int = 4
 ## Holograms and fields (the holo table's location, the navigator's star system and globes, the
 ## skill graph, the shooting range's barrier): light, not surfaces, so decals leave them out.

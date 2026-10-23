@@ -39,8 +39,6 @@ const SELECTED_NUMBER_COLOR := Color(1.0, 0.75, 0.3)
 
 ## The slot `interact` puts the selected weapon into (0: slot 1).
 var selected_slot: int = 0
-## The mission that locks it while underway; found in the scene tree when not set.
-var mission: Mission
 
 ## One part per cradle, showing the weapon in that slot (hidden while the slot is empty).
 var _cradle_parts: Array[StationPart] = []
@@ -57,6 +55,11 @@ var _locker_view_height: float
 @onready var _loadout_sign: Node3D = $LoadoutSign
 @onready var _strip: MeshInstance3D = $Strip
 @onready var _number_label: Label3D = $Number
+
+
+func _init() -> void:
+	super()
+	locks_while_underway = true
 
 
 func _ready() -> void:
@@ -83,8 +86,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	super(delta)
-	if not mission:
-		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
 	# Lockers of players not in the session stay shut, like all of them during a mission.
 	_door.visible = is_locked() or not get_owner_player()
 	_loadout_sign.visible = not _door.visible
@@ -105,11 +106,6 @@ func get_owner_player() -> Player:
 
 func can_use(player: Player) -> bool:
 	return player == get_owner_player()
-
-
-## Whether loadouts can't change right now.
-func is_locked() -> bool:
-	return mission != null and mission.is_underway()
 
 
 ## The part showing `weapon_type` on the wall, or null.

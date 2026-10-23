@@ -28,11 +28,6 @@ const OUTLINE_COLOR := Color(0.3, 0.85, 1.0, 0.35)
 ## Where the card floats, from the core's axis: right and up on screen, in m.
 const CARD_SPOT := Vector2(2.45, 1.75)
 
-## The mission that locks it while underway; found in the scene tree when not set.
-var mission: Mission
-## The ship whose heat shield it is; the one it stands in when not set.
-var ship: Ship
-
 var _parts: Array[StationPart] = []
 ## Per plate (by its part): its shell, the glowing fill of what's paid, the outline edges.
 var _shells: Dictionary[StationPart, MeshInstance3D] = {}
@@ -45,6 +40,11 @@ var _fill_material := StandardMaterial3D.new()
 var _outline_material := StandardMaterial3D.new()
 
 
+func _init() -> void:
+	super()
+	locks_while_underway = true
+
+
 func _ready() -> void:
 	_build_materials()
 	_build_plates(HeatShield.PLATES.plates)
@@ -53,10 +53,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	super(delta)
-	if not mission:
-		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
-	if not ship:
-		ship = Ship.nearest(get_tree(), global_position)
 	var shield: HeatShield = get_heat_shield()
 	if shield != _watched:
 		if _watched:
@@ -101,11 +97,6 @@ func opened_by(level: int) -> PackedStringArray:
 			if body.tier == level and body.is_reachable(level):
 				names.append(tr(body.display_name))
 	return names
-
-
-## Whether nothing can be done right now (a mission is underway).
-func is_locked() -> bool:
-	return mission != null and mission.is_underway()
 
 
 ## Whether the player using it may pick the ship's project and pay into it: only the host.

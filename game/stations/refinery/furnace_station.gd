@@ -36,8 +36,6 @@ const LAMP_COLOR := Color(1.0, 0.6, 0.2)
 ## Light in front of a running furnace's door: its energy and how much it flickers.
 const LIGHT_ENERGY: float = 1.6
 const FLICKER: float = 0.35
-## How long the second press of "Stop" may follow the first, in s.
-const STOP_CONFIRM_TIME: float = 4.0
 const IGNITE_SOUND: Sound = preload("res://assets/audio/sfx/refinery/furnace_ignite.tres")
 const ROAR_SOUND: Sound = preload("res://assets/audio/sfx/refinery/furnace_roar.tres")
 const STOP_SOUND: Sound = preload("res://assets/audio/sfx/refinery/furnace_stop.tres")
@@ -45,17 +43,13 @@ const STOP_SOUND: Sound = preload("res://assets/audio/sfx/refinery/furnace_stop.
 ## Which of the ship's furnaces it is (0: the first unlocked).
 @export var slot: int = 0
 
-## The mission that locks it while underway; found in the scene tree when not set.
-var mission: Mission
-## The ship whose furnace it is; the one it stands in when not set.
-var ship: Ship
 ## The recipe the card shows for starting.
 var recipe: AlloyType
 ## The number of bars the card shows for starting (see `get_bars`).
 var bars: int = 1
 
-## Time left to press "Stop" again, in s (0: not pressed).
-var _stop_armed: float = 0.0
+## "Stop" acts on the second press (for the batch shown).
+var stop_press := ConfirmPress.new()
 var _door := StationPart.new()
 var _fill := MeshInstance3D.new()
 var _fill_pivot := Node3D.new()
@@ -69,6 +63,11 @@ var _roar: AudioStreamPlayer3D
 var _glowing: AlloyType
 
 
+func _init() -> void:
+	super()
+	locks_while_underway = true
+
+
 func _ready() -> void:
 	_build()
 	super()
@@ -78,11 +77,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	super(delta)
-	if not mission:
-		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
-	if not ship:
-		ship = Ship.nearest(get_tree(), global_position)
-	_stop_armed = maxf(_stop_armed - delta, 0.0)
 	_update_look()
 	# The batch, the hold and the mission change meanwhile.
 	if user:
@@ -98,21 +92,9 @@ func is_unlocked() -> bool:
 	return ship != null and ship.furnaces.is_unlocked(slot)
 
 
-## Whether a mission is underway (nothing starts or stops then).
-func is_locked() -> bool:
-	return mission != null and mission.is_underway()
-
-
-## The player whose batch it shows: the one using it, else the viewer.
-func get_shown_player() -> Player:
-	if user:
-		return user
-	return ship.get_viewing_player() if ship else Player.first_local(get_tree())
-
-
 ## The shown player's batch in it, or null.
 func get_batch() -> AlloyBatch:
-	var player: Player = get_shown_player()
+	var player: Player = viewer()
 	return player.refining.get_batch(slot) if player else null
 
 
@@ -156,19 +138,17 @@ func can_stop() -> bool:
 
 ## Whether "Stop" was pressed once and waits for the second press.
 func is_stop_armed() -> bool:
-	return _stop_armed > 0.0
+	return stop_press.is_armed(get_batch())
 
 
-## Stops the user's batch on the second press within `STOP_CONFIRM_TIME`; the first only arms it.
+## Stops the user's batch on the second press (`stop_press`); the first only arms it.
 ## Returns whether it stopped.
 func stop() -> bool:
 	if not can_stop():
 		return false
-	if not is_stop_armed():
-		_stop_armed = STOP_CONFIRM_TIME
+	if not stop_press.press(user.refining.get_batch(slot)):
 		refresh()
 		return false
-	_stop_armed = 0.0
 	user.refining.stop(slot, user.hold, _now())
 	Sfx.play_at(STOP_SOUND, _door.global_position)
 	refresh()
@@ -179,7 +159,7 @@ func stop() -> bool:
 func step_recipe(step_by: int) -> void:
 	var alloys: Array[AlloyType] = CATALOG.alloys
 	recipe = alloys[posmod(alloys.find(recipe) + step_by, alloys.size())]
-	_stop_armed = 0.0
+	stop_press.reset()
 	refresh()
 
 
@@ -211,7 +191,7 @@ func _shortcut(event: InputEvent) -> bool:
 
 
 func _opened() -> void:
-	_stop_armed = 0.0
+	stop_press.reset()
 	# Start on a recipe the player knows.
 	if recipe and not recipe.is_known(user.hold):
 		for alloy: AlloyType in CATALOG.alloys:

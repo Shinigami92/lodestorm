@@ -1,6 +1,7 @@
 extends GutTest
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
@@ -38,6 +39,21 @@ func test_using_a_station_frames_it_and_selects_its_first_part() -> void:
 	assert_eq(station.selected.highlight, StationPart.Highlight.SELECTED)
 	assert_true(station.card.visible)
 	assert_eq((station.card_menu as MinerCard).miner, _player.fleet.get_miner(1))
+
+
+## Unused, a station shows the state of the player the ship's cutaway follows (like the silos);
+## used, the user's.
+func test_unused_stations_show_the_ships_viewer() -> void:
+	var other := PLAYER_SCENE.instantiate() as Player
+	_map.add_child(other)
+	await wait_physics_frames(1)
+	var bay := _ship.get_node("Rooms/Lower/Miners/MinerBay") as MinerBayStation
+	assert_eq(bay.viewer(), _player)
+	_ship.viewer = other
+	assert_eq(bay.viewer(), other)
+	assert_eq(bay.ship, _ship, "the nearest ship, found by itself")
+	bay = await _use("Miners")
+	assert_eq(bay.viewer(), _player, "the one using it")
 
 
 func test_a_station_is_used_from_any_side() -> void:

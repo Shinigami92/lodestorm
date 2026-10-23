@@ -16,8 +16,6 @@ extends Station
 
 ## Whether its player fell asleep (the game is about to quit).
 var asleep: bool = false
-## The mission that makes sleeping lose the run underway; found in the scene tree when not set.
-var mission: Mission
 
 @onready var _part: StationPart = $Part
 
@@ -29,8 +27,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	super(delta)
-	if not mission:
-		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
 	if user:
 		refresh()
 

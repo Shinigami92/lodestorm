@@ -1,7 +1,8 @@
 class_name Miner
 extends StaticBody3D
-## Mines its ore node's ore over time and stops when full. The fill level shows in the world:
-## the glass column fills up in the ore color and the lamp on top lights up when full.
+## Mines its ore node's ore over time (`OreNode.mine`) and stops when full or when the node runs
+## dry. The fill level shows in the world: the glass column fills up in the ore color and the lamp
+## on top lights up when full; on a dry node it blinks amber instead ("move me").
 ## A hose connects to the nearest player within `settings.hose_range` and moves the ore to them.
 ## Aliens can attack it: the frame flashes white when hit and turns rusty with damage. At zero
 ## health it breaks down: it stops mining and the hose disconnects, so its ore can't be taken out
@@ -38,6 +39,8 @@ extends StaticBody3D
 
 ## Emitted once each time the miner becomes full.
 signal filled
+## Emitted when its ore node runs dry while it mines.
+signal ran_dry
 ## Emitted when health reaches zero and the miner stops mining and transferring.
 signal broke
 ## Emitted when a broken miner is repaired completely and mines again.
@@ -53,6 +56,10 @@ const COLOR_ALARM := Color(1.0, 0.15, 0.1)
 ## The plate of a standard-issue miner (the ship's: no number, no owner's color).
 const COLOR_STANDARD_PLATE := Color(0.42, 0.44, 0.46)
 const COLOR_HIGHLIGHT := Color(1.0, 0.75, 0.3)
+## The lamp blinking on a dry node.
+const COLOR_DRY := Color(1.0, 0.55, 0.1)
+## How bright the lamp glows blinking amber.
+const DRY_ENERGY: float = 8.0
 ## How much the rust covers the frame at zero health (0–1).
 const RUST_MAX: float = 0.75
 ## How much a hit flash or the alarm blink covers the frame (0–1).
@@ -62,7 +69,7 @@ const SIGNAL_COVER: float = 0.7
 const FACING_OFFSET: float = 25.0
 ## Seconds a hit flash lasts.
 const FLASH_DURATION: float = 0.1
-## Blinks per second while broken.
+## Blinks per second while broken, and the lamp's on a dry node.
 const BLINK_RATE: float = 2.0
 ## Seconds it takes to turn real again when a pickup is cancelled.
 const STAND_TIME: float = 0.4
@@ -124,6 +131,7 @@ var paused: bool = false
 var _flash_left: float = 0.0
 var _time: float = 0.0
 var _frame_overlay := StandardMaterial3D.new()
+var _dry_lamp := StandardMaterial3D.new()
 ## The loops playing (null: off).
 var _drill: AudioStreamPlayer3D
 var _flow: AudioStreamPlayer3D
@@ -140,6 +148,7 @@ var _height: float
 @onready var _model: Node3D = $Model
 @onready var _fill: Node3D = _model.find_child("Fill", true, false)
 @onready var _full_lamp: Node3D = _model.find_child("FullLamp", true, false)
+@onready var _lamp_meshes: Array[MeshInstance3D] = _meshes(_full_lamp)
 @onready var _hose_outlet: Node3D = _model.find_child("HoseOutlet", true, false)
 @onready var _hose: Hose = $Hose
 @onready var _plate: Node3D = _model.get_node_or_null(^"Plate") as Node3D
@@ -172,6 +181,11 @@ func _ready() -> void:
 			OreGlow.set_phase(mesh, phase)
 		_hose.material_override = ore_type.get_glow_material()
 		OreGlow.set_phase(_hose, phase)
+	_dry_lamp.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_dry_lamp.albedo_color = COLOR_DRY
+	_dry_lamp.emission_enabled = true
+	_dry_lamp.emission = COLOR_DRY
+	_dry_lamp.emission_energy_multiplier = DRY_ENERGY
 	_frame_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_frame_overlay.next_pass = preload("res://assets/shaders/rim_light.tres")
 	# Seen behind cliffs too, as a silhouette.
@@ -198,13 +212,19 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var standing: bool = is_standing()
-	var mining: bool = standing and not broken and not is_full()
+	var mining: bool = standing and not broken and not is_full() and not is_dry()
 	_mining = mining
 	if mining:
-		amount = minf(amount + fill_rate() * delta, capacity())
+		var mined: float = minf(fill_rate() * delta, capacity() - amount)
+		if ore_node:
+			mined = ore_node.mine(mined)
+		amount = minf(amount + mined, capacity())
 		_update_gauge()
 		if is_full():
 			filled.emit()
+			Sfx.play_at(FULL_SOUND, global_position)
+		elif is_dry():
+			ran_dry.emit()
 			Sfx.play_at(FULL_SOUND, global_position)
 
 	var mending: bool = false
@@ -253,6 +273,7 @@ func _process(delta: float) -> void:
 		_pickup.enabled = is_standing()
 	_flash_left = maxf(_flash_left - delta, 0.0)
 	_update_frame()
+	_update_lamp()
 	_hose.visible = hose_target != null
 	if hose_target:
 		_hose.build(
@@ -262,6 +283,11 @@ func _process(delta: float) -> void:
 
 func is_full() -> bool:
 	return amount >= capacity()
+
+
+## Whether its ore node has run dry (a loose miner without one never does).
+func is_dry() -> bool:
+	return ore_node != null and ore_node.is_dry()
 
 
 ## Whether it stands on its node, nobody placing or picking it up: only then it mines, connects
@@ -394,6 +420,17 @@ func _update_gauge() -> void:
 	_fill.visible = ratio > 0.0 and not _hologram.shown
 	_fill.scale = Vector3(1.0, maxf(ratio, 0.001), 1.0)
 	_full_lamp.visible = is_full()
+
+
+## Lights the lamp steady when full; on a dry node it blinks amber (only once it's real: the
+## hologram keeps the lamp's materials meanwhile).
+func _update_lamp() -> void:
+	if not is_standing() or is_full():
+		return
+	var dry: bool = is_dry()
+	_full_lamp.visible = dry and fmod(_time * BLINK_RATE, 1.0) < 0.5
+	for mesh: MeshInstance3D in _lamp_meshes:
+		mesh.material_override = _dry_lamp if dry else null
 
 
 func _update_frame() -> void:

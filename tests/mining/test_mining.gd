@@ -100,6 +100,79 @@ func test_full_lamp_lights_up_when_full() -> void:
 	assert_true(lamp.visible)
 
 
+func test_node_holds_fills_by_its_band() -> void:
+	var fills: float = OreNode.FILLS[_node.ore_type.band]
+	assert_eq(_node.full_amount, fills * OreNode.MINER_SETTINGS.capacity)
+	assert_eq(_node.amount, _node.full_amount)
+	assert_false(_node.is_dry())
+
+
+func test_miner_takes_its_ore_out_of_the_node() -> void:
+	var miner: Miner = _place_miner(10.0, 100.0)
+	await wait_physics_frames(Engine.physics_ticks_per_second)
+	assert_gt(miner.amount, 0.0)
+	assert_almost_eq(_node.amount, _node.full_amount - miner.amount, 0.001)
+
+
+func test_miner_stops_when_its_node_runs_dry() -> void:
+	_node.amount = 3.0
+	var miner: Miner = _place_miner(60.0, 100.0)
+	watch_signals(miner)
+	await wait_physics_frames(Engine.physics_ticks_per_second)
+	assert_eq(miner.amount, 3.0)
+	assert_true(_node.is_dry())
+	assert_true(miner.is_dry())
+	assert_false(miner.is_full())
+	assert_signal_emit_count(miner, "ran_dry", 1)
+	assert_signal_emit_count(miner, "filled", 0)
+
+
+func test_lamp_blinks_on_a_dry_node() -> void:
+	_node.amount = 1.0
+	var miner: Miner = _place_miner(60.0, 100.0)
+	var lamp: Node3D = miner.get_node("Model").find_child("FullLamp", true, false)
+	var seen: Array[bool] = []
+	for i: int in Engine.physics_ticks_per_second:
+		await wait_physics_frames(1)
+		if lamp.visible not in seen:
+			seen.append(lamp.visible)
+	assert_eq(seen.size(), 2, "on and off")
+
+
+func test_crystals_shrink_smallest_first_until_only_rock_is_left() -> void:
+	var crystals: Array[Node3D] = []
+	for crystal: Node in _node.get_node("Crystals").get_children():
+		crystals.append(crystal as Node3D)
+	assert_gt(crystals.size(), 1)
+	var full_size: Dictionary[Node3D, float] = {}
+	for crystal: Node3D in crystals:
+		full_size[crystal] = crystal.basis.get_scale().x
+	_node.mine(_node.full_amount * 0.5)
+	var shrunk: int = 0
+	var gone: int = 0
+	for crystal: Node3D in crystals:
+		if not crystal.visible:
+			gone += 1
+		elif crystal.basis.get_scale().x < full_size[crystal] - 0.001:
+			shrunk += 1
+	assert_gt(gone, 0, "the smallest are mined out")
+	assert_lte(shrunk, 1, "one shrinks at a time")
+	assert_lt(gone, crystals.size(), "the biggest are still there")
+	_node.mine(_node.amount)
+	assert_true(_node.is_dry())
+	for crystal: Node3D in crystals:
+		assert_false(crystal.visible)
+
+
+func test_dry_node_takes_no_miner() -> void:
+	_node.mine(_node.amount)
+	_move_player_next_to(_node)
+	await wait_physics_frames(1)
+	assert_null(_player.miner_target)
+	assert_null(_node.place_miner(_player.miner_scene))
+	assert_null(_player.place_miner())
+
+
 func _move_player_next_to(node: OreNode) -> void:
 	_player.global_position = node.global_position + Vector3(1.5, 0.0, 0.0)
 	_player.reset_physics_interpolation()

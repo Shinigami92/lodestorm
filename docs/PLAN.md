@@ -75,6 +75,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 11 D1: drill hardness (each ore's hardness, each drill level's set by hand; a drill too soft mining at a quarter of the speed, turning slower with a strained loop), placing taking the miner that mines the node's ore fastest, the drill's card showing the ores it mines at full speed and what the next level adds, the silo's card naming the drill level
 - Step 11 D2: alloys in the costs: every MK level from MK4 on also takes bars of the alloy of the previous planet's signature ore (MK4 4 Merisk up to MK8 12 Noxar, scaled per upgrade, the miners' parts too), the six prototypes bars of their own signature ore's alloy, the heat shield staying ores only; the ingot badge in the cost rows, the ingot rack's "Used for" line, jobs and builds under way keeping what was paid (saved, old saves giving back the ores), every cost in units per item
 - Step 13 B, ahead of its step and without the medic: health carrying over between runs (saved with the player, full after dying), the four med beds in the medical bay (lying down with the weapon put away, healing to full, the card's health bar and "Get up"), the one-time hint at the ramp button for a hurt player
+- Step 14 A1: ore nodes running dry (amounts by the ore's band, the miner taking its ore out of the node, the crystals shrinking into the rock one after another down to the bare rock, the miner's amber blink on a dry node, dry nodes taking no miner and the scanner skipping them)
 - Miners placed as holograms: placing projects the miner onto its node as a hologram turning real from the bottom up (picking up the reverse), the player moving and fighting freely meanwhile within the miner's hose range (out of it, it waits; placing or picking up another gives a waiting one up); every miner's ring on the ground with its health, fill, hose range and that progress
 
 ## Todo
@@ -92,7 +93,7 @@ Each step builds on the ones before it (steps 1–11 are done).
   - [ ] **B** the medic's topics on the med beds (health carrying over, the med beds and the ramp button's hint are done)
   - [ ] **C** reactions to events and the pilot's two radio lines (crew joining through the story waits for the quests)
 - [ ] **Step 14: reasons to move on** ([`planned/risk-reward.md`](planned/risk-reward.md)); after the crafted miners (dry nodes matter once miners are picked up again) and the nests (the rich fields between them)
-  - [ ] **A** nodes running dry (amounts, three stages, the dry look, the miner's amber blink, the scanner skipping them) and the rich fields in nest hollows
+  - [ ] **A** the rich fields in nest hollows (nodes running dry are done)
   - [ ] **B** the late deposit (timing, the meteor's streak, boom and beam, the impact site reserved at generation, the radio line, the nest's pack)
   - [ ] **C** the cargo hatch at the ramp (independent: can come any time earlier)
 - [ ] **Step 15: more skills** ([`planned/skills.md`](planned/skills.md)): one PR with the rescue drone, the hardened canister, rebuilding spares and the miner radar (its amber pointer shows dry nodes too; the sentries with co-op, M7)

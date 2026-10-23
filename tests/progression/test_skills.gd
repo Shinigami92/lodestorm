@@ -256,6 +256,16 @@ func test_ore_scanner_points_to_the_nearest_node_in_range() -> void:
 	assert_false(scanner.visible, "close enough to place a miner")
 
 
+func test_ore_scanner_skips_dry_nodes() -> void:
+	var dry := _add_node(Vector3(0.0, 0.0, -10.0))
+	var far := _add_node(Vector3(30.0, 0.0, 0.0))
+	dry.mine(dry.amount)
+	var scanner := _player.get_node("OreScanner") as OreScanner
+	_player.skills.raise(SCANNER)
+	await _wait_physics(0.1)
+	assert_eq(scanner.target, far)
+
+
 func test_damage_readout_shows_hits_and_adds_up_pellets() -> void:
 	var alien := SWARMER.spawn()
 	alien.strain = alien.strain.duplicate() as AlienStrain

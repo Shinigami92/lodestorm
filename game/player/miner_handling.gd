@@ -43,9 +43,9 @@ func in_range() -> bool:
 
 
 ## Places the holder's next miner on `node`: it takes the node at once and stands after the place
-## time. Returns it, or null while another goes on or when the node is taken.
+## time. Returns it, or null while another goes on or when the node is taken or dry.
 func place(node: OreNode) -> Miner:
-	if not node.is_free() or not _free_hands():
+	if not node.is_free() or node.is_dry() or not _free_hands():
 		return null
 	miner = node.place_miner(holder.miner_scene, holder.fleet, holder, true)
 	_start(true)

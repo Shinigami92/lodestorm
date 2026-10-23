@@ -223,6 +223,15 @@ func test_card_shows_the_selected_ore() -> void:
 	_player.hold.add(MERIDINE, 5.0)
 	_hold.select(_hold.get_tank(MERIDINE))
 	assert_string_contains(_texts(card), "Full speed with drill MK3.")
+	# Found in more regions than fit, with every body open: names the bodies instead.
+	_ship.heat_shield.mk = _ship.heat_shield.max_mk()
+	assert_gt(_hold.regions_with(KYRITE).size(), HoldCard.MAX_REGIONS, "a common ore")
+	_hold.select(_hold.get_tank(KYRITE))
+	assert_string_contains(_texts(card), "Found on: ")
+	for body: CelestialBody in _hold.bodies_with(KYRITE):
+		assert_string_contains(_texts(card), body.display_name)
+	for region: Region in _hold.regions_with(KYRITE):
+		assert_false(_texts(card).contains(region.display_name), region.display_name)
 	_hold.close()
 
 
@@ -246,6 +255,8 @@ func test_camera_follows_the_selected_tank() -> void:
 func test_card_fits_and_reads_in_every_language() -> void:
 	for ore_type: OreType in CATALOG.ores:
 		_player.hold.add(ore_type, 123456.0)
+	# Every body open: the most places the card can name.
+	_ship.heat_shield.mk = _ship.heat_shield.max_mk()
 	assert_true(_hold.open(_player))
 	var panel: WorldPanel = _hold.card
 	var layout := Vector2(panel.size * panel.pixels_per_meter)

@@ -2,8 +2,11 @@ class_name HoldCard
 extends StationCard
 ## The holo card of the hold (`OreHold`): the selected tank's ore, how much the hold has of it and
 ## the open regions where it's found, and for an ore too hard for a miner's first drill the drill
-## level that mines it at full speed. An ore never brought aboard shows as unknown.
+## level that mines it at full speed. An ore never brought aboard shows as unknown. An ore found in
+## more regions than fit names the bodies instead.
 
+## The most regions the card names; beyond that it names their bodies.
+const MAX_REGIONS: int = 4
 const NOTE_COLOR := Color(1.0, 1.0, 1.0, 0.75)
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 
@@ -42,13 +45,18 @@ func show_part(part: StationPart) -> void:
 	_band.text = band_name(ore_type.band)
 	_amount.visible = true
 	_amount.text = tr("In the hold: %d") % floori(tank.amount)
+	var regions: Array[Region] = hold.regions_with(ore_type)
 	var names: PackedStringArray = []
-	for region: Region in hold.regions_with(ore_type):
-		names.append(tr(region.display_name))
-	if names.is_empty():
+	if regions.is_empty():
 		_found_in.text = tr("Found in no open region.")
-	else:
+	elif regions.size() <= MAX_REGIONS:
+		for region: Region in regions:
+			names.append(tr(region.display_name))
 		_found_in.text = tr("Found in: %s") % ", ".join(names)
+	else:
+		for body: CelestialBody in hold.bodies_with(ore_type):
+			names.append(tr(body.display_name))
+		_found_in.text = tr("Found on: %s") % ", ".join(names)
 
 
 ## The translated name of an ore band.

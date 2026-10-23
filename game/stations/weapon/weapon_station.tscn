@@ -93,12 +93,12 @@ position = Vector3(-1.35, 0, 0)
 position = Vector3(0.45, 1.25, -0.5)
 
 [node name="Use" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
 script = ExtResource("5_use")
-interact_range = 1.6
+interact_range = 1.5
+footprint = Vector2(1.8, 0.7)
 
 [node name="Highlight" type="MeshInstance3D" parent="Use"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.91, -0.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.91, 0)
 visible = false
 mesh = SubResource("BoxMesh_highlight")
 

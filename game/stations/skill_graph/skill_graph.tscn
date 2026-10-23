@@ -88,12 +88,11 @@ position = Vector3(2.4, 0, 0.6)
 rotation = Vector3(0, 1.344, 0)
 
 [node name="Use" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
 script = ExtResource("5_use")
-interact_range = 1.4
+interact_range = 2.0
 
 [node name="Highlight" type="MeshInstance3D" parent="Use"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 visible = false
 mesh = SubResource("TorusMesh_highlight")
 

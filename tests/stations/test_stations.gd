@@ -39,6 +39,26 @@ func test_using_a_station_frames_it_and_selects_its_first_part() -> void:
 	assert_eq((station.card_menu as MinerCard).miner, _player.fleet.get_miner(1))
 
 
+func test_a_station_is_used_from_any_side() -> void:
+	for path: String in ["Miners/MinerBay", "Skills/SkillGraph", "Weapons/UpgradeStation"]:
+		var station := _ship.get_node("Rooms/Lower/" + path) as Station
+		var use: Interactable = station.use_point
+		var half: Vector2 = use.footprint * 0.5
+		var reach: float = use.interact_range - 0.2
+		var sides: Dictionary[String, Vector3] = {
+			"left": Vector3(-half.x - reach, 0.0, 0.0),
+			"right": Vector3(half.x + reach, 0.0, 0.0),
+			"behind": Vector3(0.0, 0.0, -half.y - reach),
+			"in front": Vector3(0.0, 0.0, half.y + reach),
+		}
+		for side: String in sides:
+			var at: Vector3 = use.to_global(sides[side])
+			assert_almost_eq(use.distance_to(at), reach, 0.001, "%s %s" % [path, side])
+			assert_eq(Interactable.nearest(get_tree(), at), use, "%s %s" % [path, side])
+		var away: Vector3 = use.to_global(Vector3(half.x + use.interact_range + 0.2, 0.0, 0.0))
+		assert_ne(Interactable.nearest(get_tree(), away), use, path + " out of reach")
+
+
 func test_player_stands_still_while_using_a_station() -> void:
 	await _use("Miners")
 	var before: Vector3 = _player.global_position
@@ -184,7 +204,7 @@ func _use(room: String) -> UpgradeStation:
 	var station_name: String = "MinerBay" if room == "Miners" else "UpgradeStation"
 	var station := _ship.get_node("Rooms/Lower/%s/%s" % [room, station_name]) as UpgradeStation
 	var use: Interactable = station.use_point
-	_player.global_position = use.global_position + use.global_basis.z * 0.3
+	_player.global_position = station.user_spot.global_position
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(5)
 	assert_eq(_player.interact(), use, room)

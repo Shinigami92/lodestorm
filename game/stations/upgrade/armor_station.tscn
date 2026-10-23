@@ -116,12 +116,11 @@ card_offset = Vector2(1.05, 0.25)
 position = Vector3(0.5, 1.2, 0)
 
 [node name="Use" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.3)
 script = ExtResource("4_use")
-interact_range = 1.4
+interact_range = 2.0
 
 [node name="Highlight" type="MeshInstance3D" parent="Use"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, -0.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
 visible = false
 mesh = SubResource("TorusMesh_highlight")
 

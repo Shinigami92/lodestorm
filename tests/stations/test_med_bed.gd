@@ -73,7 +73,7 @@ func _bed(number: int) -> MedBedStation:
 
 func _use_bed(number: int) -> MedBedStation:
 	var bed: MedBedStation = _bed(number)
-	await _move(bed.use_point.global_position)
+	await _move(bed.user_spot.global_position)
 	assert_eq(_player.interact(), bed.use_point)
 	return bed
 

@@ -162,7 +162,7 @@ func _go_outside() -> void:
 func _use_weapon_station() -> WeaponStation:
 	var station := _ship.get_node("Rooms/Lower/Weapons/UpgradeStation") as WeaponStation
 	var use: Interactable = station.use_point
-	_player.global_position = use.global_position + use.global_basis.z * 0.3
+	_player.global_position = station.user_spot.global_position
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(5)
 	assert_eq(_player.interact(), use)

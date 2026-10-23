@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c8vkyy1aq1ca" path="res://game/stations/loadout/weapon_wall.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://ca7jx6rwpdvbk" path="res://game/weapons/all_weapons.tres" id="2_weapons"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="3_use"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.17, 0.175, 0.185, 1)
@@ -14,6 +15,14 @@ size = Vector3(1, 1, 0.1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
 size = Vector3(1, 1, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+size = Vector3(1, 0.02, 0.06)
 
 [node name="WeaponWall" type="Node3D" node_paths=PackedStringArray("panel", "collision")]
 script = ExtResource("1_script")
@@ -38,3 +47,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 1.2)
 light_color = Color(1, 0.95, 0.85, 1)
 light_energy = 0.8
 omni_range = 4.5
+
+[node name="Use" type="Node3D" parent="."]
+script = ExtResource("3_use")
+interact_range = 1.2
+
+[node name="Highlight" type="MeshInstance3D" parent="Use"]
+visible = false
+mesh = SubResource("BoxMesh_highlight")

@@ -9,11 +9,11 @@ const WORLD: int = 1
 ## and what floats around them (the ship pointer, arriving ore, the pause panel): the decals
 ## projected onto the ground (a charge's lane, the aim reticle) leave them out.
 const CHARACTERS: int = 2
-## Markings on the ground: the suit's (the suit ring, the target brackets: they're pulled towards
-## the camera, `ground_marking.gdshaderinc`, so a decal would land on them off its spot), the
-## highlights of what a player would use (`Interactable`) and the stand rings of the stations, the
-## rooms' names and the floor guides, a lobbed weapon's landing ring and a throw's sight line.
-## Decals leave them out, so they stay readable on top.
+## Markings on the ground: the suit's and the miners' (the suit ring, the target brackets, the
+## miners' rings: they're pulled towards the camera, `ground_marking.gdshaderinc`, so a decal would
+## land on them off its spot), the highlights of what a player would use (`Interactable`) and the
+## stand rings of the stations, the rooms' names and the floor guides, a lobbed weapon's landing
+## ring and a throw's sight line. Decals leave them out, so they stay readable on top.
 const MARKINGS: int = 4
 ## Light, not surfaces: holograms (the holo table's location, the navigator's star system and
 ## globes, the skill graph, the miners' bay's ghost miners, holo cards), fields (the shooting

@@ -11,6 +11,7 @@ shader_type spatial;
 render_mode unshaded, cull_disabled, shadows_disabled, depth_draw_never, skip_vertex_transform;
 
 #include "res://assets/shaders/ground_marking.gdshaderinc"
+#include "res://assets/shaders/ring_bands.gdshaderinc"
 
 // Half the plane's size, in m.
 uniform float radius = 1.62;
@@ -102,22 +103,6 @@ void vertex() {
 	NORMAL = normalize((MODELVIEW_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
 
-// Coverage of the band `b` at radius `r`, at least `min_line` pixels wide; `edge` is 1 on its
-// outline.
-float band(float r, vec2 b, float fw, out float edge) {
-	float center = (b.x + b.y) * 0.5;
-	float half_width = max((b.y - b.x) * 0.5, min_line * fw * 0.5);
-	float d = abs(r - center);
-	edge = smoothstep(half_width - 2.5 * fw, half_width - fw, d);
-	return 1.0 - smoothstep(half_width - fw, half_width, d);
-}
-
-// Coverage of a share range [from, to] of the circle at radius `r` (anti-aliased in m).
-float span(float s, float from, float to, float r, float fw) {
-	float d = max(from - s, s - to) * TAU * r;
-	return clamp(0.5 - d / fw, 0.0, 1.0);
-}
-
 // Signed distance (m, negative inside) from `p` to an arrow pointing to `share` from `base` to
 // `tip`, `half_width` wide at its notched back.
 float arrow_distance(vec2 p, float share, float base, float tip, float half_width) {
@@ -130,12 +115,6 @@ float arrow_distance(vec2 p, float share, float base, float tip, float half_widt
 	float to_side = (across - (tip - along) * slope) / sqrt(1.0 + slope * slope);
 	float to_back = base + 0.3 * length_m * (1.0 - across / half_width) - along;
 	return max(to_side, to_back);
-}
-
-vec4 over(vec4 below, vec4 above) {
-	float a = above.a + below.a * (1.0 - above.a);
-	vec3 rgb = (above.rgb * above.a + below.rgb * below.a * (1.0 - above.a)) / max(a, 0.0001);
-	return vec4(rgb, a);
 }
 
 // An arc's color at `t` (0 at its bottom, 1 at its top): `fill` lit, the rest dark, all of it
@@ -160,7 +139,7 @@ void fragment() {
 	vec4 color = vec4(0.0);
 	float edge;
 
-	float in_arc = band(r, arc_band, fw, edge);
+	float in_arc = band(r, arc_band, fw, min_line, edge);
 	if (in_arc > 0.0) {
 		float along_m = arc_span * TAU * r;
 		float in_left = span(s, 0.5 + bottom_gap, 1.0 - top_gap, r, fw);
@@ -197,7 +176,7 @@ void fragment() {
 		}
 	}
 
-	float in_spares = band(r, spare_band, fw, edge) * spare_alpha;
+	float in_spares = band(r, spare_band, fw, min_line, edge) * spare_alpha;
 	if (in_spares > 0.0 && spare_slots > 0) {
 		float step_share = min(0.034, arc_span / float(spare_slots));
 		float from_bottom = (0.5 - bottom_gap - s) / step_share;
@@ -212,7 +191,7 @@ void fragment() {
 		}
 	}
 
-	float in_heat = band(r, heat_band, fw, edge) * heat_alpha;
+	float in_heat = band(r, heat_band, fw, min_line, edge) * heat_alpha;
 	if (in_heat > 0.0) {
 		in_heat *= span(s, top_gap, 0.5 - bottom_gap, r, fw);
 		float along_m = arc_span * TAU * r;
@@ -221,14 +200,14 @@ void fragment() {
 		color = over(color, c);
 	}
 
-	float in_dash = band(r, dash_band, fw, edge) * dash_alpha;
+	float in_dash = band(r, dash_band, fw, min_line, edge) * dash_alpha;
 	if (in_dash > 0.0) {
 		vec4 c = s <= dash_fill ? dash_color : track_color;
 		c.a *= in_dash;
 		color = over(color, c);
 	}
 
-	float in_miners = band(r, miner_band, fw, edge) * miner_alpha;
+	float in_miners = band(r, miner_band, fw, min_line, edge) * miner_alpha;
 	if (in_miners > 0.0) {
 		// Clockwise is right to left at the bottom.
 		float slot = miner_span / 6.0;
@@ -249,14 +228,14 @@ void fragment() {
 		}
 	}
 
-	float in_give = band(r, give_band, fw, edge) * give_alpha;
+	float in_give = band(r, give_band, fw, min_line, edge) * give_alpha;
 	if (in_give > 0.0) {
 		vec4 c = s <= give_fill ? give_color : track_color;
 		c.a *= in_give;
 		color = over(color, c);
 	}
 
-	float in_hits = band(r, hit_band, fw, edge);
+	float in_hits = band(r, hit_band, fw, min_line, edge);
 	if (in_hits > 0.0) {
 		// Narrower outwards, so a mark reads as pointing out.
 		float outward = clamp((r - hit_band.x) / (hit_band.y - hit_band.x), 0.0, 1.0);
@@ -274,7 +253,7 @@ void fragment() {
 		}
 	}
 
-	float in_team = band(r, team_band, fw, edge) * team_alpha;
+	float in_team = band(r, team_band, fw, min_line, edge) * team_alpha;
 	if (in_team > 0.0) {
 		vec4 c = team_color;
 		c.a *= in_team;

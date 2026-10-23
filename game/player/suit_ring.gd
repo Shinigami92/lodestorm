@@ -448,7 +448,11 @@ func _place(delta: float) -> void:
 
 ## The ground direction towards the screen's top (away from the camera).
 func _screen_up() -> Vector3:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	return screen_up(get_viewport().get_camera_3d())
+
+
+## The ground direction towards the top of `camera`'s view (away from it; null: -Z).
+static func screen_up(camera: Camera3D) -> Vector3:
 	var forward := Vector3.FORWARD
 	if camera:
 		forward = -camera.global_basis.z

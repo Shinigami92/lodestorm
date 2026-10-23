@@ -13,7 +13,7 @@ The alloys, the furnaces, the ingot rack, recipe discovery (M4 step 11 A2) and t
 
 ## Crafted miners
 
-Building, the cradles, the parts with plating, six per run with standard-issue ones filling up, picking up with `interact`, losing them (M4 step 11 C1), placing and picking up taking time and the suit ring's ticks (C2), and drill hardness (D1) are built (see [Miners](../GAME_DESIGN.md#7-miners)). Still planned:
+Building, the cradles, the parts with plating, six per run with standard-issue ones filling up, picking up with `interact`, losing them (M4 step 11 C1), placing and picking up taking time and the suit ring's ticks (C2; since then as a hologram, with the miner's ring), and drill hardness (D1) are built (see [Miners](../GAME_DESIGN.md#7-miners)). Still planned:
 
-- **Art pass (M5):** a kneeling clip for placing and picking up, and the model's damage states.
+- **Art pass (M5):** the model's damage states.
 - **Later:** ore-specific drill heads from quest blueprints (+50 % on one band), shields and sentries (the support cluster, M7), more or faster furnaces as skills.

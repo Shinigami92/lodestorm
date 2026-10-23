@@ -7,9 +7,9 @@ extends StaticBody3D
 ## health it breaks down: it stops mining and the hose disconnects, so its ore can't be taken out
 ## (it keeps it). The frame blinks red until a player standing within `settings.repair_range` has
 ## repaired it completely. Players repair damaged miners that still work too.
-## Its sounds: set down with a thud, the servos' loop while it folds or unfolds (higher as it
-## unfolds), the drill's loop while it mines, the hose's while ore flows, a chime when full, an
-## alarm when it breaks down and the repair's loop while a player mends it.
+## Its sounds: set down with a thud, the servos' loop while it's placed or picked up (higher as it
+## turns real; not while that waits), the drill's loop while it mines, the hose's while ore flows,
+## a chime when full, an alarm when it breaks down and the repair's loop while a player mends it.
 ## A player's miners come from their `MinerFleet` (`take_from`): a crafted one brings its own
 ## levels (`upgrades`), which raise its fill rate (`drill_upgrade`), capacity (`tank_upgrade`), hose
 ## range and transfer rate (`hose_upgrade`) and health (`plating_upgrade`), and wears its number
@@ -20,19 +20,21 @@ extends StaticBody3D
 ## strained. Placing takes the miner that mines the node's ore fastest. Any player can pick one up
 ## with `interact` within `settings.repair_range` (`pick_up`): what's in its tank goes onto their
 ## back and the miner back to its owner's fleet, to place again.
-## Placing and picking up take time (see `MinerHandling`): meanwhile its `carrier` moves it between
-## their back and the node (`unfolded`): it lowers from the back and unfolds its legs, or the
-## reverse. Only a standing miner mines, connects its hose and can be picked up.
+## Placing and picking up take time (see `MinerHandling`): meanwhile it stands on its node as a
+## hologram that turns real from the bottom up as its `handled_by` player places it, and back into
+## a hologram from the top down as they pick it up (`built`, `MinerHologram`); its fill, number
+## plate and hose show only once it's real. Only a standing miner mines, connects its hose and can
+## be picked up. Its ring on the ground (`MinerRing`) shows its health, fill, hose range and that
+## progress.
 ##
 ## The look lives in the `Model` child, so a modeled asset can replace the greybox. The model
 ## provides these parts by name: `Fill` (scaled along Y from 0 to 1 with the fill level; it and its
 ## meshes get the ore material), `FullLamp`, `HoseOutlet`, and meshes named `Frame*` (the
-## structure that shows damage; `Frame_Legs` folds in towards the column) and `Drill` (turning about
-## its Y axis while it mines). Damage is drawn as an
-## overlay on the frame, so it works on top of any material the model brings. Parts are looked up
-## among all descendants (also inside an instanced model scene). The model's front is +Z: when the
-## miner is placed, the model turns its front toward the camera's view (plus `FACING_OFFSET`), so
-## the fill column stays in view.
+## structure that shows damage) and `Drill` (turning about its Y axis while it mines). Damage is
+## drawn as an overlay on the frame, so it works on top of any material the model brings. Parts are
+## looked up among all descendants (also inside an instanced model scene). The model's front is +Z:
+## when the miner is placed, the model turns its front toward the camera's view (plus
+## `FACING_OFFSET`), so the fill column stays in view.
 
 ## Emitted once each time the miner becomes full.
 signal filled
@@ -62,14 +64,11 @@ const FACING_OFFSET: float = 25.0
 const FLASH_DURATION: float = 0.1
 ## Blinks per second while broken.
 const BLINK_RATE: float = 2.0
-## Its size folded up on a player's back, and how far its legs reach out folded (shares).
-const BACK_SCALE: float = 0.25
-const FOLDED_LEGS: float = 0.3
-## Height of the model's middle (m), which sits at the carrier's hose port while folded.
-const MODEL_MIDDLE: float = 1.8
-## Seconds it takes to stand again when a pickup is cancelled.
+## Seconds it takes to turn real again when a pickup is cancelled.
 const STAND_TIME: float = 0.4
-## The servos' pitch folded and standing.
+## How bright the hologram is while the build waits for its player (0–1).
+const WAITING_ENERGY: float = 0.35
+## The servos' pitch as a hologram and real.
 const SERVO_PITCH := Vector2(0.8, 1.2)
 ## How fast the drill turns while it mines at full speed (radians per second).
 const DRILL_SPIN: float = 9.0
@@ -115,10 +114,12 @@ var health: float
 var broken: bool = false
 ## Horizontal radius of the body (its collision shape): attackers reach it at its surface.
 var body_radius: float
-## How far it stands: 0 folded on its `carrier`'s back, 1 standing on its node.
-var unfolded: float = 1.0
+## How far it's real: 0 only the hologram, 1 the miner itself (see `MinerHologram`).
+var built: float = 1.0
 ## The player placing or picking it up (see `MinerHandling`), or null.
-var carrier: Player
+var handled_by: Player
+## Whether placing or picking it up waits for `handled_by` to come back into range.
+var paused: bool = false
 
 var _flash_left: float = 0.0
 var _time: float = 0.0
@@ -128,13 +129,13 @@ var _drill: AudioStreamPlayer3D
 var _flow: AudioStreamPlayer3D
 var _repairing: AudioStreamPlayer3D
 var _servo: AudioStreamPlayer3D
-## The model's turn towards the camera, and where its carrier's back was last.
-var _facing := Basis.IDENTITY
-var _back: Vector3
 ## What picks it up (a fleet's miner), or null.
 var _pickup: Interactable
 ## Whether it mined in the last physics frame.
 var _mining: bool = false
+## Its look while it's placed or picked up, and its height (its collision shape's).
+var _hologram: MinerHologram
+var _height: float
 
 @onready var _model: Node3D = $Model
 @onready var _fill: Node3D = _model.find_child("Fill", true, false)
@@ -142,7 +143,6 @@ var _mining: bool = false
 @onready var _hose_outlet: Node3D = _model.find_child("HoseOutlet", true, false)
 @onready var _hose: Hose = $Hose
 @onready var _plate: Node3D = _model.get_node_or_null(^"Plate") as Node3D
-@onready var _legs: Node3D = _model.find_child("Frame_Legs", true, false) as Node3D
 @onready var _drill_bit: Node3D = _model.find_child("Drill", true, false) as Node3D
 
 
@@ -153,12 +153,17 @@ func _ready() -> void:
 		# Picked up earlier in this run: its damage comes along.
 		health = minf(crafted.health, health)
 		broken = health == 0.0
-	body_radius = (($CollisionShape3D as CollisionShape3D).shape as CylinderShape3D).radius
-	# Posed every frame while it folds, not between physics steps.
-	_model.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	var body := ($CollisionShape3D as CollisionShape3D).shape as CylinderShape3D
+	body_radius = body.radius
+	_height = body.height
 	_face_camera()
-	_facing = _model.global_basis
-	_back = global_position
+	# The fill and the plate don't show as a hologram.
+	var parts: Array[MeshInstance3D] = []
+	for mesh: MeshInstance3D in _meshes(_model):
+		var in_fill: bool = mesh == _fill or _fill.is_ancestor_of(mesh)
+		if not in_fill and not (_plate and _plate.is_ancestor_of(mesh)):
+			parts.append(mesh)
+	_hologram = MinerHologram.new(parts)
 	if ore_type:
 		# In sync with the deposit it stands on (see `OreGlow.phase_at`).
 		var phase: float = OreGlow.phase_at(global_position)
@@ -182,10 +187,13 @@ func _ready() -> void:
 		_add_pickup()
 	_update_gauge()
 	_update_frame()
+	var ring := MinerRing.new()
+	ring.name = "Ring"
+	add_child(ring)
 	if is_standing():
 		Sfx.play_at(PLACE_SOUND, global_position)
 	else:
-		_pose()
+		_show_built()
 
 
 func _physics_process(delta: float) -> void:
@@ -223,20 +231,21 @@ func _physics_process(delta: float) -> void:
 		)
 	_flow = _loop(_flow, HOSE_SOUND, flowing)
 	_repairing = _loop(_repairing, REPAIR_SOUND, mending)
-	_servo = _loop(_servo, SERVO_SOUND, not standing)
+	_servo = _loop(_servo, SERVO_SOUND, not standing and not paused)
 	if _servo:
-		_servo.pitch_scale = lerpf(SERVO_PITCH.x, SERVO_PITCH.y, unfolded)
+		_servo.pitch_scale = lerpf(SERVO_PITCH.x, SERVO_PITCH.y, built)
 
 
 func _process(delta: float) -> void:
 	_time += delta
-	if not is_instance_valid(carrier) and unfolded < 1.0:
-		# A pickup cancelled: it stands again.
-		unfolded = move_toward(unfolded, 1.0, delta / STAND_TIME)
-		if unfolded >= 1.0:
+	if not is_instance_valid(handled_by) and built < 1.0:
+		# A pickup cancelled: it turns real again.
+		paused = false
+		built = move_toward(built, 1.0, delta / STAND_TIME)
+		if built >= 1.0:
 			stand()
-	if unfolded < 1.0:
-		_pose()
+	if not is_standing():
+		_show_built()
 	if _mining and _drill_bit:
 		var spin: float = settings.soft_drill_share if is_drill_too_soft() else 1.0
 		_drill_bit.rotate_y(DRILL_SPIN * spin * delta)
@@ -258,15 +267,17 @@ func is_full() -> bool:
 ## Whether it stands on its node, nobody placing or picking it up: only then it mines, connects
 ## its hose and can be picked up.
 func is_standing() -> bool:
-	return unfolded >= 1.0 and not is_instance_valid(carrier)
+	return built >= 1.0 and not is_instance_valid(handled_by)
 
 
-## Sets it down for good (placing done, or standing again after a cancelled pickup): it stands
-## and lands with a thud.
+## Makes it real for good (placing done, or real again after a cancelled pickup), with a thud.
 func stand() -> void:
-	unfolded = 1.0
-	carrier = null
-	_pose()
+	built = 1.0
+	handled_by = null
+	paused = false
+	_hologram.hide()
+	_show_plate()
+	_update_gauge()
 	Sfx.play_at(PLACE_SOUND, global_position)
 
 
@@ -379,8 +390,8 @@ func _loop(playing: AudioStreamPlayer3D, sound: Sound, on: bool) -> AudioStreamP
 
 func _update_gauge() -> void:
 	var ratio: float = amount / capacity()
-	# A zero scale makes the basis singular, so hide the fill instead.
-	_fill.visible = ratio > 0.0
+	# A zero scale makes the basis singular, so hide the fill instead; a hologram has none.
+	_fill.visible = ratio > 0.0 and not _hologram.shown
 	_fill.scale = Vector3(1.0, maxf(ratio, 0.001), 1.0)
 	_full_lamp.visible = is_full()
 
@@ -433,11 +444,11 @@ func _fastest(from_fleet: MinerFleet) -> CraftedMiner:
 
 
 ## Shows the number plate: a crafted miner's number above a strip in its owner's color, a
-## standard-issue miner's plain grey plate; loose miners have none.
+## standard-issue miner's plain grey plate; loose miners and holograms have none.
 func _show_plate() -> void:
 	if not _plate:
 		return
-	_plate.visible = fleet != null
+	_plate.visible = fleet != null and not _hologram.shown
 	var label := _plate.get_node(^"Number") as Label3D
 	label.text = crafted.plate() if crafted else ""
 	var strip := _plate.get_node(^"Strip") as MeshInstance3D
@@ -469,20 +480,15 @@ func _add_pickup() -> void:
 	_pickup.used.connect(func(player: Player) -> void: player.handling.pick_up(self))
 
 
-## Between its carrier's back (folded, small) and its node (standing): the first half of `unfolded`
-## lowers it from the back, the second unfolds its legs.
-func _pose() -> void:
-	if is_instance_valid(carrier):
-		_back = carrier.get_hose_port_position() + Vector3.DOWN * BACK_SCALE * MODEL_MIDDLE
-	var lowered: float = smoothstep(0.0, 1.0, clampf(unfolded * 2.0, 0.0, 1.0))
-	var spread: float = smoothstep(0.0, 1.0, clampf(unfolded * 2.0 - 1.0, 0.0, 1.0))
-	_model.global_transform = Transform3D(
-		_facing.scaled(Vector3.ONE * lerpf(BACK_SCALE, 1.0, lowered)),
-		_back.lerp(global_position, lowered)
-	)
-	if _legs:
-		var reach: float = lerpf(FOLDED_LEGS, 1.0, spread)
-		_legs.scale = Vector3(reach, 1.0, reach)
+## Shows it as far as it's `built`, from its foot up, and the rest as the hologram.
+func _show_built() -> void:
+	var was_shown: bool = _hologram.shown
+	# Just below its foot at 0, so nothing is real yet, and just above its top at 1.
+	var line: float = global_position.y - 0.05 + (_height + 0.1) * built
+	_hologram.show(line, WAITING_ENERGY if paused else 1.0)
+	if not was_shown:
+		_show_plate()
+		_update_gauge()
 
 
 func _face_camera() -> void:

@@ -118,7 +118,10 @@ func test_navigator_says_what_a_locked_planet_needs() -> void:
 
 func _use() -> void:
 	var use: Interactable = _core.use_point
-	_player.global_position = _core.user_spot.global_position
+	# In front of it, within reach.
+	_player.global_position = use.to_global(
+		Vector3(0.0, 0.0, use.footprint.y * 0.5 + use.interact_range - 0.3)
+	)
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(5)
 	assert_eq(_player.interact(), use)

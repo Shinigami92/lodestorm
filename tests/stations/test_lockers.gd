@@ -212,7 +212,10 @@ func test_the_weapon_wall_opens_the_own_locker() -> void:
 func _open_locker() -> LoadoutStation:
 	var locker := _ship.get_node("Rooms/Lower/Armory/Locker1") as LoadoutStation
 	var use: Interactable = locker.use_point
-	_player.global_position = locker.user_spot.global_position
+	# In front of it, within reach.
+	_player.global_position = use.to_global(
+		Vector3(0.0, 0.0, use.footprint.y * 0.5 + use.interact_range - 0.3)
+	)
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(5)
 	assert_eq(_player.interact(), use)

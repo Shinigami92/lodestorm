@@ -73,8 +73,10 @@ func _bed(number: int) -> MedBedStation:
 
 func _use_bed(number: int) -> MedBedStation:
 	var bed: MedBedStation = _bed(number)
-	await _move(bed.user_spot.global_position)
-	assert_eq(_player.interact(), bed.use_point)
+	var use: Interactable = bed.use_point
+	# In front of it, within reach.
+	await _move(use.to_global(Vector3(0.0, 0.0, use.footprint.y * 0.5 + use.interact_range - 0.3)))
+	assert_eq(_player.interact(), use)
 	return bed
 
 

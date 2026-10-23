@@ -45,10 +45,9 @@ material = SubResource("StandardMaterial3D_highlight")
 inner_radius = 0.55
 outer_radius = 0.61
 
-[node name="SkillGraph" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+[node name="SkillGraph" type="Node3D" node_paths=PackedStringArray("view_focus")]
 script = ExtResource("1_script")
 tree = ExtResource("2_tree")
-user_spot = NodePath("UserSpot")
 view_height = 3.3
 view_focus = NodePath("Graph/Focus")
 
@@ -82,10 +81,6 @@ omni_range = 3.5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
 [node name="Focus" type="Marker3D" parent="Graph"]
-
-[node name="UserSpot" type="Marker3D" parent="."]
-position = Vector3(2.4, 0, 0.6)
-rotation = Vector3(0, 1.344, 0)
 
 [node name="Use" type="Node3D" parent="."]
 script = ExtResource("5_use")

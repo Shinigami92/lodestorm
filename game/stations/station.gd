@@ -2,7 +2,7 @@ class_name Station
 extends WorldMenu
 ## An object that is the menu (see GAME_DESIGN.md, UI): a workbench, a fitting frame, a miner's
 ## maintenance pad. A player uses it with `interact` at its `Use` child (an `Interactable`), steps
-## to `user_spot`, and their camera frames it (see `WorldMenu`). Its parts (`StationPart`s) are
+## where they stand, and their camera frames it (see `WorldMenu`). Its parts (`StationPart`s) are
 ## selectable:
 ## - mouse: the cursor points at them (outlined while hovered), a click selects one;
 ## - gamepad and keyboard: `move_*` and the ui_* directions move the highlight to the nearest part
@@ -35,8 +35,6 @@ const LEADER_DOT: float = 0.035
 ## How far to either side of a direction (on screen) the highlight looks for the next part first.
 const CONE: float = deg_to_rad(60.0)
 
-## Where the player using it stands, looking along its -Z.
-@export var user_spot: Node3D
 ## The room it shares with other stations (e.g. `&"cargo_bay"`: the silos, the furnaces and the
 ## ingot rack): the directions move the highlight across all of them (never into another room).
 ## Empty: only its own parts.
@@ -246,10 +244,9 @@ func refresh() -> void:
 		card_menu.show_part(selected)
 
 
+## The player using it looks at the selected part, else at it.
 func get_look_target() -> Vector3:
-	if user_spot:
-		return user_spot.global_position - user_spot.global_basis.z
-	return global_position
+	return selected.global_position if selected else global_position
 
 
 ## Steps back one level (e.g. the navigator from a planet to the system) instead of closing.
@@ -311,9 +308,6 @@ func _picked(part: StationPart) -> void:
 func _opened() -> void:
 	if use_point:
 		use_point.enabled = false
-	if user_spot:
-		user.global_position = user_spot.global_position
-		user.reset_physics_interpolation()
 	_held.clear()
 	# A subclass may have picked what to start with already.
 	if not selected:

@@ -39,10 +39,9 @@ size = Vector3(3, 0.8, 0.05)
 material = SubResource("StandardMaterial3D_highlight")
 size = Vector3(1.9, 0.02, 0.8)
 
-[node name="WeaponStation" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+[node name="WeaponStation" type="Node3D" node_paths=PackedStringArray("view_focus")]
 script = ExtResource("1_script")
 weapons = ExtResource("2_weapons")
-user_spot = NodePath("UserSpot")
 view_height = 3.0
 view_focus = NodePath("Focus")
 
@@ -84,10 +83,6 @@ panel = NodePath("Panel")
 [node name="Panel" type="MeshInstance3D" parent="Rack"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.07)
 mesh = SubResource("BoxMesh_panel")
-
-[node name="UserSpot" type="Marker3D" parent="."]
-rotation = Vector3(0, -1.5708, 0)
-position = Vector3(-1.35, 0, 0)
 
 [node name="Focus" type="Marker3D" parent="."]
 position = Vector3(0.45, 1.25, -0.5)

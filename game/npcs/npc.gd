@@ -22,11 +22,10 @@ const TURN_SPEED: float = 5.0
 const HEAD_HEIGHT: float = 1.9
 ## Gap between the head and the bubble's tail, in m.
 const BUBBLE_GAP: float = 0.05
-## Where the player talking to them stands: this far from them (in m), turned this far (in rad)
-## from the camera's side towards the left of the screen. So they turn three quarters towards the
-## camera, and the card on their right stays free.
-const USER_DISTANCE: float = 1.3
-const USER_ANGLE: float = 1.0
+## The camera's focus while talking: this far right on screen (in m) from between them and the
+## player, at this height, so the card on their right stays in view.
+const FOCUS_RIGHT: float = 0.35
+const FOCUS_HEIGHT: float = 1.3
 
 ## Who they are and what they talk about.
 @export var profile: NpcProfile
@@ -192,7 +191,7 @@ func leave_topic() -> bool:
 
 
 func get_look_target() -> Vector3:
-	return _body.global_position if not user_spot else super()
+	return _body.global_position
 
 
 func _back() -> bool:
@@ -202,7 +201,7 @@ func _back() -> bool:
 func _opened() -> void:
 	topic = null
 	choice = 0
-	_place_user_spot()
+	_place_focus()
 	super()
 	bubble.visible = true
 	bubble.set_on_top(true)
@@ -240,25 +239,20 @@ func _listener() -> Player:
 	return user if user else Player.nearest(get_tree(), global_position, INF)
 
 
-## Puts `user_spot` (and the camera's focus) where the player talking to them stands, seen from
-## the camera (see `USER_ANGLE`); unchanged without a camera.
-func _place_user_spot() -> void:
+## Puts the camera's focus between them and the player talking to them (where they stand), a
+## little to the right on screen (see `FOCUS_RIGHT`); unchanged without a camera.
+func _place_focus() -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
-	if not camera or not user_spot:
+	if not camera or not view_focus or not user:
 		return
-	var to_camera := Vector3(camera.global_basis.z.x, 0.0, camera.global_basis.z.z)
 	var right := Vector3(camera.global_basis.x.x, 0.0, camera.global_basis.x.z)
-	if to_camera.is_zero_approx() or right.is_zero_approx():
+	if right.is_zero_approx():
 		return
-	to_camera = to_camera.normalized()
-	right = right.normalized()
-	var away: Vector3 = to_camera * cos(USER_ANGLE) - right * sin(USER_ANGLE)
-	var spot: Vector3 = global_position + away * USER_DISTANCE
-	user_spot.global_transform = Transform3D(Basis.looking_at(-away), spot)
-	if view_focus:
-		view_focus.global_position = (
-			global_position.lerp(spot, 0.5) + right * 0.35 + Vector3.UP * 1.3
-		)
+	var between: Vector3 = global_position.lerp(user.global_position, 0.5)
+	between.y = global_position.y
+	view_focus.global_position = (
+		between + right.normalized() * FOCUS_RIGHT + Vector3.UP * FOCUS_HEIGHT
+	)
 
 
 ## Keeps the bubble above the head, facing the camera.

@@ -49,11 +49,10 @@ material = SubResource("StandardMaterial3D_highlight")
 inner_radius = 1.5
 outer_radius = 1.56
 
-[node name="MinerBay" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+[node name="MinerBay" type="Node3D" node_paths=PackedStringArray("view_focus")]
 script = ExtResource("1_script")
 settings = ExtResource("11_settings")
 model_scene = ExtResource("6_model")
-user_spot = NodePath("UserSpot")
 view_height = 6.6
 view_focus = NodePath("Focus")
 
@@ -134,10 +133,6 @@ outline_size = 16
 
 [node name="Cradles" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.4)
-
-[node name="UserSpot" type="Marker3D" parent="."]
-rotation = Vector3(0, -1.5708, 0)
-position = Vector3(-2, 0, 0.4)
 
 [node name="Focus" type="Marker3D" parent="."]
 position = Vector3(0.6, 1, -1.1)

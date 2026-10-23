@@ -349,7 +349,10 @@ func _open_station(room: String) -> UpgradeStation:
 	var station_name: String = "MinerBay" if room == "Miners" else "UpgradeStation"
 	var station := _ship.get_node("Rooms/Lower/%s/%s" % [room, station_name]) as UpgradeStation
 	var use: Interactable = station.use_point
-	_player.global_position = station.user_spot.global_position
+	# In front of it, within reach.
+	_player.global_position = use.to_global(
+		Vector3(0.0, 0.0, use.footprint.y * 0.5 + use.interact_range - 0.3)
+	)
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(5)
 	assert_eq(_player.interact(), use, room)

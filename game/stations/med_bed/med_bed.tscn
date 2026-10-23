@@ -14,9 +14,8 @@ albedo_color = Color(1, 0.75, 0.3, 1)
 material = SubResource("StandardMaterial3D_highlight")
 size = Vector3(1.4, 0.02, 2.4)
 
-[node name="MedBed" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+[node name="MedBed" type="Node3D" node_paths=PackedStringArray("view_focus")]
 script = ExtResource("1_script")
-user_spot = NodePath("UserSpot")
 view_height = 2.6
 view_focus = NodePath("Focus")
 
@@ -31,9 +30,6 @@ transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, 0, 0.82, 1)
 
 [node name="Focus" type="Marker3D" parent="."]
 position = Vector3(0.7, 0.8, 0)
-
-[node name="UserSpot" type="Marker3D" parent="."]
-position = Vector3(0, 0, 1.5)
 
 [node name="Use" type="Node3D" parent="."]
 script = ExtResource("4_use")

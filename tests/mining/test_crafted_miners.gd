@@ -1,7 +1,7 @@
 extends GutTest
 ## Placing a player's crafted and standard-issue miners, and picking them up again.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLATING: Upgrade = preload("res://game/progression/upgrades/miner_plating.tres")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 

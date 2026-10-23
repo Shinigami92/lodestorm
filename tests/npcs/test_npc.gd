@@ -1,7 +1,7 @@
 extends GutTest
 ## Crew members aboard (`Npc`): the quartermaster in the armory, talking to them, their topics.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
 
 var _map: Node3D

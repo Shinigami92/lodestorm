@@ -2,7 +2,7 @@ extends GutTest
 ## Harder ores need better drills: a drill too soft mines them slower, placing takes the miner that
 ## mines a node's ore fastest, and the drill's and the silo's cards say which level mines what.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const CARD_SCENE: PackedScene = preload("res://game/stations/upgrade/upgrade_card.tscn")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 const TANK: Upgrade = preload("res://game/progression/upgrades/miner_tank.tres")

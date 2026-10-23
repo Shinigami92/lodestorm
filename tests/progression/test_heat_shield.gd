@@ -2,7 +2,7 @@ extends GutTest
 ## The ship's heat shield: which bodies it reaches, paying its plates (hauls while it's the ship's
 ## project, the hold) and installing them (see `HeatShield`, `Ship.store_haul`).
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
 const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
 const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")

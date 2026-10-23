@@ -3,7 +3,7 @@ extends GutTest
 ## cards, starting and stopping batches, bars landing in the hold, and the way it keeps clear of
 ## the hold's silos.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const ALLOYS: AlloyCatalog = preload("res://game/refinery/all_alloys.tres")
 const COBREL: AlloyType = preload("res://game/refinery/alloys/alloy_cobrel.tres")

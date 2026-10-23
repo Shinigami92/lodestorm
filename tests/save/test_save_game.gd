@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const SETTINGS_MENU: PackedScene = preload("res://game/ui/settings_menu.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")

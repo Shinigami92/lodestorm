@@ -1,6 +1,6 @@
 extends GutTest
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PROJECTILE: PackedScene = preload("res://game/weapons/projectile.tscn")
 
 var _map: Node3D

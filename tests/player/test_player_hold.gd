@@ -2,7 +2,7 @@ extends GutTest
 ## Every player's own hold (`PlayerHold`): amounts per item, what was ever in it, paying, and every
 ## run's haul going whole to every player in the session (`Ship.store_haul`).
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")

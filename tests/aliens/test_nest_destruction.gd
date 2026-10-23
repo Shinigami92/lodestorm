@@ -3,7 +3,7 @@ extends GutTest
 ## warning, the stages, the collapse, the hive's answer and the target lock.
 
 const NEST_SCENE: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PROJECTILE: PackedScene = preload("res://game/weapons/projectile.tscn")
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const WARDEN: AlienStrain = preload("res://game/aliens/strains/warden/warden.tres")

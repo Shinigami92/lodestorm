@@ -3,7 +3,7 @@ extends GutTest
 ## settings, quit); solo the game stops meanwhile; the camera moves in while it's open, framing the
 ## card and the whole suit ring.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 ## Body text is at least this share of the view's height (GAME_DESIGN.md, UI).
 const MIN_TEXT_HEIGHT: float = 0.02

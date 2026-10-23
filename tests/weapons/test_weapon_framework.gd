@@ -2,7 +2,7 @@ extends GutTest
 ## Weapons composed of Resources: every weapon's data, its parts, the draw after switching and
 ## building a weapon from its blueprint at the workbench.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")

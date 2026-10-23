@@ -7,8 +7,11 @@ runs:
       shell: sh
       run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
 
-    - name: Cache LFS objects
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+    # Any older cache helps (only the changed objects are downloaded), but only main saves one:
+    # a pull request's cache can't be used by other branches and would only crowd out main's
+    - name: Restore LFS objects
+      id: lfs-cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: .git/lfs
         key: lfs-${{ hashFiles('.lfs-assets-id') }}
@@ -17,3 +20,16 @@ runs:
     - name: Pull LFS objects
       shell: sh
       run: git lfs pull
+
+    # Without the objects only older commits used, each saved cache stays the size of one checkout
+    - name: Prune LFS objects
+      if: github.ref == 'refs/heads/main' && steps.lfs-cache.outputs.cache-hit != 'true'
+      shell: sh
+      run: git lfs prune
+
+    - name: Save LFS objects
+      if: github.ref == 'refs/heads/main' && steps.lfs-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .git/lfs
+        key: lfs-${{ hashFiles('.lfs-assets-id') }}

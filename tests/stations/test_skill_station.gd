@@ -1,7 +1,7 @@
 extends GutTest
 ## The skill graph in the skills room (see GAME_DESIGN.md, Upgrade stations).
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const DASH: Skill = preload("res://game/progression/skills/tree/dash.tres")
 const RELOAD_ON_THE_MOVE: Skill = preload(
 	"res://game/progression/skills/tree/reload_on_the_move.tres"

@@ -557,7 +557,6 @@ func _action_just_pressed(action: StringName) -> bool:
 	return _action_held(action) and Input.is_action_just_pressed(action)
 
 
-## Drops everything and lies still until `respawn`.
 ## Passes what it achieves (weapons, blueprints, upgrade levels, skill ranks, bars refined) on to
 ## `GameEvents`.
 func _report_progress() -> void:
@@ -581,6 +580,7 @@ func _report_progress() -> void:
 	)
 
 
+## Drops everything and lies still until `respawn`.
 func _on_died() -> void:
 	if menu:
 		menu.close()

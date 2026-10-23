@@ -2,7 +2,7 @@ extends GutTest
 ## The drive core in the engine room: the heat shield's plates as parts, the card's project and
 ## payment, the plates' look by state, and the navigator's card of a body out of reach.
 
-const TEST_MAP := preload("res://tests/support/test_map.gd")
+const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
 const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
 

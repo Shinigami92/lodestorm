@@ -526,7 +526,14 @@ func _load_totals() -> void:
 	if not FileAccess.file_exists(path):
 		return
 	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
-	if not data is Dictionary or (data as Dictionary).get("version", 0) != VERSION:
+	# Totals of an older version are read as they are, so raising `VERSION` keeps everyone's (a
+	# change to a counter's meaning needs a step here); a newer game's aren't understood.
+	var version: float = INF
+	if data is Dictionary:
+		var saved: Variant = (data as Dictionary).get("version")
+		if saved is float or saved is int:
+			version = saved
+	if version > VERSION:
 		push_warning("Stats: can't read %s, keeping it as %s.corrupt" % [path, TOTALS_FILE])
 		DirAccess.rename_absolute(path, path + ".corrupt")
 		return

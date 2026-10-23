@@ -2,27 +2,63 @@
 
 Shows every local/concepts/<batch>/<subject>/*.png (new images appear while a batch renders), with stars and a
 note per image, a note per subject and duels: when the best images of a subject are tied, pick the better of two
-until they are ranked. Everything is saved in the concept database (db.py).
+until they are ranked. A "Best" view shows each subject's top image; the viewer rates with the keyboard (? lists
+the keys). Everything is saved in the concept database (db.py).
 """
 
+import ast
 import itertools
 import json
 import pathlib
+import re
 import sys
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import db
 
-PAGE = pathlib.Path(__file__).with_name("rate.html")
+HERE = pathlib.Path(__file__).parent
+PAGE = HERE / "rate.html"
 
 
-def batches() -> dict[str, dict[str, list[str]]]:
-    out: dict[str, dict[str, list[str]]] = {}
-    for b in sorted(p for p in db.ROOT.iterdir() if p.is_dir()):
+def describe(batch: str) -> tuple[str, str]:
+    """A short title and the whole description from a batch module's docstring ("Batch 8: Waypost Ostra (...)")."""
+    module = HERE / "batches" / f"{batch}.py"
+    if not module.exists():
+        return "", ""
+    doc = ast.get_docstring(ast.parse(module.read_text(encoding="utf-8"))) or ""
+    text = re.sub(r"\n*Usage:.*", "", doc, flags=re.DOTALL)
+    about = re.sub(r"^Batch \d+:\s*", "", " ".join(text.split()))
+    about = about[:1].upper() + about[1:]
+    # The short title ends before the first parenthesis, colon, comma or full stop
+    return re.split(r" \(|[:,.]", about, maxsplit=1)[0], about
+
+
+def natural(path: pathlib.Path) -> list:
+    """Sort key putting batch10 after batch9."""
+    return [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", path.name)]
+
+
+def batches() -> dict[str, dict]:
+    """{batch: {"title", "about", "rated", "total", "subjects": {subject: [file, ...]}}}, in batch number order."""
+    con = db.connect()
+    out: dict[str, dict] = {}
+    for b in sorted((p for p in db.ROOT.iterdir() if p.is_dir()), key=natural):
         subjects = {s.name: sorted(f.name for f in s.glob("*.png")) for s in sorted(b.iterdir()) if s.is_dir()}
-        if any(subjects.values()):
-            out[b.name] = subjects
+        if not any(subjects.values()):
+            continue
+        stars = {
+            (r["subject"], r["file"])
+            for r in con.execute("select subject, file from ratings where batch = ? and stars > 0", (b.name,))
+        }
+        title, about = describe(b.name)
+        out[b.name] = {
+            "title": title,
+            "about": about,
+            "total": sum(len(f) for f in subjects.values()),
+            "rated": sum((s, f) in stars for s, files in subjects.items() for f in files),
+            "subjects": subjects,
+        }
     return out
 
 

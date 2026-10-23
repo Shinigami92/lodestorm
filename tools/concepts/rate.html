@@ -5,132 +5,281 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Concept Ratings</title>
 <style>
-  :root { --bg: #111317; --panel: #1b1e24; --line: #2a2f38; --text: #d8dce3; --muted: #8a919c; --amber: #f0a83a; --cyan: #4fd6e8; }
+  :root {
+    --bg: #111317; --panel: #1b1e24; --panel2: #22262e; --line: #2a2f38; --text: #d8dce3; --muted: #8a919c;
+    --amber: #f0a83a; --cyan: #4fd6e8; --cell: 460px;
+  }
+  * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 system-ui, sans-serif; }
-  header { position: sticky; top: 0; z-index: 2; background: var(--panel); padding: 10px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
-  select, textarea, button { font: inherit; color: var(--text); background: #0d0f12; border: 1px solid #333a45; border-radius: 4px; }
-  select { padding: 4px 8px; }
+  select, textarea, input, button { font: inherit; color: var(--text); background: #0d0f12; border: 1px solid #333a45; border-radius: 4px; }
+  select { padding: 4px 8px; max-width: 100%; }
   button { padding: 4px 10px; cursor: pointer; }
-  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  button:disabled { opacity: .4; cursor: default; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 1px solid var(--line); }
+  .top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px 16px 6px; }
+  .top .grow { flex: 1; }
+  #status { color: var(--muted); font-size: 13px; }
+  #about { color: var(--muted); font-size: 13px; padding: 0 16px 6px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 16px 10px; }
   .tabs button { color: var(--muted); }
   .tabs button.on { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
   .tabs button.done::after { content: " ✓"; }
   .tabs button.tie::after { content: " ⚔"; color: var(--amber); }
-  #status { color: var(--muted); margin-left: auto; }
-  main { padding: 16px; }
+  .tabs button.on.tie::after { color: var(--bg); }
+  .tabs .best { color: var(--amber); }
   .bar { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
   .bar textarea { flex: 1; }
-  #duelbtn:disabled { opacity: .4; cursor: default; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 16px; }
-  .card { background: var(--panel); border-radius: 6px; overflow: hidden; }
-  .card img { width: 100%; display: block; cursor: zoom-in; }
+  main { padding: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--cell)), 1fr)); gap: 16px; }
+  .card { background: var(--panel); border-radius: 6px; overflow: hidden; outline: 2px solid transparent; }
+  .card.hot { outline-color: #3a4250; }
+  .card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; cursor: zoom-in; background: #0b0c0f; }
   .row { display: flex; gap: 6px; padding: 8px 10px 0; align-items: center; }
-  .row b { margin-right: auto; color: var(--muted); font-weight: 500; }
+  .row b { margin-right: auto; color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .badge { color: var(--bg); background: var(--amber); border-radius: 3px; padding: 0 6px; font-size: 13px; font-weight: 600; }
-  .star { background: none; border: 0; color: #444b57; font-size: 22px; padding: 0 2px; }
+  .badge.tie { background: none; color: var(--amber); border: 1px solid var(--amber); }
+  .star { background: none; border: 0; color: #444b57; font-size: 22px; padding: 0 2px; line-height: 1; }
   .star.on { color: var(--amber); }
-  textarea { width: 100%; min-height: 2.6em; box-sizing: border-box; padding: 4px 6px; }
+  textarea { width: 100%; min-height: 2.6em; padding: 4px 6px; }
   .card textarea { width: calc(100% - 20px); margin: 8px 10px 4px; }
   details { margin: 0 10px 10px; color: var(--muted); font-size: 13px; }
-  .overlay { position: fixed; inset: 0; background: #000e; display: none; z-index: 3; }
-  #zoom { align-items: center; justify-content: center; cursor: zoom-out; }
-  #zoom img { max-width: 100vw; max-height: 100vh; }
-  #duel { flex-direction: column; padding: 12px; box-sizing: border-box; gap: 10px; }
+  .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+  #loose { color: var(--muted); margin-bottom: 16px; }
+  .overlay { position: fixed; inset: 0; background: #07080a; display: none; z-index: 3; }
+  .overlay.open { display: flex; }
+  #viewer { flex-direction: column; }
+  #viewer .stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+  #viewer .stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  #viewer .nav { position: absolute; top: 0; bottom: 0; width: 15%; background: none; border: 0; font-size: 40px; color: #fff6; }
+  #viewer .nav:hover { color: #fff; background: #ffffff08; }
+  #viewer .prev { left: 0; } #viewer .next { right: 0; }
+  #viewer .info { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 10px 16px; background: var(--panel); }
+  #viewer .info b { font-weight: 500; }
+  #viewer .info input { flex: 1; min-width: 200px; padding: 4px 8px; }
+  #duel { flex-direction: column; padding: 12px; gap: 10px; }
   #duel .head { display: flex; gap: 12px; align-items: center; }
   #duel .head span { margin-right: auto; color: var(--muted); }
   #duel .pair { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0; }
-  #duel .pair img { width: 100%; height: 100%; object-fit: contain; cursor: pointer; border: 3px solid transparent; border-radius: 6px; box-sizing: border-box; }
+  #duel .pair img { width: 100%; height: 100%; object-fit: contain; cursor: pointer; border: 3px solid transparent; border-radius: 6px; }
   #duel .pair img:hover { border-color: var(--amber); }
-  @media (max-width: 700px) { #duel .pair { grid-template-columns: 1fr; } }
+  #help { align-items: center; justify-content: center; background: #000c; }
+  #help > div { background: var(--panel); border-radius: 8px; padding: 20px 24px; max-width: 520px; }
+  #help table { border-collapse: collapse; }
+  #help td { padding: 3px 12px 3px 0; vertical-align: top; }
+  kbd { background: #0d0f12; border: 1px solid #333a45; border-radius: 3px; padding: 0 5px; font: 13px ui-monospace, monospace; }
+  @media (max-width: 700px) {
+    #duel .pair { grid-template-columns: 1fr; }
+    .top { padding: 8px 16px 6px; }
+    .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .tabs button { flex: none; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <select id="batch" aria-label="Batch"></select>
+  <div class="top">
+    <select id="batch" aria-label="Batch"></select>
+    <select id="filter" aria-label="Filter">
+      <option value="all">All</option><option value="unrated">Unrated</option>
+      <option value="5">★5</option><option value="4">★4+</option><option value="3">★3 and less</option>
+    </select>
+    <select id="size" aria-label="Image size"><option value="300px">Small</option><option value="460px">Medium</option><option value="720px">Large</option></select>
+    <span class="grow"></span>
+    <span id="status"></span>
+    <button id="helpbtn" title="Keyboard keys (?)">?</button>
+  </div>
+  <div id="about"></div>
   <div class="tabs" id="tabs"></div>
-  <span id="status"></span>
 </header>
 <main>
-  <div class="bar">
+  <div id="loose" style="display:none"></div>
+  <div class="bar" id="subjbar">
     <textarea id="subjnote" placeholder="Notes for this whole subject"></textarea>
-    <button id="duelbtn" title="Pick the better of two among the tied best images">Duel</button>
+    <button id="duelbtn" title="Pick the better of two among the tied best images (D)">Duel</button>
   </div>
   <div class="grid" id="grid"></div>
 </main>
-<div class="overlay" id="zoom"><img alt=""></div>
+<div class="overlay" id="viewer">
+  <div class="stage">
+    <img id="vimg" alt="">
+    <button class="nav prev" id="vprev" aria-label="Previous">‹</button>
+    <button class="nav next" id="vnext" aria-label="Next">›</button>
+  </div>
+  <div class="info"><b id="vname"></b><span id="vstars"></span><input id="vnote" placeholder="Note (N)"><button id="vclose">Close (Esc)</button></div>
+</div>
 <div class="overlay" id="duel">
   <div class="head"><span id="duelinfo"></span><button id="duelreset">Start over</button><button id="duelclose">Close (Esc)</button></div>
   <div class="pair"><img id="duelL" alt="left"><img id="duelR" alt="right"></div>
 </div>
+<div class="overlay" id="help"><div>
+  <h3 style="margin-top:0">Keys</h3>
+  <table>
+    <tr><td><kbd>1</kbd>–<kbd>5</kbd>, <kbd>0</kbd></td><td>rate the image under the mouse or in the viewer, clear</td></tr>
+    <tr><td>click an image</td><td>open the viewer</td></tr>
+    <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>viewer: previous / next image (on into the next subject); duel: pick left / right</td></tr>
+    <tr><td><kbd>N</kbd></td><td>viewer: write a note</td></tr>
+    <tr><td><kbd>[</kbd> <kbd>]</kbd></td><td>previous / next subject</td></tr>
+    <tr><td><kbd>B</kbd></td><td>the Best view: each subject's top image</td></tr>
+    <tr><td><kbd>D</kbd></td><td>duel the tied best images of this subject</td></tr>
+    <tr><td><kbd>Esc</kbd></td><td>close</td></tr>
+  </table>
+  <p style="color:var(--muted);margin-bottom:0">Tabs: ✓ every image rated, ⚔ the best ones are tied (duel them). Ratings save at once.</p>
+</div></div>
 <script>
-let images = {}, state = {}, batch = "", subject = "", pair = null;
+const BEST = "★ Best";
+let info = {}, state = {}, batch = "", subject = "", pair = null, hot = null, view = null;
 const $ = (id) => document.getElementById(id);
-const sub = () => (state[subject] ??= { files: {}, note: "", duels: [] });
-const file = (f) => (sub().files[f] ??= { stars: 0, note: "" });
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+const subjects = () => Object.keys(info[batch]?.subjects ?? {});
+const filesOf = (s) => info[batch].subjects[s] ?? [];
+const st = (s) => (state[s] ??= { files: {}, note: "", duels: [] });
+const entry = (s, f) => (st(s).files[f] ??= { stars: 0, note: "" });
+const stars = (s, f) => state[s]?.files[f]?.stars ?? 0;
+const store = { get: (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
-function post(data) {
-  return fetch(`/api/save/${batch}`, { method: "POST", body: JSON.stringify({ subject, ...data }) })
+function post(s, data) {
+  return fetch(`/api/save/${batch}`, { method: "POST", body: JSON.stringify({ subject: s, ...data }) })
     .then(() => { $("status").textContent = "saved " + new Date().toLocaleTimeString(); });
+}
+
+function rate(s, f, n) {
+  const e = entry(s, f);
+  e.stars = n;
+  post(s, { kind: "rating", file: f, stars: n, note: e.note });
 }
 
 // The tied best images of a subject (at least two with the top stars), their pairs and wins.
 function duelInfo(s) {
-  const files = images[batch][s] ?? [];
-  const st = state[s] ?? { files: {}, duels: [] };
-  const stars = (f) => st.files[f]?.stars ?? 0;
-  const top = Math.max(0, ...files.map(stars));
-  const cand = top ? files.filter((f) => stars(f) === top) : [];
+  const files = filesOf(s);
+  const top = Math.max(0, ...files.map((f) => stars(s, f)));
+  const cand = top ? files.filter((f) => stars(s, f) === top) : [];
   const wins = Object.fromEntries(cand.map((f) => [f, 0]));
   const decided = new Set();
-  for (const [w, l] of st.duels) {
+  for (const [w, l] of state[s]?.duels ?? []) {
     if (w in wins && l in wins) { wins[w]++; decided.add([w, l].sort().join("|")); }
   }
   const pairs = [];
   for (let i = 0; i < cand.length; i++) for (let j = i + 1; j < cand.length; j++) pairs.push([cand[i], cand[j]]);
   const open = pairs.filter((p) => !decided.has([...p].sort().join("|")));
-  return { cand, wins, pairs, open };
+  const order = [...cand].sort((a, b) => wins[b] - wins[a]);
+  return { cand, wins, pairs, open, order, ranked: pairs.length > 0 && open.length === 0 };
+}
+
+function best(s) {
+  const d = duelInfo(s);
+  if (d.ranked) return { file: d.order[0], tie: false };
+  if (d.cand.length) return { file: d.cand[0], tie: d.cand.length > 1 };
+  return { file: filesOf(s)[0], tie: false };
+}
+
+function visible(s) {
+  const f = $("filter").value;
+  return filesOf(s).filter((file) => {
+    const n = stars(s, file);
+    return f === "all" || (f === "unrated" && !n) || (f === "5" && n === 5) || (f === "4" && n >= 4) || (f === "3" && n && n <= 3);
+  });
+}
+
+function starButtons(s, f, attr = "") {
+  const n = stars(s, f);
+  return [1, 2, 3, 4, 5].map((i) => `<button class="star ${i <= n ? "on" : ""}" data-s="${esc(s)}" data-f="${esc(f)}" data-n="${i}" ${attr} aria-label="${i} stars">★</button>`).join("");
 }
 
 async function load() {
-  images = await (await fetch("/api/batches")).json();
+  info = await (await fetch("/api/batches")).json();
   const [b, s] = decodeURIComponent(location.hash.slice(1)).split("/");
-  const names = Object.keys(images);
-  $("batch").innerHTML = names.map((n) => `<option>${n}</option>`).join("");
+  const names = Object.keys(info);
+  if (!names.length) { $("grid").innerHTML = `<div class="empty">No batches in local/concepts yet.</div>`; return; }
   batch = names.includes(b) ? b : names[names.length - 1];
-  $("batch").value = batch;
   await openBatch(s);
 }
 
 async function openBatch(s) {
   state = await (await fetch(`/api/state/${batch}`)).json();
-  const subjects = Object.keys(images[batch]);
-  subject = subjects.includes(s) ? s : subjects[0];
+  subject = s === BEST || subjects().includes(s) ? s : subjects()[0];
   render();
+}
+
+function renderHeader() {
+  const cur = info[batch];
+  cur.rated = Object.keys(cur.subjects).reduce((a, s) => a + filesOf(s).filter((f) => stars(s, f)).length, 0);
+  $("batch").innerHTML = Object.entries(info).map(([n, b]) =>
+    `<option value="${n}" ${n === batch ? "selected" : ""}>${n}${b.title ? " · " + esc(b.title) : ""} (${b.rated}/${b.total})</option>`).join("");
+  $("about").textContent = cur.about;
+  $("about").style.display = cur.about ? "" : "none";
+  const tab = (s) => {
+    const files = filesOf(s);
+    const done = files.length && files.every((f) => stars(s, f));
+    const tie = done && duelInfo(s).open.length;
+    return `<button class="${s === subject ? "on" : ""} ${tie ? "tie" : done ? "done" : ""}" data-s="${esc(s)}">${esc(s)}</button>`;
+  };
+  $("tabs").innerHTML = `<button class="best ${subject === BEST ? "on" : ""}" data-s="${BEST}">${BEST}</button>` + subjects().map(tab).join("");
+  const on = document.querySelector(".tabs .on");
+  if (on) on.parentElement.scrollLeft = on.offsetLeft - on.parentElement.offsetLeft - 16;
 }
 
 function render() {
   location.hash = `${batch}/${subject}`;
-  $("tabs").innerHTML = Object.keys(images[batch]).map((s) => {
-    const files = images[batch][s];
-    const done = files.length && files.every((f) => state[s]?.files[f]?.stars);
-    const tie = done && duelInfo(s).open.length;
-    return `<button class="${s === subject ? "on" : ""} ${tie ? "tie" : done ? "done" : ""}" data-s="${s}">${s}</button>`;
-  }).join("");
-  $("subjnote").value = sub().note;
+  renderHeader();
+  hot = null;
+  if (subject === BEST) return renderBest();
+  $("loose").style.display = "none";
+  $("subjbar").style.display = "";
+  $("subjnote").value = st(subject).note;
   const d = duelInfo(subject);
   $("duelbtn").disabled = d.pairs.length === 0;
   $("duelbtn").textContent = d.pairs.length ? `Duel (${d.pairs.length - d.open.length}/${d.pairs.length})` : "Duel";
-  const order = Object.keys(d.wins).sort((a, b) => d.wins[b] - d.wins[a]);
-  $("grid").innerHTML = images[batch][subject].map((f) => {
-    const e = sub().files[f] ?? { stars: 0, note: "" };
-    const stars = [1, 2, 3, 4, 5].map((n) => `<button class="star ${n <= e.stars ? "on" : ""}" data-f="${f}" data-n="${n}" aria-label="${n} stars">★</button>`).join("");
-    const rank = f in d.wins && d.pairs.length && !d.open.length ? `<span class="badge">#${order.indexOf(f) + 1}</span>` : "";
-    const prompt = e.prompt ? `<details><summary>prompt</summary>${e.prompt.replace(/</g, "&lt;")}</details>` : "";
-    return `<div class="card"><img src="/img/${batch}/${subject}/${f}" alt="${f}" loading="lazy">
-      <div class="row"><b>${f.replace(".png", "")}</b>${rank}${stars}</div>
-      <textarea data-f="${f}" placeholder="Note">${e.note.replace(/</g, "&lt;")}</textarea>${prompt}</div>`;
+  const files = visible(subject);
+  $("grid").innerHTML = files.length ? files.map((f) => {
+    const e = state[subject]?.files[f] ?? { note: "" };
+    const rank = d.ranked && f in d.wins ? `<span class="badge">#${d.order.indexOf(f) + 1}</span>` : "";
+    const prompt = e.prompt ? `<details><summary>prompt</summary>${esc(e.prompt)}</details>` : "";
+    return `<div class="card" data-s="${esc(subject)}" data-f="${esc(f)}"><img src="/img/${batch}/${subject}/${f}" alt="${esc(f)}" loading="lazy">
+      <div class="row"><b>${esc(f.replace(".png", ""))}</b>${rank}${starButtons(subject, f)}</div>
+      <textarea data-f="${esc(f)}" placeholder="Note">${esc(e.note)}</textarea>${prompt}</div>`;
+  }).join("") : `<div class="empty">No images match this filter.</div>`;
+}
+
+function renderBest() {
+  $("subjbar").style.display = "none";
+  // Notes on subjects without images (e.g. a rating per framing) show above the grid
+  const loose = Object.entries(state).filter(([s, v]) => v.note && !subjects().includes(s));
+  $("loose").innerHTML = loose.map(([s, v]) => `<div><b>${esc(s)}:</b> ${esc(v.note)}</div>`).join("");
+  $("loose").style.display = loose.length ? "" : "none";
+  $("grid").innerHTML = subjects().map((s) => {
+    const b = best(s);
+    if (!b.file) return "";
+    const n = stars(s, b.file);
+    const badge = b.tie ? `<span class="badge tie" title="tied: duel to decide">tie</span>` : n ? `<span class="badge">${"★".repeat(n)}</span>` : "";
+    return `<div class="card" data-s="${esc(s)}" data-f="${esc(b.file)}" data-jump="1"><img src="/img/${batch}/${s}/${b.file}" alt="${esc(s)}" loading="lazy">
+      <div class="row" style="padding-bottom:10px"><b>${esc(s)} · ${esc(b.file.replace(".png", ""))}</b>${badge}</div></div>`;
   }).join("");
 }
+
+// The viewer walks the visible images of the subject, then on into the next subject.
+function openViewer(s, f) { view = { s, f }; showViewer(); $("viewer").classList.add("open"); }
+function showViewer() {
+  const { s, f } = view;
+  const list = visible(s).length ? visible(s) : filesOf(s);
+  $("vimg").src = `/img/${batch}/${s}/${f}`;
+  $("vname").textContent = `${s} / ${f.replace(".png", "")} · ${list.indexOf(f) + 1}/${list.length}`;
+  $("vstars").innerHTML = starButtons(s, f, 'data-v="1"');
+  $("vnote").value = state[s]?.files[f]?.note ?? "";
+}
+function step(dir) {
+  const subs = subjects();
+  let si = subs.indexOf(view.s), list = visible(view.s), i = list.indexOf(view.f) + dir;
+  while (i < 0 || i >= list.length) {
+    si = (si + dir + subs.length) % subs.length;
+    list = visible(subs[si]);
+    i = dir > 0 ? 0 : list.length - 1;
+    if (subs[si] === view.s && !list.length) return;
+  }
+  view = { s: subs[si], f: list[i] };
+  if (subject !== BEST && view.s !== subject) { subject = view.s; render(); }
+  showViewer();
+}
+function closeViewer() { view = null; $("viewer").classList.remove("open"); render(); }
 
 function showDuel() {
   const d = duelInfo(subject);
@@ -138,61 +287,114 @@ function showDuel() {
   pair = Math.random() < 0.5 ? d.open[0] : [...d.open[0]].reverse();
   $("duelL").src = `/img/${batch}/${subject}/${pair[0]}`;
   $("duelR").src = `/img/${batch}/${subject}/${pair[1]}`;
-  $("duelinfo").textContent = `${subject}: which is better? (click or ←/→) — ${d.pairs.length - d.open.length + 1}/${d.pairs.length}`;
-  $("duel").style.display = "flex";
+  $("duelinfo").textContent = `${subject}: which is better? (click or ←/→) · ${d.pairs.length - d.open.length + 1}/${d.pairs.length}`;
+  $("duel").classList.add("open");
 }
-
 async function pick(i) {
   if (!pair) return;
   const [winner, loser] = i === 0 ? pair : [pair[1], pair[0]];
-  sub().duels = sub().duels.filter(([w, l]) => !(new Set([w, l, winner, loser]).size === 2));
-  sub().duels.push([winner, loser]);
+  st(subject).duels = st(subject).duels.filter(([w, l]) => new Set([w, l, winner, loser]).size !== 2);
+  st(subject).duels.push([winner, loser]);
   pair = null;
-  await post({ kind: "duel", winner, loser });
+  await post(subject, { kind: "duel", winner, loser });
   render();
   showDuel();
 }
-
-function closeDuel() { pair = null; $("duel").style.display = "none"; render(); }
+function closeDuel() { pair = null; $("duel").classList.remove("open"); render(); }
+async function resetDuels() { st(subject).duels = []; await post(subject, { kind: "reset_duels" }); render(); showDuel(); }
+function startDuel() {
+  if (subject === BEST || !duelInfo(subject).pairs.length) return;
+  if (duelInfo(subject).open.length) showDuel(); else if (confirm("Ranked already. Duel again from the start?")) resetDuels();
+}
+function goSubject(dir) {
+  const subs = [BEST, ...subjects()];
+  subject = subs[(subs.indexOf(subject) + dir + subs.length) % subs.length];
+  render();
+  window.scrollTo(0, 0);
+}
 
 $("batch").onchange = (ev) => { batch = ev.target.value; openBatch(); };
+$("filter").onchange = (ev) => { store.set("filter", ev.target.value); render(); };
+$("size").onchange = (ev) => { store.set("size", ev.target.value); document.documentElement.style.setProperty("--cell", ev.target.value); };
 $("tabs").onclick = (ev) => { if (ev.target.dataset.s) { subject = ev.target.dataset.s; render(); } };
 $("grid").onclick = (ev) => {
-  const t = ev.target;
+  const t = ev.target, card = t.closest(".card");
   if (t.classList.contains("star")) {
-    const e = file(t.dataset.f), n = +t.dataset.n;
-    e.stars = e.stars === n ? 0 : n;
-    post({ kind: "rating", file: t.dataset.f, stars: e.stars, note: e.note });
+    const n = +t.dataset.n;
+    rate(t.dataset.s, t.dataset.f, stars(t.dataset.s, t.dataset.f) === n ? 0 : n);
     render();
-  } else if (t.tagName === "IMG") {
-    $("zoom").querySelector("img").src = t.src; $("zoom").style.display = "flex";
+  } else if (t.tagName === "IMG" && card) {
+    if (card.dataset.jump) { subject = card.dataset.s; render(); window.scrollTo(0, 0); } else openViewer(card.dataset.s, card.dataset.f);
   }
+};
+$("grid").onmouseover = (ev) => {
+  const card = ev.target.closest(".card");
+  document.querySelectorAll(".card.hot").forEach((c) => c !== card && c.classList.remove("hot"));
+  if (card && !card.dataset.jump) { card.classList.add("hot"); hot = { s: card.dataset.s, f: card.dataset.f }; } else hot = null;
 };
 $("grid").oninput = (ev) => {
   const f = ev.target.dataset.f;
-  if (f) { const e = file(f); e.note = ev.target.value; post({ kind: "rating", file: f, stars: e.stars, note: e.note }); }
+  if (f) { const e = entry(subject, f); e.note = ev.target.value; post(subject, { kind: "rating", file: f, stars: e.stars, note: e.note }); }
 };
-$("subjnote").oninput = (ev) => { sub().note = ev.target.value; post({ kind: "note", note: ev.target.value }); };
-$("zoom").onclick = () => { $("zoom").style.display = "none"; };
-$("duelbtn").onclick = () => { if (duelInfo(subject).open.length) showDuel(); else if (confirm("Ranked already. Duel again from the start?")) resetDuels(); };
+$("subjnote").oninput = (ev) => { st(subject).note = ev.target.value; post(subject, { kind: "note", note: ev.target.value }); };
+$("vstars").onclick = (ev) => {
+  const t = ev.target;
+  if (t.classList.contains("star")) { const n = +t.dataset.n; rate(view.s, view.f, stars(view.s, view.f) === n ? 0 : n); showViewer(); renderHeader(); }
+};
+$("vnote").oninput = (ev) => { const e = entry(view.s, view.f); e.note = ev.target.value; post(view.s, { kind: "rating", file: view.f, stars: e.stars, note: e.note }); };
+$("vprev").onclick = () => step(-1);
+$("vnext").onclick = () => step(1);
+$("vclose").onclick = closeViewer;
+$("duelbtn").onclick = startDuel;
 $("duelL").onclick = () => pick(0);
 $("duelR").onclick = () => pick(1);
 $("duelclose").onclick = closeDuel;
-$("duelreset").onclick = () => resetDuels();
-async function resetDuels() { sub().duels = []; await post({ kind: "reset_duels" }); render(); showDuel(); }
+$("duelreset").onclick = resetDuels;
+$("helpbtn").onclick = () => $("help").classList.add("open");
+$("help").onclick = () => $("help").classList.remove("open");
+
 document.addEventListener("keydown", (ev) => {
-  if ($("duel").style.display !== "flex") { if (ev.key === "Escape") $("zoom").style.display = "none"; return; }
-  if (ev.key === "ArrowLeft") pick(0);
-  else if (ev.key === "ArrowRight") pick(1);
-  else if (ev.key === "Escape") closeDuel();
+  const typing = ["TEXTAREA", "INPUT"].includes(document.activeElement?.tagName);
+  if (ev.key === "Escape") {
+    if (typing) { document.activeElement.blur(); return; }
+    if ($("help").classList.contains("open")) $("help").classList.remove("open");
+    else if (pair) closeDuel(); else if (view) closeViewer();
+    return;
+  }
+  if (typing || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  if (pair) { if (ev.key === "ArrowLeft") pick(0); else if (ev.key === "ArrowRight") pick(1); return; }
+  const target = view ?? hot;
+  if (/^[0-5]$/.test(ev.key) && target) {
+    rate(target.s, target.f, +ev.key);
+    if (view) { showViewer(); renderHeader(); } else render();
+  } else if (view && ev.key === "ArrowLeft") step(-1);
+  else if (view && ev.key === "ArrowRight") step(1);
+  else if (view && ev.key.toLowerCase() === "n") { ev.preventDefault(); $("vnote").focus(); }
+  else if (!view && ev.key === "[") goSubject(-1);
+  else if (!view && ev.key === "]") goSubject(1);
+  else if (!view && ev.key.toLowerCase() === "b") { subject = BEST; render(); }
+  else if (!view && ev.key.toLowerCase() === "d") startDuel();
+  else if (ev.key === "?") $("help").classList.add("open");
 });
+
+// Back/forward and pasted links: follow the hash when it differs from what's shown
+window.addEventListener("hashchange", () => {
+  const [b, s] = decodeURIComponent(location.hash.slice(1)).split("/");
+  if (b === batch && s === subject) return;
+  if (b !== batch && b in info) { batch = b; openBatch(s); } else if (s === BEST || subjects().includes(s)) { subject = s; render(); }
+});
+$("filter").value = store.get("filter", "all");
+$("size").value = store.get("size", "460px");
+document.documentElement.style.setProperty("--cell", $("size").value);
 setInterval(async () => {
   const fresh = await (await fetch("/api/batches")).json();
-  if (JSON.stringify(fresh) !== JSON.stringify(images)) {
-    images = fresh;
-    state = await (await fetch(`/api/state/${batch}`)).json();
-    if (document.activeElement?.tagName !== "TEXTAREA" && !pair) render();
-  }
+  const shape = (o) => JSON.stringify(Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v.subjects])));
+  if (shape(fresh) === shape(info)) return;
+  const known = batch in fresh;
+  info = fresh;
+  if (!known) return load();
+  state = await (await fetch(`/api/state/${batch}`)).json();
+  if (document.activeElement?.tagName !== "TEXTAREA" && !pair && !view) render(); else renderHeader();
 }, 10000);
 load();
 </script>

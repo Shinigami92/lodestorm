@@ -6,6 +6,7 @@ const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 var _map: Node3D
 var _player: Player
 var _mission: Mission
+var _voyage: Voyage
 var _ship: Ship
 
 
@@ -14,6 +15,7 @@ func before_each() -> void:
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_ship = _map.get_node("Ship") as Ship
 	_ship.ramp_duration = 0.25
 	await wait_physics_frames(2)
@@ -153,7 +155,7 @@ func test_next_mission_resets_timer_and_outside_world() -> void:
 	assert_not_null(_player.place_miner())
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
-	var old_location: Node3D = _mission.location
+	var old_location: Node3D = _voyage.location
 	await wait_physics_frames(2)
 	assert_false(_ship.ramp_button.enabled, "the mission is done: pick the next one")
 
@@ -163,7 +165,7 @@ func test_next_mission_resets_timer_and_outside_world() -> void:
 	assert_false(is_instance_valid(old_location), "the old outside world is gone")
 	assert_eq(_mission.state, Mission.State.OPEN)
 	assert_eq(_mission.time_left, _mission.duration())
-	assert_eq(_mission.location, _map.get_node("Location"))
+	assert_eq(_voyage.location, _map.get_node("Location"))
 	var fresh_node: OreNode = _map.get_node("Location/OreNodes/KyriteA")
 	assert_true(fresh_node.is_free(), "no miner from the last run")
 	await _move(_player, _outside())

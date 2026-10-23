@@ -7,7 +7,9 @@ const NEST_SCENE: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn"
 
 var _map: Node3D
 var _mission: Mission
+var _voyage: Voyage
 var _settings: MissionSettings
+var _voyage_settings: VoyageSettings
 var _ship: Ship
 
 
@@ -15,7 +17,9 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_settings = _mission.settings
+	_voyage_settings = _voyage.settings
 	_ship = _map.get_node("Ship") as Ship
 	await wait_physics_frames(2)
 
@@ -28,27 +32,31 @@ func test_tier_1_keeps_the_settings() -> void:
 	assert_eq(_settings.alien_health_at(1), 1.0)
 	assert_eq(_settings.alien_damage_at(1), 1.0)
 	for difficulty: MissionBrief.Difficulty in MissionBrief.Difficulty.values():
-		assert_eq(_settings.nest_factor_at(difficulty, 1), _settings.nest_factors[difficulty])
+		assert_eq(
+			_voyage_settings.nest_factor_at(difficulty, 1),
+			_voyage_settings.nest_factors[difficulty]
+		)
 
 
 func test_no_body_counts_as_tier_1() -> void:
-	assert_null(_mission.brief)
+	assert_null(_voyage.brief)
 	assert_eq(_mission.tier(), 1)
 
 
 func test_each_tier_scales_aliens_nests_and_the_storm() -> void:
 	var offer: MissionBrief = _open_offer_of_tier(6)
 	assert_not_null(offer, "Zairen's regions")
-	_mission.select(offer)
-	_mission.skip_flight()
+	_voyage.select(offer)
+	_voyage.skip_flight()
 	assert_eq(_mission.tier(), 6)
 	# Five tiers above the first.
 	assert_almost_eq(_settings.alien_health_at(6), 1.0 + 5 * _settings.alien_health_per_tier, 1e-5)
 	assert_almost_eq(_settings.alien_damage_at(6), 1.0 + 5 * _settings.alien_damage_per_tier, 1e-5)
 	var nests: float = (
-		_settings.nest_factors[offer.difficulty] * (1.0 + 5 * _settings.nests_per_tier)
+		_voyage_settings.nest_factors[offer.difficulty]
+		* (1.0 + 5 * _voyage_settings.nests_per_tier)
 	)
-	assert_almost_eq(_settings.nest_factor_at(offer.difficulty, 6), nests, 1e-5)
+	assert_almost_eq(_voyage_settings.nest_factor_at(offer.difficulty, 6), nests, 1e-5)
 	assert_eq(_mission.warning_time(), _settings.warning_time + 5 * _settings.warning_time_per_tier)
 	_mission.storm_time = 2.0
 	var growth: float = _settings.storm_damage_growth * (1.0 + 5 * _settings.storm_growth_per_tier)
@@ -67,8 +75,8 @@ func test_design_values_from_torvane_to_zairen() -> void:
 
 
 func test_aliens_hatch_stronger_farther_in() -> void:
-	_mission.select(_open_offer_of_tier(3))
-	_mission.skip_flight()
+	_voyage.select(_open_offer_of_tier(3))
+	_voyage.skip_flight()
 	var nest := NEST_SCENE.instantiate() as AlienNest
 	nest.position = _ship.to_global(Vector3(55.0, 0.0, 0.0))
 	_map.add_child(nest)
@@ -90,8 +98,8 @@ func test_aliens_hatch_stronger_farther_in() -> void:
 func _open_offer_of_tier(tier: int) -> MissionBrief:
 	while _ship.heat_shield.install_next():
 		pass
-	for offer: MissionBrief in _mission.offers:
-		var body: CelestialBody = _settings.system.body_of(offer.region)
+	for offer: MissionBrief in _voyage.offers:
+		var body: CelestialBody = _voyage_settings.system.body_of(offer.region)
 		if body and body.tier == tier:
 			return offer
 	return null

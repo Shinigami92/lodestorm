@@ -74,6 +74,8 @@ const RAMP_HINT_SCENE: PackedScene = preload("res://game/ship/ramp_hint.tscn")
 
 ## The mission whose time the countdown shows; set by the mission.
 var mission: Mission
+## Where the ship goes (the mission it flies to or stands at); set by the voyage.
+var voyage: Voyage
 ## The mission time's current color (countdown, ship pointer).
 var status_color: Color = COLOR_CALM
 ## The status color's current brightness (0 to 1), dims while blinking.
@@ -266,7 +268,7 @@ func _update_display() -> void:
 	elif mission.state == Mission.State.STORM:
 		status_color = COLOR_WARNING
 		countdown_text = tr("Storm")
-	elif not mission.brief:
+	elif not voyage or not voyage.brief:
 		status_color = COLOR_CALM
 		countdown_text = tr("No mission")
 	else:

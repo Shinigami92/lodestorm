@@ -313,7 +313,7 @@ func _process(_delta: float) -> void:
 	var lines: PackedStringArray = []
 	if mission:
 		lines.append("Mission: %s" % Mission.State.keys()[mission.state])
-		var flight: ShipFlight = mission.flight
+		var flight: ShipFlight = mission.ship.flight
 		lines.append(
 			(
 				"Flight: %s (%.1f / %.1f s)"
@@ -372,7 +372,7 @@ func _process(_delta: float) -> void:
 	var running: bool = mission != null and mission.state == Mission.State.RUNNING
 	for button: Button in _time_buttons:
 		button.disabled = not running
-	_skip_flight_button.disabled = mission == null or not mission.flight.is_flying()
+	_skip_flight_button.disabled = mission == null or not mission.ship.flight.is_flying()
 	for button: Button in _nest_buttons:
 		button.disabled = nests == 0
 	_kill_aliens_button.disabled = aliens.is_empty()
@@ -399,9 +399,9 @@ func start_storm() -> void:
 
 ## Ends the ship's flight right away (only while it flies).
 func skip_flight() -> void:
-	var mission: Mission = _mission()
-	if mission and mission.flight.is_flying():
-		mission.skip_flight()
+	var voyage := get_tree().get_first_node_in_group(Voyage.GROUP) as Voyage
+	if voyage and voyage.flight.is_flying():
+		voyage.skip_flight()
 
 
 ## Kills every player, in god mode too.

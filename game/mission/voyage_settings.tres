@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VoyageSettings" format=3 uid="uid://i1xt4ygx67x3"]
+
+[ext_resource type="Script" uid="uid://dyqed2ofwsrfe" path="res://game/mission/voyage_settings.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bw4gdvse5p2xr" path="res://game/world/star_system.tres" id="2_system"]
+
+[resource]
+script = ExtResource("1_script")
+system = ExtResource("2_system")

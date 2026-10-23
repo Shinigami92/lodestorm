@@ -2,7 +2,7 @@ class_name MissionBrief
 extends Resource
 ## One mission on offer at the navigator: where it goes (a generated location of `biome` from
 ## `world_seed`: a section of `region`), how long until the storm (`length`) and how many nests
-## wait there (`difficulty`). The mission offers one per open region (see `Mission.offers`).
+## wait there (`difficulty`). The mission offers one per open region (see `Voyage.offers`).
 
 enum Difficulty { EASY, NORMAL, HARD }
 

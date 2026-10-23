@@ -11,6 +11,7 @@ const SIGNATURE_ORE: OreType = preload("res://game/ores/types/ore_aethrine.tres"
 
 var _map: Node3D
 var _mission: Mission
+var _voyage: Voyage
 var _player: Player
 var _ship: Ship
 var _nest: AlienNest
@@ -20,6 +21,7 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_player = _map.get_node("Player") as Player
 	_ship = _map.get_node("Ship") as Ship
 	# The location's own nests would get in the way.
@@ -75,8 +77,8 @@ func test_hunters_go_for_players_far_away() -> void:
 
 func test_hunters_find_their_way_around_the_nest() -> void:
 	# A nest of the location itself: only those are part of its navigation mesh.
-	_mission.reset_location()
-	var nest: AlienNest = _mission.location.get_node("AlienNests/South") as AlienNest
+	_voyage.reset_location()
+	var nest: AlienNest = _voyage.location.get_node("AlienNests/South") as AlienNest
 	await _start_mission()
 	# Its guards wait at random spots around it: one in the hunter's way holds it up a while.
 	for alien: Node in get_tree().get_nodes_in_group(Alien.GROUP).filter(nest.is_ancestor_of):
@@ -171,14 +173,14 @@ func test_escalation_follows_mission_progress() -> void:
 
 
 func test_test_location_has_nests() -> void:
-	var location: Node = _mission.location
+	var location: Node = _voyage.location
 	var nests: Array[Node] = get_tree().get_nodes_in_group(AlienNest.GROUP).filter(
 		location.is_ancestor_of
 	)
 	assert_eq(nests.size(), 0, "freed in before_each")
-	_mission.reset_location()
+	_voyage.reset_location()
 	await wait_physics_frames(2)
-	nests = get_tree().get_nodes_in_group(AlienNest.GROUP).filter(_mission.location.is_ancestor_of)
+	nests = get_tree().get_nodes_in_group(AlienNest.GROUP).filter(_voyage.location.is_ancestor_of)
 	assert_gt(nests.size(), 0)
 
 
@@ -203,7 +205,7 @@ func _set_raider_interval(seconds: float) -> void:
 
 ## A miner on an ore node of the location (far from the nest, nobody repairs it).
 func _place_miner() -> Miner:
-	var node: OreNode = _mission.location.get_node("OreNodes/KyriteA") as OreNode
+	var node: OreNode = _voyage.location.get_node("OreNodes/KyriteA") as OreNode
 	return node.place_miner(_player.miner_scene)
 
 

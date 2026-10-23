@@ -134,12 +134,12 @@ func test_resources_are_saved_by_uid() -> void:
 
 ## The heat shield (level, project, what's paid) and where the ship is are the host's.
 func test_heat_shield_and_position_are_saved() -> void:
-	var mission := _map.get_node("Mission") as Mission
+	var voyage := _map.get_node("Voyage") as Voyage
 	_ship.heat_shield.install_next()
 	_ship.heat_shield.set_project()
 	_ship.heat_shield.take_from({MERIDINE: 120.0})
-	var lisk: CelestialBody = mission.settings.system.body_by_id(&"lisk")
-	mission.at_body = lisk
+	var lisk: CelestialBody = voyage.settings.system.body_by_id(&"lisk")
+	voyage.at_body = lisk
 	_ship.heat_shield.emit_changed()
 	await wait_process_frames(1)
 	var saved: Dictionary = _saved(SaveGame.SHIP_FILE)
@@ -151,12 +151,12 @@ func test_heat_shield_and_position_are_saved() -> void:
 	assert_eq(mk, 2.0)
 	assert_true(project)
 	await _restart()
-	mission = _map.get_node("Mission") as Mission
+	voyage = _map.get_node("Voyage") as Voyage
 	assert_eq(_ship.heat_shield.mk, 2)
 	assert_true(_ship.heat_shield.project)
-	assert_eq(mission.at_body, lisk)
-	var vehra: Region = mission.settings.system.body_by_id(&"vehra").regions[0]
-	assert_not_null(mission.offer_for(vehra), "the planet it opened offers missions again")
+	assert_eq(voyage.at_body, lisk)
+	var vehra: Region = voyage.settings.system.body_by_id(&"vehra").regions[0]
+	assert_not_null(voyage.offer_for(vehra), "the planet it opened offers missions again")
 
 
 func test_damaged_heat_shield_and_position_are_skipped() -> void:
@@ -167,15 +167,15 @@ func test_damaged_heat_shield_and_position_are_skipped() -> void:
 	}
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	await _restart()
-	var mission := _map.get_node("Mission") as Mission
+	var voyage := _map.get_node("Voyage") as Voyage
 	assert_eq(_ship.heat_shield.mk, _ship.heat_shield.max_mk(), "clamped")
 	assert_false(_ship.heat_shield.project)
-	assert_eq(mission.at_body, mission.settings.system.body_by_id(&"zairen"))
+	assert_eq(voyage.at_body, voyage.settings.system.body_by_id(&"zairen"))
 	ship_data["shield"] = {"mk": 1}
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	await _restart()
-	mission = _map.get_node("Mission") as Mission
-	assert_null(mission.at_body, "out of the shield's reach")
+	voyage = _map.get_node("Voyage") as Voyage
+	assert_null(voyage.at_body, "out of the shield's reach")
 
 
 ## Version 1 saved paths, from before the resources moved into game/ (and three ores were renamed).

@@ -53,8 +53,8 @@ const HUB_RADIUS: float = 0.38
 @export var front_right_edge: float = 6.2
 @export var front_lane_margin: float = 2.6
 
-## The mission (for where ores are found); found in the scene tree when not set.
-var mission: Mission
+## Where the ship goes (for where ores are found); found in the scene tree when not set.
+var voyage: Voyage
 
 var _tanks: Dictionary[OreType, OreTank] = {}
 ## The hold the silos show right now.
@@ -73,8 +73,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	super(delta)
-	if not mission:
-		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
+	if not voyage:
+		voyage = get_tree().get_first_node_in_group(Voyage.GROUP) as Voyage
 	var shown: Player = user if user else _viewer()
 	show_hold(shown.hold if shown else null)
 
@@ -348,4 +348,4 @@ static func _left_to_right(row: Array[OreTank]) -> Array[StationPart]:
 
 
 func _system() -> StarSystem:
-	return mission.settings.system if mission and mission.settings else null
+	return voyage.settings.system if voyage and voyage.settings else null

@@ -9,6 +9,7 @@ const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 var _map: Node3D
 var _player: Player
 var _mission: Mission
+var _voyage: Voyage
 var _navigator: NavigatorStation
 var _system: StarSystem
 
@@ -18,8 +19,9 @@ func before_each() -> void:
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_navigator = _map.get_node("Ship/Rooms/Upper/Bridge/Navigator") as NavigatorStation
-	_system = _mission.settings.system
+	_system = _voyage.settings.system
 	await wait_physics_frames(2)
 	_navigator.open(_player)
 	await wait_process_frames(2)
@@ -67,10 +69,10 @@ func test_routes_lead_from_the_ship() -> void:
 	var lisk: CelestialBody = _body("Lisk")
 	assert_eq(_navigator.ship_body(), torvane, "the first planet before any flight")
 	assert_eq(_routes(), {lisk: false}, "the only other body it can go to")
-	assert_true(_mission.choose(_mission.offer_for(lisk.regions[0])))
+	assert_true(_voyage.choose(_voyage.offer_for(lisk.regions[0])))
 	assert_eq(_routes(), {lisk: true}, "the destination's route")
-	assert_true(_mission.confirm())
-	assert_eq(_mission.at_body, lisk)
+	assert_true(_voyage.confirm())
+	assert_eq(_voyage.at_body, lisk)
 	assert_eq(_navigator.ship_body(), lisk)
 	assert_eq(_routes(), {torvane: false}, "from the moon now")
 
@@ -143,9 +145,9 @@ func test_setting_the_destination_zooms_into_the_landing_site() -> void:
 	_navigator.select(_navigator.get_part(region))
 	await wait_process_frames(1)
 	(card.get_node("%Choose") as Button).pressed.emit()
-	assert_eq(_mission.destination, _mission.offer_for(region))
+	assert_eq(_voyage.destination, _voyage.offer_for(region))
 	assert_eq(_navigator.level, NavigatorStation.Level.REGION, "zooms in")
-	assert_eq(_mission.previewed, _mission.offer_for(region), "its landing site on the table")
+	assert_eq(_voyage.previewed, _voyage.offer_for(region), "its landing site on the table")
 	await wait_seconds(1.0)
 	assert_eq(_navigator.zoom, 2.0, "smoothly")
 	assert_eq(_navigator.selected.item, region)

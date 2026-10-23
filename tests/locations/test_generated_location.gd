@@ -281,14 +281,14 @@ func _check_navigation(location: GeneratedLocation) -> void:
 func test_test_map_lands_ship_on_generated_world() -> void:
 	var map := TEST_MAP.instantiate() as Node3D
 	add_child_autofree(map)
-	var mission := map.get_node("Mission") as Mission
-	assert_true(mission.select(mission.offers[0]))
-	mission.skip_flight()
+	var voyage := map.get_node("Voyage") as Voyage
+	assert_true(voyage.select(voyage.offers[0]))
+	voyage.skip_flight()
 	var location := map.get_node("Location") as GeneratedLocation
 	var ship := map.get_node("Ship") as Ship
 	assert_not_null(location)
-	var length: float = mission.offers[0].length
-	assert_eq(location.area_count, roundi(mission.settings.location_areas * length))
+	var length: float = voyage.offers[0].length
+	assert_eq(location.area_count, roundi(voyage.settings.location_areas * length))
 	# The camera's view, in the location's axes: down and to the side.
 	var rig := map.get_node("IsoCameraRig") as IsoCameraRig
 	var view: Vector3 = location.global_basis * location.view_direction

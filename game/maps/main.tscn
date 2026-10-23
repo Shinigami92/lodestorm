@@ -10,6 +10,8 @@
 [ext_resource type="Script" uid="uid://b4p7dojarbr0f" path="res://game/save/save_game.gd" id="8_save_game"]
 [ext_resource type="PackedScene" uid="uid://khm8tyaekg2n" path="res://game/ui/title/title_view.tscn" id="9_title"]
 [ext_resource type="Script" uid="uid://4xjpoesn2w8" path="res://game/stats/stats_recorder.gd" id="10_stats"]
+[ext_resource type="Script" uid="uid://q4gbpcgk3rnp" path="res://game/mission/voyage.gd" id="11_voyage"]
+[ext_resource type="Resource" uid="uid://i1xt4ygx67x3" path="res://game/mission/voyage_settings.tres" id="12_voyage_settings"]
 
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1
@@ -48,30 +50,40 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61.165, 7.05, 48.79)
 [node name="IsoCameraRig" parent="." unique_id=1063743358 node_paths=PackedStringArray("target") instance=ExtResource("4_camera")]
 target = NodePath("../Player")
 
-[node name="Mission" type="Node" parent="." unique_id=206700272 node_paths=PackedStringArray("ship")]
+[node name="Voyage" type="Node" parent="." node_paths=PackedStringArray("ship", "mission")]
+script = ExtResource("11_voyage")
+settings = ExtResource("12_voyage_settings")
+ship = NodePath("../Ship")
+mission = NodePath("../Mission")
+location_scene = ExtResource("1_location")
+
+[node name="Mission" type="Node" parent="." unique_id=206700272 node_paths=PackedStringArray("ship", "voyage")]
 script = ExtResource("5_mission")
 settings = ExtResource("6_mission_settings")
 ship = NodePath("../Ship")
-location_scene = ExtResource("1_location")
+voyage = NodePath("../Voyage")
 
-[node name="Weather" type="Node" parent="." unique_id=1730492815 node_paths=PackedStringArray("mission", "environment", "sun", "viewer")]
+[node name="Weather" type="Node" parent="." unique_id=1730492815 node_paths=PackedStringArray("mission", "voyage", "environment", "sun", "viewer")]
 script = ExtResource("7_weather")
 mission = NodePath("../Mission")
+voyage = NodePath("../Voyage")
 environment = NodePath("../WorldEnvironment")
 sun = NodePath("../Sun")
 viewer = NodePath("../Player")
 
-[node name="StatsRecorder" type="Node" parent="." node_paths=PackedStringArray("player", "ship", "mission")]
+[node name="StatsRecorder" type="Node" parent="." node_paths=PackedStringArray("player", "ship", "mission", "voyage")]
 script = ExtResource("10_stats")
 player = NodePath("../Player")
 ship = NodePath("../Ship")
 mission = NodePath("../Mission")
+voyage = NodePath("../Voyage")
 
-[node name="SaveGame" type="Node" parent="." node_paths=PackedStringArray("ship", "player", "mission")]
+[node name="SaveGame" type="Node" parent="." node_paths=PackedStringArray("ship", "player", "mission", "voyage")]
 script = ExtResource("8_save_game")
 ship = NodePath("../Ship")
 player = NodePath("../Player")
 mission = NodePath("../Mission")
+voyage = NodePath("../Voyage")
 
 [node name="TitleView" parent="." node_paths=PackedStringArray("ship") instance=ExtResource("9_title")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.376, 7.45, 47.376)

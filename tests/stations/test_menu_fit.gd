@@ -160,7 +160,7 @@ func test_miner_bay_cards_fit_in_every_language() -> void:
 	var building := CraftedMiner.new(6, TimedJob.new(1, 0.0, 21600.0))
 	# The longest place a miner can be lost at.
 	var longest: String = ""
-	for body: CelestialBody in (_map.get_node("Mission") as Mission).settings.system.bodies:
+	for body: CelestialBody in (_map.get_node("Voyage") as Voyage).settings.system.bodies:
 		for region: Region in body.regions:
 			var place: String = "%s, %s" % [body.display_name, region.display_name]
 			if place.length() > longest.length():
@@ -240,12 +240,12 @@ func test_every_locker_card_fits_in_every_language() -> void:
 func test_navigator_and_flight_cards_fit_in_every_language() -> void:
 	var navigator := _ship.get_node("Rooms/Upper/Bridge/Navigator") as NavigatorStation
 	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
-	var mission := _map.get_node("Mission") as Mission
+	var voyage := _map.get_node("Voyage") as Voyage
 	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		navigator.open(_player)
 		await wait_process_frames(1)
-		for body: CelestialBody in mission.settings.system.bodies:
+		for body: CelestialBody in voyage.settings.system.bodies:
 			navigator.show_system()
 			navigator.select(navigator.get_part(body))
 			await wait_process_frames(1)
@@ -263,7 +263,7 @@ func test_navigator_and_flight_cards_fit_in_every_language() -> void:
 		console.open(_player)
 		await wait_process_frames(1)
 		_assert_card_fits(console, "%s no destination" % locale)
-		mission.choose(mission.offers[0])
+		voyage.choose(voyage.offers[0])
 		await wait_process_frames(1)
 		_assert_card_fits(console, "%s destination" % locale)
 		console.close()
@@ -272,9 +272,9 @@ func test_navigator_and_flight_cards_fit_in_every_language() -> void:
 func test_navigator_and_flight_cards_fit_the_most_ores() -> void:
 	var navigator := _ship.get_node("Rooms/Upper/Bridge/Navigator") as NavigatorStation
 	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
-	var mission := _map.get_node("Mission") as Mission
-	var body: CelestialBody = mission.settings.system.bodies[0]
-	for candidate: CelestialBody in mission.settings.system.bodies:
+	var voyage := _map.get_node("Voyage") as Voyage
+	var body: CelestialBody = voyage.settings.system.bodies[0]
+	for candidate: CelestialBody in voyage.settings.system.bodies:
 		if not candidate.regions.is_empty():
 			body = candidate
 			break
@@ -294,7 +294,7 @@ func test_navigator_and_flight_cards_fit_the_most_ores() -> void:
 		await wait_process_frames(1)
 		_assert_card_fits(navigator, "%s region with %d ores" % [locale, ores.size()])
 		navigator.close()
-		mission.choose(mission.offers[0])
+		voyage.choose(voyage.offers[0])
 		console.open(_player)
 		(console.card_menu as FlightCard)._show_ores(ores)
 		await wait_process_frames(1)

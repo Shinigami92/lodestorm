@@ -189,12 +189,12 @@ func test_location_has_aliens_and_resets_them() -> void:
 	assert_gt(_aliens_in(map.get_node("Location")), 0)
 	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
 		alien.take_damage(alien.health)
-	var mission: Mission = map.get_node("Mission") as Mission
-	mission.reset_location()
+	var voyage := map.get_node("Voyage") as Voyage
+	voyage.reset_location()
 	await wait_physics_frames(2)
 	# Every nest's guards hatch again (packs picked anew, so not always as many).
 	for nest: AlienNest in get_tree().get_nodes_in_group(AlienNest.GROUP):
-		if mission.location.is_ancestor_of(nest):
+		if voyage.location.is_ancestor_of(nest):
 			assert_gt(_aliens_in(nest), 0, nest.name)
 
 

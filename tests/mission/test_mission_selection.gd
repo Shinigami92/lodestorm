@@ -5,6 +5,7 @@ const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 var _map: Node3D
 var _player: Player
 var _mission: Mission
+var _voyage: Voyage
 var _ship: Ship
 
 
@@ -13,19 +14,21 @@ func before_each() -> void:
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_ship = _map.get_node("Ship") as Ship
 	_ship.ramp_duration = 0.25
 	watch_signals(_mission)
+	watch_signals(_voyage)
 	await wait_physics_frames(2)
 
 
 func test_offers_a_mission_per_open_region() -> void:
-	var system: StarSystem = _mission.settings.system
+	var system: StarSystem = _voyage.settings.system
 	var regions: Array[Region] = system.open_regions(_ship.heat_shield.mk)
 	assert_gt(regions.size(), 1)
-	assert_eq(_mission.offers.size(), regions.size())
+	assert_eq(_voyage.offers.size(), regions.size())
 	for i: int in regions.size():
-		var offer: MissionBrief = _mission.offers[i]
+		var offer: MissionBrief = _voyage.offers[i]
 		var region: Region = regions[i]
 		assert_eq(offer.region, region)
 		assert_eq(offer.biome, region.biome)
@@ -33,12 +36,12 @@ func test_offers_a_mission_per_open_region() -> void:
 		assert_eq(offer.length, region.length, "and the timer")
 		assert_gt(offer.world_seed, 0)
 		assert_string_starts_with(offer.location_name(), region.display_name)
-		assert_eq(_mission.offer_for(region), offer)
-	assert_null(_mission.brief, "none is picked at the start")
+		assert_eq(_voyage.offer_for(region), offer)
+	assert_null(_voyage.brief, "none is picked at the start")
 
 
 func test_star_system_has_planets_moons_a_station_and_locked_planets() -> void:
-	var system: StarSystem = _mission.settings.system
+	var system: StarSystem = _voyage.settings.system
 	var kinds: Array = []
 	var locked: Array[CelestialBody] = []
 	for body: CelestialBody in system.bodies:
@@ -56,26 +59,26 @@ func test_star_system_has_planets_moons_a_station_and_locked_planets() -> void:
 	for body: CelestialBody in locked:
 		for region: Region in body.regions:
 			assert_false(region in system.open_regions(_ship.heat_shield.mk), "offers no missions")
-			assert_null(_mission.offer_for(region))
+			assert_null(_voyage.offer_for(region))
 
 
 ## Another heat shield plate adds the next planet's offers and keeps the others (and the
 ## destination).
 func test_next_shield_plate_adds_offers() -> void:
-	var system: StarSystem = _mission.settings.system
+	var system: StarSystem = _voyage.settings.system
 	var opened: Array[Region] = []
 	for body: CelestialBody in system.bodies:
 		if body.tier == 2:
 			opened.append_array(body.regions)
 	assert_gt(opened.size(), 0)
-	var before: Array[MissionBrief] = _mission.offers.duplicate()
-	assert_true(_mission.choose(before[0]))
+	var before: Array[MissionBrief] = _voyage.offers.duplicate()
+	assert_true(_voyage.choose(before[0]))
 	assert_true(_ship.heat_shield.install_next())
-	assert_eq(_mission.offers.size(), before.size() + opened.size())
-	assert_eq(_mission.offers.slice(0, before.size()), before, "keeps the others")
+	assert_eq(_voyage.offers.size(), before.size() + opened.size())
+	assert_eq(_voyage.offers.slice(0, before.size()), before, "keeps the others")
 	for region: Region in opened:
-		assert_eq(_mission.offer_for(region).region, region)
-	assert_eq(_mission.destination, before[0])
+		assert_eq(_voyage.offer_for(region).region, region)
+	assert_eq(_voyage.destination, before[0])
 
 
 func test_ramp_needs_a_picked_mission() -> void:
@@ -84,8 +87,8 @@ func test_ramp_needs_a_picked_mission() -> void:
 	await wait_physics_frames(2)
 	assert_eq(_mission.state, Mission.State.CLOSED)
 	assert_eq(_ship.countdown_text, "No mission")
-	assert_true(_mission.select(_mission.offers[0]))
-	_mission.skip_flight()
+	assert_true(_voyage.select(_voyage.offers[0]))
+	_voyage.skip_flight()
 	await wait_physics_frames(2)
 	# The countdown updates in _process.
 	await wait_process_frames(2)
@@ -97,73 +100,73 @@ func test_ramp_needs_a_picked_mission() -> void:
 
 
 func test_picking_flies_to_the_mission() -> void:
-	var offer: MissionBrief = _mission.offers[2]
-	var old_location: Node3D = _mission.location
-	assert_true(_mission.select(offer))
-	assert_eq(_mission.brief, offer)
-	assert_signal_emitted_with_parameters(_mission, "selected", [offer])
+	var offer: MissionBrief = _voyage.offers[2]
+	var old_location: Node3D = _voyage.location
+	assert_true(_voyage.select(offer))
+	assert_eq(_voyage.brief, offer)
+	assert_signal_emitted_with_parameters(_voyage, "selected", [offer])
 	assert_eq(_mission.duration(), _mission.settings.duration * offer.length)
 	assert_eq(_mission.time_left, _mission.duration())
 	assert_true(_ship.flight.is_flying())
-	_mission.skip_flight()
+	_voyage.skip_flight()
 	assert_true(old_location.is_queued_for_deletion(), "a fresh outside world")
-	assert_eq(_mission.location.name, &"Location")
-	assert_ne(_mission.location, old_location)
+	assert_eq(_voyage.location.name, &"Location")
+	assert_ne(_voyage.location, old_location)
 
 
 func test_only_offered_missions_can_be_picked() -> void:
 	var other := MissionBrief.new()
-	assert_false(_mission.select(other))
-	assert_null(_mission.brief)
+	assert_false(_voyage.select(other))
+	assert_null(_voyage.brief)
 
 
 func test_mission_is_locked_once_the_ramp_is_down() -> void:
 	TEST_MAP.pick_mission(_map)
-	assert_true(_mission.select(_mission.offers[1]), "another one can be picked before leaving")
-	_mission.skip_flight()
-	assert_eq(_mission.brief, _mission.offers[1])
+	assert_true(_voyage.select(_voyage.offers[1]), "another one can be picked before leaving")
+	_voyage.skip_flight()
+	assert_eq(_voyage.brief, _voyage.offers[1])
 	_ship.ramp_button.use(_player)
-	assert_false(_mission.can_select())
-	assert_false(_mission.select(_mission.offers[2]))
-	assert_eq(_mission.brief, _mission.offers[1])
+	assert_false(_voyage.can_select())
+	assert_false(_voyage.select(_voyage.offers[2]))
+	assert_eq(_voyage.brief, _voyage.offers[1])
 	_ship.ramp_button.use(_player)
 	assert_eq(_mission.state, Mission.State.CLOSED, "the ramp went up again before leaving")
-	assert_true(_mission.can_select())
+	assert_true(_voyage.can_select())
 
 
 func test_finished_mission_brings_new_offers() -> void:
 	TEST_MAP.pick_mission(_map)
-	var old_offers: Array[MissionBrief] = _mission.offers.duplicate()
+	var old_offers: Array[MissionBrief] = _voyage.offers.duplicate()
 	_ship.ramp_button.use(_player)
 	await wait_physics_frames(ceili(_ship.ramp_duration * Engine.physics_ticks_per_second) + 2)
 	await _move(_ship.to_global(Vector3(22.0, 0.0, 0.0)))
 	assert_eq(_mission.state, Mission.State.RUNNING)
 	await _move(_ship.to_global(Vector3(10.0, 2.5, 0.0)))
 	assert_eq(_mission.state, Mission.State.RETURNED)
-	assert_null(_mission.brief)
-	assert_eq(_mission.offers.size(), old_offers.size())
-	for i: int in _mission.offers.size():
-		assert_does_not_have(old_offers, _mission.offers[i])
-		assert_eq(_mission.offers[i].region, old_offers[i].region, "the same regions")
-		assert_ne(_mission.offers[i].world_seed, old_offers[i].world_seed, "a new section")
-	assert_true(_mission.can_select())
+	assert_null(_voyage.brief)
+	assert_eq(_voyage.offers.size(), old_offers.size())
+	for i: int in _voyage.offers.size():
+		assert_does_not_have(old_offers, _voyage.offers[i])
+		assert_eq(_voyage.offers[i].region, old_offers[i].region, "the same regions")
+		assert_ne(_voyage.offers[i].world_seed, old_offers[i].world_seed, "a new section")
+	assert_true(_voyage.can_select())
 
 
 func test_picking_only_previews_until_course_is_set() -> void:
-	var offer: MissionBrief = _mission.offers[1]
-	var old_location: Node3D = _mission.location
-	assert_true(_mission.preview(offer))
-	assert_eq(_mission.previewed, offer)
-	assert_null(_mission.destination, "only shown")
-	assert_null(_mission.brief)
-	assert_signal_not_emitted(_mission, "selected")
+	var offer: MissionBrief = _voyage.offers[1]
+	var old_location: Node3D = _voyage.location
+	assert_true(_voyage.preview(offer))
+	assert_eq(_voyage.previewed, offer)
+	assert_null(_voyage.destination, "only shown")
+	assert_null(_voyage.brief)
+	assert_signal_not_emitted(_voyage, "selected")
 	assert_false(_ship.flight.is_flying())
-	assert_eq(_mission.location, old_location)
-	assert_false(_mission.confirm(), "nothing chosen yet")
-	assert_true(_mission.preview(_mission.offers[2]), "another one to compare")
-	assert_true(_mission.choose(_mission.offers[2]))
-	assert_true(_mission.confirm())
-	assert_eq(_mission.brief, _mission.offers[2])
+	assert_eq(_voyage.location, old_location)
+	assert_false(_voyage.confirm(), "nothing chosen yet")
+	assert_true(_voyage.preview(_voyage.offers[2]), "another one to compare")
+	assert_true(_voyage.choose(_voyage.offers[2]))
+	assert_true(_voyage.confirm())
+	assert_eq(_voyage.brief, _voyage.offers[2])
 
 
 func test_hologram_marks_the_ore_fields() -> void:
@@ -171,7 +174,7 @@ func test_hologram_marks_the_ore_fields() -> void:
 	TEST_MAP.pick_mission(_map)
 	var ores: Array[OreNode] = []
 	for ore: OreNode in get_tree().get_nodes_in_group(OreNode.GROUP):
-		if _mission.location.is_ancestor_of(ore):
+		if _voyage.location.is_ancestor_of(ore):
 			ores.append(ore)
 	var markers: Array[MeshInstance3D] = table.get_markers()
 	assert_eq(markers.size(), ores.size())
@@ -190,7 +193,7 @@ func test_hologram_marks_the_ore_fields() -> void:
 func test_navigator_zooms_from_system_to_landing_site() -> void:
 	var navigator: NavigatorStation = await _use_navigator()
 	assert_eq(navigator.level, NavigatorStation.Level.SYSTEM)
-	var system: StarSystem = _mission.settings.system
+	var system: StarSystem = _voyage.settings.system
 	assert_eq(navigator.get_parts().size(), system.bodies.size() + 1, "one per body, and the star")
 	var planet: CelestialBody = system.bodies[0]
 	navigator.select(navigator.get_part(planet))
@@ -201,11 +204,11 @@ func test_navigator_zooms_from_system_to_landing_site() -> void:
 	navigator.select(navigator.get_part(region))
 	assert_true(navigator.activate(), "zooms to its landing site")
 	assert_eq(navigator.level, NavigatorStation.Level.REGION)
-	assert_eq(_mission.previewed, _mission.offer_for(region), "shown on the table")
-	assert_null(_mission.destination, "zooming in doesn't choose it")
+	assert_eq(_voyage.previewed, _voyage.offer_for(region), "shown on the table")
+	assert_null(_voyage.destination, "zooming in doesn't choose it")
 	assert_true(navigator.activate(), "interact there chooses it")
-	assert_eq(_mission.destination, _mission.offer_for(region))
-	assert_null(_mission.brief, "course is set at the cockpit")
+	assert_eq(_voyage.destination, _voyage.offer_for(region))
+	assert_null(_voyage.brief, "course is set at the cockpit")
 	assert_false(_ship.flight.is_flying())
 	var table: HoloTable = _ship.get_node("Rooms/Upper/Bridge/HoloTable") as HoloTable
 	await wait_seconds(1.0)
@@ -227,7 +230,7 @@ func test_navigator_zooms_from_system_to_landing_site() -> void:
 
 func test_navigator_stays_where_it_was_left() -> void:
 	var navigator: NavigatorStation = await _use_navigator()
-	var moon: CelestialBody = _mission.settings.system.bodies[1]
+	var moon: CelestialBody = _voyage.settings.system.bodies[1]
 	navigator.select(navigator.get_part(moon))
 	assert_true(navigator.activate())
 	navigator.close()
@@ -241,7 +244,7 @@ func test_navigator_stays_where_it_was_left() -> void:
 
 func test_star_shows_its_name() -> void:
 	var navigator: NavigatorStation = await _use_navigator()
-	var system: StarSystem = _mission.settings.system
+	var system: StarSystem = _voyage.settings.system
 	var star: StationPart = navigator.get_part(system)
 	assert_not_null(star)
 	navigator.select(star)
@@ -256,7 +259,7 @@ func test_star_shows_its_name() -> void:
 
 func test_stations_and_locked_planets_cannot_be_visited() -> void:
 	var navigator: NavigatorStation = await _use_navigator()
-	for body: CelestialBody in _mission.settings.system.bodies:
+	for body: CelestialBody in _voyage.settings.system.bodies:
 		if not navigator.is_reachable(body):
 			navigator.select(navigator.get_part(body))
 			assert_false(navigator.activate(), body.display_name)
@@ -267,7 +270,7 @@ func test_stations_and_locked_planets_cannot_be_visited() -> void:
 
 func test_mouse_wheel_zooms_gradually() -> void:
 	var navigator: NavigatorStation = await _use_navigator()
-	var planet: CelestialBody = _mission.settings.system.bodies[0]
+	var planet: CelestialBody = _voyage.settings.system.bodies[0]
 	navigator.select(navigator.get_part(planet))
 	for i: int in 3:
 		var wheel := InputEventMouseButton.new()
@@ -291,13 +294,13 @@ func test_navigator_cannot_choose_while_the_ramp_is_down() -> void:
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	var navigator: NavigatorStation = await _use_navigator()
-	var system: StarSystem = _mission.settings.system
+	var system: StarSystem = _voyage.settings.system
 	navigator.show_body(system.bodies[0])
 	var other: Region = system.bodies[0].regions[2]
 	navigator.select(navigator.get_part(other))
 	assert_true(navigator.activate(), "looking is fine")
 	assert_false(navigator.choose_destination())
-	assert_ne(_mission.destination, _mission.offer_for(other))
+	assert_ne(_voyage.destination, _voyage.offer_for(other))
 
 
 func test_flight_console_sets_course_for_the_destination() -> void:
@@ -308,15 +311,15 @@ func test_flight_console_sets_course_for_the_destination() -> void:
 	var card := console.card_menu as FlightCard
 	assert_false(console.can_launch(), "no destination yet")
 	assert_false(card.press_primary())
-	var offer: MissionBrief = _mission.offers[1]
-	_mission.preview(offer)
+	var offer: MissionBrief = _voyage.offers[1]
+	_voyage.preview(offer)
 	await wait_process_frames(1)
 	assert_false(console.can_launch(), "only shown at the navigator")
-	_mission.choose(offer)
+	_voyage.choose(offer)
 	await wait_process_frames(1)
 	assert_true(console.can_launch())
 	_send(&"interact")
-	assert_eq(_mission.brief, offer)
+	assert_eq(_voyage.brief, offer)
 	assert_true(_ship.flight.is_flying())
 	assert_false(console.can_launch(), "not again in flight")
 
@@ -336,7 +339,7 @@ func test_hologram_rebuilds_after_a_new_plate() -> void:
 	unshown.free()
 	var navigator: NavigatorStation = await _use_navigator()
 	var locked: CelestialBody = null
-	for body: CelestialBody in _mission.settings.system.bodies:
+	for body: CelestialBody in _voyage.settings.system.bodies:
 		if not locked and body.kind == CelestialBody.Kind.PLANET and body.tier == 2:
 			locked = body
 	assert_false(navigator.is_reachable(locked))

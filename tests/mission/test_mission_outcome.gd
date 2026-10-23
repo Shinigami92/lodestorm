@@ -8,6 +8,7 @@ const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
 var _map: Node3D
 var _player: Player
 var _mission: Mission
+var _voyage: Voyage
 var _ship: Ship
 
 
@@ -16,6 +17,7 @@ func before_each() -> void:
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_ship = _map.get_node("Ship") as Ship
 	_ship.ramp_duration = 0.25
 	_mission.settings = _mission.settings.duplicate()
@@ -23,6 +25,7 @@ func before_each() -> void:
 	await wait_physics_frames(2)
 	TEST_MAP.pick_mission(_map)
 	watch_signals(_mission)
+	watch_signals(GameEvents.bus)
 
 
 func after_each() -> void:
@@ -62,6 +65,7 @@ func test_storm_spares_players_aboard() -> void:
 
 
 func test_dying_in_storm_loses_mission_and_cargo() -> void:
+	var brief: MissionBrief = _voyage.brief
 	await _open()
 	await _move(_player, _outside())
 	_player.add_cargo(KYRITE, 100.0)
@@ -72,6 +76,8 @@ func test_dying_in_storm_loses_mission_and_cargo() -> void:
 	assert_eq(_mission.state, Mission.State.LOST)
 	assert_signal_emit_count(_mission, "lost", 1)
 	assert_signal_not_emitted(_mission, "returned")
+	assert_signal_emitted_with_parameters(GameEvents.bus, "mission_ended", [brief, false])
+	assert_null(_voyage.brief, "new missions on offer")
 	assert_true(_player.cargo.is_empty())
 	assert_false(_player.hold.items.has(KYRITE), "nothing reached the hold")
 
@@ -113,7 +119,7 @@ func test_dying_aboard_without_mission_respawns() -> void:
 
 
 func test_tuning_duration_updates_timer() -> void:
-	var length: float = _mission.brief.length
+	var length: float = _voyage.brief.length
 	_mission.settings.duration = 120.0
 	await wait_physics_frames(2)
 	assert_eq(_mission.time_left, 120.0 * length, "before the start: the new duration")
@@ -176,6 +182,7 @@ func test_health_carries_over_to_the_next_run() -> void:
 
 
 func test_mission_won_when_the_living_are_aboard() -> void:
+	var brief: MissionBrief = _voyage.brief
 	var other: Player = PLAYER_SCENE.instantiate() as Player
 	_map.add_child(other)
 	await _move(other, _inside())
@@ -189,6 +196,7 @@ func test_mission_won_when_the_living_are_aboard() -> void:
 	assert_eq(_mission.state, Mission.State.RUNNING, "one player is still alive outside")
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
+	assert_signal_emitted_with_parameters(GameEvents.bus, "mission_ended", [brief, true])
 	assert_eq(_player.hold.amount(KYRITE), 80.0, "the dead player's cargo is lost")
 	assert_false(other.dead, "the dead respawn aboard")
 	await wait_physics_frames(3)
@@ -205,7 +213,7 @@ func test_crafted_miners_left_on_the_planet_are_lost() -> void:
 	var left_number: int = left.crafted.number
 	var taken_number: int = taken.crafted.number
 	assert_true(taken.pick_up(_player))
-	var where: String = _mission.brief.place_name(_mission.settings.system)
+	var where: String = _voyage.brief.place_name(_voyage.settings.system)
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	assert_true(_player.fleet.is_empty(left_number), "left behind")

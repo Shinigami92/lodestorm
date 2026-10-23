@@ -10,6 +10,7 @@ var _map: Node3D
 var _player: Player
 var _ship: Ship
 var _mission: Mission
+var _voyage: Voyage
 var _core: HeatShieldStation
 
 
@@ -19,6 +20,7 @@ func before_each() -> void:
 	_player = _map.get_node("Player") as Player
 	_ship = _map.get_node("Ship") as Ship
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_ship.ramp_duration = 0.25
 	_core = _ship.get_node("Rooms/Lower/EngineRoom/DriveCore") as HeatShieldStation
 	await wait_physics_frames(2)
@@ -101,7 +103,7 @@ func test_navigator_says_what_a_locked_planet_needs() -> void:
 	var navigator := _ship.get_node("Rooms/Upper/Bridge/Navigator") as NavigatorStation
 	navigator.open(_player)
 	await wait_process_frames(1)
-	var vehra: CelestialBody = _mission.settings.system.body_by_id(&"vehra")
+	var vehra: CelestialBody = _voyage.settings.system.body_by_id(&"vehra")
 	navigator.select(navigator.get_part(vehra))
 	await wait_process_frames(1)
 	var card := navigator.card_menu as NavigatorCard

@@ -155,5 +155,6 @@ collision_mask = 0
 shape = SubResource("BoxShape3D_n_2x3x0_5")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Barrier"]
+layers = 8
 cast_shadow = 0
 mesh = SubResource("BoxMesh_barrier")

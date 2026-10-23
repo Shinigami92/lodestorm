@@ -1,10 +1,11 @@
 extends GutTest
 ## The in-game cursor: a reticle on the ground where the mouse points, only for the local player
 ## aiming with the mouse outside menus and pauses, dimmed (or following) while something is locked,
-## and never on the suit's markings.
+## and never on the player.
 
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
+const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 
 var _arena: Node3D
 var _player: Player
@@ -62,17 +63,22 @@ func test_dims_under_the_cursor_while_locked_or_follows_the_lock() -> void:
 	assert_eq(decal.albedo_mix, unlocked)
 
 
-## Aims the mouse at `point` on the ground and lets the reticle follow at once.
-## The suit ring and the target brackets are drawn pulled towards the camera, so the reticle (a
-## decal) leaves them out: else it paints a shifted copy of itself on the ring.
-func test_leaves_the_suits_markings_out() -> void:
+## Nothing on the player catches the reticle (a decal): not the suit and what it carries (the
+## weapon, the cargo tubes, the armor pips), and not the suit ring and the target brackets, which
+## are drawn pulled towards the camera (it would paint a shifted copy of itself on them).
+func test_leaves_the_player_out() -> void:
+	# Enough for canisters beside the backpack.
+	_player.add_cargo(KYRITE, 2000.0)
+	await wait_process_frames(1)
 	var decal := _reticle.get_node("Decal") as Decal
-	var ring := _player.get_node("SuitRing") as SuitRing
-	var brackets := _player.get_node("TargetMarker") as TargetMarker
-	assert_eq(ring.layers & decal.cull_mask, 0, "the suit ring")
-	assert_eq(brackets.layers & decal.cull_mask, 0, "the target brackets")
+	assert_not_null(_player.weapon, "with a weapon")
+	for node: Node in _player.find_children("*", "VisualInstance3D", true, false):
+		if node != decal:
+			var visual := node as VisualInstance3D
+			assert_eq(visual.layers & decal.cull_mask, 0, str(_player.get_path_to(visual)))
 
 
+## Aims the mouse at `point` on the ground and lets the reticle follow at once.
 func _point_at(point: Vector3) -> void:
 	_player.aim.set(&"_with_mouse", true)
 	_player.aim.target = null

@@ -121,6 +121,7 @@ func _pour() -> void:
 	for canister: Node3D in _canisters:
 		_fill(canister, stack, start, units_per_canister, CANISTER_HEIGHT)
 		start += units_per_canister
+	RenderLayers.put(self, RenderLayers.CHARACTERS)
 
 
 ## Shows the part of `stack` between `start` and `start + capacity` units in `vessel`: one layer

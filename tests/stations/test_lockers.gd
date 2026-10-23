@@ -190,10 +190,32 @@ func test_each_player_has_their_own_locker() -> void:
 	assert_null(lockers[1].user)
 
 
+func test_the_weapon_wall_opens_the_own_locker() -> void:
+	var wall: WeaponWall = (_ship.get_node("Rooms/Lower/Armory/Locker1") as LoadoutStation).wall
+	var part: StationPart = wall.get_parts()[1]
+	# In front of the second weapon of the top line, and behind the wall.
+	for side: float in [1.0, -1.0]:
+		var floor_y: float = -wall.position.y
+		_player.global_position = wall.to_global(Vector3(part.position.x, floor_y, side * 0.8))
+		_player.reset_physics_interpolation()
+		await wait_physics_frames(5)
+		assert_eq(_player.interact(), wall.use_point, "side %s" % side)
+		var locker: LoadoutStation = wall.get_locker(_player)
+		assert_eq(_player.menu, locker, "the own locker")
+		assert_eq(locker.number, 1)
+		assert_eq(locker.selected, part, "the weapon in front of the player")
+		assert_true(locker.is_on_wall())
+		locker.close()
+		await wait_physics_frames(2)
+
+
 func _open_locker() -> LoadoutStation:
 	var locker := _ship.get_node("Rooms/Lower/Armory/Locker1") as LoadoutStation
 	var use: Interactable = locker.use_point
-	_player.global_position = use.global_position + use.global_basis.z * 0.3
+	# In front of it, within reach.
+	_player.global_position = use.to_global(
+		Vector3(0.0, 0.0, use.footprint.y * 0.5 + use.interact_range - 0.3)
+	)
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(5)
 	assert_eq(_player.interact(), use)

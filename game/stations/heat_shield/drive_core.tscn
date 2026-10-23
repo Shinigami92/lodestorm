@@ -47,9 +47,8 @@ material = SubResource("StandardMaterial3D_highlight")
 inner_radius = 1.72
 outer_radius = 1.78
 
-[node name="DriveCore" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+[node name="DriveCore" type="Node3D" node_paths=PackedStringArray("view_focus")]
 script = ExtResource("1_script")
-user_spot = NodePath("UserSpot")
 view_height = 4.6
 view_focus = NodePath("Focus")
 
@@ -73,20 +72,15 @@ light_color = Color(1, 0.7, 0.45, 1)
 light_energy = 0.8
 omni_range = 5.0
 
-[node name="UserSpot" type="Marker3D" parent="."]
-rotation = Vector3(0, -0.785398, 0)
-position = Vector3(-2.3, 0, 2.3)
-
 [node name="Focus" type="Marker3D" parent="."]
 position = Vector3(1.2, 1.7, 0)
 
 [node name="Use" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.1)
 script = ExtResource("4_use")
-interact_range = 1.6
+interact_range = 3.4
 
 [node name="Highlight" type="MeshInstance3D" parent="Use"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -2.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 visible = false
 mesh = SubResource("TorusMesh_highlight")
 

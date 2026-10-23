@@ -51,9 +51,8 @@ material = SubResource("StandardMaterial3D_highlight")
 inner_radius = 0.66
 outer_radius = 0.72
 
-[node name="ArmorStation" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+[node name="ArmorStation" type="Node3D" node_paths=PackedStringArray("view_focus")]
 script = ExtResource("1_script")
-user_spot = NodePath("UserSpot")
 view_height = 2.6
 view_focus = NodePath("Focus")
 
@@ -102,9 +101,6 @@ light_color = Color(0.3, 0.85, 1, 1)
 light_energy = 0.6
 omni_range = 3.0
 
-[node name="UserSpot" type="Marker3D" parent="."]
-rotation = Vector3(0, 3.14159, 0)
-
 [node name="Suit" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 script = ExtResource("5_part")
@@ -116,12 +112,11 @@ card_offset = Vector2(1.05, 0.25)
 position = Vector3(0.5, 1.2, 0)
 
 [node name="Use" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.3)
 script = ExtResource("4_use")
-interact_range = 1.4
+interact_range = 2.0
 
 [node name="Highlight" type="MeshInstance3D" parent="Use"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, -0.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
 visible = false
 mesh = SubResource("TorusMesh_highlight")
 

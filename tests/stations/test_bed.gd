@@ -75,7 +75,8 @@ func _bed(number: int) -> BedStation:
 func _use_bed() -> BedStation:
 	var bed: BedStation = _bed(1)
 	var use: Interactable = bed.use_point
-	_player.global_position = use.global_position
+	# At its foot.
+	_player.global_position = use.global_position + use.global_basis.z * 1.5
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(5)
 	assert_eq(_player.interact(), use)

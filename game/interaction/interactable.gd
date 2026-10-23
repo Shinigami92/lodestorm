@@ -9,8 +9,12 @@ signal used(player: Player)
 
 const GROUP: StringName = &"interactables"
 
-## How close (horizontally, in m) a player must be to use it.
+## How close (horizontally, in m) a player must be to use it: to its `footprint`'s edge, or to it.
 @export var interact_range: float = 1.5
+## The object it belongs to on the floor, a rectangle centered on it (along its x and z, in m), so
+## players use it from any side; none (a point) when zero. Round objects: a point at their center
+## with their radius in `interact_range`.
+@export var footprint: Vector2 = Vector2.ZERO
 
 ## Disabled interactables can't be targeted or used.
 var enabled: bool = true
@@ -37,13 +41,21 @@ func use(player: Player) -> void:
 		used.emit(player)
 
 
+## How far `from` is from its `footprint` (or from it), horizontally, in m.
+func distance_to(from: Vector3) -> float:
+	var local: Vector3 = global_transform.affine_inverse() * from
+	var outside := Vector2(
+		maxf(absf(local.x) - footprint.x * 0.5, 0.0), maxf(absf(local.z) - footprint.y * 0.5, 0.0)
+	)
+	return outside.length()
+
+
 ## The enabled interactable closest to `from` that is within its range, or null.
 static func nearest(tree: SceneTree, from: Vector3) -> Interactable:
 	var nearest_target: Interactable = null
 	var nearest_distance: float = INF
 	for target: Interactable in tree.get_nodes_in_group(GROUP):
-		var offset: Vector3 = target.global_position - from
-		var distance: float = Vector2(offset.x, offset.z).length()
+		var distance: float = target.distance_to(from)
 		if target.enabled and distance <= target.interact_range and distance < nearest_distance:
 			nearest_target = target
 			nearest_distance = distance

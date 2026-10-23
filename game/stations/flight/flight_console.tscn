@@ -39,9 +39,8 @@ material = SubResource("StandardMaterial3D_highlight")
 inner_radius = 0.4
 outer_radius = 0.46
 
-[node name="FlightConsole" type="Node3D" node_paths=PackedStringArray("user_spot", "view_focus")]
+[node name="FlightConsole" type="Node3D" node_paths=PackedStringArray("view_focus")]
 script = ExtResource("1_script")
-user_spot = NodePath("UserSpot")
 view_height = 2.6
 view_focus = NodePath("Focus")
 
@@ -67,10 +66,6 @@ script = ExtResource("5_part")
 pick_radius = 0.3
 card_offset = Vector2(1.0, 0.2)
 outline = NodePath("../Handle")
-
-[node name="UserSpot" type="Marker3D" parent="."]
-rotation = Vector3(0, 1.5708, 0)
-position = Vector3(0.9, 0, 0.7)
 
 [node name="Focus" type="Marker3D" parent="."]
 position = Vector3(0.7, 1.2, 0)

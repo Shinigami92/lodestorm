@@ -4,10 +4,16 @@ extends WeaponRack
 ## game once, in rows by origin. Players pick from it into the cradles of their own locker
 ## (`LoadoutStation.wall`). It shows the weapons of the player using a locker at it, else of the
 ## first local player: their MK levels, the ones they don't own yet see-through, and under each
-## weapon in their loadout its slot's number in their color.
+## weapon in their loadout its slot's number in their color. Players use it (`use_point`) from
+## anywhere along it, on either side: that opens their own locker with the weapon in front of them
+## selected.
 
 ## Below a weapon, where its slot number shows, in m.
 const TAG_DROP: float = 0.2
+## How deep it is where players use it (its footprint along z), and how far in front of it its
+## highlight lies on the floor, in m.
+const USE_DEPTH: float = 0.3
+const HIGHLIGHT_AHEAD: float = 0.25
 
 ## The player whose weapons it shows, or null.
 var viewer: Player
@@ -15,6 +21,14 @@ var viewer: Player
 ## What it last showed: the player, their loadout, weapons and MK levels.
 var _shown_for: Array = []
 var _tags: Array[Label3D] = []
+
+## Where players use it, on the floor below it (its parent's origin, like the panel's foot).
+@onready var use_point: Interactable = $Use
+
+
+func _ready() -> void:
+	super()
+	use_point.used.connect(_on_used)
 
 
 func _process(_delta: float) -> void:
@@ -47,6 +61,16 @@ func build() -> void:
 		part.add_child(tag)
 		_tags.append(tag)
 	_shown_for = []
+	_fit_use()
+
+
+## The locker of `player` that picks from it, or null.
+func get_locker(player: Player) -> LoadoutStation:
+	for menu: WorldMenu in get_tree().get_nodes_in_group(WorldMenu.GROUP):
+		var locker := menu as LoadoutStation
+		if locker and locker.wall == self and locker.can_use(player):
+			return locker
+	return null
 
 
 func _show() -> void:
@@ -59,6 +83,29 @@ func _show() -> void:
 		if viewer:
 			_tags[i].modulate = viewer.color()
 	_shown_for = _arrangement()
+
+
+## Spans the use point and its highlight across its width.
+func _fit_use() -> void:
+	if not use_point:
+		return
+	var width: float = get_half_width() * 2.0
+	use_point.position = Vector3(0.0, -position.y, 0.0)
+	use_point.footprint = Vector2(width, USE_DEPTH)
+	var highlight := use_point.get_node(^"Highlight") as MeshInstance3D
+	var strip := highlight.mesh.duplicate() as BoxMesh
+	strip.size.x = width
+	highlight.mesh = strip
+	highlight.position = Vector3(0.0, 0.01, HIGHLIGHT_AHEAD)
+
+
+## Opens the player's locker with the weapon on the top line nearest to where they stand selected.
+func _on_used(player: Player) -> void:
+	var locker: LoadoutStation = get_locker(player)
+	if not locker or locker.user:
+		return
+	locker.select(nearest_on_line(0, to_local(player.global_position).x))
+	locker.open(player)
 
 
 func _arrangement() -> Array:

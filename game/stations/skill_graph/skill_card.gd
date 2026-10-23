@@ -99,7 +99,7 @@ func show_skill(
 	_learn.text = tr("Learn") if next else tr("Learned")
 	_learn.disabled = not can_learn
 	for dimmed: CanvasItem in [_title, _description, _pips, _cost_row]:
-		dimmed.modulate = Color.WHITE if open else UpgradeCard.LOCKED_COLOR
+		dimmed.modulate = Color.WHITE if open else CardPalette.DIMMED
 
 
 ## Shows the rank `job` under way (after `show_skill`) at `now` (Unix seconds): its pip filling,

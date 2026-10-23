@@ -7,7 +7,6 @@ extends StationCard
 
 ## The most regions the card names; beyond that it names their bodies.
 const MAX_REGIONS: int = 4
-const NOTE_COLOR := Color(1.0, 1.0, 1.0, 0.75)
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 
 @onready var _badge: Control = %Badge

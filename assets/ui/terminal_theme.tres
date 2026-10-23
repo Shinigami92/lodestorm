@@ -108,6 +108,18 @@ border_width_right = 3
 border_width_bottom = 3
 border_color = Color(0.3, 0.85, 1, 0.5)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 18.0
+bg_color = Color(0.025, 0.04, 0.055, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.3, 0.85, 1, 0.6)
+
 [resource]
 default_font_size = 30
 Button/colors/font_color = Color(0.78, 0.9, 1, 1)
@@ -120,6 +132,19 @@ Button/styles/hover = SubResource("StyleBoxFlat_button_hover")
 Button/styles/hover_pressed = SubResource("StyleBoxFlat_button_pressed")
 Button/styles/normal = SubResource("StyleBoxFlat_button")
 Button/styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+Card/base_type = &"PanelContainer"
+Card/styles/panel = SubResource("StyleBoxFlat_card")
+CardNote/base_type = &"Label"
+CardNote/colors/font_color = Color(1, 1, 1, 0.75)
+CardNote/font_sizes/font_size = 26
+CardStatus/base_type = &"Label"
+CardStatus/colors/font_color = Color(1, 0.75, 0.3, 1)
+CardStatus/font_sizes/font_size = 26
+CardText/base_type = &"Label"
+CardText/font_sizes/font_size = 26
+CardTitle/base_type = &"Label"
+CardTitle/colors/font_color = Color(0.3, 0.85, 1, 1)
+CardTitle/font_sizes/font_size = 34
 CheckBox/colors/font_color = Color(0.78, 0.9, 1, 1)
 CheckBox/colors/font_focus_color = Color(0.9, 0.97, 1, 1)
 CheckBox/colors/font_hover_color = Color(0.9, 0.97, 1, 1)

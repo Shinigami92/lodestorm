@@ -3,9 +3,6 @@ extends StationCard
 ## The holo card of a bed (`BedStation`): "Sleep" quits the game; it says whether the progress is
 ## saved or the run underway is lost.
 
-const WARNING_COLOR := Color(1.0, 0.4, 0.35)
-const NOTE_COLOR := Color(1.0, 1.0, 1.0, 0.75)
-
 @onready var _note: Label = %Note
 @onready var _sleep: Button = %Sleep
 @onready var _close: Button = %Close
@@ -28,10 +25,10 @@ func show_part(part: StationPart) -> void:
 func show_state(loses_run: bool) -> void:
 	if loses_run:
 		_note.text = tr("A run is underway: sleeping now loses it.")
-		_note.add_theme_color_override(&"font_color", WARNING_COLOR)
+		_note.add_theme_color_override(&"font_color", CardPalette.WARNING)
 	else:
 		_note.text = tr("Ends the game here. Your progress is saved.")
-		_note.add_theme_color_override(&"font_color", NOTE_COLOR)
+		_note.add_theme_color_override(&"font_color", CardPalette.NOTE)
 
 
 func press_primary() -> bool:

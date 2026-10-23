@@ -7,13 +7,10 @@ extends StationCard
 ## mouse press on the other button). Below, what the slots are for, or while a mission is underway
 ## why nothing changes.
 
-const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
 const PIP_LIT := Color(0.3, 0.85, 1.0)
 const PIP_DARK := Color(0.12, 0.18, 0.22)
 const PIP_SIZE := Vector2(22.0, 12.0)
 const SELECTED_SLOT_COLOR := Color(1.0, 0.75, 0.3)
-const STATUS_LOCKED := Color(1.0, 0.75, 0.3)
-const STATUS_HINT := Color(1.0, 1.0, 1.0, 0.6)
 ## Button states framed amber on the selected slot.
 const SLOT_STATES: Array[StringName] = [
 	&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"
@@ -85,10 +82,12 @@ func show_weapon(
 		if locked
 		else tr("Slots 1 and 2 go along on the next mission; one weapon always does.")
 	)
-	_status.add_theme_color_override(&"font_color", STATUS_LOCKED if locked else STATUS_HINT)
+	_status.add_theme_color_override(
+		&"font_color", CardPalette.STATUS if locked else CardPalette.HINT
+	)
 	_show_slots(slots, slot, selected_slot, owned and not locked)
 	for dimmed: CanvasItem in [_title, _description, _levels]:
-		dimmed.modulate = Color.WHITE if owned else LOCKED_COLOR
+		dimmed.modulate = Color.WHITE if owned else CardPalette.DIMMED
 
 
 func press_primary() -> bool:

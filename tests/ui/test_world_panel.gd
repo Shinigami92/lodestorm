@@ -71,6 +71,8 @@ func test_movement_and_interact_steer_the_menu() -> void:
 		_send(&"move_back")
 		assert_eq(_focused().get_parent().name, bus)
 	_send(&"move_back")
+	assert_eq(_focused().name, &"OpenLogs")
+	_send(&"move_back")
 	assert_eq(_focused().name, &"ResetProgress")
 	_send(&"move_back")
 	assert_eq(_focused().name, &"ShowCredits")
@@ -159,6 +161,15 @@ func test_languages_are_english_and_the_translations() -> void:
 	assert_eq(SettingsList.languages(), PackedStringArray(["en", "de"]))
 	for code: String in SettingsList.languages():
 		assert_has(SettingsList.LANGUAGE_NAMES, code, "own name of " + code)
+
+
+func test_log_files_are_in_the_games_own_folder() -> void:
+	var user_folder: String = OS.get_user_data_dir()
+	assert_eq(user_folder.get_file(), "Lodestorm", "not under Godot's app_userdata")
+	assert_eq(SettingsList.logs_folder(), user_folder.path_join("logs"))
+	assert_true(DirAccess.dir_exists_absolute(SettingsList.logs_folder()), "file logging is on")
+	_player.interact()
+	assert_not_null(_panel.content.find_child("OpenLogs", true, false), "the settings show it")
 
 
 func _focused() -> Control:

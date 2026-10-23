@@ -120,3 +120,13 @@ custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 auto_translate_mode = 2
 text = "100 %"
+
+[node name="LogsLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Log files"
+
+[node name="OpenLogs" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Open folder"

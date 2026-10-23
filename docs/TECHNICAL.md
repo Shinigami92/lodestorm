@@ -7,7 +7,7 @@
   - Others may fork, modify and share, with attribution, non-commercially, under the same license.
   - Only the owner sells the game (Steam/Epic/GOG). Strictly speaking this is *source-available*, not OSI "open source".
   - Third-party code and assets keep their own licenses, shipped next to them (e.g. `addons/godot_ai/` and `addons/gut/` are MIT, see their license files; GUT's bundled fonts are OFL). Only add third-party material whose license allows redistribution in this repo and in the commercial release.
-- **CLA required for contributions** (via [CLA Assistant](https://github.com/cla-assistant/cla-assistant) GitHub app), so the owner may use contributions in the commercial release.
+- **CLA required for contributions**, so the owner may use contributions in the commercial release: the text is [`CLA.md`](../CLA.md) (a license grant, the contributor keeps the copyright). Contributors sign it on their first pull request through [CLA Assistant](https://cla-assistant.io/) (hosted by SAP, [source](https://github.com/cla-assistant/cla-assistant)), which reads the agreement from a public Gist of the owner's and reports the `license/cla` status check, required on `main`. The Gist holds the same text as `CLA.md` plus a `metadata` file for the form (full name, email); a change to `CLA.md` goes to the Gist too, as a new version that contributors sign again. Bots that can't sign are allowed in the CLA Assistant dashboard (`renovate[bot]`).
 - Game name/logo: consider protecting as trademark before release.
 - Get a short legal review before the commercial release.
 - Secrets (Steam credentials, store tokens) only live in GitHub Actions secrets, never in the repo.

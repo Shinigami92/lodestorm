@@ -19,8 +19,9 @@ extends Node3D
 ## only shows while the camera looks into the upper deck.
 ## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
 ## Windows in the outer walls look out from every room along them (and in from outside).
-## A countdown above the door shows the mission time ("No mission" until one is picked at the holo
-## table, "In flight" on the way) in its status color: green, amber after half the time, red in the
+## A countdown above the door (running outwards from it, clear of the silos) shows the mission time
+## ("No mission" until one is picked at the holo table, "In flight" on the way) in its status color:
+## green, amber after half the time, red in the
 ## warning time (the ship pointer outside blinks then), red in the storm, blue once everyone is back
 ## and grey when the mission is lost.
 ## Returned cargo goes into every player's own hold (`PlayerHold`, shown by the silos in the cargo

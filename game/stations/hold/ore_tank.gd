@@ -1,27 +1,43 @@
 class_name OreTank
 extends StationPart
 ## One ore's silo in the hold (`OreHold`), greybox until the cargo bay's art pass: an
-## opaque metal silo on a base ring, with bands, a conical top with a hatch and a window strip
-## facing the camera's side (+Z), where the ore glows up to `amount` of `capacity` (full beyond
-## it). A name plate on the base shows the exact amount. Rarer ores get smaller silos. Until the ore
-## was first brought aboard its window stays dark and its plate shows "?", so the hold doesn't give
-## away what's still to find. Players can't walk through it; `interact` next to it uses it
-## (`use_point`, its base outlined amber while it's the target).
+## opaque metal silo on a base ring, with bands, a conical top with a hatch and, facing the
+## camera's side (+Z), a display at the top of its body and a window strip below it, where the ore
+## glows up to `amount` of `capacity` (full beyond it). The display shows the exact amount in the
+## ore's color, big enough to read from the normal camera (it sits high enough to show over the
+## silo in front of it), with the ore's name small below. Rarer ores get smaller silos. Until the
+## ore was first brought aboard its window stays dark and its display shows a grey "?" without a
+## name, so the hold doesn't give away what's still to find. Players can't walk through it;
+## `interact` next to it uses it (`use_point`, its base outlined amber while it's the target).
 
 const BASE_HEIGHT: float = 0.22
 ## The window strip: its width relative to the silo's diameter, and how much of the body's height it
 ## spans.
 const WINDOW_WIDTH: float = 0.34
-const WINDOW_SPAN: float = 0.82
+## Gaps between the window and the body's bottom, and between the window and the display, in m.
+const WINDOW_MARGIN: float = 0.2
+const WINDOW_GAP: float = 0.12
+## The display: its width relative to the silo's diameter, its height and its gap to the body's top
+## (m; the top 0.8 m of a far row's silo show over the near row from the camera).
+const DISPLAY_WIDTH: float = 0.72
+const DISPLAY_HEIGHT: float = 0.66
+const DISPLAY_MARGIN: float = 0.1
+## The amount's text fits this many digits at its full size (more get smaller).
+const DISPLAY_DIGITS: int = 4
+## Height of the amount's and the name's text (em, m), and how bright the amount glows.
+const AMOUNT_TEXT: float = 0.52
+const NAME_TEXT: float = 0.1
+const AMOUNT_GLOW: float = 1.4
+const UNKNOWN_COLOR := Color(0.36, 0.39, 0.43)
 const METAL_COLOR := Color(0.36, 0.38, 0.41)
 const TRIM_COLOR := Color(0.17, 0.18, 0.2)
 const WINDOW_COLOR := Color(0.02, 0.025, 0.03)
-## Height of the plate's text, in m.
-const PLATE_TEXT: float = 0.2
+const FONT_SIZE: int = 128
 
 static var _metal: StandardMaterial3D
 static var _trim: StandardMaterial3D
 static var _window: StandardMaterial3D
+static var _font: FontVariation
 
 ## Its ore (also `item`).
 var ore_type: OreType
@@ -40,7 +56,10 @@ var use_point := Interactable.new()
 
 var _fill := MeshInstance3D.new()
 var _fill_pivot := Node3D.new()
-var _plate := Label3D.new()
+var _amount := Label3D.new()
+var _name := Label3D.new()
+## Width the amount's text may take, in m.
+var _amount_width: float = 1.0
 
 
 ## Builds the silo for `of_ore` (call before adding it to the tree).
@@ -83,18 +102,40 @@ func _ready() -> void:
 	hatch.position.y = height * 0.5 + 0.02
 	shell.add_child(hatch)
 
-	# The window strip on the camera's side: a frame, dark glass and the glowing ore behind it.
-	var window_width: float = radius * 2.0 * WINDOW_WIDTH
-	var window_height: float = body_height * WINDOW_SPAN
-	var window_bottom: float = body_bottom + (body_height - window_height) * 0.5
-	# The frame reaches back to where the round body meets the window's edges.
-	var edge: float = radius * cos(asin(WINDOW_WIDTH))
-	var frame_depth: float = radius - edge + 0.06
+	# The display at the top of the body on the camera's side: a frame and a dark screen with the
+	# amount and the name.
+	var display_width: float = radius * 2.0 * DISPLAY_WIDTH
+	var display_center: float = body_bottom + body_height - DISPLAY_MARGIN - DISPLAY_HEIGHT * 0.5
+	_frame(display_width, DISPLAY_HEIGHT, display_center, DISPLAY_WIDTH)
 	_box(
-		Vector3(window_width + 0.08, window_height + 0.08, frame_depth),
-		Vector3(0.0, window_bottom + window_height * 0.5, edge + frame_depth * 0.5),
-		_trim
+		Vector3(display_width, DISPLAY_HEIGHT, 0.01),
+		Vector3(0.0, display_center, radius + 0.065),
+		_window
 	)
+	_amount_width = display_width - 0.12
+	_amount.name = "Amount"
+	_amount.position = Vector3(0.0, display_center + 0.06, radius + 0.075)
+	_name.name = "Name"
+	_name.pixel_size = NAME_TEXT / FONT_SIZE
+	_name.modulate = Color(0.7, 0.76, 0.84)
+	_name.position = Vector3(0.0, display_center - DISPLAY_HEIGHT * 0.5 + 0.1, radius + 0.075)
+	for label: Label3D in [_amount, _name]:
+		label.font = _font
+		label.font_size = FONT_SIZE
+		label.outline_size = 0
+		# Names and numbers: the name is translated by `OreType.get_display_name`.
+		label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+		label.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		label.layers = RenderLayers.EFFECTS
+		add_child(label)
+
+	# The window strip below it: a frame, dark glass and the glowing ore behind it.
+	var window_width: float = radius * 2.0 * WINDOW_WIDTH
+	var window_bottom: float = body_bottom + WINDOW_MARGIN
+	var window_height: float = (
+		display_center - DISPLAY_HEIGHT * 0.5 - WINDOW_GAP - 0.08 - window_bottom
+	)
+	_frame(window_width, window_height, window_bottom + window_height * 0.5, WINDOW_WIDTH)
 	_box(
 		Vector3(window_width, window_height, 0.01),
 		Vector3(0.0, window_bottom + window_height * 0.5, radius + 0.065),
@@ -140,19 +181,6 @@ func _ready() -> void:
 	ring.visible = false
 	use_point.add_child(ring)
 	add_child(use_point)
-
-	_plate.name = "Plate"
-	_plate.pixel_size = PLATE_TEXT / 64.0
-	_plate.font_size = 64
-	_plate.outline_size = 12
-	_plate.modulate = Color(0.85, 0.92, 1.0)
-	_plate.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_plate.position = Vector3(0.0, bottom - 0.05, radius + 0.45)
-	_plate.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	# Names and numbers: the name is translated by `OreType.get_display_name`.
-	_plate.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	_plate.layers = RenderLayers.EFFECTS
-	add_child(_plate)
 	_update()
 
 
@@ -175,9 +203,39 @@ func _update() -> void:
 	_fill_pivot.scale = Vector3(1.0, maxf(level, 0.001), 1.0)
 	_fill.material_override = ore_type.get_glow_material() if found else null
 	if found:
-		_plate.text = "%s\n%d" % [ore_type.get_display_name().to_upper(), floori(amount)]
+		_amount.text = str(floori(amount))
+		var glow: Color = ore_type.color * AMOUNT_GLOW
+		glow.a = 1.0
+		_amount.modulate = glow
+		_name.text = ore_type.get_display_name().to_upper()
 	else:
-		_plate.text = "?"
+		_amount.text = "?"
+		_amount.modulate = UNKNOWN_COLOR
+		_name.text = ""
+	_amount.pixel_size = amount_text_height() / FONT_SIZE
+
+
+## Height (em, m) of the amount's text: `AMOUNT_TEXT` for up to `DISPLAY_DIGITS` digits, smaller
+## where the silo's display is too narrow for that, and for longer amounts.
+func amount_text_height() -> float:
+	var digits: int = maxi(_amount.text.length(), DISPLAY_DIGITS)
+	var text_width: float = (
+		_font.get_string_size("0".repeat(digits), HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE).x
+		/ FONT_SIZE
+	)
+	return minf(AMOUNT_TEXT, _amount_width / text_width)
+
+
+## A frame `width` × `frame_height` around a flat panel centered at `at` on the camera's side,
+## reaching back to where the round body meets its edges (`relative_width`: of the diameter).
+func _frame(width: float, frame_height: float, at: float, relative_width: float) -> void:
+	var edge: float = radius * cos(asin(relative_width))
+	var frame_depth: float = radius - edge + 0.06
+	_box(
+		Vector3(width + 0.08, frame_height + 0.08, frame_depth),
+		Vector3(0.0, at, edge + frame_depth * 0.5),
+		_trim
+	)
 
 
 func _cylinder(
@@ -206,7 +264,7 @@ func _box(box_size: Vector3, at: Vector3, material: Material) -> void:
 	add_child(instance)
 
 
-## The silos' shared materials.
+## The silos' shared materials and font.
 static func _make_materials() -> void:
 	if _metal:
 		return
@@ -222,3 +280,7 @@ static func _make_materials() -> void:
 	_window.albedo_color = WINDOW_COLOR
 	_window.metallic = 0.2
 	_window.roughness = 0.08
+	# Bold, so the digits read from afar.
+	_font = FontVariation.new()
+	_font.base_font = ThemeDB.fallback_font
+	_font.variation_embolden = 0.6

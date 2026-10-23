@@ -29,13 +29,13 @@ func show_part(part: StationPart) -> void:
 	visible = part != null and console != null
 	if not visible:
 		return
-	var mission: Mission = console.mission
-	var destination: MissionBrief = mission.destination if mission else null
-	if not destination and mission:
-		destination = mission.brief
+	var voyage: Voyage = console.voyage
+	var destination: MissionBrief = voyage.destination if voyage else null
+	if not destination and voyage:
+		destination = voyage.brief
 	if destination:
 		_title.text = destination.location_name()
-		var system: StarSystem = mission.settings.system
+		var system: StarSystem = voyage.settings.system
 		var body: CelestialBody = (
 			system.body_of(destination.region) if system and destination.region else null
 		)
@@ -45,13 +45,15 @@ func show_part(part: StationPart) -> void:
 		_danger.add_theme_color_override(
 			&"font_color", NavigatorCard.DANGER_COLORS[destination.difficulty]
 		)
-		_timer.text = tr("%d min") % roundi(mission.settings.duration * destination.length / 60.0)
+		_timer.text = (
+			tr("%d min") % roundi(voyage.mission.settings.duration * destination.length / 60.0)
+		)
 		_show_ores(destination.found_ores())
 	else:
 		_title.text = tr("No destination")
 		_subtitle.text = ""
 		_info.visible = false
-	_status.text = _status_text(mission)
+	_status.text = _status_text(voyage)
 	_status.add_theme_color_override(&"font_color", STATUS_COLOR)
 	_launch.disabled = not console.can_launch()
 
@@ -73,19 +75,19 @@ func press_primary() -> bool:
 	return console != null and console.launch()
 
 
-func _status_text(mission: Mission) -> String:
+func _status_text(voyage: Voyage) -> String:
 	var text: String = ""
-	if not mission:
+	if not voyage:
 		text = ""
-	elif mission.flight.is_flying():
+	elif voyage.flight.is_flying():
 		text = tr("In flight: gear up and head for the ramp.")
-	elif not mission.can_select():
+	elif not voyage.can_select():
 		text = tr("Locked until everyone is back aboard.")
-	elif not mission.destination:
+	elif not voyage.destination:
 		text = tr("Pick a destination at the navigator on the bridge.")
-	elif mission.is_preparing(mission.destination):
+	elif voyage.is_preparing(voyage.destination):
 		text = tr("Scanning the location...")
-	elif mission.can_confirm():
+	elif voyage.can_confirm():
 		text = tr("Set course to fly there.")
 	else:
 		text = tr("Landed: lower the ramp in the cargo bay.")

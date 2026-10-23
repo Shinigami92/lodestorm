@@ -24,6 +24,7 @@ const CLOUD_FOG_HEIGHT: float = 1.5
 const CLOUD_FOG_DENSITY: float = 1.5
 
 @export var mission: Mission
+@export var voyage: Voyage
 @export var environment: WorldEnvironment
 @export var sun: DirectionalLight3D
 ## The local player the camera follows.
@@ -72,7 +73,7 @@ func _ready() -> void:
 	env.sky = sky
 	env.background_mode = Environment.BG_SKY
 	mission.opened.connect(_clear)
-	mission.selected.connect(_clear.unbind(1))
+	voyage.selected.connect(_clear.unbind(1))
 	var sounds := MissionSounds.new()
 	sounds.name = "Sounds"
 	sounds.weather = self
@@ -100,8 +101,8 @@ func _process(delta: float) -> void:
 func _apply() -> void:
 	var env: Environment = environment.environment
 	var haze: float = intensity * (1.0 - indoors)
-	var space: float = mission.flight.space_amount()
-	var clouds: float = mission.flight.cloud_amount()
+	var space: float = voyage.flight.space_amount()
+	var clouds: float = voyage.flight.cloud_amount()
 	env.fog_enabled = haze > 0.0 or clouds > 0.0
 	env.fog_density = max_fog * haze
 	env.fog_height_density = CLOUD_FOG_DENSITY * clouds

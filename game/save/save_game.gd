@@ -56,6 +56,8 @@ static var directory: String = "user://dev/" if OS.has_feature("editor") else "u
 @export var player: Player
 ## The mission; progress changed while it's underway is saved when it's over.
 @export var mission: Mission
+## Where the ship goes: where it is is saved, and so is setting course.
+@export var voyage: Voyage
 
 ## Whether a save is queued for the end of the frame.
 var _save_queued: bool = false
@@ -98,6 +100,8 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	if not mission:
 		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
+	if not voyage:
+		voyage = get_tree().get_first_node_in_group(Voyage.GROUP) as Voyage
 	load_progress()
 	if ship:
 		ship.story.changed.connect(_on_progress_changed)
@@ -112,8 +116,9 @@ func _ready() -> void:
 		player.skills.changed.connect(_on_progress_changed)
 		player.fleet.changed.connect(_on_progress_changed)
 		player.health_changed.connect(_on_health_changed)
+	if voyage:
+		voyage.selected.connect(_on_progress_changed.unbind(1))
 	if mission:
-		mission.selected.connect(_on_progress_changed.unbind(1))
 		mission.returned.connect(save_progress)
 		mission.lost.connect(save_progress)
 
@@ -184,8 +189,8 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 		"shield": {"mk": shield.mk, "project": shield.project, "paid": paid},
 		"furnaces": of_ship.furnaces.unlocked,
 	}
-	if of_ship.mission and of_ship.mission.at_body:
-		data["at"] = String(of_ship.mission.at_body.id)
+	if of_ship.voyage and of_ship.voyage.at_body:
+		data["at"] = String(of_ship.voyage.at_body.id)
 	return data
 
 
@@ -402,12 +407,12 @@ func _apply_shield(data: Dictionary) -> void:
 
 ## Puts the ship at the body a save names, if the heat shield reaches it.
 func _apply_position(id: Variant) -> void:
-	var system: StarSystem = mission.settings.system if mission and mission.settings else null
+	var system: StarSystem = voyage.settings.system if voyage and voyage.settings else null
 	var body: CelestialBody = null
 	if id is String and system:
 		body = system.body_by_id(StringName(id as String))
-	if body and body.is_reachable(ship.heat_shield.mk) and mission:
-		mission.at_body = body
+	if body and body.is_reachable(ship.heat_shield.mk) and voyage:
+		voyage.at_body = body
 	else:
 		_outdated = true
 		push_warning("Save: skipped the ship's position %s" % id)

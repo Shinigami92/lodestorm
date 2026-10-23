@@ -49,7 +49,7 @@ func show_part(part: StationPart) -> void:
 	visible = item != null and navigator != null
 	if not visible:
 		return
-	var mission: Mission = navigator.mission
+	var voyage: Voyage = navigator.voyage
 	var shown_body := item as CelestialBody
 	var shown_region := item as Region
 	var star := item as StarSystem
@@ -103,7 +103,9 @@ func show_part(part: StationPart) -> void:
 		_show_rows(_ore_rows, true)
 		_danger.text = MissionBrief.for_region(shown_region, 1).difficulty_name()
 		_danger.add_theme_color_override(&"font_color", DANGER_COLORS[shown_region.danger])
-		var minutes: float = (mission.settings.duration if mission else 900.0) * shown_region.length
+		var minutes: float = (
+			(voyage.mission.settings.duration if voyage else 900.0) * shown_region.length
+		)
 		_timer.text = tr("%d min") % roundi(minutes / 60.0)
 		_show_ores(navigator.shown_ores(shown_region))
 		_primary.visible = not at_landing_site
@@ -111,8 +113,8 @@ func show_part(part: StationPart) -> void:
 		var reachable: bool = navigator.is_reachable(shown_region)
 		_primary.disabled = not reachable
 		_choose.text = tr("Set as destination")
-		var chosen: bool = offer != null and mission != null and offer == mission.destination
-		_choose.disabled = not reachable or not mission or not mission.can_select() or chosen
+		var chosen: bool = offer != null and voyage != null and offer == voyage.destination
+		_choose.disabled = not reachable or not voyage or not voyage.can_select() or chosen
 		_status.text = _region_status(navigator, shown_region, offer)
 		if region_body and not navigator.is_reachable(shown_region):
 			needed = _needed_plate(navigator, region_body)
@@ -131,23 +133,23 @@ func press_primary() -> bool:
 func _region_status(
 	navigator: NavigatorStation, shown_region: Region, offer: MissionBrief
 ) -> String:
-	var mission: Mission = navigator.mission
+	var voyage: Voyage = navigator.voyage
 	var text: String = ""
 	var system: StarSystem = navigator.get_system()
 	if not navigator.is_reachable(shown_region):
 		var region_body: CelestialBody = system.body_of(shown_region) if system else null
 		text = _needs_text(region_body) if region_body else tr("Locked")
-	elif not mission or not offer:
+	elif not voyage or not offer:
 		text = ""
-	elif mission.flight.is_flying():
+	elif voyage.flight.is_flying():
 		text = tr("In flight: gear up and head for the ramp.")
-	elif not mission.can_select():
+	elif not voyage.can_select():
 		text = tr("Locked until everyone is back aboard.")
-	elif offer == mission.brief:
+	elif offer == voyage.brief:
 		text = tr("Landed: lower the ramp in the cargo bay.")
-	elif offer != mission.destination:
+	elif offer != voyage.destination:
 		text = ""
-	elif mission.is_preparing(offer):
+	elif voyage.is_preparing(offer):
 		text = tr("Scanning the location...")
 	else:
 		text = tr("Destination set: set course at the cockpit.")

@@ -12,6 +12,7 @@ const DRAY: WeaponType = preload("res://game/weapons/types/dray/dray.tres")
 
 var _map: Node3D
 var _mission: Mission
+var _voyage: Voyage
 var _player: Player
 var _ship: Ship
 var _nest: AlienNest
@@ -21,6 +22,7 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_player = _map.get_node("Player") as Player
 	_ship = _map.get_node("Ship") as Ship
 	# The location's own nests would get in the way.
@@ -142,7 +144,7 @@ func test_destroyed_it_sends_no_more_hunters_or_raiders() -> void:
 	assert_eq(_nest.get_hunters(), out, "its hunters out stay, no new ones come")
 	_nest.raider_cooldown = 0.0
 	_nest.settings.raider_interval_start = 0.1
-	var node: OreNode = _mission.location.get_node("OreNodes/KyriteA") as OreNode
+	var node: OreNode = _voyage.location.get_node("OreNodes/KyriteA") as OreNode
 	node.place_miner(_player.miner_scene)
 	await _wait_physics(0.4)
 	assert_eq(_nest.get_raiders().size(), 0, "nor raiders")

@@ -94,7 +94,8 @@ func level_of(part: StationPart) -> int:
 ## The names of the bodies plate MK `level` opens (translated): those of that tier with regions.
 func opened_by(level: int) -> PackedStringArray:
 	var names: PackedStringArray = []
-	var system: StarSystem = mission.settings.system if mission and mission.settings else null
+	var voyage: Voyage = ship.voyage if ship else null
+	var system: StarSystem = voyage.settings.system if voyage and voyage.settings else null
 	if system:
 		for body: CelestialBody in system.bodies:
 			if body.tier == level and body.is_reachable(level):

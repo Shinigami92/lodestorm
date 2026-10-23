@@ -6,6 +6,7 @@ const MINER_SETTINGS: String = "res://game/mining/miner_settings.tres"
 var _overlay: CanvasLayer
 var _map: Node3D
 var _mission: Mission
+var _voyage: Voyage
 var _player: Player
 
 
@@ -14,6 +15,7 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_player = _map.get_node("Player") as Player
 	await wait_physics_frames(2)
 
@@ -145,7 +147,7 @@ func test_nearest_nest_is_the_one_closest_to_the_player() -> void:
 
 
 func test_break_miners() -> void:
-	var node: OreNode = _mission.location.get_node("OreNodes/KyriteA") as OreNode
+	var node: OreNode = _voyage.location.get_node("OreNodes/KyriteA") as OreNode
 	var miner: Miner = node.place_miner(_player.miner_scene)
 	_overlay.call(&"break_miners")
 	assert_true(miner.broken)
@@ -153,10 +155,10 @@ func test_break_miners() -> void:
 
 func test_install_shield_opens_the_next_planet() -> void:
 	var ship: Ship = _mission.ship
-	var before: int = _mission.offers.size()
+	var before: int = _voyage.offers.size()
 	_overlay.call(&"install_shield")
 	assert_eq(ship.heat_shield.mk, 2)
-	assert_gt(_mission.offers.size(), before)
+	assert_gt(_voyage.offers.size(), before)
 
 
 func test_refinery_shortcuts() -> void:
@@ -174,14 +176,14 @@ func test_refinery_shortcuts() -> void:
 
 
 func test_open_all_offers_every_region() -> void:
-	var system: StarSystem = _mission.settings.system
+	var system: StarSystem = _voyage.settings.system
 	var regions: int = 0
 	for body: CelestialBody in system.bodies:
 		regions += body.regions.size()
-	assert_lt(_mission.offers.size(), regions)
+	assert_lt(_voyage.offers.size(), regions)
 	_overlay.call(&"open_all_bodies")
 	assert_eq(_mission.ship.heat_shield.mk, _mission.ship.heat_shield.max_mk())
-	assert_eq(_mission.offers.size(), regions)
+	assert_eq(_voyage.offers.size(), regions)
 
 
 func test_buttons_that_would_do_nothing_are_off() -> void:

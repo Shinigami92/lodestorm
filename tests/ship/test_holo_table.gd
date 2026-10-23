@@ -4,6 +4,7 @@ const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 
 var _map: Node3D
 var _mission: Mission
+var _voyage: Voyage
 var _table: HoloTable
 var _content: Node3D
 
@@ -12,13 +13,14 @@ func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
 	add_child_autofree(_map)
 	_mission = _map.get_node("Mission") as Mission
+	_voyage = _map.get_node("Voyage") as Voyage
 	_table = _map.get_node("Ship/Rooms/Upper/Bridge/HoloTable") as HoloTable
 	_content = _table.get_node("Hologram/Content")
 	await wait_physics_frames(2)
 
 
 func test_shows_mission_location() -> void:
-	var meshes: int = _mission.location.find_children("*", "MeshInstance3D", true, false).size()
+	var meshes: int = _voyage.location.find_children("*", "MeshInstance3D", true, false).size()
 	assert_gt(_content.get_child_count(), meshes / 2.0)
 	var hologram: Node = _table.get_node("Hologram")
 	var parts: Array[Node] = hologram.find_children("*", "VisualInstance3D", true, false)
@@ -50,6 +52,6 @@ func test_ship_stands_out() -> void:
 
 func test_shows_fresh_location_of_next_run() -> void:
 	var before: Node = _content.get_child(0)
-	_mission.reset_location()
+	_voyage.reset_location()
 	assert_ne(_content.get_child(0), before)
 	assert_gt(_content.get_child_count(), 0)

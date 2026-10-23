@@ -30,6 +30,7 @@ const TELEPORT_DISTANCE: float = 3.0
 @export var player: Player
 @export var ship: Ship
 @export var mission: Mission
+@export var voyage: Voyage
 
 ## Counters over all sessions, and over the run underway (or the last one).
 var totals := StatCounters.new()
@@ -399,8 +400,8 @@ func _on_mission_started(brief: MissionBrief) -> void:
 	var fields: Dictionary = {"tier": mission.tier() if mission else 1}
 	if brief:
 		var body: CelestialBody = null
-		if brief.region and mission and mission.settings.system:
-			body = mission.settings.system.body_of(brief.region)
+		if brief.region and voyage and voyage.settings.system:
+			body = voyage.settings.system.body_of(brief.region)
 		(
 			fields
 			. merge(

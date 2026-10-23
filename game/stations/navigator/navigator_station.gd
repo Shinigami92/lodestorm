@@ -9,7 +9,7 @@ extends Station
 ## takes over. `interact` zooms in a whole step (at a landing site: chooses it as the
 ## destination), `pause`/`ui_cancel` back out a step (and close at the star system);
 ## `zoom_in`/`zoom_out` (mouse wheel, gamepad triggers, +/-) zoom gradually. A landing site is only
-## shown (`Mission.preview`); choosing it as the destination (`Mission.choose`, a new section of
+## shown (`Voyage.preview`); choosing it as the destination (`Voyage.choose`, a new section of
 ## the region) takes "Set as destination" (on the globe, it then zooms into the landing site), and
 ## course is set at the cockpit's flight console.
 ## Stations can't be docked at yet and locked planets and regions can't be visited: zooming stops
@@ -72,8 +72,8 @@ var zoom_target: float = 0.0
 ## The body zoomed into (or towards), and the region.
 var body: CelestialBody
 var region: Region
-## The mission whose offers it shows; found in the scene tree when not set.
-var mission: Mission
+## Where the ship goes: its offers are shown; found in the scene tree when not set.
+var voyage: Voyage
 ## The level the navigator is at (or zooming to): what its parts are.
 var level: Level:
 	get:
@@ -102,12 +102,12 @@ var _region_plates: Dictionary[HoloPlate, Vector3] = {}
 
 func _process(delta: float) -> void:
 	super(delta)
-	if not mission:
-		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
-		if mission:
-			mission.offers_changed.connect(_build_routes)
-			mission.ship.heat_shield.level_changed.connect(rebuild_hologram.unbind(1))
-	if not mission:
+	if not voyage:
+		voyage = get_tree().get_first_node_in_group(Voyage.GROUP) as Voyage
+		if voyage:
+			voyage.offers_changed.connect(_build_routes)
+			voyage.ship.heat_shield.level_changed.connect(rebuild_hologram.unbind(1))
+	if not voyage:
 		return
 	if not _system:
 		# The table shows the star system from the start.
@@ -129,7 +129,7 @@ func _process(delta: float) -> void:
 
 ## The star system shown, or null.
 func get_system() -> StarSystem:
-	return mission.settings.system if mission and mission.settings else null
+	return voyage.settings.system if voyage and voyage.settings else null
 
 
 func get_parts() -> Array[StationPart]:
@@ -160,7 +160,7 @@ func display_orbit(shown_body: CelestialBody) -> float:
 
 ## The planet or moon the ship is at: where it flew last, else the first one it can go to.
 func ship_body() -> CelestialBody:
-	return mission.ship_body() if mission else null
+	return voyage.ship_body() if voyage else null
 
 
 ## The name plates shown: the system view's (one per body) or the globe's (one per region).
@@ -221,13 +221,13 @@ func shield_mk() -> int:
 
 ## The ship's heat shield, or null.
 func get_heat_shield() -> HeatShield:
-	return mission.ship.heat_shield if mission and mission.ship else null
+	return voyage.ship.heat_shield if voyage and voyage.ship else null
 
 
 ## The mission on offer for `item` (a region), or null.
 func get_offer(item: Resource) -> MissionBrief:
 	var shown_region := item as Region
-	return mission.offer_for(shown_region) if mission and shown_region else null
+	return voyage.offer_for(shown_region) if voyage and shown_region else null
 
 
 ## Zooms in a whole step: into the selected body, or into the selected region's landing site; at
@@ -247,7 +247,7 @@ func choose_destination() -> bool:
 	var offer: MissionBrief = get_offer(picked)
 	if not offer or not is_reachable(picked):
 		return false
-	if offer != mission.destination and not mission.choose(offer):
+	if offer != voyage.destination and not voyage.choose(offer):
 		return false
 	if level == Level.BODY:
 		set_zoom_target(2.0)
@@ -283,7 +283,7 @@ func step_back() -> bool:
 
 ## Sets where the zoom eases to (zooming towards the selected body or region), stopping short of
 ## what can't be reached: the star, a station or locked body, a locked region. Reaching a landing
-## site shows it (`Mission.preview`), without choosing it.
+## site shows it (`Voyage.preview`), without choosing it.
 func set_zoom_target(value: float) -> void:
 	value = clampf(value, 0.0, 2.0)
 	var from_level: Level = _level_of(zoom_target)
@@ -401,12 +401,12 @@ func _show_landing_site() -> bool:
 	if not region or not is_reachable(region):
 		return false
 	var offer: MissionBrief = get_offer(region)
-	return offer != null and (offer == mission.previewed or mission.preview(offer))
+	return offer != null and (offer == voyage.previewed or voyage.preview(offer))
 
 
 ## At a landing site, keeps showing it (after a run, its region offers a new section).
 func _keep_landing_site_shown() -> void:
-	if level == Level.REGION and region and get_offer(region) != mission.previewed:
+	if level == Level.REGION and region and get_offer(region) != voyage.previewed:
 		_show_landing_site()
 
 
@@ -625,8 +625,8 @@ func _build_routes() -> void:
 	_routes.add_child(marker)
 	var target: CelestialBody = null
 	var system: StarSystem = get_system()
-	if mission and mission.destination and mission.destination.region and system:
-		target = system.body_of(mission.destination.region)
+	if voyage and voyage.destination and voyage.destination.region and system:
+		target = system.body_of(voyage.destination.region)
 	for other: CelestialBody in _body_parts:
 		if other == from or not is_reachable(other):
 			continue

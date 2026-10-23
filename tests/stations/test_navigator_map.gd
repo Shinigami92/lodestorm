@@ -30,21 +30,22 @@ func before_each() -> void:
 ## The star's orbits spread evenly between the innermost and the outermost one, in their order;
 ## moons stay close to their planet.
 func test_every_body_fits_on_the_table() -> void:
+	var hologram: NavigatorHologram = _navigator.hologram
 	var around_star: Array[CelestialBody] = []
 	for body: CelestialBody in _system.bodies:
-		var orbit: float = _navigator.display_orbit(body)
+		var orbit: float = hologram.display_orbit(body)
 		if body.orbits:
-			assert_lt(orbit, _navigator.inner_orbit, body.display_name + " near its planet")
+			assert_lt(orbit, hologram.inner_orbit, body.display_name + " near its planet")
 		else:
-			assert_between(orbit, _navigator.inner_orbit, _navigator.outer_orbit, body.display_name)
+			assert_between(orbit, hologram.inner_orbit, hologram.outer_orbit, body.display_name)
 			around_star.append(body)
 	around_star.sort_custom(
 		func(a: CelestialBody, b: CelestialBody) -> bool: return a.orbit_radius < b.orbit_radius
 	)
-	var step: float = (_navigator.outer_orbit - _navigator.inner_orbit) / (around_star.size() - 1)
+	var step: float = (hologram.outer_orbit - hologram.inner_orbit) / (around_star.size() - 1)
 	for i: int in around_star.size():
-		var expected: float = _navigator.inner_orbit + step * i
-		assert_almost_eq(_navigator.display_orbit(around_star[i]), expected, 0.001)
+		var expected: float = hologram.inner_orbit + step * i
+		assert_almost_eq(hologram.display_orbit(around_star[i]), expected, 0.001)
 
 
 ## A plate per body with its name and signature ore; "?" for one that can't be reached yet.
@@ -170,6 +171,6 @@ func _plate(plates: Array[HoloPlate], text: String) -> HoloPlate:
 ## The routes drawn: body -> whether it's the destination's.
 func _routes() -> Dictionary:
 	var routes: Dictionary = {}
-	for route: Dictionary in _navigator.get_routes():
-		routes[route["body"]] = route["chosen"]
+	for route: NavigatorHologram.Route in _navigator.hologram.get_routes():
+		routes[route.body] = route.chosen
 	return routes

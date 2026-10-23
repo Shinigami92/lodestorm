@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="2_panel"]
 [ext_resource type="PackedScene" uid="uid://d4omth1tytek" path="res://game/stations/navigator/navigator_card.tscn" id="3_card"]
 [ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="4_use"]
+[ext_resource type="Script" uid="uid://pae6qxj0uhy1" path="res://game/stations/navigator/navigator_hologram.gd" id="5_hologram"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
 shading_mode = 0
@@ -22,6 +23,7 @@ view_focus = NodePath("Focus")
 
 [node name="View" type="Node3D" parent="." groups=["ship_overlays"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+script = ExtResource("5_hologram")
 
 [node name="Focus" type="Marker3D" parent="."]
 position = Vector3(0.8, 1.4, 0)

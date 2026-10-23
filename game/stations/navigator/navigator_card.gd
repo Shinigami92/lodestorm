@@ -49,78 +49,94 @@ func show_part(part: StationPart) -> void:
 	visible = item != null and navigator != null
 	if not visible:
 		return
-	var voyage: Voyage = navigator.voyage
-	var shown_body := item as CelestialBody
-	var shown_region := item as Region
-	var star := item as StarSystem
-	var offer: MissionBrief = navigator.get_offer(item)
 	_status.add_theme_color_override(&"font_color", STATUS_COLOR)
-	_choose.visible = shown_region != null
+	_choose.visible = item is Region
 	var needed: ShieldPlate = null
-	if star:
-		_title.text = tr(star.display_name)
-		_subtitle.text = tr("Star")
-		_info.visible = false
-		_primary.visible = false
-		_status.text = ""
-	elif shown_body:
-		_title.text = tr(shown_body.display_name)
-		_subtitle.text = shown_body.kind_name()
-		if shown_body.kind != CelestialBody.Kind.STATION:
-			_subtitle.text = _with_tier(_subtitle.text, shown_body)
-		_show_rows(_region_rows, false)
-		var signature: Array[OreType] = []
-		for ore_type: OreType in shown_body.signature_ores:
-			signature.append(ore_type if navigator.is_reachable(shown_body) else null)
-		_info.visible = not signature.is_empty()
-		_show_rows(_ore_rows, not signature.is_empty())
-		_show_ores(signature)
-		_primary.visible = true
-		_primary.text = tr("Zoom in")
-		_primary.disabled = not navigator.is_reachable(shown_body)
-		if navigator.is_reachable(shown_body):
-			_status.text = ""
-		elif shown_body.kind == CelestialBody.Kind.STATION:
-			_status.text = tr("No docking yet.")
-		elif shown_body.kind == CelestialBody.Kind.GAS_GIANT:
-			_status.text = tr("Nowhere to land: its moons can be visited.")
-		else:
-			needed = _needed_plate(navigator, shown_body)
-			_status.text = _needs_text(shown_body)
-	elif shown_region:
-		var at_landing_site: bool = navigator.level == NavigatorStation.Level.REGION
-		_title.text = (
-			offer.location_name() if offer and at_landing_site else tr(shown_region.display_name)
-		)
-		_subtitle.text = tr(shown_region.biome.display_name) if shown_region.biome else ""
-		var region_body: CelestialBody = (
-			navigator.get_system().body_of(shown_region) if navigator.get_system() else null
-		)
-		if region_body:
-			_subtitle.text = _with_tier(_subtitle.text, region_body)
-		_info.visible = true
-		_show_rows(_region_rows, true)
-		_show_rows(_ore_rows, true)
-		_danger.text = MissionBrief.for_region(shown_region, 1).difficulty_name()
-		_danger.add_theme_color_override(&"font_color", DANGER_COLORS[shown_region.danger])
-		var minutes: float = (
-			(voyage.mission.settings.duration if voyage else 900.0) * shown_region.length
-		)
-		_timer.text = tr("%d min") % roundi(minutes / 60.0)
-		_show_ores(navigator.shown_ores(shown_region))
-		_primary.visible = not at_landing_site
-		_primary.text = tr("Zoom in")
-		var reachable: bool = navigator.is_reachable(shown_region)
-		_primary.disabled = not reachable
-		_choose.text = tr("Set as destination")
-		var chosen: bool = offer != null and voyage != null and offer == voyage.destination
-		_choose.disabled = not reachable or not voyage or not voyage.can_select() or chosen
-		_status.text = _region_status(navigator, shown_region, offer)
-		if region_body and not navigator.is_reachable(shown_region):
-			needed = _needed_plate(navigator, region_body)
+	if item is StarSystem:
+		_show_star(item as StarSystem)
+	elif item is CelestialBody:
+		needed = _show_body(navigator, item as CelestialBody)
+	elif item is Region:
+		needed = _show_region(navigator, item as Region)
 	_status.visible = _status.text != ""
 	_show_needed(needed)
 	_back.visible = navigator.level != NavigatorStation.Level.SYSTEM
+
+
+func _show_star(star: StarSystem) -> void:
+	_title.text = tr(star.display_name)
+	_subtitle.text = tr("Star")
+	_info.visible = false
+	_primary.visible = false
+	_status.text = ""
+
+
+## Shows `shown_body`: its kind and tier, its signature ores, "Zoom in". Returns the heat shield
+## plate it needs (null: none, or none would help).
+func _show_body(navigator: NavigatorStation, shown_body: CelestialBody) -> ShieldPlate:
+	var reachable: bool = navigator.is_reachable(shown_body)
+	_title.text = tr(shown_body.display_name)
+	_subtitle.text = shown_body.kind_name()
+	if shown_body.kind != CelestialBody.Kind.STATION:
+		_subtitle.text = _with_tier(_subtitle.text, shown_body)
+	_show_rows(_region_rows, false)
+	var signature: Array[OreType] = []
+	for ore_type: OreType in shown_body.signature_ores:
+		signature.append(ore_type if reachable else null)
+	_info.visible = not signature.is_empty()
+	_show_rows(_ore_rows, not signature.is_empty())
+	_show_ores(signature)
+	_primary.visible = true
+	_primary.text = tr("Zoom in")
+	_primary.disabled = not reachable
+	if reachable:
+		_status.text = ""
+	elif shown_body.kind == CelestialBody.Kind.STATION:
+		_status.text = tr("No docking yet.")
+	elif shown_body.kind == CelestialBody.Kind.GAS_GIANT:
+		_status.text = tr("Nowhere to land: its moons can be visited.")
+	else:
+		_status.text = _needs_text(shown_body)
+		return _needed_plate(navigator, shown_body)
+	return null
+
+
+## Shows `shown_region` (at its landing site: its mission's location name): its biome and tier,
+## danger, timer and ores, "Zoom in" and "Set as destination", and where things stand. Returns
+## the heat shield plate its body needs (null: none).
+func _show_region(navigator: NavigatorStation, shown_region: Region) -> ShieldPlate:
+	var voyage: Voyage = navigator.voyage
+	var offer: MissionBrief = navigator.get_offer(shown_region)
+	var reachable: bool = navigator.is_reachable(shown_region)
+	var at_landing_site: bool = navigator.level == NavigatorStation.Level.REGION
+	_title.text = (
+		offer.location_name() if offer and at_landing_site else tr(shown_region.display_name)
+	)
+	_subtitle.text = tr(shown_region.biome.display_name) if shown_region.biome else ""
+	var system: StarSystem = navigator.get_system()
+	var region_body: CelestialBody = system.body_of(shown_region) if system else null
+	if region_body:
+		_subtitle.text = _with_tier(_subtitle.text, region_body)
+	_info.visible = true
+	_show_rows(_region_rows, true)
+	_show_rows(_ore_rows, true)
+	_danger.text = MissionBrief.for_region(shown_region, 1).difficulty_name()
+	_danger.add_theme_color_override(&"font_color", DANGER_COLORS[shown_region.danger])
+	_timer.text = ""
+	if voyage:
+		var minutes: float = voyage.mission.settings.duration * shown_region.length / 60.0
+		_timer.text = tr("%d min") % roundi(minutes)
+	_show_ores(navigator.shown_ores(shown_region))
+	_primary.visible = not at_landing_site
+	_primary.text = tr("Zoom in")
+	_primary.disabled = not reachable
+	_choose.text = tr("Set as destination")
+	var chosen: bool = offer != null and voyage != null and offer == voyage.destination
+	_choose.disabled = not reachable or not voyage or not voyage.can_select() or chosen
+	_status.text = _region_status(navigator, shown_region, offer)
+	if region_body and not reachable:
+		return _needed_plate(navigator, region_body)
+	return null
 
 
 ## `interact`: zooms in, or at a landing site chooses it as the destination.

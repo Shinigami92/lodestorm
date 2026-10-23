@@ -190,7 +190,7 @@ static func groups() -> Array[Group]:
 			. add("MK pips", MkPips.COLOR_LIT)
 			. add("Heat", HeatShieldStation.HEAT_COLOR)
 			. add("Plate installed", HeatShieldCard.INSTALLED_COLOR)
-			. add("Ship on the map", NavigatorStation.SHIP_COLOR)
+			. add("Ship on the map", NavigatorHologram.SHIP_COLOR)
 			. add("Landmarks", HoloTable.LANDMARK_COLOR)
 		)
 	)

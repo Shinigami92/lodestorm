@@ -30,8 +30,6 @@ const FOCUS_HEIGHT: float = 1.3
 ## Who they are and what they talk about.
 @export var profile: NpcProfile
 
-## The ship whose story they follow; the one they stand in when not set.
-var ship: Ship
 ## The topic being told, or null while the card lists the topics.
 var topic: Topic
 ## The line of `topic` shown.
@@ -78,9 +76,6 @@ func _process(delta: float) -> void:
 
 ## The story the topics heard go into: the ship's.
 func get_story() -> Story:
-	# The ship joins its group when it's ready, after its rooms.
-	if not ship:
-		ship = Ship.nearest(get_tree(), global_position)
 	return ship.story if ship else _own_story
 
 

@@ -75,7 +75,7 @@ func _process(delta: float) -> void:
 	super(delta)
 	if not voyage:
 		voyage = get_tree().get_first_node_in_group(Voyage.GROUP) as Voyage
-	var shown: Player = user if user else _viewer()
+	var shown: Player = viewer()
 	show_hold(shown.hold if shown else null)
 
 
@@ -126,7 +126,6 @@ func get_reading_order() -> Array[StationPart]:
 func regions_with(ore_type: OreType) -> Array[Region]:
 	var found_in: Array[Region] = []
 	var system: StarSystem = _system()
-	var ship := get_parent() as Ship
 	if system:
 		for region: Region in system.open_regions(ship.heat_shield.mk if ship else 1):
 			if ore_type in system.ores_of(region):
@@ -164,7 +163,6 @@ static func window_shift(radius: float) -> float:
 func _opened() -> void:
 	super()
 	_enable_uses(false)
-	var ship := get_parent() as Ship
 	if ship:
 		ship.countdown_hidden = true
 
@@ -172,7 +170,6 @@ func _opened() -> void:
 func _closed() -> void:
 	super()
 	_enable_uses(true)
-	var ship := get_parent() as Ship
 	if ship:
 		ship.countdown_hidden = false
 
@@ -187,12 +184,6 @@ func _cycle(step_by: int) -> void:
 func _enable_uses(enabled: bool) -> void:
 	for tank: OreTank in _tanks.values():
 		tank.use_point.enabled = enabled
-
-
-## Whose hold the silos show while nobody uses them (see `Ship.get_viewing_player`).
-func _viewer() -> Player:
-	var ship := get_parent() as Ship
-	return ship.get_viewing_player() if ship else Player.first_local(get_tree())
 
 
 func _on_item_changed(item: ItemType, amount: float) -> void:

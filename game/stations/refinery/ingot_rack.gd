@@ -21,9 +21,6 @@ const POST_SIZE: float = 0.06
 const FRAME_COLOR := Color(0.22, 0.23, 0.25)
 const CLINK_SOUND: Sound = preload("res://assets/audio/sfx/refinery/bar_clink.tres")
 
-## The ship whose refinery it belongs to; the one it stands in when not set.
-var ship: Ship
-
 var _shelves: Dictionary[AlloyType, RackShelf] = {}
 ## The shelves in reading order (for `tab_prev`/`tab_next`).
 var _reading: Array[StationPart] = []
@@ -38,10 +35,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	super(delta)
-	if not ship:
-		ship = Ship.nearest(get_tree(), global_position)
-	var viewer: Player = user if user else _viewer()
-	show_player(viewer)
+	show_player(viewer())
 
 
 ## Shows the bars in `player`'s hold (null: all unknown), and their changes from then on.
@@ -83,10 +77,6 @@ func _cycle(step_by: int) -> void:
 		return
 	var index: int = _reading.find(selected)
 	select(_reading[posmod(index + step_by, _reading.size())])
-
-
-func _viewer() -> Player:
-	return ship.get_viewing_player() if ship else Player.first_local(get_tree())
 
 
 func _show(alloy: AlloyType) -> void:

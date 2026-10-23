@@ -81,8 +81,6 @@ const HOLOGRAM_PRIORITY: int = 2
 ## Every skill of the game.
 @export var tree: SkillTree
 
-## The mission that locks it while underway; found in the scene tree when not set.
-var mission: Mission
 ## "Stop" waiting for its second press.
 var stop_press := ConfirmPress.new()
 ## How far it's zoomed (1: the whole graph, down to `MIN_ZOOM`).
@@ -110,6 +108,11 @@ var _backdrop_material := StandardMaterial3D.new()
 @onready var _focus: Node3D = $Graph/Focus
 
 
+func _init() -> void:
+	super()
+	locks_while_underway = true
+
+
 func _ready() -> void:
 	super()
 	_full_view_height = view_height
@@ -118,8 +121,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
-	if not mission:
-		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	if camera:
 		# Faces the camera like the cards, so the graph reads from the isometric view.
@@ -148,11 +149,6 @@ func get_parts() -> Array[StationPart]:
 ## The point showing `skill`, or null.
 func get_part(skill: Skill) -> StationPart:
 	return _parts.get(skill, null)
-
-
-## Whether nothing can be learned right now.
-func is_locked() -> bool:
-	return mission != null and mission.is_underway()
 
 
 ## Whether the player using it can learn the next rank of `skill` right now.

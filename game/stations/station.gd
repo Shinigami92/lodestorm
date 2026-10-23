@@ -46,9 +46,33 @@ var selected: StationPart
 var hovered: StationPart
 ## The card's menu.
 var card_menu: StationCard
+## The mission, found in the scene tree when not set: one underway locks the stations that
+## change progress or gear (`locks_while_underway`, see `is_locked`).
+var mission: Mission:
+	get:
+		if not is_instance_valid(_mission) and is_inside_tree():
+			_mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
+		return _mission
+	set(value):
+		_mission = value
+## The ship it stands in (the nearest one), found when not set: whose hold, story or shield it
+## works with.
+var ship: Ship:
+	get:
+		# Ships join their group when they're ready, after their rooms: looked up until found.
+		if not is_instance_valid(_ship) and is_inside_tree():
+			_ship = Ship.nearest(get_tree(), global_position)
+		return _ship
+	set(value):
+		_ship = value
+## Whether a mission underway locks it (nothing is bought, built, started or swapped then),
+## set by the stations that change progress or gear.
+var locks_while_underway: bool = false
 
 ## Directions held down right now (a stick sends many events while held: only the first counts).
 var _held: Dictionary[Vector2, bool] = {}
+var _mission: Mission
+var _ship: Ship
 var _leader := MeshInstance3D.new()
 var _leader_mesh := ImmediateMesh.new()
 
@@ -265,6 +289,20 @@ func _shortcut(_event: InputEvent) -> bool:
 static func nth_player(tree: SceneTree, number: int) -> Player:
 	var players: Array[Node] = tree.get_nodes_in_group(Player.GROUP)
 	return players[number - 1] as Player if number >= 1 and number <= players.size() else null
+
+
+## Whether nothing can be done right now: while a mission is underway, for the stations it locks
+## (`locks_while_underway`).
+func is_locked() -> bool:
+	return locks_while_underway and mission != null and mission.is_underway()
+
+
+## The player whose state it shows (their hold, batch, fleet): the one using it, else the one
+## the ship's cutaway follows (the camera's), else the first local player.
+func viewer() -> Player:
+	if user:
+		return user
+	return ship.get_viewing_player() if ship else Player.first_local(get_tree())
 
 
 ## Whether `player` may use it (e.g. only their own locker).

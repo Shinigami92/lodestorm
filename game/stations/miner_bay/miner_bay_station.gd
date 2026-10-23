@@ -52,11 +52,6 @@ func _process(delta: float) -> void:
 	_show_fleet()
 
 
-## The player whose miners it shows: the one using it, else the first local one (or null).
-func viewer() -> Player:
-	return user if user else Player.first_local(get_tree())
-
-
 ## The fleet it shows, or null.
 func get_fleet() -> MinerFleet:
 	var player: Player = viewer()

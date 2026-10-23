@@ -10,21 +10,17 @@ extends Station
 ## above the ship's reach wait for the next heat shield plate (`upgrade_cap`), and nothing can be
 ## bought or stopped while a mission is underway.
 
-## The mission that locks it while underway; found in the scene tree when not set.
-var mission: Mission
-## The ship whose heat shield caps the levels; the one it stands in when not set.
-var ship: Ship
-
 ## "Stop" waiting for its second press.
 var stop_press := ConfirmPress.new()
 
 
+func _init() -> void:
+	super()
+	locks_while_underway = true
+
+
 func _process(delta: float) -> void:
 	super(delta)
-	if not mission:
-		mission = get_tree().get_first_node_in_group(Mission.GROUP) as Mission
-	if not ship:
-		ship = Ship.nearest(get_tree(), global_position)
 	# The hold, the owned weapons or the mission may change meanwhile.
 	if user:
 		refresh()
@@ -57,11 +53,6 @@ func get_levels() -> Upgrades:
 ## The weapon `upgrade` belongs to, or null (not a weapon's).
 func get_weapon(_upgrade: Upgrade) -> WeaponType:
 	return null
-
-
-## Whether nothing can be bought right now.
-func is_locked() -> bool:
-	return mission != null and mission.is_underway()
 
 
 ## Whether the player using it has the upgrade's weapon (or it's not a weapon's).

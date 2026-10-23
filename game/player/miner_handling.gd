@@ -1,12 +1,14 @@
 class_name MinerHandling
 extends Node
-## Placing a miner and picking one up take time (`MinerSettings.place_time`, `pick_up_time`):
-## meanwhile the `holder` stands still with its weapon lowered, facing the miner, which lowers
-## from its back to the ore node and unfolds its legs (placing), or folds them and rises onto its
-## back (picking up; see `Miner.unfolded`). Moving, dashing or attacking cancels it (`cancel`):
-## a miner being placed goes back onto the back, one being picked up stands again where it was;
-## nothing is lost. Taking damage doesn't cancel it. The holder drives it every physics step
-## (`update`).
+## Placing a miner and picking one up take time (`MinerSettings.place_time`, `pick_up_time`): the
+## miner stands on its node as a hologram that turns real from the bottom up (placing), or back
+## into a hologram from the top down until it's gone (picking up; see `Miner.built`). The `holder`
+## moves, dashes and fights freely meanwhile; it only goes on while they stay within the miner's
+## hose range (`in_range`, the circle of its ring) and waits while they're out of it
+## (`Miner.paused`). One at a time: while it goes on, nothing else is placed or picked up; placing
+## or picking up another miner while it waits gives it up (`cancel`: a miner being placed goes
+## back to the fleet, one being picked up turns real again where it stands); nothing is lost.
+## Taking damage doesn't cancel it, dying does. The holder drives it every physics step (`update`).
 
 ## Emitted when a miner it placed stands, and when one it picked up is on the back.
 signal placed(miner: Miner)
@@ -20,7 +22,7 @@ var holder: Player
 var miner: Miner
 ## Whether `miner` is being placed (else picked up).
 var placing: bool = false
-## Seconds since it started.
+## Seconds it went on so far.
 var elapsed: float = 0.0
 
 
@@ -32,10 +34,18 @@ func busy() -> bool:
 	)
 
 
+## Whether it goes on: busy, with the holder within the miner's hose range.
+func in_range() -> bool:
+	if not busy():
+		return false
+	var offset: Vector3 = miner.global_position - holder.global_position
+	return Vector2(offset.x, offset.z).length() <= miner.hose_range()
+
+
 ## Places the holder's next miner on `node`: it takes the node at once and stands after the place
-## time. Returns it, or null while busy or when the node is taken.
+## time. Returns it, or null while another goes on or when the node is taken.
 func place(node: OreNode) -> Miner:
-	if busy() or not node.is_free():
+	if not node.is_free() or not _free_hands():
 		return null
 	miner = node.place_miner(holder.miner_scene, holder.fleet, holder, true)
 	_start(true)
@@ -44,10 +54,10 @@ func place(node: OreNode) -> Miner:
 
 ## Starts picking up `target` (a standing miner of anyone's fleet). Returns whether it started.
 func pick_up(target: Miner) -> bool:
-	if busy() or not target.fleet or not target.is_standing():
+	if not target.fleet or not target.is_standing() or not _free_hands():
 		return false
 	miner = target
-	miner.carrier = holder
+	miner.handled_by = holder
 	_start(false)
 	return true
 
@@ -60,24 +70,29 @@ func progress() -> float:
 	return clampf(elapsed / seconds, 0.0, 1.0) if seconds > 0.0 else 1.0
 
 
-## Stops placing (the miner goes back onto the back) or picking up (it stands again).
+## Gives it up: a miner being placed goes back to the fleet, one being picked up turns real again.
 func cancel() -> void:
 	if busy():
+		miner.paused = false
 		if placing:
 			miner.pick_up(holder)
 		else:
-			miner.carrier = null
+			miner.handled_by = null
 	miner = null
 
 
-## Moves it on by `delta` seconds; at the end the miner stands or is picked up.
+## Moves it on by `delta` seconds while the holder is in range; at the end the miner stands or is
+## picked up.
 func update(delta: float) -> void:
 	if not busy():
 		miner = null
 		return
+	miner.paused = not in_range()
+	if miner.paused:
+		return
 	elapsed += delta
 	var share: float = progress()
-	miner.unfolded = share if placing else 1.0 - share
+	miner.built = share if placing else 1.0 - share
 	if share < 1.0:
 		return
 	var done: Miner = miner
@@ -90,7 +105,15 @@ func update(delta: float) -> void:
 		picked_up.emit(done)
 	else:
 		# Left behind meanwhile (the run ended): it stays.
-		done.carrier = null
+		done.handled_by = null
+
+
+## Whether another can start: nothing goes on, or what waits is given up.
+func _free_hands() -> bool:
+	if in_range():
+		return false
+	cancel()
+	return true
 
 
 func _start(is_placing: bool) -> void:

@@ -1,6 +1,6 @@
 extends GutTest
-## Placing and picking up miners taking time: standing still, cancelling, the fold and its sounds,
-## and the suit ring's miner ticks.
+## Placing and picking up miners taking time: the hologram, moving freely within range, waiting out
+## of it, giving up, the sounds, the miner's ring and the suit ring's miner ticks.
 
 const TEST_MAP := preload("res://tests/support/test_map.gd")
 const SERVO: Sound = preload("res://assets/audio/sfx/mining/miner_servo.tres")
@@ -42,7 +42,7 @@ func test_placing_takes_the_place_time() -> void:
 	assert_does_not_have(_played, PLACE, "no thud yet")
 	await wait_physics_frames(3)
 	assert_eq(miner.amount, 0.0, "it doesn't mine yet")
-	assert_gt(miner.unfolded, 0.0)
+	assert_gt(miner.built, 0.0)
 	assert_has(_loops(miner), SERVO)
 	_player.handling.update(miner.settings.place_time)
 	assert_true(miner.is_standing())
@@ -54,43 +54,71 @@ func test_placing_takes_the_place_time() -> void:
 	assert_does_not_have(_loops(miner), SERVO)
 
 
-func test_nothing_else_is_placed_meanwhile() -> void:
-	_player.place_miner()
-	var left: int = _player.fleet.left_to_place()
-	_player.global_position = (
-		(_map.get_node("Location/OreNodes").get_child(1) as Node3D).global_position
+func test_it_is_a_hologram_until_it_is_built() -> void:
+	var miner: Miner = _player.place_miner()
+	await wait_process_frames(2)
+	var frame := miner.find_child("Frame_Body", true, false) as MeshInstance3D
+	var built := frame.get_surface_override_material(0) as ShaderMaterial
+	assert_not_null(built, "its own look up to the build line")
+	assert_eq(built.shader, MinerHologram.BUILD_SHADER)
+	assert_eq((frame.material_overlay as ShaderMaterial).shader, MinerHologram.HOLOGRAM_SHADER)
+	assert_false((miner.get_node("Model/Plate") as Node3D).visible, "no plate yet")
+	_player.handling.update(miner.settings.place_time)
+	assert_null(frame.get_surface_override_material(0), "its own material again")
+	assert_ne(
+		(frame.material_overlay as ShaderMaterial).shader,
+		MinerHologram.HOLOGRAM_SHADER,
+		"its silhouette again"
 	)
-	assert_null(_player.place_miner())
-	assert_eq(_player.fleet.left_to_place(), left)
+	assert_true((miner.get_node("Model/Plate") as Node3D).visible)
 
 
-func test_moving_cancels_placing() -> void:
+func test_the_player_moves_and_fights_meanwhile() -> void:
 	var miner: Miner = _player.place_miner()
 	Input.action_press(&"move_right")
-	await wait_physics_frames(2)
-	assert_false(_player.handling.busy())
-	assert_true(not is_instance_valid(miner) or miner.is_queued_for_deletion(), "back on the back")
-	assert_true(_node.is_free())
-	assert_eq(_player.fleet.left_to_place(), MinerFleet.PER_RUN, "nothing lost")
-
-
-func test_attacking_cancels_placing() -> void:
-	_player.place_miner()
 	Input.action_press(&"attack")
-	await wait_physics_frames(2)
-	assert_false(_player.handling.busy())
-	assert_true(_node.is_free())
+	await wait_physics_frames(3)
+	assert_true(_player.handling.busy(), "not cancelled")
+	assert_ne(Vector2(_player.velocity.x, _player.velocity.z), Vector2.ZERO, "walking")
+	assert_true(_player.weapon.trigger_held, "shooting")
+	assert_false(miner.paused)
 
 
-func test_the_player_stands_still_with_the_weapon_lowered() -> void:
+func test_out_of_range_it_waits() -> void:
 	var miner: Miner = _player.place_miner()
+	_player.handling.update(miner.settings.place_time * 0.5)
+	_player.global_position = _node.global_position + Vector3(miner.hose_range() + 1.0, 0.0, 0.0)
+	_player.handling.update(miner.settings.place_time)
+	assert_true(miner.paused)
+	assert_almost_eq(miner.built, 0.5, 0.01, "it waits")
+	assert_true(_player.handling.busy())
 	await wait_physics_frames(2)
-	assert_eq(_player.velocity.x, 0.0)
-	assert_eq(_player.velocity.z, 0.0)
-	assert_false(_player.weapon.trigger_held)
-	var to_miner: Vector3 = miner.global_position - _player.global_position
-	to_miner.y = 0.0
-	assert_almost_eq(_player.aim.direction.dot(to_miner.normalized()), 1.0, 0.01, "facing it")
+	assert_does_not_have(_loops(miner), SERVO, "quiet while it waits")
+	_player.global_position = _node.global_position + Vector3(2.0, 0.0, 0.0)
+	_player.handling.update(miner.settings.place_time * 0.5)
+	assert_true(miner.is_standing(), "back in range, it goes on")
+
+
+func test_nothing_else_is_placed_while_it_goes_on() -> void:
+	_player.place_miner()
+	var left: int = _player.fleet.left_to_place()
+	var other := _map.get_node("Location/OreNodes/KyriteB") as OreNode
+	assert_null(_player.handling.place(other))
+	assert_eq(_player.fleet.left_to_place(), left)
+	assert_true(other.is_free())
+
+
+func test_placing_elsewhere_gives_up_a_waiting_one() -> void:
+	var waiting: Miner = _player.place_miner()
+	var other := _map.get_node("Location/OreNodes/KyriteB") as OreNode
+	_player.global_position = other.global_position + Vector3(2.0, 0.0, 0.0)
+	_player.handling.update(0.1)
+	var miner: Miner = _player.place_miner()
+	assert_not_null(miner)
+	assert_eq(other.miner, miner)
+	assert_true(waiting.is_queued_for_deletion(), "back to the fleet")
+	assert_true(_node.is_free())
+	assert_eq(_player.fleet.left_to_place(), MinerFleet.PER_RUN - 1, "nothing lost")
 
 
 func test_damage_does_not_cancel() -> void:
@@ -113,11 +141,11 @@ func test_picking_up_takes_the_pick_up_time() -> void:
 	await wait_physics_frames(2)
 	_player.interact()
 	assert_true(_player.handling.busy())
-	assert_eq(miner.carrier, _player)
-	assert_false(miner.is_standing(), "folding")
+	assert_eq(miner.handled_by, _player)
+	assert_false(miner.is_standing(), "turning into a hologram")
 	_player.handling.update(miner.settings.pick_up_time * 0.5)
 	assert_false(miner.is_queued_for_deletion())
-	assert_almost_eq(miner.unfolded, 0.5, 0.01)
+	assert_almost_eq(miner.built, 0.5, 0.01)
 	_player.handling.update(miner.settings.pick_up_time * 0.5)
 	assert_true(miner.is_queued_for_deletion())
 	assert_true(_node.is_free())
@@ -126,17 +154,15 @@ func test_picking_up_takes_the_pick_up_time() -> void:
 	assert_has(_played, LATCH)
 
 
-func test_moving_cancels_a_pickup_and_it_stands_again() -> void:
+func test_a_given_up_pickup_turns_real_again() -> void:
 	var miner: Miner = _place_standing()
 	await wait_physics_frames(2)
 	_player.interact()
 	_player.handling.update(1.0)
-	Input.action_press(&"move_right")
-	await wait_physics_frames(2)
+	_player.handling.cancel()
 	assert_false(_player.handling.busy())
 	assert_false(miner.is_queued_for_deletion(), "it stays where it was")
-	assert_null(miner.carrier)
-	Input.action_release(&"move_right")
+	assert_null(miner.handled_by)
 	await wait_seconds(Miner.STAND_TIME + 0.2)
 	assert_true(miner.is_standing())
 
@@ -152,6 +178,25 @@ func test_a_miner_being_picked_up_cannot_be_taken_by_another() -> void:
 	assert_false(other.handling.pick_up(miner))
 	await wait_physics_frames(1)
 	assert_false((miner.get_node("Pickup") as Interactable).enabled)
+
+
+func test_the_miners_ring_shows_its_state() -> void:
+	var miner: Miner = _player.place_miner()
+	var ring := miner.get_node("Ring") as MinerRing
+	_player.handling.update(miner.settings.place_time * 0.5)
+	await wait_process_frames(1)
+	assert_eq(ring.shown(&"progress_alpha") as float, 1.0, "the progress while it's placed")
+	assert_almost_eq(ring.shown(&"progress") as float, 0.5, 0.01)
+	assert_eq(ring.shown(&"range_radius") as float, miner.hose_range())
+	_player.handling.update(miner.settings.place_time)
+	miner.take_damage(miner.max_health() * 0.6)
+	miner.amount = miner.capacity() * 0.25
+	await wait_physics_frames(2)
+	await wait_process_frames(1)
+	assert_eq(ring.shown(&"progress_alpha") as float, 0.0)
+	assert_almost_eq(ring.shown(&"health_fill") as float, 0.4, 0.05)
+	assert_gt(ring.shown(&"tank_fill") as float, 0.0)
+	assert_eq(ring.shown(&"range_solid") as float, 1.0, "the hose is connected")
 
 
 func test_the_ring_ticks_show_the_runs_miners() -> void:

@@ -1,10 +1,10 @@
 # Lodestorm Individual Contributor License Agreement
 
-Version 1.0
+Version 1.1
 
 Thank you for contributing to Lodestorm. The project is source-available under [CC BY-NC-SA 4.0](https://github.com/Shinigami92/lodestorm/blob/main/LICENSE), and the game itself will be sold. This agreement lets the maintainer include your contribution in both. You keep the copyright to your contribution; you only grant a license to use it.
 
-You sign this agreement once, on your first pull request, through [CLA Assistant](https://cla-assistant.io/). It then covers all your contributions to the project.
+You sign this agreement once, on your first pull request, through [CLA Bot](https://cla.fiveonefour.com/sign/Shinigami92): sign in with GitHub, read the agreement and confirm it. It then covers all your contributions to the project, until a new version of it asks you to sign again.
 
 ## 1. Definitions
 
@@ -46,7 +46,7 @@ The Maintainer is not obliged to use any Contribution, and may change or remove 
 
 ## 8. Your data
 
-CLA Assistant (a service hosted by SAP, storing its data in the EU) records Your GitHub account, the details You enter when signing, and the date and version of this agreement You signed. The Maintainer keeps them as proof of the licenses granted here, for as long as the Project uses Your Contributions.
+CLA Bot (a service run by fiveonefour, see its [privacy policy](https://cla.fiveonefour.com/privacy)) records Your GitHub account (its id, username, name and avatar), the date You signed and a fingerprint (hash) of the exact text You signed. The Maintainer keeps them as proof of the licenses granted here, for as long as the Project uses Your Contributions.
 
 ## 9. Governing law
 

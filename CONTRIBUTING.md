@@ -77,7 +77,7 @@ docs: describe storm damage
 
 ## Contributor License Agreement (CLA)
 
-Lodestorm is source-available under [CC BY-NC-SA 4.0](LICENSE), but the game itself will be sold (Steam and other stores). To include your contribution in the commercial release, you must sign the [CLA](CLA.md) once before your first pull request can be merged. A bot ([CLA Assistant](https://cla-assistant.io/)) asks you to do so on your pull request; signing takes a minute in the browser and covers all your later contributions.
+Lodestorm is source-available under [CC BY-NC-SA 4.0](LICENSE), but the game itself will be sold (Steam and other stores). To include your contribution in the commercial release, you must sign the [CLA](CLA.md) once before your first pull request can be merged. A bot ([CLA Bot](https://cla.fiveonefour.com/)) asks you to do so on your pull request; signing takes a minute in the browser (sign in with GitHub, read, confirm) and covers all your later contributions. Afterwards the check on your pull request turns green by itself; if it doesn't, comment `/recheck`.
 
 In short: you keep the copyright to your contribution and grant the maintainer a license to use it in the project, including the commercial release, under any license. You confirm that the contribution is yours (or third-party material you name with its license) and that any AI tools used to make it are named in the pull request. The [CLA](CLA.md) itself is what counts.
 

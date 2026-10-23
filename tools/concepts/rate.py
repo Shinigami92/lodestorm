@@ -1,0 +1,115 @@
+"""Local rating page for the concept batches: python tools/concepts/rate.py [port]   (default 8190)
+
+Shows every local/concepts/<batch>/<subject>/*.png (new images appear while a batch renders), with stars and a
+note per image, a note per subject and duels: when the best images of a subject are tied, pick the better of two
+until they are ranked. Everything is saved in the concept database (db.py).
+"""
+
+import itertools
+import json
+import pathlib
+import sys
+import urllib.parse
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+import db
+
+PAGE = pathlib.Path(__file__).with_name("rate.html")
+
+
+def batches() -> dict[str, dict[str, list[str]]]:
+    out: dict[str, dict[str, list[str]]] = {}
+    for b in sorted(p for p in db.ROOT.iterdir() if p.is_dir()):
+        subjects = {s.name: sorted(f.name for f in s.glob("*.png")) for s in sorted(b.iterdir()) if s.is_dir()}
+        if any(subjects.values()):
+            out[b.name] = subjects
+    return out
+
+
+def state(batch: str) -> dict:
+    """Ratings, notes and duel wins of one batch: {subject: {"files": {file: {...}}, "note": str, "duels": [...]}}."""
+    con = db.connect()
+    out: dict = {}
+
+    def subject(name: str) -> dict:
+        return out.setdefault(name, {"files": {}, "note": "", "duels": []})
+
+    for r in con.execute("select subject, file, stars, note from ratings where batch = ?", (batch,)):
+        subject(r["subject"])["files"][r["file"]] = {"stars": r["stars"], "note": r["note"]}
+    for r in con.execute("select subject, note from notes where batch = ?", (batch,)):
+        subject(r["subject"])["note"] = r["note"]
+    for r in con.execute("select subject, winner, loser from duels where batch = ? order by id", (batch,)):
+        subject(r["subject"])["duels"].append([r["winner"], r["loser"]])
+    for r in con.execute("select subject, file, prompt from images where batch = ?", (batch,)):
+        subject(r["subject"])["files"].setdefault(r["file"], {"stars": 0, "note": ""})["prompt"] = r["prompt"]
+    return out
+
+
+def save(batch: str, data: dict) -> None:
+    con = db.connect()
+    kind, subject = data["kind"], data["subject"]
+    if kind == "rating":
+        con.execute(
+            "insert or replace into ratings values (?, ?, ?, ?, ?, ?)",
+            (batch, subject, data["file"], data["stars"], data["note"], db.now()),
+        )
+    elif kind == "note":
+        con.execute("insert or replace into notes values (?, ?, ?)", (batch, subject, data["note"]))
+    elif kind == "duel":
+        # A new verdict on the same pair replaces the old one
+        pair = (data["winner"], data["loser"])
+        for a, b in itertools.permutations(pair):
+            con.execute(
+                "delete from duels where batch = ? and subject = ? and winner = ? and loser = ?", (batch, subject, a, b)
+            )
+        con.execute(
+            "insert into duels (batch, subject, winner, loser, at) values (?, ?, ?, ?, ?)",
+            (batch, subject, *pair, db.now()),
+        )
+    elif kind == "reset_duels":
+        con.execute("delete from duels where batch = ? and subject = ?", (batch, subject))
+    con.commit()
+
+
+class Handler(BaseHTTPRequestHandler):
+    def log_message(self, *args: object) -> None:
+        pass
+
+    def send(self, code: int, body: bytes, kind: str) -> None:
+        self.send_response(code)
+        self.send_header("Content-Type", kind)
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self) -> None:
+        path = urllib.parse.unquote(urllib.parse.urlparse(self.path).path)
+        if path == "/":
+            self.send(200, PAGE.read_bytes(), "text/html; charset=utf-8")
+        elif path == "/api/batches":
+            self.send(200, json.dumps(batches()).encode(), "application/json")
+        elif path.startswith("/api/state/"):
+            self.send(200, json.dumps(state(path.rsplit("/", 1)[1])).encode(), "application/json")
+        elif path.startswith("/img/"):
+            f = (db.ROOT / path[5:]).resolve()
+            if db.ROOT.resolve() in f.parents and f.suffix == ".png" and f.exists():
+                self.send(200, f.read_bytes(), "image/png")
+            else:
+                self.send(404, b"", "text/plain")
+        else:
+            self.send(404, b"", "text/plain")
+
+    def do_POST(self) -> None:
+        path = urllib.parse.urlparse(self.path).path
+        if path.startswith("/api/save/"):
+            save(path.rsplit("/", 1)[1], json.loads(self.rfile.read(int(self.headers["Content-Length"]))))
+            self.send(200, b"{}", "application/json")
+        else:
+            self.send(404, b"", "text/plain")
+
+
+if __name__ == "__main__":
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8190
+    db.connect()
+    print(f"http://127.0.0.1:{port}/", flush=True)
+    ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()

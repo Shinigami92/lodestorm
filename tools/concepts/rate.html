@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept Ratings</title>
+<style>
+  :root { --bg: #111317; --panel: #1b1e24; --line: #2a2f38; --text: #d8dce3; --muted: #8a919c; --amber: #f0a83a; --cyan: #4fd6e8; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--panel); padding: 10px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+  select, textarea, button { font: inherit; color: var(--text); background: #0d0f12; border: 1px solid #333a45; border-radius: 4px; }
+  select { padding: 4px 8px; }
+  button { padding: 4px 10px; cursor: pointer; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tabs button { color: var(--muted); }
+  .tabs button.on { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
+  .tabs button.done::after { content: " ✓"; }
+  .tabs button.tie::after { content: " ⚔"; color: var(--amber); }
+  #status { color: var(--muted); margin-left: auto; }
+  main { padding: 16px; }
+  .bar { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+  .bar textarea { flex: 1; }
+  #duelbtn:disabled { opacity: .4; cursor: default; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 16px; }
+  .card { background: var(--panel); border-radius: 6px; overflow: hidden; }
+  .card img { width: 100%; display: block; cursor: zoom-in; }
+  .row { display: flex; gap: 6px; padding: 8px 10px 0; align-items: center; }
+  .row b { margin-right: auto; color: var(--muted); font-weight: 500; }
+  .badge { color: var(--bg); background: var(--amber); border-radius: 3px; padding: 0 6px; font-size: 13px; font-weight: 600; }
+  .star { background: none; border: 0; color: #444b57; font-size: 22px; padding: 0 2px; }
+  .star.on { color: var(--amber); }
+  textarea { width: 100%; min-height: 2.6em; box-sizing: border-box; padding: 4px 6px; }
+  .card textarea { width: calc(100% - 20px); margin: 8px 10px 4px; }
+  details { margin: 0 10px 10px; color: var(--muted); font-size: 13px; }
+  .overlay { position: fixed; inset: 0; background: #000e; display: none; z-index: 3; }
+  #zoom { align-items: center; justify-content: center; cursor: zoom-out; }
+  #zoom img { max-width: 100vw; max-height: 100vh; }
+  #duel { flex-direction: column; padding: 12px; box-sizing: border-box; gap: 10px; }
+  #duel .head { display: flex; gap: 12px; align-items: center; }
+  #duel .head span { margin-right: auto; color: var(--muted); }
+  #duel .pair { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0; }
+  #duel .pair img { width: 100%; height: 100%; object-fit: contain; cursor: pointer; border: 3px solid transparent; border-radius: 6px; box-sizing: border-box; }
+  #duel .pair img:hover { border-color: var(--amber); }
+  @media (max-width: 700px) { #duel .pair { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <select id="batch" aria-label="Batch"></select>
+  <div class="tabs" id="tabs"></div>
+  <span id="status"></span>
+</header>
+<main>
+  <div class="bar">
+    <textarea id="subjnote" placeholder="Notes for this whole subject"></textarea>
+    <button id="duelbtn" title="Pick the better of two among the tied best images">Duel</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+<div class="overlay" id="zoom"><img alt=""></div>
+<div class="overlay" id="duel">
+  <div class="head"><span id="duelinfo"></span><button id="duelreset">Start over</button><button id="duelclose">Close (Esc)</button></div>
+  <div class="pair"><img id="duelL" alt="left"><img id="duelR" alt="right"></div>
+</div>
+<script>
+let images = {}, state = {}, batch = "", subject = "", pair = null;
+const $ = (id) => document.getElementById(id);
+const sub = () => (state[subject] ??= { files: {}, note: "", duels: [] });
+const file = (f) => (sub().files[f] ??= { stars: 0, note: "" });
+
+function post(data) {
+  return fetch(`/api/save/${batch}`, { method: "POST", body: JSON.stringify({ subject, ...data }) })
+    .then(() => { $("status").textContent = "saved " + new Date().toLocaleTimeString(); });
+}
+
+// The tied best images of a subject (at least two with the top stars), their pairs and wins.
+function duelInfo(s) {
+  const files = images[batch][s] ?? [];
+  const st = state[s] ?? { files: {}, duels: [] };
+  const stars = (f) => st.files[f]?.stars ?? 0;
+  const top = Math.max(0, ...files.map(stars));
+  const cand = top ? files.filter((f) => stars(f) === top) : [];
+  const wins = Object.fromEntries(cand.map((f) => [f, 0]));
+  const decided = new Set();
+  for (const [w, l] of st.duels) {
+    if (w in wins && l in wins) { wins[w]++; decided.add([w, l].sort().join("|")); }
+  }
+  const pairs = [];
+  for (let i = 0; i < cand.length; i++) for (let j = i + 1; j < cand.length; j++) pairs.push([cand[i], cand[j]]);
+  const open = pairs.filter((p) => !decided.has([...p].sort().join("|")));
+  return { cand, wins, pairs, open };
+}
+
+async function load() {
+  images = await (await fetch("/api/batches")).json();
+  const [b, s] = decodeURIComponent(location.hash.slice(1)).split("/");
+  const names = Object.keys(images);
+  $("batch").innerHTML = names.map((n) => `<option>${n}</option>`).join("");
+  batch = names.includes(b) ? b : names[names.length - 1];
+  $("batch").value = batch;
+  await openBatch(s);
+}
+
+async function openBatch(s) {
+  state = await (await fetch(`/api/state/${batch}`)).json();
+  const subjects = Object.keys(images[batch]);
+  subject = subjects.includes(s) ? s : subjects[0];
+  render();
+}
+
+function render() {
+  location.hash = `${batch}/${subject}`;
+  $("tabs").innerHTML = Object.keys(images[batch]).map((s) => {
+    const files = images[batch][s];
+    const done = files.length && files.every((f) => state[s]?.files[f]?.stars);
+    const tie = done && duelInfo(s).open.length;
+    return `<button class="${s === subject ? "on" : ""} ${tie ? "tie" : done ? "done" : ""}" data-s="${s}">${s}</button>`;
+  }).join("");
+  $("subjnote").value = sub().note;
+  const d = duelInfo(subject);
+  $("duelbtn").disabled = d.pairs.length === 0;
+  $("duelbtn").textContent = d.pairs.length ? `Duel (${d.pairs.length - d.open.length}/${d.pairs.length})` : "Duel";
+  const order = Object.keys(d.wins).sort((a, b) => d.wins[b] - d.wins[a]);
+  $("grid").innerHTML = images[batch][subject].map((f) => {
+    const e = sub().files[f] ?? { stars: 0, note: "" };
+    const stars = [1, 2, 3, 4, 5].map((n) => `<button class="star ${n <= e.stars ? "on" : ""}" data-f="${f}" data-n="${n}" aria-label="${n} stars">★</button>`).join("");
+    const rank = f in d.wins && d.pairs.length && !d.open.length ? `<span class="badge">#${order.indexOf(f) + 1}</span>` : "";
+    const prompt = e.prompt ? `<details><summary>prompt</summary>${e.prompt.replace(/</g, "&lt;")}</details>` : "";
+    return `<div class="card"><img src="/img/${batch}/${subject}/${f}" alt="${f}" loading="lazy">
+      <div class="row"><b>${f.replace(".png", "")}</b>${rank}${stars}</div>
+      <textarea data-f="${f}" placeholder="Note">${e.note.replace(/</g, "&lt;")}</textarea>${prompt}</div>`;
+  }).join("");
+}
+
+function showDuel() {
+  const d = duelInfo(subject);
+  if (!d.open.length) { closeDuel(); return; }
+  pair = Math.random() < 0.5 ? d.open[0] : [...d.open[0]].reverse();
+  $("duelL").src = `/img/${batch}/${subject}/${pair[0]}`;
+  $("duelR").src = `/img/${batch}/${subject}/${pair[1]}`;
+  $("duelinfo").textContent = `${subject}: which is better? (click or ←/→) — ${d.pairs.length - d.open.length + 1}/${d.pairs.length}`;
+  $("duel").style.display = "flex";
+}
+
+async function pick(i) {
+  if (!pair) return;
+  const [winner, loser] = i === 0 ? pair : [pair[1], pair[0]];
+  sub().duels = sub().duels.filter(([w, l]) => !(new Set([w, l, winner, loser]).size === 2));
+  sub().duels.push([winner, loser]);
+  pair = null;
+  await post({ kind: "duel", winner, loser });
+  render();
+  showDuel();
+}
+
+function closeDuel() { pair = null; $("duel").style.display = "none"; render(); }
+
+$("batch").onchange = (ev) => { batch = ev.target.value; openBatch(); };
+$("tabs").onclick = (ev) => { if (ev.target.dataset.s) { subject = ev.target.dataset.s; render(); } };
+$("grid").onclick = (ev) => {
+  const t = ev.target;
+  if (t.classList.contains("star")) {
+    const e = file(t.dataset.f), n = +t.dataset.n;
+    e.stars = e.stars === n ? 0 : n;
+    post({ kind: "rating", file: t.dataset.f, stars: e.stars, note: e.note });
+    render();
+  } else if (t.tagName === "IMG") {
+    $("zoom").querySelector("img").src = t.src; $("zoom").style.display = "flex";
+  }
+};
+$("grid").oninput = (ev) => {
+  const f = ev.target.dataset.f;
+  if (f) { const e = file(f); e.note = ev.target.value; post({ kind: "rating", file: f, stars: e.stars, note: e.note }); }
+};
+$("subjnote").oninput = (ev) => { sub().note = ev.target.value; post({ kind: "note", note: ev.target.value }); };
+$("zoom").onclick = () => { $("zoom").style.display = "none"; };
+$("duelbtn").onclick = () => { if (duelInfo(subject).open.length) showDuel(); else if (confirm("Ranked already. Duel again from the start?")) resetDuels(); };
+$("duelL").onclick = () => pick(0);
+$("duelR").onclick = () => pick(1);
+$("duelclose").onclick = closeDuel;
+$("duelreset").onclick = () => resetDuels();
+async function resetDuels() { sub().duels = []; await post({ kind: "reset_duels" }); render(); showDuel(); }
+document.addEventListener("keydown", (ev) => {
+  if ($("duel").style.display !== "flex") { if (ev.key === "Escape") $("zoom").style.display = "none"; return; }
+  if (ev.key === "ArrowLeft") pick(0);
+  else if (ev.key === "ArrowRight") pick(1);
+  else if (ev.key === "Escape") closeDuel();
+});
+setInterval(async () => {
+  const fresh = await (await fetch("/api/batches")).json();
+  if (JSON.stringify(fresh) !== JSON.stringify(images)) {
+    images = fresh;
+    state = await (await fetch(`/api/state/${batch}`)).json();
+    if (document.activeElement?.tagName !== "TEXTAREA" && !pair) render();
+  }
+}, 10000);
+load();
+</script>
+</body>
+</html>

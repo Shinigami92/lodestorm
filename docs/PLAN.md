@@ -77,6 +77,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 13 B, ahead of its step and without the medic: health carrying over between runs (saved with the player, full after dying), the four med beds in the medical bay (lying down with the weapon put away, healing to full, the card's health bar and "Get up"), the one-time hint at the ramp button for a hurt player
 - Step 14 A1: ore nodes running dry (amounts by the ore's band, the miner taking its ore out of the node, the crystals shrinking into the rock one after another down to the bare rock, the miner's amber blink on a dry node, dry nodes taking no miner and the scanner skipping them)
 - Miners placed as holograms: placing projects the miner onto its node as a hologram turning real from the bottom up (picking up the reverse), the player moving and fighting freely meanwhile within the miner's hose range (out of it, it waits; placing or picking up another gives a waiting one up); every miner's ring on the ground with its health, fill, hose range and that progress
+- Silo displays: each silo's exact amount in big digits in the ore's color at the top of its body, readable from the normal camera over the silo in front ("?" for unknown ores); the ramp's countdown running outwards from the door, clear of them
 
 ## Todo
 

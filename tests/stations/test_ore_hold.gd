@@ -63,7 +63,7 @@ func test_clusters_leave_a_way_between_them() -> void:
 					assert_gte(gap, OreHold.WALK_WIDTH, "%s and %s" % [a.name, b.name])
 
 
-func test_no_silo_hides_another_ones_window() -> void:
+func test_no_silo_hides_another_ones_window_or_amount() -> void:
 	# The camera looks along the hold's -Z: a silo in front must not cover a window behind it.
 	for a: OreTank in _hold.get_parts():
 		for b: OreTank in _hold.get_parts():
@@ -73,6 +73,19 @@ func test_no_silo_hides_another_ones_window() -> void:
 			assert_gte(
 				absf(a.position.x - b.position.x) + 0.001, needed, "%s hides %s" % [a.name, b.name]
 			)
+	# The camera looks along the hold's -Z and down at its pitch: the line of sight from each
+	# amount's text towards it passes over the silos in front (their bodies as cylinders).
+	var rise: float = tan(deg_to_rad(IsoCameraSettings.new().pitch))
+	for b: OreTank in _hold.get_parts():
+		var text: Vector3 = _hold.to_local((b.get_node("Amount") as Node3D).global_position)
+		for a: OreTank in _hold.get_parts():
+			var reach: float = a.radius + 0.12
+			var dx: float = absf(a.position.x - text.x)
+			if a == b or a.position.z <= b.position.z or dx >= reach:
+				continue
+			var enters: float = maxf(a.position.z - sqrt(reach * reach - dx * dx), text.z)
+			var sight: float = text.y + (enters - text.z) * rise
+			assert_gt(sight, a.position.y + a.height * 0.5, "%s hides %s" % [a.name, b.name])
 
 
 func test_the_way_to_the_lift_stays_clear() -> void:
@@ -132,15 +145,37 @@ func test_silos_block_the_way() -> void:
 
 func test_unknown_until_brought_aboard() -> void:
 	var tank: OreTank = _hold.get_tank(KYRITE)
+	var amount := tank.get_node("Amount") as Label3D
+	var ore_name := tank.get_node("Name") as Label3D
 	assert_false(tank.found)
-	assert_eq((tank.get_node("Plate") as Label3D).text, "?")
+	assert_eq(amount.text, "?")
+	assert_eq(ore_name.text, "", "an unknown ore stays nameless")
 	_player.hold.add(KYRITE, 1500.0)
 	assert_true(tank.found)
 	assert_almost_eq(tank.fill_level(), 0.5, 0.001)
-	assert_string_contains((tank.get_node("Plate") as Label3D).text, "1500")
+	assert_eq(amount.text, "1500")
+	assert_almost_eq(amount.modulate.h, KYRITE.color.h, 0.001, "in the ore's color")
+	assert_eq(ore_name.text, KYRITE.get_display_name().to_upper())
 	assert_true(_player.hold.pay({KYRITE: 1500}))
 	assert_eq(tank.fill_level(), 0.0)
+	assert_eq(amount.text, "0")
 	assert_true(tank.found, "stays known when emptied")
+
+
+func test_amounts_read_from_the_camera_and_fit() -> void:
+	# Four digits on the smallest silo's display: big enough from the normal camera.
+	const READABLE: float = 0.35
+	for ore_type: OreType in CATALOG.ores:
+		_player.hold.add(ore_type, 2480.0)
+		var tank: OreTank = _hold.get_tank(ore_type)
+		assert_gte(tank.amount_text_height(), READABLE, ore_type.display_name)
+	_player.hold.add(KYRITE, 1000000.0)
+	var amount := _hold.get_tank(KYRITE).get_node("Amount") as Label3D
+	var width: float = (
+		amount.font.get_string_size(amount.text, HORIZONTAL_ALIGNMENT_LEFT, -1, amount.font_size).x
+		* amount.pixel_size
+	)
+	assert_lte(width, _hold.get_tank(KYRITE).radius * 2.0 * OreTank.DISPLAY_WIDTH, "long ones fit")
 
 
 func test_silos_show_the_users_hold() -> void:

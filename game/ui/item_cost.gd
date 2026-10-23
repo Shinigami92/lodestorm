@@ -3,8 +3,6 @@ extends HFlowContainer
 ## A cost on a holo card: per ore type (or alloy) its badge with its name and "cost / in the hold",
 ## red where the hold is short (an upgrade's next level, a skill's next rank, a miner's build).
 
-const MISSING_COLOR := Color(1.0, 0.4, 0.35)
-
 ## The cost shown, and its amount label per item.
 var _cost: Dictionary[ItemType, int] = {}
 var _labels: Dictionary[ItemType, Label] = {}
@@ -34,6 +32,6 @@ func show_cost(cost: Dictionary[ItemType, int], hold: Dictionary[ItemType, float
 		var label: Label = _labels[item_type]
 		label.text = "%d / %d" % [cost[item_type], stored]
 		if stored < cost[item_type]:
-			label.add_theme_color_override(&"font_color", MISSING_COLOR)
+			label.add_theme_color_override(&"font_color", CardPalette.WARNING)
 		else:
 			label.remove_theme_color_override(&"font_color")

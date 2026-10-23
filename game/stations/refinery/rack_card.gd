@@ -5,7 +5,6 @@ extends StationCard
 ## the upgrade levels and the weapons whose cost has it). An unknown alloy shows as "?" with the
 ## ores of its recipe found so far.
 
-const NOTE_COLOR := Color(1.0, 1.0, 1.0, 0.75)
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
 const MINER_SETTINGS: MinerSettings = preload("res://game/mining/miner_settings.tres")
 
@@ -96,7 +95,7 @@ func _show_recipe(alloy: AlloyType, known: bool, hold: PlayerHold) -> void:
 		_recipe.add_child(entry)
 	if not known:
 		var unknown := _label("?")
-		unknown.modulate = NOTE_COLOR
+		unknown.modulate = CardPalette.NOTE
 		_recipe.add_child(unknown)
 
 

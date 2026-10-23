@@ -25,7 +25,7 @@ func _ready() -> void:
 	for part: Upgrade in CraftedMiner.PARTS:
 		var label := Label.new()
 		label.text = part.display_name
-		label.add_theme_font_size_override(&"font_size", 26)
+		label.theme_type_variation = &"CardText"
 		_parts.add_child(label)
 		var pips := HBoxContainer.new()
 		pips.add_theme_constant_override(&"separation", 6)

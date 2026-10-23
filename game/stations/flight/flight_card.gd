@@ -3,8 +3,6 @@ extends StationCard
 ## The holo card of the flight console (`FlightStation`): the destination picked at the navigator
 ## (its location, body, danger and timer), where things stand, and "Set course".
 
-const STATUS_COLOR := Color(1.0, 0.75, 0.3)
-
 ## The ores the badges show.
 var _shown_ores: Array[OreType] = []
 
@@ -54,7 +52,6 @@ func show_part(part: StationPart) -> void:
 		_subtitle.text = ""
 		_info.visible = false
 	_status.text = _status_text(voyage)
-	_status.add_theme_color_override(&"font_color", STATUS_COLOR)
 	_launch.disabled = not console.can_launch()
 
 

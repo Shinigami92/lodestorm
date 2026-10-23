@@ -7,9 +7,6 @@ extends StationCard
 ## its cost and the level it needs first. While a mission is underway it says why nothing can be
 ## done, and to a guest that only the host can.
 
-const MISSING_COLOR := Color(1.0, 0.4, 0.35)
-## Dims a later plate's cost (the card itself stays readable).
-const LATER_COLOR := Color(1.0, 1.0, 1.0, 0.45)
 const INSTALLED_COLOR := Color(1.0, 0.62, 0.25)
 
 ## The plate shown (its MK level), 0 for none.
@@ -89,7 +86,7 @@ func show_plate(
 		if is_next:
 			paid = shield.paid
 		_show_cost(plate.cost, paid, hold)
-		_cost_grid.modulate = Color.WHITE if is_next else LATER_COLOR
+		_cost_grid.modulate = Color.WHITE if is_next else CardPalette.DIMMED
 	var status: String = ""
 	if is_next and locked:
 		status = tr("Locked until everyone is back aboard.")
@@ -155,7 +152,7 @@ func _show_cost(
 		var label: Label = _hold_labels[ore_type]
 		label.text = "%d" % floori(in_hold)
 		if in_hold < cost[ore_type] - paid_so_far - HeatShield.PAID_TOLERANCE:
-			label.add_theme_color_override(&"font_color", MISSING_COLOR)
+			label.add_theme_color_override(&"font_color", CardPalette.WARNING)
 		else:
 			label.remove_theme_color_override(&"font_color")
 

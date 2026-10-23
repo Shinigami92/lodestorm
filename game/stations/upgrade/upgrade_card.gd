@@ -12,8 +12,6 @@ extends StationCard
 ## doesn't own shows what building it costs and "Build" (with its blueprint, see
 ## `WeaponStation.build`); a weapon selected on the rack shows what it is and "Lay on the bench".
 
-## Dims what a locked upgrade would bring (the card itself and "Locked" stay readable).
-const LOCKED_COLOR := Color(1.0, 1.0, 1.0, 0.45)
 const PIP_LIT := Color(0.3, 0.85, 1.0)
 const PIP_DARK := Color(0.12, 0.18, 0.22)
 ## Levels beyond the ship's reach (they come with the next planets).
@@ -154,7 +152,7 @@ func show_upgrade(
 	_buy.text = tr("Upgrade") if next else tr("Max")
 	_buy.disabled = not can_buy
 	for dimmed: CanvasItem in [_title, _description, _pips, _cost_row]:
-		dimmed.modulate = Color.WHITE if available else LOCKED_COLOR
+		dimmed.modulate = Color.WHITE if available else CardPalette.DIMMED
 
 
 ## Shows a drill's reach at MK `mk` (after `show_upgrade`; other upgrades show none): the hardest
@@ -250,7 +248,7 @@ func show_build(
 	_buy.text = tr("Build")
 	_buy.disabled = not can_build
 	for dimmed: CanvasItem in [_title, _description, _cost_row]:
-		dimmed.modulate = Color.WHITE if blueprint else LOCKED_COLOR
+		dimmed.modulate = Color.WHITE if blueprint else CardPalette.DIMMED
 
 
 ## Shows `shown`, selected on the rack: what it is (`owned`: whether the player has it, else
@@ -273,7 +271,7 @@ func show_pick(shown: WeaponType, owned: bool = true) -> void:
 	_buy.text = tr("Lay on the bench")
 	_buy.disabled = false
 	for dimmed: CanvasItem in [_title, _description]:
-		dimmed.modulate = Color.WHITE if owned else LOCKED_COLOR
+		dimmed.modulate = Color.WHITE if owned else CardPalette.DIMMED
 
 
 func press_primary() -> bool:

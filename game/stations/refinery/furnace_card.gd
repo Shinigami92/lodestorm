@@ -7,8 +7,6 @@ extends StationCard
 ## how long they take, and "Start". A running one's shows its alloy, the bars done, how far the bar
 ## in the furnace is, the time left, and "Stop" (pressed twice).
 
-const NOTE_COLOR := Color(1.0, 1.0, 1.0, 0.75)
-
 ## What `_found` shows, so it's only rebuilt when it changes.
 var _found_shown: Array[OreType] = []
 ## The bar buttons, by what they add.
@@ -189,7 +187,7 @@ func _show_found(ores: Array[OreType], shown: bool) -> void:
 	for ore_type: OreType in ores:
 		_found.add_child(ItemBadge.new(ore_type))
 	var unknown := _label("?")
-	unknown.modulate = NOTE_COLOR
+	unknown.modulate = CardPalette.NOTE
 	_found.add_child(unknown)
 
 

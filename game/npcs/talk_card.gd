@@ -5,9 +5,6 @@ extends StationCard
 ## topic is told its title, how far it is ("2 / 3") and "Continue" ("Done" on the last line) and
 ## "Back". The button `interact` presses has an amber frame (not the focus, see `LoadoutCard`).
 
-const NEW_COLOR := Color(1.0, 0.75, 0.3)
-const ROLE_COLOR := Color(1.0, 1.0, 1.0, 0.6)
-const SELECTED_COLOR := Color(1.0, 0.75, 0.3)
 ## Button states framed amber on the selected button.
 const SELECTED_STATES: Array[StringName] = [
 	&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"
@@ -33,7 +30,7 @@ func show_part(part: StationPart) -> void:
 		return
 	_name.text = npc.profile.display_name
 	_role.text = tr(npc.profile.role)
-	_role.add_theme_color_override(&"font_color", ROLE_COLOR)
+	_role.add_theme_color_override(&"font_color", CardPalette.HINT)
 	var told: Topic = npc.topic
 	_topic_title.visible = told != null
 	_progress.visible = told != null
@@ -86,7 +83,7 @@ func _show_buttons(texts: Array[String], new: Array[bool], selected: int) -> voi
 			continue
 		button.text = (NEW_DOT if new[i] else "") + texts[i]
 		if new[i]:
-			button.add_theme_color_override(&"font_color", NEW_COLOR)
+			button.add_theme_color_override(&"font_color", CardPalette.STATUS)
 		else:
 			button.remove_theme_color_override(&"font_color")
 		for state: StringName in SELECTED_STATES:
@@ -102,7 +99,7 @@ func _selected_style(button: Button, state: StringName) -> StyleBox:
 		var style: StyleBox = button.get_theme_stylebox(state).duplicate()
 		var flat := style as StyleBoxFlat
 		if flat:
-			flat.border_color = SELECTED_COLOR
+			flat.border_color = CardPalette.STATUS
 			flat.set_border_width_all(3)
 		_selected_styles[state] = style
 	return _selected_styles[state]

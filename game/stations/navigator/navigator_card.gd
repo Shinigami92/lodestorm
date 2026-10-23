@@ -10,7 +10,6 @@ extends StationCard
 const DANGER_COLORS: Array[Color] = [
 	Color(0.45, 0.95, 0.55), Color(1.0, 0.75, 0.3), Color(1.0, 0.4, 0.35)
 ]
-const STATUS_COLOR := Color(1.0, 0.75, 0.3)
 
 ## What's shown (a body or a region), or null.
 var item: Resource
@@ -49,7 +48,6 @@ func show_part(part: StationPart) -> void:
 	visible = item != null and navigator != null
 	if not visible:
 		return
-	_status.add_theme_color_override(&"font_color", STATUS_COLOR)
 	_choose.visible = item is Region
 	var needed: ShieldPlate = null
 	if item is StarSystem:

@@ -1,0 +1,23 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job.",
+    "description": "A man in his early sixties, the old quartermaster of a mining ship, talking to a crew member across the armory counter. Deep, weathered, slightly gravelly voice, worn by years aboard. Calm and grounded, never loud, plain and conversational rather than narrating. Practical and protective, with a dry, understated sense of humor. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 1,
+    "picked_from": "round1b/brannik/qwen3_s1.flac",
+    "picked": "2026-10-24"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Gut, dass du da bist. Lass uns vor der nächsten Mission kurz die Waffenkammer durchgehen. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind.",
+    "description": "A man in his early sixties, the old quartermaster of a mining ship, talking to a crew member across the armory counter. Deep, weathered, slightly gravelly voice, worn by years aboard. Calm and grounded, never loud, plain and conversational rather than narrating. Practical and protective, with a dry, understated sense of humor. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 1,
+    "picked_from": "round4/brannik/qwen3_s1_de.flac",
+    "picked": "2026-10-24",
+    "reroll": {
+      "f7e48a90d5d76cfc": 3
+    }
+  }
+}

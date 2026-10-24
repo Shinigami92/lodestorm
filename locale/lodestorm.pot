@@ -943,6 +943,12 @@ msgstr ""
 #: game/player/pause/pause_card.gd
 #: game/player/pause/pause_card.tscn
 #: game/ui/settings_menu.tscn
+msgid "Sound"
+msgstr ""
+
+#: game/player/pause/pause_card.gd
+#: game/player/pause/pause_card.tscn
+#: game/ui/settings_menu.tscn
 msgid "Credits"
 msgstr ""
 
@@ -1846,6 +1852,15 @@ msgid "Language"
 msgstr ""
 
 #: game/ui/settings_list.tscn
+#: game/ui/sound_list.tscn
+msgid "Voices"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Off"
+msgstr ""
+
+#: game/ui/settings_list.tscn
 msgid "Suit ring"
 msgstr ""
 
@@ -1863,18 +1878,6 @@ msgstr ""
 
 #: game/ui/settings_list.tscn
 msgid "Always show"
-msgstr ""
-
-#: game/ui/settings_list.tscn
-msgid "Volume"
-msgstr ""
-
-#: game/ui/settings_list.tscn
-msgid "Effects"
-msgstr ""
-
-#: game/ui/settings_list.tscn
-msgid "Ambience"
 msgstr ""
 
 #: game/ui/settings_list.tscn
@@ -1919,6 +1922,18 @@ msgstr ""
 
 #: game/ui/settings_menu.tscn
 msgid "Only while you're alone. With others in your session, everyone keeps their progress."
+msgstr ""
+
+#: game/ui/sound_list.tscn
+msgid "Volume"
+msgstr ""
+
+#: game/ui/sound_list.tscn
+msgid "Effects"
+msgstr ""
+
+#: game/ui/sound_list.tscn
+msgid "Ambience"
 msgstr ""
 
 #: game/ui/title/title_view.tscn

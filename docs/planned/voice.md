@@ -1,4 +1,4 @@
-# Voice-over (planned)
+# Voice-over (planned: the rest)
 
 Decided 2026-10-17, built after the art pass (see [`PLAN.md`](../PLAN.md), M5). All values **TBD (playtest)**. What's wanted (see [Localization and voice](../GAME_DESIGN.md#localization-and-voice)): English and German voice-over from a free AI text-to-speech model running locally, lines generated ahead of time, a license that allows selling the game, distinct voices that aren't cloned from real people without their consent; subtitles as speech bubbles, as today. The audio basics (the buses and the volume settings) are built (see [Sound](../GAME_DESIGN.md#sound)); voice adds its Voice and Radio buses.
 
@@ -12,9 +12,9 @@ Decided 2026-10-17, built after the art pass (see [`PLAN.md`](../PLAN.md), M5). 
 
 ## In the game
 
-- **Languages:** text and voice languages are set apart (decided 2026-10-24): the voice language is its own setting next to the text language, so German text with English voices works, and the other way round. English voices first; a voice language only shows up in the setting once its lines are rendered. A German voice is the same character from the character's German anchor (see above); a line missing in the chosen voice language falls back to English.
-- **The pipeline:** a dev tool (`tools/voice.sh`, running the model locally like the Blender scripts; heavy on the GPU) reads every line from the dialogue data and renders one file per line, voice and voice language (Ogg Vorbis) into `assets/voice/<npc>/<language>/`, named by a hash of the text, the anchor and the model with its version, so a changed line gets a new file and stale files are listed for removal. Moving to a new model or version therefore marks every line stale and the tool renders the whole cast again from the unchanged anchors; that's a rerun, and listening to each NPC again, not new voice work. Committed with Git LFS, not run in CI. Lines stay the English originals (the translation keys).
-- **Playing it:** when a bubble shows a line, its file plays from the NPC (3D sound); moving on stops it and plays the next; a line without a file just shows the bubble, so missing audio never breaks anything. Radio lines play near the player through a radio filter (band-pass and a little static, an effect on a Radio bus, not baked into the files), so the same voice sounds different on the radio.
-- **Settings:** a Voice and a Radio bus next to the earlier ones, their volumes in the settings terminal, "Voice on/off" and the voice language (default: the text language when it has voices, English otherwise).
-- **Tests:** every voice file belongs to a current line (no orphans) and plays; a report (not a failure) of lines without audio, since the cast fills up over several steps.
+Built so far (see [Localization and voice](../GAME_DESIGN.md#localization-and-voice) and [`TECHNICAL.md`](../TECHNICAL.md#4-asset-pipeline)): the pipeline tool, the Voice bus and its volume, the voice language setting (with "Off"), playback from the speech bubbles, Brannik and Nell voiced in English and German. Still to do:
+
+- **The rest of the cast:** the crew as they come, Kade, Selin and Rook, and the colonists' remarks (they speak when their bubble shows). A voice the ratings kept as a spare (one of Brannik's runners-up, two of Nell's that might suit Selin) is a starting point.
+- **Radio lines** play near the player through a radio filter (band-pass and a little static, an effect on a Radio bus with its own volume, not baked into the files), so the same voice sounds different on the radio.
+- **Strained or urgent anchors** for characters who need them (a second anchor per language, picked per line).
 - **AI-driven NPCs** stay a later, separate experiment (they share the GPU with rendering and need guardrails).

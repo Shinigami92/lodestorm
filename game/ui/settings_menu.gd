@@ -1,7 +1,8 @@
 class_name SettingsMenu
 extends PanelContainer
 ## The settings terminal's screen in cabin 1: the settings (`SettingsList`, the same as in the
-## pause panel), the credits (a page of their own, `back` or "Back" returns) and "Reset progress",
+## pause panel), the sound settings and the credits (pages of their own, `SoundList` and `Credits`;
+## `back` or "Back" returns) and "Reset progress",
 ## which wipes the progress (`SaveGame.reset_progress`). Wiping can't be undone, so it asks three
 ## times, each time saying so; each confirm button only works after `confirm_delay`, so quick
 ## repeated presses can't get through, and cancel has the focus. Leaving the terminal drops the
@@ -27,6 +28,8 @@ var _confirm_left: float = 0.0
 @onready var _close: Button = %Close
 @onready var _credits: Credits = %Credits
 @onready var _show_credits: Button = %ShowCredits
+@onready var _sound: SoundList = %Sound
+@onready var _show_sound: Button = %ShowSound
 @onready var _back: Button = %Back
 
 
@@ -36,7 +39,8 @@ func _ready() -> void:
 	_wipe_cancel.pressed.connect(cancel_wipe)
 	_close.pressed.connect(_on_close_pressed)
 	_show_credits.pressed.connect(show_credits.bind(true))
-	_back.pressed.connect(show_credits.bind(false))
+	_show_sound.pressed.connect(show_sound.bind(true))
+	_back.pressed.connect(_on_back_pressed)
 	show_credits(false)
 
 
@@ -96,29 +100,61 @@ func show_credits(shown: bool) -> void:
 	if shown:
 		cancel_wipe()
 		_credits.restart()
+	_sound.visible = false
 	_credits.visible = shown
-	_back.visible = shown
-	_show_wipe_step()
-	if is_inside_tree() and WorldPanel.showing(self):
-		(_back if shown else _show_credits).grab_focus.call_deferred()
+	_show_page(_show_credits)
 
 
-## Steps back from the credits (`pause` on the terminal). Returns whether it did.
+## Shows the sound settings instead of the settings, or the settings again.
+func show_sound(shown: bool) -> void:
+	if shown:
+		cancel_wipe()
+	_credits.visible = false
+	_sound.visible = shown
+	_show_page(_show_sound)
+
+
+## Steps back from the sound settings or the credits (`pause` on the terminal). Returns whether it
+## did.
 func back() -> bool:
-	if not _credits.visible:
+	if not _credits.visible and not _sound.visible:
 		return false
-	show_credits(false)
+	_on_back_pressed()
 	return true
 
 
+func _on_back_pressed() -> void:
+	if _sound.visible:
+		show_sound(false)
+	else:
+		show_credits(false)
+
+
+## Shows "Back" on a page of its own and focuses the page's first control (the credits: "Back"),
+## or focuses `opener` back on the settings.
+func _show_page(opener: Button) -> void:
+	var own_page: bool = _credits.visible or _sound.visible
+	_back.visible = own_page
+	_show_wipe_step()
+	if not is_inside_tree() or not WorldPanel.showing(self):
+		return
+	var first: Control = opener
+	if _sound.visible:
+		first = _sound.find_next_valid_focus()
+	elif own_page:
+		first = _back
+	first.grab_focus.call_deferred()
+
+
 func _show_wipe_step() -> void:
-	# While asking or showing the credits, only the question or the credits show.
-	var settings_shown: bool = wipe_step == 0 and not _credits.visible
+	# While asking or showing a page of its own, only the question or that page shows.
+	var settings_shown: bool = wipe_step == 0 and not _credits.visible and not _sound.visible
 	_settings.visible = settings_shown
 	_progress.visible = settings_shown
 	_reset.visible = settings_shown
 	_reset_hint.visible = settings_shown and not SaveGame.is_solo(get_tree())
 	_show_credits.visible = settings_shown
+	_show_sound.visible = settings_shown
 	_wipe.visible = wipe_step > 0
 	match wipe_step:
 		1:

@@ -82,6 +82,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Silo displays: each silo's exact amount in big digits in the ore's color at the top of its body, readable from the normal camera over the silo in front ("?" for unknown ores); the ramp's countdown running outwards from the door, clear of them
 - Statistics **A**: every game event as a signal on one bus (`GameEvents`: combat with the weapon credited, damage taken with its cause, reloads and timing presses, mining, ore, unlocks, runs), the local player's counters over all sessions (`stats/totals.json`) and a log per session (`stats/sessions/*.jsonl`, each run with its brief, gear and counters), for playtesting and tuning
 - Voice-over **A** (M5's spike), ahead of its milestone: voice models compared by ear on a local listening page (Brannik and Nell, English and German), Qwen3-TTS picked (voice design for each character's anchor, cloning for every line, an anchor per language), the decision and the tools in `TECHNICAL.md` (see [`planned/voice.md`](planned/voice.md))
+- Voice-over **B** (first part): `tools/voice.sh` renders every line of the NPCs with anchors, Brannik and Nell voiced in English and German, spoken from their head as the bubble shows, the Voice bus with its volume, the voice language as its own setting (English, Deutsch, Off; following the texts until picked)
 
 ## Todo
 
@@ -120,7 +121,7 @@ Alongside, any time:
 - The biomes' textures and meshes (from M4 step 6, see [`planned/biomes.md`](planned/biomes.md)): per biome a ground texture set (floor, barrier, the barrier's lip), its scatter (5–8 rocks and plants) and its feature meshes (snow bridge, crust crossing, shard spikes, fungal stalks, lava), with parallel Blender agents (heavy on the GPU: ask first)
 - The sky per body and the far ring of land beyond the map ([`planned/vr-view.md`](planned/vr-view.md)); each body's light, the darkness floor and the storm's light steps ([`planned/art.md`](planned/art.md))
 - Basic VFX for mining, shooting, reloading, storm (the sound effects come earlier, M4 step 9)
-- Voice-over, after the models ([`planned/voice.md`](planned/voice.md); **A**, the spike, is done): **B** the pipeline tool, the Voice and Radio buses and "Voice on/off", playback from the bubbles and the radio filter, Brannik voiced; the other NPCs with the tool
+- Voice-over, after the models ([`planned/voice.md`](planned/voice.md); **A**, the spike, and the first part of **B** are done): the radio filter and the Radio bus; the other NPCs with the tool
 
 ### M6: VR
 

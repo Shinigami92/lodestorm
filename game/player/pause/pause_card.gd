@@ -2,14 +2,15 @@ class_name PauseCard
 extends Control
 ## The pause panel's card (in a `PausePanel` beside the player): its first page has "Resume",
 ## "Settings" and "Quit"; "Settings" shows the settings (`SettingsList`, the same as on the
-## settings terminal) with a way to the credits, and "Quit" during a run asks first (the run is
+## settings terminal) with a way to the sound settings (`SoundList`) and the credits, and "Quit"
+## during a run asks first (the run is
 ## lost). `back` (also `pause`) steps back a page. Solo, its title says the game is paused; in
 ## co-op it says the game goes on. It keeps to the bottom of its screen and takes only the height
 ## its content needs, so a page's last button (e.g. "Back") sits where the next page's last one
 ## ("Quit") appears: after a page change, mouse clicks only count once the pointer moved
 ## `CLICK_GUARD` pixels, and stepping back focuses the button that opened the page.
 
-enum Page { MAIN, SETTINGS, CREDITS, QUIT }
+enum Page { MAIN, SETTINGS, SOUND, CREDITS, QUIT }
 
 ## Pixels the pointer has to move after a page change before a click counts.
 const CLICK_GUARD: float = 12.0
@@ -29,6 +30,7 @@ var _guard_from := Vector2.INF
 @onready var _pages: Dictionary[Page, Control] = {
 	Page.MAIN: %Main,
 	Page.SETTINGS: %SettingsPage,
+	Page.SOUND: %SoundPage,
 	Page.CREDITS: %CreditsPage,
 	Page.QUIT: %QuitPage,
 }
@@ -36,7 +38,7 @@ var _guard_from := Vector2.INF
 @onready var _first: Dictionary[Page, Control] = {Page.QUIT: %QuitCancel}
 ## The button that opens each page from the one before it (focused when stepping back to that).
 @onready var _opener: Dictionary[Page, Control] = {
-	Page.SETTINGS: %Settings, Page.CREDITS: %ShowCredits, Page.QUIT: %Quit
+	Page.SETTINGS: %Settings, Page.SOUND: %ShowSound, Page.CREDITS: %ShowCredits, Page.QUIT: %Quit
 }
 @onready var _credits: Credits = %Credits
 
@@ -45,8 +47,10 @@ func _ready() -> void:
 	(%Resume as Button).pressed.connect(_on_resume_pressed)
 	(%Settings as Button).pressed.connect(show_page.bind(Page.SETTINGS))
 	(%Quit as Button).pressed.connect(_on_quit_pressed)
+	(%ShowSound as Button).pressed.connect(show_page.bind(Page.SOUND))
 	(%ShowCredits as Button).pressed.connect(show_page.bind(Page.CREDITS))
 	(%SettingsBack as Button).pressed.connect(back)
+	(%SoundBack as Button).pressed.connect(back)
 	(%CreditsBack as Button).pressed.connect(back)
 	(%QuitConfirm as Button).pressed.connect(_on_quit_confirmed)
 	(%QuitCancel as Button).pressed.connect(back)
@@ -91,14 +95,15 @@ func show_page(shown_page: Page, focus: Control = null) -> void:
 			first.grab_focus.call_deferred()
 
 
-## Steps back a page: from the credits to the settings, from the others to the first page. Returns
+## Steps back a page: from the sound settings and the credits to the settings, from the others to
+## the first page. Returns
 ## whether it did (false on the first page: the panel closes).
 func back() -> bool:
 	var from: Page = page
 	match page:
 		Page.MAIN:
 			return false
-		Page.CREDITS:
+		Page.SOUND, Page.CREDITS:
 			show_page(Page.SETTINGS, _opener[from])
 		_:
 			show_page(Page.MAIN, _opener[from])
@@ -117,6 +122,8 @@ func _show_title() -> void:
 			_title.text = tr("Paused") if paused else tr("Menu")
 		Page.SETTINGS:
 			_title.text = tr("Settings")
+		Page.SOUND:
+			_title.text = tr("Sound")
 		Page.CREDITS:
 			_title.text = tr("Credits")
 		Page.QUIT:

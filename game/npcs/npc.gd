@@ -6,15 +6,21 @@ extends Station
 ##
 ## Talking to them is a station (`interact`): the camera frames them and the player, their lines
 ## show in a speech bubble above their head (`Bubble`, a `SpeechBubble`), and the card beside
-## them (a `TalkCard`) lists the open topics of their `Dialogue` or moves the topic on. The
-## greeting plays by itself the first time. Up and down pick a topic, `interact` plays it (or the
-## next line), `pause` steps back from a topic to the list and closes from there. What's been heard
-## is a flag in the ship's `Story`.
+## them (a `TalkCard`) lists the open topics of their `Dialogue` or moves the topic on. Each line
+## is also spoken from their head, in their recorded voice (`VoiceLines`, on the Voice bus), and
+## stops when the next one comes; the prompt is spoken when the talk starts without the greeting.
+## The greeting plays by itself the first time. Up and down pick a topic, `interact` plays it (or
+## the next line), `pause` steps back from a topic to the list and closes from there. What's been
+## heard is a flag in the ship's `Story`.
 
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
 ## player, at this height, so the card on their right stays in view.
 const FOCUS_RIGHT: float = 0.35
 const FOCUS_HEIGHT: float = 1.3
+## How their voice carries: as loud as close by up to `VOICE_UNIT_SIZE` m, gone beyond
+## `VOICE_MAX_DISTANCE` m. TBD (playtest).
+const VOICE_UNIT_SIZE: float = 6.0
+const VOICE_MAX_DISTANCE: float = 30.0
 
 ## Who they are and what they talk about.
 @export var profile: NpcProfile
@@ -25,6 +31,8 @@ var topic: Topic
 var line: int = 0
 ## The highlighted entry of the list: an open topic (`get_choices`), or after them "Goodbye".
 var choice: int = 0
+## Speaks their lines, from their head.
+var voice: AudioStreamPlayer3D
 
 ## Used without a ship (e.g. tests of a lone NPC).
 var _own_story := Story.new()
@@ -39,6 +47,13 @@ func _ready() -> void:
 	super()
 	body.profile = profile
 	bubble.visible = false
+	voice = AudioStreamPlayer3D.new()
+	voice.name = "Voice"
+	voice.bus = &"Voice"
+	voice.unit_size = VOICE_UNIT_SIZE
+	voice.max_distance = VOICE_MAX_DISTANCE
+	voice.position = Vector3.UP * NpcBody.HEAD_HEIGHT
+	add_child(voice)
 
 
 func _process(delta: float) -> void:
@@ -124,6 +139,7 @@ func talk_about(told: Topic) -> void:
 	if topic.lines.is_empty():
 		_finish_topic()
 	_show()
+	_speak()
 
 
 ## Shows the next line; after the last one the topic counts as heard and the list comes back.
@@ -134,6 +150,7 @@ func advance() -> void:
 	if line >= topic.lines.size():
 		_finish_topic()
 	_show()
+	_speak()
 
 
 ## Does what `interact` does: the next line of the topic, or the highlighted list entry (a topic,
@@ -169,6 +186,7 @@ func leave_topic() -> bool:
 		return false
 	topic = null
 	_show()
+	voice.stop()
 	return true
 
 
@@ -192,6 +210,7 @@ func _opened() -> void:
 		talk_about(greeting)
 	else:
 		_show()
+		_say(profile.dialogue.prompt if profile and profile.dialogue else "")
 	_place_bubble()
 
 
@@ -200,6 +219,7 @@ func _closed() -> void:
 	topic = null
 	bubble.visible = false
 	bubble.set_on_top(false)
+	voice.stop()
 
 
 func _finish_topic() -> void:
@@ -214,6 +234,21 @@ func _show() -> void:
 	var speech := bubble.content as SpeechBubble
 	if speech:
 		speech.show_line(get_line())
+
+
+## Speaks the topic's line shown, or stops when the list is back.
+func _speak() -> void:
+	_say(topic.lines[line] if topic and line < topic.lines.size() else "")
+
+
+## Speaks `english` (a line's English text) in their voice, stopping what they said before; just
+## stops without a recording of it.
+func _say(english: String) -> void:
+	voice.stop()
+	var recording: AudioStream = VoiceLines.stream(profile.id, english) if profile else null
+	if recording:
+		voice.stream = recording
+		voice.play()
 
 
 ## Who the "something new" marker is for: the player talking to them, else the nearest one.

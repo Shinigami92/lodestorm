@@ -1,0 +1,294 @@
+{
+  "de": {
+    "09d770f36e0d96c1": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Neue Ersatzmagazine kann dein Anzug draußen nicht herstellen. Sind sie aufgebraucht, bezahlst du jedes Nachladen mit dem Erz, das du trägst."
+    },
+    "1668e9dbe7bc3a9c": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Aber Vorsicht bei Harl: Das Nachladen wirft die Munition weg, die noch im Magazin ist. Lade ein halbvolles Magazin also nicht einfach aus Gewohnheit nach."
+    },
+    "23fa40b32563a3cc": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
+    },
+    "33dcc9374efdc3f4": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Gleich nebenan ist der Schießstand. Wenn du eine neue Waffe bekommst, probier sie dort aus, bevor du sie auf eine Mission mitnimmst."
+    },
+    "37bb55673f8bd0e4": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sind deine Ersatzmagazine aufgebraucht, kannst du ohne Erz nicht mehr nachladen. Stell also früh deine Miner auf, oder nimm Dray mit: Ein Hammer braucht keine Munition."
+    },
+    "3ff7cdc9f47a3b3a": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Während einer Mission hast du nur die Waffen zur Verfügung, die du bei dir trägst. Wähle also mit Bedacht, sonst müssen wir dich auf der Krankenstation begrüßen."
+    },
+    "459dd9aa23a5e6a9": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nachladen kostet dort nichts, du kannst das Timing also so oft üben, wie du willst. Die Ziele stehen am hinteren Ende."
+    },
+    "48b7cd1f63862934": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Draußen stellt dein Anzug neue Munition aus dem Erz her, das du auf dem Rücken trägst. Jede Erzsorte funktioniert. Er verbraucht immer zuerst das Erz mit der niedrigsten Qualität, damit dein seltenes Erz am längsten reicht."
+    },
+    "59d16f5d69ce63da": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Drückst du gar kein zweites Mal, dauert es einfach so lange wie immer. Probier es also zuerst am Schießstand aus, dort kostet es dich nichts."
+    },
+    "69b73afe0ae377f2": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Drückst du genau dann, wenn der Ring die weiße Markierung erreicht, ist das Nachladen sofort fertig. Drückst du zu früh oder zu spät, dauert es stattdessen länger."
+    },
+    "95aef4645e442e45": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Jede Fernkampfwaffe, die du mitnimmst, startet jede Mission mit zwei Ersatzmagazinen aus dem Vorrat des Schiffs. Beim Nachladen werden zuerst diese verbraucht, und sie kosten dich kein Erz."
+    },
+    "a5c39c66a0b88e52": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Gut, dass du da bist. Lass uns vor der nächsten Mission kurz die Waffenkammer durchgehen. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind."
+    },
+    "abd92813c294757c": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "An Bord kostet Nachladen nichts: Die Munition kommt dann aus dem Vorrat des Schiffs."
+    },
+    "ad8d0b125cf3642e": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Je seltener das Erz, desto mehr Munition bekommst du aus der gleichen Menge."
+    },
+    "aef02d5522bd8c98": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Du kannst nachladen, wann immer du willst, solange du noch ein Ersatzmagazin oder Erz dafür hast. Ist das Magazin leer, lädt deine Waffe von selbst nach."
+    },
+    "b41b090f5202edbd": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du Fragen zu Munition oder zum Nachladen hast, frag einfach mich. Besser hier als draußen, wenn dir ein Schwarm im Nacken sitzt."
+    },
+    "cf048b47b8c5609c": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Während du nachlädst, gehst du langsamer. Such dir also einen Moment aus, in dem dir nichts direkt auf den Fersen ist."
+    },
+    "db25df64127d711b": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Drückst du mitten im Nachladen ab, hört sie mit dem Nachladen auf und feuert, was schon geladen ist."
+    },
+    "e0b554a01315667c": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Draußen siehst du sie als kurze Striche im Ring um deine Füße, innen in seiner rechten Hälfte, sobald du nachlädst. Ist ein Strich nur noch umrandet, ist dieses Magazin aufgebraucht."
+    },
+    "e773ea61a4eb0b36": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Timing-Trick klappt bei jeder einzelnen Patrone. Klappt er bei mehreren Patronen hintereinander, lädt jede etwas schneller. Verfehlst du eine oder drückst bei einer nicht, fängt dieser Vorteil von vorn an."
+    },
+    "eb0641cf7f5dd6b6": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Such dir an deinem Spind die Waffen aus, mit denen du auf eine Mission gehen möchtest. Allerdings kannst du nur bis zu zwei Waffen gleichzeitig tragen."
+    },
+    "ecd831d72f9428ca": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ein Trick: Drück während des Nachladens ein zweites Mal auf Nachladen. Die rechte Hälfte des Rings um deine Füße füllt sich beim Nachladen, und sie hat eine weiße Markierung."
+    },
+    "f41a96465b5015be": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Du hast jetzt also Brask, die Schrotflinte. Sie hat kein Magazin, sondern lädt eine Patrone nach der anderen und behält die Patronen, die schon drin sind."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 3,
+      "text": "Wie kann ich dir helfen?"
+    }
+  },
+  "en": {
+    "09d770f36e0d96c1": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."
+    },
+    "1668e9dbe7bc3a9c": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "But careful with Harl: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
+    },
+    "23fa40b32563a3cc": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
+    },
+    "33dcc9374efdc3f4": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
+    },
+    "37bb55673f8bd0e4": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take Dray along: a hammer needs no ammo."
+    },
+    "3ff7cdc9f47a3b3a": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay."
+    },
+    "459dd9aa23a5e6a9": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end."
+    },
+    "48b7cd1f63862934": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest."
+    },
+    "59d16f5d69ce63da": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
+    },
+    "69b73afe0ae377f2": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead."
+    },
+    "95aef4645e442e45": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
+    },
+    "a5c39c66a0b88e52": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
+    },
+    "abd92813c294757c": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Aboard, every reload is free: the rounds come from the ship's stock."
+    },
+    "ad8d0b125cf3642e": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The rarer the ore, the more rounds you get from the same amount."
+    },
+    "aef02d5522bd8c98": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself."
+    },
+    "b41b090f5202edbd": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
+    },
+    "cf048b47b8c5609c": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "While you reload, you walk slower. So pick a moment when nothing is right on your heels."
+    },
+    "db25df64127d711b": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded."
+    },
+    "e0b554a01315667c": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Out there, they show up as short marks in the ring around your feet, inside its right half, whenever you reload. A mark that's only an outline is a magazine you've used up."
+    },
+    "e773ea61a4eb0b36": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip a press, and that bonus starts over."
+    },
+    "eb0641cf7f5dd6b6": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
+    },
+    "ecd831d72f9428ca": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Here's a trick: press reload a second time while you're reloading. The right half of the ring around your feet fills up while you reload, and it has a white mark."
+    },
+    "f41a96465b5015be": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So you've got Brask now, the shotgun. It has no magazine: it loads one shell after another, and keeps the shells that are already in."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How can I help you?"
+    }
+  }
+}

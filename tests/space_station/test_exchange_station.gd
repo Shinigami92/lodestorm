@@ -66,7 +66,20 @@ func test_trades_from_the_players_hold() -> void:
 	# Nothing left that goes in but Vyrel, and nothing else found to get for it but Kyrite.
 	assert_eq(_exchange.ore_in, VYREL)
 	assert_eq(_exchange.ore_out, KYRITE)
-	assert_eq(_exchange.get_count(), 1, "starts from one again")
+	assert_eq(_exchange.get_count(), 4, "the amount kept, capped at what 14 pay for")
+	_exchange.close()
+
+
+func test_the_amount_stays_after_a_trade() -> void:
+	_player.hold.add(KYRITE, 60.0)
+	_player.hold.mark_found(VYREL)
+	assert_true(_exchange.open(_player))
+	_exchange.step_count(4)
+	assert_true(_exchange.trade())
+	assert_eq(_exchange.get_count(), 5, "ready to trade the same again")
+	assert_true(_exchange.trade())
+	assert_eq(_player.hold.amount(KYRITE), 30.0)
+	assert_eq(_player.hold.amount(VYREL), 10.0)
 	_exchange.close()
 
 

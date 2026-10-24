@@ -105,8 +105,7 @@ func trade() -> bool:
 		return false
 	_since_trade = 0.0
 	Sfx.play_at(TRADE_SOUND, global_position + Vector3(0.0, COUNTER_TOP, 0.0))
-	# Less may be left than the card showed: start from one again.
-	count = 1
+	# The amount stays for the next trade (`get_count` caps it at what's left).
 	_pick_valid()
 	refresh()
 	return true

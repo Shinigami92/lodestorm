@@ -30,7 +30,7 @@ def arm(wrist, pole, along, palm) -> tuple:
 def held_up(wrist, along) -> tuple:
     """A right hand holding something upright (thumb up): its palm faces across the way it points."""
     along = Vector(along).normalized()
-    return arm(wrist, (-1, 0.5, -0.3), along, UP.cross(along))
+    return arm(wrist, (-0.5, 0.3, -1), along, UP.cross(along))
 
 
 def relaxed(body: H.Body, side: str) -> tuple:
@@ -48,6 +48,8 @@ def standing(body: H.Body) -> dict:
         "yaw": 0.0,
         "Left": relaxed(body, "Left"),
         "Right": relaxed(body, "Right"),
+        "LeftCurl": H.RELAXED_CURL,
+        "RightCurl": H.RELAXED_CURL,
     }
 
 
@@ -89,6 +91,7 @@ def pose(body: H.Body, k: dict, t: float, breaths: int) -> H.Pose:
     )
     for side, s in H.SIDES:
         p.arm(side, *k[side])
+        p.curl(side, k[f"{side}Curl"])
         p.leg(side, Vector((s * body.foot_x, -0.01, body.ankle_z)), Vector((s * 0.15, -1, 0)), 0.0, s * 6)
     return p
 
@@ -114,6 +117,8 @@ def wipe(body: H.Body, t: float) -> H.Pose:
             (0, 0, -1),
         ),
         Left=arm((0.21, COUNTER_EDGE - 0.08, COUNTER_TOP + 0.04), (1, 0.6, -0.4), (-0.25, -1, -0.3), (0, 0, -1)),
+        RightCurl=25.0,
+        LeftCurl=20.0,
     )
     k = mix(rest, work, H.smooth(min(t / 0.12, (1 - t) / 0.12, 1.0)))
     p = pose(body, k, t, 2)
@@ -137,6 +142,8 @@ def polish(body: H.Body, t: float) -> H.Pose:
             (0.35, -0.5, -0.8),
             (0.8 * math.cos(0.4 * math.sin(a)), 0.3, -0.5),
         ),
+        LeftCurl=50.0,
+        RightCurl=40.0,
     )
     k = mix(rest, work, H.smooth(min(t / 0.14, (1 - t) / 0.14, 1.0)))
     p = pose(body, k, t, 2)
@@ -155,15 +162,22 @@ def shelve(body: H.Body, t: float) -> H.Pose:
         lean=30.0,
         pitch=20.0,
         Right=held_up((-0.12, -0.26, 0.6), (0.2, -1, -0.6)),
+        RightCurl=50.0,
     )
     look = dict(rest)
-    look.update(pitch=-6.0, yaw=8.0, Right=held_up((-0.07, -0.3, 1.38), (0.35, -1, 0.15)))
+    look.update(pitch=-6.0, yaw=8.0, Right=held_up((-0.07, -0.3, 1.38), (0.35, -1, 0.15)), RightCurl=50.0)
     turned = dict(rest)
     turned.update(
-        turn=-48.0, yaw=-35.0, pitch=-8.0, Right=held_up(SHELF + Vector((0.04, -0.06, -0.06)), (-0.5, 1, 0.1))
+        turn=-48.0,
+        yaw=-35.0,
+        pitch=-8.0,
+        Right=held_up(SHELF + Vector((0.04, -0.06, -0.06)), (-0.5, 1, 0.1)),
+        RightCurl=50.0,
     )
     placed = dict(turned)
-    placed.update(Right=arm(SHELF + Vector((0.08, -0.12, -0.1)), (-1, 0.5, -0.3), (-0.4, 1, -0.2), (0.4, 0.2, -1)))
+    placed.update(
+        Right=arm(SHELF + Vector((0.08, -0.12, -0.1)), (-1, 0.5, -0.3), (-0.4, 1, -0.2), (0.4, 0.2, -1)), RightCurl=15.0
+    )
     keys = [
         (0.0, rest),
         (0.2, down),

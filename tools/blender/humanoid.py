@@ -29,6 +29,11 @@ WALK_SPEED = 1.3  # m/s the walk clip is authored at (PlayerAnimator.walk_speed)
 WALK_FRAMES = 32  # one stride (two steps) in 1.07 s
 I3 = Matrix.Identity(3)
 SIDES = (("Left", 1.0), ("Right", -1.0))
+FINGERS = {  # Godot's humanoid finger bones, root to tip
+    "Thumb": ("Metacarpal", "Proximal", "Distal"),
+    **{f: ("Proximal", "Intermediate", "Distal") for f in ("Index", "Middle", "Ring", "Little")},
+}
+RELAXED_CURL = 12.0  # degrees per finger joint of a hand hanging loose
 ARM_POLE = Vector((0, 1, 0))  # an arm straight at rest bends its elbow back
 LEG_POLE = Vector((0, -1, 0))  # a leg straight at rest bends its knee forward
 PALM = Vector((0, 0, -1))  # the way a palm faces at rest (T-pose: down)
@@ -45,7 +50,9 @@ class Body:
     """One skeleton: its bones (name, head, tail, parent) at rest, the hands' rest poles per side (default: palms
     down), and the measures the clips stand it on: the feet's distance from the middle and the hanging wrists'
     sideways distance and height. `props` are bones holding things in the hands (a glass, a rag): a pose shows them
-    by their scale (hidden unless it says otherwise)."""
+    by their scale (hidden unless it says otherwise). `forearm_twist`: the share of the hand's twist the forearm takes
+    (a skeleton without twist bones: the wrist's skin would twist alone; the player's armored suit: 0);
+    `wrist_bend`: how far (degrees) a hand bends away from its forearm's line at most."""
 
     def __init__(
         self,
@@ -56,6 +63,8 @@ class Body:
         wrist_z: float,
         palm: dict | None = None,
         props: tuple = (),
+        forearm_twist: float = 0.0,
+        wrist_bend: float = 180.0,
     ):
         self.bones = bones
         self.head = {n: Vector(h) for n, h, _t, _p in bones}
@@ -63,6 +72,8 @@ class Body:
         self.parent = {n: p for n, _h, _t, p in bones}
         self.foot_x, self.wrist_x, self.wrist_z = foot_x, wrist_x, wrist_z
         self.props = props
+        self.forearm_twist = forearm_twist
+        self.wrist_bend = math.radians(wrist_bend)
         self.ankle_z = self.head["LeftFoot"].z
         self.length = {}
         self.rest = {}  # bone: (direction, pole) at rest
@@ -164,8 +175,41 @@ class Pose:
         a = self.pos(f"{side}UpperArm")
         elbow, end = two_bone(a, Vector(wrist), length[f"{side}UpperArm"], length[f"{side}LowerArm"], Vector(pole))
         self.w[f"{side}UpperArm"] = turn_between(*rest[f"{side}UpperArm"], elbow - a, pole)
-        self.w[f"{side}LowerArm"] = turn_between(*rest[f"{side}LowerArm"], end - elbow, pole)
-        self.w[f"{side}Hand"] = turn_between(*rest[f"{side}Hand"], Vector(hand_dir), Vector(palm))
+        lower = turn_between(*rest[f"{side}LowerArm"], end - elbow, pole)
+        forearm = (end - elbow).normalized()
+        hand_dir = Vector(hand_dir).normalized()
+        bend = forearm.angle(hand_dir, 0.0)
+        if bend > self.body.wrist_bend:  # no further than a wrist bends: towards the forearm's line
+            hand_dir = forearm.slerp(hand_dir, self.body.wrist_bend / bend)
+        hand = turn_between(*rest[f"{side}Hand"], hand_dir, Vector(palm))
+        if self.body.forearm_twist:
+            # The forearm rolls along with the hand (a share of the hand's twist about it), so the wrist's skin
+            # doesn't twist alone.
+            axis = rest[f"{side}LowerArm"][0]
+            rel = (lower.transposed() @ hand).to_quaternion()
+            twist = 2 * math.atan2(Vector((rel.x, rel.y, rel.z)).dot(axis), rel.w)
+            twist = (twist + math.pi) % (2 * math.pi) - math.pi
+            lower = lower @ Matrix.Rotation(twist * self.body.forearm_twist, 3, axis)
+        self.w[f"{side}LowerArm"] = lower
+        self.w[f"{side}Hand"] = hand
+
+    def curl(self, side: str, fingers: float, thumb: float | None = None) -> None:
+        """Bends the fingers towards the palm, `fingers` degrees at each joint (the thumb `thumb`, default half);
+        nothing on a skeleton without fingers."""
+        body = self.body
+        if f"{side}IndexProximal" not in body.head:
+            return
+        thumb = fingers * 0.5 if thumb is None else thumb
+        hand = self.world(f"{side}Hand")
+        palm = body.rest[f"{side}Hand"][1]
+        for finger, joints in FINGERS.items():
+            names = [f"{side}{finger}{j}" for j in joints]
+            first = body.head[names[0]]
+            tip = body.tail[names[-1]]
+            axis = (tip - first).cross(palm).normalized()
+            angle = thumb if finger == "Thumb" else fingers
+            for k, name in enumerate(names, 1):
+                self.w[name] = hand @ Matrix.Rotation(math.radians(angle * k), 3, axis)
 
     def leg(self, side: str, ankle: Vector, pole: Vector, pitch: float = 0.0, yaw: float = 0.0) -> None:
         rest, length = self.body.rest, self.body.length
@@ -219,6 +263,7 @@ def relaxed_arms(p: Pose, swing: dict | None = None) -> None:
         f = (swing or {}).get(side, 0.0)
         wrist = Vector((s * body.wrist_x, -0.02 - f, body.wrist_z + 0.12 * abs(f)))
         p.arm(side, wrist, Vector((s * 0.3, 1, 0)), Vector((s * 0.15, -0.25, -1)), Vector((-s, 0, 0)))
+        p.curl(side, RELAXED_CURL)
 
 
 def idle(body: Body, t: float, upper=None) -> Pose:

@@ -28,6 +28,8 @@ import generated as G
 import humanoid as H
 
 EXTENSION = "bl_ext.blender_org.mpfb"
+FOREARM_TWIST = 0.6  # the share of a hand's twist the forearm takes (no twist bones: the wrist would twist alone)
+WRIST_BEND = 45.0  # degrees a hand bends away from its forearm's line at most
 
 # MPFB's game_engine bones and the Godot humanoid names they get (SkeletonProfileHumanoid).
 BONES = {"Root": "Root", "pelvis": "Hips", "spine_01": "Spine", "spine_02": "Chest", "spine_03": "UpperChest"}
@@ -217,6 +219,8 @@ def body_of(arm: bpy.types.Object, *, foot_out: float = 0.03, wrist_out: float =
         wrist_z=shoulder.z - reach * arm_length,
         palm=palms,
         props=tuple(b.name for b in arm.data.bones if b.name.startswith("Prop")),
+        forearm_twist=FOREARM_TWIST,
+        wrist_bend=WRIST_BEND,
     )
 
 
@@ -281,9 +285,18 @@ def _line(points: np.ndarray) -> tuple:
     return mid, vt[0]
 
 
+def _on_line(mid: np.ndarray, d: np.ndarray, center: np.ndarray, radius: float) -> np.ndarray:
+    """The point on the line (mid, d) `radius` from `center`, the farther one along d (the nearest if none is)."""
+    rel = center - mid
+    t = rel @ d
+    off = rel - t * d
+    reach = radius**2 - off @ off
+    return mid + d * (t + math.sqrt(reach) if reach > 0 else t)
+
+
 def limb_directions(outfit: bpy.types.Object, arm: bpy.types.Object, waist: float) -> tuple:
-    """Where the outfit's arms and legs point, per bone (armature space): each arm along the line through the
-    middles of its slices (from the shoulder out, the hand left out), each thigh from the hip's joint to the top of
+    """Where the outfit's arms and legs point, per bone (armature space): each arm's elbow and wrist on the line
+    through the middles of its slices (from the shoulder out, the hand left out), the bones' lengths apart, each thigh from the hip's joint to the top of
     the lower leg's line (the middles of the trousers' slices below the knee), each lower leg along that line; and
     which way each hand's palm faces (per side: the flat hand's normal, to the front: an A-pose concept shows the
     palms)."""
@@ -299,10 +312,15 @@ def limb_directions(outfit: bpy.types.Object, arm: bpy.types.Object, waist: floa
             m = (s * co[:, 0] > x) & (s * co[:, 0] < x + 0.03) & (co[:, 2] > waist)
             if m.sum() > 10:
                 mids.append(co[m].mean(0))
-        _mid, d = _line(np.array(mids))
-        d = Vector(d * (1 if d[0] * s > 0 else -1))
-        for bone in ("UpperArm", "LowerArm", "Hand"):
-            out[f"{side}{bone}"] = d
+        mid, d = _line(np.array(mids))
+        d = d * (1 if d[0] * s > 0 else -1)
+        # The elbow and the wrist on the outfit's arm (its line), the bones' lengths apart from the shoulder.
+        elbow_head, wrist_head = head[f"{side}LowerArm"], head[f"{side}Hand"]
+        elbow = _on_line(mid, d, np.array(shoulder), (elbow_head - shoulder).length)
+        wrist = _on_line(mid, d, elbow, (wrist_head - elbow_head).length)
+        out[f"{side}UpperArm"] = Vector(elbow - np.array(shoulder)).normalized()
+        out[f"{side}LowerArm"] = Vector(wrist - elbow).normalized()
+        out[f"{side}Hand"] = Vector(d)
         hand = co[(s * co[:, 0] > reach - 0.15) & (co[:, 2] > waist)]
         _u, _s, vt = np.linalg.svd(hand - hand.mean(0))
         palms[side] = Vector(vt[2] * (1 if vt[2][1] < 0 else -1))

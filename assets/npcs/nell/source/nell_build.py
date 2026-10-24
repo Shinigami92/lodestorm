@@ -78,7 +78,19 @@ SKIN_MATCH = 0.12  # how close (in sRGB) to the generated face's skin a texel mu
 SKIRT_LOOSE = (0.03, 0.07)  # loose cloth below the waist: how far from the body it blends into the skirt's weights
 ARMS_FROM = 0.24  # the arms' faces: this far (m) from the middle and farther (in the outfit's A-pose)
 CHIN = 0.07  # the generated skin is cut from this far above the neck's joint up; the neck below keeps its own
-KEEP = ("Head", "Neck")  # the body's skin that stays (the rest is under the outfit)
+ARM_ROOT = 0.1  # the outfit's arms are shortened from this far past the shoulder's joint (m)
+ARM_REACH = 0.2  # an arm's points lie this close to its line (m)
+HAND_REACH = 0.16  # a hand's points lie this close to its arm's line (m)
+CUFF = 0.08  # the generated gloves' cuffs reach this far up the forearm (m): cut, the body's forearm shows there
+GLOVE_DARK = 0.13  # a face this dark (sRGB) near the wrist is the generated glove
+GLOVE = (0.07, 0.065, 0.065)  # the fingerless gloves' leather (sRGB)
+KEEP = (
+    "Head",
+    "Neck",
+    "LeftHand",
+    "RightHand",
+    *(f"{s}{f}{j}" for s in ("Left", "Right") for f, js in H.FINGERS.items() for j in js),
+)  # the body's skin that stays (the rest is under the outfit)
 
 
 def measure(arm: bpy.types.Object, parts: dict) -> dict:
@@ -185,9 +197,18 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict) -> None:
     tone, texels = cut_skin(outfit, m)
     match_skin(outfit, skin, tone, texels, m["neck"])
     fit_hair(outfit, m)
-    P.pose_limbs(arm, *P.limb_directions(outfit, arm, m["waist"]))
+    directions, _palms = P.limb_directions(outfit, arm, m["waist"])
+    P.pose_limbs(arm, directions)
+    fit_arms(outfit, arm, directions)
     body = P.posed_vertices(skin)
     body_w = P.weight_matrix(skin, names)
+    hands = beyond_wrists(arm, directions)
+    rgba = G.image_pixels(G.base_color_image(outfit.data.materials[0]))
+    dark = G.face_values(outfit.data, rgba[..., :3].mean(2)) < GLOVE_DARK
+    reach = hands(P.face_centers(outfit))
+    cut = (reach > -0.005) | ((reach > -CUFF) & dark)  # the hands and the gloves' cuffs
+    print("HANDS cut", P.delete_faces(outfit, cut), "faces")
+    in_cuffs = hands(body) > -CUFF
     co = G.vertices(outfit.data)
     w, near = P.transfer_weights(co, body, body_w)
     loose = (co[:, 2] < m["waist"]) & (co[:, 2] > m["hem"] - 0.1) & (np.abs(co[:, 0]) < ARMS_FROM)
@@ -205,10 +226,73 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict) -> None:
     H.rest_pose(arm)
     keep = [names.index(b) for b in KEEP]
     owner = body_w.argmax(1)
-    under = P.face_centers(skin)[:, 2] < m["neck"] + CHIN - 0.03  # the body's neck inside the generated one
-    covered = np.array([not np.isin(owner[list(p.vertices)], keep).all() for p in skin.data.polygons]) | under
+    shown = np.isin(owner, keep) | in_cuffs  # the head and neck, the hands from inside the cuffs
+    centers = P.face_centers(skin)
+    under = (centers[:, 2] < m["neck"] + CHIN - 0.03) & (centers[:, 2] > m["neck"] - 0.3)  # inside the generated neck
+    covered = np.array([not shown[list(p.vertices)].all() for p in skin.data.polygons]) | under
     print("SKIN covered", P.delete_faces(skin, covered), "faces")
+    gloves(skin, arm, names)
     parts["Outfit"] = outfit
+
+
+def fit_arms(outfit: bpy.types.Object, arm: bpy.types.Object, directions: dict) -> None:
+    """Shortens the outfit's arms to the body's (posed into them): from a little past the shoulder out, its points
+    move in along the arm, so its fingertips meet the body's (the generator makes arms too long)."""
+    co = G.vertices(outfit.data)
+    for side, s in H.SIDES:
+        d = np.array(directions[f"{side}LowerArm"])
+        shoulder = np.array(arm.pose.bones[f"{side}UpperArm"].head)
+        rel = co - shoulder
+        along = rel @ d
+        near = (s * co[:, 0] > abs(shoulder[0])) & (np.linalg.norm(rel - along[:, None] * d, axis=1) < ARM_REACH)
+        tip = float(along[near].max())
+        body = float((np.array(arm.pose.bones[f"{side}MiddleDistal"].tail) - shoulder) @ d)
+        k = (body - ARM_ROOT) / (tip - ARM_ROOT)
+        moved = near & (along > ARM_ROOT)
+        co[moved] -= ((along[moved] - ARM_ROOT) * (1 - k))[:, None] * d
+        print("ARM", side, "fingertips", round(tip, 3), "->", round(body, 3), "m from the shoulder")
+    G.set_vertices(outfit.data, co)
+
+
+def beyond_wrists(arm: bpy.types.Object, directions: dict):
+    """How far points near the arms (within HAND_REACH of their lines, up to a hand beyond the wrist) lie beyond the
+    posed wrists along them (m; negative: on the arm's side; -1 elsewhere): the hands are the body's, the generated
+    ones are cut there."""
+    planes = []
+    for side, s in H.SIDES:
+        wrist = np.array(arm.pose.bones[f"{side}Hand"].head)
+        planes.append((s, wrist, np.array(directions[f"{side}LowerArm"])))
+
+    def beyond(points: np.ndarray) -> np.ndarray:
+        out = np.full(len(points), -1.0)
+        for s, wrist, d in planes:
+            rel = points - wrist
+            along = rel @ d
+            off_axis = np.linalg.norm(rel - along[:, None] * d, axis=1)
+            mine = (s * points[:, 0] > 0.15) & (off_axis < HAND_REACH) & (along < 0.25)
+            out[mine] = np.maximum(out[mine], along[mine])
+        return out
+
+    return beyond
+
+
+def gloves(skin: bpy.types.Object, arm: bpy.types.Object, names: list) -> None:
+    """Fingerless gloves painted on her hands (the concept's): dark worn leather over the palm, the back of the hand
+    and the thumb's root, the fingers bare."""
+    w = P.weight_matrix(skin, names)
+    gloved = [names.index(f"{side}{b}") for side, _s in H.SIDES for b in ("Hand", "ThumbMetacarpal")]
+    owner = w.argmax(1)
+    faces = [p for p in skin.data.polygons if np.isin(owner[list(p.vertices)], gloved).all()]
+    img = G.base_color_image(skin.data.materials[0])
+    size = img.size[0]
+    cover = G.uv_cover(skin.data, faces, size, grow=1)
+    grain = P.noise(size, 64, 21, 3)[..., None]
+    leather = np.array(GLOVE)[None, None, :] * (0.8 + 0.4 * grain)
+    rgba = G.image_pixels(img)
+    rgba[cover, :3] = leather[cover]
+    img.pixels.foreach_set(rgba.ravel())
+    img.pack()
+    print("GLOVES on", len(faces), "faces")
 
 
 def decimate(obj: bpy.types.Object, tris: int) -> None:

@@ -127,6 +127,29 @@ CHARACTERS: dict[str, dict] = {
             ),
         ],
     },
+    "tamsin": {
+        "name": "Tamsin",
+        "role": "Pilot",
+        "description": (
+            "A woman in her late thirties, the pilot of a mining ship, talking to her crew over the ship's radio. "
+            "Clear, steady mid-range voice, focused and practical, a veteran hauler pilot used to long flights in "
+            "the dark. Warm but brisk, calm under pressure, with a slight edge of unease about the storms. Plain "
+            "and conversational, not theatrical, not breathy or seductive. "
+            "Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "There you are. I keep us flying, and every trip starts here at the navigator. "
+                    "Come over to the holo table whenever you want to pick where we go next."
+                ),
+                (
+                    "Da bist du ja. Ich halte uns in der Luft, und jede Reise beginnt hier am Navigator. "
+                    "Komm an den Holotisch, wann immer du aussuchen willst, wohin es als Nächstes geht."
+                ),
+            ),
+        ],
+    },
 }
 
 # Round 1 renders this line with each voice-design take: long enough to hear the voice, in both languages later

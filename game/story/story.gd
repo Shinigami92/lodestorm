@@ -8,7 +8,9 @@ extends Resource
 ## - `<npc>.<topic>`: a topic heard, `<npc>` the `NpcProfile.id` (`quartermaster.ammo`);
 ## - `quest.<quest>.<step>`: a quest step done, `quest.<quest>` the quest itself;
 ## - `reward.<quest>`: a quest's reward handed out;
-## - `crew.<npc>.joined`: a crew member aboard.
+## - `crew.<npc>.joined`: a crew member aboard;
+## - `event.<event>`: something that happens once per game (`CrewReactions`), e.g.
+##   `event.first_death`, `event.landed.<body>`.
 
 ## What a flag's name looks like: two or more parts of lowercase letters, digits and `_`, joined
 ## by dots.

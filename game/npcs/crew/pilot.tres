@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
 [ext_resource type="PackedScene" uid="uid://dqwsbxro53s6q" path="res://game/npcs/crew/accessories/pilot.tscn" id="4_accessory"]
+[ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="9_reaction"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
 script = ExtResource("3_topic")
@@ -51,6 +52,84 @@ script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_navigator"), SubResource("Resource_regions"), SubResource("Resource_flight"), SubResource("Resource_ostra"), SubResource("Resource_about")])
 
+[sub_resource type="Resource" id="Reaction_planet_opened_cassor"]
+script = ExtResource("9_reaction")
+event = &"planet_opened"
+subject = &"cassor"
+lines = Array[String](["Cassor is on the navigator now, and its moon Mirr with it. Closer to the star, the storms come in sooner, so I'll call earlier from now on."])
+
+[sub_resource type="Resource" id="Reaction_planet_opened_zairen"]
+script = ExtResource("9_reaction")
+event = &"planet_opened"
+subject = &"zairen"
+lines = Array[String](["Zairen is on the navigator. That's as close to Kesh as anyone should ever fly. I'll get us there, and I'll get us back out."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_torvane"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"torvane"
+lines = Array[String](["Torvane, our first landing. Most of it is dust and rock, with thick growth in the low places. I'll call on the radio when the storm comes."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_lisk"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"lisk"
+lines = Array[String](["Lisk is a moon of ice. The ice out there is slick, and the cracks in it go deep."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_vehra"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"vehra"
+lines = Array[String](["Welcome to Vehra. Ice, salt and dust, and all of it a little harsher than on Torvane. I'll keep the engines warm."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_cassor"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"cassor"
+lines = Array[String](["Cassor. Salt flats and thick growth, and the ground in between doesn't always hold. There are sinkholes out there."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_mirr"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"mirr"
+lines = Array[String](["Mirr is a small moon, nothing but dust and stone. It's quiet out there. Too quiet for my taste."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_orrel"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"orrel"
+lines = Array[String](["We're on Orrel, one of Gaulm's moons. Salt and growth again, but everything here hits harder than anywhere before."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_iska"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"iska"
+lines = Array[String](["Iska, Gaulm's other moon. Ice and dust, and colder than anywhere we've been. Nobody should stay out there longer than they have to."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_skelde"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"skelde"
+lines = Array[String](["Skelde. Lava runs through the ash fields here, and the vents can burst at any moment. Standing still out there is a bad idea."])
+
+[sub_resource type="Resource" id="Reaction_first_landing_zairen"]
+script = ExtResource("9_reaction")
+event = &"first_landing"
+subject = &"zairen"
+lines = Array[String](["Zairen. The heat has turned the ground to glass, and some of the shards are sharp enough to hurt. I'll be waiting right here."])
+
+[sub_resource type="Resource" id="Reaction_storm_warning_solo"]
+script = ExtResource("9_reaction")
+event = &"storm_warning"
+players = 1
+lines = Array[String](["Storm's coming in. Get back to the ship.", "Storm front on the scanner. Time to head back.", "The storm is on its way. The ramp is down, so come on back.", "Here comes the weather. Finish up and get back aboard."])
+
+[sub_resource type="Resource" id="Reaction_storm_warning_coop"]
+script = ExtResource("9_reaction")
+event = &"storm_warning"
+players = 2
+lines = Array[String](["Storm's coming in. Everyone back to the ship.", "Storm front on the scanner. Time to head back.", "The storm is on its way. The ramp is down, so come on back, all of you.", "Here comes the weather. Finish up, all of you, and get back aboard."])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"pilot"
@@ -60,3 +139,4 @@ accent_color = Color(0.3, 0.72, 1, 1)
 accessory = ExtResource("4_accessory")
 cabin = 2
 dialogue = SubResource("Resource_dialogue")
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_cassor"), SubResource("Reaction_planet_opened_zairen"), SubResource("Reaction_first_landing_torvane"), SubResource("Reaction_first_landing_lisk"), SubResource("Reaction_first_landing_vehra"), SubResource("Reaction_first_landing_cassor"), SubResource("Reaction_first_landing_mirr"), SubResource("Reaction_first_landing_orrel"), SubResource("Reaction_first_landing_iska"), SubResource("Reaction_first_landing_skelde"), SubResource("Reaction_first_landing_zairen"), SubResource("Reaction_storm_warning_solo"), SubResource("Reaction_storm_warning_coop")])

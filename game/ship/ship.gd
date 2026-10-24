@@ -95,6 +95,8 @@ var story := Story.new()
 var heat_shield := HeatShield.new()
 ## How many of the refinery's furnaces it has, saved with the ship.
 var furnaces := Furnaces.new()
+## The crew's reactions to what happens, and their radio calls, saved with the ship.
+var reactions := CrewReactions.new()
 ## Lets the levels and skill ranks under way take effect once done.
 var progress_clock: ProgressClock
 ## Says once where to heal when a hurt player stands at the ramp button.
@@ -148,6 +150,9 @@ func _ready() -> void:
 	progress_clock = ProgressClock.new()
 	progress_clock.name = "ProgressClock"
 	add_child(progress_clock)
+	reactions.name = "Reactions"
+	reactions.ship = self
+	add_child(reactions)
 
 
 func _physics_process(delta: float) -> void:

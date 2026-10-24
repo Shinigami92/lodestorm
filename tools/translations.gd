@@ -19,6 +19,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"AlienStrain": [&"display_name"],
 	"AlloyType": [&"display_name"],
 	"CelestialBody": [&"display_name"],
+	"CrewReaction": [&"lines"],
 	"Dialogue": [&"prompt"],
 	"LocationBiome": [&"display_name"],
 	"OreType": [&"display_name"],

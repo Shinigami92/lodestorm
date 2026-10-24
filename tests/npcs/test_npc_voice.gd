@@ -11,6 +11,8 @@ const VOICED: Array[NpcProfile] = [
 	preload("res://game/npcs/crew/quartermaster.tres"),
 	preload("res://game/npcs/ostra/bartender.tres"),
 ]
+## The NPCs voiced only on the radio: their reactions.
+const VOICED_ON_RADIO: Array[NpcProfile] = [preload("res://game/npcs/crew/pilot.tres")]
 const DIRECTORY: String = "user://test_npc_voice/"
 
 var _map: Node3D
@@ -38,7 +40,7 @@ func after_each() -> void:
 
 
 func test_every_line_has_its_recording_in_every_voice_language() -> void:
-	for profile: NpcProfile in VOICED:
+	for profile: NpcProfile in VOICED + VOICED_ON_RADIO:
 		for language: String in VoiceLines.LANGUAGES:
 			for line: String in _lines(profile):
 				assert_true(
@@ -48,7 +50,7 @@ func test_every_line_has_its_recording_in_every_voice_language() -> void:
 
 
 func test_no_recording_is_left_over() -> void:
-	for profile: NpcProfile in VOICED:
+	for profile: NpcProfile in VOICED + VOICED_ON_RADIO:
 		var keys: Array[String] = []
 		for line: String in _lines(profile):
 			keys.append(VoiceLines.path(profile.id, "en", line).get_file().get_basename())
@@ -161,9 +163,13 @@ func test_voices_have_their_own_volume() -> void:
 
 ## The English lines of `profile`: the prompt, the greeting's and every topic's.
 func _lines(profile: NpcProfile) -> Array[String]:
-	var lines: Array[String] = [profile.dialogue.prompt]
-	for topic: Topic in [profile.dialogue.greeting] + profile.dialogue.topics:
-		lines.append_array(topic.lines)
+	var lines: Array[String] = []
+	if profile not in VOICED_ON_RADIO:
+		lines.append(profile.dialogue.prompt)
+		for topic: Topic in [profile.dialogue.greeting] + profile.dialogue.topics:
+			lines.append_array(topic.lines)
+	for reaction: CrewReaction in profile.reactions:
+		lines.append_array(reaction.lines)
 	return lines
 
 

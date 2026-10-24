@@ -61,7 +61,7 @@ func test_ramp_hint_shows_once_when_hurt() -> void:
 	await wait_process_frames(2)
 	assert_eq(hint.shown_for, _player)
 	assert_true(_player.hints.is_seen(RampHint.HINT), "the player's, not the ship's story")
-	assert_true(_ship.story.flags.is_empty())
+	assert_false(_ship.story.is_set(RampHint.HINT), "no story flag")
 	await _move(_ship.get_respawn_position())
 	assert_null(hint.shown_for, "gone once the player steps away")
 	await _stand_at_ramp_button()

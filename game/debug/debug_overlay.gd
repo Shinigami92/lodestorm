@@ -6,9 +6,9 @@ extends CanvasLayer
 ## resources live, so every scene using them sees the new values right away; they last until the
 ## game stops and aren't written to the files. Also shows the mission and flight state and has
 ## shortcuts for testing the flight, storm, death, fights, weapons, ammo, upgrades, the heat
-## shield and the furnaces, and teammates standing still (to see their rings before co-op, and hurt
-## to heal them), and switches for god mode (players take no damage) and the aliens' AI (off: they
-## stand still).
+## shield and the furnaces, the crew's reactions and radio, and teammates standing still (to see
+## their rings before co-op, and hurt to heal them), and switches for god mode (players take no
+## damage) and the aliens' AI (off: they stand still).
 ## Integer settings get whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
@@ -478,6 +478,19 @@ func _give_blueprints() -> void:
 			player.arsenal.learn(weapon_type)
 
 
+## Has the crew call in about every event once, one call after another (see
+## `CrewReactions.transmit_all`).
+func _transmit_reactions() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		ship.reactions.transmit_all()
+
+
+## Has the crew call the storm warning over the radio, to every player outside.
+func _radio_storm() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		ship.reactions.transmit(CrewReactions.STORM_WARNING)
+
+
 ## Gives every player every weapon of the game, without building them.
 func unlock_weapons() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -688,6 +701,9 @@ func _build() -> void:
 		_nest_buttons.append(_button(strains, label, hatch_strain.bind(strain)))
 	var miners: GridContainer = _group(state, "Miners")
 	_break_miners_button = _button(miners, "Break miners", break_miners)
+	var crew: GridContainer = _group(state, "Crew")
+	_button(crew, "Radio: all events", _transmit_reactions)
+	_button(crew, "Radio: storm", _radio_storm)
 	var progress: GridContainer = _group(state, "Progress")
 	_button(progress, "Give blueprints", _give_blueprints)
 	_button(progress, "Unlock weapons", unlock_weapons)

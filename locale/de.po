@@ -167,6 +167,10 @@ msgstr "Angeheuert habe ich zum Kochen, aber vor allem höre ich zu. Bei einer w
 msgid "Most of what I hear is nonsense. Some of it isn't. The trick is telling the difference."
 msgstr "Das meiste, was ich höre, ist Unsinn. Manches nicht. Die Kunst ist, das eine vom anderen zu unterscheiden."
 
+#: game/npcs/crew/cook.tres
+msgid "Moons around a gas giant! When I signed on, I never thought I'd see Gaulm out of a window. Somebody has to tell me what it looks like from down there."
+msgstr "Monde um einen Gasriesen! Als ich angeheuert habe, hätte ich nie gedacht, dass ich Gaulm mal aus einem Fenster sehe. Irgendwer muss mir erzählen, wie er von dort unten aussieht."
+
 #: game/npcs/crew/engineer.tres
 msgid "Engineer"
 msgstr "Ingenieur"
@@ -271,6 +275,26 @@ msgstr "Ich bin hergekommen, um den Stern zu erforschen. Kesh ist unruhig, mehr,
 msgid "This shield is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
 msgstr "Dieser Schild ist die beste Antwort, die ich bisher habe. Jede Platte, die wir einbauen, bringt mir etwas Neues bei, und ich schreibe alles auf."
 
+#: game/npcs/crew/engineer.tres
+msgid "The new plate holds. Vehra is in reach now, the next planet inwards. The aliens there are tougher than on Torvane."
+msgstr "Die neue Platte hält. Vehra ist jetzt in Reichweite, der nächste Planet weiter innen. Die Aliens dort halten mehr aus als auf Torvane."
+
+#: game/npcs/crew/engineer.tres
+msgid "Skelde is in reach now. Most of it is ash and lava, and the star feels close enough to touch. The shield holds, but only just."
+msgstr "Skelde ist jetzt in Reichweite. Dort ist fast alles Asche und Lava, und der Stern fühlt sich zum Greifen nah an. Der Schild hält, aber nur knapp."
+
+#: game/npcs/crew/engineer.tres
+msgid "That was quite a haul. The silos have never been this full, and this ship runs on hauls like that."
+msgstr "Das war eine ordentliche Ladung. So voll waren die Silos noch nie, und von solchen Ladungen lebt dieses Schiff."
+
+#: game/npcs/crew/engineer.tres
+msgid "I had to look twice at the numbers on the silos. That's the biggest haul this ship has seen so far."
+msgstr "Bei den Zahlen auf den Silos musste ich zweimal hinsehen. Das ist die größte Ladung, die dieses Schiff bisher gesehen hat."
+
+#: game/npcs/crew/engineer.tres
+msgid "Another record haul. At this rate, I'll need a bigger cargo bay."
+msgstr "Schon wieder eine Rekordladung. Wenn das so weitergeht, brauche ich einen größeren Frachtraum."
+
 #: game/npcs/crew/gunsmith.tres
 msgid "Gunsmith"
 msgstr "Waffenschmied"
@@ -342,6 +366,18 @@ msgstr "Das meiste in diesem Regal kenne ich nur aus Zeichnungen. Die erste Expe
 #: game/npcs/crew/gunsmith.tres
 msgid "Sometimes I wonder what they needed weapons like these for."
 msgstr "Manchmal frage ich mich, wofür sie solche Waffen gebraucht haben."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "A new weapon, fresh off my bench. Take it to the shooting range first, before you take it out there."
+msgstr "Eine neue Waffe, frisch von meiner Werkbank. Bring sie zuerst zum Schießstand, bevor du sie mit nach draußen nimmst."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "It's not every day I get to build something new from those old drawings. Bring it back in one piece, and I'll keep improving it."
+msgstr "Nicht jeden Tag darf ich etwas Neues nach diesen alten Zeichnungen bauen. Bring sie heil zurück, dann mache ich sie weiter besser."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Every weapon takes some getting used to. Give the new one a few missions before you judge it."
+msgstr "An jede Waffe muss man sich erst gewöhnen. Gib der neuen ein paar Missionen, bevor du urteilst."
 
 #: game/npcs/crew/medic.tres
 msgid "Medic"
@@ -418,6 +454,10 @@ msgstr "Früher habe ich die Klinik auf Ostra geleitet. Laut den Berichten des R
 #: game/npcs/crew/medic.tres
 msgid "Then I count the injuries that come back from these runs. The numbers don't match the reports, so I'm keeping my own."
 msgstr "Dann zähle ich die Verletzungen, die von diesen Einsätzen zurückkommen. Die Zahlen passen nicht zu den Berichten, also führe ich meine eigenen."
+
+#: game/npcs/crew/medic.tres
+msgid "Easy, take a breath. You fell out there and woke up in my medical bay. It happens to everyone once. Let's make sure it doesn't happen often."
+msgstr "Ganz ruhig, atme erst mal durch. Du bist da draußen gefallen und in meiner Krankenstation aufgewacht. Das passiert jedem einmal. Sorgen wir dafür, dass es nicht oft passiert."
 
 #: game/npcs/crew/miner_mechanic.tres
 msgid "Miner mechanic"
@@ -507,6 +547,18 @@ msgstr "Ich grabe in diesem System schon länger als jeder andere an Bord. Auch 
 msgid "I knew some of the people on the first expedition. Good people. Nobody has heard from them in a long time."
 msgstr "Ich kannte ein paar Leute von der ersten Expedition. Gute Leute. Seit Langem hat niemand mehr etwas von ihnen gehört."
 
+#: game/npcs/crew/miner_mechanic.tres
+msgid "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
+msgstr "Die Miner haben da draußen hart gearbeitet, das sieht man. Solche Ladungen halten dieses Schiff am Laufen."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "That's a haul. The miners dig best when nobody lets the aliens near them. That's the whole trick."
+msgstr "Das nenne ich eine Ladung. Die Miner graben am besten, wenn niemand die Aliens an sie heranlässt. Das ist der ganze Trick."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "I've seen a lot of crews come and go. Not many bring back that much ore. Keep it up."
+msgstr "Ich habe viele Crews kommen und gehen sehen. Nicht viele bringen so viel Erz zurück. Weiter so."
+
 #: game/npcs/crew/pilot.tres
 msgid "Pilot"
 msgstr "Pilotin"
@@ -595,6 +647,78 @@ msgstr "Davor habe ich die Frachter geflogen, die die Kolonie hergebracht haben.
 #: game/npcs/crew/pilot.tres
 msgid "But these storms are something else. I've never seen weather like this anywhere. So when the warning comes out there, please don't make me wait for you."
 msgstr "Aber diese Stürme sind etwas anderes. So ein Wetter habe ich noch nirgends erlebt. Wenn da draußen also die Warnung kommt, lass mich bitte nicht auf dich warten."
+
+#: game/npcs/crew/pilot.tres
+msgid "Cassor is on the navigator now, and its moon Mirr with it. Closer to the star, the storms come in sooner, so I'll call earlier from now on."
+msgstr "Cassor ist jetzt auf dem Navigator, und sein Mond Mirr auch. Näher am Stern ziehen die Stürme früher auf, also melde ich mich ab jetzt früher."
+
+#: game/npcs/crew/pilot.tres
+msgid "Zairen is on the navigator. That's as close to Kesh as anyone should ever fly. I'll get us there, and I'll get us back out."
+msgstr "Zairen ist auf dem Navigator. Näher an Kesh sollte niemand je fliegen. Ich bringe uns hin, und ich bringe uns auch wieder raus."
+
+#: game/npcs/crew/pilot.tres
+msgid "Torvane, our first landing. Most of it is dust and rock, with thick growth in the low places. I'll call on the radio when the storm comes."
+msgstr "Torvane, unsere erste Landung. Fast alles hier ist Staub und Fels, mit dichtem Bewuchs in den Senken. Wenn der Sturm kommt, melde ich mich über Funk."
+
+#: game/npcs/crew/pilot.tres
+msgid "Lisk is a moon of ice. The ice out there is slick, and the cracks in it go deep."
+msgstr "Lisk ist ein Mond aus Eis. Das Eis da draußen ist glatt, und die Spalten darin sind tief."
+
+#: game/npcs/crew/pilot.tres
+msgid "Welcome to Vehra. Ice, salt and dust, and all of it a little harsher than on Torvane. I'll keep the engines warm."
+msgstr "Willkommen auf Vehra. Eis, Salz und Staub, und alles ein bisschen rauer als auf Torvane. Ich halte die Triebwerke warm."
+
+#: game/npcs/crew/pilot.tres
+msgid "Cassor. Salt flats and thick growth, and the ground in between doesn't always hold. There are sinkholes out there."
+msgstr "Cassor. Salzebenen und dichter Bewuchs, und der Boden dazwischen hält nicht immer. Da draußen gibt es Erdlöcher."
+
+#: game/npcs/crew/pilot.tres
+msgid "Mirr is a small moon, nothing but dust and stone. It's quiet out there. Too quiet for my taste."
+msgstr "Mirr ist ein kleiner Mond, nur Staub und Stein. Da draußen ist es ruhig. Zu ruhig für meinen Geschmack."
+
+#: game/npcs/crew/pilot.tres
+msgid "We're on Orrel, one of Gaulm's moons. Salt and growth again, but everything here hits harder than anywhere before."
+msgstr "Wir sind auf Orrel, einem von Gaulms Monden. Wieder Salz und Bewuchs, aber hier schlägt alles härter zu als bisher."
+
+#: game/npcs/crew/pilot.tres
+msgid "Iska, Gaulm's other moon. Ice and dust, and colder than anywhere we've been. Nobody should stay out there longer than they have to."
+msgstr "Iska, Gaulms anderer Mond. Eis und Staub, und kälter als alles, wo wir bisher waren. Niemand sollte länger draußen bleiben als nötig."
+
+#: game/npcs/crew/pilot.tres
+msgid "Skelde. Lava runs through the ash fields here, and the vents can burst at any moment. Standing still out there is a bad idea."
+msgstr "Skelde. Durch die Aschefelder hier fließt Lava, und die Schlote können jeden Moment ausbrechen. Da draußen stehen zu bleiben ist keine gute Idee."
+
+#: game/npcs/crew/pilot.tres
+msgid "Zairen. The heat has turned the ground to glass, and some of the shards are sharp enough to hurt. I'll be waiting right here."
+msgstr "Zairen. Die Hitze hat den Boden zu Glas geschmolzen, und manche Scherben sind scharf genug, um zu verletzen. Ich warte genau hier."
+
+#: game/npcs/crew/pilot.tres
+msgid "Storm's coming in. Get back to the ship."
+msgstr "Der Sturm zieht auf. Komm zurück zum Schiff."
+
+#: game/npcs/crew/pilot.tres
+msgid "Storm front on the scanner. Time to head back."
+msgstr "Sturmfront auf dem Scanner. Zeit, zurückzukommen."
+
+#: game/npcs/crew/pilot.tres
+msgid "The storm is on its way. The ramp is down, so come on back."
+msgstr "Der Sturm ist im Anmarsch. Die Rampe ist unten, also komm zurück."
+
+#: game/npcs/crew/pilot.tres
+msgid "Here comes the weather. Finish up and get back aboard."
+msgstr "Das Wetter schlägt um. Mach fertig und komm an Bord."
+
+#: game/npcs/crew/pilot.tres
+msgid "Storm's coming in. Everyone back to the ship."
+msgstr "Der Sturm zieht auf. Alle zurück zum Schiff."
+
+#: game/npcs/crew/pilot.tres
+msgid "The storm is on its way. The ramp is down, so come on back, all of you."
+msgstr "Der Sturm ist im Anmarsch. Die Rampe ist unten, also kommt alle zurück."
+
+#: game/npcs/crew/pilot.tres
+msgid "Here comes the weather. Finish up, all of you, and get back aboard."
+msgstr "Das Wetter schlägt um. Macht fertig und kommt an Bord."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "Quartermaster"
@@ -718,6 +842,38 @@ msgstr "Nachladen kostet dort nichts, du kannst das Timing also so oft üben, wi
 #: game/npcs/crew/quartermaster.tres
 msgid "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
 msgstr "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
+msgstr "Du bist heil zurück, und mit Erz auf dem Rücken. So soll eine erste Mission enden."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Everyone made it back in one piece, and with ore on their backs. That's how I like a first mission to end."
+msgstr "Alle sind heil zurück, und mit Erz auf dem Rücken. So soll eine erste Mission enden."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "I hear you've got a new weapon. If you want to take it along, pick it at your locker before the next mission."
+msgstr "Wie ich höre, hast du eine neue Waffe. Wenn du sie mitnehmen willst, wähl sie vor der nächsten Mission an deinem Spind aus."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Another one for the armory. You'll find it on the wall with the others, so take whatever suits the next mission best."
+msgstr "Noch eine für die Waffenkammer. Du findest sie bei den anderen an der Wand, also nimm, was am besten zur nächsten Mission passt."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "A new weapon is only as good as the hands holding it. Spend some time at the shooting range before the next mission."
+msgstr "Eine neue Waffe ist nur so gut wie die Hände, die sie halten. Verbring vor der nächsten Mission etwas Zeit am Schießstand."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach."
+msgstr "Das nenne ich eine Ladung. Mit so viel Erz an Bord sind ein paar von diesen Upgrades endlich drin."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast."
+msgstr "Gute Ladung. Aber wer leichtsinnig wird, hat nicht lange Glück. Die nächste Mission kann genauso schnell schiefgehen."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."
+msgstr "Schon wieder eine große Ladung. Wenn das so weitergeht, haben Dace und Wren keine ruhige Minute mehr."
 
 #: game/npcs/crew/suit_tech.tres
 msgid "Suit tech"
@@ -1422,6 +1578,10 @@ msgstr "Meine Crew ist klein, aber die beste, die es gibt. Wir sind in mehr Regi
 #: game/npcs/ostra/rival_captain.tres
 msgid "We'll see how long you last out there. If you're still flying in a few months, I'll buy you a drink."
 msgstr "Mal sehen, wie lange du da draußen durchhältst. Wenn du in ein paar Monaten noch fliegst, geb ich dir einen aus."
+
+#: game/npcs/radio_bubble.gd
+msgid "Radio"
+msgstr "Funk"
 
 #: game/npcs/talk_card.gd
 msgid "Done"

@@ -1,0 +1,222 @@
+{
+  "de": {
+    "0ff3b4900078ed4c": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Iska, Gaulms anderer Mond. Eis und Staub, und kälter als alles, wo wir bisher waren. Niemand sollte länger draußen bleiben als nötig."
+    },
+    "12b09b92375f8eb0": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Skelde. Durch die Aschefelder hier fließt Lava, und die Schlote können jeden Moment ausbrechen. Da draußen stehen zu bleiben ist keine gute Idee."
+    },
+    "1495147e46d005b1": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Zairen. Die Hitze hat den Boden zu Glas geschmolzen, und manche Scherben sind scharf genug, um zu verletzen. Ich warte genau hier."
+    },
+    "4070638e4bb197fc": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Sturm zieht auf. Alle zurück zum Schiff."
+    },
+    "582f19e32531a0b6": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Sturm ist im Anmarsch. Die Rampe ist unten, also kommt alle zurück."
+    },
+    "61b4a7a5013f7a05": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Willkommen auf Vehra. Eis, Salz und Staub, und alles ein bisschen rauer als auf Torvane. Ich halte die Triebwerke warm."
+    },
+    "767187d88f57700e": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Sturm zieht auf. Komm zurück zum Schiff."
+    },
+    "7aa7a888197fcd2c": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Zairen ist auf dem Navigator. Näher an Kesh sollte niemand je fliegen. Ich bringe uns hin, und ich bringe uns auch wieder raus."
+    },
+    "7f01dba35dbf4252": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Lisk ist ein Mond aus Eis. Das Eis da draußen ist glatt, und die Spalten darin sind tief."
+    },
+    "904f734f33f3efbd": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sturmfront auf dem Scanner. Zeit, zurückzukommen."
+    },
+    "913b0628d3f31201": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das Wetter schlägt um. Macht fertig und kommt an Bord."
+    },
+    "94bda7790c627d03": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mirr ist ein kleiner Mond, nur Staub und Stein. Da draußen ist es ruhig. Zu ruhig für meinen Geschmack."
+    },
+    "9e2afc640b385424": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das Wetter schlägt um. Mach fertig und komm an Bord."
+    },
+    "a5bb04564a210f5c": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wir sind auf Orrel, einem von Gaulms Monden. Wieder Salz und Bewuchs, aber hier schlägt alles härter zu als bisher."
+    },
+    "bf59427c16c1abe5": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Torvane, unsere erste Landung. Fast alles hier ist Staub und Fels, mit dichtem Bewuchs in den Senken. Wenn der Sturm kommt, melde ich mich über Funk."
+    },
+    "d1a2eb924f49a7a0": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Sturm ist im Anmarsch. Die Rampe ist unten, also komm zurück."
+    },
+    "ea86a104090612c3": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Cassor ist jetzt auf dem Navigator, und sein Mond Mirr auch. Näher am Stern ziehen die Stürme früher auf, also melde ich mich ab jetzt früher."
+    },
+    "f37ccbb8db26a8c1": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Cassor. Salzebenen und dichter Bewuchs, und der Boden dazwischen hält nicht immer. Da draußen gibt es Erdlöcher."
+    }
+  },
+  "en": {
+    "0ff3b4900078ed4c": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Iska, Gaulm's other moon. Ice and dust, and colder than anywhere we've been. Nobody should stay out there longer than they have to."
+    },
+    "12b09b92375f8eb0": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Skelde. Lava runs through the ash fields here, and the vents can burst at any moment. Standing still out there is a bad idea."
+    },
+    "1495147e46d005b1": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Zairen. The heat has turned the ground to glass, and some of the shards are sharp enough to hurt. I'll be waiting right here."
+    },
+    "4070638e4bb197fc": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Storm's coming in. Everyone back to the ship."
+    },
+    "582f19e32531a0b6": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The storm is on its way. The ramp is down, so come on back, all of you."
+    },
+    "61b4a7a5013f7a05": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Welcome to Vehra. Ice, salt and dust, and all of it a little harsher than on Torvane. I'll keep the engines warm."
+    },
+    "767187d88f57700e": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Storm's coming in. Get back to the ship."
+    },
+    "7aa7a888197fcd2c": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Zairen is on the navigator. That's as close to Kesh as anyone should ever fly. I'll get us there, and I'll get us back out."
+    },
+    "7f01dba35dbf4252": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Lisk is a moon of ice. The ice out there is slick, and the cracks in it go deep."
+    },
+    "904f734f33f3efbd": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Storm front on the scanner. Time to head back."
+    },
+    "913b0628d3f31201": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Here comes the weather. Finish up, all of you, and get back aboard."
+    },
+    "94bda7790c627d03": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mirr is a small moon, nothing but dust and stone. It's quiet out there. Too quiet for my taste."
+    },
+    "9e2afc640b385424": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Here comes the weather. Finish up and get back aboard."
+    },
+    "a5bb04564a210f5c": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We're on Orrel, one of Gaulm's moons. Salt and growth again, but everything here hits harder than anywhere before."
+    },
+    "bf59427c16c1abe5": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Torvane, our first landing. Most of it is dust and rock, with thick growth in the low places. I'll call on the radio when the storm comes."
+    },
+    "d1a2eb924f49a7a0": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The storm is on its way. The ramp is down, so come on back."
+    },
+    "ea86a104090612c3": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Cassor is on the navigator now, and its moon Mirr with it. Closer to the star, the storms come in sooner, so I'll call earlier from now on."
+    },
+    "f37ccbb8db26a8c1": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Cassor. Salt flats and thick growth, and the ground in between doesn't always hold. There are sinkholes out there."
+    }
+  }
+}

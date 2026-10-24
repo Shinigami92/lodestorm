@@ -12,9 +12,9 @@ Decided 2026-10-17, built after the art pass (see [`PLAN.md`](../PLAN.md), M5). 
 
 ## In the game
 
-Built so far (see [Localization and voice](../GAME_DESIGN.md#localization-and-voice) and [`TECHNICAL.md`](../TECHNICAL.md#4-asset-pipeline)): the pipeline tool, the Voice bus and its volume, the voice language setting (with "Off"), playback from the speech bubbles, Brannik and Nell voiced in English and German. Still to do:
+Built so far (see [Localization and voice](../GAME_DESIGN.md#localization-and-voice) and [`TECHNICAL.md`](../TECHNICAL.md#4-asset-pipeline)): the pipeline tool, the Voice bus and its volume, the voice language setting (with "Off"), playback from the speech bubbles and the radio bubble, Brannik and Nell voiced in English and German, Tamsin's radio calls (her talks aboard still to come). Still to do:
 
 - **The rest of the cast:** the crew as they come, Kade, Selin and Rook, and the colonists' remarks (they speak when their bubble shows). A voice the ratings kept as a spare (one of Brannik's runners-up, two of Nell's that might suit Selin) is a starting point.
-- **Radio lines** play near the player through a radio filter (band-pass and a little static, an effect on a Radio bus with its own volume, not baked into the files), so the same voice sounds different on the radio.
+- **Radio lines** play near the player through a radio filter (band-pass and a little static, an effect on a Radio bus, not baked into the files), so the same voice sounds different on the radio. The bus and its filter are built (with the crew's transmissions, step 13 C); its own volume slider comes with the comms log. Later: other crew members' calls sounding like they come from the cockpit beside the pilot (a second, roomier filter, as if the pilot's mic picks them up), or from wherever they are when the pilot isn't in the cockpit.
 - **Strained or urgent anchors** for characters who need them (a second anchor per language, picked per line).
 - **AI-driven NPCs** stay a later, separate experiment (they share the GPU with rendering and need guardrails).

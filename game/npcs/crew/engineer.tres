@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
 [ext_resource type="PackedScene" uid="uid://gp5xyxp3eil3" path="res://game/npcs/crew/accessories/engineer.tscn" id="4_accessory"]
+[ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="9_reaction"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
 script = ExtResource("3_topic")
@@ -51,6 +52,23 @@ script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_shield"), SubResource("Resource_further_in"), SubResource("Resource_hold"), SubResource("Resource_refinery"), SubResource("Resource_about")])
 
+[sub_resource type="Resource" id="Reaction_planet_opened_vehra"]
+script = ExtResource("9_reaction")
+event = &"planet_opened"
+subject = &"vehra"
+lines = Array[String](["The new plate holds. Vehra is in reach now, the next planet inwards. The aliens there are tougher than on Torvane."])
+
+[sub_resource type="Resource" id="Reaction_planet_opened_skelde"]
+script = ExtResource("9_reaction")
+event = &"planet_opened"
+subject = &"skelde"
+lines = Array[String](["Skelde is in reach now. Most of it is ash and lava, and the star feels close enough to touch. The shield holds, but only just."])
+
+[sub_resource type="Resource" id="Reaction_big_haul"]
+script = ExtResource("9_reaction")
+event = &"big_haul"
+lines = Array[String](["That was quite a haul. The silos have never been this full, and this ship runs on hauls like that.", "I had to look twice at the numbers on the silos. That's the biggest haul this ship has seen so far.", "Another record haul. At this rate, I'll need a bigger cargo bay."])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"engineer"
@@ -60,3 +78,4 @@ accent_color = Color(1, 0.5, 0.12, 1)
 accessory = ExtResource("4_accessory")
 cabin = 3
 dialogue = SubResource("Resource_dialogue")
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_vehra"), SubResource("Reaction_planet_opened_skelde"), SubResource("Reaction_big_haul")])

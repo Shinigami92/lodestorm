@@ -1,0 +1,21 @@
+{
+  "lines": "reactions",
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "There you are. I keep us flying, and every trip starts here at the navigator. Come over to the holo table whenever you want to pick where we go next.",
+    "description": "A woman in her late thirties, the pilot of a mining ship, talking to her crew over the ship's radio. Clear, steady mid-range voice, focused and practical, a veteran hauler pilot used to long flights in the dark. Warm but brisk, calm under pressure, with a slight edge of unease about the storms. Plain and conversational, not theatrical, not breathy or seductive. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 6,
+    "picked_from": "tamsin1/tamsin/qwen3_s6.flac",
+    "picked": "2026-10-24"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Da bist du ja. Ich halte uns in der Luft, und jede Reise beginnt hier am Navigator. Komm an den Holotisch, wann immer du aussuchen willst, wohin es als Nächstes geht.",
+    "description": "A woman in her late thirties, the pilot of a mining ship, talking to her crew over the ship's radio. Clear, steady mid-range voice, focused and practical, a veteran hauler pilot used to long flights in the dark. Warm but brisk, calm under pressure, with a slight edge of unease about the storms. Plain and conversational, not theatrical, not breathy or seductive. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 2,
+    "picked_from": "tamsin1/tamsin/qwen3_s2_de.flac",
+    "picked": "2026-10-24"
+  }
+}

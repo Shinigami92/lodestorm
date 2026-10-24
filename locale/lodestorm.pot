@@ -423,24 +423,244 @@ msgstr ""
 msgid "In the Fused Expanse, a crystal wall stands in a dead end, with the rarest ore in front of it. Getting there and back again is another story."
 msgstr ""
 
-#: game/npcs/ostra/colonist.tres
-msgid "Colonist"
+#: game/npcs/ostra/colonists/barter_trader.tres
+msgid "Barter trader"
 msgstr ""
 
-#: game/npcs/ostra/colonist.tres
-msgid "Another crew? Good. The ration lines have been getting longer."
+#: game/npcs/ostra/colonists/barter_trader.tres
+msgid "I don't sell anything. People bring what they can spare, and I find someone who needs it."
 msgstr ""
 
-#: game/npcs/ostra/colonist.tres
-msgid "Mind your step. The deck plates in here are older than I am."
+#: game/npcs/ostra/colonists/barter_trader.tres
+msgid "Two pairs of boots for a water heater. That was a good morning."
 msgstr ""
 
-#: game/npcs/ostra/colonist.tres
-msgid "My children have never seen a sky from the ground. Maybe one day."
+#: game/npcs/ostra/colonists/barter_trader.tres
+msgid "Everyone here owes everyone something. I just keep track of who owes whom."
 msgstr ""
 
-#: game/npcs/ostra/colonist.tres
-msgid "Have you seen Torvane from the gallery? I go there every evening."
+#: game/npcs/ostra/colonists/barter_trader.tres
+msgid "The best things to trade are the small ones: needles, batteries, seeds. Nobody ever has enough of them."
+msgstr ""
+
+#: game/npcs/ostra/colonists/barter_trader.tres
+msgid "Some days this stall is empty within an hour. Then I start again with whatever comes in next."
+msgstr ""
+
+#: game/npcs/ostra/colonists/courier.tres
+msgid "Courier"
+msgstr ""
+
+#: game/npcs/ostra/colonists/courier.tres
+msgid "Messages for the council, a parcel for the bar, and I'm late for all of them."
+msgstr ""
+
+#: game/npcs/ostra/colonists/courier.tres
+msgid "I walk this station from end to end a dozen times a day. I know every loose deck plate."
+msgstr ""
+
+#: game/npcs/ostra/colonists/courier.tres
+msgid "Can't stop for long, sorry. Someone in the gallery is waiting for this."
+msgstr ""
+
+#: game/npcs/ostra/colonists/courier.tres
+msgid "Messages travel faster by radio, but some things people want to hand over in person."
+msgstr ""
+
+#: game/npcs/ostra/colonists/courier.tres
+msgid "The hangar is the worst part of my route. It's long, and it's always cold."
+msgstr ""
+
+#: game/npcs/ostra/colonists/depot_clerk.tres
+msgid "Depot clerk"
+msgstr ""
+
+#: game/npcs/ostra/colonists/depot_clerk.tres
+msgid "Shelf four, second row: thirty-one air filters. Kade will want that number."
+msgstr ""
+
+#: game/npcs/ostra/colonists/depot_clerk.tres
+msgid "If a crate isn't on my list, it doesn't exist. That's the rule in this depot."
+msgstr ""
+
+#: game/npcs/ostra/colonists/depot_clerk.tres
+msgid "I count everything twice. Then Kade counts it a third time."
+msgstr ""
+
+#: game/npcs/ostra/colonists/depot_clerk.tres
+msgid "The water filter cartridges are running low again. Don't tell anyone, or people start to worry."
+msgstr ""
+
+#: game/npcs/ostra/colonists/depot_clerk.tres
+msgid "The labels on these shelves have been rewritten so often you can barely read them."
+msgstr ""
+
+#: game/npcs/ostra/colonists/dock_hand.tres
+msgid "Dock hand"
+msgstr ""
+
+#: game/npcs/ostra/colonists/dock_hand.tres
+msgid "End of my shift. The crates can wait until tomorrow."
+msgstr ""
+
+#: game/npcs/ostra/colonists/dock_hand.tres
+msgid "Twelve hours on the hangar floor, and Nell still makes me pay for my drink."
+msgstr ""
+
+#: game/npcs/ostra/colonists/dock_hand.tres
+msgid "If you need a hand in the hangar, don't ask me today. Ask me tomorrow."
+msgstr ""
+
+#: game/npcs/ostra/colonists/dock_hand.tres
+msgid "The clamps holding your ship? I greased those myself. You're welcome."
+msgstr ""
+
+#: game/npcs/ostra/colonists/dock_hand.tres
+msgid "The best seat in the bar is right here, closest to the counter."
+msgstr ""
+
+#: game/npcs/ostra/colonists/gardener.tres
+msgid "Hydroponics gardener"
+msgstr ""
+
+#: game/npcs/ostra/colonists/gardener.tres
+msgid "I grow lettuce and beans for the station. Today I'm just looking around. Looking is free."
+msgstr ""
+
+#: game/npcs/ostra/colonists/gardener.tres
+msgid "The beans are doing well this month. The tomatoes, not so much."
+msgstr ""
+
+#: game/npcs/ostra/colonists/gardener.tres
+msgid "Every plant on this station needs light, water and someone talking to it. I'm the one who talks."
+msgstr ""
+
+#: game/npcs/ostra/colonists/gardener.tres
+msgid "We could grow twice as much with more lamps. Lamps need metal, and metal needs crews like yours."
+msgstr ""
+
+#: game/npcs/ostra/colonists/gardener.tres
+msgid "My hands smell of soil all day. Up here, that's the best smell there is."
+msgstr ""
+
+#: game/npcs/ostra/colonists/hauler_pilot.tres
+msgid "Hauler pilot"
+msgstr ""
+
+#: game/npcs/ostra/colonists/hauler_pilot.tres
+msgid "I flew one of the haulers that brought the colony here. Now I just watch the planet below."
+msgstr ""
+
+#: game/npcs/ostra/colonists/hauler_pilot.tres
+msgid "From up here, Torvane looks calm. I know better."
+msgstr ""
+
+#: game/npcs/ostra/colonists/hauler_pilot.tres
+msgid "They took my hauler apart for spare parts. I still come here to look out at space."
+msgstr ""
+
+#: game/npcs/ostra/colonists/hauler_pilot.tres
+msgid "Landing on a planet with a full cargo hold is an art. You crews make it look easy."
+msgstr ""
+
+#: game/npcs/ostra/colonists/hauler_pilot.tres
+msgid "Some nights I count the lights of the ships out there. There are never as many as I'd like."
+msgstr ""
+
+#: game/npcs/ostra/colonists/loader.tres
+msgid "Cargo loader"
+msgstr ""
+
+#: game/npcs/ostra/colonists/loader.tres
+msgid "Mind the crates. If one tips over, I'll be stacking it again until the next shift."
+msgstr ""
+
+#: game/npcs/ostra/colonists/loader.tres
+msgid "These crates go to the depot, those stay here. Don't ask me what's in them."
+msgstr ""
+
+#: game/npcs/ostra/colonists/loader.tres
+msgid "Some days I carry the same crate from one end of the hangar to the other three times."
+msgstr ""
+
+#: game/npcs/ostra/colonists/loader.tres
+msgid "A ship in the hangar means work for us. Good to have you."
+msgstr ""
+
+#: game/npcs/ostra/colonists/loader.tres
+msgid "My back says I've loaded enough crates for one lifetime. My shift lead disagrees."
+msgstr ""
+
+#: game/npcs/ostra/colonists/maintenance_tech.tres
+msgid "Maintenance technician"
+msgstr ""
+
+#: game/npcs/ostra/colonists/maintenance_tech.tres
+msgid "This light has been flickering for a week. Today it's my turn to fix it."
+msgstr ""
+
+#: game/npcs/ostra/colonists/maintenance_tech.tres
+msgid "Don't touch that panel. It's the only thing keeping the air in this hall warm."
+msgstr ""
+
+#: game/npcs/ostra/colonists/maintenance_tech.tres
+msgid "Half the station runs on spare parts from the first haulers."
+msgstr ""
+
+#: game/npcs/ostra/colonists/maintenance_tech.tres
+msgid "If you hear a hiss, walk away calmly and tell someone. Usually it's nothing."
+msgstr ""
+
+#: game/npcs/ostra/colonists/maintenance_tech.tres
+msgid "The air recyclers need new filters again. They always need new filters."
+msgstr ""
+
+#: game/npcs/ostra/colonists/mechanic.tres
+msgid "Mechanic"
+msgstr ""
+
+#: game/npcs/ostra/colonists/mechanic.tres
+msgid "Bring me anything with a cracked casing, and I'll have it working again by tomorrow. Most of it, anyway."
+msgstr ""
+
+#: game/npcs/ostra/colonists/mechanic.tres
+msgid "Air filters, lamps, water pumps: whatever breaks on this station ends up on my counter sooner or later."
+msgstr ""
+
+#: game/npcs/ostra/colonists/mechanic.tres
+msgid "Half of what I fix here was never meant to last this long. Neither were we, I suppose."
+msgstr ""
+
+#: game/npcs/ostra/colonists/mechanic.tres
+msgid "I'd give a lot for a crate of new circuit boards. I've been soldering the same old ones for years."
+msgstr ""
+
+#: game/npcs/ostra/colonists/mechanic.tres
+msgid "Your suit looks like it's seen some hard work. Keep it out of my queue if you can. It's long enough already."
+msgstr ""
+
+#: game/npcs/ostra/colonists/teacher.tres
+msgid "Teacher"
+msgstr ""
+
+#: game/npcs/ostra/colonists/teacher.tres
+msgid "I bring the children here to show them the planet below. They always ask when we'll live down there."
+msgstr ""
+
+#: game/npcs/ostra/colonists/teacher.tres
+msgid "Today's lesson was about the planets of this system. The children know their names better than I do."
+msgstr ""
+
+#: game/npcs/ostra/colonists/teacher.tres
+msgid "Twelve children in my class, and every one of them wants to be a prospector."
+msgstr ""
+
+#: game/npcs/ostra/colonists/teacher.tres
+msgid "I'm just walking off a long day. A classroom on a station is never quiet."
+msgstr ""
+
+#: game/npcs/ostra/colonists/teacher.tres
+msgid "If you have a story from down there, the children would love to hear it. Keep the scary parts short."
 msgstr ""
 
 #: game/npcs/ostra/councillor.tres
@@ -567,26 +787,6 @@ msgstr ""
 msgid "But I like to know the people who bring the ore up. So come by whenever you're docked, even if it's only to talk."
 msgstr ""
 
-#: game/npcs/ostra/dock_hand.tres
-msgid "Dock hand"
-msgstr ""
-
-#: game/npcs/ostra/dock_hand.tres
-msgid "Careful, that crate is heavier than it looks."
-msgstr ""
-
-#: game/npcs/ostra/dock_hand.tres
-msgid "Your ship's clamped in tight. It's not going anywhere until you say so."
-msgstr ""
-
-#: game/npcs/ostra/dock_hand.tres
-msgid "Every crate on this deck gets counted twice. Kade insists."
-msgstr ""
-
-#: game/npcs/ostra/dock_hand.tres
-msgid "I've loaded more haulers than I can count, and I still haven't been down to a planet."
-msgstr ""
-
 #: game/npcs/ostra/rival_captain.tres
 msgid "Prospector captain"
 msgstr ""
@@ -649,46 +849,6 @@ msgstr ""
 
 #: game/npcs/ostra/rival_captain.tres
 msgid "We'll see how long you last out there. If you're still flying in a few months, I'll buy you a drink."
-msgstr ""
-
-#: game/npcs/ostra/technician.tres
-msgid "Technician"
-msgstr ""
-
-#: game/npcs/ostra/technician.tres
-msgid "Don't touch that panel. It's the only thing keeping the air in this section warm."
-msgstr ""
-
-#: game/npcs/ostra/technician.tres
-msgid "Half the station runs on spare parts from the first haulers."
-msgstr ""
-
-#: game/npcs/ostra/technician.tres
-msgid "If you hear a hiss, walk away calmly and tell someone. Usually it's nothing."
-msgstr ""
-
-#: game/npcs/ostra/technician.tres
-msgid "The air recyclers need new filters again. They always need new filters."
-msgstr ""
-
-#: game/npcs/ostra/trader.tres
-msgid "Trader"
-msgstr ""
-
-#: game/npcs/ostra/trader.tres
-msgid "Nothing for sale today, I'm afraid. Everything here is already promised to someone."
-msgstr ""
-
-#: game/npcs/ostra/trader.tres
-msgid "I used to sell spare parts. Now I mostly fix the ones people bring me."
-msgstr ""
-
-#: game/npcs/ostra/trader.tres
-msgid "Ore is the only thing anyone wants to trade for these days."
-msgstr ""
-
-#: game/npcs/ostra/trader.tres
-msgid "Quiet day. They're all quiet days lately."
 msgstr ""
 
 #: game/npcs/talk_card.gd

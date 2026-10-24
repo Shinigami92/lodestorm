@@ -7,13 +7,19 @@
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="npc"]
 [ext_resource type="PackedScene" uid="uid://bftkdc44jxkuq" path="res://game/npcs/colonist.tscn" id="colonist"]
 [ext_resource type="Resource" uid="uid://b26e8fg578g0j" path="res://game/npcs/ostra/bartender.tres" id="profile_bartender"]
-[ext_resource type="Resource" uid="uid://btbcyyfbdyfhi" path="res://game/npcs/ostra/colonist.tres" id="profile_colonist"]
 [ext_resource type="Resource" uid="uid://dfmrx0ergdctx" path="res://game/npcs/ostra/councillor.tres" id="profile_councillor"]
 [ext_resource type="Resource" uid="uid://dv66pnlem07ra" path="res://game/npcs/ostra/depot_master.tres" id="profile_depot_master"]
-[ext_resource type="Resource" uid="uid://ibao3nllkm7s" path="res://game/npcs/ostra/dock_hand.tres" id="profile_dock_hand"]
 [ext_resource type="Resource" uid="uid://bdefd2epo835b" path="res://game/npcs/ostra/rival_captain.tres" id="profile_rival_captain"]
-[ext_resource type="Resource" uid="uid://ce5m7h4ibphnx" path="res://game/npcs/ostra/technician.tres" id="profile_technician"]
-[ext_resource type="Resource" uid="uid://bjfgte4uxm0mw" path="res://game/npcs/ostra/trader.tres" id="profile_trader"]
+[ext_resource type="Resource" uid="uid://dqf2s5mudvnob" path="res://game/npcs/ostra/colonists/barter_trader.tres" id="colonist_barter_trader"]
+[ext_resource type="Resource" uid="uid://bjo8884ih46qf" path="res://game/npcs/ostra/colonists/courier.tres" id="colonist_courier"]
+[ext_resource type="Resource" uid="uid://qlh6ghisk4lw" path="res://game/npcs/ostra/colonists/depot_clerk.tres" id="colonist_depot_clerk"]
+[ext_resource type="Resource" uid="uid://bla2n4vf7xlbf" path="res://game/npcs/ostra/colonists/dock_hand.tres" id="colonist_dock_hand"]
+[ext_resource type="Resource" uid="uid://bo8fw66fpg2v2" path="res://game/npcs/ostra/colonists/gardener.tres" id="colonist_gardener"]
+[ext_resource type="Resource" uid="uid://cjyrfsywh7kon" path="res://game/npcs/ostra/colonists/hauler_pilot.tres" id="colonist_hauler_pilot"]
+[ext_resource type="Resource" uid="uid://b2xwvv3m4sjhe" path="res://game/npcs/ostra/colonists/loader.tres" id="colonist_loader"]
+[ext_resource type="Resource" uid="uid://ttvj3w8ua1s8" path="res://game/npcs/ostra/colonists/maintenance_tech.tres" id="colonist_maintenance_tech"]
+[ext_resource type="Resource" uid="uid://s47471xvuxr4" path="res://game/npcs/ostra/colonists/mechanic.tres" id="colonist_mechanic"]
+[ext_resource type="Resource" uid="uid://41nodk7mv013" path="res://game/npcs/ostra/colonists/teacher.tres" id="colonist_teacher"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wall"]
 albedo_color = Color(0.33, 0.31, 0.29, 1)
@@ -1518,59 +1524,59 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110.2, 0.45, -19.5)
 mesh = SubResource("BoxMesh_0_6x0_9x0_6")
 
 [node name="BarCounterShape" type="CollisionShape3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 87, 0.55, 20)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 0.55, 20)
 shape = SubResource("BoxShape3D_0_9x1_1x9")
 
 [node name="BarCounter" type="MeshInstance3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 87, 0.55, 20)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 0.55, 20)
 mesh = SubResource("BoxMesh_0_9x1_1x9")
 
 [node name="BoothTable1Shape" type="CollisionShape3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.375, 16.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 16.5)
 shape = SubResource("BoxShape3D_1_6x0_75x1_2")
 
 [node name="BoothTable1" type="MeshInstance3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.375, 16.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 16.5)
 mesh = SubResource("BoxMesh_1_6x0_75x1_2")
 
 [node name="BoothBench1BackShape" type="CollisionShape3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.55, 15.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 15.2)
 shape = SubResource("BoxShape3D_1_8x1_1x0_6")
 
 [node name="BoothBench1Back" type="MeshInstance3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.55, 15.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 15.2)
 mesh = SubResource("BoxMesh_1_8x1_1x0_6")
 
 [node name="BoothBench1FrontShape" type="CollisionShape3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.55, 17.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 17.8)
 shape = SubResource("BoxShape3D_1_8x1_1x0_6")
 
 [node name="BoothBench1Front" type="MeshInstance3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.55, 17.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 17.8)
 mesh = SubResource("BoxMesh_1_8x1_1x0_6")
 
 [node name="BoothTable2Shape" type="CollisionShape3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.375, 23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 23)
 shape = SubResource("BoxShape3D_1_6x0_75x1_2")
 
 [node name="BoothTable2" type="MeshInstance3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.375, 23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 23)
 mesh = SubResource("BoxMesh_1_6x0_75x1_2")
 
 [node name="BoothBench2BackShape" type="CollisionShape3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.55, 21.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 21.7)
 shape = SubResource("BoxShape3D_1_8x1_1x0_6")
 
 [node name="BoothBench2Back" type="MeshInstance3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.55, 21.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 21.7)
 mesh = SubResource("BoxMesh_1_8x1_1x0_6")
 
 [node name="BoothBench2FrontShape" type="CollisionShape3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.55, 24.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 24.3)
 shape = SubResource("BoxShape3D_1_8x1_1x0_6")
 
 [node name="BoothBench2Front" type="MeshInstance3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 0.55, 24.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 24.3)
 mesh = SubResource("BoxMesh_1_8x1_1x0_6")
 
 [node name="Stall1Shape" type="CollisionShape3D" parent="Walls"]
@@ -2511,7 +2517,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.5, 0, -25.3)
 profile = ExtResource("profile_councillor")
 
 [node name="Nell" parent="People" instance=ExtResource("npc")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 88, 0, 20)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 58, 0, 20)
 profile = ExtResource("profile_bartender")
 
 [node name="Use" parent="People/Nell"]
@@ -2523,60 +2529,60 @@ footprint = Vector2(9, 1.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.7)
 
 [node name="Rook" parent="People" instance=ExtResource("npc")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 60.8, 0, 23)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 86.2, 0, 23)
 profile = ExtResource("profile_rival_captain")
 
-[node name="Trader1" parent="People" instance=ExtResource("colonist")]
+[node name="Mechanic" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 16.4)
-profile = ExtResource("profile_trader")
+profile = ExtResource("colonist_mechanic")
 tint = Color(0.95, 0.9, 0.8, 1)
 
-[node name="Trader2" parent="People" instance=ExtResource("colonist")]
+[node name="BarterTrader" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0, 16.4)
-profile = ExtResource("profile_trader")
+profile = ExtResource("colonist_barter_trader")
 tint = Color(0.8, 0.85, 0.95, 1)
 
-[node name="Shopper" parent="People" instance=ExtResource("colonist")]
+[node name="Gardener" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 110, 0, 19.4)
-profile = ExtResource("profile_colonist")
-tint = Color(1, 0.92, 0.85, 1)
+profile = ExtResource("colonist_gardener")
+tint = Color(0.9, 1, 0.85, 1)
 
-[node name="Drinker" parent="People" instance=ExtResource("colonist")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 85.6, 0, 24)
-profile = ExtResource("profile_dock_hand")
+[node name="DockHand" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 60.4, 0, 24)
+profile = ExtResource("colonist_dock_hand")
 tint = Color(0.9, 0.95, 1, 1)
 
-[node name="Watcher" parent="People" instance=ExtResource("colonist")]
+[node name="HaulerPilot" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 148, 0, -25.4)
-profile = ExtResource("profile_colonist")
+profile = ExtResource("colonist_hauler_pilot")
 tint = Color(0.85, 0.9, 1, 1)
 
-[node name="Stocktaker" parent="People" instance=ExtResource("colonist")]
+[node name="DepotClerk" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 86, 0, -24.9)
-profile = ExtResource("profile_technician")
+profile = ExtResource("colonist_depot_clerk")
 tint = Color(1, 1, 1, 1)
 
 [node name="Loader" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 28, 0, -21)
-profile = ExtResource("profile_dock_hand")
+profile = ExtResource("colonist_loader")
 tint = Color(1, 0.95, 0.85, 1)
 route = PackedVector3Array(48, 0, -21, 28, 0, -21)
 
-[node name="Walker" parent="People" instance=ExtResource("colonist")]
+[node name="Courier" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 36, 0, 2)
-profile = ExtResource("profile_colonist")
+profile = ExtResource("colonist_courier")
 tint = Color(0.95, 1, 0.95, 1)
 route = PackedVector3Array(140, 0, 2, 36, 0, 2)
 
-[node name="Fixer" parent="People" instance=ExtResource("colonist")]
+[node name="MaintenanceTech" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 80, 0, -8)
-profile = ExtResource("profile_technician")
+profile = ExtResource("colonist_maintenance_tech")
 tint = Color(0.9, 0.9, 1, 1)
 route = PackedVector3Array(112, 0, -8, 80, 0, -8)
 
-[node name="Stroller" parent="People" instance=ExtResource("colonist")]
+[node name="Teacher" parent="People" instance=ExtResource("colonist")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 134, 0, -14)
-profile = ExtResource("profile_colonist")
+profile = ExtResource("colonist_teacher")
 tint = Color(1, 0.9, 0.95, 1)
 route = PackedVector3Array(164, 0, -14, 164, 0, 14, 134, 0, 14, 134, 0, -14)
 

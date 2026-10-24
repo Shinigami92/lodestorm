@@ -4,8 +4,8 @@ extends Node3D
 ## `NpcBody` that `profile` says (a role on the plate, no name), standing at its spot or walking
 ## its `route` round and round, with a short stop at every waypoint. It stops while a player is
 ## close (turning towards them, like the crew) instead of walking into them. When a player stops
-## next to it, it says one of its profile's `remarks` in a speech bubble for a while; the next one
-## comes once that player has walked off and come back. The bubble grows with the camera's view,
+## next to it, it says one of its profile's `remarks` in a speech bubble, which stays until they
+## walk off; the next one comes when a player comes back. The bubble grows with the camera's view,
 ## so it reads like a crew member's while talking to them. No talking (it's no station).
 
 ## Walking speed, in m/s.
@@ -18,8 +18,9 @@ const TURN_SPEED: float = 4.0
 const REMARK_RANGE: float = 2.0
 ## How slow (in m/s) a player close by must be to count as stopping there.
 const STILL_SPEED: float = 0.5
-## How long a remark shows, in s.
-const REMARK_TIME: float = 4.0
+## How far (in m) the player has to walk off for the remark to end (a little farther than
+## `REMARK_RANGE`, so it doesn't flicker at the edge).
+const LEAVE_RANGE: float = 2.6
 ## The camera's visible height (in m) the bubble is sized for: the view while talking to the crew
 ## (`Npc`'s `view_height`). Wider views scale it up.
 const BUBBLE_VIEW_HEIGHT: float = 3.2
@@ -37,9 +38,6 @@ var next: int = 0
 
 var _stop_left: float = 0.0
 var _remark: int = 0
-var _remark_left: float = 0.0
-## Whether it has said a remark to the player close by (cleared once nobody is).
-var _remarked: bool = false
 
 @onready var body: NpcBody = $Body
 @onready var bubble: WorldPanel = $Bubble
@@ -55,7 +53,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_walk(delta, Player.nearest(get_tree(), global_position, NpcBody.NOTICE_RANGE) == null)
-	_listen(delta)
+	_listen()
 
 
 func _process(_delta: float) -> void:
@@ -83,8 +81,6 @@ func remark() -> void:
 	if speech:
 		speech.show_line(tr(profile.remarks[_remark]))
 	_remark = (_remark + 1) % profile.remarks.size()
-	_remark_left = REMARK_TIME
-	_remarked = true
 	bubble.visible = true
 
 
@@ -119,16 +115,11 @@ func _walk(delta: float, free: bool) -> void:
 	body.walk(WALK_SPEED)
 
 
-## Says a remark to a player who stops close by (once until they leave), and hides it after a
-## while.
-func _listen(delta: float) -> void:
-	if _remark_left > 0.0:
-		_remark_left -= delta
-		if _remark_left <= 0.0:
-			bubble.visible = false
-	var near: Player = Player.nearest(get_tree(), global_position, REMARK_RANGE)
-	if not near:
-		_remarked = false
+## Says a remark to a player who stops close by, until every player has walked off.
+func _listen() -> void:
+	if bubble.visible:
+		bubble.visible = Player.nearest(get_tree(), global_position, LEAVE_RANGE) != null
 		return
-	if not _remarked and near.velocity.length() <= STILL_SPEED:
+	var near: Player = Player.nearest(get_tree(), global_position, REMARK_RANGE)
+	if near and near.velocity.length() <= STILL_SPEED:
 		remark()

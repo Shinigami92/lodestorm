@@ -39,13 +39,13 @@ func test_named_npcs_stand_at_their_places() -> void:
 		assert_eq(npc.ship, _ship, who + " tells the docked ship's story")
 	# Facing the room: the depot master towards the camera, the bartender across the counter.
 	assert_almost_eq(_facing("Kade"), Vector3.BACK, Vector3.ONE * 0.01)
-	assert_almost_eq(_facing("Nell"), Vector3.LEFT, Vector3.ONE * 0.01)
-	assert_almost_eq(_facing("Rook"), Vector3.RIGHT, Vector3.ONE * 0.01)
+	assert_almost_eq(_facing("Nell"), Vector3.RIGHT, Vector3.ONE * 0.01)
+	assert_almost_eq(_facing("Rook"), Vector3.LEFT, Vector3.ONE * 0.01)
 	# The bartender is talked to across the counter.
 	var nell := _station.get_node("People/Nell") as Npc
-	var front: Vector3 = nell.global_position + _station.global_basis * Vector3(-1.4, 0.0, 1.5)
+	var front: Vector3 = nell.global_position + _station.global_basis * Vector3(1.4, 0.0, 1.5)
 	assert_eq(Interactable.nearest(get_tree(), front), nell.use_point)
-	var away: Vector3 = front - _station.global_basis.x * 1.5
+	var away: Vector3 = front + _station.global_basis.x * 1.5
 	assert_null(Interactable.nearest(get_tree(), away), "close to the counter only")
 
 
@@ -118,13 +118,31 @@ func test_a_long_topic_list_scrolls() -> void:
 
 
 func test_colonists_show_their_role_only() -> void:
-	var trader := _station.get_node("People/Trader1") as Colonist
-	assert_eq(trader.body.get_plate_text(), "Trader")
-	assert_true(trader.route.is_empty(), "stands at the stall")
+	var mechanic := _station.get_node("People/Mechanic") as Colonist
+	assert_eq(mechanic.body.get_plate_text(), "Mechanic")
+	assert_true(mechanic.route.is_empty(), "stands at the stall")
+
+
+## Every colonist has a profile of their own, and no two say the same.
+func test_every_colonist_says_their_own_remarks() -> void:
+	var said: Dictionary[String, String] = {}
+	var profiles: Array[NpcProfile] = []
+	for person: Node in _station.get_node("People").get_children():
+		var colonist := person as Colonist
+		if not colonist:
+			continue
+		assert_does_not_have(profiles, colonist.profile, colonist.name + " has their own profile")
+		profiles.append(colonist.profile)
+		assert_gte(colonist.profile.remarks.size(), 4, colonist.name)
+		for remark: String in colonist.profile.remarks:
+			assert_false(
+				said.has(remark), "%s and %s: %s" % [said.get(remark), colonist.name, remark]
+			)
+			said[remark] = colonist.name
 
 
 func test_walkers_walk_their_route_and_wait_for_players() -> void:
-	var walker := _station.get_node("People/Walker") as Colonist
+	var walker := _station.get_node("People/Courier") as Colonist
 	_player.global_position = walker.global_position + Vector3(0.0, 0.0, 20.0)
 	var start: Vector3 = walker.position
 	await wait_physics_frames(30)
@@ -153,23 +171,26 @@ func test_waypoints_loop_with_a_stop() -> void:
 	assert_true(loader.is_walking())
 
 
-func test_a_colonist_remarks_when_a_player_stops_close() -> void:
-	var shopper := _station.get_node("People/Shopper") as Colonist
-	var remarks: Array[String] = shopper.profile.remarks
-	_player.global_position = shopper.global_position + Vector3(0.0, 0.0, 10.0)
+func test_a_colonist_remarks_while_a_player_stays_close() -> void:
+	var gardener := _station.get_node("People/Gardener") as Colonist
+	var remarks: Array[String] = gardener.profile.remarks
+	_player.global_position = gardener.global_position + Vector3(0.0, 0.0, 10.0)
 	await wait_physics_frames(2)
-	assert_eq(shopper.get_remark(), "")
-	_player.global_position = shopper.global_position + Vector3(0.0, 0.0, 1.5)
+	assert_eq(gardener.get_remark(), "")
+	_player.global_position = gardener.global_position + Vector3(0.0, 0.0, 1.5)
 	await wait_physics_frames(2)
-	assert_eq(shopper.get_remark(), remarks[0])
-	var shown: int = ceili(Colonist.REMARK_TIME * Engine.physics_ticks_per_second)
-	await wait_physics_frames(shown + 2)
-	assert_eq(shopper.get_remark(), "", "fades after a while, and no new one while they stay")
-	_player.global_position = shopper.global_position + Vector3(0.0, 0.0, 10.0)
+	assert_eq(gardener.get_remark(), remarks[0])
+	await wait_physics_frames(600)
+	assert_eq(gardener.get_remark(), remarks[0], "stays while the player does")
+	_player.global_position = gardener.global_position + Vector3(0.0, 0.0, 2.3)
 	await wait_physics_frames(2)
-	_player.global_position = shopper.global_position + Vector3(0.0, 0.0, 1.5)
+	assert_eq(gardener.get_remark(), remarks[0], "a step back doesn't end it")
+	_player.global_position = gardener.global_position + Vector3(0.0, 0.0, 10.0)
 	await wait_physics_frames(2)
-	assert_eq(shopper.get_remark(), remarks[1], "the next one after coming back")
+	assert_eq(gardener.get_remark(), "", "ends once the player has walked off")
+	_player.global_position = gardener.global_position + Vector3(0.0, 0.0, 1.5)
+	await wait_physics_frames(2)
+	assert_eq(gardener.get_remark(), remarks[1], "the next one after coming back")
 
 
 ## Where an NPC faces, in the station's axes.

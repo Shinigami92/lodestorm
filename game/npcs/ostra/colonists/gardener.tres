@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://bo8fw66fpg2v2"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = &"gardener"
+role = "Hydroponics gardener"
+accent_color = Color(0.45, 0.55, 0.6, 1)
+suit_tint = Color(0.64, 0.6, 0.58, 1)
+remarks = Array[String](["I grow lettuce and beans for the station. Today I'm just looking around. Looking is free.", "The beans are doing well this month. The tomatoes, not so much.", "Every plant on this station needs light, water and someone talking to it. I'm the one who talks.", "We could grow twice as much with more lamps. Lamps need metal, and metal needs crews like yours.", "My hands smell of soil all day. Up here, that's the best smell there is."])

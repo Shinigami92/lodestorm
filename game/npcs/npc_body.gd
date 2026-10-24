@@ -41,6 +41,7 @@ var plate_allowed: bool = true
 
 func _ready() -> void:
 	_animator.aiming = false
+	_animator.walks = true
 	_animator.setup(_model)
 	_dress()
 	_plate.visible = false

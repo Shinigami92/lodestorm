@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://41nodk7mv013"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = &"teacher"
+role = "Teacher"
+accent_color = Color(0.45, 0.55, 0.6, 1)
+suit_tint = Color(0.64, 0.6, 0.58, 1)
+remarks = Array[String](["I bring the children here to show them the planet below. They always ask when we'll live down there.", "Today's lesson was about the planets of this system. The children know their names better than I do.", "Twelve children in my class, and every one of them wants to be a prospector.", "I'm just walking off a long day. A classroom on a station is never quiet.", "If you have a story from down there, the children would love to hear it. Keep the scary parts short."])

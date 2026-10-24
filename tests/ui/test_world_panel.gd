@@ -58,6 +58,8 @@ func test_movement_and_interact_steer_the_menu() -> void:
 	_send(&"move_back")
 	assert_eq(_focused().get_parent().name, &"VoiceLanguages", "the voice languages")
 	_send(&"move_back")
+	assert_eq(_focused().name, &"AutoContinue", "continuing talks by themselves")
+	_send(&"move_back")
 	assert_eq(_focused().get_parent().name, &"RingSizes", "the suit ring's sizes")
 	for step: int in 3:
 		if _focused().name != &"AlwaysShow":

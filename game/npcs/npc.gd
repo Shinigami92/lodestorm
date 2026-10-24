@@ -12,6 +12,10 @@ extends Station
 ## The greeting plays by itself the first time. Up and down pick a topic, `interact` plays it (or
 ## the next line), `pause` steps back from a topic to the list and closes from there. What's been
 ## heard is a flag in the ship's `Story`.
+## With "Continue by itself" on (`GameSettings.dialogue_auto_continue`), a topic's line moves on
+## by itself: a voiced one `AUTO_PAUSE` s after the voice ends, one without a voice after its
+## reading time (`reading_time`); after the last line the list comes back. The card's "Continue"
+## fills up meanwhile; pressing it still moves on at once.
 
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
 ## player, at this height, so the card on their right stays in view.
@@ -21,6 +25,12 @@ const FOCUS_HEIGHT: float = 1.3
 ## `VOICE_MAX_DISTANCE` m. TBD (playtest).
 const VOICE_UNIT_SIZE: float = 6.0
 const VOICE_MAX_DISTANCE: float = 30.0
+## Auto-continue: the pause after a voiced line ends, and how long a line without a voice stays
+## (`READ_BASE` s plus `READ_PER_LETTER` s per letter of the shown text, a calm reading speed), in
+## s. TBD (playtest).
+const AUTO_PAUSE: float = 1.0
+const READ_BASE: float = 2.0
+const READ_PER_LETTER: float = 0.06
 
 ## Who they are and what they talk about.
 @export var profile: NpcProfile
@@ -37,6 +47,10 @@ var voice: AudioStreamPlayer3D
 ## Used without a ship (e.g. tests of a lone NPC).
 var _own_story := Story.new()
 var _new_marker_time: float = 0.0
+## How long the line shown waits before it moves on by itself (0: it doesn't), and for how long it
+## has waited.
+var _line_time: float = 0.0
+var _line_waited: float = 0.0
 
 @onready var bubble: WorldPanel = $Bubble
 @onready var body: NpcBody = $Body
@@ -67,6 +81,7 @@ func _process(delta: float) -> void:
 		_new_marker.position.y = NpcBody.HEAD_HEIGHT + 0.5 + 0.04 * sin(_new_marker_time * 3.0)
 	if user:
 		_place_bubble()
+		_auto_continue(delta)
 
 
 ## The story the topics heard go into: the ship's.
@@ -130,6 +145,19 @@ func get_line() -> String:
 	if topic:
 		return tr(topic.lines[line]) if line < topic.lines.size() else ""
 	return tr(profile.dialogue.prompt) if profile and profile.dialogue else ""
+
+
+## How far the line shown is towards moving on by itself (0..1), or -1 when it won't (no topic
+## told, or auto-continue off).
+func get_auto_progress() -> float:
+	if not topic or _line_time <= 0.0 or not GameSettings.dialogue_auto_continue:
+		return -1.0
+	return clampf(_line_waited / _line_time, 0.0, 1.0)
+
+
+## How long `text` (a shown line) stays when it moves on by itself without a voice, in s.
+static func reading_time(text: String) -> float:
+	return READ_BASE + READ_PER_LETTER * text.length()
 
 
 ## Starts telling `told` from its first line.
@@ -236,19 +264,40 @@ func _show() -> void:
 		speech.show_line(get_line())
 
 
-## Speaks the topic's line shown, or stops when the list is back.
+## Speaks the topic's line shown, or stops when the list is back; starts the line's wait for
+## moving on by itself (its voice and `AUTO_PAUSE`, else its `reading_time`).
 func _speak() -> void:
-	_say(topic.lines[line] if topic and line < topic.lines.size() else "")
+	var told: bool = topic != null and line < topic.lines.size()
+	var recording: AudioStream = _say(topic.lines[line] if told else "")
+	_line_waited = 0.0
+	_line_time = 0.0
+	if told:
+		_line_time = (
+			recording.get_length() + AUTO_PAUSE if recording else reading_time(get_line())
+		)
 
 
 ## Speaks `english` (a line's English text) in their voice, stopping what they said before; just
-## stops without a recording of it.
-func _say(english: String) -> void:
+## stops without a recording of it. Returns the recording, or null.
+func _say(english: String) -> AudioStream:
 	voice.stop()
 	var recording: AudioStream = VoiceLines.stream(profile.id, english) if profile else null
 	if recording:
 		voice.stream = recording
 		voice.play()
+	return recording
+
+
+## Moves the topic on by itself once the line shown has waited long enough (with auto-continue
+## on), and shows how far it is on the card.
+func _auto_continue(delta: float) -> void:
+	if get_auto_progress() >= 0.0:
+		_line_waited += delta
+		if _line_waited >= _line_time:
+			advance()
+	var card_shown := card_menu as TalkCard
+	if card_shown:
+		card_shown.show_progress(get_auto_progress())
 
 
 ## Who the "something new" marker is for: the player talking to them, else the nearest one.

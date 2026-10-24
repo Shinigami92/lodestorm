@@ -1913,6 +1913,14 @@ msgid "Off"
 msgstr ""
 
 #: game/ui/settings_list.tscn
+msgid "Dialogue"
+msgstr ""
+
+#: game/ui/settings_list.tscn
+msgid "Continue by itself"
+msgstr ""
+
+#: game/ui/settings_list.tscn
 msgid "Suit ring"
 msgstr ""
 

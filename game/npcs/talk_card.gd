@@ -5,7 +5,8 @@ extends StationCard
 ## topic is told its title, how far it is ("2 / 3") and "Continue" ("Done" on the last line) and
 ## "Back". The button `interact` presses has an amber frame (not the focus, see `LoadoutCard`).
 ## Past `MAX_ROWS` entries the list scrolls, keeping the framed one in view (an NPC with many
-## topics, like the bartender's rumors about every planet).
+## topics, like the bartender's rumors about every planet). With auto-continue on, an amber bar
+## along the bottom of "Continue" fills until the line moves on by itself (`show_progress`).
 
 ## Button states framed amber on the selected button.
 const SELECTED_STATES: Array[StringName] = [
@@ -15,10 +16,16 @@ const SELECTED_STATES: Array[StringName] = [
 const NEW_DOT: String = "●  "
 ## The most entries the list shows at once; more scroll.
 const MAX_ROWS: int = 7
+## Height of the auto-continue bar and its inset from the button's edges (inside the amber
+## frame), in px.
+const PROGRESS_HEIGHT: float = 7.0
+const PROGRESS_INSET: float = 7.0
 
 var _buttons: Array[Button] = []
 ## The amber-framed styles of the selected button, per state.
 var _selected_styles: Dictionary[StringName, StyleBox] = {}
+## The auto-continue bar along the bottom of the first button (made when first shown).
+var _progress_bar: ColorRect
 
 @onready var _name: Label = %Name
 @onready var _role: Label = %Role
@@ -53,6 +60,32 @@ func show_part(part: StationPart) -> void:
 	texts.append(tr("Goodbye"))
 	new.append(false)
 	_show_buttons(texts, new, npc.choice)
+
+
+## Shows how far the line is towards moving on by itself (0..1) as the bar on "Continue"; hides it
+## when below 0.
+func show_progress(fraction: float) -> void:
+	var shown: bool = fraction >= 0.0 and not _buttons.is_empty()
+	if _progress_bar:
+		_progress_bar.visible = shown
+	if not shown:
+		return
+	var button: Button = _buttons[0]
+	if not _progress_bar:
+		_progress_bar = ColorRect.new()
+		_progress_bar.name = "AutoContinue"
+		_progress_bar.color = CardPalette.STATUS
+		_progress_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(_progress_bar)
+	_progress_bar.position = Vector2(
+		PROGRESS_INSET, button.size.y - PROGRESS_INSET - PROGRESS_HEIGHT
+	)
+	_progress_bar.size = Vector2((button.size.x - PROGRESS_INSET * 2.0) * fraction, PROGRESS_HEIGHT)
+
+
+## The auto-continue bar (for tests and probes), or null before it first showed.
+func get_progress_bar() -> ColorRect:
+	return _progress_bar
 
 
 func press_primary() -> bool:

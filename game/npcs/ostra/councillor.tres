@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://dfmrx0ergdctx"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"councillor.greeting"
+title = "Hello"
+lines = Array[String](["Welcome to Waypost Ostra. I'm Selin, and I speak for the colony's council. We're glad to have another prospecting crew in the system.", "This station is the heart of the colony. Our people live here, the council meets here, and every supply run ends here.", "Look around and talk to people. If you have questions about the colony or the council, come and see me."])
+
+[sub_resource type="Resource" id="Resource_council"]
+script = ExtResource("3_topic")
+id = &"councillor.council"
+title = "The council"
+lines = Array[String](["The council is a handful of people the colonists chose to make the hard decisions: who gets which supplies, which repairs come first and which crews we work with.", "We meet at this table. It's the only one on the station that's big enough, so every argument ends up here too.", "We don't always agree, but every decision is made in the open. Anyone on the station can come and listen."])
+requires = Array[StringName]([&"councillor.greeting"])
+
+[sub_resource type="Resource" id="Resource_torvane"]
+script = ExtResource("3_topic")
+id = &"councillor.torvane"
+title = "Torvane"
+lines = Array[String](["The planet below us is Torvane. The colony's first landing sites were down there, so it's the planet we know best.", "There are dry dust flats and a wide swamp full of giant growth. The hive is everywhere, but on Torvane it's at its weakest.", "If you want to see it, go to the observation gallery at the far end of the station. The view from there is worth the walk."])
+requires = Array[StringName]([&"councillor.greeting"])
+
+[sub_resource type="Resource" id="Resource_selin"]
+script = ExtResource("3_topic")
+id = &"councillor.selin"
+title = "About Selin"
+lines = Array[String](["I was among the first to come here, back when this station was little more than a docking ring and a few modules.", "Back then, we thought we'd be able to support ourselves within a few years. That turned out to be a lot harder than any of us expected.", "People say I'm too careful with my words. Maybe they're right. But on a station this small, a careless word travels fast."])
+requires = Array[StringName]([&"councillor.greeting"])
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_council"), SubResource("Resource_torvane"), SubResource("Resource_selin")])
+
+[resource]
+script = ExtResource("1_profile")
+id = &"councillor"
+display_name = "Selin"
+role = "Council member"
+accent_color = Color(0.55, 0.95, 0.8, 1)
+suit_tint = Color(0.7, 0.72, 0.76, 1)
+dialogue = SubResource("Resource_dialogue")

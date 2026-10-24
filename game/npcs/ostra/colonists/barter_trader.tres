@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://dqf2s5mudvnob"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = &"barter_trader"
+role = "Barter trader"
+accent_color = Color(0.45, 0.55, 0.6, 1)
+suit_tint = Color(0.64, 0.6, 0.58, 1)
+remarks = Array[String](["I don't sell anything. People bring what they can spare, and I find someone who needs it.", "Two pairs of boots for a water heater. That was a good morning.", "Everyone here owes everyone something. I just keep track of who owes whom.", "The best things to trade are the small ones: needles, batteries, seeds. Nobody ever has enough of them.", "Some days this stall is empty within an hour. Then I start again with whatever comes in next."])

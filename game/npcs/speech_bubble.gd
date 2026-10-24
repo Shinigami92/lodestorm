@@ -5,6 +5,8 @@ extends Control
 ## to the bottom of its screen and takes only the height the line needs, so the tail stays just
 ## above the speaker's head. The whole line shows at once (no typing out).
 
+## Gap between the head and the tail, in m.
+const HEAD_GAP: float = 0.05
 ## Width of the tail where it meets the panel, in px of the layout (its height is `%Tail`'s).
 const TAIL_WIDTH: float = 44.0
 
@@ -16,6 +18,19 @@ const TAIL_WIDTH: float = 44.0
 
 func _ready() -> void:
 	_tail.draw.connect(_draw_tail)
+
+
+## Keeps `panel` (a bubble's) above `head` (the top of the speaker's head), facing the camera,
+## `factor` times its size; unchanged without a camera.
+static func place(panel: WorldPanel, head: Vector3, factor: float = 1.0) -> void:
+	var camera: Camera3D = panel.get_viewport().get_camera_3d()
+	if not camera:
+		return
+	var view: Basis = camera.global_basis.orthonormalized()
+	var lift: float = panel.size.y * 0.5 * factor + HEAD_GAP
+	panel.global_transform = Transform3D(
+		view.scaled_local(Vector3.ONE * factor), head + view.y * lift
+	)
 
 
 ## Shows `text` (already translated).

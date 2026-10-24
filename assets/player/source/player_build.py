@@ -19,7 +19,8 @@ mesh, skinned: each part weighted to its nearest bone, blended across the joints
 "CargoRack" and "HosePort" (UpperChest, on the backpack).
 
 Animations (one action per clip, each in its own NLA track, all at 30 fps): "Idle" (loop), "Run", "RunBack",
-"StrafeLeft", "StrafeRight" (loops, authored at RUN_SPEED: the game scales their speed by the actual one),
+"StrafeLeft", "StrafeRight" (loops, authored at RUN_SPEED: the game scales their speed by the actual one), "Walk"
+(loop, authored at WALK_SPEED: the station's colonists walking),
 "Aim" (upper-body pose holding Harl; the game layers it over the legs), "Die" (once, ends lying face
 down) and the melee clips, upper body only too: the holds "ReadyBlade" (Riven), "ReadyHammer" (Dray), "Brace"
 (Jag, Auger: two-handed at the hip), "ReadyFist" (Clout: the gauntlet raised) and "ReadyShield" (Mantle: the left
@@ -56,6 +57,8 @@ ASSET = "Player"
 FPS = 30
 RUN_SPEED = 6.0  # m/s the locomotion clips are authored at (PlayerSettings.move_speed)
 RUN_FRAMES = 20  # one stride (two steps) in 0.67 s
+WALK_SPEED = 1.3  # m/s the walk clip is authored at (PlayerAnimator.walk_speed)
+WALK_FRAMES = 32  # one stride (two steps) in 1.07 s
 I3 = Matrix.Identity(3)
 
 # --- skeleton -------------------------------------------------------------------------------------
@@ -596,6 +599,40 @@ def run(t: float, move: Vector) -> Pose:
     return p
 
 
+def walk(t: float) -> Pose:
+    """One walking stride at phase t (0..1), forward at WALK_SPEED: each foot is down for 60 % of the stride
+    (both down around each step), moving back under the body at the walking speed, so it stays planted; the
+    heel strikes and the foot rolls off its toes, a low swing, a small bob (highest over the standing foot),
+    upright, the arms swinging a little."""
+    stance = 0.6
+    stride = WALK_SPEED * stance * WALK_FRAMES / FPS  # the ground the body covers while a foot is down
+    bob = math.cos(2 * math.pi * 2 * (t - stance / 2))
+    yaw = 4 * math.sin(2 * math.pi * t)
+    lean = Matrix.Rotation(math.radians(2), 3, Vector((1, 0, 0)))
+    p = Pose(Vector((0, 0, -0.03 + 0.012 * bob)), rz(yaw))
+    p.spine(spine=lean @ rz(yaw * 0.4), chest=rz(-yaw * 0.2), upper=rz(-yaw * 0.6), neck=rz(-yaw * 0.3), head=I3)
+    swing = {}
+    for side, s in SIDES:
+        u = (t + (0.0 if side == "Left" else 0.5)) % 1.0
+        if u < stance:
+            w = u / stance
+            x, lift = stride / 2 - stride * w, 0.0
+            pitch = -10 * (1 - smooth(w / 0.15)) + 18 * smooth((w - 0.75) / 0.25)
+        else:
+            w = (u - stance) / (1 - stance)
+            x = -stride / 2 + stride * (0.5 - 0.5 * math.cos(math.pi * w))
+            lift = 0.08 * math.sin(math.pi * w)
+            pitch = 18 * (1 - smooth(w / 0.3)) + 20 * math.sin(math.pi * w) * (1 - w) - 10 * smooth((w - 0.8) / 0.2)
+        # The foot rolls over its toes (heel up) or its heel (toes up), not around the ankle.
+        lift += 0.14 * math.sin(math.radians(max(pitch, 0))) + 0.07 * math.sin(math.radians(max(-pitch, 0)))
+        ankle = Vector((s * (FOOT_X - 0.01), -x, ANKLE_Z + lift))
+        p.leg(side, ankle, Vector((s * 0.15, -1, 0)), pitch)
+        swing[side] = -0.35 * x
+    swing = {"Left": swing["Right"], "Right": swing["Left"]}  # arms swing with the opposite leg
+    relaxed_arms(p, swing)
+    return p
+
+
 def die(t: float) -> Pose:
     """Knees buckle (to 0.3), then the body tips forward and lies face down (1.0)."""
     k = smooth(t / 0.3)
@@ -870,6 +907,7 @@ MOVES = {
 CLIPS = {  # name: (frames, pose(t) for t in 0..1)
     "Idle": (60, lambda t: idle(t)),
     **{name: (RUN_FRAMES, lambda t, m=m: run(t, m)) for name, m in MOVES.items()},
+    "Walk": (WALK_FRAMES, walk),
     "Aim": (1, lambda t: idle(0.0, aim=True)),
     "Die": (36, die),
     "ReadyBlade": (1, lambda t: ready_blade()),
@@ -917,6 +955,7 @@ def preview(arm: bpy.types.Object, tag: str) -> list:
     shots = []
     poses = [("aim", idle(0.0, aim=True)), ("idle", idle(0.25))]
     poses += [(f"run{i}", run(i / 4, MOVES["Run"])) for i in range(4)]
+    poses += [(f"walk{i}", walk(i / 4)) for i in range(4)]
     poses += [
         ("back", run(0.1, MOVES["RunBack"])),
         ("strafeL", run(0.1, MOVES["StrafeLeft"])),

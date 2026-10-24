@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://b2xwvv3m4sjhe"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = &"loader"
+role = "Cargo loader"
+accent_color = Color(0.45, 0.55, 0.6, 1)
+suit_tint = Color(0.64, 0.6, 0.58, 1)
+remarks = Array[String](["Mind the crates. If one tips over, I'll be stacking it again until the next shift.", "These crates go to the depot, those stay here. Don't ask me what's in them.", "Some days I carry the same crate from one end of the hangar to the other three times.", "A ship in the hangar means work for us. Good to have you.", "My back says I've loaded enough crates for one lifetime. My shift lead disagrees."])

@@ -26,6 +26,7 @@ the camera and a room; the shapes on the roofs) only casts shadows while the vie
 aboard the docked ship, the walls leaving a stub (STUB m high).
 """
 
+import math
 import pathlib
 import sys
 
@@ -150,6 +151,27 @@ for i, (x, z) in enumerate(CRATES):
     box(f"Crate{i + 1}", (2.4, high, 2.4), (x, high / 2, z))
 for i, x in enumerate([62.0, 70.0, 78.0, 86.0]):
     box(f"Shelf{i + 1}", (5, 3.5, 1.2), (x, 1.75, -26.5))
+# --- furniture for the station's people (see PEOPLE): the depot's counter, the council's long
+# table with its chairs, the bar's counter and booths, stalls along the concourse (scenery: no
+# shops), benches in the gallery facing the windows ---
+box("DepotCounter", (6, 1.1, 0.9), (73.5, 0.55, -20.5))
+# It ends short of the room's name on the floor.
+box("CouncilTable", (2.4, 0.8, 5.5), (108.5, 0.4, -21.25))
+for i, z in enumerate([-23.0, -21.25, -19.5]):
+    for side, sname in [(-1, "Left"), (1, "Right")]:
+        box(f"CouncilChair{sname}{i + 1}", (0.6, 0.9, 0.6), (108.5 + side * 1.7, 0.45, z))
+# The bar's counter along its left wall, the booths along its right one.
+box("BarCounter", (0.9, 1.1, 9), (59, 0.55, 20))
+for i, z in enumerate([16.5, 23.0]):
+    box(f"BoothTable{i + 1}", (1.6, 0.75, 1.2), (88.5, 0.375, z))
+    for side, sname in [(-1, "Back"), (1, "Front")]:
+        box(f"BoothBench{i + 1}{sname}", (1.8, 1.1, 0.6), (88.5, 0.55, z + side * 1.3))
+# A stall: its counter towards the hall, a rack behind the one standing at it.
+for i, x in enumerate([100.0, 110.0, 120.0]):
+    box(f"Stall{i + 1}", (3, 1.0, 1.2), (x, 0.5, 18))
+    box(f"StallRack{i + 1}", (3, 2.2, 0.4), (x, 1.1, 15.2))
+for i, x in enumerate([140.0, 156.0]):
+    box(f"Bench{i + 1}", (5, 0.5, 0.8), (x, 0.25, -20))
 
 # --- outside: solar wings behind the station, a mast on the council's roof ---
 for i, x in enumerate([32.0, 148.0]):
@@ -349,6 +371,78 @@ for i, (x, y, side) in enumerate(CLAMPS):
         "",
     ]
 
+
+# --- the station's people: the named NPCs at their places (profile, where (x, z), facing yaw in
+# degrees: 0 towards the camera, 90 towards +x), then the ambient colonists, each with a profile of
+# their own (profile, tint, where, yaw, route: the waypoints they walk in a loop; none: they stand) ---
+NPC_SCENE = "res://game/npcs/npc.tscn"
+COLONIST_SCENE = "res://game/npcs/colonist.tscn"
+PROFILES = "res://game/npcs/ostra/"
+PEOPLE = [
+    # Beside the depot's counter (the exchange's hoppers join it later).
+    ("Kade", "depot_master", (77.6, -21.6), 0),
+    # At the head of the long table, the big window behind.
+    ("Selin", "councillor", (108.5, -25.3), 0),
+    # Behind the bar's counter: used across it (see USE_ACROSS).
+    ("Nell", "bartender", (58, 20), 90),
+    # At the booth by the bar's door.
+    ("Rook", "rival_captain", (86.2, 23), -90),
+]
+# Used across their counter: the use point's offset towards the players (along the facing), the
+# footprint around it (across, along the facing: from them to the counter's front) and the range
+# from there (short, so the camera framing both stays close).
+USE_ACROSS = {"Nell": (0.7, (9, 1.5), 1.0)}
+COLONISTS = [
+    ("Mechanic", "mechanic", (0.95, 0.9, 0.8), (100, 16.4), 0, []),
+    ("BarterTrader", "barter_trader", (0.8, 0.85, 0.95), (120, 16.4), 0, []),
+    ("Gardener", "gardener", (0.9, 1, 0.85), (110, 19.4), 180, []),
+    ("DockHand", "dock_hand", (0.9, 0.95, 1), (60.4, 24), -90, []),
+    ("HaulerPilot", "hauler_pilot", (0.85, 0.9, 1), (148, -25.4), 180, []),
+    ("DepotClerk", "depot_clerk", (1, 1, 1), (86, -24.9), 180, []),
+    ("Loader", "loader", (1, 0.95, 0.85), (28, -21), 90, [(48, -21), (28, -21)]),
+    ("Courier", "courier", (0.95, 1, 0.95), (36, 2), 90, [(140, 2), (36, 2)]),
+    ("MaintenanceTech", "maintenance_tech", (0.9, 0.9, 1), (80, -8), 90, [(112, -8), (80, -8)]),
+    ("Teacher", "teacher", (1, 0.9, 0.95), (134, -14), 90, [(164, -14), (164, 14), (134, 14), (134, -14)]),
+]
+
+
+def yaw(degrees):
+    """A turn about the vertical axis (rows, as scenes store them): 0 faces +z."""
+    c, s = math.cos(math.radians(degrees)), math.sin(math.radians(degrees))
+    return ", ".join(g(round(v, 6) + 0.0) for v in (c, 0, s, 0, 1, 0, -s, 0, c))
+
+
+nodes += ['[node name="People" type="Node3D" parent="."]', ""]
+for name, profile, (px, pz), facing in PEOPLE:
+    nodes += [
+        f'[node name="{name}" parent="People" instance=ExtResource("npc")]',
+        f"transform = {xform((px, 0, pz), yaw(facing))}",
+        f'profile = ExtResource("profile_{profile}")',
+        "",
+    ]
+    if name in USE_ACROSS:
+        ahead, (across, along), reach = USE_ACROSS[name]
+        nodes += [
+            f'[node name="Use" parent="People/{name}"]',
+            f"transform = {xform((0, 0, ahead))}",
+            f"interact_range = {g(reach)}",
+            f"footprint = Vector2({g(across)}, {g(along)})",
+            "",
+            f'[node name="Highlight" parent="People/{name}/Use"]',
+            f"transform = {xform((0, 0.02, -ahead))}",
+            "",
+        ]
+for name, profile, tint, (px, pz), facing, route in COLONISTS:
+    nodes += [
+        f'[node name="{name}" parent="People" instance=ExtResource("colonist")]',
+        f"transform = {xform((px, 0, pz), yaw(facing))}",
+        f'profile = ExtResource("colonist_{profile}")',
+        f"tint = Color({', '.join(g(c) for c in tint)}, 1)",
+    ]
+    if route:
+        nodes += ["route = PackedVector3Array(" + ", ".join(f"{g(x)}, 0, {g(z)}" for x, z in route) + ")"]
+    nodes += [""]
+
 # --- who's inside: the cut-away and the indoor light follow it ---
 nodes += ['[node name="Interior" type="Area3D" parent="."]', "monitorable = false", ""]
 for name, (x0, x1), (z0, z1), height in interior:
@@ -364,7 +458,13 @@ ext = [
     ("Script", GUIDE_SCRIPT, "guide_script"),
     ("StandardMaterial3D", GUIDE_MATERIAL, "mat_guide"),
     ("StandardMaterial3D", PROP_MATERIAL, "mat_prop"),
+    ("PackedScene", NPC_SCENE, "npc"),
+    ("PackedScene", COLONIST_SCENE, "colonist"),
 ]
+for profile in sorted({p[1] for p in PEOPLE}):
+    ext.append(("Resource", f"{PROFILES}{profile}.tres", f"profile_{profile}"))
+for profile in sorted({c[1] for c in COLONISTS}):
+    ext.append(("Resource", f"{PROFILES}colonists/{profile}.tres", f"colonist_{profile}"))
 out = write(OUT, ROOT, ext, subs, nodes, "ostra_build.py")
 if out:
     print(len(kit.walls), "wall pieces,", len(kit.glass), "windows,", out.count("[node "), "nodes")

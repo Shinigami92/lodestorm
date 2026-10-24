@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bftkdc44jxkuq"]
+
+[ext_resource type="Script" uid="uid://74eey7q7hl74" path="res://game/npcs/colonist.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://vkyghej1md17" path="res://game/npcs/npc_body.tscn" id="2_body"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="3_panel"]
+[ext_resource type="PackedScene" uid="uid://c76kk6ltt4vax" path="res://game/npcs/speech_bubble.tscn" id="4_bubble"]
+
+[node name="Colonist" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Body" parent="." instance=ExtResource("2_body")]
+
+[node name="Bubble" parent="." instance=ExtResource("3_panel")]
+size = Vector2(1.2, 0.8)
+pixels_per_meter = 450.0
+transparent = true
+menu = ExtResource("4_bubble")

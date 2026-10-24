@@ -4,6 +4,22 @@
 [ext_resource type="Script" uid="uid://cultwlahxlbt4" path="res://game/ship/floor_guide.gd" id="guide_script"]
 [ext_resource type="StandardMaterial3D" uid="uid://bpk3xig2xe43q" path="res://game/ship/materials/guide.tres" id="mat_guide"]
 [ext_resource type="StandardMaterial3D" uid="uid://d0bdki1n4b0el" path="res://game/ship/materials/prop.tres" id="mat_prop"]
+[ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="npc"]
+[ext_resource type="PackedScene" uid="uid://bftkdc44jxkuq" path="res://game/npcs/colonist.tscn" id="colonist"]
+[ext_resource type="Resource" uid="uid://b26e8fg578g0j" path="res://game/npcs/ostra/bartender.tres" id="profile_bartender"]
+[ext_resource type="Resource" uid="uid://dfmrx0ergdctx" path="res://game/npcs/ostra/councillor.tres" id="profile_councillor"]
+[ext_resource type="Resource" uid="uid://dv66pnlem07ra" path="res://game/npcs/ostra/depot_master.tres" id="profile_depot_master"]
+[ext_resource type="Resource" uid="uid://bdefd2epo835b" path="res://game/npcs/ostra/rival_captain.tres" id="profile_rival_captain"]
+[ext_resource type="Resource" uid="uid://dqf2s5mudvnob" path="res://game/npcs/ostra/colonists/barter_trader.tres" id="colonist_barter_trader"]
+[ext_resource type="Resource" uid="uid://bjo8884ih46qf" path="res://game/npcs/ostra/colonists/courier.tres" id="colonist_courier"]
+[ext_resource type="Resource" uid="uid://qlh6ghisk4lw" path="res://game/npcs/ostra/colonists/depot_clerk.tres" id="colonist_depot_clerk"]
+[ext_resource type="Resource" uid="uid://bla2n4vf7xlbf" path="res://game/npcs/ostra/colonists/dock_hand.tres" id="colonist_dock_hand"]
+[ext_resource type="Resource" uid="uid://bo8fw66fpg2v2" path="res://game/npcs/ostra/colonists/gardener.tres" id="colonist_gardener"]
+[ext_resource type="Resource" uid="uid://cjyrfsywh7kon" path="res://game/npcs/ostra/colonists/hauler_pilot.tres" id="colonist_hauler_pilot"]
+[ext_resource type="Resource" uid="uid://b2xwvv3m4sjhe" path="res://game/npcs/ostra/colonists/loader.tres" id="colonist_loader"]
+[ext_resource type="Resource" uid="uid://ttvj3w8ua1s8" path="res://game/npcs/ostra/colonists/maintenance_tech.tres" id="colonist_maintenance_tech"]
+[ext_resource type="Resource" uid="uid://s47471xvuxr4" path="res://game/npcs/ostra/colonists/mechanic.tres" id="colonist_mechanic"]
+[ext_resource type="Resource" uid="uid://41nodk7mv013" path="res://game/npcs/ostra/colonists/teacher.tres" id="colonist_teacher"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wall"]
 albedo_color = Color(0.33, 0.31, 0.29, 1)
@@ -46,11 +62,26 @@ size = Vector3(0.5, 18, 14)
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x18x24"]
 size = Vector3(0.5, 18, 24)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_6x0_9x0_6"]
+size = Vector3(0.6, 0.9, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_9x1_1x9"]
+size = Vector3(0.9, 1.1, 9)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_1_5x1_5x33"]
 size = Vector3(1.5, 1.5, 33)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1_5x12x1_5"]
 size = Vector3(1.5, 12, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1_6x0_75x1_2"]
+size = Vector3(1.6, 0.75, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1_8x1_1x0_6"]
+size = Vector3(1.8, 1.1, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2_4x0_8x5_5"]
+size = Vector3(2.4, 0.8, 5.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2_4x1_2x2_4"]
 size = Vector3(2.4, 1.2, 2.4)
@@ -61,11 +92,23 @@ size = Vector3(2.4, 2.4, 2.4)
 [sub_resource type="BoxShape3D" id="BoxShape3D_2_5x10_5x1_5"]
 size = Vector3(2.5, 10.5, 1.5)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_3x1x1_2"]
+size = Vector3(3, 1, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3x2_2x0_4"]
+size = Vector3(3, 2.2, 0.4)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_3x7x0_5"]
 size = Vector3(3, 7, 0.5)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_5x0_5x0_8"]
+size = Vector3(5, 0.5, 0.8)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_5x3_5x1_2"]
 size = Vector3(5, 3.5, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6x1_1x0_9"]
+size = Vector3(6, 1.1, 0.9)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_15_75x10x0_5"]
 size = Vector3(15.75, 10, 0.5)
@@ -154,9 +197,17 @@ size = Vector3(0.5, 18, 14)
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(0.5, 18, 24)
 
+[sub_resource type="BoxMesh" id="BoxMesh_0_6x0_9x0_6"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(0.6, 0.9, 0.6)
+
 [sub_resource type="BoxMesh" id="BoxMesh_0_8x16x0_8"]
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(0.8, 16, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_9x1_1x9"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(0.9, 1.1, 9)
 
 [sub_resource type="BoxMesh" id="BoxMesh_1x1x8"]
 material = SubResource("StandardMaterial3D_wall")
@@ -174,6 +225,10 @@ size = Vector3(1.5, 1.5, 33)
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(1.5, 12, 1.5)
 
+[sub_resource type="BoxMesh" id="BoxMesh_1_6x0_75x1_2"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(1.6, 0.75, 1.2)
+
 [sub_resource type="BoxMesh" id="BoxMesh_1_6x10x0_5"]
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(1.6, 10, 0.5)
@@ -182,9 +237,17 @@ size = Vector3(1.6, 10, 0.5)
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(1.8, 10, 0.5)
 
+[sub_resource type="BoxMesh" id="BoxMesh_1_8x1_1x0_6"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(1.8, 1.1, 0.6)
+
 [sub_resource type="BoxMesh" id="BoxMesh_2_2857x10x0_5"]
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(2.2857, 10, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2_4x0_8x5_5"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(2.4, 0.8, 5.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_2_4x1_2x2_4"]
 material = SubResource("StandardMaterial3D_wall")
@@ -197,6 +260,14 @@ size = Vector3(2.4, 2.4, 2.4)
 [sub_resource type="BoxMesh" id="BoxMesh_2_5x10_5x1_5"]
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(2.5, 10.5, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3x1x1_2"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(3, 1, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3x2_2x0_4"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(3, 2.2, 0.4)
 
 [sub_resource type="BoxMesh" id="BoxMesh_3x7x0_5"]
 material = SubResource("StandardMaterial3D_wall")
@@ -246,9 +317,17 @@ size = Vector3(4.4, 0.6, 0.5)
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(4.4, 1.4, 0.5)
 
+[sub_resource type="BoxMesh" id="BoxMesh_5x0_5x0_8"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(5, 0.5, 0.8)
+
 [sub_resource type="BoxMesh" id="BoxMesh_5x3_5x1_2"]
 material = SubResource("StandardMaterial3D_wall")
 size = Vector3(5, 3.5, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6x1_1x0_9"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(6, 1.1, 0.9)
 
 [sub_resource type="BoxMesh" id="BoxMesh_6x18x0_5"]
 material = SubResource("StandardMaterial3D_wall")
@@ -1380,6 +1459,190 @@ shape = SubResource("BoxShape3D_5x3_5x1_2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86, 1.75, -26.5)
 mesh = SubResource("BoxMesh_5x3_5x1_2")
 
+[node name="DepotCounterShape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 0.55, -20.5)
+shape = SubResource("BoxShape3D_6x1_1x0_9")
+
+[node name="DepotCounter" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 0.55, -20.5)
+mesh = SubResource("BoxMesh_6x1_1x0_9")
+
+[node name="CouncilTableShape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.5, 0.4, -21.25)
+shape = SubResource("BoxShape3D_2_4x0_8x5_5")
+
+[node name="CouncilTable" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.5, 0.4, -21.25)
+mesh = SubResource("BoxMesh_2_4x0_8x5_5")
+
+[node name="CouncilChairLeft1Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 106.8, 0.45, -23)
+shape = SubResource("BoxShape3D_0_6x0_9x0_6")
+
+[node name="CouncilChairLeft1" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 106.8, 0.45, -23)
+mesh = SubResource("BoxMesh_0_6x0_9x0_6")
+
+[node name="CouncilChairRight1Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110.2, 0.45, -23)
+shape = SubResource("BoxShape3D_0_6x0_9x0_6")
+
+[node name="CouncilChairRight1" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110.2, 0.45, -23)
+mesh = SubResource("BoxMesh_0_6x0_9x0_6")
+
+[node name="CouncilChairLeft2Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 106.8, 0.45, -21.25)
+shape = SubResource("BoxShape3D_0_6x0_9x0_6")
+
+[node name="CouncilChairLeft2" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 106.8, 0.45, -21.25)
+mesh = SubResource("BoxMesh_0_6x0_9x0_6")
+
+[node name="CouncilChairRight2Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110.2, 0.45, -21.25)
+shape = SubResource("BoxShape3D_0_6x0_9x0_6")
+
+[node name="CouncilChairRight2" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110.2, 0.45, -21.25)
+mesh = SubResource("BoxMesh_0_6x0_9x0_6")
+
+[node name="CouncilChairLeft3Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 106.8, 0.45, -19.5)
+shape = SubResource("BoxShape3D_0_6x0_9x0_6")
+
+[node name="CouncilChairLeft3" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 106.8, 0.45, -19.5)
+mesh = SubResource("BoxMesh_0_6x0_9x0_6")
+
+[node name="CouncilChairRight3Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110.2, 0.45, -19.5)
+shape = SubResource("BoxShape3D_0_6x0_9x0_6")
+
+[node name="CouncilChairRight3" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110.2, 0.45, -19.5)
+mesh = SubResource("BoxMesh_0_6x0_9x0_6")
+
+[node name="BarCounterShape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 0.55, 20)
+shape = SubResource("BoxShape3D_0_9x1_1x9")
+
+[node name="BarCounter" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 0.55, 20)
+mesh = SubResource("BoxMesh_0_9x1_1x9")
+
+[node name="BoothTable1Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 16.5)
+shape = SubResource("BoxShape3D_1_6x0_75x1_2")
+
+[node name="BoothTable1" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 16.5)
+mesh = SubResource("BoxMesh_1_6x0_75x1_2")
+
+[node name="BoothBench1BackShape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 15.2)
+shape = SubResource("BoxShape3D_1_8x1_1x0_6")
+
+[node name="BoothBench1Back" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 15.2)
+mesh = SubResource("BoxMesh_1_8x1_1x0_6")
+
+[node name="BoothBench1FrontShape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 17.8)
+shape = SubResource("BoxShape3D_1_8x1_1x0_6")
+
+[node name="BoothBench1Front" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 17.8)
+mesh = SubResource("BoxMesh_1_8x1_1x0_6")
+
+[node name="BoothTable2Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 23)
+shape = SubResource("BoxShape3D_1_6x0_75x1_2")
+
+[node name="BoothTable2" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 23)
+mesh = SubResource("BoxMesh_1_6x0_75x1_2")
+
+[node name="BoothBench2BackShape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 21.7)
+shape = SubResource("BoxShape3D_1_8x1_1x0_6")
+
+[node name="BoothBench2Back" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 21.7)
+mesh = SubResource("BoxMesh_1_8x1_1x0_6")
+
+[node name="BoothBench2FrontShape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 24.3)
+shape = SubResource("BoxShape3D_1_8x1_1x0_6")
+
+[node name="BoothBench2Front" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.55, 24.3)
+mesh = SubResource("BoxMesh_1_8x1_1x0_6")
+
+[node name="Stall1Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0.5, 18)
+shape = SubResource("BoxShape3D_3x1x1_2")
+
+[node name="Stall1" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0.5, 18)
+mesh = SubResource("BoxMesh_3x1x1_2")
+
+[node name="StallRack1Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 1.1, 15.2)
+shape = SubResource("BoxShape3D_3x2_2x0_4")
+
+[node name="StallRack1" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 1.1, 15.2)
+mesh = SubResource("BoxMesh_3x2_2x0_4")
+
+[node name="Stall2Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0.5, 18)
+shape = SubResource("BoxShape3D_3x1x1_2")
+
+[node name="Stall2" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0.5, 18)
+mesh = SubResource("BoxMesh_3x1x1_2")
+
+[node name="StallRack2Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 1.1, 15.2)
+shape = SubResource("BoxShape3D_3x2_2x0_4")
+
+[node name="StallRack2" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 1.1, 15.2)
+mesh = SubResource("BoxMesh_3x2_2x0_4")
+
+[node name="Stall3Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0.5, 18)
+shape = SubResource("BoxShape3D_3x1x1_2")
+
+[node name="Stall3" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0.5, 18)
+mesh = SubResource("BoxMesh_3x1x1_2")
+
+[node name="StallRack3Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 1.1, 15.2)
+shape = SubResource("BoxShape3D_3x2_2x0_4")
+
+[node name="StallRack3" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 1.1, 15.2)
+mesh = SubResource("BoxMesh_3x2_2x0_4")
+
+[node name="Bench1Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 140, 0.25, -20)
+shape = SubResource("BoxShape3D_5x0_5x0_8")
+
+[node name="Bench1" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 140, 0.25, -20)
+mesh = SubResource("BoxMesh_5x0_5x0_8")
+
+[node name="Bench2Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 156, 0.25, -20)
+shape = SubResource("BoxShape3D_5x0_5x0_8")
+
+[node name="Bench2" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 156, 0.25, -20)
+mesh = SubResource("BoxMesh_5x0_5x0_8")
+
 [node name="WingStrut1" type="MeshInstance3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 9, -32)
 mesh = SubResource("BoxMesh_1x1x8")
@@ -2242,6 +2505,86 @@ mesh = SubResource("BoxMesh_clamp_pad")
 [node name="Arm" type="MeshInstance3D" parent="Clamps/Clamp4"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.3)
 mesh = SubResource("BoxMesh_clamp_arm")
+
+[node name="People" type="Node3D" parent="."]
+
+[node name="Kade" parent="People" instance=ExtResource("npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 77.6, 0, -21.6)
+profile = ExtResource("profile_depot_master")
+
+[node name="Selin" parent="People" instance=ExtResource("npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.5, 0, -25.3)
+profile = ExtResource("profile_councillor")
+
+[node name="Nell" parent="People" instance=ExtResource("npc")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 58, 0, 20)
+profile = ExtResource("profile_bartender")
+
+[node name="Use" parent="People/Nell"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.7)
+interact_range = 1
+footprint = Vector2(9, 1.5)
+
+[node name="Highlight" parent="People/Nell/Use"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.7)
+
+[node name="Rook" parent="People" instance=ExtResource("npc")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 86.2, 0, 23)
+profile = ExtResource("profile_rival_captain")
+
+[node name="Mechanic" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 16.4)
+profile = ExtResource("colonist_mechanic")
+tint = Color(0.95, 0.9, 0.8, 1)
+
+[node name="BarterTrader" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0, 16.4)
+profile = ExtResource("colonist_barter_trader")
+tint = Color(0.8, 0.85, 0.95, 1)
+
+[node name="Gardener" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 110, 0, 19.4)
+profile = ExtResource("colonist_gardener")
+tint = Color(0.9, 1, 0.85, 1)
+
+[node name="DockHand" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 60.4, 0, 24)
+profile = ExtResource("colonist_dock_hand")
+tint = Color(0.9, 0.95, 1, 1)
+
+[node name="HaulerPilot" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 148, 0, -25.4)
+profile = ExtResource("colonist_hauler_pilot")
+tint = Color(0.85, 0.9, 1, 1)
+
+[node name="DepotClerk" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 86, 0, -24.9)
+profile = ExtResource("colonist_depot_clerk")
+tint = Color(1, 1, 1, 1)
+
+[node name="Loader" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 28, 0, -21)
+profile = ExtResource("colonist_loader")
+tint = Color(1, 0.95, 0.85, 1)
+route = PackedVector3Array(48, 0, -21, 28, 0, -21)
+
+[node name="Courier" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 36, 0, 2)
+profile = ExtResource("colonist_courier")
+tint = Color(0.95, 1, 0.95, 1)
+route = PackedVector3Array(140, 0, 2, 36, 0, 2)
+
+[node name="MaintenanceTech" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 80, 0, -8)
+profile = ExtResource("colonist_maintenance_tech")
+tint = Color(0.9, 0.9, 1, 1)
+route = PackedVector3Array(112, 0, -8, 80, 0, -8)
+
+[node name="Teacher" parent="People" instance=ExtResource("colonist")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 134, 0, -14)
+profile = ExtResource("colonist_teacher")
+tint = Color(1, 0.9, 0.95, 1)
+route = PackedVector3Array(164, 0, -14, 164, 0, 14, 134, 0, 14, 134, 0, -14)
 
 [node name="Interior" type="Area3D" parent="."]
 monitorable = false

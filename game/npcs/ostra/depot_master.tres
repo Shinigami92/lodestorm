@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://dv66pnlem07ra"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"depot_master.greeting"
+title = "Hello"
+lines = Array[String](["You must be the crew from the ship in the hangar. I'm Kade, and I run the supply depot. Every crate that comes aboard this station passes my counter first.", "The colony is short of nearly everything, and most of what keeps it going is ore that crews like yours bring up from the planets.", "If you want to know what the depot does or how the colony is doing, just ask me. I'm always here."])
+
+[sub_resource type="Resource" id="Resource_depot"]
+script = ExtResource("3_topic")
+id = &"depot_master.depot"
+title = "The depot"
+lines = Array[String](["Everything the colony eats, breathes and builds with is stored here: food, air filters, spare parts and metal.", "The shelves behind me look full, but most of those crates are already promised to someone. What comes in today is gone by next week.", "Ore is the one thing we can never get enough of. Without it, the workshops stop, and nothing gets repaired."])
+requires = Array[StringName]([&"depot_master.greeting"])
+
+[sub_resource type="Resource" id="Resource_colony"]
+script = ExtResource("3_topic")
+id = &"depot_master.colony"
+title = "The colony"
+lines = Array[String](["A few thousand people live aboard this station. Most of them came in on the colony's haulers, with little more than what they could carry.", "We grow some of our food and recycle most of our water and air, but metal doesn't grow. It has to be mined, and that means going down to the planets.", "That's why the colony counts on prospecting crews like yours. Without you, this station would run dry within a year."])
+requires = Array[StringName]([&"depot_master.greeting"])
+
+[sub_resource type="Resource" id="Resource_kade"]
+script = ExtResource("3_topic")
+id = &"depot_master.kade"
+title = "About Kade"
+lines = Array[String](["Me? I keep the books. I know how many crates of anything we have, down to the last bolt.", "I've never been down to the surface myself. I've seen the storms in the crews' recordings, and that was enough for me.", "But I like to know the people who bring the ore up. So come by whenever you're docked, even if it's only to talk."])
+requires = Array[StringName]([&"depot_master.greeting"])
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_depot"), SubResource("Resource_colony"), SubResource("Resource_kade")])
+
+[resource]
+script = ExtResource("1_profile")
+id = &"depot_master"
+display_name = "Kade"
+role = "Depot master"
+accent_color = Color(1, 0.6, 0.2, 1)
+suit_tint = Color(0.72, 0.68, 0.62, 1)
+dialogue = SubResource("Resource_dialogue")

@@ -4,6 +4,8 @@ extends StationCard
 ## either the open topics and "Goodbye" (an amber dot on topics nobody has heard yet), or while a
 ## topic is told its title, how far it is ("2 / 3") and "Continue" ("Done" on the last line) and
 ## "Back". The button `interact` presses has an amber frame (not the focus, see `LoadoutCard`).
+## Past `MAX_ROWS` entries the list scrolls, keeping the framed one in view (an NPC with many
+## topics, like the bartender's rumors about every planet).
 
 ## Button states framed amber on the selected button.
 const SELECTED_STATES: Array[StringName] = [
@@ -11,6 +13,8 @@ const SELECTED_STATES: Array[StringName] = [
 ]
 ## Marks a topic nobody has heard yet.
 const NEW_DOT: String = "●  "
+## The most entries the list shows at once; more scroll.
+const MAX_ROWS: int = 7
 
 var _buttons: Array[Button] = []
 ## The amber-framed styles of the selected button, per state.
@@ -20,6 +24,7 @@ var _selected_styles: Dictionary[StringName, StyleBox] = {}
 @onready var _role: Label = %Role
 @onready var _topic_title: Label = %TopicTitle
 @onready var _progress: Label = %Progress
+@onready var _scroll: ScrollContainer = %Scroll
 @onready var _list: VBoxContainer = %List
 
 
@@ -91,6 +96,30 @@ func _show_buttons(texts: Array[String], new: Array[bool], selected: int) -> voi
 				button.add_theme_stylebox_override(state, _selected_style(button, state))
 			else:
 				button.remove_theme_stylebox_override(state)
+	var gap: int = _list.get_theme_constant(&"separation")
+	var row: float = _buttons[0].get_combined_minimum_size().y + gap
+	_scroll.custom_minimum_size.y = mini(texts.size(), MAX_ROWS) * row - gap
+	_scroll_to.call_deferred(selected)
+
+
+## Whether entry `index` of the list shows without scrolling (for tests and probes).
+func is_row_in_view(index: int) -> bool:
+	var button: Button = _buttons[index]
+	var top: float = button.position.y - _scroll.scroll_vertical
+	return top >= -0.5 and top + button.size.y <= _scroll.size.y + 0.5
+
+
+## Scrolls the list so entry `index` shows.
+func _scroll_to(index: int) -> void:
+	if index < 0 or index >= _buttons.size():
+		return
+	var button: Button = _buttons[index]
+	var top: float = button.position.y
+	var bottom: float = top + button.size.y
+	if top < _scroll.scroll_vertical:
+		_scroll.scroll_vertical = int(top)
+	elif bottom > _scroll.scroll_vertical + _scroll.size.y:
+		_scroll.scroll_vertical = int(ceilf(bottom - _scroll.size.y))
 
 
 ## The theme's style of a button `state` with an amber frame.

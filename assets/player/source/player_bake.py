@@ -3,6 +3,11 @@
 Run from the repo root, after player_build.py final (see docs/TECHNICAL.md, Asset pipeline):
     tools/blender.sh assets/player/source/player_bake.py          # bake, export, check renders
     tools/blender.sh assets/player/source/player_bake.py verify   # only re-import and render the checks
+    tools/blender.sh assets/player/source/player_bake.py clips    # only add new clips, without baking again
+
+"clips" takes the clips player_build.py added since the last bake (in player_procedural.blend, not yet in
+player.blend) into player.blend and exports the .glb again, keeping the baked textures (the skeleton has to be
+unchanged).
 
 Writes the game asset assets/player/player.glb (textures, skeleton and animations embedded) and its source
 assets/player/source/player.blend; the separate PNGs and check renders go to tmp/assets/player/game/.
@@ -69,6 +74,28 @@ JOB = B.Job(
 )
 
 
+def add_clips(job: B.Job) -> None:
+    """Appends the build's clips missing from the game source, each in its own muted NLA track like the build's,
+    then exports the .glb and saves the source again."""
+    bpy.ops.wm.open_mainfile(filepath=str(job.blend))
+    C.ASSET = job.asset
+    have = {a.name for a in bpy.data.actions}
+    with bpy.data.libraries.load(str(job.source), link=False) as (src, dst):
+        dst.actions = [name for name in src.actions if name not in have]
+    ad = bpy.data.objects["Skeleton"].animation_data_create()
+    for act in dst.actions:
+        track = ad.nla_tracks.new()
+        track.name = act.name
+        strip = track.strips.new(act.name, 0, act)
+        if act.slots:
+            strip.action_slot = act.slots[0]
+        track.mute = True
+        print("CLIP added", act.name)
+    C.export_glb(job.glb)
+    bpy.context.preferences.filepaths.save_version = 0  # no .blend1 backup next to the source
+    bpy.ops.wm.save_as_mainfile(filepath=str(job.blend))
+
+
 def checks(job: B.Job, meshes: list) -> None:
     print("CHECK actions", sorted(a.name for a in bpy.data.actions))
     for obj in [o for o in bpy.data.objects if o.name.startswith("Icosphere")]:  # the importer's bone shape
@@ -80,4 +107,7 @@ def checks(job: B.Job, meshes: list) -> None:
     C.render_from(job.game / "check_close.png", Vector((0.5, -1.2, 1.55)), (0, 0, 1.45), 40, 64, 768)
 
 
+if "clips" in sys.argv:
+    add_clips(B.redirected(JOB))
+    sys.argv.append("verify")
 B.run(JOB, checks)

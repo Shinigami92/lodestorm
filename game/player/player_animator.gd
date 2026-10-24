@@ -1,7 +1,8 @@
 class_name PlayerAnimator
 extends AnimationTree
 ## Plays the suit model's clips (assets/player/player.glb): the legs blend between "Idle" and
-## the four run directions by the velocity relative to where the player faces, the upper body
+## the four run directions by the velocity relative to where the player faces (or play "Walk" at
+## a slow pace, for NPCs that `walks`), the upper body
 ## holds the weapon while it's out, as the weapon's `hold` says (`WeaponType.Hold`: the "Aim" pose,
 ## a blade, a hammer, a braced tool, a gauntlet, a shield), and "Die" plays once on death and
 ## holds. A melee attack plays its motion over the hold (`play_motion`: a slash, an overhead blow, a
@@ -46,6 +47,10 @@ const MOTION_FADE_OUT: float = 0.2
 
 ## Speed the run clips are authored at (RUN_SPEED in assets/player/source/player_build.py), in m/s.
 @export var run_speed: float = 6.0
+## Speed the walk clip is authored at (WALK_SPEED in player_build.py), in m/s.
+@export var walk_speed: float = 1.3
+## Seconds to blend between standing (or running) and walking.
+@export var walk_blend_time: float = 0.2
 ## Seconds to blend the aim pose in and out, and between holds.
 @export var aim_blend_time: float = 0.15
 ## Seconds to go out to drilling and back.
@@ -53,6 +58,9 @@ const MOTION_FADE_OUT: float = 0.2
 
 ## Velocity relative to the body, in m/s: x to the right, y forward.
 var local_velocity: Vector2 = Vector2.ZERO
+## Whether moving forward at up to about `walk_speed` plays "Walk" instead of the slowed-down run
+## clips (NPCs strolling; players always run).
+var walks: bool = false
 ## Whether the upper body holds the weapon.
 var aiming: bool = true
 ## How it holds the weapon.
@@ -75,6 +83,7 @@ var dead: bool = false:
 
 var _aim_amount: float = 1.0
 var _drill_amount: float = 0.0
+var _walk_amount: float = 0.0
 
 
 ## Builds the blend tree for `model` (an instance of player.glb with its AnimationPlayer).
@@ -117,6 +126,9 @@ func setup(model: Node3D) -> void:
 	var blend := AnimationNodeBlendTree.new()
 	blend.add_node(&"move", move)
 	blend.add_node(&"move_speed", AnimationNodeTimeScale.new())
+	blend.add_node(&"Walk", _clip(player, &"Walk"))
+	blend.add_node(&"walk_speed", AnimationNodeTimeScale.new())
+	blend.add_node(&"walk", AnimationNodeBlend2.new())
 	blend.add_node(&"hold", holds)
 	for i: int in HOLD_CLIPS.size():
 		blend.add_node(HOLD_CLIPS[i], _clip(player, HOLD_CLIPS[i]))
@@ -146,7 +158,10 @@ func setup(model: Node3D) -> void:
 	blend.add_node(&"die", _clip(player, &"Die", false))
 	blend.add_node(&"life", life)
 	blend.connect_node(&"move_speed", 0, &"move")
-	blend.connect_node(&"aim", 0, &"move_speed")
+	blend.connect_node(&"walk_speed", 0, &"Walk")
+	blend.connect_node(&"walk", 0, &"move_speed")
+	blend.connect_node(&"walk", 1, &"walk_speed")
+	blend.connect_node(&"aim", 0, &"walk")
 	blend.connect_node(&"aim", 1, upper)
 	blend.connect_node(&"life", 0, &"aim")
 	blend.connect_node(&"life", 1, &"die")
@@ -173,8 +188,12 @@ func _process(delta: float) -> void:
 	if not tree_root:
 		return
 	set(&"parameters/move/blend_position", local_velocity / run_speed)
-	var scale: float = maxf(local_velocity.length() / run_speed, MIN_TIME_SCALE)
-	set(&"parameters/move_speed/scale", scale)
+	var speed: float = local_velocity.length()
+	set(&"parameters/move_speed/scale", maxf(speed / run_speed, MIN_TIME_SCALE))
+	var strolling: bool = walks and local_velocity.y > 0.05 and speed < walk_speed * 1.5
+	_walk_amount = move_toward(_walk_amount, 1.0 if strolling else 0.0, delta / walk_blend_time)
+	set(&"parameters/walk/blend_amount", _walk_amount)
+	set(&"parameters/walk_speed/scale", maxf(speed / walk_speed, MIN_TIME_SCALE))
 	_aim_amount = move_toward(_aim_amount, 1.0 if aiming else 0.0, delta / aim_blend_time)
 	set(&"parameters/aim/blend_amount", _aim_amount)
 	var braced: bool = hold == WeaponType.Hold.BRACE

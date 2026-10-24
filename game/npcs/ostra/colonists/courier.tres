@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://bjo8884ih46qf"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = &"courier"
+role = "Courier"
+accent_color = Color(0.45, 0.55, 0.6, 1)
+suit_tint = Color(0.64, 0.6, 0.58, 1)
+remarks = Array[String](["Messages for the council, a parcel for the bar, and I'm late for all of them.", "I walk this station from end to end a dozen times a day. I know every loose deck plate.", "Can't stop for long, sorry. Someone in the gallery is waiting for this.", "Messages travel faster by radio, but some things people want to hand over in person.", "The hangar is the worst part of my route. It's long, and it's always cold."])

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://bjfgte4uxm0mw"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = &"trader"
+role = "Trader"
+accent_color = Color(0.45, 0.55, 0.6, 1)
+suit_tint = Color(0.62, 0.56, 0.6, 1)
+remarks = Array[String](["Nothing for sale today, I'm afraid. Everything here is already promised to someone.", "I used to sell spare parts. Now I mostly fix the ones people bring me.", "Ore is the only thing anyone wants to trade for these days.", "Quiet day. They're all quiet days lately."])

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://ibao3nllkm7s"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = &"dock_hand"
+role = "Dock hand"
+accent_color = Color(0.45, 0.55, 0.6, 1)
+suit_tint = Color(0.66, 0.6, 0.5, 1)
+remarks = Array[String](["Careful, that crate is heavier than it looks.", "Your ship's clamped in tight. It's not going anywhere until you say so.", "Every crate on this deck gets counted twice. Kade insists.", "I've loaded more haulers than I can count, and I still haven't been down to a planet."])

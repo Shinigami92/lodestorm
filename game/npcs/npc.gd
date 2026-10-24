@@ -11,8 +11,6 @@ extends Station
 ## next line), `pause` steps back from a topic to the list and closes from there. What's been heard
 ## is a flag in the ship's `Story`.
 
-## Gap between the head and the bubble's tail, in m.
-const BUBBLE_GAP: float = 0.05
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
 ## player, at this height, so the card on their right stays in view.
 const FOCUS_RIGHT: float = 0.35
@@ -75,10 +73,25 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 	if not listener:
 		listener = user
 	var story: Story = get_story()
+	var reaches: Array[StringName] = get_reached_bodies()
 	for listed: Topic in profile.dialogue.topics:
-		if listed.is_open(listener, story):
+		if listed.is_open(listener, story, reaches):
 			choices.append(listed)
 	return choices
+
+
+## The ids of the planets and moons the ship reaches now (for topics about them, see
+## `Topic.requires_body`): none without a ship on a voyage.
+func get_reached_bodies() -> Array[StringName]:
+	var reaches: Array[StringName] = []
+	var voyage: Voyage = ship.voyage if ship else null
+	var system: StarSystem = voyage.settings.system if voyage and voyage.settings else null
+	if not system:
+		return reaches
+	for place: CelestialBody in system.bodies:
+		if place.kind != CelestialBody.Kind.STATION and place.is_reachable(ship.heat_shield.mk):
+			reaches.append(place.id)
+	return reaches
 
 
 ## Whether nobody has heard `listed` to the end yet.
@@ -224,11 +237,5 @@ func _place_focus() -> void:
 	)
 
 
-## Keeps the bubble above the head, facing the camera.
 func _place_bubble() -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
-	if not camera:
-		return
-	var view: Basis = camera.global_basis.orthonormalized()
-	var head: Vector3 = body.get_head_position()
-	bubble.global_transform = Transform3D(view, head + view.y * (bubble.size.y * 0.5 + BUBBLE_GAP))
+	SpeechBubble.place(bubble, body.get_head_position())

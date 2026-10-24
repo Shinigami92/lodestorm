@@ -22,7 +22,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"Dialogue": [&"prompt"],
 	"LocationBiome": [&"display_name"],
 	"OreType": [&"display_name"],
-	"NpcProfile": [&"role"],
+	"NpcProfile": [&"role", &"remarks"],
 	"Region": [&"display_name"],
 	"Skill": [&"display_name", &"description"],
 	"SkillCluster": [&"display_name"],

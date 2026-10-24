@@ -1,13 +1,14 @@
 class_name NpcProfile
 extends Resource
 ## Who an NPC is (see `Npc`): their name and role on the name plate, how their suit looks and what
-## they talk about.
+## they talk about. An ambient colonist's (see `Colonist`) has a role but no name, and says short
+## `remarks` instead.
 
 ## Who they are in the story's flags (the start of their topics' ids, see `Story`) and later in
 ## quests and reputation, e.g. `quartermaster`: saved, so it never changes; not a name (names may
 ## still change).
 @export var id: StringName
-## Their name (a name: not translated).
+## Their name (a name: not translated); none for ambient colonists (the plate shows the role).
 @export var display_name: String
 ## What they do, e.g. "Quartermaster" (the English text, translated).
 @export var role: String
@@ -19,3 +20,6 @@ extends Resource
 ## have none.
 @export_range(1, 8) var cabin: int = 1
 @export var dialogue: Dialogue
+## Short lines said in passing to a player who stops close by, one after another (the English
+## texts, translated).
+@export var remarks: Array[String] = []

@@ -3,8 +3,8 @@ extends Node3D
 ## Someone standing in the world (see GAME_DESIGN.md, Spaceship: NPCs), who `profile` says: the
 ## suit model in their darker tint with the collar light in their own color, turning towards whom
 ## it `faces` (else the nearest player close by, else back to where it stands facing), and their
-## name plate while a player is near. The crew (`Npc`, which adds talking) and the station's
-## ambient colonists share it.
+## name plate while a player is near (not while they use a menu). The crew (`Npc`, which adds
+## talking) and the station's ambient colonists (`Colonist`, which adds walking) share it.
 
 ## How close (in m) a player must be for it to turn towards them.
 const NOTICE_RANGE: float = 3.0
@@ -19,6 +19,13 @@ const HEAD_HEIGHT: float = 1.9
 @export var profile: NpcProfile:
 	set(value):
 		profile = value
+		if is_node_ready():
+			_dress()
+
+## Multiplies the profile's suit tint (e.g. colonists of one role in different suits).
+@export var tint: Color = Color.WHITE:
+	set(value):
+		tint = value
 		if is_node_ready():
 			_dress()
 
@@ -42,16 +49,29 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_turn(delta)
 	var near: Player = Player.nearest(get_tree(), global_position, PLATE_RANGE)
-	_plate.visible = plate_allowed and near != null
+	# Not while that player uses a menu (the camera moves in close: the plate would fill the view).
+	_plate.visible = plate_allowed and near != null and near.menu == null
 	if _plate.visible:
 		_plate.text = get_plate_text()
 
 
-## Their name and role, as the name plate shows them.
+## Their name and role, as the name plate shows them (only the role without a name).
 func get_plate_text() -> String:
 	if not profile:
 		return ""
+	if profile.display_name.is_empty():
+		return tr(profile.role)
 	return "%s · %s" % [profile.display_name, tr(profile.role)]
+
+
+## Plays the legs walking forward at `speed` (m/s; 0: standing).
+func walk(speed: float) -> void:
+	_animator.local_velocity = Vector2(0.0, speed)
+
+
+## Whether the legs walk.
+func is_walking() -> bool:
+	return not _animator.local_velocity.is_zero_approx()
 
 
 ## Whether the name plate shows right now.
@@ -91,7 +111,7 @@ func _dress() -> void:
 			if not material:
 				continue
 			var tinted := material.duplicate() as BaseMaterial3D
-			tinted.albedo_color *= profile.suit_tint
+			tinted.albedo_color *= profile.suit_tint * tint
 			suit.set_surface_override_material(surface, tinted)
 	var band := _model.find_child("SuitLight") as GeometryInstance3D
 	if band:

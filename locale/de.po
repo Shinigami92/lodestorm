@@ -101,10 +101,18 @@ msgid "Quartermaster"
 msgstr "Quartiermeister"
 
 #: game/npcs/crew/quartermaster.tres
+#: game/npcs/ostra/bartender.tres
+#: game/npcs/ostra/councillor.tres
+#: game/npcs/ostra/depot_master.tres
+#: game/npcs/ostra/rival_captain.tres
 msgid "How can I help you?"
 msgstr "Wie kann ich dir helfen?"
 
 #: game/npcs/crew/quartermaster.tres
+#: game/npcs/ostra/bartender.tres
+#: game/npcs/ostra/councillor.tres
+#: game/npcs/ostra/depot_master.tres
+#: game/npcs/ostra/rival_captain.tres
 msgid "Hello"
 msgstr "Hallo"
 
@@ -226,6 +234,464 @@ msgstr "Nachladen kostet dort nichts, du kannst das Timing also so oft üben, wi
 #: game/npcs/crew/quartermaster.tres
 msgid "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
 msgstr "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Bartender"
+msgstr "Barkeeperin"
+
+#: game/npcs/ostra/bartender.tres
+msgid "Welcome to the only bar in orbit around Torvane. I'm Nell. It's nothing fancy, but the drinks are cold and the chairs hardly wobble."
+msgstr "Willkommen in der einzigen Bar im Orbit um Torvane. Ich bin Nell. Hier ist nichts Besonderes, aber die Getränke sind kalt, und die Stühle wackeln kaum."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Crews come in here after every run and talk about what they've seen down there. I listen to all of it."
+msgstr "Nach jedem Einsatz kommen die Crews hierher und erzählen, was sie da unten gesehen haben. Ich höre mir alles an."
+
+#: game/npcs/ostra/bartender.tres
+msgid "So if you want to know what's waiting for you somewhere, ask me. I'll tell you what I've heard."
+msgstr "Wenn du also wissen willst, was dich irgendwo erwartet, frag mich. Ich erzähle dir, was ich gehört habe."
+
+#: game/npcs/ostra/bartender.tres
+msgid "The bar"
+msgstr "Die Bar"
+
+#: game/npcs/ostra/bartender.tres
+msgid "This place belongs to whoever needs it. Crews meet here, colonists come to forget their work for an hour, and the council pretends it never drinks here."
+msgstr "Dieser Ort gehört allen, die ihn brauchen. Crews treffen sich hier, Leute aus der Kolonie vergessen für eine Stunde ihre Arbeit, und der Rat tut so, als würde er hier nie etwas trinken."
+
+#: game/npcs/ostra/bartender.tres
+msgid "The best place to hear news is right here at the counter. Crews talk more freely with a drink in their hand."
+msgstr "Neuigkeiten hört man am besten genau hier an der Theke. Mit einem Glas in der Hand reden die Crews offener."
+
+#: game/npcs/ostra/bartender.tres
+msgid "About Nell"
+msgstr "Über Nell"
+
+#: game/npcs/ostra/bartender.tres
+msgid "I came here to work in the air recycling plant. After a few years, I'd had enough of filters and fans, and the bar needed someone."
+msgstr "Ich bin hergekommen, um in der Luftaufbereitung zu arbeiten. Nach ein paar Jahren hatte ich genug von Filtern und Lüftern, und die Bar brauchte jemanden."
+
+#: game/npcs/ostra/bartender.tres
+msgid "I run it on my own. I know everyone's name, what they drink and who still owes me."
+msgstr "Ich führe sie allein. Ich kenne alle beim Namen, weiß, was sie trinken und wer mir noch etwas schuldet."
+
+#: game/npcs/ostra/bartender.tres
+msgid "People tell me things they'd never tell the council. I keep most of it to myself. Most of it."
+msgstr "Die Leute erzählen mir Dinge, die sie dem Rat nie erzählen würden. Das meiste behalte ich für mich. Das meiste."
+
+#: game/npcs/ostra/bartender.tres
+#: game/npcs/ostra/councillor.tres
+#: game/world/star_system.tres
+msgid "Torvane"
+msgstr "Torvane"
+
+#: game/npcs/ostra/bartender.tres
+msgid "In Redscar Flats, there's an abandoned outpost: a few modules and an empty landing pad. Crews say there's usually still a crate there worth opening."
+msgstr "In Redscar Flats gibt es einen verlassenen Außenposten: ein paar Module und eine leere Landeplattform. Die Crews sagen, dort steht meistens noch eine Kiste, die sich zu öffnen lohnt."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Somewhere in Hollow Mire, between the giant stalks, stands an old camp with a survival pod. Its beacon is still blinking, but nobody knows who left it there."
+msgstr "Irgendwo in Hollow Mire, zwischen den riesigen Stängeln, steht ein altes Lager mit einer Rettungskapsel. Sein Funkfeuer blinkt noch, aber niemand weiß, wer es dort zurückgelassen hat."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Cinder Steps has a huge crater where a meteorite came down, with ore all around it. It's the most dangerous region on Torvane, so go there prepared."
+msgstr "In Cinder Steps gibt es einen riesigen Krater, wo ein Meteorit eingeschlagen ist, und ringsum liegt Erz. Es ist die gefährlichste Region auf Torvane, also geh gut vorbereitet hin."
+
+#: game/npcs/ostra/bartender.tres
+#: game/world/star_system.tres
+msgid "Lisk"
+msgstr "Lisk"
+
+#: game/npcs/ostra/bartender.tres
+msgid "In Pale Basin on Lisk, a ship's hull lies half buried in the ice. Whoever flew it is long gone, but there may still be a crate aboard."
+msgstr "In Pale Basin auf Lisk liegt ein Schiffsrumpf halb im Eis begraben. Wer immer es geflogen hat, ist längst fort, aber vielleicht ist noch eine Kiste an Bord."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Rimeback has a whole wall of crystals at the end of a dead end. The rarest ore of the region lies right in front of it."
+msgstr "In Rimeback steht am Ende einer Sackgasse eine ganze Wand aus Kristallen. Das seltenste Erz der Region liegt direkt davor."
+
+#: game/npcs/ostra/bartender.tres
+#: game/world/star_system.tres
+msgid "Vehra"
+msgstr "Vehra"
+
+#: game/npcs/ostra/bartender.tres
+msgid "On Hoarfrost Ridge, there's another abandoned outpost, frozen solid. Someone left in a hurry, and maybe left a crate behind."
+msgstr "Auf Hoarfrost Ridge gibt es noch einen verlassenen Außenposten, völlig zugefroren. Jemand ist dort überstürzt aufgebrochen und hat vielleicht eine Kiste zurückgelassen."
+
+#: game/npcs/ostra/bartender.tres
+msgid "In the Glare Fields, the salt is so bright it hurts your eyes. Somewhere in there, a wall of crystals stands in a dead end, with rare ore in front of it."
+msgstr "In den Glare Fields ist das Salz so hell, dass es in den Augen schmerzt. Irgendwo dort steht in einer Sackgasse eine Wand aus Kristallen, und davor liegt seltenes Erz."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Ember Reach is rough, the most dangerous place on Vehra. There's a wrecked ship out there, half buried in the dust."
+msgstr "Ember Reach ist hart, der gefährlichste Ort auf Vehra. Dort draußen liegt ein Schiffswrack, halb im Staub begraben."
+
+#: game/npcs/ostra/bartender.tres
+#: game/world/star_system.tres
+msgid "Cassor"
+msgstr "Cassor"
+
+#: game/npcs/ostra/bartender.tres
+msgid "In Sunken Verge, a wreck lies tangled in the growth. The crews who found it say the plants have grown right through the hull."
+msgstr "In Sunken Verge liegt ein Wrack, ganz von Pflanzen überwuchert. Die Crews, die es gefunden haben, sagen, die Pflanzen seien mitten durch den Rumpf gewachsen."
+
+#: game/npcs/ostra/bartender.tres
+msgid "On the Brine Terraces, there's an old outpost with its landing pad still in one piece, which is more than most places can say."
+msgstr "Auf den Brine Terraces gibt es einen alten Außenposten, dessen Landeplattform noch ganz ist. Das kann man nicht von vielen Orten sagen."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Whiteshelf has a meteorite crater in the middle of the salt. The ore around it is worth the walk."
+msgstr "In Whiteshelf liegt mitten im Salz ein Meteoritenkrater. Für das Erz ringsherum lohnt sich der Weg."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Mossgrave is bad. Deep inside it, there's another one of those old camps with a blinking beacon. Same pod, same silence."
+msgstr "Mossgrave ist übel. Tief darin steht noch so ein altes Lager mit einem blinkenden Funkfeuer. Dieselbe Kapsel, dieselbe Stille."
+
+#: game/npcs/ostra/bartender.tres
+#: game/world/star_system.tres
+msgid "Mirr"
+msgstr "Mirr"
+
+#: game/npcs/ostra/bartender.tres
+msgid "On Mirr, there's only one place to land: Quiet Scar. It has a meteorite crater, and the crews say it's quieter there than anywhere else. They don't trust it."
+msgstr "Auf Mirr gibt es nur einen Ort zum Landen: Quiet Scar. Dort liegt ein Meteoritenkrater, und die Crews sagen, es sei dort ruhiger als irgendwo sonst. Sie trauen dem Frieden nicht."
+
+#: game/npcs/ostra/bartender.tres
+#: game/world/star_system.tres
+msgid "Orrel"
+msgstr "Orrel"
+
+#: game/npcs/ostra/bartender.tres
+msgid "In Drift Basin on Orrel, a wreck lies half sunk in the salt. The crews say it looks as if it had always been there."
+msgstr "In Drift Basin auf Orrel liegt ein Wrack halb im Salz versunken. Die Crews sagen, es sieht aus, als wäre es schon immer dort gewesen."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Lantern Hollow got its name from a beacon that blinks somewhere in the growth. It belongs to an old camp, like the ones on Torvane and Cassor."
+msgstr "Lantern Hollow hat seinen Namen von einem Funkfeuer, das irgendwo zwischen den Pflanzen blinkt. Es gehört zu einem alten Lager, wie die auf Torvane und Cassor."
+
+#: game/npcs/ostra/bartender.tres
+#: game/world/star_system.tres
+msgid "Iska"
+msgstr "Iska"
+
+#: game/npcs/ostra/bartender.tres
+msgid "On Coldwake, there's an outpost the ice has nearly taken back. Crews say there's usually still a crate there worth opening."
+msgstr "Auf Coldwake gibt es einen Außenposten, den sich das Eis fast zurückgeholt hat. Die Crews sagen, dort steht meistens noch eine Kiste, die sich zu öffnen lohnt."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Splitrock Steps on Iska is dangerous, but a crystal wall stands in a dead end there, with the rarest ore of the region in front of it. Most crews think it's worth it."
+msgstr "Splitrock Steps auf Iska ist gefährlich, aber dort steht in einer Sackgasse eine Kristallwand, und davor liegt das seltenste Erz der Region. Die meisten Crews finden, dass es das wert ist."
+
+#: game/npcs/ostra/bartender.tres
+#: game/world/star_system.tres
+msgid "Skelde"
+msgstr "Skelde"
+
+#: game/npcs/ostra/bartender.tres
+msgid "On Rustwind Plain, the wind has scoured an old outpost down to bare metal. It's the easiest landing on Skelde."
+msgstr "Auf Rustwind Plain hat der Wind einen alten Außenposten bis aufs blanke Metall abgeschliffen. Dort landet es sich auf Skelde am leichtesten."
+
+#: game/npcs/ostra/bartender.tres
+msgid "In Black Tide, a wreck lies between the lava channels. The heat has warped the hull, but crews still go looking for what's left inside."
+msgstr "In Black Tide liegt ein Wrack zwischen den Lavarinnen. Die Hitze hat den Rumpf verzogen, aber die Crews suchen trotzdem nach dem, was noch darin ist."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Brimstone Cut has a crystal wall at the end of a dead end. The rare ore in front of it is the best you'll find there."
+msgstr "In Brimstone Cut steht am Ende einer Sackgasse eine Kristallwand. Das seltene Erz davor ist das beste, das du dort findest."
+
+#: game/npcs/ostra/bartender.tres
+msgid "The Slag Terraces are the worst place on Skelde. A meteorite crater sits in the middle of it all, with ore all around."
+msgstr "Die Slag Terraces sind der schlimmste Ort auf Skelde. Mittendrin liegt ein Meteoritenkrater, und ringsum liegt Erz."
+
+#: game/npcs/ostra/bartender.tres
+#: game/world/star_system.tres
+msgid "Zairen"
+msgstr "Zairen"
+
+#: game/npcs/ostra/bartender.tres
+msgid "On Sunward Scar, there's a wreck so close to the star that its metal has turned dark. Only a few crews have seen it up close."
+msgstr "Auf Sunward Scar liegt ein Wrack so nah am Stern, dass sein Metall ganz dunkel geworden ist. Nur wenige Crews haben es aus der Nähe gesehen."
+
+#: game/npcs/ostra/bartender.tres
+msgid "In Glassmere, the ground is glass, and somewhere on it stands an old camp with a beacon. Whoever set it up came farther in than anyone else."
+msgstr "In Glassmere ist der Boden aus Glas, und irgendwo darauf steht ein altes Lager mit einem Funkfeuer. Wer es aufgebaut hat, ist weiter vorgedrungen als alle anderen."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Mirror Flats has a meteorite crater in the glass. The crews say the light there is so bright you can barely see the aliens coming."
+msgstr "In Mirror Flats liegt ein Meteoritenkrater im Glas. Die Crews sagen, das Licht dort sei so hell, dass man die Aliens kaum kommen sieht."
+
+#: game/npcs/ostra/bartender.tres
+msgid "In the Fused Expanse, a crystal wall stands in a dead end, with the rarest ore in front of it. Getting there and back again is another story."
+msgstr "In der Fused Expanse steht in einer Sackgasse eine Kristallwand, und davor liegt das seltenste Erz. Hin und wieder zurück zu kommen, ist eine andere Geschichte."
+
+#: game/npcs/ostra/colonist.tres
+msgid "Colonist"
+msgstr "Kolonist"
+
+#: game/npcs/ostra/colonist.tres
+msgid "Another crew? Good. The ration lines have been getting longer."
+msgstr "Noch eine Crew? Gut. Die Schlangen bei der Essensausgabe werden immer länger."
+
+#: game/npcs/ostra/colonist.tres
+msgid "Mind your step. The deck plates in here are older than I am."
+msgstr "Pass auf, wo du hintrittst. Die Bodenplatten hier sind älter als ich."
+
+#: game/npcs/ostra/colonist.tres
+msgid "My children have never seen a sky from the ground. Maybe one day."
+msgstr "Meine Kinder haben noch nie einen Himmel vom Boden aus gesehen. Vielleicht eines Tages."
+
+#: game/npcs/ostra/colonist.tres
+msgid "Have you seen Torvane from the gallery? I go there every evening."
+msgstr "Hast du Torvane schon von der Galerie aus gesehen? Ich gehe jeden Abend hin."
+
+#: game/npcs/ostra/councillor.tres
+msgid "Council member"
+msgstr "Ratsmitglied"
+
+#: game/npcs/ostra/councillor.tres
+msgid "Welcome to Waypost Ostra. I'm Selin, and I speak for the colony's council. We're glad to have another prospecting crew in the system."
+msgstr "Willkommen auf Waypost Ostra. Ich bin Selin und spreche für den Rat der Kolonie. Wir sind froh über jede weitere Prospektoren-Crew im System."
+
+#: game/npcs/ostra/councillor.tres
+msgid "This station is the heart of the colony. Our people live here, the council meets here, and every supply run ends here."
+msgstr "Diese Station ist das Herz der Kolonie. Unsere Leute wohnen hier, der Rat tagt hier, und jede Versorgungsfahrt endet hier."
+
+#: game/npcs/ostra/councillor.tres
+msgid "Look around and talk to people. If you have questions about the colony or the council, come and see me."
+msgstr "Sieh dich um und sprich mit den Leuten. Wenn du Fragen zur Kolonie oder zum Rat hast, komm zu mir."
+
+#: game/npcs/ostra/councillor.tres
+msgid "The council"
+msgstr "Der Rat"
+
+#: game/npcs/ostra/councillor.tres
+msgid "The council is a handful of people the colonists chose to make the hard decisions: who gets which supplies, which repairs come first and which crews we work with."
+msgstr "Der Rat besteht aus einer Handvoll Leuten, die die Kolonie gewählt hat, um die schweren Entscheidungen zu treffen: wer welche Vorräte bekommt, welche Reparaturen zuerst drankommen und mit welchen Crews wir arbeiten."
+
+#: game/npcs/ostra/councillor.tres
+msgid "We meet at this table. It's the only one on the station that's big enough, so every argument ends up here too."
+msgstr "Wir tagen an diesem Tisch. Er ist der einzige auf der Station, der groß genug ist, also landet auch jeder Streit hier."
+
+#: game/npcs/ostra/councillor.tres
+msgid "We don't always agree, but every decision is made in the open. Anyone on the station can come and listen."
+msgstr "Wir sind uns nicht immer einig, aber jede Entscheidung fällt öffentlich. Alle auf der Station dürfen kommen und zuhören."
+
+#: game/npcs/ostra/councillor.tres
+msgid "The planet below us is Torvane. The colony's first landing sites were down there, so it's the planet we know best."
+msgstr "Der Planet unter uns ist Torvane. Dort unten lagen die ersten Landeplätze der Kolonie, deshalb kennen wir ihn am besten."
+
+#: game/npcs/ostra/councillor.tres
+msgid "There are dry dust flats and a wide swamp full of giant growth. The hive is everywhere, but on Torvane it's at its weakest."
+msgstr "Es gibt dort trockene Staubebenen und einen weiten Sumpf voller riesiger Pflanzen. Der Schwarm ist überall, aber auf Torvane ist er am schwächsten."
+
+#: game/npcs/ostra/councillor.tres
+msgid "If you want to see it, go to the observation gallery at the far end of the station. The view from there is worth the walk."
+msgstr "Wenn du ihn sehen willst, geh zur Aussichtsgalerie am anderen Ende der Station. Der Blick von dort lohnt den Weg."
+
+#: game/npcs/ostra/councillor.tres
+msgid "About Selin"
+msgstr "Über Selin"
+
+#: game/npcs/ostra/councillor.tres
+msgid "I was among the first to come here, back when this station was little more than a docking ring and a few modules."
+msgstr "Ich war unter den Ersten hier, damals, als diese Station kaum mehr war als ein Andockring und ein paar Module."
+
+#: game/npcs/ostra/councillor.tres
+msgid "Back then, we thought we'd be able to support ourselves within a few years. That turned out to be a lot harder than any of us expected."
+msgstr "Damals dachten wir, wir könnten uns in ein paar Jahren selbst versorgen. Das hat sich als viel schwerer herausgestellt, als wir alle erwartet hatten."
+
+#: game/npcs/ostra/councillor.tres
+msgid "People say I'm too careful with my words. Maybe they're right. But on a station this small, a careless word travels fast."
+msgstr "Man sagt mir nach, ich wähle meine Worte zu vorsichtig. Vielleicht stimmt das. Aber auf einer so kleinen Station spricht sich ein unbedachtes Wort schnell herum."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Depot master"
+msgstr "Depotleitung"
+
+#: game/npcs/ostra/depot_master.tres
+msgid "You must be the crew from the ship in the hangar. I'm Kade, and I run the supply depot. Every crate that comes aboard this station passes my counter first."
+msgstr "Ihr seid sicher die Crew vom Schiff im Hangar. Ich bin Kade und leite das Versorgungsdepot. Jede Kiste, die an Bord dieser Station kommt, geht zuerst über meinen Tresen."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "The colony is short of nearly everything, and most of what keeps it going is ore that crews like yours bring up from the planets."
+msgstr "Der Kolonie fehlt fast alles, und das meiste, was sie am Laufen hält, ist Erz, das Crews wie eure von den Planeten heraufbringen."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "If you want to know what the depot does or how the colony is doing, just ask me. I'm always here."
+msgstr "Wenn du wissen willst, was das Depot macht oder wie es der Kolonie geht, frag einfach mich. Ich bin immer hier."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "The depot"
+msgstr "Das Depot"
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Everything the colony eats, breathes and builds with is stored here: food, air filters, spare parts and metal."
+msgstr "Alles, was die Kolonie isst, atmet und verbaut, lagert hier: Essen, Luftfilter, Ersatzteile und Metall."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "The shelves behind me look full, but most of those crates are already promised to someone. What comes in today is gone by next week."
+msgstr "Die Regale hinter mir sehen voll aus, aber die meisten dieser Kisten sind schon jemandem versprochen. Was heute reinkommt, ist nächste Woche weg."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Ore is the one thing we can never get enough of. Without it, the workshops stop, and nothing gets repaired."
+msgstr "Von Erz können wir nie genug bekommen. Ohne Erz stehen die Werkstätten still, und nichts wird mehr repariert."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "The colony"
+msgstr "Die Kolonie"
+
+#: game/npcs/ostra/depot_master.tres
+msgid "A few thousand people live aboard this station. Most of them came in on the colony's haulers, with little more than what they could carry."
+msgstr "Ein paar Tausend Leute leben auf dieser Station. Die meisten kamen mit den Frachtern der Kolonie, mit kaum mehr als dem, was sie tragen konnten."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "We grow some of our food and recycle most of our water and air, but metal doesn't grow. It has to be mined, and that means going down to the planets."
+msgstr "Einen Teil unseres Essens bauen wir selbst an, und das meiste Wasser und die Luft bereiten wir auf, aber Metall wächst nicht nach. Es muss abgebaut werden, und dafür muss man runter auf die Planeten."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "That's why the colony counts on prospecting crews like yours. Without you, this station would run dry within a year."
+msgstr "Deshalb zählt die Kolonie auf Prospektoren-Crews wie eure. Ohne euch wären die Vorräte dieser Station in einem Jahr aufgebraucht."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "About Kade"
+msgstr "Über Kade"
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Me? I keep the books. I know how many crates of anything we have, down to the last bolt."
+msgstr "Ich? Ich führe die Bücher. Ich weiß, wie viele Kisten wir von allem haben, bis zur letzten Schraube."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "I've never been down to the surface myself. I've seen the storms in the crews' recordings, and that was enough for me."
+msgstr "Ich selbst war noch nie unten auf der Oberfläche. Ich habe die Stürme auf den Aufnahmen der Crews gesehen, und das hat mir gereicht."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "But I like to know the people who bring the ore up. So come by whenever you're docked, even if it's only to talk."
+msgstr "Aber ich kenne gern die Leute, die das Erz heraufbringen. Also komm vorbei, wann immer ihr angedockt seid, auch wenn es nur zum Reden ist."
+
+#: game/npcs/ostra/dock_hand.tres
+msgid "Dock hand"
+msgstr "Dockarbeiter"
+
+#: game/npcs/ostra/dock_hand.tres
+msgid "Careful, that crate is heavier than it looks."
+msgstr "Vorsicht, die Kiste ist schwerer, als sie aussieht."
+
+#: game/npcs/ostra/dock_hand.tres
+msgid "Your ship's clamped in tight. It's not going anywhere until you say so."
+msgstr "Euer Schiff sitzt fest in den Klammern. Es geht nirgendwohin, bevor ihr es sagt."
+
+#: game/npcs/ostra/dock_hand.tres
+msgid "Every crate on this deck gets counted twice. Kade insists."
+msgstr "Jede Kiste auf diesem Deck wird zweimal gezählt. Kade besteht darauf."
+
+#: game/npcs/ostra/dock_hand.tres
+msgid "I've loaded more haulers than I can count, and I still haven't been down to a planet."
+msgstr "Ich habe mehr Frachter beladen, als ich zählen kann, und war trotzdem noch nie unten auf einem Planeten."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Prospector captain"
+msgstr "Prospektoren-Kapitän"
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Well, look who's here. Another crew that thinks it can make a living down on those planets. I'm Rook, captain of the best prospecting crew in the system."
+msgstr "Sieh mal an, wer da ist. Noch eine Crew, die glaubt, da unten auf den Planeten ihr Auskommen zu finden. Ich bin Rook, Kapitän der besten Prospektoren-Crew im System."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Don't take it personally. There's plenty of ore for everyone, as long as you get to it first."
+msgstr "Nimm es nicht persönlich. Es gibt genug Erz für alle, solange du als Erstes dort bist."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Ask me anything, if you like. I'm always happy to tell a new crew how it's really done."
+msgstr "Frag mich ruhig, was du willst. Ich erkläre einer neuen Crew immer gern, wie es wirklich läuft."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Prospecting"
+msgstr "Prospektieren"
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Every time you land, it's a new stretch of ground, even in a region you've been to before. So nobody gets to keep a good spot for themselves."
+msgstr "Bei jeder Landung ist es ein neues Stück Land, auch in einer Region, in der du schon warst. Einen guten Fleck kann also niemand für sich behalten."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "The ore close to your ship is the lowest quality. The rarer ores lie farther out, often in dead ends, and you have to fight your way back from there."
+msgstr "Das Erz nahe beim Schiff ist von der niedrigsten Qualität. Die selteneren Erze liegen weiter draußen, oft in Sackgassen, und von dort musst du dich zurückkämpfen."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "My advice: set up your miners early, then go looking for the good stuff while they work."
+msgstr "Mein Rat: Stell deine Miner früh auf und such nach dem guten Zeug, während sie arbeiten."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Staying alive"
+msgstr "Am Leben bleiben"
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "When the countdown runs out, the storm hits, and out there it kills you within seconds. Be back aboard before then, no matter how much ore is still waiting."
+msgstr "Wenn der Countdown abläuft, kommt der Sturm, und da draußen bringt er dich in Sekunden um. Sei vorher wieder an Bord, egal wie viel Erz noch wartet."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "The nests keep sending hunters after you for as long as you're outside. Destroy one, and its hunters stop coming, but the other nests answer right away."
+msgstr "Die Nester schicken dir Jäger hinterher, solange du draußen bist. Zerstörst du eines, kommen seine Jäger nicht mehr, aber die anderen Nester antworten sofort."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "And watch your miners. Some of the hive's creatures go straight for them. My crew has lost more miners than I like to admit, but never a person."
+msgstr "Und pass auf deine Miner auf. Manche Kreaturen des Schwarms gehen direkt auf sie los. Meine Crew hat mehr Miner verloren, als ich zugeben mag, aber noch nie einen Menschen."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "About Rook"
+msgstr "Über Rook"
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "I came in on one of the first haulers, before there was much of a station here. I've been prospecting ever since."
+msgstr "Ich kam mit einem der ersten Frachter, als es hier noch kaum eine Station gab. Seitdem bin ich Prospektor."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "My crew is small, but they're the best there is. We've landed in more regions than anyone else on this station."
+msgstr "Meine Crew ist klein, aber die beste, die es gibt. Wir sind in mehr Regionen gelandet als irgendwer sonst auf dieser Station."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "We'll see how long you last out there. If you're still flying in a few months, I'll buy you a drink."
+msgstr "Mal sehen, wie lange du da draußen durchhältst. Wenn du in ein paar Monaten noch fliegst, geb ich dir einen aus."
+
+#: game/npcs/ostra/technician.tres
+msgid "Technician"
+msgstr "Technikerin"
+
+#: game/npcs/ostra/technician.tres
+msgid "Don't touch that panel. It's the only thing keeping the air in this section warm."
+msgstr "Fass die Konsole nicht an. Sie ist das Einzige, was die Luft in diesem Abschnitt warm hält."
+
+#: game/npcs/ostra/technician.tres
+msgid "Half the station runs on spare parts from the first haulers."
+msgstr "Die halbe Station läuft mit Ersatzteilen aus den ersten Frachtern."
+
+#: game/npcs/ostra/technician.tres
+msgid "If you hear a hiss, walk away calmly and tell someone. Usually it's nothing."
+msgstr "Wenn du ein Zischen hörst, geh ruhig weg und sag jemandem Bescheid. Meistens ist es nichts."
+
+#: game/npcs/ostra/technician.tres
+msgid "The air recyclers need new filters again. They always need new filters."
+msgstr "Die Luftaufbereitung braucht schon wieder neue Filter. Sie braucht immer neue Filter."
+
+#: game/npcs/ostra/trader.tres
+msgid "Trader"
+msgstr "Händlerin"
+
+#: game/npcs/ostra/trader.tres
+msgid "Nothing for sale today, I'm afraid. Everything here is already promised to someone."
+msgstr "Heute gibt es leider nichts zu kaufen. Alles hier ist schon jemandem versprochen."
+
+#: game/npcs/ostra/trader.tres
+msgid "I used to sell spare parts. Now I mostly fix the ones people bring me."
+msgstr "Früher habe ich Ersatzteile verkauft. Jetzt repariere ich meistens die, die mir die Leute bringen."
+
+#: game/npcs/ostra/trader.tres
+msgid "Ore is the only thing anyone wants to trade for these days."
+msgstr "Erz ist zurzeit das Einzige, wofür irgendwer tauschen will."
+
+#: game/npcs/ostra/trader.tres
+msgid "Quiet day. They're all quiet days lately."
+msgstr "Ruhiger Tag. In letzter Zeit sind alle Tage ruhig."
 
 #: game/npcs/talk_card.gd
 msgid "Done"
@@ -1796,10 +2262,6 @@ msgid "Kesh"
 msgstr "Kesh"
 
 #: game/world/star_system.tres
-msgid "Torvane"
-msgstr "Torvane"
-
-#: game/world/star_system.tres
 msgid "Redscar Flats"
 msgstr "Redscar Flats"
 
@@ -1810,10 +2272,6 @@ msgstr "Hollow Mire"
 #: game/world/star_system.tres
 msgid "Cinder Steps"
 msgstr "Cinder Steps"
-
-#: game/world/star_system.tres
-msgid "Lisk"
-msgstr "Lisk"
 
 #: game/world/star_system.tres
 msgid "Pale Basin"
@@ -1828,10 +2286,6 @@ msgid "Waypost Ostra"
 msgstr "Waypost Ostra"
 
 #: game/world/star_system.tres
-msgid "Vehra"
-msgstr "Vehra"
-
-#: game/world/star_system.tres
 msgid "Hoarfrost Ridge"
 msgstr "Hoarfrost Ridge"
 
@@ -1842,10 +2296,6 @@ msgstr "Glare Fields"
 #: game/world/star_system.tres
 msgid "Ember Reach"
 msgstr "Ember Reach"
-
-#: game/world/star_system.tres
-msgid "Cassor"
-msgstr "Cassor"
 
 #: game/world/star_system.tres
 msgid "Sunken Verge"
@@ -1864,20 +2314,12 @@ msgid "Mossgrave"
 msgstr "Mossgrave"
 
 #: game/world/star_system.tres
-msgid "Mirr"
-msgstr "Mirr"
-
-#: game/world/star_system.tres
 msgid "Quiet Scar"
 msgstr "Quiet Scar"
 
 #: game/world/star_system.tres
 msgid "Gaulm"
 msgstr "Gaulm"
-
-#: game/world/star_system.tres
-msgid "Orrel"
-msgstr "Orrel"
 
 #: game/world/star_system.tres
 msgid "Drift Basin"
@@ -1888,20 +2330,12 @@ msgid "Lantern Hollow"
 msgstr "Lantern Hollow"
 
 #: game/world/star_system.tres
-msgid "Iska"
-msgstr "Iska"
-
-#: game/world/star_system.tres
 msgid "Coldwake"
 msgstr "Coldwake"
 
 #: game/world/star_system.tres
 msgid "Splitrock Steps"
 msgstr "Splitrock Steps"
-
-#: game/world/star_system.tres
-msgid "Skelde"
-msgstr "Skelde"
 
 #: game/world/star_system.tres
 msgid "Rustwind Plain"
@@ -1918,10 +2352,6 @@ msgstr "Brimstone Cut"
 #: game/world/star_system.tres
 msgid "Slag Terraces"
 msgstr "Slag Terraces"
-
-#: game/world/star_system.tres
-msgid "Zairen"
-msgstr "Zairen"
 
 #: game/world/star_system.tres
 msgid "Sunward Scar"

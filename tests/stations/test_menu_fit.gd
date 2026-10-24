@@ -6,6 +6,7 @@ const CARD_SCENE: PackedScene = preload("res://game/stations/upgrade/upgrade_car
 const LOADOUT_CARD_SCENE: PackedScene = preload("res://game/stations/loadout/loadout_card.tscn")
 const SKILL_CARD_SCENE: PackedScene = preload("res://game/stations/skill_graph/skill_card.tscn")
 const SKILL_TREE: SkillTree = preload("res://game/progression/skills/tree/skill_tree.tres")
+const THEME: Theme = preload("res://assets/ui/terminal_theme.tres")
 const CREW: Array[NpcProfile] = [preload("res://game/npcs/crew/quartermaster.tres")]
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
 const UPGRADES: Array[Upgrade] = [
@@ -339,32 +340,69 @@ func test_every_crew_line_and_card_fits_in_every_language() -> void:
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		_player.arsenal.unlock(weapon_type)
 	for profile: NpcProfile in CREW:
-		var npc := _ship.get_node(NPCS[profile.resource_path]) as Npc
-		_player.global_position = npc.use_point.global_position
-		var dialogue: Dialogue = profile.dialogue
-		var topics: Array[Topic] = dialogue.topics.duplicate()
-		topics.push_front(dialogue.greeting)
+		await _assert_lines_fit(_ship.get_node(NPCS[profile.resource_path]) as Npc)
+
+
+func test_every_station_line_card_and_remark_fits_in_every_language() -> void:
+	var voyage := _map.get_node("Voyage") as Voyage
+	voyage.select(voyage.offer_for_station(voyage.settings.system.body_by_id(&"ostra")))
+	voyage.skip_flight()
+	await wait_physics_frames(2)
+	# Every body in reach: every rumor topic open.
+	_ship.heat_shield.restore(_ship.heat_shield.max_mk(), false, {})
+	var people: Node = voyage.location.get_node("People")
+	for person: Node in people.get_children():
+		if person is Npc:
+			await _assert_lines_fit(person as Npc)
+	# The camera zooms back out after the last talk.
+	var rig := _map.get_node("IsoCameraRig") as IsoCameraRig
+	for i: int in 300:
+		if is_equal_approx(rig.zoom, 1.0):
+			break
+		await wait_process_frames(1)
+	for person: Node in people.get_children():
+		var colonist := person as Colonist
+		if not colonist:
+			continue
 		for locale: String in SettingsList.languages():
 			TranslationServer.set_locale(locale)
-			# Every topic open and new (the most buttons, the widest with their dots).
-			_ship.story.flags.clear()
-			for topic: Topic in topics:
-				for flag: StringName in topic.requires:
-					_ship.story.flags[flag] = true
-			npc.open(_player)
-			npc.leave_topic()
-			await wait_process_frames(1)
-			_assert_card_fits(npc, "%s %s topics" % [locale, profile.display_name])
-			_assert_bubble_fits(npc, "%s %s prompt" % [locale, profile.display_name])
-			for topic: Topic in topics:
-				npc.talk_about(topic)
-				for line: int in topic.lines.size():
-					await wait_process_frames(1)
-					var label: String = "%s %s line %d" % [locale, topic.id, line + 1]
-					_assert_card_fits(npc, label)
-					_assert_bubble_fits(npc, label)
-					npc.advance()
-			npc.close()
+			for remark: int in colonist.profile.remarks.size():
+				colonist.remark()
+				await wait_process_frames(1)
+				var label: String = "%s %s remark %d" % [locale, colonist.name, remark + 1]
+				_assert_speech_fits(colonist.bubble, label)
+				var share: float = _bubble_text_height(colonist.bubble, colonist)
+				assert_gte(share, MIN_TEXT_HEIGHT, label + " reads")
+
+
+## Every line of `npc`'s topics and their card fit in every language.
+func _assert_lines_fit(npc: Npc) -> void:
+	var profile: NpcProfile = npc.profile
+	_player.global_position = npc.use_point.global_position
+	var dialogue: Dialogue = profile.dialogue
+	var topics: Array[Topic] = dialogue.topics.duplicate()
+	topics.push_front(dialogue.greeting)
+	for locale: String in SettingsList.languages():
+		TranslationServer.set_locale(locale)
+		# Every topic open and new (the most buttons, the widest with their dots).
+		_ship.story.flags.clear()
+		for topic: Topic in topics:
+			for flag: StringName in topic.requires:
+				_ship.story.flags[flag] = true
+		npc.open(_player)
+		npc.leave_topic()
+		await wait_process_frames(1)
+		_assert_card_fits(npc, "%s %s topics" % [locale, profile.display_name])
+		_assert_bubble_fits(npc, "%s %s prompt" % [locale, profile.display_name])
+		for topic: Topic in topics:
+			npc.talk_about(topic)
+			for line: int in topic.lines.size():
+				await wait_process_frames(1)
+				var label: String = "%s %s line %d" % [locale, topic.id, line + 1]
+				_assert_card_fits(npc, label)
+				_assert_bubble_fits(npc, label)
+				npc.advance()
+		npc.close()
 
 
 func test_every_terminal_fits_in_every_language() -> void:
@@ -380,8 +418,7 @@ func test_every_terminal_fits_in_every_language() -> void:
 
 
 func test_text_reads_from_the_camera() -> void:
-	var theme: Theme = load("res://assets/ui/terminal_theme.tres")
-	var font_size: float = theme.default_font_size
+	var font_size: float = THEME.default_font_size
 	for path: String in TERMINALS:
 		var terminal := _ship.get_node(path) as Terminal
 		var panel: WorldPanel = terminal.panel
@@ -397,11 +434,7 @@ func test_text_reads_from_the_camera() -> void:
 			assert_gte(text_height / at_wall, MIN_TEXT_HEIGHT, path + " at the wall")
 	for path: String in NPCS.values():
 		var npc := _ship.get_node(path) as Npc
-		var bubble: WorldPanel = npc.bubble
-		var text_height: float = (
-			font_size / bubble.pixels_per_meter * bubble.global_basis.y.length()
-		)
-		assert_gte(text_height / npc.view_height, MIN_TEXT_HEIGHT, path + " bubble")
+		assert_gte(_bubble_text_height(npc.bubble, npc), MIN_TEXT_HEIGHT, path + " bubble")
 
 
 func _assert_card_fits(station: Station, label: String) -> void:
@@ -410,7 +443,10 @@ func _assert_card_fits(station: Station, label: String) -> void:
 
 
 func _assert_bubble_fits(npc: Npc, label: String) -> void:
-	var panel: WorldPanel = npc.bubble
+	_assert_speech_fits(npc.bubble, label)
+
+
+func _assert_speech_fits(panel: WorldPanel, label: String) -> void:
 	var speech := panel.content as SpeechBubble
 	var needed: Vector2 = speech.get_needed_size()
 	var layout := Vector2(panel.size * panel.pixels_per_meter)
@@ -422,3 +458,14 @@ func _assert_fits(content: Control, layout: Vector2, label: String) -> void:
 	var needed: Vector2 = content.get_combined_minimum_size()
 	assert_lte(needed.x, layout.x + 0.5, "%s: %s wide" % [label, needed.x])
 	assert_lte(needed.y, layout.y + 0.5, "%s: %s high" % [label, needed.y])
+
+
+## The bubble's text height as a part of the view's height around `speaker` (an NPC's while
+## talking, or the camera's without zoom for colonists).
+func _bubble_text_height(bubble: WorldPanel, speaker: Node3D) -> float:
+	var text_height: float = (
+		THEME.default_font_size / bubble.pixels_per_meter * bubble.global_basis.y.length()
+	)
+	var npc := speaker as Npc
+	var rig := _map.get_node("IsoCameraRig") as IsoCameraRig
+	return text_height / (npc.view_height if npc else rig.view_height() * rig.zoom)

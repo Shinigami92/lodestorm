@@ -1,0 +1,111 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://b26e8fg578g0j"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"bartender.greeting"
+title = "Hello"
+lines = Array[String](["Welcome to the only bar in orbit around Torvane. I'm Nell. It's nothing fancy, but the drinks are cold and the chairs hardly wobble.", "Crews come in here after every run and talk about what they've seen down there. I listen to all of it.", "So if you want to know what's waiting for you somewhere, ask me. I'll tell you what I've heard."])
+
+[sub_resource type="Resource" id="Resource_bar"]
+script = ExtResource("3_topic")
+id = &"bartender.bar"
+title = "The bar"
+lines = Array[String](["This place belongs to whoever needs it. Crews meet here, colonists come to forget their work for an hour, and the council pretends it never drinks here.", "The best place to hear news is right here at the counter. Crews talk more freely with a drink in their hand."])
+requires = Array[StringName]([&"bartender.greeting"])
+
+[sub_resource type="Resource" id="Resource_nell"]
+script = ExtResource("3_topic")
+id = &"bartender.nell"
+title = "About Nell"
+lines = Array[String](["I came here to work in the air recycling plant. After a few years, I'd had enough of filters and fans, and the bar needed someone.", "I run it on my own. I know everyone's name, what they drink and who still owes me.", "People tell me things they'd never tell the council. I keep most of it to myself. Most of it."])
+requires = Array[StringName]([&"bartender.greeting"])
+
+[sub_resource type="Resource" id="Resource_torvane"]
+script = ExtResource("3_topic")
+id = &"bartender.torvane"
+title = "Torvane"
+lines = Array[String](["In Redscar Flats, there's an abandoned outpost: a few modules and an empty landing pad. Crews say there's usually still a crate there worth opening.", "Somewhere in Hollow Mire, between the giant stalks, stands an old camp with a survival pod. Its beacon is still blinking, but nobody knows who left it there.", "Cinder Steps has a huge crater where a meteorite came down, with ore all around it. It's the most dangerous region on Torvane, so go there prepared."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"torvane"
+
+[sub_resource type="Resource" id="Resource_lisk"]
+script = ExtResource("3_topic")
+id = &"bartender.lisk"
+title = "Lisk"
+lines = Array[String](["In Pale Basin on Lisk, a ship's hull lies half buried in the ice. Whoever flew it is long gone, but there may still be a crate aboard.", "Rimeback has a whole wall of crystals at the end of a dead end. The rarest ore of the region lies right in front of it."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"lisk"
+
+[sub_resource type="Resource" id="Resource_vehra"]
+script = ExtResource("3_topic")
+id = &"bartender.vehra"
+title = "Vehra"
+lines = Array[String](["On Hoarfrost Ridge, there's another abandoned outpost, frozen solid. Someone left in a hurry, and maybe left a crate behind.", "In the Glare Fields, the salt is so bright it hurts your eyes. Somewhere in there, a wall of crystals stands in a dead end, with rare ore in front of it.", "Ember Reach is rough, the most dangerous place on Vehra. There's a wrecked ship out there, half buried in the dust."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"vehra"
+
+[sub_resource type="Resource" id="Resource_cassor"]
+script = ExtResource("3_topic")
+id = &"bartender.cassor"
+title = "Cassor"
+lines = Array[String](["In Sunken Verge, a wreck lies tangled in the growth. The crews who found it say the plants have grown right through the hull.", "On the Brine Terraces, there's an old outpost with its landing pad still in one piece, which is more than most places can say.", "Whiteshelf has a meteorite crater in the middle of the salt. The ore around it is worth the walk.", "Mossgrave is bad. Deep inside it, there's another one of those old camps with a blinking beacon. Same pod, same silence."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"cassor"
+
+[sub_resource type="Resource" id="Resource_mirr"]
+script = ExtResource("3_topic")
+id = &"bartender.mirr"
+title = "Mirr"
+lines = Array[String](["On Mirr, there's only one place to land: Quiet Scar. It has a meteorite crater, and the crews say it's quieter there than anywhere else. They don't trust it."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"mirr"
+
+[sub_resource type="Resource" id="Resource_orrel"]
+script = ExtResource("3_topic")
+id = &"bartender.orrel"
+title = "Orrel"
+lines = Array[String](["In Drift Basin on Orrel, a wreck lies half sunk in the salt. The crews say it looks as if it had always been there.", "Lantern Hollow got its name from a beacon that blinks somewhere in the growth. It belongs to an old camp, like the ones on Torvane and Cassor."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"orrel"
+
+[sub_resource type="Resource" id="Resource_iska"]
+script = ExtResource("3_topic")
+id = &"bartender.iska"
+title = "Iska"
+lines = Array[String](["On Coldwake, there's an outpost the ice has nearly taken back. Crews say there's usually still a crate there worth opening.", "Splitrock Steps on Iska is dangerous, but a crystal wall stands in a dead end there, with the rarest ore of the region in front of it. Most crews think it's worth it."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"iska"
+
+[sub_resource type="Resource" id="Resource_skelde"]
+script = ExtResource("3_topic")
+id = &"bartender.skelde"
+title = "Skelde"
+lines = Array[String](["On Rustwind Plain, the wind has scoured an old outpost down to bare metal. It's the easiest landing on Skelde.", "In Black Tide, a wreck lies between the lava channels. The heat has warped the hull, but crews still go looking for what's left inside.", "Brimstone Cut has a crystal wall at the end of a dead end. The rare ore in front of it is the best you'll find there.", "The Slag Terraces are the worst place on Skelde. A meteorite crater sits in the middle of it all, with ore all around."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"skelde"
+
+[sub_resource type="Resource" id="Resource_zairen"]
+script = ExtResource("3_topic")
+id = &"bartender.zairen"
+title = "Zairen"
+lines = Array[String](["On Sunward Scar, there's a wreck so close to the star that its metal has turned dark. Only a few crews have seen it up close.", "In Glassmere, the ground is glass, and somewhere on it stands an old camp with a beacon. Whoever set it up came farther in than anyone else.", "Mirror Flats has a meteorite crater in the glass. The crews say the light there is so bright you can barely see the aliens coming.", "In the Fused Expanse, a crystal wall stands in a dead end, with the rarest ore in front of it. Getting there and back again is another story."])
+requires = Array[StringName]([&"bartender.greeting"])
+requires_body = &"zairen"
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_bar"), SubResource("Resource_nell"), SubResource("Resource_torvane"), SubResource("Resource_lisk"), SubResource("Resource_vehra"), SubResource("Resource_cassor"), SubResource("Resource_mirr"), SubResource("Resource_orrel"), SubResource("Resource_iska"), SubResource("Resource_skelde"), SubResource("Resource_zairen")])
+
+[resource]
+script = ExtResource("1_profile")
+id = &"bartender"
+display_name = "Nell"
+role = "Bartender"
+accent_color = Color(1, 0.45, 0.7, 1)
+suit_tint = Color(0.74, 0.68, 0.7, 1)
+dialogue = SubResource("Resource_dialogue")

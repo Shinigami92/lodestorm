@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://bdefd2epo835b"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"rival_captain.greeting"
+title = "Hello"
+lines = Array[String](["Well, look who's here. Another crew that thinks it can make a living down on those planets. I'm Rook, captain of the best prospecting crew in the system.", "Don't take it personally. There's plenty of ore for everyone, as long as you get to it first.", "Ask me anything, if you like. I'm always happy to tell a new crew how it's really done."])
+
+[sub_resource type="Resource" id="Resource_prospecting"]
+script = ExtResource("3_topic")
+id = &"rival_captain.prospecting"
+title = "Prospecting"
+lines = Array[String](["Every time you land, it's a new stretch of ground, even in a region you've been to before. So nobody gets to keep a good spot for themselves.", "The ore close to your ship is the lowest quality. The rarer ores lie farther out, often in dead ends, and you have to fight your way back from there.", "My advice: set up your miners early, then go looking for the good stuff while they work."])
+requires = Array[StringName]([&"rival_captain.greeting"])
+
+[sub_resource type="Resource" id="Resource_survival"]
+script = ExtResource("3_topic")
+id = &"rival_captain.survival"
+title = "Staying alive"
+lines = Array[String](["When the countdown runs out, the storm hits, and out there it kills you within seconds. Be back aboard before then, no matter how much ore is still waiting.", "The nests keep sending hunters after you for as long as you're outside. Destroy one, and its hunters stop coming, but the other nests answer right away.", "And watch your miners. Some of the hive's creatures go straight for them. My crew has lost more miners than I like to admit, but never a person."])
+requires = Array[StringName]([&"rival_captain.greeting"])
+
+[sub_resource type="Resource" id="Resource_rook"]
+script = ExtResource("3_topic")
+id = &"rival_captain.rook"
+title = "About Rook"
+lines = Array[String](["I came in on one of the first haulers, before there was much of a station here. I've been prospecting ever since.", "My crew is small, but they're the best there is. We've landed in more regions than anyone else on this station.", "We'll see how long you last out there. If you're still flying in a few months, I'll buy you a drink."])
+requires = Array[StringName]([&"rival_captain.greeting"])
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_prospecting"), SubResource("Resource_survival"), SubResource("Resource_rook")])
+
+[resource]
+script = ExtResource("1_profile")
+id = &"rival_captain"
+display_name = "Rook"
+role = "Prospector captain"
+accent_color = Color(0.95, 0.3, 0.25, 1)
+suit_tint = Color(0.66, 0.62, 0.6, 1)
+dialogue = SubResource("Resource_dialogue")

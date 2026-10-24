@@ -6,6 +6,7 @@
 [ext_resource type="StandardMaterial3D" uid="uid://d0bdki1n4b0el" path="res://game/ship/materials/prop.tres" id="mat_prop"]
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="npc"]
 [ext_resource type="PackedScene" uid="uid://bftkdc44jxkuq" path="res://game/npcs/colonist.tscn" id="colonist"]
+[ext_resource type="PackedScene" uid="uid://ighcxvpy8jv7" path="res://game/stations/exchange/ore_exchange.tscn" id="exchange"]
 [ext_resource type="Resource" uid="uid://b26e8fg578g0j" path="res://game/npcs/ostra/bartender.tres" id="profile_bartender"]
 [ext_resource type="Resource" uid="uid://dfmrx0ergdctx" path="res://game/npcs/ostra/councillor.tres" id="profile_councillor"]
 [ext_resource type="Resource" uid="uid://dv66pnlem07ra" path="res://game/npcs/ostra/depot_master.tres" id="profile_depot_master"]
@@ -2585,6 +2586,9 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 134, 0, -14)
 profile = ExtResource("colonist_teacher")
 tint = Color(1, 0.9, 0.95, 1)
 route = PackedVector3Array(164, 0, -14, 164, 0, 14, 134, 0, 14, 134, 0, -14)
+
+[node name="OreExchange" parent="." instance=ExtResource("exchange")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5, 0, -20.5)
 
 [node name="Interior" type="Area3D" parent="."]
 monitorable = false

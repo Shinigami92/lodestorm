@@ -6,6 +6,7 @@ const THEME: Theme = preload("res://assets/ui/terminal_theme.tres")
 const CARDS: Array[String] = [
 	"res://game/npcs/talk_card.tscn",
 	"res://game/stations/bed/bed_card.tscn",
+	"res://game/stations/exchange/exchange_card.tscn",
 	"res://game/stations/flight/flight_card.tscn",
 	"res://game/stations/heat_shield/heat_shield_card.tscn",
 	"res://game/stations/hold/hold_card.tscn",

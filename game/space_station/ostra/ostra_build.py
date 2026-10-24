@@ -377,9 +377,10 @@ for i, (x, y, side) in enumerate(CLAMPS):
 # their own (profile, tint, where, yaw, route: the waypoints they walk in a loop; none: they stand) ---
 NPC_SCENE = "res://game/npcs/npc.tscn"
 COLONIST_SCENE = "res://game/npcs/colonist.tscn"
+EXCHANGE_SCENE = "res://game/stations/exchange/ore_exchange.tscn"
 PROFILES = "res://game/npcs/ostra/"
 PEOPLE = [
-    # Beside the depot's counter (the exchange's hoppers join it later).
+    # Beside the depot's counter (the exchange's hoppers on it).
     ("Kade", "depot_master", (77.6, -21.6), 0),
     # At the head of the long table, the big window behind.
     ("Selin", "councillor", (108.5, -25.3), 0),
@@ -443,6 +444,14 @@ for name, profile, tint, (px, pz), facing, route in COLONISTS:
         nodes += ["route = PackedVector3Array(" + ", ".join(f"{g(x)}, 0, {g(z)}" for x, z in route) + ")"]
     nodes += [""]
 
+# --- the ore exchange: its hoppers on the depot's counter (its origin: the counter's middle on the
+# deck, see ExchangeStation) ---
+nodes += [
+    '[node name="OreExchange" parent="." instance=ExtResource("exchange")]',
+    f"transform = {xform((73.5, 0, -20.5))}",
+    "",
+]
+
 # --- who's inside: the cut-away and the indoor light follow it ---
 nodes += ['[node name="Interior" type="Area3D" parent="."]', "monitorable = false", ""]
 for name, (x0, x1), (z0, z1), height in interior:
@@ -460,6 +469,7 @@ ext = [
     ("StandardMaterial3D", PROP_MATERIAL, "mat_prop"),
     ("PackedScene", NPC_SCENE, "npc"),
     ("PackedScene", COLONIST_SCENE, "colonist"),
+    ("PackedScene", EXCHANGE_SCENE, "exchange"),
 ]
 for profile in sorted({p[1] for p in PEOPLE}):
     ext.append(("Resource", f"{PROFILES}{profile}.tres", f"profile_{profile}"))

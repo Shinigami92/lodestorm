@@ -17,6 +17,13 @@ title = "The depot"
 lines = Array[String](["Everything the colony eats, breathes and builds with is stored here: food, air filters, spare parts and metal.", "The shelves behind me look full, but most of those crates are already promised to someone. What comes in today is gone by next week.", "Ore is the one thing we can never get enough of. Without it, the workshops stop, and nothing gets repaired."])
 requires = Array[StringName]([&"depot_master.greeting"])
 
+[sub_resource type="Resource" id="Resource_exchange"]
+script = ExtResource("3_topic")
+id = &"depot_master.exchange"
+title = "The exchange"
+lines = Array[String](["The two hoppers on my counter are the ore exchange. You put one ore in and get another one out, but only at three for one.", "It's not a good rate, and it's not meant to be. It's for when you're short of one ore and have far too much of another.", "Ore that only one planet has, I can't give out. You can trade it in, but if you need it, you have to go down there and mine it yourself."])
+requires = Array[StringName]([&"depot_master.greeting"])
+
 [sub_resource type="Resource" id="Resource_colony"]
 script = ExtResource("3_topic")
 id = &"depot_master.colony"
@@ -34,7 +41,7 @@ requires = Array[StringName]([&"depot_master.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_depot"), SubResource("Resource_colony"), SubResource("Resource_kade")])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_depot"), SubResource("Resource_exchange"), SubResource("Resource_colony"), SubResource("Resource_kade")])
 
 [resource]
 script = ExtResource("1_profile")

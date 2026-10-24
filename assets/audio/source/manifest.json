@@ -231,6 +231,11 @@
       "variants": 1,
       "recordings": []
     },
+    "stations/exchange": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "stations/job_done": {
       "made_by": "build.py",
       "variants": 1,

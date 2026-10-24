@@ -758,6 +758,22 @@ msgid "Ore is the one thing we can never get enough of. Without it, the workshop
 msgstr "Von Erz können wir nie genug bekommen. Ohne Erz stehen die Werkstätten still, und nichts wird mehr repariert."
 
 #: game/npcs/ostra/depot_master.tres
+msgid "The exchange"
+msgstr "Die Erzbörse"
+
+#: game/npcs/ostra/depot_master.tres
+msgid "The two hoppers on my counter are the ore exchange. You put one ore in and get another one out, but only at three for one."
+msgstr "Die beiden Trichter auf meiner Theke sind die Erzbörse. Du gibst ein Erz hinein und bekommst ein anderes heraus, aber nur drei zu eins."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "It's not a good rate, and it's not meant to be. It's for when you're short of one ore and have far too much of another."
+msgstr "Das ist kein guter Kurs, und das soll er auch nicht sein. Er ist für den Fall, dass dir ein Erz fehlt und du von einem anderen viel zu viel hast."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Ore that only one planet has, I can't give out. You can trade it in, but if you need it, you have to go down there and mine it yourself."
+msgstr "Erz, das es nur auf einem einzigen Planeten gibt, kann ich nicht herausgeben. Du kannst es eintauschen, aber wenn du es brauchst, musst du selbst hinunter und es abbauen."
+
+#: game/npcs/ostra/depot_master.tres
 msgid "The colony"
 msgstr "Die Kolonie"
 
@@ -1349,6 +1365,7 @@ msgid "Sleep"
 msgstr "Schlafen"
 
 #: game/stations/bed/bed_card.tscn
+#: game/stations/exchange/exchange_card.tscn
 #: game/stations/flight/flight_card.tscn
 #: game/stations/heat_shield/heat_shield_card.tscn
 #: game/stations/hold/hold_card.tscn
@@ -1361,6 +1378,45 @@ msgstr "Schlafen"
 #: game/ui/settings_menu.tscn
 msgid "Close"
 msgstr "Schließen"
+
+#: game/stations/exchange/exchange_card.gd
+msgid "Rate: %d in, 1 out."
+msgstr "Kurs: %d hinein, 1 heraus."
+
+#: game/stations/exchange/exchange_card.gd
+msgid "Your hold has no ore to trade: at least %d of one kind go in."
+msgstr "In deinem Laderaum ist kein Erz zum Tauschen: Von einer Sorte müssen mindestens %d hinein."
+
+#: game/stations/exchange/exchange_card.gd
+msgid "There's no other ore you could get yet."
+msgstr "Es gibt noch kein anderes Erz, das du bekommen könntest."
+
+#: game/stations/exchange/exchange_card.gd
+#: game/stations/hold/hold_card.gd
+msgid "In the hold: %d"
+msgstr "Im Laderaum: %d"
+
+#: game/stations/exchange/exchange_card.tscn
+msgid "Ore exchange"
+msgstr "Erzbörse"
+
+#: game/stations/exchange/exchange_card.tscn
+#: game/stations/exchange/exchange_station.gd
+msgid "In"
+msgstr "Hinein"
+
+#: game/stations/exchange/exchange_card.tscn
+#: game/stations/exchange/exchange_station.gd
+msgid "Out"
+msgstr "Heraus"
+
+#: game/stations/exchange/exchange_card.tscn
+msgid "Amount"
+msgstr "Menge"
+
+#: game/stations/exchange/exchange_card.tscn
+msgid "Exchange"
+msgstr "Tauschen"
 
 #: game/stations/flight/flight_card.gd
 #: game/stations/navigator/navigator_card.gd
@@ -1488,10 +1544,6 @@ msgstr "Unbekanntes Erz"
 #: game/stations/hold/hold_card.gd
 msgid "Not brought aboard yet."
 msgstr "Noch nie an Bord gebracht."
-
-#: game/stations/hold/hold_card.gd
-msgid "In the hold: %d"
-msgstr "Im Laderaum: %d"
 
 #: game/stations/hold/hold_card.gd
 msgid "Found in no open region."

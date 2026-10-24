@@ -106,6 +106,8 @@ func _turn(delta: float) -> void:
 	var target: Node3D = faces
 	if not target:
 		target = Player.nearest(get_tree(), global_position, NOTICE_RANGE)
+	# Works on its activities only while nobody is close (it turns to them instead).
+	_animator.may_work = target == null
 	var yaw: float = 0.0
 	if target:
 		var parent: Node3D = get_parent_node_3d()
@@ -116,8 +118,8 @@ func _turn(delta: float) -> void:
 	rotation.y = lerp_angle(rotation.y, yaw, 1.0 - exp(-TURN_SPEED * delta))
 
 
-## Puts in the profile's own model (else the suit) in place of the one there, sets up its clips and
-## measures where its head is.
+## Puts in the profile's own model (else the suit) in place of the one there, sets up its clips
+## (with the profile's activities and props, on its own model) and measures where its head is.
 func _load_model() -> void:
 	var scene: PackedScene = profile.model if profile and profile.model else _suit_scene
 	if _model.scene_file_path != scene.resource_path:
@@ -128,7 +130,17 @@ func _load_model() -> void:
 		add_child(model)
 		move_child(model, 0)
 		_model = model
-	_animator.setup(_model)
+	var activities: Array[StringName] = []
+	if profile and profile.model:
+		activities = profile.activities
+	_animator.setup(_model, activities)
+	if profile and profile.model:
+		for prop: StringName in profile.props:
+			var grip := _model.find_child(String(prop) + "Grip", true, false) as Node3D
+			if not grip:
+				push_error('NpcBody: the model has no "%sGrip"' % prop)
+				continue
+			grip.add_child(profile.props[prop].instantiate())
 	var top := _model.find_child("HeadTop", true, false) as Node3D
 	head_height = (
 		(global_transform.affine_inverse() * top.global_position).y if top else SUIT_HEAD_HEIGHT

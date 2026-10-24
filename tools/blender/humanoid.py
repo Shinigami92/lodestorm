@@ -44,14 +44,25 @@ def _pole(a: Vector, joint: Vector, end: Vector, default: Vector) -> Vector:
 class Body:
     """One skeleton: its bones (name, head, tail, parent) at rest, the hands' rest poles per side (default: palms
     down), and the measures the clips stand it on: the feet's distance from the middle and the hanging wrists'
-    sideways distance and height."""
+    sideways distance and height. `props` are bones holding things in the hands (a glass, a rag): a pose shows them
+    by their scale (hidden unless it says otherwise)."""
 
-    def __init__(self, bones: list, *, foot_x: float, wrist_x: float, wrist_z: float, palm: dict | None = None):
+    def __init__(
+        self,
+        bones: list,
+        *,
+        foot_x: float,
+        wrist_x: float,
+        wrist_z: float,
+        palm: dict | None = None,
+        props: tuple = (),
+    ):
         self.bones = bones
         self.head = {n: Vector(h) for n, h, _t, _p in bones}
         self.tail = {n: Vector(t) for n, _h, t, _p in bones}
         self.parent = {n: p for n, _h, _t, p in bones}
         self.foot_x, self.wrist_x, self.wrist_z = foot_x, wrist_x, wrist_z
+        self.props = props
         self.ankle_z = self.head["LeftFoot"].z
         self.length = {}
         self.rest = {}  # bone: (direction, pole) at rest
@@ -124,6 +135,7 @@ class Pose:
     def __init__(self, body: Body, hips_offset=(0, 0, 0), hips=I3):
         self.body = body
         self.offset = Vector(hips_offset)
+        self.show = {}  # prop bone: its scale (0: hidden)
         self.w = {"Root": I3.copy(), "Hips": hips}
 
     def spine(self, spine=None, chest=None, upper=None, neck=None, head=None) -> None:
@@ -177,12 +189,15 @@ def apply(arm: bpy.types.Object, pose: Pose) -> None:
             q.negate()
         pb.rotation_quaternion = q
         pb.location = rest.transposed() @ pose.offset if name == "Hips" else Vector()
+        if name in pose.body.props:
+            pb.scale = (pose.show.get(name, 0.0),) * 3
 
 
 def rest_pose(arm: bpy.types.Object) -> None:
     for pb in arm.pose.bones:
         pb.rotation_quaternion = (1, 0, 0, 0)
         pb.location = (0, 0, 0)
+        pb.scale = (1, 1, 1)
     bpy.context.view_layer.update()
 
 
@@ -334,8 +349,9 @@ def locomotion(body: Body) -> dict:
     }
 
 
-def bake_clips(arm: bpy.types.Object, clips: dict) -> None:
-    """One action per clip (name: (frames, pose(t))), each in its own muted NLA track."""
+def bake_clips(arm: bpy.types.Object, clips: dict, props: tuple = ()) -> None:
+    """One action per clip (name: (frames, pose(t))), each in its own muted NLA track; `props` (the Body's prop
+    bones) get their scale keyed too."""
     ad = arm.animation_data_create()
     for name, (frames, fn) in clips.items():
         ad.action = None
@@ -345,6 +361,8 @@ def bake_clips(arm: bpy.types.Object, clips: dict) -> None:
                 pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)
                 if pb.name == "Hips":
                     pb.keyframe_insert("location", frame=f, group=pb.name)
+                if pb.name in props:
+                    pb.keyframe_insert("scale", frame=f, group=pb.name)
         act = ad.action
         act.name = name
         track = ad.nla_tracks.new()

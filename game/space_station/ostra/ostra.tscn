@@ -27,6 +27,12 @@ albedo_color = Color(0.33, 0.31, 0.29, 1)
 metallic = 0.2
 roughness = 0.65
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_07x0_25x0_07"]
+size = Vector3(0.07, 0.25, 0.07)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0_3x1_38x1_3"]
+size = Vector3(0.3, 1.38, 1.3)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_0_5x6x15_5"]
 size = Vector3(0.5, 6, 15.5)
 
@@ -149,6 +155,14 @@ size = Vector3(70.5, 0.5, 24.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_162_5x1x56_5"]
 size = Vector3(162.5, 1, 56.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_07x0_25x0_07"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(0.07, 0.25, 0.07)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0_3x1_38x1_3"]
+material = SubResource("StandardMaterial3D_wall")
+size = Vector3(0.3, 1.38, 1.3)
 
 [sub_resource type="BoxMesh" id="BoxMesh_0_5x6x15_5"]
 material = SubResource("StandardMaterial3D_wall")
@@ -1532,6 +1546,46 @@ shape = SubResource("BoxShape3D_0_9x1_1x9")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59, 0.55, 20)
 mesh = SubResource("BoxMesh_0_9x1_1x9")
 
+[node name="BackBarShape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 0.69, 20.75)
+shape = SubResource("BoxShape3D_0_3x1_38x1_3")
+
+[node name="BackBar" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 0.69, 20.75)
+mesh = SubResource("BoxMesh_0_3x1_38x1_3")
+
+[node name="BackBarBottle1Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 1.505, 20.3)
+shape = SubResource("BoxShape3D_0_07x0_25x0_07")
+
+[node name="BackBarBottle1" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 1.505, 20.3)
+mesh = SubResource("BoxMesh_0_07x0_25x0_07")
+
+[node name="BackBarBottle2Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 1.505, 20.55)
+shape = SubResource("BoxShape3D_0_07x0_25x0_07")
+
+[node name="BackBarBottle2" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 1.505, 20.55)
+mesh = SubResource("BoxMesh_0_07x0_25x0_07")
+
+[node name="BackBarBottle3Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 1.505, 20.9)
+shape = SubResource("BoxShape3D_0_07x0_25x0_07")
+
+[node name="BackBarBottle3" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 1.505, 20.9)
+mesh = SubResource("BoxMesh_0_07x0_25x0_07")
+
+[node name="BackBarBottle4Shape" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 1.505, 21.2)
+shape = SubResource("BoxShape3D_0_07x0_25x0_07")
+
+[node name="BackBarBottle4" type="MeshInstance3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.85, 1.505, 21.2)
+mesh = SubResource("BoxMesh_0_07x0_25x0_07")
+
 [node name="BoothTable1Shape" type="CollisionShape3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.5, 0.375, 16.5)
 shape = SubResource("BoxShape3D_1_6x0_75x1_2")
@@ -2518,16 +2572,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.5, 0, -25.3)
 profile = ExtResource("profile_councillor")
 
 [node name="Nell" parent="People" instance=ExtResource("npc")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 58, 0, 20)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 58.27, 0, 20)
 profile = ExtResource("profile_bartender")
 
 [node name="Use" parent="People/Nell"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.43)
 interact_range = 1
 footprint = Vector2(9, 1.5)
 
 [node name="Highlight" parent="People/Nell/Use"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.43)
 
 [node name="Rook" parent="People" instance=ExtResource("npc")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 86.2, 0, 23)

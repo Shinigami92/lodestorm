@@ -15,6 +15,7 @@ its sliders, rigged with MPFB's "game_engine" skeleton renamed to Godot's humano
 Assets come from MPFB's user data folder (installed asset packs, CC0 unless a person's script says otherwise).
 """
 
+import math
 import pathlib
 
 import addon_utils
@@ -198,7 +199,7 @@ def _rename_bones(rig: bpy.types.Object) -> None:
         pb.rotation_mode = "QUATERNION"
 
 
-def body_of(arm: bpy.types.Object, *, foot_out: float = 0.03, wrist_out: float = 0.09, reach: float = 0.93) -> H.Body:
+def body_of(arm: bpy.types.Object, *, foot_out: float = 0.03, wrist_out: float = 0.05, reach: float = 1.0) -> H.Body:
     """The humanoid.Body of a person's armature: its bones at rest (armature space), the feet `foot_out` outside the
     hips' joints, the hanging wrists `wrist_out` outside the shoulders and `reach` of the arm's length below them,
     the palms measured on the fingers."""
@@ -206,11 +207,7 @@ def body_of(arm: bpy.types.Object, *, foot_out: float = 0.03, wrist_out: float =
     for b in arm.data.bones:
         bones.append((b.name, tuple(b.head_local), tuple(b.tail_local), b.parent.name if b.parent else None))
     head = {n: Vector(h) for n, h, _t, _p in bones}
-    tail = {n: Vector(t) for n, _h, t, _p in bones}
-    palm = {}
-    for side, s in H.SIDES:
-        across = head[f"{side}LittleProximal"] - head[f"{side}IndexProximal"]
-        palm[side] = tuple(-s * (tail[f"{side}Hand"] - head[f"{side}Hand"]).cross(across).normalized())
+    palms = {side: tuple(palm(arm, side, posed=False)) for side, _s in H.SIDES}
     shoulder = head["LeftUpperArm"]
     arm_length = (head["LeftLowerArm"] - shoulder).length + (head["LeftHand"] - head["LeftLowerArm"]).length
     return H.Body(
@@ -218,7 +215,8 @@ def body_of(arm: bpy.types.Object, *, foot_out: float = 0.03, wrist_out: float =
         foot_x=head["LeftUpperLeg"].x + foot_out,
         wrist_x=shoulder.x + wrist_out,
         wrist_z=shoulder.z - reach * arm_length,
-        palm=palm,
+        palm=palms,
+        props=tuple(b.name for b in arm.data.bones if b.name.startswith("Prop")),
     )
 
 
@@ -283,13 +281,16 @@ def _line(points: np.ndarray) -> tuple:
     return mid, vt[0]
 
 
-def limb_directions(outfit: bpy.types.Object, arm: bpy.types.Object, waist: float) -> dict:
+def limb_directions(outfit: bpy.types.Object, arm: bpy.types.Object, waist: float) -> tuple:
     """Where the outfit's arms and legs point, per bone (armature space): each arm along the line through the
     middles of its slices (from the shoulder out, the hand left out), each thigh from the hip's joint to the top of
-    the lower leg's line (the middles of the trousers' slices below the knee), each lower leg along that line."""
+    the lower leg's line (the middles of the trousers' slices below the knee), each lower leg along that line; and
+    which way each hand's palm faces (per side: the flat hand's normal, to the front: an A-pose concept shows the
+    palms)."""
     co = G.vertices(outfit.data)
     head = {b.name: Vector(b.head_local) for b in arm.data.bones}
     out = {}
+    palms = {}
     for side, s in H.SIDES:
         shoulder = head[f"{side}UpperArm"]
         reach = float((s * co[:, 0]).max())
@@ -302,6 +303,9 @@ def limb_directions(outfit: bpy.types.Object, arm: bpy.types.Object, waist: floa
         d = Vector(d * (1 if d[0] * s > 0 else -1))
         for bone in ("UpperArm", "LowerArm", "Hand"):
             out[f"{side}{bone}"] = d
+        hand = co[(s * co[:, 0] > reach - 0.15) & (co[:, 2] > waist)]
+        _u, _s, vt = np.linalg.svd(hand - hand.mean(0))
+        palms[side] = Vector(vt[2] * (1 if vt[2][1] < 0 else -1))
         hip = head[f"{side}UpperLeg"]
         mids = []
         for z in np.arange(0.18, 0.46, 0.03):
@@ -313,17 +317,42 @@ def limb_directions(outfit: bpy.types.Object, arm: bpy.types.Object, waist: floa
         knee = Vector(mid + d * ((0.46 - mid[2]) / d[2]))
         out[f"{side}UpperLeg"] = (knee - hip).normalized()
         out[f"{side}LowerLeg"] = Vector(d)
-    return out
+    return out, palms
 
 
-def pose_limbs(arm: bpy.types.Object, directions: dict) -> None:
-    """Turns each bone (parents first) about its head so it points along its direction."""
+def palm(arm: bpy.types.Object, side: str, posed: bool = True) -> Vector:
+    """Which way the hand's palm faces (from its fingers' joints), posed or at rest."""
+    if posed:
+        joint = {n: arm.pose.bones[f"{side}{n}"].head for n in ("Hand", "IndexProximal", "LittleProximal")}
+        tip = arm.pose.bones[f"{side}Hand"].tail
+    else:
+        joint = {n: arm.data.bones[f"{side}{n}"].head_local for n in ("Hand", "IndexProximal", "LittleProximal")}
+        tip = arm.data.bones[f"{side}Hand"].tail_local
+    s = 1.0 if side == "Left" else -1.0
+    return -s * (tip - joint["Hand"]).cross(joint["LittleProximal"] - joint["IndexProximal"]).normalized()
+
+
+def pose_limbs(arm: bpy.types.Object, directions: dict, palms: dict | None = None) -> None:
+    """Turns each bone (parents first) about its head so it points along its direction, then each forearm about
+    itself so the hand's palm faces the way `palms` says (per side)."""
     for name, want in directions.items():
         pb = arm.pose.bones[name]
         head = pb.head.copy()
         turn = (pb.tail - pb.head).rotation_difference(want).to_matrix().to_4x4()
         pb.matrix = Matrix.Translation(head) @ turn @ Matrix.Translation(-head) @ pb.matrix
         bpy.context.view_layer.update()
+    for side, want in (palms or {}).items():
+        pb = arm.pose.bones[f"{side}LowerArm"]
+        axis = (pb.tail - pb.head).normalized()
+        have = palm(arm, side)
+        a = (have - axis * have.dot(axis)).normalized()
+        b = (want - axis * want.dot(axis)).normalized()
+        angle = math.atan2(axis.dot(a.cross(b)), a.dot(b))
+        head = pb.head.copy()
+        twist = Matrix.Rotation(angle, 4, axis)
+        pb.matrix = Matrix.Translation(head) @ twist @ Matrix.Translation(-head) @ pb.matrix
+        bpy.context.view_layer.update()
+        print("PALM", side, "turned", round(math.degrees(angle)), "degrees")
 
 
 def transfer_weights(co: np.ndarray, body: np.ndarray, w: np.ndarray, k: int = 4) -> tuple:
@@ -405,3 +434,47 @@ def noise(size: int, scale: int, seed: int, octaves: int = 4) -> np.ndarray:
         out += (a * (1 - f)[:, None] + b * f[:, None]) * 0.5**o
         total += 0.5**o
     return out / total
+
+
+# --- things in the hands ----------------------------------------------------------------------------
+# A person holds props (a glass, a bottle, a rag: their own models, e.g. assets/props/bar/) on bones of their own
+# ("Prop<Name>") under a hand bone: the clips show a prop by its bone's scale (humanoid.Body.props; hidden in every
+# clip that doesn't show it). An empty "<Name>Grip" on the bone marks where the hand holds it (the game puts the
+# prop's model there, NpcBody): in front of the palm, a hand's width along it; its +Z (Godot: +Y) along the thumb's
+# side (index to little finger reversed), its +Y (Godot: -Z) along the fingers. A prop's model stands on that frame:
+# its origin where it's held, its up (a glass's axis) along the thumb's side.
+
+
+def grip_frame(arm: bpy.types.Object, side: str) -> Matrix:
+    """The hand's grip at rest (armature space)."""
+    hand = arm.data.bones[f"{side}Hand"]
+    along = (hand.tail_local - hand.head_local).normalized()
+    face = palm(arm, side, posed=False)
+    up = arm.data.bones[f"{side}IndexProximal"].head_local - arm.data.bones[f"{side}LittleProximal"].head_local
+    up = (up - along * up.dot(along)).normalized()
+    m = Matrix((along.cross(up), along, up)).transposed().to_4x4()
+    m.translation = hand.head_local + along * 0.085 + face * 0.035
+    return m
+
+
+def prop_grip(arm: bpy.types.Object, name: str, side: str) -> None:
+    """A bone "Prop<name>" under the hand, at its grip, with the empty "<name>Grip" on it."""
+    frame = grip_frame(arm, side)
+    bone = f"Prop{name}"
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode="EDIT")
+    eb = arm.data.edit_bones.new(bone)
+    eb.head = frame.translation
+    eb.tail = frame.translation + frame.to_3x3().col[2] * 0.08
+    eb.parent = arm.data.edit_bones[f"{side}Hand"]
+    bpy.ops.object.mode_set(mode="OBJECT")
+    arm.pose.bones[bone].rotation_mode = "QUATERNION"
+    e = bpy.data.objects.new(f"{name}Grip", None)
+    e.empty_display_type = "ARROWS"
+    e.empty_display_size = 0.05
+    C.link(e)
+    e.parent = arm
+    e.parent_type = "BONE"
+    e.parent_bone = bone
+    bpy.context.view_layer.update()
+    e.matrix_world = arm.matrix_world @ frame

@@ -12,8 +12,10 @@ her face, her skeleton and its weights); what she wears and her hair are generat
 concept, the TRELLIS.2 model and trellis.json with how). The outfit is cut open where her face is, its hair fitted
 over her head, its skin tone matched to the body's; it takes the weights of the body under it, the apron's skirt
 from the hips into both thighs. Skeleton "Skeleton" (Godot's humanoid bone names, MPFB's A-pose rest), clips "Idle"
-and "Walk" from the shared pose code. Meshes: "Skin" (her head, neck and hands are what's left of it), "Eyes",
-"Brows", "Lashes", "Outfit"; empty "HeadTop" on the head (where the name plate and the bubbles go).
+and "Walk" from the shared pose code, her work at the bar from nell_clips.py. Meshes: "Skin" (her head and neck are what's left of it), "Eyes",
+"Brows", "Lashes", "Outfit"; empty "HeadTop" on the head (where the name plate and the bubbles go); bones
+"PropRag", "PropGlass", "PropBottle" with the empties "RagGrip", "GlassGrip", "BottleGrip" (where the game puts
+the props' models, assets/props/bar/).
 
 Writes assets/npcs/nell/nell.glb and its source assets/npcs/nell/source/nell.blend; renders go to tmp/assets/npcs/nell/.
 """
@@ -25,8 +27,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "tmp" / "assets" / "npcs" / "nell"
 SOURCE = ROOT / "assets" / "npcs" / "nell" / "source"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
+sys.path.insert(0, str(SOURCE))
 
 import bpy
+import nell_clips
 import numpy as np
 from mathutils import Vector
 
@@ -67,7 +71,7 @@ LOOKS = {
     "Lashes": ((1.0, 1.0, 1.0), 0.8, True),
 }
 OUTFIT = SOURCE / "trellis" / "nell_trellis.glb"
-OUTFIT_TRIS = 24000
+OUTFIT_TRIS = 40000
 HAIR_ABOVE_SKULL = 0.02  # the outfit's hair top above the body's head top (m)
 HAIR_MARGIN = 0.008  # the hair cap's gap over the skull (m)
 SKIN_MATCH = 0.12  # how close (in sRGB) to the generated face's skin a texel must be to count as skin
@@ -181,7 +185,7 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict) -> None:
     tone, texels = cut_skin(outfit, m)
     match_skin(outfit, skin, tone, texels, m["neck"])
     fit_hair(outfit, m)
-    P.pose_limbs(arm, P.limb_directions(outfit, arm, m["waist"]))
+    P.pose_limbs(arm, *P.limb_directions(outfit, arm, m["waist"]))
     body = P.posed_vertices(skin)
     body_w = P.weight_matrix(skin, names)
     co = G.vertices(outfit.data)
@@ -230,17 +234,33 @@ def head_top(arm: bpy.types.Object, parts: dict) -> None:
     print("HEAD top", round(top, 3))
 
 
+def props(arm: bpy.types.Object) -> None:
+    """Where her hands hold things while she works (the work clips show them; the models are
+    assets/props/bar/: a rag and a bottle in the right hand, a glass in the left)."""
+    for name, side in (("Rag", "Right"), ("Glass", "Left"), ("Bottle", "Right")):
+        P.prop_grip(arm, name, side)
+
+
 def clips(body: H.Body) -> dict:
-    return {
+    out = {
         "Idle": (60, lambda t: H.idle(body, t)),
         "Walk": (H.WALK_FRAMES, lambda t: H.walk(body, t)),
     }
+    for name, (frames, fn) in nell_clips.CLIPS.items():
+        out[name] = (frames, lambda t, fn=fn: fn(body, t))
+    return out
 
 
 def preview(arm: bpy.types.Object, body: H.Body, tag: str) -> None:
     C.preview_scene(crystals=False, figure_location=(30, 30, 0))
     shots = []
-    for name, pose in (("rest", None), ("idle", H.idle(body, 0.25)), ("walk0", H.walk(body, 0.0))):
+    work = [
+        (f"{n}{i}", fn(body, t))
+        for n, fn in (("wipe", nell_clips.wipe), ("polish", nell_clips.polish))
+        for i, t in ((5, 0.5),)
+    ]
+    work += [(f"shelve{i}", nell_clips.shelve(body, t)) for i, t in ((2, 0.24), (5, 0.5), (7, 0.76))]
+    for name, pose in (("rest", None), ("idle", H.idle(body, 0.25)), ("walk0", H.walk(body, 0.0)), *work):
         if pose:
             H.apply(arm, pose)
         else:
@@ -284,11 +304,12 @@ def main() -> None:
     m = measure(arm, parts)
     dress(arm, parts, m)
     head_top(arm, parts)
+    props(arm)
     body = P.body_of(arm)
     print("STATS", C.stats(), C.tris_per_object())
     preview(arm, body, TAG if MODE == "wip" else "final")
     if MODE == "final":
-        H.bake_clips(arm, clips(body))
+        H.bake_clips(arm, clips(body), body.props)
         bpy.context.scene.render.fps = H.FPS
         C.save_blend(SOURCE / "nell.blend")
         C.export_glb(ROOT / "assets" / "npcs" / "nell" / "nell.glb")

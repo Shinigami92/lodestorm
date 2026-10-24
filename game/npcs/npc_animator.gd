@@ -2,7 +2,11 @@ class_name NpcAnimator
 extends AnimationTree
 ## Plays an NPC model's clips: "Idle" while standing, "Walk" while walking, sped up or slowed down
 ## to the walking speed (every person's model has both, the suit's too, see docs/TECHNICAL.md,
-## People). Both loop (set here, so the import settings stay default).
+## People); both loop (set here, so the import settings stay default). While it `may_work`, it
+## plays one of its `activities` now and then (once, over the standing: e.g. wiping the counter;
+## never the same twice in a row),
+## with a pause of `work_pause` seconds between them; when it may not any more (a player came
+## close), the one under way fades out.
 
 ## Speed the walk clip is authored at (WALK_SPEED in tools/blender/humanoid.py), in m/s.
 @export var walk_speed: float = 1.3
@@ -10,15 +14,29 @@ extends AnimationTree
 @export var walk_blend_time: float = 0.2
 ## The slowest the walk plays (a share of its speed).
 @export var min_time_scale: float = 0.4
+## Seconds of standing between two activities (at random within this range; values TBD
+## (playtest)).
+@export var work_pause: Vector2 = Vector2(3.0, 8.0)
+## Seconds an activity fades in, and out at its end or when stopped.
+@export var work_fade: float = 0.5
 
 ## How fast it walks forward, in m/s (0: standing).
 var speed: float = 0.0
+## Whether it may play its activities (no player close, not walking).
+var may_work: bool = true
 
 var _walk_amount: float = 0.0
+## The activity clips the model has.
+var _activities: Array[StringName] = []
+## Seconds left until the next activity may start.
+var _pause_left: float = 0.0
+## The activity played last (the next is another one).
+var _last: StringName = &""
 
 
-## Builds the blend tree for `model` (an imported person or the suit, with its AnimationPlayer).
-func setup(model: Node3D) -> void:
+## Builds the blend tree for `model` (an imported person or the suit, with its AnimationPlayer) and
+## its `activities` (the ones the model has clips for).
+func setup(model: Node3D, activities: Array[StringName] = []) -> void:
 	var player: AnimationPlayer = model.find_child("AnimationPlayer", true, false)
 	root_node = get_path_to(model)
 	anim_player = get_path_to(player)
@@ -30,9 +48,34 @@ func setup(model: Node3D) -> void:
 	blend.connect_node(&"walk_speed", 0, &"Walk")
 	blend.connect_node(&"walk", 0, &"Idle")
 	blend.connect_node(&"walk", 1, &"walk_speed")
-	blend.connect_node(&"output", 0, &"walk")
+	var below: StringName = &"walk"
+	_activities.clear()
+	for activity: StringName in activities:
+		if not player.has_animation(activity):
+			push_warning('NpcAnimator: the model has no clip "%s"' % activity)
+			continue
+		_activities.append(activity)
+		var shot := AnimationNodeOneShot.new()
+		shot.fadein_time = work_fade
+		shot.fadeout_time = work_fade
+		var shot_node := _shot_name(activity)
+		blend.add_node(activity, _clip(player, activity, false))
+		blend.add_node(shot_node, shot)
+		blend.connect_node(shot_node, 0, below)
+		blend.connect_node(shot_node, 1, activity)
+		below = shot_node
+	blend.connect_node(&"output", 0, below)
 	tree_root = blend
 	active = true
+	_pause_left = randf_range(work_pause.x, work_pause.y)
+
+
+## The activity playing right now (empty: none).
+func working() -> StringName:
+	for activity: StringName in _activities:
+		if get("parameters/%s/active" % _shot_name(activity)):
+			return activity
+	return &""
 
 
 func _process(delta: float) -> void:
@@ -42,13 +85,44 @@ func _process(delta: float) -> void:
 	_walk_amount = move_toward(_walk_amount, 1.0 if walking else 0.0, delta / walk_blend_time)
 	set(&"parameters/walk/blend_amount", _walk_amount)
 	set(&"parameters/walk_speed/scale", maxf(speed / walk_speed, min_time_scale))
+	_work(delta)
 
 
-func _clip(player: AnimationPlayer, clip: StringName) -> AnimationNodeAnimation:
+## Starts an activity after the pause, stops the one under way when it may not work any more.
+func _work(delta: float) -> void:
+	if _activities.is_empty():
+		return
+	var current: StringName = working()
+	if not may_work or speed > 0.05:
+		if not current.is_empty():
+			set(
+				"parameters/%s/request" % _shot_name(current),
+				AnimationNodeOneShot.ONE_SHOT_REQUEST_FADE_OUT
+			)
+		_pause_left = maxf(_pause_left, work_pause.x)
+		return
+	if not current.is_empty():
+		return
+	_pause_left -= delta
+	if _pause_left <= 0.0:
+		var choices: Array[StringName] = _activities.filter(
+			func(a: StringName) -> bool: return a != _last or _activities.size() == 1
+		)
+		var next: StringName = choices.pick_random()
+		_last = next
+		set("parameters/%s/request" % _shot_name(next), AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
+		_pause_left = randf_range(work_pause.x, work_pause.y)
+
+
+func _shot_name(activity: StringName) -> StringName:
+	return StringName("work_" + String(activity))
+
+
+func _clip(player: AnimationPlayer, clip: StringName, loop: bool = true) -> AnimationNodeAnimation:
 	var node := AnimationNodeAnimation.new()
 	node.animation = clip
 	node.use_custom_timeline = true
 	node.timeline_length = player.get_animation(clip).length
 	node.stretch_time_scale = false
-	node.loop_mode = Animation.LOOP_LINEAR
+	node.loop_mode = Animation.LOOP_LINEAR if loop else Animation.LOOP_NONE
 	return node

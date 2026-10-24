@@ -162,6 +162,11 @@ for i, z in enumerate([-23.0, -21.25, -19.5]):
         box(f"CouncilChair{sname}{i + 1}", (0.6, 0.9, 0.6), (108.5 + side * 1.7, 0.45, z))
 # The bar's counter along its left wall, the booths along its right one.
 box("BarCounter", (0.9, 1.1, 9), (59, 0.55, 20))
+# Behind the bartender's right shoulder: a low back bar with bottles, where she shelves one now and then
+# (assets/npcs/nell/source/nell_clips.py: SHELF).
+box("BackBar", (0.3, 1.38, 1.3), (57.85, 0.69, 20.75))
+for i, z in enumerate([20.3, 20.55, 20.9, 21.2]):
+    box(f"BackBarBottle{i + 1}", (0.07, 0.25, 0.07), (57.85, 1.505, z))
 for i, z in enumerate([16.5, 23.0]):
     box(f"BoothTable{i + 1}", (1.6, 0.75, 1.2), (88.5, 0.375, z))
     for side, sname in [(-1, "Back"), (1, "Front")]:
@@ -384,15 +389,15 @@ PEOPLE = [
     ("Kade", "depot_master", (77.6, -21.6), 0),
     # At the head of the long table, the big window behind.
     ("Selin", "councillor", (108.5, -25.3), 0),
-    # Behind the bar's counter: used across it (see USE_ACROSS).
-    ("Nell", "bartender", (58, 20), 90),
+    # Behind the bar's counter, close to it (her work reaches across it): used across it (see USE_ACROSS).
+    ("Nell", "bartender", (58.27, 20), 90),
     # At the booth by the bar's door.
     ("Rook", "rival_captain", (86.2, 23), -90),
 ]
 # Used across their counter: the use point's offset towards the players (along the facing), the
 # footprint around it (across, along the facing: from them to the counter's front) and the range
 # from there (short, so the camera framing both stays close).
-USE_ACROSS = {"Nell": (0.7, (9, 1.5), 1.0)}
+USE_ACROSS = {"Nell": (0.43, (9, 1.5), 1.0)}
 COLONISTS = [
     ("Mechanic", "mechanic", (0.95, 0.9, 0.8), (100, 16.4), 0, []),
     ("BarterTrader", "barter_trader", (0.8, 0.85, 0.95), (120, 16.4), 0, []),

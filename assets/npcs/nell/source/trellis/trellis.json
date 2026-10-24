@@ -24,8 +24,8 @@
     "background_removal": "BiRefNet (birefnet, MIT)",
     "comfyui": "0.42.0",
     "seed": 42,
-    "faces": 30000,
-    "texture_size": 2048,
+    "faces": 80000,
+    "texture_size": 4096,
     "date": "2026-10-25"
   }
 }

@@ -1,6 +1,6 @@
 extends GutTest
 
-const SETTINGS_LIST: PackedScene = preload("res://game/ui/settings_list.tscn")
+const SOUND_LIST: PackedScene = preload("res://game/ui/sound_list.tscn")
 const SHOT: Sound = preload("res://assets/audio/sfx/weapons/harl_shot.tres")
 const TICK: Sound = preload("res://assets/audio/sfx/weapons/window_tick.tres")
 const DRILL: Sound = preload("res://assets/audio/sfx/mining/drill.tres")
@@ -100,7 +100,7 @@ func test_volumes_follow_the_settings_and_are_saved() -> void:
 
 
 func test_a_volume_slider_sets_its_bus_and_plays_a_sample() -> void:
-	var list := SETTINGS_LIST.instantiate() as SettingsList
+	var list := SOUND_LIST.instantiate() as SoundList
 	add_child_autofree(list)
 	var row := list.get_node("%Effects") as HBoxContainer
 	(row.get_node(^"Slider") as HSlider).value = 0.3

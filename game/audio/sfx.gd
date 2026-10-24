@@ -13,7 +13,7 @@ extends Node
 signal played(sound: Sound, critical: bool)
 
 ## The buses with a volume in the settings, Master first (see `game/audio/bus_layout.tres`).
-const BUSES: Array[StringName] = [&"Master", &"Effects", &"Ambience"]
+const BUSES: Array[StringName] = [&"Master", &"Effects", &"Ambience", &"Voice"]
 ## The buses a critical cue ducks, and by how much (dB). TBD (playtest).
 const DUCKED: Array[StringName] = [&"Effects", &"Ambience"]
 const DUCK_DB: float = -6.0

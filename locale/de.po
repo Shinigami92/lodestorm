@@ -945,6 +945,12 @@ msgstr "Einstellungen"
 #: game/player/pause/pause_card.gd
 #: game/player/pause/pause_card.tscn
 #: game/ui/settings_menu.tscn
+msgid "Sound"
+msgstr "Ton"
+
+#: game/player/pause/pause_card.gd
+#: game/player/pause/pause_card.tscn
+#: game/ui/settings_menu.tscn
 msgid "Credits"
 msgstr "Mitwirkende"
 
@@ -1848,6 +1854,15 @@ msgid "Language"
 msgstr "Sprache"
 
 #: game/ui/settings_list.tscn
+#: game/ui/sound_list.tscn
+msgid "Voices"
+msgstr "Stimmen"
+
+#: game/ui/settings_list.tscn
+msgid "Off"
+msgstr "Aus"
+
+#: game/ui/settings_list.tscn
 msgid "Suit ring"
 msgstr "Anzugring"
 
@@ -1866,18 +1881,6 @@ msgstr "Groß"
 #: game/ui/settings_list.tscn
 msgid "Always show"
 msgstr "Immer zeigen"
-
-#: game/ui/settings_list.tscn
-msgid "Volume"
-msgstr "Lautstärke"
-
-#: game/ui/settings_list.tscn
-msgid "Effects"
-msgstr "Effekte"
-
-#: game/ui/settings_list.tscn
-msgid "Ambience"
-msgstr "Umgebung"
 
 #: game/ui/settings_list.tscn
 msgid "Log files"
@@ -1922,6 +1925,18 @@ msgstr "Fortschritt zurücksetzen"
 #: game/ui/settings_menu.tscn
 msgid "Only while you're alone. With others in your session, everyone keeps their progress."
 msgstr "Nur, solange du allein bist. Mit anderen in deiner Sitzung behalten alle ihren Fortschritt."
+
+#: game/ui/sound_list.tscn
+msgid "Volume"
+msgstr "Lautstärke"
+
+#: game/ui/sound_list.tscn
+msgid "Effects"
+msgstr "Effekte"
+
+#: game/ui/sound_list.tscn
+msgid "Ambience"
+msgstr "Umgebung"
 
 #: game/ui/title/title_view.tscn
 msgid "Press any button"

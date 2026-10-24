@@ -1,0 +1,414 @@
+{
+  "de": {
+    "09cd78a2b75670e3": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Irgendwo in Hollow Mire, zwischen den riesigen Stängeln, steht ein altes Lager mit einer Rettungskapsel. Sein Funkfeuer blinkt noch, aber niemand weiß, wer es dort zurückgelassen hat."
+    },
+    "0ea1c940afd57fe6": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Slag Terraces sind der schlimmste Ort auf Skelde. Mittendrin liegt ein Meteoritenkrater, und ringsum liegt Erz."
+    },
+    "14808e3553caf6de": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Splitrock Steps auf Iska ist gefährlich, aber dort steht in einer Sackgasse eine Kristallwand, und davor liegt das seltenste Erz der Region. Die meisten Crews finden, dass es das wert ist."
+    },
+    "14ae0fdd816150f7": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Auf Mirr gibt es nur einen Ort zum Landen: Quiet Scar. Dort liegt ein Meteoritenkrater, und die Crews sagen, es sei dort ruhiger als irgendwo sonst. Sie trauen dem Frieden nicht."
+    },
+    "1822677d37e9222e": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Auf den Brine Terraces gibt es einen alten Außenposten, dessen Landeplattform noch ganz ist. Das kann man nicht von vielen Orten sagen."
+    },
+    "1ac15be945492576": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Cinder Steps gibt es einen riesigen Krater, wo ein Meteorit eingeschlagen ist, und ringsum liegt Erz. Es ist die gefährlichste Region auf Torvane, also geh gut vorbereitet hin."
+    },
+    "20e0089a4e558627": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Pale Basin auf Lisk liegt ein Schiffsrumpf halb im Eis begraben. Wer immer es geflogen hat, ist längst fort, aber vielleicht ist noch eine Kiste an Bord."
+    },
+    "28af944f2488e9f5": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Lantern Hollow hat seinen Namen von einem Funkfeuer, das irgendwo zwischen den Pflanzen blinkt. Es gehört zu einem alten Lager, wie die auf Torvane und Cassor."
+    },
+    "29573f59e037c913": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Dieser Ort gehört allen, die ihn brauchen. Crews treffen sich hier, Leute aus der Kolonie vergessen für eine Stunde ihre Arbeit, und der Rat tut so, als würde er hier nie etwas trinken."
+    },
+    "2dbd78cccc0953bd": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Sunken Verge liegt ein Wrack, ganz von Pflanzen überwuchert. Die Crews, die es gefunden haben, sagen, die Pflanzen seien mitten durch den Rumpf gewachsen."
+    },
+    "3a5130431668ced4": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In der Fused Expanse steht in einer Sackgasse eine Kristallwand, und davor liegt das seltenste Erz. Hin und wieder zurück zu kommen, ist eine andere Geschichte."
+    },
+    "3efd9d022c1b5fce": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Redscar Flats gibt es einen verlassenen Außenposten: ein paar Module und eine leere Landeplattform. Die Crews sagen, dort steht meistens noch eine Kiste, die sich zu öffnen lohnt."
+    },
+    "4648873d2f014c82": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Willkommen in der einzigen Bar im Orbit um Torvane. Ich bin Nell. Hier ist nichts Besonderes, aber die Getränke sind kalt, und die Stühle wackeln kaum."
+    },
+    "48934e795188ae92": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In den Glare Fields ist das Salz so hell, dass es in den Augen schmerzt. Irgendwo dort steht in einer Sackgasse eine Wand aus Kristallen, und davor liegt seltenes Erz."
+    },
+    "4d2663fcdceed65a": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mossgrave ist übel. Tief darin steht noch so ein altes Lager mit einem blinkenden Funkfeuer. Dieselbe Kapsel, dieselbe Stille."
+    },
+    "5131dcafd89070fb": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Rimeback steht am Ende einer Sackgasse eine ganze Wand aus Kristallen. Das seltenste Erz der Region liegt direkt davor."
+    },
+    "577c4ab7162ff6eb": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du also wissen willst, was dich irgendwo erwartet, frag mich. Ich erzähle dir, was ich gehört habe."
+    },
+    "59298e9f5a24b4a6": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Leute erzählen mir Dinge, die sie dem Rat nie erzählen würden. Das meiste behalte ich für mich. Das meiste."
+    },
+    "5f13908354a6c294": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Brimstone Cut steht am Ende einer Sackgasse eine Kristallwand. Das seltene Erz davor ist das beste, das du dort findest."
+    },
+    "62b9af913981f74a": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich bin hergekommen, um in der Luftaufbereitung zu arbeiten. Nach ein paar Jahren hatte ich genug von Filtern und Lüftern, und die Bar brauchte jemanden."
+    },
+    "6613d57648fab462": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Glassmere ist der Boden aus Glas, und irgendwo darauf steht ein altes Lager mit einem Funkfeuer. Wer es aufgebaut hat, ist weiter vorgedrungen als alle anderen."
+    },
+    "7a82934abe2fe665": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Auf Coldwake gibt es einen Außenposten, den sich das Eis fast zurückgeholt hat. Die Crews sagen, dort steht meistens noch eine Kiste, die sich zu öffnen lohnt."
+    },
+    "8521d5dc485b2dc9": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Auf Sunward Scar liegt ein Wrack so nah am Stern, dass sein Metall ganz dunkel geworden ist. Nur wenige Crews haben es aus der Nähe gesehen."
+    },
+    "b2d2f396695f191f": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Black Tide liegt ein Wrack zwischen den Lavarinnen. Die Hitze hat den Rumpf verzogen, aber die Crews suchen trotzdem nach dem, was noch darin ist."
+    },
+    "b90bf1cd45290080": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich führe sie allein. Ich kenne alle beim Namen, weiß, was sie trinken und wer mir noch etwas schuldet."
+    },
+    "c37039639f6d7083": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Auf Hoarfrost Ridge gibt es noch einen verlassenen Außenposten, völlig zugefroren. Jemand ist dort überstürzt aufgebrochen und hat vielleicht eine Kiste zurückgelassen."
+    },
+    "cd51c051b7c981b0": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nach jedem Einsatz kommen die Crews hierher und erzählen, was sie da unten gesehen haben. Ich höre mir alles an."
+    },
+    "da2837e483e8c6c6": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Whiteshelf liegt mitten im Salz ein Meteoritenkrater. Für das Erz ringsherum lohnt sich der Weg."
+    },
+    "db2d2cbd88fcff16": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Mirror Flats liegt ein Meteoritenkrater im Glas. Die Crews sagen, das Licht dort sei so hell, dass man die Aliens kaum kommen sieht."
+    },
+    "dbd125fad9cf4e57": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Neuigkeiten hört man am besten genau hier an der Theke. Mit einem Glas in der Hand reden die Crews offener."
+    },
+    "e2a72d4f1f9b9b60": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ember Reach ist hart, der gefährlichste Ort auf Vehra. Dort draußen liegt ein Schiffswrack, halb im Staub begraben."
+    },
+    "f1a7e9cc72043d62": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Drift Basin auf Orrel liegt ein Wrack halb im Salz versunken. Die Crews sagen, es sieht aus, als wäre es schon immer dort gewesen."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie kann ich dir helfen?"
+    },
+    "fe6a7766b49f438e": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Auf Rustwind Plain hat der Wind einen alten Außenposten bis aufs blanke Metall abgeschliffen. Dort landet es sich auf Skelde am leichtesten."
+    }
+  },
+  "en": {
+    "09cd78a2b75670e3": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Somewhere in Hollow Mire, between the giant stalks, stands an old camp with a survival pod. Its beacon is still blinking, but nobody knows who left it there."
+    },
+    "0ea1c940afd57fe6": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The Slag Terraces are the worst place on Skelde. A meteorite crater sits in the middle of it all, with ore all around."
+    },
+    "14808e3553caf6de": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Splitrock Steps on Iska is dangerous, but a crystal wall stands in a dead end there, with the rarest ore of the region in front of it. Most crews think it's worth it."
+    },
+    "14ae0fdd816150f7": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "On Mirr, there's only one place to land: Quiet Scar. It has a meteorite crater, and the crews say it's quieter there than anywhere else. They don't trust it."
+    },
+    "1822677d37e9222e": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "On the Brine Terraces, there's an old outpost with its landing pad still in one piece, which is more than most places can say."
+    },
+    "1ac15be945492576": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Cinder Steps has a huge crater where a meteorite came down, with ore all around it. It's the most dangerous region on Torvane, so go there prepared."
+    },
+    "20e0089a4e558627": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Pale Basin on Lisk, a ship's hull lies half buried in the ice. Whoever flew it is long gone, but there may still be a crate aboard."
+    },
+    "28af944f2488e9f5": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Lantern Hollow got its name from a beacon that blinks somewhere in the growth. It belongs to an old camp, like the ones on Torvane and Cassor."
+    },
+    "29573f59e037c913": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "This place belongs to whoever needs it. Crews meet here, colonists come to forget their work for an hour, and the council pretends it never drinks here."
+    },
+    "2dbd78cccc0953bd": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Sunken Verge, a wreck lies tangled in the growth. The crews who found it say the plants have grown right through the hull."
+    },
+    "3a5130431668ced4": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In the Fused Expanse, a crystal wall stands in a dead end, with the rarest ore in front of it. Getting there and back again is another story."
+    },
+    "3efd9d022c1b5fce": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Redscar Flats, there's an abandoned outpost: a few modules and an empty landing pad. Crews say there's usually still a crate there worth opening."
+    },
+    "4648873d2f014c82": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Welcome to the only bar in orbit around Torvane. I'm Nell. It's nothing fancy, but the drinks are cold and the chairs hardly wobble."
+    },
+    "48934e795188ae92": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In the Glare Fields, the salt is so bright it hurts your eyes. Somewhere in there, a wall of crystals stands in a dead end, with rare ore in front of it."
+    },
+    "4d2663fcdceed65a": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mossgrave is bad. Deep inside it, there's another one of those old camps with a blinking beacon. Same pod, same silence."
+    },
+    "5131dcafd89070fb": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Rimeback has a whole wall of crystals at the end of a dead end. The rarest ore of the region lies right in front of it."
+    },
+    "577c4ab7162ff6eb": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So if you want to know what's waiting for you somewhere, ask me. I'll tell you what I've heard."
+    },
+    "59298e9f5a24b4a6": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "People tell me things they'd never tell the council. I keep most of it to myself. Most of it."
+    },
+    "5f13908354a6c294": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brimstone Cut has a crystal wall at the end of a dead end. The rare ore in front of it is the best you'll find there."
+    },
+    "62b9af913981f74a": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I came here to work in the air recycling plant. After a few years, I'd had enough of filters and fans, and the bar needed someone."
+    },
+    "6613d57648fab462": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Glassmere, the ground is glass, and somewhere on it stands an old camp with a beacon. Whoever set it up came farther in than anyone else."
+    },
+    "7a82934abe2fe665": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "On Coldwake, there's an outpost the ice has nearly taken back. Crews say there's usually still a crate there worth opening."
+    },
+    "8521d5dc485b2dc9": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "On Sunward Scar, there's a wreck so close to the star that its metal has turned dark. Only a few crews have seen it up close."
+    },
+    "b2d2f396695f191f": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Black Tide, a wreck lies between the lava channels. The heat has warped the hull, but crews still go looking for what's left inside."
+    },
+    "b90bf1cd45290080": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I run it on my own. I know everyone's name, what they drink and who still owes me."
+    },
+    "c37039639f6d7083": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "On Hoarfrost Ridge, there's another abandoned outpost, frozen solid. Someone left in a hurry, and maybe left a crate behind."
+    },
+    "cd51c051b7c981b0": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Crews come in here after every run and talk about what they've seen down there. I listen to all of it."
+    },
+    "da2837e483e8c6c6": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Whiteshelf has a meteorite crater in the middle of the salt. The ore around it is worth the walk."
+    },
+    "db2d2cbd88fcff16": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mirror Flats has a meteorite crater in the glass. The crews say the light there is so bright you can barely see the aliens coming."
+    },
+    "dbd125fad9cf4e57": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The best place to hear news is right here at the counter. Crews talk more freely with a drink in their hand."
+    },
+    "e2a72d4f1f9b9b60": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ember Reach is rough, the most dangerous place on Vehra. There's a wrecked ship out there, half buried in the dust."
+    },
+    "f1a7e9cc72043d62": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Drift Basin on Orrel, a wreck lies half sunk in the salt. The crews say it looks as if it had always been there."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How can I help you?"
+    },
+    "fe6a7766b49f438e": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "On Rustwind Plain, the wind has scoured an old outpost down to bare metal. It's the easiest landing on Skelde."
+    }
+  }
+}

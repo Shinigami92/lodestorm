@@ -4,6 +4,7 @@
 [ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" uid="uid://bur5woov5rtm" path="res://game/ui/settings_list.tscn" id="3_settings"]
 [ext_resource type="PackedScene" uid="uid://dox0qtjp3jjkp" path="res://game/ui/credits.tscn" id="4_credits"]
+[ext_resource type="PackedScene" uid="uid://7uv5opu14ho4" path="res://game/ui/sound_list.tscn" id="5_sound"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 content_margin_left = 28.0
@@ -96,6 +97,11 @@ layout_mode = 2
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 14
 
+[node name="ShowSound" type="Button" parent="Panel/Layout/SettingsPage/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sound"
+
 [node name="ShowCredits" type="Button" parent="Panel/Layout/SettingsPage/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -104,6 +110,21 @@ text = "Credits"
 [node name="SettingsBack" type="Button" parent="Panel/Layout/SettingsPage/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "Back"
+
+[node name="SoundPage" type="VBoxContainer" parent="Panel/Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Sound" parent="Panel/Layout/SoundPage" instance=ExtResource("5_sound")]
+layout_mode = 2
+
+[node name="SoundBack" type="Button" parent="Panel/Layout/SoundPage"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
 text = "Back"
 
 [node name="CreditsPage" type="VBoxContainer" parent="Panel/Layout"]

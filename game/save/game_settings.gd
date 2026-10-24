@@ -2,7 +2,7 @@ class_name GameSettings
 extends RefCounted
 ## The player's settings, kept apart from the progress (`SaveGame`) in `settings.cfg` next to the
 ## save, so resetting keeps them: the language (the system's until one is picked), the suit
-## ring's size and "Always show", and the sound volumes per bus.
+## ring's size and "Always show", the sound volumes per bus and the voice language.
 
 const FILE: String = "settings.cfg"
 
@@ -17,6 +17,9 @@ static var ring_always_show: bool = false
 ## The volume of each bus that has been changed (0..1, by bus name, see `Sfx.BUSES`); the others
 ## are at full volume.
 static var volumes: Dictionary[StringName, float] = {}
+## The language the NPCs speak (see `VoiceLines`): one of `VoiceLines.LANGUAGES`, `VoiceLines.OFF`,
+## or empty for the texts' language.
+static var voice_language: String = ""
 
 
 ## Where the settings are kept, or empty when saving is off (`SaveGame.directory`).
@@ -30,6 +33,7 @@ static func load_settings() -> void:
 	ring_size = RING_MEDIUM
 	ring_always_show = false
 	volumes.clear()
+	voice_language = ""
 	var config := ConfigFile.new()
 	if not path() or config.load(path()) != OK:
 		return
@@ -44,6 +48,9 @@ static func load_settings() -> void:
 			if saved is float or saved is int:
 				var level: float = saved
 				volumes[StringName(bus)] = clampf(level, 0.0, 1.0)
+	var voice: Variant = config.get_value("voice", "language", "")
+	if voice is String and (voice in VoiceLines.LANGUAGES or voice == VoiceLines.OFF):
+		voice_language = voice
 	var language: String = saved_language()
 	var forced: bool = TranslationServer.get_locale() != OS.get_locale()
 	if language and not forced:
@@ -76,6 +83,12 @@ static func volume(bus: StringName) -> float:
 static func set_volume(bus: StringName, level: float) -> void:
 	volumes[bus] = clampf(level, 0.0, 1.0)
 	_save("volume", bus, volumes[bus])
+
+
+## Sets the language the NPCs speak (see `voice_language`) and saves it.
+static func set_voice_language(code: String) -> void:
+	voice_language = code
+	_save("voice", "language", code)
 
 
 ## The language picked at the settings terminal, or empty when none was (or it's unknown).

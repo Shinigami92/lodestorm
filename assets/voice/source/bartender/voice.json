@@ -1,0 +1,20 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Welcome to the only bar in orbit around Torvane. I'm Nell. It's nothing fancy, but the drinks are cold and the chairs hardly wobble.",
+    "description": "A woman around forty who runs the only bar on an orbital station, talking to a regular across the counter. Warm, slightly husky alto voice, clear and present. Relaxed and low-key, she doesn't perform or try to win anyone over; she has heard every story twice. Dry, quiet humor and a knowing calm. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 3,
+    "picked_from": "round1b/nell/qwen3_s3.flac",
+    "picked": "2026-10-24"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Willkommen in der einzigen Bar im Orbit um Torvane. Ich bin Nell. Hier ist nichts Besonderes, aber die Getränke sind kalt, und die Stühle wackeln kaum.",
+    "description": "A woman in her early thirties who runs the only bar on an orbital station, talking to a regular across the counter. Warm, slightly husky alto voice, clear, natural and present. Relaxed and friendly in a low-key way: open, not secretive or mysterious, and she doesn't perform or try to win anyone over. Dry, quiet humor. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 1,
+    "picked_from": "round5/nell/qwen3_s1_de.flac",
+    "picked": "2026-10-24"
+  }
+}

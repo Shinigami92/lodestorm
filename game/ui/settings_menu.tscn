@@ -4,6 +4,7 @@
 [ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" uid="uid://bur5woov5rtm" path="res://game/ui/settings_list.tscn" id="3_settings"]
 [ext_resource type="PackedScene" uid="uid://dox0qtjp3jjkp" path="res://game/ui/credits.tscn" id="4_credits"]
+[ext_resource type="PackedScene" uid="uid://7uv5opu14ho4" path="res://game/ui/sound_list.tscn" id="5_sound"]
 
 [node name="SettingsMenu" type="PanelContainer"]
 anchors_preset = 15
@@ -76,6 +77,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Cancel"
 
+[node name="Sound" parent="Layout" instance=ExtResource("5_sound")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
 [node name="Credits" parent="Layout" instance=ExtResource("4_credits")]
 unique_name_in_owner = true
 visible = false
@@ -89,6 +95,11 @@ size_flags_vertical = 3
 [node name="Footer" type="HBoxContainer" parent="Layout"]
 layout_mode = 2
 theme_override_constants/separation = 20
+
+[node name="ShowSound" type="Button" parent="Layout/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sound"
 
 [node name="ShowCredits" type="Button" parent="Layout/Footer"]
 unique_name_in_owner = true

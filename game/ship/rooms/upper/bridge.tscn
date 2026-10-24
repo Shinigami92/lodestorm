@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://cdwn1ioiledej" path="res://game/ship/holo_table.tscn" id="4_holo_table"]
 [ext_resource type="PackedScene" uid="uid://c284r5im2gvf8" path="res://game/stations/navigator/navigator.tscn" id="11_navigator"]
+[ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
+[ext_resource type="Resource" uid="uid://b3d5d8411ot80" path="res://game/npcs/crew/pilot.tres" id="91_profile"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Bridge"]
 albedo_color = Color(0.36, 0.42, 0.52, 1)
@@ -38,3 +40,11 @@ uppercase = true
 
 [node name="Navigator" parent="." node_paths=PackedStringArray("holo_table") instance=ExtResource("11_navigator")]
 holo_table = NodePath("../HoloTable")
+
+[node name="PilotFlightSpot" type="Marker3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -13.5, 0, -2.6)
+
+[node name="Pilot" parent="." node_paths=PackedStringArray("flight_spot") instance=ExtResource("90_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -3)
+profile = ExtResource("91_profile")
+flight_spot = NodePath("../PilotFlightSpot")

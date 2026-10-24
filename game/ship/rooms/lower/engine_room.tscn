@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://ce4h8o3dea7nk"]
 
 [ext_resource type="PackedScene" uid="uid://c1173nrdfc7v8" path="res://game/stations/heat_shield/drive_core.tscn" id="1_drive_core"]
+[ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
+[ext_resource type="Resource" uid="uid://dvd7ogckuu0u5" path="res://game/npcs/crew/engineer.tres" id="91_profile"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_EngineRoom"]
 albedo_color = Color(0.42, 0.38, 0.34, 1)
@@ -35,3 +37,7 @@ uppercase = true
 
 [node name="DriveCore" parent="." instance=ExtResource("1_drive_core")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 0.5)
+
+[node name="Engineer" parent="." instance=ExtResource("90_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -1.5)
+profile = ExtResource("91_profile")

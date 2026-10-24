@@ -2,6 +2,8 @@
 
 [ext_resource type="StandardMaterial3D" uid="uid://bd4esevpwqv63" path="res://game/ship/materials/bed.tres" id="mat_bed"]
 [ext_resource type="PackedScene" uid="uid://c4cyv6r7rc7df" path="res://game/stations/med_bed/med_bed.tscn" id="med_bed"]
+[ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
+[ext_resource type="Resource" uid="uid://cxih2upgkspuc" path="res://game/npcs/crew/medic.tres" id="91_profile"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_MedicalBay"]
 albedo_color = Color(0.4, 0.52, 0.5, 1)
@@ -114,3 +116,7 @@ bed = NodePath("../Bed3")
 [node name="MedBed4" parent="." node_paths=PackedStringArray("bed") instance=ExtResource("med_bed")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -4.6)
 bed = NodePath("../Bed4")
+
+[node name="Medic" parent="." instance=ExtResource("90_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+profile = ExtResource("91_profile")

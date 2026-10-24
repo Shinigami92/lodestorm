@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://da884p12ya6el" path="res://game/stations/weapon/weapon_station.tscn" id="15_weapon_station"]
 [ext_resource type="StandardMaterial3D" uid="uid://d0bdki1n4b0el" path="res://game/ship/materials/prop.tres" id="mat_prop"]
+[ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
+[ext_resource type="Resource" uid="uid://bey386yr8d7ne" path="res://game/npcs/crew/gunsmith.tres" id="91_profile"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Weapons"]
 albedo_color = Color(0.5, 0.45, 0.38, 1)
@@ -52,3 +54,7 @@ mesh = SubResource("BoxMesh_prop")
 
 [node name="UpgradeStation" parent="." instance=ExtResource("15_weapon_station")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0, -4.4)
+
+[node name="Gunsmith" parent="." instance=ExtResource("90_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0, 1.6)
+profile = ExtResource("91_profile")

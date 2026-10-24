@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://37lgyg42kwy1"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
+[ext_resource type="PackedScene" uid="uid://dj0ui2vglcylw" path="res://game/npcs/crew/accessories/miner_mechanic.tscn" id="4_accessory"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"miner_mechanic.greeting"
+title = "Hello"
+lines = Array[String](["Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well.", "M-01 there in its cradle is yours. Out there, the miners dig while you keep the aliens off them."])
+
+[sub_resource type="Resource" id="Resource_placing"]
+script = ExtResource("3_topic")
+id = &"miner_mechanic.placing"
+title = "Placing miners"
+lines = Array[String](["Stand close to an ore node and place a miner. It shows up as a hologram first and turns real from the bottom up.", "Meanwhile, you can move and fight, but stay within reach of its hose, or it waits for you.", "While you stay near it, its hose fills your back with ore. Pick it up before you leave, and you also get what's still in its tank.", "Working miners draw aliens, and some of them go straight for the miners. So don't wander off too far."])
+requires = Array[StringName]([&"miner_mechanic.greeting"])
+
+[sub_resource type="Resource" id="Resource_fleet"]
+script = ExtResource("3_topic")
+id = &"miner_mechanic.fleet"
+title = "Your miners"
+lines = Array[String](["Each of you takes six miners on a run. Your own go first, and standard-issue ones fill up the rest.", "Standard-issue miners are slower, but they never get lost. Your own you can upgrade on the pad, one by one.", "Any of your own miners still out there when the mission ends are gone for good. So bring them back aboard with you."])
+requires = Array[StringName]([&"miner_mechanic.greeting"])
+
+[sub_resource type="Resource" id="Resource_drills"]
+script = ExtResource("3_topic")
+id = &"miner_mechanic.drills"
+title = "Drills"
+lines = Array[String](["Some ores are harder than others. A drill that's too soft still gets through, but only at a quarter of the speed.", "Upgrade a miner's drill on the pad, and its card shows which ores it mines at full speed. When you place a miner, the fastest one for that ore goes."])
+requires = Array[StringName]([&"miner_mechanic.greeting"])
+
+[sub_resource type="Resource" id="Resource_dry"]
+script = ExtResource("3_topic")
+id = &"miner_mechanic.dry"
+title = "Dry nodes"
+lines = Array[String](["A node doesn't last forever. Its crystals shrink as the miner takes the ore out, until only bare rock is left.", "When the lamp on a miner blinks amber, its node is dry. Pick it up and find it a new one."])
+requires = Array[StringName]([&"miner_mechanic.greeting"])
+
+[sub_resource type="Resource" id="Resource_about"]
+script = ExtResource("3_topic")
+id = &"miner_mechanic.about"
+title = "About Hollis"
+lines = Array[String](["I've been digging in this system longer than anyone else aboard. Longer than most people at Ostra, too.", "I knew some of the people on the first expedition. Good people. Nobody has heard from them in a long time."])
+requires = Array[StringName]([&"miner_mechanic.greeting"])
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+prompt = "What do you need?"
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_placing"), SubResource("Resource_fleet"), SubResource("Resource_drills"), SubResource("Resource_dry"), SubResource("Resource_about")])
+
+[resource]
+script = ExtResource("1_profile")
+id = &"miner_mechanic"
+display_name = "Hollis"
+role = "Miner mechanic"
+accent_color = Color(0.55, 0.9, 0.3, 1)
+accessory = ExtResource("4_accessory")
+cabin = 7
+dialogue = SubResource("Resource_dialogue")

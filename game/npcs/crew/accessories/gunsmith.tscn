@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://dqypvkrrymw3g"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_leather"]
+albedo_color = Color(0.45, 0.28, 0.14, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_Bib"]
+material = SubResource("StandardMaterial3D_leather")
+size = Vector3(0.32, 0.44, 0.02)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Skirt"]
+material = SubResource("StandardMaterial3D_leather")
+size = Vector3(0.46, 0.55, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_strap"]
+albedo_color = Color(0.15, 0.13, 0.12, 1)
+roughness = 0.8
+
+[sub_resource type="TorusMesh" id="TorusMesh_Strap"]
+material = SubResource("StandardMaterial3D_strap")
+inner_radius = 0.175
+outer_radius = 0.195
+rings = 32
+ring_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lens"]
+albedo_color = Color(1, 0.65, 0.2, 1)
+roughness = 0.2
+emission_enabled = true
+emission = Color(1, 0.65, 0.2, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_LeftLens"]
+material = SubResource("StandardMaterial3D_lens")
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.04
+radial_segments = 24
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_RightLens"]
+material = SubResource("StandardMaterial3D_lens")
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.04
+radial_segments = 24
+
+[node name="GunsmithApron" type="Node3D"]
+
+[node name="UpperChest" type="Node3D" parent="."]
+
+[node name="Bib" type="MeshInstance3D" parent="UpperChest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.26, 0.3)
+mesh = SubResource("BoxMesh_Bib")
+
+[node name="Hips" type="Node3D" parent="."]
+
+[node name="Skirt" type="MeshInstance3D" parent="Hips"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0.245)
+mesh = SubResource("BoxMesh_Skirt")
+
+[node name="Head" type="Node3D" parent="."]
+
+[node name="Strap" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1.4, 0, 0, 0, 1, 0, 1.82, 0)
+mesh = SubResource("TorusMesh_Strap")
+
+[node name="LeftLens" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.065, 1.83, 0.175)
+mesh = SubResource("CylinderMesh_LeftLens")
+
+[node name="RightLens" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -0.065, 1.83, 0.175)
+mesh = SubResource("CylinderMesh_RightLens")

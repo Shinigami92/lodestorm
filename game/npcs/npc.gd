@@ -16,6 +16,8 @@ extends Station
 ## by itself: a voiced one `AUTO_PAUSE` s after the voice ends, one without a voice after its
 ## reading time (`reading_time`); after the last line the list comes back. The card's "Continue"
 ## fills up meanwhile; pressing it still moves on at once.
+## With a `flight_spot`, they stand there while the ship flies (the pilot at the cockpit's
+## controls), and back at their spot once it has landed or docked.
 
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
 ## player, at this height, so the card on their right stays in view.
@@ -34,6 +36,8 @@ const READ_PER_LETTER: float = 0.06
 
 ## Who they are and what they talk about.
 @export var profile: NpcProfile
+## Where they stand while the ship flies (greybox: they're just there); none: always at their spot.
+@export var flight_spot: Node3D
 
 ## The topic being told, or null while the card lists the topics.
 var topic: Topic
@@ -51,6 +55,8 @@ var _new_marker_time: float = 0.0
 ## has waited.
 var _line_time: float = 0.0
 var _line_waited: float = 0.0
+## Their spot (where they stand in the scene).
+var _home: Transform3D
 
 @onready var bubble: WorldPanel = $Bubble
 @onready var body: NpcBody = $Body
@@ -59,6 +65,7 @@ var _line_waited: float = 0.0
 
 func _ready() -> void:
 	super()
+	_home = transform
 	body.profile = profile
 	bubble.visible = false
 	voice = AudioStreamPlayer3D.new()
@@ -72,6 +79,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	super(delta)
+	_take_post()
 	body.faces = user
 	body.plate_allowed = not user
 	_new_marker.visible = not user and has_news(_listener())
@@ -298,6 +306,20 @@ func _auto_continue(delta: float) -> void:
 	var card_shown := card_menu as TalkCard
 	if card_shown:
 		card_shown.show_progress(get_auto_progress())
+
+
+## Stands at `flight_spot` while the ship flies, else at their spot; stays put while someone
+## talks to them.
+func _take_post() -> void:
+	if not flight_spot or user:
+		return
+	var post: Transform3D = _home
+	if ship and ship.flight.is_flying():
+		var parent: Node3D = get_parent_node_3d()
+		post = parent.global_transform.affine_inverse() * flight_spot.global_transform
+	if not transform.is_equal_approx(post):
+		transform = post
+		reset_physics_interpolation()
 
 
 ## Who the "something new" marker is for: the player talking to them, else the nearest one.

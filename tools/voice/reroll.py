@@ -11,16 +11,17 @@ import json
 import sys
 
 import comfy
+import lines
 import render
 
 import db
 
 
 def main(npc: str, language: str, english: str, seeds: list[int]) -> None:
-    folder = render.SOURCE / npc
+    folder = lines.SOURCE / npc
     anchor = json.loads((folder / "voice.json").read_text(encoding="utf-8"))[language]
-    text = english if language == "en" else render.translations(language)[english]
-    key = render.line_hash(english)
+    text = english if language == "en" else lines.translations(language)[english]
+    key = lines.line_hash(english)
     round_name = f"reroll-{npc}-{language}"
     out = db.ROOT / round_name / npc
     out.mkdir(parents=True, exist_ok=True)
@@ -29,7 +30,7 @@ def main(npc: str, language: str, english: str, seeds: list[int]) -> None:
     for seed in seeds:
         file = f"seed{seed}.flac"
         raw = out / f"raw_{file}"
-        seconds = comfy.clone(render.ENGINE, str(raw), seed, uploaded, anchor["text"], text, render.NAMES[language])
+        seconds = comfy.clone(lines.ENGINE, str(raw), seed, uploaded, anchor["text"], text, render.NAMES[language])
         # The same finish as in the game (trimmed, leveled), as FLAC for the listening page
         render.finish(str(raw), out / f"seed{seed}.ogg")
         audio, rate = render.soundfile.read(out / f"seed{seed}.ogg", dtype="float32")
@@ -42,8 +43,8 @@ def main(npc: str, language: str, english: str, seeds: list[int]) -> None:
                 round_name,
                 npc,
                 file,
-                render.ENGINE,
-                render.comfy.CLONERS[render.ENGINE][1],
+                lines.ENGINE,
+                comfy.CLONERS[lines.ENGINE][1],
                 seed,
                 language,
                 anchor["description"],

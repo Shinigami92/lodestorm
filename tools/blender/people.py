@@ -1,11 +1,15 @@
-"""Shared helpers for people made with MakeHuman (MPFB 2, a Blender extension; see docs/TECHNICAL.md, People): a body
-shaped by its sliders, dressed in MakeHuman garments that fit any body, rigged with MPFB's "game_engine" skeleton
-renamed to Godot's humanoid bone names, so the shared clips (tools/blender/humanoid.py) play on everyone.
+"""Shared helpers for people (see docs/TECHNICAL.md, People): a MakeHuman body (MPFB 2, a Blender extension) shaped by
+its sliders, rigged with MPFB's "game_engine" skeleton renamed to Godot's humanoid bone names, so the shared clips
+(tools/blender/humanoid.py) play on everyone, wearing a generated outfit (TRELLIS.2) fitted over it.
 
     import people as P
     C.reset("Nell")
     mpfb = P.enable()                      # after C.reset(): the reset unloads extensions
     arm, parts = P.build(PERSON, root)     # PERSON: the sliders and the assets, see build()
+    outfit = P.load_outfit(path, root, parts["Skin"], top, band)
+    P.pose_limbs(arm, P.limb_directions(outfit, arm, waist))   # the body in the outfit's pose
+    w, near = P.transfer_weights(outfit_co, P.posed_vertices(parts["Skin"]), body_weights)
+    P.unskin(outfit, arm, names, w)        # back to the body's rest pose
     body = P.body_of(arm)                  # humanoid.Body with the measures the clips stand it on
 
 Assets come from MPFB's user data folder (installed asset packs, CC0 unless a person's script says otherwise).
@@ -16,10 +20,10 @@ import pathlib
 import addon_utils
 import bpy
 import numpy as np
-from mathutils import Vector
-from mathutils.bvhtree import BVHTree
+from mathutils import Matrix, Vector
 
 import common as C
+import generated as G
 import humanoid as H
 
 EXTENSION = "bl_ext.blender_org.mpfb"
@@ -218,10 +222,13 @@ def body_of(arm: bpy.types.Object, *, foot_out: float = 0.03, wrist_out: float =
     )
 
 
-# --- garments made here -----------------------------------------------------------------------------
-# Parts no asset pack has (an apron, a belt) are built on the dressed body in its rest pose: their points are found
-# by casting rays at the body and its clothes, and they take the weights of the body under them (a skirt-like
-# panel blends from the hips into both thighs instead, so it doesn't tear between the legs).
+# --- a generated outfit -----------------------------------------------------------------------------
+# What a person wears (and their hair) can come from a generated model (TRELLIS.2 on an A-pose concept, see
+# docs/TECHNICAL.md, Generated models), worn over the MakeHuman body: the body keeps its face, its skeleton and its
+# weights, the outfit is cut where the body shows (the face), its hair is fitted over the head, the body is posed
+# into the outfit's pose and the outfit takes the weights of the body under it (loose cloth below the waist, an
+# apron, from the hips into both thighs instead, so it doesn't tear between the legs), then both go back to the
+# body's rest pose. The body's skin the outfit covers is deleted.
 
 
 def weight_matrix(obj: bpy.types.Object, names: list) -> np.ndarray:
@@ -235,197 +242,149 @@ def weight_matrix(obj: bpy.types.Object, names: list) -> np.ndarray:
     return w
 
 
-def nearest_weights(co: np.ndarray, points, w: np.ndarray) -> np.ndarray:
-    """The weights of the vertex nearest to each point."""
-    pts = np.asarray(points, dtype=float)
-    out = np.empty((len(pts), w.shape[1]))
-    for i in range(0, len(pts), 256):
-        d = ((co[None, :, :] - pts[i : i + 256, None, :]) ** 2).sum(2)
-        out[i : i + 256] = w[d.argmin(1)]
+def posed_vertices(obj: bpy.types.Object) -> np.ndarray:
+    """The mesh's vertices as its modifiers (the armature's pose) leave them, in world space."""
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    me = ev.to_mesh()
+    co = np.array([ev.matrix_world @ v.co for v in me.vertices])
+    ev.to_mesh_clear()
+    return co
+
+
+def load_outfit(path, root: bpy.types.Object, skin: bpy.types.Object, top: float, band: tuple) -> bpy.types.Object:
+    """The generated model as "Outfit": centered, scaled to `top` (m, its hair's top), moved front to back so its
+    torso (heights `band`) is where the body's is."""
+    obj = G.load(path, root, "Outfit")
+    co = G.vertices(obj.data)
+    lo, hi = co.min(0), co.max(0)
+    co = (co - [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, lo[2]]) * (top / (hi[2] - lo[2]))
+    body = G.vertices(skin.data)
+
+    def middle(c):
+        m = (c[:, 2] > band[0]) & (c[:, 2] < band[1]) & (np.abs(c[:, 0]) < 0.12)
+        return (c[m, 1].min() + c[m, 1].max()) / 2
+
+    co[:, 1] += middle(body) - middle(co)
+    G.set_vertices(obj.data, co)
+    for mat in obj.data.materials:
+        mat.use_backface_culling = False  # cut open at the neck: its inside may show
+        for link in mat.node_tree.links:  # the textures named after what they are (the export's file names)
+            if link.from_node.type == "TEX_IMAGE" and link.from_node.image:
+                kind = {"BSDF_PRINCIPLED": "Base", "NORMAL_MAP": "Normal"}.get(link.to_node.type, "ORM")
+                link.from_node.image.name = f"Outfit{kind}"
+    return obj
+
+
+def _line(points: np.ndarray) -> tuple:
+    """A line through the points (their middle and main direction)."""
+    mid = points.mean(0)
+    _u, _s, vt = np.linalg.svd(points - mid)
+    return mid, vt[0]
+
+
+def limb_directions(outfit: bpy.types.Object, arm: bpy.types.Object, waist: float) -> dict:
+    """Where the outfit's arms and legs point, per bone (armature space): each arm along the line through the
+    middles of its slices (from the shoulder out, the hand left out), each thigh from the hip's joint to the top of
+    the lower leg's line (the middles of the trousers' slices below the knee), each lower leg along that line."""
+    co = G.vertices(outfit.data)
+    head = {b.name: Vector(b.head_local) for b in arm.data.bones}
+    out = {}
+    for side, s in H.SIDES:
+        shoulder = head[f"{side}UpperArm"]
+        reach = float((s * co[:, 0]).max())
+        mids = []
+        for x in np.arange(shoulder.x * s + 0.15, reach - 0.18, 0.03):
+            m = (s * co[:, 0] > x) & (s * co[:, 0] < x + 0.03) & (co[:, 2] > waist)
+            if m.sum() > 10:
+                mids.append(co[m].mean(0))
+        _mid, d = _line(np.array(mids))
+        d = Vector(d * (1 if d[0] * s > 0 else -1))
+        for bone in ("UpperArm", "LowerArm", "Hand"):
+            out[f"{side}{bone}"] = d
+        hip = head[f"{side}UpperLeg"]
+        mids = []
+        for z in np.arange(0.18, 0.46, 0.03):
+            m = (s * co[:, 0] > 0.02) & (np.abs(co[:, 2] - z) < 0.015)
+            if m.sum() > 10:
+                mids.append(co[m].mean(0))
+        mid, d = _line(np.array(mids))
+        d = d * (1 if d[2] < 0 else -1)
+        knee = Vector(mid + d * ((0.46 - mid[2]) / d[2]))
+        out[f"{side}UpperLeg"] = (knee - hip).normalized()
+        out[f"{side}LowerLeg"] = Vector(d)
     return out
 
 
-class Surface:
-    """Ray casts against the given meshes (world space, rest pose), and the weights of their vertices nearest to a
-    point (for what lies on them)."""
-
-    def __init__(self, objs: list, names: list):
-        dg = bpy.context.evaluated_depsgraph_get()
-        self.trees = [BVHTree.FromObject(o, dg) for o in objs]
-        self.names = names
-        self.co = np.vstack([np.array([o.matrix_world @ v.co for v in o.data.vertices]) for o in objs])
-        self.w = np.vstack([weight_matrix(o, names) for o in objs])
-
-    def hit(self, origin, direction):
-        """The nearest hit point along the ray, or None."""
-        best, best_d = None, 1e9
-        for t in self.trees:
-            loc, _n, _i, dist = t.ray_cast(Vector(origin), Vector(direction).normalized(), 3.0)
-            if loc is not None and dist < best_d:
-                best, best_d = loc, dist
-        return best
-
-    def weights_at(self, points) -> np.ndarray:
-        return nearest_weights(self.co, points, self.w)
+def pose_limbs(arm: bpy.types.Object, directions: dict) -> None:
+    """Turns each bone (parents first) about its head so it points along its direction."""
+    for name, want in directions.items():
+        pb = arm.pose.bones[name]
+        head = pb.head.copy()
+        turn = (pb.tail - pb.head).rotation_difference(want).to_matrix().to_4x4()
+        pb.matrix = Matrix.Translation(head) @ turn @ Matrix.Translation(-head) @ pb.matrix
+        bpy.context.view_layer.update()
 
 
-def _mesh(name: str, verts, faces, uvs) -> bpy.types.Object:
-    me = bpy.data.meshes.new(name)
-    me.from_pydata([tuple(v) for v in verts], [], faces)
-    layer = me.uv_layers.new(name="UVMap")
-    for loop in me.loops:
-        layer.data[loop.index].uv = uvs[loop.vertex_index]
-    me.update()
-    obj = bpy.data.objects.new(name, me)
-    C.link(obj)
-    for p in me.polygons:
-        p.use_smooth = True
-    return obj
+def transfer_weights(co: np.ndarray, body: np.ndarray, w: np.ndarray, k: int = 4) -> tuple:
+    """The weights of the nearest body vertices (k, by inverse distance, normalized) at each point, and the distance
+    to the nearest."""
+    from mathutils.kdtree import KDTree
+
+    tree = KDTree(len(body))
+    for i, p in enumerate(body):
+        tree.insert(p, i)
+    tree.balance()
+    out = np.zeros((len(co), w.shape[1]))
+    near = np.zeros(len(co))
+    for i, p in enumerate(co):
+        found = tree.find_n(p, k)
+        inv = np.array([1.0 / max(d, 1e-4) for _c, _j, d in found])
+        row = (inv[:, None] * w[[j for _c, j, _d in found]]).sum(0)
+        out[i] = row / max(row.sum(), 1e-6)
+        near[i] = found[0][2]
+    return out, near
 
 
-def _skin(obj: bpy.types.Object, arm: bpy.types.Object, names: list, w: np.ndarray) -> None:
-    for i, name in enumerate(names):
-        g = obj.vertex_groups.new(name=name)
-        for vi in np.nonzero(w[:, i] > 1e-4)[0]:
-            g.add([int(vi)], float(w[vi, i]), "REPLACE")
-    obj.parent = arm
-    obj.modifiers.new("Armature", "ARMATURE").object = arm
+def skirt_weights(co: np.ndarray, names: list, waist: float, hem: float, width: float) -> np.ndarray:
+    """A skirt's weights: the hips at the waist, blending into the thigh on its side towards the hem."""
+    w = np.zeros((len(co), len(names)))
+    t = np.clip((waist - co[:, 2]) / (waist - hem), 0, 1)
+    side = np.clip((co[:, 0] / width + 1) / 2, 0, 1)  # 1: the left (+x)
+    w[:, names.index("Hips")] = 1 - 0.5 * t
+    w[:, names.index("LeftUpperLeg")] = 0.5 * t * side
+    w[:, names.index("RightUpperLeg")] = 0.5 * t * (1 - side)
+    return w
 
 
-def apron(
-    arm: bpy.types.Object,
-    surface: Surface,
-    *,
-    top: float,
-    waist: float,
-    hem: float,
-    widths: tuple,
-    gap: float = 0.012,
-    drop: float = 0.04,
-    columns: int = 14,
-    rows: int = 32,
-) -> bpy.types.Object:
-    """An apron (`top`, `waist`, `hem`: heights in m; `widths`: half-widths at the top, the waist and the hem): the
-    bib lies on the chest, the skirt hangs from the front-most point above it (straight down past the thighs), leaning
-    out to `drop` (m) at the hem (clear of the knees when they bend) and curving back a little towards its sides. Weights: the bib the body's under it, the skirt from the hips into
-    both thighs, more towards the hem."""
-    zs = np.linspace(top, hem, rows + 1)
-    us = np.linspace(-1.0, 1.0, columns + 1)
-    half = np.interp(zs, [hem, waist, top], [widths[2], widths[1], widths[0]])
-    grid = np.zeros((rows + 1, columns + 1, 3))
-    hang = None
-    for r, z in enumerate(zs):
-        ys = np.array(
-            [loc.y - gap if (loc := surface.hit((u * half[r], -1.0, z), (0, 1, 0))) is not None else np.nan for u in us]
-        )
-        front = np.nanmin(ys)
-        t = (waist - z) / (waist - hem)
-        if z < waist:
-            hang = front if hang is None else min(hang, front)
-            # Hanging straight, curving back towards the sides, never into the body.
-            ys = np.fmin(hang - drop * t + 0.1 * np.abs(us) ** 3, np.where(np.isnan(ys), np.inf, ys))
-        else:
-            ys = np.where(np.isnan(ys), front, ys)
-        grid[r, :, 0] = us * half[r]
-        grid[r, :, 1] = ys
-        grid[r, :, 2] = z
-    verts = grid.reshape(-1, 3)
-    n = columns + 1
-    faces = [
-        (r * n + c, r * n + c + 1, (r + 1) * n + c + 1, (r + 1) * n + c) for r in range(rows) for c in range(columns)
-    ]
-    uvs = [((u + 1) / 2, (z - hem) / (top - hem)) for z in zs for u in us]
-    obj = _mesh("Apron", verts, faces, uvs)
-    names = surface.names
-    w = surface.weights_at(verts)
-    hips, left, right = names.index("Hips"), names.index("LeftUpperLeg"), names.index("RightUpperLeg")
-    skirt = verts[:, 2] < waist
-    t = np.clip((waist - verts[skirt, 2]) / (waist - hem), 0, 1)
-    side = np.clip((verts[skirt, 0] / widths[2] + 1) / 2, 0, 1)  # 1: her left (+x)
-    w[skirt] = 0.0
-    w[skirt, hips] = 1 - 0.5 * t
-    w[skirt, left] = 0.5 * t * side
-    w[skirt, right] = 0.5 * t * (1 - side)
-    _skin(obj, arm, names, w)
-    return obj
+def unskin(obj: bpy.types.Object, arm: bpy.types.Object, names: list, w: np.ndarray) -> None:
+    """Moves the mesh from the armature's pose back into its rest pose (the inverse of its blended bones)."""
+    co = G.vertices(obj.data)
+    mats = np.array([np.array(arm.pose.bones[b].matrix @ arm.data.bones[b].matrix_local.inverted()) for b in names])
+    blend = np.einsum("nb,bij->nij", w, mats)
+    rest = np.einsum("nij,nj->ni", np.linalg.inv(blend), np.column_stack((co, np.ones(len(co)))))[:, :3]
+    G.set_vertices(obj.data, rest)
 
 
-def strap(arm: bpy.types.Object, surface: Surface, points: list, *, width: float = 0.025, gap: float = 0.006):
-    """A strap through `points` (an open path), each point moved onto the surface from outside (along the way from
-    the neck's middle line), `width` wide across the path, lying flat on it. Weights: the body's under it."""
-    path = []
-    for p in points:
-        p = Vector(p)
-        out = Vector((p.x, p.y + 0.02, 0)).normalized()  # away from the neck's line (x = 0, y = -0.02)
-        loc = surface.hit(p + out * 0.3, -out)
-        path.append((loc if loc is not None else p) + out * gap)
-    verts, uvs = [], []
-    for k, p in enumerate(path):
-        nxt = path[min(k + 1, len(path) - 1)] - path[max(k - 1, 0)]
-        out = Vector((p.x, p.y + 0.02, 0)).normalized()
-        across = nxt.cross(out).normalized() * (width / 2)
-        verts += [tuple(p - across), tuple(p + across)]
-        uvs += [(0.0, k / (len(path) - 1)), (1.0, k / (len(path) - 1))]
-    faces = [(2 * k, 2 * k + 1, 2 * k + 3, 2 * k + 2) for k in range(len(path) - 1)]
-    obj = _mesh("Strap", verts, faces, uvs)
-    _skin(obj, arm, surface.names, surface.weights_at(verts))
-    return obj
+def delete_faces(obj: bpy.types.Object, mask: np.ndarray) -> int:
+    """Deletes the faces where `mask` (per face) is set, and the vertices left without faces."""
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    bm.faces.ensure_lookup_table()
+    gone = [f for f in bm.faces if mask[f.index]]
+    bmesh.ops.delete(bm, geom=gone, context="FACES")
+    loose = [v for v in bm.verts if not v.link_faces]
+    bmesh.ops.delete(bm, geom=loose, context="VERTS")
+    bm.to_mesh(obj.data)
+    bm.free()
+    return len(gone)
 
 
-def ring(surface: Surface, z: float, gap: float, steps: int = 48, reach: float = 0.32) -> np.ndarray:
-    """Points round the body at height z, `gap` outside what's there (rays from `reach` outside the middle towards
-    it: inside the arms hanging beside the body), the first at the front (-y), going round counter-clockwise seen
-    from above."""
-    pts = []
-    for k in range(steps):
-        a = 2 * np.pi * k / steps
-        d = Vector((np.sin(a), -np.cos(a), 0.0))
-        loc = surface.hit(Vector((0, 0, z)) + d * reach, -d)
-        r = Vector((loc.x, loc.y, 0)).length if loc is not None else 0.15
-        pts.append(tuple(Vector((0, 0, z)) + d * (r + gap)))
-    return np.array(pts)
-
-
-def belt(
-    arm: bpy.types.Object,
-    surface: Surface,
-    *,
-    z: float,
-    height: float = 0.05,
-    gap: float = 0.01,
-    pouches: tuple = (),
-) -> bpy.types.Object:
-    """A belt round the body at height z (its middle), lying on what's there (an apron too), with `pouches` hanging
-    on it ((angle in degrees from the front, counter-clockwise seen from above, (width, height, depth)) each):
-    boxes, rigid on the hips like the belt."""
-    lo = ring(surface, z - height / 2, gap)
-    hi = ring(surface, z + height / 2, gap)
-    steps = len(lo)
-    verts = [tuple(v) for v in np.vstack([lo, hi])]
-    faces = [(k, (k + 1) % steps, steps + (k + 1) % steps, steps + k) for k in range(steps)]
-    uvs = [(k / steps, 0.0) for k in range(steps)] + [(k / steps, 0.25) for k in range(steps)]
-    for angle, (w_, h_, d_) in pouches:
-        a = np.radians(angle)
-        out = np.array([np.sin(a), -np.cos(a), 0.0])
-        along = np.array([np.cos(a), np.sin(a), 0.0])
-        k = round(angle / 360 * steps) % steps
-        base = (lo[k] + hi[k]) / 2 + out * (d_ / 2) - np.array([0, 0, h_ * 0.3])
-        first = len(verts)
-        for sx in (-1, 1):
-            for sy in (-1, 1):
-                for sz in (-1, 1):
-                    verts.append(tuple(base + along * sx * w_ / 2 + out * sy * d_ / 2 + np.array([0, 0, sz * h_ / 2])))
-                    uvs.append((0.5 + 0.25 * sx, 0.6 + 0.3 * sz))
-        boxes = ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3))
-        faces += [tuple(first + i for i in f) for f in boxes]
-    obj = _mesh("Belt", verts, faces, uvs)
-    for p in obj.data.polygons[steps:]:
-        p.use_smooth = False
-    names = surface.names
-    w = np.zeros((len(verts), len(names)))
-    w[:, names.index("Hips")] = 1.0
-    _skin(obj, arm, names, w)
-    return obj
+def face_centers(obj: bpy.types.Object) -> np.ndarray:
+    co = G.vertices(obj.data)
+    return np.array([co[list(p.vertices)].mean(0) for p in obj.data.polygons])
 
 
 def noise(size: int, scale: int, seed: int, octaves: int = 4) -> np.ndarray:
@@ -446,30 +405,3 @@ def noise(size: int, scale: int, seed: int, octaves: int = 4) -> np.ndarray:
         out += (a * (1 - f)[:, None] + b * f[:, None]) * 0.5**o
         total += 0.5**o
     return out / total
-
-
-def worn_material(
-    name: str, base, dark, *, size: int = 1024, seed: int = 1, roughness: float = 0.85, seam: float = 0.0
-) -> bpy.types.Material:
-    """A worn cloth or leather look in a texture: the `base` color (sRGB) mottled towards `dark` (stains, grime),
-    `seam`: a darker border that wide (in UV; 0: none)."""
-    stains = noise(size, 4, seed) * 0.6 + noise(size, 24, seed + 1) * 0.4
-    grime = np.clip((stains - 0.45) * 2.5, 0, 1)[..., None]
-    rgb = np.array(base)[None, None, :] * (1 - grime) + np.array(dark)[None, None, :] * grime
-    if seam:
-        u = np.linspace(0, 1, size)
-        edge = np.minimum.outer(np.minimum(u, 1 - u), np.minimum(u, 1 - u))
-        rgb *= np.where(edge < seam, 0.7, 1.0)[..., None]
-    rgba = np.concatenate([np.clip(rgb, 0, 1), np.ones((size, size, 1))], axis=2).astype(np.float32)
-    img = bpy.data.images.new(f"{name}Base", size, size)
-    img.pixels.foreach_set(rgba.ravel())
-    img.pack()
-    mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
-    nt = mat.node_tree
-    bsdf = nt.nodes["Principled BSDF"]
-    bsdf.inputs["Roughness"].default_value = roughness
-    tex = nt.nodes.new("ShaderNodeTexImage")
-    tex.image = img
-    nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
-    return mat

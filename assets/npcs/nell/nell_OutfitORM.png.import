@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bh8bmqnbpduy6"
-path.s3tc="res://.godot/imported/nell_BootsBase.png-4dfad1a03b822520ab8f0e3361b017bd.s3tc.ctex"
+uid="uid://yodnqtjqrp1o"
+path.s3tc="res://.godot/imported/nell_OutfitORM.png-f4b9a0092222b0420b7eda0074364242.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "e02ce556144c099c45201e8c62cf0e36"
+"md5": "e7fc6b262af2a92bbfc0dd3497f65424"
 }
 
 [deps]
 
-source_file="res://assets/npcs/nell/nell_BootsBase.png"
-dest_files=["res://.godot/imported/nell_BootsBase.png-4dfad1a03b822520ab8f0e3361b017bd.s3tc.ctex"]
+source_file="res://assets/npcs/nell/nell_OutfitORM.png"
+dest_files=["res://.godot/imported/nell_OutfitORM.png-f4b9a0092222b0420b7eda0074364242.s3tc.ctex"]
 
 [params]
 

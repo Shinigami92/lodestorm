@@ -21,9 +21,6 @@ const STILL_SPEED: float = 0.5
 ## How far (in m) the player has to walk off for the remark to end (a little farther than
 ## `REMARK_RANGE`, so it doesn't flicker at the edge).
 const LEAVE_RANGE: float = 2.6
-## The camera's visible height (in m) the bubble is sized for: the view while talking to the crew
-## (`Npc`'s `view_height`). Wider views scale it up.
-const BUBBLE_VIEW_HEIGHT: float = 3.2
 
 ## Who it is: its role, suit and remarks.
 @export var profile: NpcProfile
@@ -59,7 +56,7 @@ func _physics_process(delta: float) -> void:
 func _process(_delta: float) -> void:
 	body.plate_allowed = not bubble.visible
 	if bubble.visible:
-		SpeechBubble.place(bubble, body.get_head_position(), _bubble_scale())
+		SpeechBubble.place(bubble, body.get_head_position(), SpeechBubble.view_scale(get_tree()))
 
 
 ## Whether it's walking right now.
@@ -82,13 +79,6 @@ func remark() -> void:
 		speech.show_line(tr(profile.remarks[_remark]))
 	_remark = (_remark + 1) % profile.remarks.size()
 	bubble.visible = true
-
-
-## How much bigger the bubble shows than its size: the camera's visible height now over
-## `BUBBLE_VIEW_HEIGHT` (1 without a camera rig).
-func _bubble_scale() -> float:
-	var rig := get_tree().get_first_node_in_group(IsoCameraRig.GROUP) as IsoCameraRig
-	return rig.view_height() * rig.zoom / BUBBLE_VIEW_HEIGHT if rig else 1.0
 
 
 ## Walks on along the route while `free` (no player close), turning into the way it goes.

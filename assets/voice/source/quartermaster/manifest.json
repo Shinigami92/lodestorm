@@ -6,6 +6,12 @@
       "seed": 1,
       "text": "Neue Ersatzmagazine kann dein Anzug draußen nicht herstellen. Sind sie aufgebraucht, bezahlst du jedes Nachladen mit dem Erz, das du trägst."
     },
+    "0b2a3b6ea6f27deb": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Noch eine für die Waffenkammer. Du findest sie bei den anderen an der Wand, also nimm, was am besten zur nächsten Mission passt."
+    },
     "1668e9dbe7bc3a9c": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -17,6 +23,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
+    },
+    "31c71c57cefcd838": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Alle sind heil zurück, und mit Erz auf dem Rücken. So soll eine erste Mission enden."
+    },
+    "32b9dbc68ddeefdd": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Eine neue Waffe ist nur so gut wie die Hände, die sie halten. Verbring vor der nächsten Mission etwas Zeit am Schießstand."
     },
     "33dcc9374efdc3f4": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -48,6 +66,12 @@
       "seed": 1,
       "text": "Draußen stellt dein Anzug neue Munition aus dem Erz her, das du auf dem Rücken trägst. Jede Erzsorte funktioniert. Er verbraucht immer zuerst das Erz mit der niedrigsten Qualität, damit dein seltenes Erz am längsten reicht."
     },
+    "4c367ec7aee8bc9c": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das nenne ich eine Ladung. Mit so viel Erz an Bord sind ein paar von diesen Upgrades endlich drin."
+    },
     "59d16f5d69ce63da": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -59,6 +83,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Drückst du genau dann, wenn der Ring die weiße Markierung erreicht, ist das Nachladen sofort fertig. Drückst du zu früh oder zu spät, dauert es stattdessen länger."
+    },
+    "8416a0862f4a44e9": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Du bist heil zurück, und mit Erz auf dem Rücken. So soll eine erste Mission enden."
     },
     "95aef4645e442e45": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -96,6 +126,12 @@
       "seed": 1,
       "text": "Wenn du Fragen zu Munition oder zum Nachladen hast, frag einfach mich. Besser hier als draußen, wenn dir ein Schwarm im Nacken sitzt."
     },
+    "ca08b26b8055dbba": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie ich höre, hast du eine neue Waffe. Wenn du sie mitnehmen willst, wähl sie vor der nächsten Mission an deinem Spind aus."
+    },
     "cf048b47b8c5609c": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -126,11 +162,23 @@
       "seed": 1,
       "text": "Such dir an deinem Spind die Waffen aus, mit denen du auf eine Mission gehen möchtest. Allerdings kannst du nur bis zu zwei Waffen gleichzeitig tragen."
     },
+    "eb8ed89d5f451abf": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Schon wieder eine große Ladung. Wenn das so weitergeht, haben Dace und Wren keine ruhige Minute mehr."
+    },
     "ecd831d72f9428ca": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Ein Trick: Drück während des Nachladens ein zweites Mal auf Nachladen. Die rechte Hälfte des Rings um deine Füße füllt sich beim Nachladen, und sie hat eine weiße Markierung."
+    },
+    "eced603dac6aeb28": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Gute Ladung. Aber wer leichtsinnig wird, hat nicht lange Glück. Die nächste Mission kann genauso schnell schiefgehen."
     },
     "f41a96465b5015be": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -152,6 +200,12 @@
       "seed": 1,
       "text": "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."
     },
+    "0b2a3b6ea6f27deb": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Another one for the armory. You'll find it on the wall with the others, so take whatever suits the next mission best."
+    },
     "1668e9dbe7bc3a9c": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -163,6 +217,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
+    },
+    "31c71c57cefcd838": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Everyone made it back in one piece, and with ore on their backs. That's how I like a first mission to end."
+    },
+    "32b9dbc68ddeefdd": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "A new weapon is only as good as the hands holding it. Spend some time at the shooting range before the next mission."
     },
     "33dcc9374efdc3f4": {
       "anchor": "772c7907f9411bf4",
@@ -194,6 +260,12 @@
       "seed": 1,
       "text": "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest."
     },
+    "4c367ec7aee8bc9c": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach."
+    },
     "59d16f5d69ce63da": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -205,6 +277,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead."
+    },
+    "8416a0862f4a44e9": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
     },
     "95aef4645e442e45": {
       "anchor": "772c7907f9411bf4",
@@ -242,6 +320,12 @@
       "seed": 1,
       "text": "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
     },
+    "ca08b26b8055dbba": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I hear you've got a new weapon. If you want to take it along, pick it at your locker before the next mission."
+    },
     "cf048b47b8c5609c": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -272,11 +356,23 @@
       "seed": 1,
       "text": "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
     },
+    "eb8ed89d5f451abf": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."
+    },
     "ecd831d72f9428ca": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Here's a trick: press reload a second time while you're reloading. The right half of the ring around your feet fills up while you reload, and it has a white mark."
+    },
+    "eced603dac6aeb28": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast."
     },
     "f41a96465b5015be": {
       "anchor": "772c7907f9411bf4",

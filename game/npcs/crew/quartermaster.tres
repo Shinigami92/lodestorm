@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
 [ext_resource type="Resource" uid="uid://7jm5s1jr48n5" path="res://game/weapons/types/brask/brask.tres" id="4_brask"]
+[ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="9_reaction"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
 script = ExtResource("3_topic")
@@ -59,6 +60,28 @@ script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResource("Resource_spares"), SubResource("Resource_reload"), SubResource("Resource_timing"), SubResource("Resource_brask"), SubResource("Resource_range")])
 
+[sub_resource type="Resource" id="Reaction_first_run_won_solo"]
+script = ExtResource("9_reaction")
+event = &"first_run_won"
+players = 1
+lines = Array[String](["You made it back in one piece, and with ore on your back. That's how I like a first mission to end."])
+
+[sub_resource type="Resource" id="Reaction_first_run_won_coop"]
+script = ExtResource("9_reaction")
+event = &"first_run_won"
+players = 2
+lines = Array[String](["Everyone made it back in one piece, and with ore on their backs. That's how I like a first mission to end."])
+
+[sub_resource type="Resource" id="Reaction_weapon_built"]
+script = ExtResource("9_reaction")
+event = &"weapon_built"
+lines = Array[String](["I hear you've got a new weapon. If you want to take it along, pick it at your locker before the next mission.", "Another one for the armory. You'll find it on the wall with the others, so take whatever suits the next mission best.", "A new weapon is only as good as the hands holding it. Spend some time at the shooting range before the next mission."])
+
+[sub_resource type="Resource" id="Reaction_big_haul"]
+script = ExtResource("9_reaction")
+event = &"big_haul"
+lines = Array[String](["Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach.", "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast.", "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"quartermaster"
@@ -66,3 +89,4 @@ display_name = "Brannik"
 role = "Quartermaster"
 accent_color = Color(0.65, 0.45, 1, 1)
 dialogue = SubResource("Resource_dialogue")
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_run_won_solo"), SubResource("Reaction_first_run_won_coop"), SubResource("Reaction_weapon_built"), SubResource("Reaction_big_haul")])

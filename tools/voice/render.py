@@ -5,7 +5,8 @@ soundfile, e.g. the VoxCPM environment; env: VOICE_COMFYUI_URL, the voice ComfyU
 
 An NPC is voiced once assets/voice/source/<npc id>/ holds its anchors (anchor.py): one per voice language, listed
 in voice.json. Its lines are its dialogue's (the profile .tres in game/npcs/ with that id): the prompt and every
-line of the greeting and the topics, in English (the translation keys) and translated from locale/<language>.po.
+line of the greeting, the topics and the reactions (only the reactions, its radio calls, with "lines": "reactions"
+in voice.json), in English (the translation keys) and translated from locale/<language>.po.
 Each line is cloned from the language's anchor with Qwen3-TTS (comfy.py) and written to
 assets/voice/<npc id>/<language>/<hash>.ogg, the hash being the first 16 hex digits of the SHA-256 of the English
 line, so the game finds a line's file from its text (`VoiceLines`). manifest.json next to the anchors records what
@@ -53,8 +54,9 @@ def default_prompt() -> str:
     return json.loads(re.search(r"var prompt: String = (\".*\")", script).group(1))
 
 
-def npc_lines(npc: str) -> list[str]:
-    """The NPC's lines in English: the prompt, then the greeting's and every topic's, in file order."""
+def npc_lines(npc: str, reactions_only: bool = False) -> list[str]:
+    """The NPC's lines in English: the prompt, then the greeting's, every topic's and reaction's, in file order;
+    only the reactions' with reactions_only."""
     for path in sorted((ROOT / "game" / "npcs").rglob("*.tres")):
         text = path.read_text(encoding="utf-8")
         resource = text[text.rfind("[resource]") :]
@@ -63,9 +65,13 @@ def npc_lines(npc: str) -> list[str]:
     else:
         raise SystemExit(f"No NPC profile with id {npc} in game/npcs/")
     prompt = re.search(r'^prompt = (".*")$', text, re.MULTILINE)
-    lines = [json.loads(prompt.group(1)) if prompt else default_prompt()]
-    for found in re.finditer(r"^lines = Array\[String\]\((\[.*\])\)$", text, re.MULTILINE):
-        lines += json.loads(found.group(1))
+    lines = [] if reactions_only else [json.loads(prompt.group(1)) if prompt else default_prompt()]
+    for block in re.split(r"\n(?=\[)", text):
+        # A reaction's block names its event.
+        if reactions_only and not re.search(r"^event = ", block, re.MULTILINE):
+            continue
+        for found in re.finditer(r"^lines = Array\[String\]\((\[.*\])\)$", block, re.MULTILINE):
+            lines += json.loads(found.group(1))
     return list(dict.fromkeys(lines))
 
 
@@ -104,9 +110,10 @@ def finish(source: str, out: pathlib.Path) -> None:
 def render(npc: str, prune: bool, dry_run: bool) -> None:
     folder = SOURCE / npc
     voice = json.loads((folder / "voice.json").read_text(encoding="utf-8"))
+    scope = voice.pop("lines", "all")
     manifest_path = folder / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
-    lines = npc_lines(npc)
+    lines = npc_lines(npc, scope == "reactions")
     model = comfy.CLONERS[ENGINE][1]
     for language, anchor in voice.items():
         spoken = {line: line for line in lines} if language == "en" else translations(language)

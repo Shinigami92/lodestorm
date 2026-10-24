@@ -28,3 +28,33 @@ extends Resource
 ## Short lines said in passing to a player who stops close by, one after another (the English
 ## texts, translated).
 @export var remarks: Array[String] = []
+## What a crew member says over the radio about things that happen (see `CrewReactions`).
+@export var reactions: Array[CrewReaction] = []
+
+
+## The lines they have for `event` about `subject`, worded for several players `together` or one
+## alone: the subject's own before the ones for any, and within those the ones worded for the
+## players before the ones for either; empty: they don't react to it.
+func reaction_lines(
+	event: StringName, subject: StringName = &"", together: bool = false
+) -> Array[String]:
+	var fitting: CrewReaction = null
+	var best: int = -1
+	var wording: CrewReaction.Players = (
+		CrewReaction.Players.COOP if together else CrewReaction.Players.SOLO
+	)
+	for reaction: CrewReaction in reactions:
+		if reaction.event != event:
+			continue
+		if not reaction.subject.is_empty() and reaction.subject != subject:
+			continue
+		if reaction.players != CrewReaction.Players.ANY and reaction.players != wording:
+			continue
+		var score: int = (
+			(2 if not reaction.subject.is_empty() else 0)
+			+ (1 if reaction.players != CrewReaction.Players.ANY else 0)
+		)
+		if score > best:
+			best = score
+			fitting = reaction
+	return fitting.lines if fitting else ([] as Array[String])

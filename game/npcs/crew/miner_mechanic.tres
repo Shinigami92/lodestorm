@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
 [ext_resource type="PackedScene" uid="uid://dj0ui2vglcylw" path="res://game/npcs/crew/accessories/miner_mechanic.tscn" id="4_accessory"]
+[ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="9_reaction"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
 script = ExtResource("3_topic")
@@ -52,6 +53,11 @@ greeting = SubResource("Resource_greeting")
 prompt = "What do you need?"
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_placing"), SubResource("Resource_fleet"), SubResource("Resource_drills"), SubResource("Resource_dry"), SubResource("Resource_about")])
 
+[sub_resource type="Resource" id="Reaction_big_haul"]
+script = ExtResource("9_reaction")
+event = &"big_haul"
+lines = Array[String](["The miners worked hard out there, I can tell. Hauls like that are what keep this ship going.", "That's a haul. The miners dig best when nobody lets the aliens near them. That's the whole trick.", "I've seen a lot of crews come and go. Not many bring back that much ore. Keep it up."])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"miner_mechanic"
@@ -61,3 +67,4 @@ accent_color = Color(0.55, 0.9, 0.3, 1)
 accessory = ExtResource("4_accessory")
 cabin = 7
 dialogue = SubResource("Resource_dialogue")
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_big_haul")])

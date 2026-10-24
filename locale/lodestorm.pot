@@ -165,6 +165,10 @@ msgstr ""
 msgid "Most of what I hear is nonsense. Some of it isn't. The trick is telling the difference."
 msgstr ""
 
+#: game/npcs/crew/cook.tres
+msgid "Moons around a gas giant! When I signed on, I never thought I'd see Gaulm out of a window. Somebody has to tell me what it looks like from down there."
+msgstr ""
+
 #: game/npcs/crew/engineer.tres
 msgid "Engineer"
 msgstr ""
@@ -269,6 +273,26 @@ msgstr ""
 msgid "This shield is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
 msgstr ""
 
+#: game/npcs/crew/engineer.tres
+msgid "The new plate holds. Vehra is in reach now, the next planet inwards. The aliens there are tougher than on Torvane."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Skelde is in reach now. Most of it is ash and lava, and the star feels close enough to touch. The shield holds, but only just."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "That was quite a haul. The silos have never been this full, and this ship runs on hauls like that."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "I had to look twice at the numbers on the silos. That's the biggest haul this ship has seen so far."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Another record haul. At this rate, I'll need a bigger cargo bay."
+msgstr ""
+
 #: game/npcs/crew/gunsmith.tres
 msgid "Gunsmith"
 msgstr ""
@@ -339,6 +363,18 @@ msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
 msgid "Sometimes I wonder what they needed weapons like these for."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "A new weapon, fresh off my bench. Take it to the shooting range first, before you take it out there."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "It's not every day I get to build something new from those old drawings. Bring it back in one piece, and I'll keep improving it."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Every weapon takes some getting used to. Give the new one a few missions before you judge it."
 msgstr ""
 
 #: game/npcs/crew/medic.tres
@@ -415,6 +451,10 @@ msgstr ""
 
 #: game/npcs/crew/medic.tres
 msgid "Then I count the injuries that come back from these runs. The numbers don't match the reports, so I'm keeping my own."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Easy, take a breath. You fell out there and woke up in my medical bay. It happens to everyone once. Let's make sure it doesn't happen often."
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
@@ -505,6 +545,18 @@ msgstr ""
 msgid "I knew some of the people on the first expedition. Good people. Nobody has heard from them in a long time."
 msgstr ""
 
+#: game/npcs/crew/miner_mechanic.tres
+msgid "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "That's a haul. The miners dig best when nobody lets the aliens near them. That's the whole trick."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "I've seen a lot of crews come and go. Not many bring back that much ore. Keep it up."
+msgstr ""
+
 #: game/npcs/crew/pilot.tres
 msgid "Pilot"
 msgstr ""
@@ -592,6 +644,78 @@ msgstr ""
 
 #: game/npcs/crew/pilot.tres
 msgid "But these storms are something else. I've never seen weather like this anywhere. So when the warning comes out there, please don't make me wait for you."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Cassor is on the navigator now, and its moon Mirr with it. Closer to the star, the storms come in sooner, so I'll call earlier from now on."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Zairen is on the navigator. That's as close to Kesh as anyone should ever fly. I'll get us there, and I'll get us back out."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Torvane, our first landing. Most of it is dust and rock, with thick growth in the low places. I'll call on the radio when the storm comes."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Lisk is a moon of ice. The ice out there is slick, and the cracks in it go deep."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Welcome to Vehra. Ice, salt and dust, and all of it a little harsher than on Torvane. I'll keep the engines warm."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Cassor. Salt flats and thick growth, and the ground in between doesn't always hold. There are sinkholes out there."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Mirr is a small moon, nothing but dust and stone. It's quiet out there. Too quiet for my taste."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "We're on Orrel, one of Gaulm's moons. Salt and growth again, but everything here hits harder than anywhere before."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Iska, Gaulm's other moon. Ice and dust, and colder than anywhere we've been. Nobody should stay out there longer than they have to."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Skelde. Lava runs through the ash fields here, and the vents can burst at any moment. Standing still out there is a bad idea."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Zairen. The heat has turned the ground to glass, and some of the shards are sharp enough to hurt. I'll be waiting right here."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Storm's coming in. Get back to the ship."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Storm front on the scanner. Time to head back."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "The storm is on its way. The ramp is down, so come on back."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Here comes the weather. Finish up and get back aboard."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Storm's coming in. Everyone back to the ship."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "The storm is on its way. The ramp is down, so come on back, all of you."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Here comes the weather. Finish up, all of you, and get back aboard."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -715,6 +839,38 @@ msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
 msgid "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Everyone made it back in one piece, and with ore on their backs. That's how I like a first mission to end."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "I hear you've got a new weapon. If you want to take it along, pick it at your locker before the next mission."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Another one for the armory. You'll find it on the wall with the others, so take whatever suits the next mission best."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "A new weapon is only as good as the hands holding it. Spend some time at the shooting range before the next mission."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."
 msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
@@ -1419,6 +1575,10 @@ msgstr ""
 
 #: game/npcs/ostra/rival_captain.tres
 msgid "We'll see how long you last out there. If you're still flying in a few months, I'll buy you a drink."
+msgstr ""
+
+#: game/npcs/radio_bubble.gd
+msgid "Radio"
 msgstr ""
 
 #: game/npcs/talk_card.gd

@@ -359,6 +359,25 @@ func test_every_crew_line_and_card_fits_in_every_language() -> void:
 		await _assert_lines_fit(_ship.get_node(NPCS[profile.resource_path]) as Npc)
 
 
+func test_every_crew_call_fits_in_every_language() -> void:
+	var radio: PlayerRadio = _player.radio
+	var bubble := radio.panel.content as RadioBubble
+	var layout := Vector2(radio.panel.size * radio.panel.pixels_per_meter)
+	for locale: String in SettingsList.languages():
+		TranslationServer.set_locale(locale)
+		for profile: NpcProfile in CREW:
+			for reaction: CrewReaction in profile.reactions:
+				for line: String in reaction.lines:
+					radio.clear()
+					radio.hear(profile, line)
+					await wait_process_frames(1)
+					var label: String = "%s %s %s %s" % [locale, profile.id, reaction.event, line]
+					var needed: Vector2 = bubble.get_needed_size()
+					assert_lte(needed.x, layout.x + 0.5, "%s: %s wide" % [label, needed.x])
+					assert_lte(needed.y, layout.y + 0.5, "%s: %s high" % [label, needed.y])
+	radio.clear()
+
+
 func test_every_station_line_card_and_remark_fits_in_every_language() -> void:
 	var voyage := _map.get_node("Voyage") as Voyage
 	voyage.select(voyage.offer_for_station(voyage.settings.system.body_by_id(&"ostra")))

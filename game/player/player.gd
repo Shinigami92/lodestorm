@@ -153,6 +153,8 @@ var sounds := PlayerSounds.new()
 var ground_contact := GroundContact.new()
 ## The pause panel beside it (`pause`: resume, settings, quit).
 var pause_panel: PausePanel
+## The suit's radio: crew calls beside the player's head.
+var radio := PlayerRadio.new()
 ## The 3D menu (a screen or a station) the player is using, or null. Meanwhile it doesn't move or
 ## act.
 var menu: WorldMenu:
@@ -225,8 +227,11 @@ func _ready() -> void:
 	pause_panel.name = "PausePanel"
 	pause_panel.holder = self
 	add_child(pause_panel)
+	radio.name = "Radio"
+	radio.holder = self
+	add_child(radio)
 	# What floats around the player: decals projected onto the ground leave it out.
-	for part: Node3D in [_ship_pointer, $OreArrival as Node3D, pause_panel]:
+	for part: Node3D in [_ship_pointer, $OreArrival as Node3D, pause_panel, radio]:
 		RenderLayers.put(part, RenderLayers.CHARACTERS)
 	aim.name = "Aim"
 	aim.holder = self

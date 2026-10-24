@@ -76,7 +76,10 @@ func _physics_process(delta: float) -> void:
 	_follow_duration()
 	match state:
 		State.RUNNING:
+			var before: float = time_left
 			time_left = maxf(time_left - delta, 0.0)
+			if before > warning_time() and time_left <= warning_time():
+				GameEvents.bus.storm_warned.emit()
 			if time_left == 0.0:
 				state = State.STORM
 				time_up.emit()

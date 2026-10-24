@@ -9,6 +9,9 @@ extends Control
 const HEAD_GAP: float = 0.05
 ## Width of the tail where it meets the panel, in px of the layout (its height is `%Tail`'s).
 const TAIL_WIDTH: float = 44.0
+## The camera's visible height (in m) bubbles outside a talk are sized for: the view while talking
+## to the crew (`Npc`'s `view_height`). Wider views scale them up (`view_scale`).
+const VIEW_HEIGHT: float = 3.2
 
 @onready var _layout: Control = %Layout
 @onready var _panel: PanelContainer = %Panel
@@ -31,6 +34,13 @@ static func place(panel: WorldPanel, head: Vector3, factor: float = 1.0) -> void
 	panel.global_transform = Transform3D(
 		view.scaled_local(Vector3.ONE * factor), head + view.y * lift
 	)
+
+
+## How much bigger a bubble outside a talk (a remark, a reaction, a radio call) shows than its
+## size: the camera's visible height now over `VIEW_HEIGHT` (1 without a camera rig).
+static func view_scale(tree: SceneTree) -> float:
+	var rig := tree.get_first_node_in_group(IsoCameraRig.GROUP) as IsoCameraRig
+	return rig.view_height() * rig.zoom / VIEW_HEIGHT if rig else 1.0
 
 
 ## Shows `text` (already translated).

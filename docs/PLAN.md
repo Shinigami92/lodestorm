@@ -79,6 +79,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Step 12 C: the ore exchange on the depot's counter (two hoppers, any ore in at 3 for 1, a common or mid ore the hold ever had out, signature ores never; paid from the player's own hold at once), Kade's topic about it
 - Step 13 B, ahead of its step and without the medic: health carrying over between runs (saved with the player, full after dying), the four med beds in the medical bay (lying down with the weapon put away, healing to full, the card's health bar and "Get up"), the one-time hint at the ramp button for a hurt player
 - Step 13 A (with the medic's topics of 13 B): the seven new crew members at their posts (Tamsin the pilot on the bridge, in the cockpit while the ship flies; Okoro the engineer by the drive core, also on the hold and the refinery; Ilse the medic between the med beds; Dace the gunsmith, Wren the suit tech and Hollis the miner mechanic in their rooms; Fenna the cook in the mess hall), each with a greeting, their post's topics and one about themselves, in English and German; one greybox accessory each over the suit, following its bones (`NpcProfile.accessory`)
+- Step 13 C: the crew calling in over the radio when something happens (the first run won, the first fall, a new planet opened, a new weapon built, a big haul, the first landing on a body, the storm warning), one crew member per event (taking turns for repeating ones), to everyone or only the player it's about, worded for one player or several; the radio bubble beside the player with its queue, the Radio bus with its filter; Tamsin's voice for her radio lines; the debug overlay setting them off
 - Step 14 A1: ore nodes running dry (amounts by the ore's band, the miner taking its ore out of the node, the crystals shrinking into the rock one after another down to the bare rock, the miner's amber blink on a dry node, dry nodes taking no miner and the scanner skipping them)
 - Miners placed as holograms: placing projects the miner onto its node as a hologram turning real from the bottom up (picking up the reverse), the player moving and fighting freely meanwhile within the miner's hose range (out of it, it waits; placing or picking up another gives a waiting one up); every miner's ring on the ground with its health, fill, hose range and that progress
 - Silo displays: each silo's exact amount in big digits in the ore's color at the top of its body, readable from the normal camera over the silo in front ("?" for unknown ores); the ramp's countdown running outwards from the door, clear of them
@@ -91,10 +92,8 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 
 ### M4: Progression & quests (the rest, in order)
 
-Each step builds on the ones before it (steps 1–12 are done; the station NPCs' deliveries and requests come with the quests, step 16).
+Each step builds on the ones before it (steps 1–13 are done, crew joining waits for the quests; the station NPCs' deliveries and requests come with the quests, step 16).
 
-- [ ] **Step 13: more crew** ([`planned/crew.md`](planned/crew.md)); A and B are done
-  - [ ] **C** reactions to events and the pilot's two radio lines (crew joining through the story waits for the quests)
 - [ ] **Step 14: reasons to move on** ([`planned/risk-reward.md`](planned/risk-reward.md)); after the crafted miners (dry nodes matter once miners are picked up again) and the nests (the rich fields between them)
   - [ ] **A** the rich fields in nest hollows (nodes running dry are done)
   - [ ] **B** the late deposit (timing, the meteor's streak, boom and beam, the impact site reserved at generation, the radio line, the nest's pack)

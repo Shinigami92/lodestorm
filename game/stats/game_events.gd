@@ -88,6 +88,8 @@ signal story_flag_set(flag: StringName)
 
 ## A run started (the first player left the ship).
 signal mission_started(brief: MissionBrief)
+## The storm's warning started (see `Mission.warning_time`).
+signal storm_warned
 ## The storm broke (the timer ran out).
 signal storm_started
 ## A run ended: everyone alive aboard (`returned`), or everyone dead.

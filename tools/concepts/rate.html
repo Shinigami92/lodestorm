@@ -47,6 +47,7 @@
     padding: 8px 10px; background: #0d0f12f2; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
   .card.showprompt .ppop, .card.shownote .npop { display: block; }
   .star.on { color: var(--amber); }
+  .star.half { background: linear-gradient(90deg, var(--amber) 50%, #444b57 50%); -webkit-background-clip: text; background-clip: text; color: transparent; }
   textarea { width: 100%; min-height: 4.5em; padding: 4px 6px; display: block; }
   .empty { color: var(--muted); padding: 40px 0; text-align: center; }
   #loose { color: var(--muted); margin-bottom: 16px; }
@@ -119,7 +120,8 @@
 <div class="overlay" id="help"><div>
   <h3 style="margin-top:0">Keys</h3>
   <table>
-    <tr><td><kbd>1</kbd>–<kbd>5</kbd>, <kbd>0</kbd></td><td>rate the image under the mouse or in the viewer, clear</td></tr>
+    <tr><td><kbd>1</kbd>–<kbd>5</kbd>, <kbd>0</kbd></td><td>rate the image under the mouse or in the viewer (the same digit again adds ½), clear</td></tr>
+    <tr><td>click a star</td><td>its left half gives ½ less (3½)</td></tr>
     <tr><td>click an image</td><td>open the viewer</td></tr>
     <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>viewer: previous / next image (on into the next subject); duel: pick left / right</td></tr>
     <tr><td><kbd>N</kbd></td><td>write a note (viewer, or the image under the mouse)</td></tr>
@@ -182,13 +184,19 @@ function visible(s) {
   const f = $("filter").value;
   return filesOf(s).filter((file) => {
     const n = stars(s, file);
-    return f === "all" || (f === "unrated" && !n) || (f === "5" && n === 5) || (f === "4" && n >= 4) || (f === "3" && n && n <= 3);
+    return f === "all" || (f === "unrated" && !n) || (f === "5" && n >= 5) || (f === "4" && n >= 4) || (f === "3" && n && n < 4);
   });
+}
+
+// A star's left half rates half a star less (3½)
+function starValue(ev) {
+  const r = ev.target.getBoundingClientRect();
+  return +ev.target.dataset.n - (ev.clientX < r.left + r.width / 2 ? 0.5 : 0);
 }
 
 function starButtons(s, f, attr = "") {
   const n = stars(s, f);
-  return [1, 2, 3, 4, 5].map((i) => `<button class="star ${i <= n ? "on" : ""}" data-s="${esc(s)}" data-f="${esc(f)}" data-n="${i}" ${attr} aria-label="${i} stars">★</button>`).join("");
+  return [1, 2, 3, 4, 5].map((i) => `<button class="star ${i <= n ? "on" : i - 0.5 === n ? "half" : ""}" data-s="${esc(s)}" data-f="${esc(f)}" data-n="${i}" ${attr} aria-label="${i} stars">★</button>`).join("");
 }
 
 async function load() {
@@ -357,7 +365,7 @@ $("grid").onclick = (ev) => {
   const t = ev.target, card = t.closest(".card");
   if (t.dataset.pop && card) togglePop(card, t.dataset.pop);
   else if (t.classList.contains("star")) {
-    const n = +t.dataset.n;
+    const n = starValue(ev);
     rate(t.dataset.s, t.dataset.f, stars(t.dataset.s, t.dataset.f) === n ? 0 : n);
     render();
   } else if (t.tagName === "IMG" && card) {
@@ -382,7 +390,7 @@ $("grid").oninput = (ev) => {
 $("subjnote").oninput = (ev) => { st(subject).note = ev.target.value; post(subject, { kind: "note", note: ev.target.value }); };
 $("vstars").onclick = (ev) => {
   const t = ev.target;
-  if (t.classList.contains("star")) { const n = +t.dataset.n; rate(view.s, view.f, stars(view.s, view.f) === n ? 0 : n); showViewer(); renderHeader(); }
+  if (t.classList.contains("star")) { const n = starValue(ev); rate(view.s, view.f, stars(view.s, view.f) === n ? 0 : n); showViewer(); renderHeader(); }
 };
 $("vnote").oninput = (ev) => { const e = entry(view.s, view.f); e.note = ev.target.value; post(view.s, { kind: "rating", file: view.f, stars: e.stars, note: e.note }); };
 $("vprev").onclick = () => step(-1);
@@ -410,7 +418,8 @@ document.addEventListener("keydown", (ev) => {
   if (pair) { if (ev.key === "ArrowLeft") pick(0); else if (ev.key === "ArrowRight") pick(1); return; }
   const target = view ?? hot;
   if (/^[0-5]$/.test(ev.key) && target) {
-    rate(target.s, target.f, +ev.key);
+    const d = +ev.key;
+    rate(target.s, target.f, d && d < 5 && stars(target.s, target.f) === d ? d + 0.5 : d);
     if (view) { showViewer(); renderHeader(); } else render();
   } else if (view && ev.key === "ArrowLeft") step(-1);
   else if (view && ev.key === "ArrowRight") step(1);

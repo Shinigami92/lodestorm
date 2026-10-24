@@ -16,7 +16,7 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 | [`weapons.md`](weapons.md) | 18 weapons with names, feeds, upgrade parts, the armory's weapon wall | M4, step 10 |
 | [`refinery.md`](refinery.md) | the station's alloy requests, furnaces through the quests, the engineer, later drill heads, the art pass | M4 steps 12–16, M5 |
 | [`station.md`](station.md) | Waypost Ostra: the ore exchange, its NPCs (docking and the map are built) | M4, step 12 |
-| [`crew.md`](crew.md) | the eight crew members, health carrying over, the med bed | M4, step 13 |
+| [`crew.md`](crew.md) | the crew joining, reactions to events, the pilot on the radio | M4, step 13 |
 | [`risk-reward.md`](risk-reward.md) | rich ore by the nests, the late meteor, banking ore at a cargo hatch | M4, step 14 |
 | [`skills.md`](skills.md) | the rescue drone, the hardened canister, rebuilding spares, the miner radar; where the skill graph is heading | M4, step 15 |
 | [`quests.md`](quests.md) | quests as data, goals, the quest board, requests, the story's acts, first content | M4, step 16 |

@@ -94,11 +94,86 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: game/npcs/crew/quartermaster.tres
-msgid "Quartermaster"
+#: game/npcs/crew/cook.tres
+msgid "Cook"
 msgstr ""
 
+#: game/npcs/crew/cook.tres
+msgid "What'll it be?"
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+#: game/npcs/crew/engineer.tres
+#: game/npcs/crew/gunsmith.tres
+#: game/npcs/crew/medic.tres
+#: game/npcs/crew/miner_mechanic.tres
+#: game/npcs/crew/pilot.tres
 #: game/npcs/crew/quartermaster.tres
+#: game/npcs/crew/suit_tech.tres
+#: game/npcs/ostra/bartender.tres
+#: game/npcs/ostra/councillor.tres
+#: game/npcs/ostra/depot_master.tres
+#: game/npcs/ostra/rival_captain.tres
+msgid "Hello"
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Hungry? Sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Everyone comes through my mess hall sooner or later. So if you want to know what's going on aboard, I'm the one to ask."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "The crew"
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Hollis keeps the miners going. Ilse has the medical bay at the nose, and Okoro is down in the engine room with the heat shield."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And I'm up here, of course."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "News"
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "If you want news from the rest of the colony, dock at Waypost Ostra. Tamsin can take you there any time."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Have a drink at the bar while you're there. Nell hears even more gossip than I do, and that's saying something."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "About Fenna"
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "I signed on to cook, but mostly I listen. Over a hot meal, people say more than they'd ever admit."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Most of what I hear is nonsense. Some of it isn't. The trick is telling the difference."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Engineer"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+#: game/npcs/crew/gunsmith.tres
+#: game/npcs/crew/pilot.tres
+#: game/npcs/crew/quartermaster.tres
+#: game/npcs/crew/suit_tech.tres
 #: game/npcs/ostra/bartender.tres
 #: game/npcs/ostra/councillor.tres
 #: game/npcs/ostra/depot_master.tres
@@ -106,12 +181,421 @@ msgstr ""
 msgid "How can I help you?"
 msgstr ""
 
+#: game/npcs/crew/engineer.tres
+msgid "Ah, good, come and look at this: the drive core, and the heat shield around it. It's what keeps us alive when we fly closer to the star."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "I look after the engine room and the cargo bay. If you want to know how we get further in, or what happens to the ore you bring back, ask me."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "The heat shield"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "The closer we get to the star, the hotter it burns, so the shield needs a new plate for every step further in. The installed plates glow, and the next one fills up as it's paid."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "A plate costs ore. Select it, and its card shows how much is paid already and how much your hold has."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Make it the ship's project, and every run pays into it first, before the rest goes into your hold. Or pay the rest from your hold right away."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "As soon as a plate is paid, I install it. If you're out there with others, though, only the host can work on the shield."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Further in"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Every new plate takes us closer to the star. The ores get rarer there, and the aliens get tougher and hit harder."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "The storm comes sooner there, too, and it hurts more. So don't rush in before your gear is ready for it."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "The good news is that every plate also lets the crew take your weapons, your armor and your miners one level higher."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Your hold"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Everything you bring back from a run goes into your own hold, back in the cargo bay. Each of you has one."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "There's a silo for every ore. The number on top tells you exactly how much you have, and a silo with a question mark holds an ore that nobody has brought aboard yet."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Upgrades, skills and new builds are all paid from your hold. So have a look at the silos before you spend."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "The refinery"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "The four furnaces in the cargo bay turn ore into alloy bars. Better gear needs those bars sooner or later."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Right now they're all cold. I'm still working on getting them going, and I'll tell you when the first one is ready."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Every alloy has its own recipe, and a recipe only shows once every ore it needs has been in your hold. The rack next to the furnaces holds your bars."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "About Okoro"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "I came out here to study the star. Kesh is restless, more than anyone expected when the colony was planned."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "This shield is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Gunsmith"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "The see-through ones on the rack you don't own yet. I need a weapon's blueprint before I can build it for you."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Upgrades"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Pick one of your weapons at the rack and lay it on the bench. Every weapon has three parts I can improve, and each part has its own row of lights on the weapon."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Select a part, and the card tells you what the next level does, what it costs, and how long it takes. The ore comes from your hold."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "How far I can go depends on the heat shield. Every new plate in the engine room lets me add one more level."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Taking time"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Good work takes time. Once you start an upgrade, it keeps going, even while you're out on a mission or asleep in your cabin."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Its light on the weapon breathes while I work on it. The new level counts once it's done and you're back aboard."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "I can work on several parts at once, but only on one level per part. If you change your mind, press Stop twice, and you get the whole cost back."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "New weapons"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Lay a weapon you don't own yet on the bench, and its card shows what it costs to build. Without its blueprint, though, there's nothing I can do."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "With the blueprint, I build it right away. It only costs the ore, no waiting."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Once it's built, it's yours. Try it at the shooting range before you take it on a mission."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "About Dace"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Most of what's on that rack I've only ever seen in drawings. The first expedition brought designs no colony workshop had ever made."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Sometimes I wonder what they needed weapons like these for."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Medic"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "What can I do for you?"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Come in. This is my medical bay, and I'd rather see you walk in here than wake up here."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "But whatever happens out there, this is where you wake up again. Ask me anything about staying in one piece."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Wounds"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Your wounds don't just go away when the ramp closes. If you come back hurt, you start the next mission just as hurt."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "So before you go out again, lie down on one of the med beds here. It doesn't cost you anything."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "If you forget, the ramp button reminds you once. After that, it's up to you."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Med beds"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Lie down on a free bed, and it heals you up to full health. The smaller the wound, the sooner it's done."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "The card beside you shows your health filling up. When it's full, press Get up, and you're ready to go."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "There are four beds, so all of you can lie down at the same time."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Falling out there"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "If you fall out there, you lose the ore you're carrying, and you wake up here at full health."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "When you're alone out there, falling ends the mission. You wake up here, and the next run needs a new destination."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "With others, you stay down until the mission is over. So look out for each other."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "About Ilse"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "I used to run the clinic at Ostra. The council's reports say the storms are nothing to worry about."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Then I count the injuries that come back from these runs. The numbers don't match the reports, so I'm keeping my own."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Miner mechanic"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "What do you need?"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "M-01 there in its cradle is yours. Out there, the miners dig while you keep the aliens off them."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Placing miners"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Stand close to an ore node and place a miner. It shows up as a hologram first and turns real from the bottom up."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Meanwhile, you can move and fight, but stay within reach of its hose, or it waits for you."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "While you stay near it, its hose fills your back with ore. Pick it up before you leave, and you also get what's still in its tank."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Working miners draw aliens, and some of them go straight for the miners. So don't wander off too far."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Your miners"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Each of you takes six miners on a run. Your own go first, and standard-issue ones fill up the rest."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Standard-issue miners are slower, but they never get lost. Your own you can upgrade on the pad, one by one."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Any of your own miners still out there when the mission ends are gone for good. So bring them back aboard with you."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Drills"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Some ores are harder than others. A drill that's too soft still gets through, but only at a quarter of the speed."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Upgrade a miner's drill on the pad, and its card shows which ores it mines at full speed. When you place a miner, the fastest one for that ore goes."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Dry nodes"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "A node doesn't last forever. Its crystals shrink as the miner takes the ore out, until only bare rock is left."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "When the lamp on a miner blinks amber, its node is dry. Pick it up and find it a new one."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "About Hollis"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "I've been digging in this system longer than anyone else aboard. Longer than most people at Ostra, too."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "I knew some of the people on the first expedition. Good people. Nobody has heard from them in a long time."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Pilot"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "There you are. I keep us flying, and every trip starts here at the navigator. Come over to the holo table whenever you want to pick where we go next."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "I'll take us anywhere the ship can reach. Where we land is your call, though: you're the ones who walk out there."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "The navigator"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "The holo table shows the whole system. Zoom in on a planet or a moon to see its regions, and zoom in on a region to see the spot where we would land."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "That last view lies the way the ship will touch down, with the ramp on the right like in here. Whatever you see beside the ship there, you'll find beside the ship outside."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "The beams are ore nodes, each in its ore's color, and places worth a look have a color of their own. So you can plan your way before you even leave."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Picking a region"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Each region's card tells you how dangerous it is, how long you have before the storm, and which ores you'll find there."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Some regions give you more time than others. If you're not sure where to go, start with an easy one."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "When you've found a spot you like, press Set as destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Flying"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Once the destination is set, go to the flight console in the cockpit, right next door, and press Set course. Anyone can do that, not just me."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+#: game/world/star_system.tres
+msgid "Waypost Ostra"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Waypost Ostra is the colony's station. It circles Torvane, and you'll find it at the navigator just like a region."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "While we're docked there, the ramp goes up and down whenever you like, and there's no storm and no timer. Take your time and talk to the people there."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "When we leave, I wait until everyone is back aboard. Nobody gets left behind at Ostra."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "About Tamsin"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Before this, I flew the haulers that brought the colony here. Months in the dark, with thousands of people asleep behind me."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "But these storms are something else. I've never seen weather like this anywhere. So when the warning comes out there, please don't make me wait for you."
+msgstr ""
+
 #: game/npcs/crew/quartermaster.tres
-#: game/npcs/ostra/bartender.tres
-#: game/npcs/ostra/councillor.tres
-#: game/npcs/ostra/depot_master.tres
-#: game/npcs/ostra/rival_captain.tres
-msgid "Hello"
+msgid "Quartermaster"
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -231,6 +715,76 @@ msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
 msgid "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Suit tech"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Hi! I keep your suits running: the armor here, and the skills next door."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+#: game/progression/upgrades/armor.tres
+msgid "Suit armor"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "At the fitting frame, I can reinforce your suit's armor. Every level gives you more health, so you can take more hits out there."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "The lights on top of your helmet show its level. Like every upgrade, it's paid from your hold and takes a while to finish."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+#: game/ship/rooms/lower/skills.tscn
+msgid "Skills"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Next door is the skill graph. Every skill teaches your suit something new, like a quick dash or more spare magazines."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Some skills need another one first, and the card tells you which. The ones you can learn and pay for right now pulse."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Learning one costs ore from your hold and takes a while, just like an upgrade. Some skills have several ranks, each a bit stronger."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "The suit ring"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "The ring around your feet out there is your suit talking to you. Its left half is your health, the right half your ammo."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Red marks on it point to where a hit came from, and an arrow on its edge shows the way back to the ship."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "In the settings, you can make it bigger or keep it showing all the time."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "About Wren"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "I was born on Ostra. Before I joined you, I'd never been off the station, not even once."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."
 msgstr ""
 
 #: game/npcs/ostra/bartender.tres
@@ -1070,10 +1624,6 @@ msgid "One more spare magazine per ranged weapon and rank"
 msgstr ""
 
 #: game/progression/upgrades/armor.tres
-msgid "Suit armor"
-msgstr ""
-
-#: game/progression/upgrades/armor.tres
 msgid "More health"
 msgstr ""
 
@@ -1176,10 +1726,6 @@ msgstr ""
 #: game/ship/rooms/lower/miners.tscn
 #: game/stations/refinery/rack_card.gd
 msgid "Miners"
-msgstr ""
-
-#: game/ship/rooms/lower/skills.tscn
-msgid "Skills"
 msgstr ""
 
 #: game/ship/rooms/lower/weapons.tscn
@@ -2512,10 +3058,6 @@ msgstr ""
 
 #: game/world/star_system.tres
 msgid "Rimeback"
-msgstr ""
-
-#: game/world/star_system.tres
-msgid "Waypost Ostra"
 msgstr ""
 
 #: game/world/star_system.tres

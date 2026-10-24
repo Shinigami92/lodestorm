@@ -16,6 +16,11 @@ extends Resource
 @export var accent_color: Color = Color(0.3, 0.85, 1.0)
 ## Multiplies the suit's colors, so crew look darker than players.
 @export var suit_tint: Color = Color(0.7, 0.7, 0.75)
+## What they wear over the suit, so they read apart from the camera (greybox until their own model,
+## e.g. the pilot's headset): a scene whose children are named after the suit model's bones and
+## placed in its rest pose (in m, the feet at the origin, facing +z); each follows its bone (see
+## `NpcBody`). None: the bare suit.
+@export var accessory: PackedScene
 ## A crew member's cabin aboard (1–8, see GAME_DESIGN.md, Spaceship; not used yet). Station NPCs
 ## have none.
 @export_range(1, 8) var cabin: int = 1

@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://bey386yr8d7ne"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
+[ext_resource type="PackedScene" uid="uid://dqypvkrrymw3g" path="res://game/npcs/crew/accessories/gunsmith.tscn" id="4_accessory"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"gunsmith.greeting"
+title = "Hello"
+lines = Array[String](["Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better.", "The see-through ones on the rack you don't own yet. I need a weapon's blueprint before I can build it for you."])
+
+[sub_resource type="Resource" id="Resource_upgrades"]
+script = ExtResource("3_topic")
+id = &"gunsmith.upgrades"
+title = "Upgrades"
+lines = Array[String](["Pick one of your weapons at the rack and lay it on the bench. Every weapon has three parts I can improve, and each part has its own row of lights on the weapon.", "Select a part, and the card tells you what the next level does, what it costs, and how long it takes. The ore comes from your hold.", "How far I can go depends on the heat shield. Every new plate in the engine room lets me add one more level."])
+requires = Array[StringName]([&"gunsmith.greeting"])
+
+[sub_resource type="Resource" id="Resource_time"]
+script = ExtResource("3_topic")
+id = &"gunsmith.time"
+title = "Taking time"
+lines = Array[String](["Good work takes time. Once you start an upgrade, it keeps going, even while you're out on a mission or asleep in your cabin.", "Its light on the weapon breathes while I work on it. The new level counts once it's done and you're back aboard.", "I can work on several parts at once, but only on one level per part. If you change your mind, press Stop twice, and you get the whole cost back."])
+requires = Array[StringName]([&"gunsmith.greeting"])
+
+[sub_resource type="Resource" id="Resource_building"]
+script = ExtResource("3_topic")
+id = &"gunsmith.building"
+title = "New weapons"
+lines = Array[String](["Lay a weapon you don't own yet on the bench, and its card shows what it costs to build. Without its blueprint, though, there's nothing I can do.", "With the blueprint, I build it right away. It only costs the ore, no waiting.", "Once it's built, it's yours. Try it at the shooting range before you take it on a mission."])
+requires = Array[StringName]([&"gunsmith.greeting"])
+
+[sub_resource type="Resource" id="Resource_about"]
+script = ExtResource("3_topic")
+id = &"gunsmith.about"
+title = "About Dace"
+lines = Array[String](["Most of what's on that rack I've only ever seen in drawings. The first expedition brought designs no colony workshop had ever made.", "Sometimes I wonder what they needed weapons like these for."])
+requires = Array[StringName]([&"gunsmith.greeting"])
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_upgrades"), SubResource("Resource_time"), SubResource("Resource_building"), SubResource("Resource_about")])
+
+[resource]
+script = ExtResource("1_profile")
+id = &"gunsmith"
+display_name = "Dace"
+role = "Gunsmith"
+accent_color = Color(0.95, 0.28, 0.25, 1)
+accessory = ExtResource("4_accessory")
+cabin = 5
+dialogue = SubResource("Resource_dialogue")

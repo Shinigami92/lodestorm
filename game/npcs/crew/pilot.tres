@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://b3d5d8411ot80"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
+[ext_resource type="PackedScene" uid="uid://dqwsbxro53s6q" path="res://game/npcs/crew/accessories/pilot.tscn" id="4_accessory"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"pilot.greeting"
+title = "Hello"
+lines = Array[String](["There you are. I keep us flying, and every trip starts here at the navigator. Come over to the holo table whenever you want to pick where we go next.", "I'll take us anywhere the ship can reach. Where we land is your call, though: you're the ones who walk out there."])
+
+[sub_resource type="Resource" id="Resource_navigator"]
+script = ExtResource("3_topic")
+id = &"pilot.navigator"
+title = "The navigator"
+lines = Array[String](["The holo table shows the whole system. Zoom in on a planet or a moon to see its regions, and zoom in on a region to see the spot where we would land.", "That last view lies the way the ship will touch down, with the ramp on the right like in here. Whatever you see beside the ship there, you'll find beside the ship outside.", "The beams are ore nodes, each in its ore's color, and places worth a look have a color of their own. So you can plan your way before you even leave."])
+requires = Array[StringName]([&"pilot.greeting"])
+
+[sub_resource type="Resource" id="Resource_regions"]
+script = ExtResource("3_topic")
+id = &"pilot.regions"
+title = "Picking a region"
+lines = Array[String](["Each region's card tells you how dangerous it is, how long you have before the storm, and which ores you'll find there.", "Some regions give you more time than others. If you're not sure where to go, start with an easy one.", "When you've found a spot you like, press Set as destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."])
+requires = Array[StringName]([&"pilot.greeting"])
+
+[sub_resource type="Resource" id="Resource_flight"]
+script = ExtResource("3_topic")
+id = &"pilot.flight"
+title = "Flying"
+lines = Array[String](["Once the destination is set, go to the flight console in the cockpit, right next door, and press Set course. Anyone can do that, not just me.", "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down.", "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."])
+requires = Array[StringName]([&"pilot.greeting"])
+
+[sub_resource type="Resource" id="Resource_ostra"]
+script = ExtResource("3_topic")
+id = &"pilot.ostra"
+title = "Waypost Ostra"
+lines = Array[String](["Waypost Ostra is the colony's station. It circles Torvane, and you'll find it at the navigator just like a region.", "While we're docked there, the ramp goes up and down whenever you like, and there's no storm and no timer. Take your time and talk to the people there.", "When we leave, I wait until everyone is back aboard. Nobody gets left behind at Ostra."])
+requires = Array[StringName]([&"pilot.greeting"])
+
+[sub_resource type="Resource" id="Resource_about"]
+script = ExtResource("3_topic")
+id = &"pilot.about"
+title = "About Tamsin"
+lines = Array[String](["Before this, I flew the haulers that brought the colony here. Months in the dark, with thousands of people asleep behind me.", "But these storms are something else. I've never seen weather like this anywhere. So when the warning comes out there, please don't make me wait for you."])
+requires = Array[StringName]([&"pilot.greeting"])
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_navigator"), SubResource("Resource_regions"), SubResource("Resource_flight"), SubResource("Resource_ostra"), SubResource("Resource_about")])
+
+[resource]
+script = ExtResource("1_profile")
+id = &"pilot"
+display_name = "Tamsin"
+role = "Pilot"
+accent_color = Color(0.3, 0.72, 1, 1)
+accessory = ExtResource("4_accessory")
+cabin = 2
+dialogue = SubResource("Resource_dialogue")

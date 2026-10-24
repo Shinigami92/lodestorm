@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="NpcProfile" format=3 uid="uid://bmbq5xnawcxbp"]
+
+[ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
+[ext_resource type="PackedScene" uid="uid://blu635jxpl827" path="res://game/npcs/crew/accessories/suit_tech.tscn" id="4_accessory"]
+
+[sub_resource type="Resource" id="Resource_greeting"]
+script = ExtResource("3_topic")
+id = &"suit_tech.greeting"
+title = "Hello"
+lines = Array[String](["Hi! I keep your suits running: the armor here, and the skills next door.", "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."])
+
+[sub_resource type="Resource" id="Resource_armor"]
+script = ExtResource("3_topic")
+id = &"suit_tech.armor"
+title = "Suit armor"
+lines = Array[String](["At the fitting frame, I can reinforce your suit's armor. Every level gives you more health, so you can take more hits out there.", "The lights on top of your helmet show its level. Like every upgrade, it's paid from your hold and takes a while to finish."])
+requires = Array[StringName]([&"suit_tech.greeting"])
+
+[sub_resource type="Resource" id="Resource_skills"]
+script = ExtResource("3_topic")
+id = &"suit_tech.skills"
+title = "Skills"
+lines = Array[String](["Next door is the skill graph. Every skill teaches your suit something new, like a quick dash or more spare magazines.", "Some skills need another one first, and the card tells you which. The ones you can learn and pay for right now pulse.", "Learning one costs ore from your hold and takes a while, just like an upgrade. Some skills have several ranks, each a bit stronger."])
+requires = Array[StringName]([&"suit_tech.greeting"])
+
+[sub_resource type="Resource" id="Resource_ring"]
+script = ExtResource("3_topic")
+id = &"suit_tech.ring"
+title = "The suit ring"
+lines = Array[String](["The ring around your feet out there is your suit talking to you. Its left half is your health, the right half your ammo.", "Red marks on it point to where a hit came from, and an arrow on its edge shows the way back to the ship.", "In the settings, you can make it bigger or keep it showing all the time."])
+requires = Array[StringName]([&"suit_tech.greeting"])
+
+[sub_resource type="Resource" id="Resource_about"]
+script = ExtResource("3_topic")
+id = &"suit_tech.about"
+title = "About Wren"
+lines = Array[String](["I was born on Ostra. Before I joined you, I'd never been off the station, not even once.", "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."])
+requires = Array[StringName]([&"suit_tech.greeting"])
+
+[sub_resource type="Resource" id="Resource_dialogue"]
+script = ExtResource("2_dialogue")
+greeting = SubResource("Resource_greeting")
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_armor"), SubResource("Resource_skills"), SubResource("Resource_ring"), SubResource("Resource_about")])
+
+[resource]
+script = ExtResource("1_profile")
+id = &"suit_tech"
+display_name = "Wren"
+role = "Suit tech"
+accent_color = Color(0.3, 0.95, 0.85, 1)
+accessory = ExtResource("4_accessory")
+cabin = 6
+dialogue = SubResource("Resource_dialogue")

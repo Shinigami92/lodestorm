@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://blasvrv7cg3v2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cloth"]
+albedo_color = Color(0.94, 0.93, 0.9, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_Bib"]
+material = SubResource("StandardMaterial3D_cloth")
+size = Vector3(0.32, 0.44, 0.02)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Skirt"]
+material = SubResource("StandardMaterial3D_cloth")
+size = Vector3(0.46, 0.55, 0.02)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Cap"]
+material = SubResource("StandardMaterial3D_cloth")
+top_radius = 0.17
+bottom_radius = 0.17
+height = 0.13
+radial_segments = 24
+
+[sub_resource type="SphereMesh" id="SphereMesh_Puff"]
+material = SubResource("StandardMaterial3D_cloth")
+radius = 0.19
+height = 0.12
+radial_segments = 24
+rings = 8
+
+[node name="CookApron" type="Node3D"]
+
+[node name="UpperChest" type="Node3D" parent="."]
+
+[node name="Bib" type="MeshInstance3D" parent="UpperChest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.26, 0.3)
+mesh = SubResource("BoxMesh_Bib")
+
+[node name="Hips" type="Node3D" parent="."]
+
+[node name="Skirt" type="MeshInstance3D" parent="Hips"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0.245)
+mesh = SubResource("BoxMesh_Skirt")
+
+[node name="Head" type="Node3D" parent="."]
+
+[node name="Cap" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, -0.01)
+mesh = SubResource("CylinderMesh_Cap")
+
+[node name="Puff" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.02, -0.01)
+mesh = SubResource("SphereMesh_Puff")

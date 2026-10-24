@@ -96,11 +96,86 @@ msgstr "Schwer"
 msgid "Normal"
 msgstr "Normal"
 
-#: game/npcs/crew/quartermaster.tres
-msgid "Quartermaster"
-msgstr "Quartiermeister"
+#: game/npcs/crew/cook.tres
+msgid "Cook"
+msgstr "Köchin"
 
+#: game/npcs/crew/cook.tres
+msgid "What'll it be?"
+msgstr "Was darf es sein?"
+
+#: game/npcs/crew/cook.tres
+#: game/npcs/crew/engineer.tres
+#: game/npcs/crew/gunsmith.tres
+#: game/npcs/crew/medic.tres
+#: game/npcs/crew/miner_mechanic.tres
+#: game/npcs/crew/pilot.tres
 #: game/npcs/crew/quartermaster.tres
+#: game/npcs/crew/suit_tech.tres
+#: game/npcs/ostra/bartender.tres
+#: game/npcs/ostra/councillor.tres
+#: game/npcs/ostra/depot_master.tres
+#: game/npcs/ostra/rival_captain.tres
+msgid "Hello"
+msgstr "Hallo"
+
+#: game/npcs/crew/cook.tres
+msgid "Hungry? Sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you."
+msgstr "Hunger? Setz dich, wo du willst. Es ist nichts Besonderes, aber es ist warm, und da draußen kocht dir niemand etwas."
+
+#: game/npcs/crew/cook.tres
+msgid "Everyone comes through my mess hall sooner or later. So if you want to know what's going on aboard, I'm the one to ask."
+msgstr "Früher oder später kommt jeder durch meine Messe. Wenn du also wissen willst, was an Bord los ist, frag am besten mich."
+
+#: game/npcs/crew/cook.tres
+msgid "The crew"
+msgstr "Die Crew"
+
+#: game/npcs/crew/cook.tres
+msgid "Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door."
+msgstr "Brannik führt die Waffenkammer und kümmert sich um die Munition. Dace verbessert deine Waffen im Waffenraum, und Wren kümmert sich im Raum daneben um deinen Anzug."
+
+#: game/npcs/crew/cook.tres
+msgid "Hollis keeps the miners going. Ilse has the medical bay at the nose, and Okoro is down in the engine room with the heat shield."
+msgstr "Hollis hält die Miner am Laufen. Ilse hat die Krankenstation im Bug, und Okoro ist unten im Maschinenraum beim Hitzeschild."
+
+#: game/npcs/crew/cook.tres
+msgid "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And I'm up here, of course."
+msgstr "Tamsin fliegt das Schiff. Du findest sie auf der Brücke oder während des Flugs im Cockpit. Und ich bin natürlich hier oben."
+
+#: game/npcs/crew/cook.tres
+msgid "News"
+msgstr "Neuigkeiten"
+
+#: game/npcs/crew/cook.tres
+msgid "If you want news from the rest of the colony, dock at Waypost Ostra. Tamsin can take you there any time."
+msgstr "Wenn du Neuigkeiten aus dem Rest der Kolonie willst, dock an Waypost Ostra an. Tamsin bringt dich jederzeit hin."
+
+#: game/npcs/crew/cook.tres
+msgid "Have a drink at the bar while you're there. Nell hears even more gossip than I do, and that's saying something."
+msgstr "Trink an der Bar etwas, wenn du schon dort bist. Nell hört sogar noch mehr Klatsch als ich, und das will was heißen."
+
+#: game/npcs/crew/cook.tres
+msgid "About Fenna"
+msgstr "Über Fenna"
+
+#: game/npcs/crew/cook.tres
+msgid "I signed on to cook, but mostly I listen. Over a hot meal, people say more than they'd ever admit."
+msgstr "Angeheuert habe ich zum Kochen, aber vor allem höre ich zu. Bei einer warmen Mahlzeit erzählen die Leute mehr, als sie je zugeben würden."
+
+#: game/npcs/crew/cook.tres
+msgid "Most of what I hear is nonsense. Some of it isn't. The trick is telling the difference."
+msgstr "Das meiste, was ich höre, ist Unsinn. Manches nicht. Die Kunst ist, das eine vom anderen zu unterscheiden."
+
+#: game/npcs/crew/engineer.tres
+msgid "Engineer"
+msgstr "Ingenieur"
+
+#: game/npcs/crew/engineer.tres
+#: game/npcs/crew/gunsmith.tres
+#: game/npcs/crew/pilot.tres
+#: game/npcs/crew/quartermaster.tres
+#: game/npcs/crew/suit_tech.tres
 #: game/npcs/ostra/bartender.tres
 #: game/npcs/ostra/councillor.tres
 #: game/npcs/ostra/depot_master.tres
@@ -108,13 +183,422 @@ msgstr "Quartiermeister"
 msgid "How can I help you?"
 msgstr "Wie kann ich dir helfen?"
 
+#: game/npcs/crew/engineer.tres
+msgid "Ah, good, come and look at this: the drive core, and the heat shield around it. It's what keeps us alive when we fly closer to the star."
+msgstr "Ah, gut, komm und sieh dir das an: der Antriebskern und der Hitzeschild darum. Er hält uns am Leben, wenn wir näher an den Stern heranfliegen."
+
+#: game/npcs/crew/engineer.tres
+msgid "I look after the engine room and the cargo bay. If you want to know how we get further in, or what happens to the ore you bring back, ask me."
+msgstr "Ich kümmere mich um den Maschinenraum und den Frachtraum. Wenn du wissen willst, wie wir weiter hineinkommen oder was mit dem Erz passiert, das du mitbringst, frag mich."
+
+#: game/npcs/crew/engineer.tres
+msgid "The heat shield"
+msgstr "Der Hitzeschild"
+
+#: game/npcs/crew/engineer.tres
+msgid "The closer we get to the star, the hotter it burns, so the shield needs a new plate for every step further in. The installed plates glow, and the next one fills up as it's paid."
+msgstr "Je näher wir dem Stern kommen, desto heißer brennt er, also braucht der Schild für jeden Schritt weiter hinein eine neue Platte. Die eingebauten Platten leuchten, und die nächste füllt sich, während sie bezahlt wird."
+
+#: game/npcs/crew/engineer.tres
+msgid "A plate costs ore. Select it, and its card shows how much is paid already and how much your hold has."
+msgstr "Eine Platte kostet Erz. Wähl sie aus, und ihre Karte zeigt, wie viel schon bezahlt ist und wie viel dein Laderaum hat."
+
+#: game/npcs/crew/engineer.tres
+msgid "Make it the ship's project, and every run pays into it first, before the rest goes into your hold. Or pay the rest from your hold right away."
+msgstr "Mach sie zum Schiffsprojekt, dann zahlt jede Mission zuerst darauf ein, bevor der Rest in deinen Laderaum geht. Oder zahl den Rest gleich aus deinem Laderaum."
+
+#: game/npcs/crew/engineer.tres
+msgid "As soon as a plate is paid, I install it. If you're out there with others, though, only the host can work on the shield."
+msgstr "Sobald eine Platte bezahlt ist, baue ich sie ein. Wenn du mit anderen unterwegs bist, kann allerdings nur der Host am Schild arbeiten."
+
+#: game/npcs/crew/engineer.tres
+msgid "Further in"
+msgstr "Weiter hinein"
+
+#: game/npcs/crew/engineer.tres
+msgid "Every new plate takes us closer to the star. The ores get rarer there, and the aliens get tougher and hit harder."
+msgstr "Jede neue Platte bringt uns näher an den Stern. Die Erze dort werden seltener, und die Aliens halten mehr aus und schlagen härter zu."
+
+#: game/npcs/crew/engineer.tres
+msgid "The storm comes sooner there, too, and it hurts more. So don't rush in before your gear is ready for it."
+msgstr "Der Sturm kommt dort auch früher und tut mehr weh. Also stürz dich nicht hinein, bevor deine Ausrüstung bereit dafür ist."
+
+#: game/npcs/crew/engineer.tres
+msgid "The good news is that every plate also lets the crew take your weapons, your armor and your miners one level higher."
+msgstr "Die gute Nachricht: Mit jeder Platte kann die Crew deine Waffen, deine Panzerung und deine Miner auch eine Stufe weiter aufrüsten."
+
+#: game/npcs/crew/engineer.tres
+msgid "Your hold"
+msgstr "Dein Laderaum"
+
+#: game/npcs/crew/engineer.tres
+msgid "Everything you bring back from a run goes into your own hold, back in the cargo bay. Each of you has one."
+msgstr "Alles, was du von einer Mission mitbringst, kommt in deinen eigenen Laderaum, hinten im Frachtraum. Jeder von euch hat einen."
+
+#: game/npcs/crew/engineer.tres
+msgid "There's a silo for every ore. The number on top tells you exactly how much you have, and a silo with a question mark holds an ore that nobody has brought aboard yet."
+msgstr "Für jedes Erz gibt es ein Silo. Die Zahl oben sagt dir genau, wie viel du hast, und ein Silo mit Fragezeichen gehört zu einem Erz, das noch niemand an Bord gebracht hat."
+
+#: game/npcs/crew/engineer.tres
+msgid "Upgrades, skills and new builds are all paid from your hold. So have a look at the silos before you spend."
+msgstr "Upgrades, Fähigkeiten und alles, was gebaut wird, bezahlst du aus deinem Laderaum. Schau also bei den Silos vorbei, bevor du etwas ausgibst."
+
+#: game/npcs/crew/engineer.tres
+msgid "The refinery"
+msgstr "Die Raffinerie"
+
+#: game/npcs/crew/engineer.tres
+msgid "The four furnaces in the cargo bay turn ore into alloy bars. Better gear needs those bars sooner or later."
+msgstr "Die vier Schmelzöfen im Frachtraum machen aus Erz Legierungsbarren. Bessere Ausrüstung braucht diese Barren früher oder später."
+
+#: game/npcs/crew/engineer.tres
+msgid "Right now they're all cold. I'm still working on getting them going, and I'll tell you when the first one is ready."
+msgstr "Im Moment sind sie alle kalt. Ich arbeite noch daran, sie in Gang zu bringen, und sage dir Bescheid, sobald der erste bereit ist."
+
+#: game/npcs/crew/engineer.tres
+msgid "Every alloy has its own recipe, and a recipe only shows once every ore it needs has been in your hold. The rack next to the furnaces holds your bars."
+msgstr "Jede Legierung hat ihr eigenes Rezept, und ein Rezept zeigt sich erst, wenn jedes Erz dafür schon in deinem Laderaum war. Das Regal neben den Öfen bewahrt deine Barren auf."
+
+#: game/npcs/crew/engineer.tres
+msgid "About Okoro"
+msgstr "Über Okoro"
+
+#: game/npcs/crew/engineer.tres
+msgid "I came out here to study the star. Kesh is restless, more than anyone expected when the colony was planned."
+msgstr "Ich bin hergekommen, um den Stern zu erforschen. Kesh ist unruhig, mehr, als irgendwer erwartet hat, als die Kolonie geplant wurde."
+
+#: game/npcs/crew/engineer.tres
+msgid "This shield is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
+msgstr "Dieser Schild ist die beste Antwort, die ich bisher habe. Jede Platte, die wir einbauen, bringt mir etwas Neues bei, und ich schreibe alles auf."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Gunsmith"
+msgstr "Waffenschmied"
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
+msgstr "Willkommen im Waffenraum. Im Regal hängt jede Waffe, die ich kenne, und an der Werkbank mache ich deine besser."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "The see-through ones on the rack you don't own yet. I need a weapon's blueprint before I can build it for you."
+msgstr "Die durchsichtigen im Regal besitzt du noch nicht. Ich brauche den Bauplan einer Waffe, bevor ich sie dir bauen kann."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Upgrades"
+msgstr "Upgrades"
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Pick one of your weapons at the rack and lay it on the bench. Every weapon has three parts I can improve, and each part has its own row of lights on the weapon."
+msgstr "Such dir im Regal eine deiner Waffen aus und leg sie auf die Werkbank. Jede Waffe hat drei Teile, die ich verbessern kann, und jedes Teil hat seine eigene Lichterreihe auf der Waffe."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Select a part, and the card tells you what the next level does, what it costs, and how long it takes. The ore comes from your hold."
+msgstr "Wähl ein Teil aus, und die Karte sagt dir, was die nächste Stufe bewirkt, was sie kostet und wie lange sie dauert. Das Erz kommt aus deinem Laderaum."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "How far I can go depends on the heat shield. Every new plate in the engine room lets me add one more level."
+msgstr "Wie weit ich gehen kann, hängt vom Hitzeschild ab. Mit jeder neuen Platte im Maschinenraum kann ich eine Stufe mehr draufsetzen."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Taking time"
+msgstr "Gut Ding will Weile"
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Good work takes time. Once you start an upgrade, it keeps going, even while you're out on a mission or asleep in your cabin."
+msgstr "Gute Arbeit braucht Zeit. Wenn du ein Upgrade startest, läuft es weiter, auch während du auf einer Mission bist oder in deiner Kabine schläfst."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Its light on the weapon breathes while I work on it. The new level counts once it's done and you're back aboard."
+msgstr "Sein Licht auf der Waffe pulsiert, während ich daran arbeite. Die neue Stufe zählt, sobald sie fertig ist und du wieder an Bord bist."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "I can work on several parts at once, but only on one level per part. If you change your mind, press Stop twice, and you get the whole cost back."
+msgstr "Ich kann an mehreren Teilen gleichzeitig arbeiten, aber pro Teil nur an einer Stufe. Wenn du es dir anders überlegst, drück zweimal auf Anhalten, und du bekommst alles zurück."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "New weapons"
+msgstr "Neue Waffen"
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Lay a weapon you don't own yet on the bench, and its card shows what it costs to build. Without its blueprint, though, there's nothing I can do."
+msgstr "Leg eine Waffe, die du noch nicht besitzt, auf die Werkbank, und ihre Karte zeigt, was der Bau kostet. Ohne ihren Bauplan kann ich allerdings nichts machen."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "With the blueprint, I build it right away. It only costs the ore, no waiting."
+msgstr "Mit dem Bauplan baue ich sie sofort. Das kostet nur das Erz, ohne Wartezeit."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Once it's built, it's yours. Try it at the shooting range before you take it on a mission."
+msgstr "Sobald sie gebaut ist, gehört sie dir. Probier sie am Schießstand aus, bevor du sie auf eine Mission mitnimmst."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "About Dace"
+msgstr "Über Dace"
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Most of what's on that rack I've only ever seen in drawings. The first expedition brought designs no colony workshop had ever made."
+msgstr "Das meiste in diesem Regal kenne ich nur aus Zeichnungen. Die erste Expedition hat Entwürfe mitgebracht, die keine Werkstatt der Kolonie je gebaut hatte."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Sometimes I wonder what they needed weapons like these for."
+msgstr "Manchmal frage ich mich, wofür sie solche Waffen gebraucht haben."
+
+#: game/npcs/crew/medic.tres
+msgid "Medic"
+msgstr "Ärztin"
+
+#: game/npcs/crew/medic.tres
+msgid "What can I do for you?"
+msgstr "Was kann ich für dich tun?"
+
+#: game/npcs/crew/medic.tres
+msgid "Come in. This is my medical bay, and I'd rather see you walk in here than wake up here."
+msgstr "Komm rein. Das ist meine Krankenstation, und ich sehe dich lieber hereinkommen als hier aufwachen."
+
+#: game/npcs/crew/medic.tres
+msgid "But whatever happens out there, this is where you wake up again. Ask me anything about staying in one piece."
+msgstr "Aber was da draußen auch passiert, hier wachst du wieder auf. Frag mich ruhig alles, was dir hilft, heil zu bleiben."
+
+#: game/npcs/crew/medic.tres
+msgid "Wounds"
+msgstr "Wunden"
+
+#: game/npcs/crew/medic.tres
+msgid "Your wounds don't just go away when the ramp closes. If you come back hurt, you start the next mission just as hurt."
+msgstr "Deine Wunden verschwinden nicht einfach, wenn sich die Rampe schließt. Wenn du verletzt zurückkommst, beginnst du die nächste Mission genauso verletzt."
+
+#: game/npcs/crew/medic.tres
+msgid "So before you go out again, lie down on one of the med beds here. It doesn't cost you anything."
+msgstr "Leg dich also vor dem nächsten Einsatz auf eins der Medizinbetten hier. Das kostet dich nichts."
+
+#: game/npcs/crew/medic.tres
+msgid "If you forget, the ramp button reminds you once. After that, it's up to you."
+msgstr "Falls du es vergisst, erinnert dich der Rampenknopf einmal daran. Danach liegt es bei dir."
+
+#: game/npcs/crew/medic.tres
+msgid "Med beds"
+msgstr "Medizinbetten"
+
+#: game/npcs/crew/medic.tres
+msgid "Lie down on a free bed, and it heals you up to full health. The smaller the wound, the sooner it's done."
+msgstr "Leg dich auf ein freies Bett, und es heilt dich ganz. Je kleiner die Wunde, desto schneller ist es vorbei."
+
+#: game/npcs/crew/medic.tres
+msgid "The card beside you shows your health filling up. When it's full, press Get up, and you're ready to go."
+msgstr "Die Karte neben dir zeigt, wie sich deine Gesundheit auffüllt. Wenn sie voll ist, drück auf Aufstehen, und du bist bereit."
+
+#: game/npcs/crew/medic.tres
+msgid "There are four beds, so all of you can lie down at the same time."
+msgstr "Es gibt vier Betten, also könnt ihr euch alle gleichzeitig hinlegen."
+
+#: game/npcs/crew/medic.tres
+msgid "Falling out there"
+msgstr "Wenn du fällst"
+
+#: game/npcs/crew/medic.tres
+msgid "If you fall out there, you lose the ore you're carrying, and you wake up here at full health."
+msgstr "Wenn du da draußen fällst, verlierst du das Erz, das du trägst, und wachst hier mit voller Gesundheit auf."
+
+#: game/npcs/crew/medic.tres
+msgid "When you're alone out there, falling ends the mission. You wake up here, and the next run needs a new destination."
+msgstr "Wenn du allein unterwegs bist, endet die Mission, sobald du fällst. Du wachst hier auf, und für den nächsten Einsatz braucht es ein neues Ziel."
+
+#: game/npcs/crew/medic.tres
+msgid "With others, you stay down until the mission is over. So look out for each other."
+msgstr "Mit anderen bleibst du liegen, bis die Mission vorbei ist. Also passt aufeinander auf."
+
+#: game/npcs/crew/medic.tres
+msgid "About Ilse"
+msgstr "Über Ilse"
+
+#: game/npcs/crew/medic.tres
+msgid "I used to run the clinic at Ostra. The council's reports say the storms are nothing to worry about."
+msgstr "Früher habe ich die Klinik auf Ostra geleitet. Laut den Berichten des Rats sind die Stürme kein Grund zur Sorge."
+
+#: game/npcs/crew/medic.tres
+msgid "Then I count the injuries that come back from these runs. The numbers don't match the reports, so I'm keeping my own."
+msgstr "Dann zähle ich die Verletzungen, die von diesen Einsätzen zurückkommen. Die Zahlen passen nicht zu den Berichten, also führe ich meine eigenen."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Miner mechanic"
+msgstr "Minermechaniker"
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "What do you need?"
+msgstr "Was brauchst du?"
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well."
+msgstr "Hm. Du kommst wegen der Miner. Gut. Sie bezahlen alles auf diesem Schiff, also behandle sie anständig."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "M-01 there in its cradle is yours. Out there, the miners dig while you keep the aliens off them."
+msgstr "M-01 dort in der Halterung gehört dir. Da draußen graben die Miner, während du ihnen die Aliens vom Leib hältst."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Placing miners"
+msgstr "Miner aufstellen"
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Stand close to an ore node and place a miner. It shows up as a hologram first and turns real from the bottom up."
+msgstr "Stell dich nah an ein Erzvorkommen und stell einen Miner auf. Er erscheint zuerst als Hologramm und wird von unten nach oben echt."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Meanwhile, you can move and fight, but stay within reach of its hose, or it waits for you."
+msgstr "Währenddessen kannst du dich bewegen und kämpfen, aber bleib in Reichweite seines Schlauchs, sonst wartet er auf dich."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "While you stay near it, its hose fills your back with ore. Pick it up before you leave, and you also get what's still in its tank."
+msgstr "Solange du in seiner Nähe bleibst, füllt sein Schlauch Erz in deinen Rücken. Heb ihn auf, bevor du gehst, dann bekommst du auch, was noch in seinem Tank ist."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Working miners draw aliens, and some of them go straight for the miners. So don't wander off too far."
+msgstr "Arbeitende Miner locken Aliens an, und manche davon gehen direkt auf die Miner los. Entfern dich also nicht zu weit."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Your miners"
+msgstr "Deine Miner"
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Each of you takes six miners on a run. Your own go first, and standard-issue ones fill up the rest."
+msgstr "Jeder von euch nimmt sechs Miner auf eine Mission mit. Deine eigenen kommen zuerst, und Standard-Miner füllen den Rest auf."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Standard-issue miners are slower, but they never get lost. Your own you can upgrade on the pad, one by one."
+msgstr "Standard-Miner sind langsamer, gehen aber nie verloren. Deine eigenen kannst du auf der Plattform aufrüsten, einen nach dem anderen."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Any of your own miners still out there when the mission ends are gone for good. So bring them back aboard with you."
+msgstr "Jeder deiner eigenen Miner, der noch draußen steht, wenn die Mission endet, ist für immer verloren. Bring sie also mit zurück an Bord."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Drills"
+msgstr "Bohrer"
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Some ores are harder than others. A drill that's too soft still gets through, but only at a quarter of the speed."
+msgstr "Manche Erze sind härter als andere. Ein zu weicher Bohrer kommt trotzdem durch, aber nur mit einem Viertel der Geschwindigkeit."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Upgrade a miner's drill on the pad, and its card shows which ores it mines at full speed. When you place a miner, the fastest one for that ore goes."
+msgstr "Rüste den Bohrer eines Miners auf der Plattform auf, und seine Karte zeigt, welche Erze er mit voller Geschwindigkeit abbaut. Wenn du einen Miner aufstellst, kommt der schnellste für dieses Erz."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Dry nodes"
+msgstr "Leere Vorkommen"
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "A node doesn't last forever. Its crystals shrink as the miner takes the ore out, until only bare rock is left."
+msgstr "Ein Vorkommen hält nicht ewig. Seine Kristalle schrumpfen, während der Miner das Erz herausholt, bis nur noch nackter Fels übrig ist."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "When the lamp on a miner blinks amber, its node is dry. Pick it up and find it a new one."
+msgstr "Wenn die Lampe an einem Miner bernsteinfarben blinkt, ist sein Vorkommen leer. Heb ihn auf und such ihm ein neues."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "About Hollis"
+msgstr "Über Hollis"
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "I've been digging in this system longer than anyone else aboard. Longer than most people at Ostra, too."
+msgstr "Ich grabe in diesem System schon länger als jeder andere an Bord. Auch länger als die meisten auf Ostra."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "I knew some of the people on the first expedition. Good people. Nobody has heard from them in a long time."
+msgstr "Ich kannte ein paar Leute von der ersten Expedition. Gute Leute. Seit Langem hat niemand mehr etwas von ihnen gehört."
+
+#: game/npcs/crew/pilot.tres
+msgid "Pilot"
+msgstr "Pilotin"
+
+#: game/npcs/crew/pilot.tres
+msgid "There you are. I keep us flying, and every trip starts here at the navigator. Come over to the holo table whenever you want to pick where we go next."
+msgstr "Da bist du ja. Ich halte uns in der Luft, und jede Reise beginnt hier am Navigator. Komm an den Holotisch, wann immer du aussuchen willst, wohin es als Nächstes geht."
+
+#: game/npcs/crew/pilot.tres
+msgid "I'll take us anywhere the ship can reach. Where we land is your call, though: you're the ones who walk out there."
+msgstr "Ich bringe uns überallhin, wo das Schiff hinkommt. Wo wir landen, entscheidest aber du: Schließlich gehst du da raus."
+
+#: game/npcs/crew/pilot.tres
+msgid "The navigator"
+msgstr "Der Navigator"
+
+#: game/npcs/crew/pilot.tres
+msgid "The holo table shows the whole system. Zoom in on a planet or a moon to see its regions, and zoom in on a region to see the spot where we would land."
+msgstr "Der Holotisch zeigt das ganze System. Zoom an einen Planeten oder Mond heran, um seine Regionen zu sehen, und an eine Region, um die Stelle zu sehen, an der wir landen würden."
+
+#: game/npcs/crew/pilot.tres
+msgid "That last view lies the way the ship will touch down, with the ramp on the right like in here. Whatever you see beside the ship there, you'll find beside the ship outside."
+msgstr "Diese letzte Ansicht liegt so, wie das Schiff aufsetzen wird, mit der Rampe rechts wie hier drinnen. Was du dort neben dem Schiff siehst, findest du draußen auch neben dem Schiff."
+
+#: game/npcs/crew/pilot.tres
+msgid "The beams are ore nodes, each in its ore's color, and places worth a look have a color of their own. So you can plan your way before you even leave."
+msgstr "Die Lichtsäulen sind Erzvorkommen, jedes in der Farbe seines Erzes, und sehenswerte Orte haben eine eigene Farbe. So kannst du deinen Weg planen, bevor du überhaupt losgehst."
+
+#: game/npcs/crew/pilot.tres
+msgid "Picking a region"
+msgstr "Eine Region wählen"
+
+#: game/npcs/crew/pilot.tres
+msgid "Each region's card tells you how dangerous it is, how long you have before the storm, and which ores you'll find there."
+msgstr "Die Karte jeder Region sagt dir, wie gefährlich sie ist, wie viel Zeit du bis zum Sturm hast und welche Erze du dort findest."
+
+#: game/npcs/crew/pilot.tres
+msgid "Some regions give you more time than others. If you're not sure where to go, start with an easy one."
+msgstr "Manche Regionen lassen dir mehr Zeit als andere. Wenn du nicht weißt, wohin, fang mit einer leichten an."
+
+#: game/npcs/crew/pilot.tres
+msgid "When you've found a spot you like, press Set as destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."
+msgstr "Wenn du eine Stelle gefunden hast, die dir gefällt, drück auf Als Ziel setzen. Jedes Mal, wenn du eine Region wählst, landen wir auf einem neuen Stück davon, also gleicht keine Reise der anderen."
+
+#: game/npcs/crew/pilot.tres
+msgid "Flying"
+msgstr "Fliegen"
+
+#: game/npcs/crew/pilot.tres
+msgid "Once the destination is set, go to the flight console in the cockpit, right next door, and press Set course. Anyone can do that, not just me."
+msgstr "Sobald das Ziel steht, geh zur Flugkonsole im Cockpit gleich nebenan und drück auf Kurs setzen. Das kann jeder, nicht nur ich."
+
+#: game/npcs/crew/pilot.tres
+msgid "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down."
+msgstr "Der Flug dauert eine Weile, also nutz die Zeit. Geh nach hinten in die Waffenkammer, such dir deine Waffen aus und sei an der Rampe, wenn wir aufsetzen."
+
+#: game/npcs/crew/pilot.tres
+msgid "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."
+msgstr "Während einer Mission können wir keinen neuen Kurs setzen. Sobald alle wieder an Bord sind und die Rampe oben ist, heben wir von selbst wieder ab."
+
+#: game/npcs/crew/pilot.tres
+#: game/world/star_system.tres
+msgid "Waypost Ostra"
+msgstr "Waypost Ostra"
+
+#: game/npcs/crew/pilot.tres
+msgid "Waypost Ostra is the colony's station. It circles Torvane, and you'll find it at the navigator just like a region."
+msgstr "Waypost Ostra ist die Station der Kolonie. Sie kreist um Torvane, und du findest sie am Navigator genau wie eine Region."
+
+#: game/npcs/crew/pilot.tres
+msgid "While we're docked there, the ramp goes up and down whenever you like, and there's no storm and no timer. Take your time and talk to the people there."
+msgstr "Solange wir dort angedockt sind, geht die Rampe hoch und runter, wann immer du willst, und es gibt weder Sturm noch Timer. Lass dir Zeit und rede mit den Leuten dort."
+
+#: game/npcs/crew/pilot.tres
+msgid "When we leave, I wait until everyone is back aboard. Nobody gets left behind at Ostra."
+msgstr "Wenn wir ablegen, warte ich, bis alle wieder an Bord sind. Auf Ostra wird niemand zurückgelassen."
+
+#: game/npcs/crew/pilot.tres
+msgid "About Tamsin"
+msgstr "Über Tamsin"
+
+#: game/npcs/crew/pilot.tres
+msgid "Before this, I flew the haulers that brought the colony here. Months in the dark, with thousands of people asleep behind me."
+msgstr "Davor habe ich die Frachter geflogen, die die Kolonie hergebracht haben. Monatelang durch die Dunkelheit, mit Tausenden schlafenden Menschen hinter mir."
+
+#: game/npcs/crew/pilot.tres
+msgid "But these storms are something else. I've never seen weather like this anywhere. So when the warning comes out there, please don't make me wait for you."
+msgstr "Aber diese Stürme sind etwas anderes. So ein Wetter habe ich noch nirgends erlebt. Wenn da draußen also die Warnung kommt, lass mich bitte nicht auf dich warten."
+
 #: game/npcs/crew/quartermaster.tres
-#: game/npcs/ostra/bartender.tres
-#: game/npcs/ostra/councillor.tres
-#: game/npcs/ostra/depot_master.tres
-#: game/npcs/ostra/rival_captain.tres
-msgid "Hello"
-msgstr "Hallo"
+msgid "Quartermaster"
+msgstr "Quartiermeister"
 
 #: game/npcs/crew/quartermaster.tres
 msgid "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
@@ -234,6 +718,76 @@ msgstr "Nachladen kostet dort nichts, du kannst das Timing also so oft üben, wi
 #: game/npcs/crew/quartermaster.tres
 msgid "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
 msgstr "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Suit tech"
+msgstr "Anzugtechnikerin"
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Hi! I keep your suits running: the armor here, and the skills next door."
+msgstr "Hi! Ich halte eure Anzüge in Schuss: die Panzerung hier und die Fähigkeiten nebenan."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."
+msgstr "Dein Anzug kann viel mehr, als nur die Luft drinnen zu halten. Frag mich, und ich erzähle dir, was er alles lernen kann."
+
+#: game/npcs/crew/suit_tech.tres
+#: game/progression/upgrades/armor.tres
+msgid "Suit armor"
+msgstr "Anzugpanzerung"
+
+#: game/npcs/crew/suit_tech.tres
+msgid "At the fitting frame, I can reinforce your suit's armor. Every level gives you more health, so you can take more hits out there."
+msgstr "Am Anpassungsrahmen kann ich die Panzerung deines Anzugs verstärken. Jede Stufe gibt dir mehr Gesundheit, damit du da draußen mehr einstecken kannst."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "The lights on top of your helmet show its level. Like every upgrade, it's paid from your hold and takes a while to finish."
+msgstr "Die Lichter oben auf deinem Helm zeigen ihre Stufe. Wie jedes Upgrade wird sie aus deinem Laderaum bezahlt und braucht eine Weile, bis sie fertig ist."
+
+#: game/npcs/crew/suit_tech.tres
+#: game/ship/rooms/lower/skills.tscn
+msgid "Skills"
+msgstr "Fähigkeiten"
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Next door is the skill graph. Every skill teaches your suit something new, like a quick dash or more spare magazines."
+msgstr "Nebenan ist der Fähigkeitenbaum. Jede Fähigkeit bringt deinem Anzug etwas Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Some skills need another one first, and the card tells you which. The ones you can learn and pay for right now pulse."
+msgstr "Manche Fähigkeiten setzen eine andere voraus, und die Karte sagt dir, welche. Die, die du jetzt gleich lernen und bezahlen kannst, pulsieren."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Learning one costs ore from your hold and takes a while, just like an upgrade. Some skills have several ranks, each a bit stronger."
+msgstr "Eine zu lernen kostet Erz aus deinem Laderaum und dauert eine Weile, genau wie ein Upgrade. Manche Fähigkeiten haben mehrere Ränge, jeder ein bisschen stärker."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "The suit ring"
+msgstr "Der Anzugring"
+
+#: game/npcs/crew/suit_tech.tres
+msgid "The ring around your feet out there is your suit talking to you. Its left half is your health, the right half your ammo."
+msgstr "Der Ring um deine Füße da draußen ist dein Anzug, der mit dir spricht. Seine linke Hälfte ist deine Gesundheit, die rechte deine Munition."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Red marks on it point to where a hit came from, and an arrow on its edge shows the way back to the ship."
+msgstr "Rote Markierungen darauf zeigen, woher ein Treffer kam, und ein Pfeil an seinem Rand zeigt den Weg zurück zum Schiff."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "In the settings, you can make it bigger or keep it showing all the time."
+msgstr "In den Einstellungen kannst du ihn größer machen oder ihn immer anzeigen lassen."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "About Wren"
+msgstr "Über Wren"
+
+#: game/npcs/crew/suit_tech.tres
+msgid "I was born on Ostra. Before I joined you, I'd never been off the station, not even once."
+msgstr "Ich bin auf Ostra geboren. Bevor ich zu euch kam, war ich noch nie von der Station weg, kein einziges Mal."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."
+msgstr "Wenn ihr da unten herumlauft, auf einem echten Planeten unter einem echten Himmel, bin ich also ein bisschen neidisch. Erzähl mir irgendwann, wie es dort ist."
 
 #: game/npcs/ostra/bartender.tres
 msgid "Bartender"
@@ -1072,10 +1626,6 @@ msgid "One more spare magazine per ranged weapon and rank"
 msgstr "Ein Ersatzmagazin mehr pro Fernkampfwaffe und Rang"
 
 #: game/progression/upgrades/armor.tres
-msgid "Suit armor"
-msgstr "Anzugpanzerung"
-
-#: game/progression/upgrades/armor.tres
 msgid "More health"
 msgstr "Mehr Gesundheit"
 
@@ -1179,10 +1729,6 @@ msgstr "Krankenstation"
 #: game/stations/refinery/rack_card.gd
 msgid "Miners"
 msgstr "Schürfer"
-
-#: game/ship/rooms/lower/skills.tscn
-msgid "Skills"
-msgstr "Fähigkeiten"
 
 #: game/ship/rooms/lower/weapons.tscn
 msgid "Weapons"
@@ -2515,10 +3061,6 @@ msgstr "Pale Basin"
 #: game/world/star_system.tres
 msgid "Rimeback"
 msgstr "Rimeback"
-
-#: game/world/star_system.tres
-msgid "Waypost Ostra"
-msgstr "Waypost Ostra"
 
 #: game/world/star_system.tres
 msgid "Hoarfrost Ridge"

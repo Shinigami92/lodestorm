@@ -1,0 +1,171 @@
+[gd_scene format=3 uid="uid://dr5kyhieqlkb8"]
+
+[ext_resource type="Script" uid="uid://c71a313x3oruo" path="res://game/stations/exchange/exchange_card.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+
+[node name="ExchangeCard" type="PanelContainer"]
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+theme_type_variation = &"Card"
+script = ExtResource("1_script")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Layout"]
+layout_mode = 2
+theme_type_variation = &"CardTitle"
+text = "Ore exchange"
+autowrap_mode = 3
+
+[node name="InRow" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="InHeading" type="Label" parent="Layout/InRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_type_variation = &"CardText"
+text = "In"
+
+[node name="InPrev" type="Button" parent="Layout/InRow"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+focus_mode = 0
+text = "<"
+
+[node name="InBadge" type="CenterContainer" parent="Layout/InRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InAmount" type="Label" parent="Layout/InRow"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_type_variation = &"CardText"
+horizontal_alignment = 2
+
+[node name="InNext" type="Button" parent="Layout/InRow"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+focus_mode = 0
+text = ">"
+
+[node name="InHave" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_type_variation = &"CardNote"
+horizontal_alignment = 1
+
+[node name="OutRow" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="OutHeading" type="Label" parent="Layout/OutRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_type_variation = &"CardText"
+text = "Out"
+
+[node name="OutPrev" type="Button" parent="Layout/OutRow"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+focus_mode = 0
+text = "<"
+
+[node name="OutBadge" type="CenterContainer" parent="Layout/OutRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="OutAmount" type="Label" parent="Layout/OutRow"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_type_variation = &"CardText"
+horizontal_alignment = 2
+
+[node name="OutNext" type="Button" parent="Layout/OutRow"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+focus_mode = 0
+text = ">"
+
+[node name="OutHave" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_type_variation = &"CardNote"
+horizontal_alignment = 1
+
+[node name="CountLabel" type="Label" parent="Layout"]
+layout_mode = 2
+theme_type_variation = &"CardNote"
+text = "Amount"
+horizontal_alignment = 1
+
+[node name="CountRow" type="HBoxContainer" parent="Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Count" type="Label" parent="Layout/CountRow"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+
+[node name="Rate" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_type_variation = &"CardNote"
+autowrap_mode = 3
+
+[node name="Status" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_type_variation = &"CardStatus"
+autowrap_mode = 3
+
+[node name="Buttons" type="HFlowContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 8
+alignment = 2
+
+[node name="Action" type="Button" parent="Layout/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Exchange"
+
+[node name="Close" type="Button" parent="Layout/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Close"

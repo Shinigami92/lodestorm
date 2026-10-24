@@ -2,7 +2,8 @@ class_name GameSettings
 extends RefCounted
 ## The player's settings, kept apart from the progress (`SaveGame`) in `settings.cfg` next to the
 ## save, so resetting keeps them: the language (the system's until one is picked), the suit
-## ring's size and "Always show", the sound volumes per bus and the voice language.
+## ring's size and "Always show", the sound volumes per bus, the voice language and whether talks
+## continue by themselves.
 
 const FILE: String = "settings.cfg"
 
@@ -20,6 +21,8 @@ static var volumes: Dictionary[StringName, float] = {}
 ## The language the NPCs speak (see `VoiceLines`): one of `VoiceLines.LANGUAGES`, `VoiceLines.OFF`,
 ## or empty for the texts' language.
 static var voice_language: String = ""
+## Whether a talk moves on to the next line by itself (see `Npc`, auto-continue).
+static var dialogue_auto_continue: bool = false
 
 
 ## Where the settings are kept, or empty when saving is off (`SaveGame.directory`).
@@ -34,6 +37,7 @@ static func load_settings() -> void:
 	ring_always_show = false
 	volumes.clear()
 	voice_language = ""
+	dialogue_auto_continue = false
 	var config := ConfigFile.new()
 	if not path() or config.load(path()) != OK:
 		return
@@ -51,6 +55,8 @@ static func load_settings() -> void:
 	var voice: Variant = config.get_value("voice", "language", "")
 	if voice is String and (voice in VoiceLines.LANGUAGES or voice == VoiceLines.OFF):
 		voice_language = voice
+	var auto: Variant = config.get_value("dialogue", "auto_continue", false)
+	dialogue_auto_continue = auto is bool and auto
 	var language: String = saved_language()
 	var forced: bool = TranslationServer.get_locale() != OS.get_locale()
 	if language and not forced:
@@ -89,6 +95,12 @@ static func set_volume(bus: StringName, level: float) -> void:
 static func set_voice_language(code: String) -> void:
 	voice_language = code
 	_save("voice", "language", code)
+
+
+## Sets whether talks continue by themselves and saves it.
+static func set_dialogue_auto_continue(auto: bool) -> void:
+	dialogue_auto_continue = auto
+	_save("dialogue", "auto_continue", auto)
 
 
 ## The language picked at the settings terminal, or empty when none was (or it's unknown).

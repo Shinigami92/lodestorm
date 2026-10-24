@@ -31,6 +31,16 @@ layout_mode = 2
 toggle_mode = true
 text = "Off"
 
+[node name="Dialogue" type="Label" parent="."]
+layout_mode = 2
+text = "Dialogue"
+
+[node name="AutoContinue" type="CheckBox" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Continue by itself"
+
 [node name="SuitRing" type="Label" parent="."]
 layout_mode = 2
 text = "Suit ring"

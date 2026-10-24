@@ -3,7 +3,8 @@ extends GridContainer
 ## The player's settings, the same wherever they're changed (the pause panel and the settings
 ## terminal in cabin 1, see GAME_DESIGN.md, UI): the language (picking one switches the game's
 ## texts right away), the language the NPCs speak (or "Off"; until one is picked it follows the
-## texts, see `VoiceLines`; picking one plays a sample), the suit ring's size and "Always show",
+## texts, see `VoiceLines`; picking one plays a sample), whether talks continue by themselves
+## ("Dialogue", see `Npc`), the suit ring's size and "Always show",
 ## each saved at once (see `GameSettings`), and "Open folder", which shows the game's log files in
 ## the system's file manager (for bug reports). The volumes are a page of their own (`SoundList`).
 
@@ -14,6 +15,7 @@ var _voice_sample: AudioStreamPlayer
 
 @onready var _languages: HBoxContainer = %Languages
 @onready var _voice_languages: HBoxContainer = %VoiceLanguages
+@onready var _auto_continue: CheckBox = %AutoContinue
 @onready var _ring_sizes: HBoxContainer = %RingSizes
 @onready var _always_show: CheckBox = %AlwaysShow
 @onready var _open_logs: Button = %OpenLogs
@@ -55,6 +57,8 @@ func _ready() -> void:
 		button.button_group = sizes
 		button.button_pressed = index == GameSettings.ring_size
 		button.pressed.connect(GameSettings.set_ring_size.bind(index))
+	_auto_continue.button_pressed = GameSettings.dialogue_auto_continue
+	_auto_continue.toggled.connect(GameSettings.set_dialogue_auto_continue)
 	_always_show.button_pressed = GameSettings.ring_always_show
 	_always_show.toggled.connect(GameSettings.set_ring_always_show)
 	var ring_row: Array[Control] = []

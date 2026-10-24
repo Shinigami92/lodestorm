@@ -87,7 +87,7 @@ func _step_sound() -> Sound:
 	return STEP_DECK_SOUND if _on_deck() else STEP_GROUND_SOUND
 
 
-## Whether the player stands on the ship (its deck, the ramp) rather than the ground.
+## Whether the player stands on the ship (its deck, the ramp) or a station rather than the ground.
 func _on_deck() -> bool:
 	var from: Vector3 = holder.global_position + Vector3.UP * 0.3
 	var query := PhysicsRayQueryParameters3D.create(
@@ -96,7 +96,7 @@ func _on_deck() -> bool:
 	var hit: Dictionary = holder.get_world_3d().direct_space_state.intersect_ray(query)
 	var node: Node = hit.get("collider") as Node
 	while node:
-		if node is Ship:
+		if node is Ship or node is SpaceStation:
 			return true
 		node = node.get_parent()
 	return false

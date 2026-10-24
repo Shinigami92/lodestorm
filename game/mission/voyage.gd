@@ -11,7 +11,12 @@ extends Node
 ## moon), and the location goes under the ship during the descent. `select` chooses and confirms at
 ## once. Course can only be set while the `mission` lets the ship leave (no run underway, nobody
 ## dead) and not in flight.
-## The game starts in space, or landed at `location` if the map has one (tests).
+## A station the ship can dock at (`CelestialBody.is_dockable`) is on offer too, without a mission
+## (`MissionBrief.station`): its location is its map (a `SpaceStation`, ready at once), which the
+## flight docks at instead of landing; leaving it takes everyone aboard (the ramp goes up by itself
+## when course is set), and the ship undocks.
+## The game starts in space, or landed at `location` if the map has one (tests); a save made while
+## docked docks the ship again (`dock_at`).
 ## Once a run is over, the mission rolls new offers (`roll_offers`).
 
 ## Emitted when the missions on offer, the previewed one or the picked one change.
@@ -108,7 +113,7 @@ func roll_offers() -> void:
 
 
 ## Offers a mission for every open region that has none yet (e.g. once the heat shield got
-## another plate), keeping the others.
+## another plate), keeping the others, and a visit to every station the ship can dock at.
 func offer_open_regions() -> void:
 	if settings.system:
 		for region: Region in settings.system.open_regions(ship.heat_shield.mk):
@@ -117,16 +122,22 @@ func offer_open_regions() -> void:
 			var world_seed: int = _rng.randi_range(1, 0x7fffffff)
 			var ores: Array[OreType] = settings.system.ores_of(region)
 			offers.append(MissionBrief.for_region(region, world_seed, ores))
+		for body: CelestialBody in settings.system.bodies:
+			if body.is_dockable() and not offer_for_station(body):
+				offers.append(MissionBrief.for_station(body))
 	offers_changed.emit()
 
 
-## The planet or moon the ship is at: where it flew last, else the first one it can go to (where
-## a new game starts), or null.
+## The planet, moon or station the ship is at: where it flew last, else the first planet or moon
+## it can go to (where a new game starts), or null.
 func ship_body() -> CelestialBody:
 	if at_body or not settings.system:
 		return at_body
 	for candidate: CelestialBody in settings.system.bodies:
-		if candidate.is_reachable(ship.heat_shield.mk):
+		if (
+			candidate.kind != CelestialBody.Kind.STATION
+			and candidate.is_reachable(ship.heat_shield.mk)
+		):
 			return candidate
 	return null
 
@@ -137,6 +148,19 @@ func offer_for(region: Region) -> MissionBrief:
 		if offer.region == region:
 			return offer
 	return null
+
+
+## The visit on offer to `station`, or null.
+func offer_for_station(station: CelestialBody) -> MissionBrief:
+	for offer: MissionBrief in offers:
+		if offer.station == station:
+			return offer
+	return null
+
+
+## Whether the ship is docked at a station.
+func is_docked() -> bool:
+	return flight.is_docked()
 
 
 ## Whether a mission can be picked now: not once the ramp is down for one (it's locked then), not
@@ -174,25 +198,55 @@ func is_preparing(offer: MissionBrief) -> bool:
 	return offer != null and _tasks.has(offer)
 
 
-## Whether course can be set for the destination now (not for the one the ship is at).
+## Whether course can be set for the destination now (not for the one the ship is at; docked at
+## a station, only with everyone aboard).
 func can_confirm() -> bool:
-	return can_select() and destination != null and destination != brief
+	return (
+		can_select()
+		and destination != null
+		and destination != brief
+		and (not is_docked() or ship.everyone_aboard())
+	)
 
 
 ## Sets course for the destination: the ship flies to its location (and the mission sets its
-## timer, see `selected`). Returns whether it did.
+## timer, see `selected`); docked at a station, the ramp goes up and the ship undocks first.
+## Returns whether it did.
 func confirm() -> bool:
 	if not can_confirm():
 		return false
 	brief = destination
 	var from_body: CelestialBody = ship_body()
-	if settings.system and brief.region:
+	if brief.station:
+		at_body = brief.station
+	elif settings.system and brief.region:
 		at_body = settings.system.body_of(brief.region)
 	_destination_location = _prepared[brief]
 	flight.destination_ready = not _tasks.has(brief)
+	ship.ramp_open = false
 	# Within the same body the ship only takes off and lands; to another one it crosses space.
-	flight.fly(at_body if at_body != from_body else null)
+	flight.fly(at_body if at_body != from_body else null, brief.station != null)
 	selected.emit(brief)
+	offers_changed.emit()
+	return true
+
+
+## Docks the ship at `station` right away, its map placed around it (a save made while docked).
+## Returns whether it did (not in flight, and only at a station on offer).
+func dock_at(station: CelestialBody) -> bool:
+	var offer: MissionBrief = offer_for_station(station)
+	if not offer or flight.is_flying():
+		return false
+	destination = offer
+	brief = offer
+	at_body = station
+	_prepare(offer)
+	if ship.get_parent().is_node_ready():
+		_place(_prepared[offer])
+	else:
+		# Loading a save while the map sets up its nodes: it can't take another child yet.
+		_place.call_deferred(_prepared[offer])
+	flight.dock_now()
 	offers_changed.emit()
 	return true
 
@@ -224,8 +278,16 @@ func tier_of(offer: MissionBrief) -> int:
 	return body.tier if body else 1
 
 
-## A fresh location for `offer` (its biome, seed and difficulty if it's generated), not built yet.
+## A fresh location for `offer` (its biome, seed and difficulty if it's generated; a station's
+## map), not built yet.
 func _instantiate(offer: MissionBrief) -> Node3D:
+	if offer and offer.station:
+		var station := offer.station.map.instantiate() as SpaceStation
+		station.name = LOCATION_NAME
+		station.body = offer.station
+		station.flight = flight
+		station.viewer = ship.viewer
+		return station
 	var fresh := location_scene.instantiate() as Node3D
 	fresh.name = LOCATION_NAME
 	var generated := fresh as GeneratedLocation
@@ -248,7 +310,8 @@ func _instantiate(offer: MissionBrief) -> Node3D:
 	return fresh
 
 
-## Starts preparing `offer`'s location, a generated one on a worker thread.
+## Starts preparing `offer`'s location, a generated one on a worker thread (a station's map is
+## ready at once).
 func _prepare(offer: MissionBrief) -> void:
 	if _prepared.has(offer):
 		return
@@ -325,7 +388,8 @@ func _place(fresh: Node3D) -> void:
 		if _prepared[offer] == fresh:
 			_prepared.erase(offer)
 	var parent: Node = ship.get_parent()
-	fresh.transform = _location_transform
+	# A station docks at the ship, wherever the locations stand.
+	fresh.transform = ship.transform if fresh is SpaceStation else _location_transform
 	parent.add_child(fresh)
 	parent.move_child(fresh, ship.get_index())
 	location = fresh

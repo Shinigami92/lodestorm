@@ -17,6 +17,7 @@ extends Node
 ## Either way, crafted miners still standing on the planet are lost there (`MinerFleet.end_run`).
 ## Players who die while no mission runs (e.g. killed through the debug overlay) also respawn
 ## aboard after `settings.respawn_delay`.
+## Docked at a station there's no run: the ramp button lowers and raises the ramp freely.
 ## Changing `settings.duration` while playing (debug overlay) updates the timer: before the start
 ## it's the new duration, while it runs it moves by the difference.
 
@@ -65,12 +66,13 @@ func _ready() -> void:
 	voyage.selected.connect(_on_selected.unbind(1))
 	ship.flight.left_location.connect(_on_left_location)
 	ship.flight.landed.connect(_on_landed)
+	ship.flight.docked.connect(_on_landed)
 	ship.player_left.connect(_on_player_left)
 	ship.ramp_button.used.connect(_on_ramp_button_used)
 
 
 func _physics_process(delta: float) -> void:
-	ship.ramp_button.enabled = _can_start_run()
+	ship.ramp_button.enabled = _can_start_run() or ship.flight.is_docked()
 	_follow_duration()
 	match state:
 		State.RUNNING:
@@ -271,6 +273,9 @@ func _players() -> Array[Player]:
 
 
 func _on_ramp_button_used(_player: Player) -> void:
+	if ship.flight.is_docked():
+		ship.ramp_open = not ship.ramp_open
+		return
 	if not _can_start_run():
 		return
 	match state:
@@ -295,7 +300,7 @@ func _on_player_left(_player: Player) -> void:
 
 
 func _on_landed() -> void:
-	ship.ramp_button.enabled = _can_start_run()
+	ship.ramp_button.enabled = _can_start_run() or ship.flight.is_docked()
 
 
 ## Course is set for a new mission: its timer, and no run there yet.
@@ -304,7 +309,7 @@ func _on_selected() -> void:
 	time_left = duration()
 	_duration = duration()
 	storm_time = 0.0
-	ship.ramp_button.enabled = _can_start_run()
+	ship.ramp_button.enabled = _can_start_run() or ship.flight.is_docked()
 
 
 ## High above the old location: the run that was there is over.

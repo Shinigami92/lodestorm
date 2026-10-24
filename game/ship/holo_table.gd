@@ -34,6 +34,11 @@ var _marker_materials: Dictionary[OreType, ShaderMaterial] = {}
 @onready var _markers: Node3D = $Hologram/Markers
 
 
+func _ready() -> void:
+	# Hidden with the deck it stands on when that's cut away, not left casting shadows.
+	add_to_group(CutAway.HIDE_GROUP)
+
+
 ## Shows `location` (as it is right now) and the `landmarks` in it as a hologram; null clears it.
 ## `origin`: where the location stands in the world (or will stand, if it's outside the tree).
 func show_location(

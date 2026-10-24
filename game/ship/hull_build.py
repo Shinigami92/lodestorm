@@ -18,12 +18,16 @@ by the lobby and in the cargo bay's back corner.
 Groups (see Ship): "hull" always shows; "lower_cut" only casts shadows while the viewer is on the
 lower deck; "upper" only casts shadows while the viewer is on the lower deck; "upper_cut" (inside
 upper) only casts shadows while the viewer is aboard. A wall in front of what the camera must see
-is cut away, leaving a stub (STUB m high) in the always-visible group.
+is cut away, leaving a stub (STUB m high) in the always-visible group. The walls, windows and the
+writing are the shared greybox helpers' (tools/greybox.py).
 """
 
 import pathlib
-import re
 import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "tools"))
+
+from greybox import Greybox, g, scaled, sid, vec, windows_for, write, xform
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "game" / "ship" / "hull.tscn"
@@ -32,79 +36,16 @@ PROP_MATERIAL = "res://game/ship/materials/prop.tres"
 # The hull stands on landing gear, GEAR m above the ground.
 GEAR = 1.5
 LOW, SLAB, UP, TOP = GEAR + 1.0, GEAR + 5.0, GEAR + 5.5, GEAR + 9.5
-DOOR = 3.0
 STUB = 1.0
 ZI = 14.5  # inner half depth
 CW = 2.75  # corridor wall center (inner corridor half width 2.5)
-NL = "\n"
 
-walls = []  # (name, size, center, group, stub_group or None, kind: "both", "shape" or "mesh")
-
-
-def g(c):
-    c = round(c, 4)
-    if c == 0:
-        c = 0.0
-    return f"{c:g}"
-
-
-def vec(v):
-    return f"Vector3({', '.join(g(c) for c in v)})"
-
-
-def xform(origin, basis="1, 0, 0, 0, 1, 0, 0, 0, 1"):
-    return f"Transform3D({basis}, {', '.join(g(c) for c in origin)})"
-
-
-def scaled(size, origin):
-    x, y, z = (g(c) for c in size)
-    return xform(origin, f"{x}, 0, 0, 0, {y}, 0, 0, 0, {z}")
-
-
-def sid(s):
-    return "x".join(g(c) for c in s).replace(".", "_").replace("-", "m")
-
-
-def unique(sizes):
-    """Sizes in order, one per id (sizes a rounding error apart share one)."""
-    seen = {}
-    for s in sorted(sizes):
-        seen.setdefault(sid(s), s)
-    return list(seen.values())
-
-
-def wall(name, axis, fixed, a0, a1, y0, y1, doors=(), group="hull", stub_group=None, front=None, door_height=DOOR):
-    """Wall along `axis` at `fixed`, from a0 to a1 and y0 to y1, doors as (center, width) from y0
-    up to y0 + door_height (a zero-width door just splits the wall). `front` = (group, stub_group)
-    for the pieces of a z wall in front of the corridor, which would hide players from the camera."""
-
-    def piece(pname, b0, b1, c0, c1, sg):
-        if b1 - b0 <= 0.001 or c1 - c0 <= 0.001:
-            return
-        mid = (b0 + b1) / 2
-        gr = group
-        if axis == "x":
-            size, center = (b1 - b0, c1 - c0, 0.5), (mid, (c0 + c1) / 2, fixed)
-        else:
-            size, center = (0.5, c1 - c0, b1 - b0), (fixed, (c0 + c1) / 2, mid)
-            if front and b0 >= 1.0:
-                gr, sg = front
-        walls.append((pname, size, center, gr, sg, "both"))
-
-    edges = [a0]
-    for c, w in sorted(doors):
-        edges += [c - w / 2, c + w / 2]
-    edges.append(a1)
-    for i in range(0, len(edges), 2):
-        suffix = "" if len(edges) == 2 else str(i // 2 + 1)
-        piece(name + suffix, edges[i], edges[i + 1], y0, y1, stub_group)
-    for i, (c, w) in enumerate(sorted(doors)):
-        suffix = "" if len(doors) == 1 else str(i + 1)
-        piece(name + "Lintel" + suffix, c - w / 2, c + w / 2, y0 + door_height, y1, None)
-
-
-def box(name, size, center, group="hull"):
-    walls.append((name, size, center, group, None, "both"))
+GROUP_PARENT = {"hull": ".", "lower_cut": "LowerCut", "upper": "Upper", "upper_cut": "Upper/Cut"}
+HULL_MATERIAL = ["albedo_color = Color(0.3, 0.31, 0.33, 1)", "metallic = 0.2", "roughness = 0.6"]
+box_kit = Greybox(GROUP_PARENT, "hull", HULL_MATERIAL, stub=STUB, door=3.0, sill=1.0, window_height=2.0)
+wall = box_kit.wall
+box = box_kit.box
+outer_wall = box_kit.outer_wall
 
 
 LOWER_FRONT = ("lower_cut", "hull")
@@ -116,7 +57,7 @@ box("RightWallBack", (0.5, 8.5, 12.5), (14.75, (LOW + TOP) / 2, -8.25))
 box("RightWallFront", (0.5, 8.5, 12.5), (14.75, (LOW + TOP) / 2, 8.25), "lower_cut")
 box("DoorLintel", (0.5, 5, 4), (14.75, TOP - 2.5, 0), "lower_cut")
 # Keeps players and aliens from walking under the ship, between the legs.
-walls.append(("Underside", (96, GEAR, 30), (-33, GEAR / 2, 0), "hull", None, "shape"))
+box("Underside", (96, GEAR, 30), (-33, GEAR / 2, 0), kind="shape")
 box("Roof", (96, 0.5, 30), (-33, TOP + 0.25, 0), "upper_cut")
 # Upper floor, except over the lift shafts and the cargo bay.
 box("SlabNose", (23, 0.5, 29), (-69, SLAB + 0.25, 0), "upper")
@@ -198,53 +139,8 @@ ROOMS += [
 ROOMS += [(name, "Lower", (a, b), FRONT) for name, a, b in VENDORS]
 ROOMS += [("CargoBay", None, (-3, 14.5), FULL)]
 
+
 # --- outer walls with windows ---
-SILL, WIN_H = 1.0, 2.0
-glass = []  # (name, size, center, group)
-
-
-def windows_for(x0, x1):
-    """Evenly spaced windows along a room's outer wall, one per ~9 m."""
-    w = x1 - x0
-    n = max(1, int(w // 9))
-    return [(x0 + w * (i + 0.5) / n, min(4.0, w / n - 1.5)) for i in range(n)]
-
-
-def outer_wall(name, axis, fixed, a0, a1, y0, y1, wins, group="hull", stub_group=None):
-    """One collision shape for the whole wall; its mesh goes around the windows (sill below,
-    header above), with glass in them."""
-    if axis == "x":
-        size, center = (a1 - a0, y1 - y0, 0.5), ((a0 + a1) / 2, (y0 + y1) / 2, fixed)
-    else:
-        size, center = (0.5, y1 - y0, a1 - a0), (fixed, (y0 + y1) / 2, (a0 + a1) / 2)
-    walls.append((name, size, center, group, stub_group, "shape"))
-
-    def piece(pname, b0, b1, c0, c1):
-        if b1 - b0 <= 0.001 or c1 - c0 <= 0.001:
-            return
-        mid = (b0 + b1) / 2
-        if axis == "x":
-            s, c = (b1 - b0, c1 - c0, 0.5), (mid, (c0 + c1) / 2, fixed)
-        else:
-            s, c = (0.5, c1 - c0, b1 - b0), (fixed, (c0 + c1) / 2, mid)
-        walls.append((pname, s, c, group, None, "mesh"))
-
-    edges = [a0]
-    for c, w in sorted(wins):
-        edges += [c - w / 2, c + w / 2]
-    edges.append(a1)
-    for i in range(0, len(edges), 2):
-        piece(f"{name}Part{i // 2 + 1}", edges[i], edges[i + 1], y0, y1)
-    for i, (c, w) in enumerate(sorted(wins)):
-        piece(f"{name}Sill{i + 1}", c - w / 2, c + w / 2, y0, y0 + SILL)
-        piece(f"{name}Header{i + 1}", c - w / 2, c + w / 2, y0 + SILL + WIN_H, y1)
-        wy = y0 + SILL + WIN_H / 2
-        if axis == "x":
-            glass.append((f"{name}Glass{i + 1}", (w, WIN_H, 0.06), (c, wy, fixed), group))
-        else:
-            glass.append((f"{name}Glass{i + 1}", (0.06, WIN_H, w), (fixed, wy, c), group))
-
-
 def outer_windows(deck, side):
     """Windows of the rooms on `deck` (rooms of both decks count for both) along the back (-1) or
     front (+1) wall."""
@@ -287,33 +183,7 @@ def cylinder(mid, material_id, top, bottom, height, segments):
     ]
 
 
-subs = ['[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hull"]']
-subs += ["albedo_color = Color(0.3, 0.31, 0.33, 1)", "metallic = 0.2", "roughness = 0.6", ""]
-for s in unique({w[1] for w in walls if w[5] != "mesh"}):
-    subs += [f'[sub_resource type="BoxShape3D" id="BoxShape3D_{sid(s)}"]', f"size = {vec(s)}", ""]
-for s in unique({w[1] for w in walls if w[5] != "shape"}):
-    subs += [
-        f'[sub_resource type="BoxMesh" id="BoxMesh_{sid(s)}"]',
-        'material = SubResource("StandardMaterial3D_hull")',
-        f"size = {vec(s)}",
-        "",
-    ]
-subs += ['[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glass"]', "transparency = 1"]
-subs += ["albedo_color = Color(0.6, 0.8, 0.95, 0.2)", "metallic = 0.4", "roughness = 0.05", ""]
-for s in unique({gl[1] for gl in glass}):
-    subs += [
-        f'[sub_resource type="BoxMesh" id="BoxMesh_glass_{sid(s)}"]',
-        'material = SubResource("StandardMaterial3D_glass")',
-        f"size = {vec(s)}",
-        "",
-    ]
-for s in unique({(w[1][0], STUB, w[1][2] - 0.02) for w in walls if w[4]}):
-    subs += [
-        f'[sub_resource type="BoxMesh" id="BoxMesh_stub_{sid(s)}"]',
-        'material = SubResource("StandardMaterial3D_hull")',
-        f"size = {vec(s)}",
-        "",
-    ]
+subs = box_kit.subresources()
 subs += material("thruster", "Color(0.32, 0.34, 0.38, 1)")
 subs += material("exhaust", "Color(0.4, 0.75, 1, 1)", 2.0)
 subs += ['[sub_resource type="BoxMesh" id="BoxMesh_prop"]', 'material = ExtResource("mat_prop")', ""]
@@ -343,44 +213,10 @@ def shape(size):
 
 
 # --- nodes ---
-GROUP_PARENT = {"hull": ".", "lower_cut": "LowerCut", "upper": "Upper", "upper_cut": "Upper/Cut"}
 nodes = ['[node name="Hull" type="StaticBody3D"]', ""]
 for parent, name in [(".", "LowerCut"), (".", "Upper"), ("Upper", "Cut")]:
     nodes += [f'[node name="{name}" type="Node3D" parent="{parent}"]', ""]
-for name, size, center, group, stub_group, kind in walls:
-    if kind != "mesh":
-        nodes += [
-            f'[node name="{name}Shape" type="CollisionShape3D" parent="."]',
-            f"transform = {xform(center)}",
-            f'shape = SubResource("BoxShape3D_{sid(size)}")',
-            "",
-        ]
-    if kind != "shape":
-        nodes += [
-            f'[node name="{name}" type="MeshInstance3D" parent="{GROUP_PARENT[group]}"]',
-            f"transform = {xform(center)}",
-            f'mesh = SubResource("BoxMesh_{sid(size)}")',
-            "",
-        ]
-    if stub_group:
-        s = (size[0], STUB, size[2] - 0.02)
-        y0 = center[1] - size[1] / 2
-        nodes += [
-            f'[node name="{name}Stub" type="MeshInstance3D" parent="{GROUP_PARENT[stub_group]}"]',
-            f"transform = {xform((center[0], y0 + STUB / 2, center[2]))}",
-            f'mesh = SubResource("BoxMesh_stub_{sid(s)}")',
-            "",
-        ]
-
-# Windows: glass lets light in and doesn't cast shadows; the ship shows or hides it with its wall.
-for name, size, center, group in glass:
-    nodes += [
-        f'[node name="{name}" type="MeshInstance3D" parent="{GROUP_PARENT[group]}" groups=["ship_glass"]]',
-        f"transform = {xform(center)}",
-        "cast_shadow = 0",
-        f'mesh = SubResource("BoxMesh_glass_{sid(size)}")',
-        "",
-    ]
+nodes += box_kit.nodes()
 
 # Exterior: a nose cone and two thrusters on the roof at the tail.
 nodes += [
@@ -434,23 +270,7 @@ for i, z in enumerate([-7, 7]):
 for key, size in sorted(shapes.items()):
     subs += [f'[sub_resource type="BoxShape3D" id="{key}"]', f"size = {vec(size)}", ""]
 
-# --- write: keep the scene's and the material's UIDs (tools/uids.sh adds them to a new file) ---
-old = OUT.read_text(encoding="utf-8") if OUT.exists() else ""
-scene_uid = re.search(r'^\[gd_scene [^\]]*?( uid="[^"]+")', old)
-prop_uid = re.search(rf'\[ext_resource [^\]]*?( uid="[^"]+") path="{re.escape(PROP_MATERIAL)}"', old)
-header = [
-    "[gd_scene format=3%s]" % (scene_uid.group(1) if scene_uid else ""),
-    "",
-    '[ext_resource type="StandardMaterial3D"{} path="{}" id="mat_prop"]'.format(
-        prop_uid.group(1) if prop_uid else "", PROP_MATERIAL
-    ),
-    "",
-]
-out = NL.join(header + subs + nodes).rstrip(NL) + NL
-out = re.sub(r"\n{3,}", NL + NL, out)
-if "--check" in sys.argv:
-    if out != old:
-        sys.exit(f"{OUT.relative_to(ROOT)} differs from what hull_build.py builds: run it, don't edit the file")
-else:
-    OUT.write_text(out, encoding="utf-8", newline=NL)
-    print(len(walls), "wall pieces,", len(glass), "windows,", out.count("[node "), "nodes")
+# --- write ---
+out = write(OUT, ROOT, [("StandardMaterial3D", PROP_MATERIAL, "mat_prop")], subs, nodes, "hull_build.py")
+if out:
+    print(len(box_kit.walls), "wall pieces,", len(box_kit.glass), "windows,", out.count("[node "), "nodes")

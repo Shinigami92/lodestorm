@@ -3,7 +3,8 @@ extends Node
 ## Shows the storm in the world, so the mission time is visible without a HUD: haze and darker
 ## light build up during the mission's warning time and the storm rages once the timer ran out.
 ## A new mission (picked, so the ship flew to its location) and the next run start in clear
-## weather. While the `viewer` is aboard the ship, the haze and the tinted ambient light fade out,
+## weather. While the `viewer` is aboard the ship (or inside a docked station), the haze and the
+## tinted ambient light fade out,
 ## so the inside stays clear; the dim sun still shows the storm outside. Aboard, the ambient light
 ## also turns up to `indoor_ambient_energy`: the cut-away roof still shades the rooms, and the
 ## dark outside lighting would leave them murky.
@@ -93,7 +94,11 @@ func _process(delta: float) -> void:
 			target = 1.0
 	# RETURNED keeps the weather the players escaped from.
 	intensity = move_toward(intensity, target, delta / RISE_TIME)
-	var aboard: bool = viewer != null and mission.ship.is_aboard(viewer)
+	var station := voyage.location as SpaceStation
+	var aboard: bool = (
+		viewer != null
+		and (mission.ship.is_aboard(viewer) or (station != null and station.is_inside(viewer)))
+	)
 	indoors = move_toward(indoors, 1.0 if aboard else 0.0, delta / INDOOR_FADE_TIME)
 	_apply()
 

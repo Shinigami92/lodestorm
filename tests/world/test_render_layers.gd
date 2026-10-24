@@ -31,7 +31,7 @@ func _is_effect(visual: GeometryInstance3D) -> bool:
 		return true
 	if visual is GPUParticles3D or visual is CPUParticles3D:
 		return true
-	if visual.is_in_group(Ship.GLASS_GROUP):
+	if visual.is_in_group(CutAway.HIDE_GROUP):
 		return false
 	for material: Material in _materials(visual):
 		var shader := material as ShaderMaterial

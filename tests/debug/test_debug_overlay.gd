@@ -177,13 +177,14 @@ func test_refinery_shortcuts() -> void:
 
 func test_open_all_offers_every_region() -> void:
 	var system: StarSystem = _voyage.settings.system
-	var regions: int = 0
+	var offers: int = 0
 	for body: CelestialBody in system.bodies:
-		regions += body.regions.size()
-	assert_lt(_voyage.offers.size(), regions)
+		# A mission per region, a visit per station.
+		offers += body.regions.size() + (1 if body.is_dockable() else 0)
+	assert_lt(_voyage.offers.size(), offers)
 	_overlay.call(&"open_all_bodies")
 	assert_eq(_mission.ship.heat_shield.mk, _mission.ship.heat_shield.max_mk())
-	assert_eq(_voyage.offers.size(), regions)
+	assert_eq(_voyage.offers.size(), offers)
 
 
 func test_buttons_that_would_do_nothing_are_off() -> void:

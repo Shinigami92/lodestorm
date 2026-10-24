@@ -5,7 +5,7 @@ extends Node3D
 ## edge in `color`, the ship's status color (blinking in the warning time). Beyond the arrow's tip,
 ## the ship's countdown shows the exact time left, shrinking as the camera moves in (e.g. to frame
 ## the pause panel), so it keeps its size on screen. Shows the way back and how urgent it is while
-## the ship is off-screen.
+## the ship is off-screen. Docked at a station there's no time to show: only the arrow.
 
 ## Distance to the door (horizontally, in m) below which the arrow hides. TBD (playtest).
 @export var min_distance: float = 12.0
@@ -42,6 +42,7 @@ func _process(_delta: float) -> void:
 		return
 	color = Color(target.status_color, 0.3 + 0.6 * target.status_brightness)
 	_countdown.text = target.countdown_text
+	_countdown.visible = not target.flight.is_docked()
 	_countdown.scale = Vector3.ONE * _zoom()
 	# Blinks less than the arrow, so the time stays readable.
 	_countdown.modulate = Color(target.status_color, 0.6 + 0.4 * target.status_brightness)

@@ -188,7 +188,8 @@ func show_zoom(zoom: float, shown_body: CelestialBody, shown_region: Region) -> 
 		_fade_system(1.0 - crossfade(stage), zoom)
 	var globe_fade: float = crossfade(stage) if stage < 1.0 else 1.0 - crossfade(stage - 1.0)
 	if _globe and _globe_material:
-		_globe.visible = globe_fade > 0.0
+		# Not while zooming into a station (its map shows on the table) or another body.
+		_globe.visible = globe_fade > 0.0 and _globe.get_meta(&"body", null) == shown_body
 		if stage >= 1.0 and shown_region:
 			_zoom_into(_globe, _region_dir(shown_region) * globe_radius, REGION_ZOOM, stage - 1.0)
 		else:

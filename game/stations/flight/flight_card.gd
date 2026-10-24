@@ -1,7 +1,8 @@
 class_name FlightCard
 extends StationCard
 ## The holo card of the flight console (`FlightStation`): the destination picked at the navigator
-## (its location, body, danger and timer), where things stand, and "Set course".
+## (its location, body, danger and timer; a station's name and kind), where things stand, and "Set
+## course".
 
 ## The ores the badges show.
 var _shown_ores: Array[OreType] = []
@@ -31,7 +32,11 @@ func show_part(part: StationPart) -> void:
 	var destination: MissionBrief = voyage.destination if voyage else null
 	if not destination and voyage:
 		destination = voyage.brief
-	if destination:
+	if destination and destination.station:
+		_title.text = destination.location_name()
+		_subtitle.text = destination.station.kind_name()
+		_info.visible = false
+	elif destination:
 		_title.text = destination.location_name()
 		var system: StarSystem = voyage.settings.system
 		var body: CelestialBody = (
@@ -85,7 +90,15 @@ func _status_text(voyage: Voyage) -> String:
 	elif voyage.is_preparing(voyage.destination):
 		text = tr("Scanning the location...")
 	elif voyage.can_confirm():
-		text = tr("Set course to fly there.")
+		text = (
+			tr("Set course to dock there.")
+			if voyage.destination.station
+			else tr("Set course to fly there.")
+		)
+	elif voyage.is_docked() and voyage.destination != voyage.brief:
+		text = tr("Wait until everyone is back aboard.")
+	elif voyage.is_docked():
+		text = tr("Docked: lower the ramp in the cargo bay.")
 	else:
 		text = tr("Landed: lower the ramp in the cargo bay.")
 	return text

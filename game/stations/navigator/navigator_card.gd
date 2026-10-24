@@ -4,7 +4,9 @@ extends StationCard
 ## it. The star: its name; a body: its kind and tier, its signature ore ("?" while it can't be
 ## reached; "Zoom in"); a region: its biome and tier, danger, timer and ores ("Zoom in", "Set as
 ## destination"); the landing site: the mission's location name and where
-## things stand (destination set, scanning, in flight, landed). A body out of the heat shield's
+## things stand (destination set, scanning, in flight, landed); a station: its kind ("Zoom in",
+## "Set as destination") and where things stand (destination set, docked). A body out of the heat
+## shield's
 ## reach, and its regions, say which MK level it needs, with the ores of that plate's cost.
 
 const DANGER_COLORS: Array[Color] = [
@@ -48,7 +50,7 @@ func show_part(part: StationPart) -> void:
 	visible = item != null and navigator != null
 	if not visible:
 		return
-	_choose.visible = item is Region
+	_choose.visible = item is Region or NavigatorStation.is_station(item)
 	var needed: ShieldPlate = null
 	if item is StarSystem:
 		_show_star(item as StarSystem)
@@ -87,7 +89,9 @@ func _show_body(navigator: NavigatorStation, shown_body: CelestialBody) -> Shiel
 	_primary.visible = true
 	_primary.text = tr("Zoom in")
 	_primary.disabled = not reachable
-	if reachable:
+	if NavigatorStation.is_station(shown_body):
+		_show_station(navigator, shown_body)
+	elif reachable:
 		_status.text = ""
 	elif shown_body.kind == CelestialBody.Kind.STATION:
 		_status.text = tr("No docking yet.")
@@ -135,6 +139,29 @@ func _show_region(navigator: NavigatorStation, shown_region: Region) -> ShieldPl
 	if region_body and not reachable:
 		return _needed_plate(navigator, region_body)
 	return null
+
+
+## A station the ship docks at: "Zoom in" at the star system (its map on the table), "Set as
+## destination", and where things stand.
+func _show_station(navigator: NavigatorStation, shown_station: CelestialBody) -> void:
+	var voyage: Voyage = navigator.voyage
+	var offer: MissionBrief = navigator.get_offer(shown_station)
+	_primary.visible = navigator.level == NavigatorStation.Level.SYSTEM
+	_choose.text = tr("Set as destination")
+	var chosen: bool = offer != null and voyage != null and offer == voyage.destination
+	_choose.disabled = not offer or not voyage.can_select() or chosen
+	var text: String = ""
+	if not voyage or not offer:
+		text = ""
+	elif voyage.flight.is_flying():
+		text = tr("In flight: gear up and head for the ramp.")
+	elif not voyage.can_select():
+		text = tr("Locked until everyone is back aboard.")
+	elif offer == voyage.brief:
+		text = tr("Docked: lower the ramp in the cargo bay.")
+	elif chosen:
+		text = tr("Destination set: set course at the cockpit.")
+	_status.text = text
 
 
 ## `interact`: zooms in, or at a landing site chooses it as the destination.

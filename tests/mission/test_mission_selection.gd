@@ -26,7 +26,10 @@ func test_offers_a_mission_per_open_region() -> void:
 	var system: StarSystem = _voyage.settings.system
 	var regions: Array[Region] = system.open_regions(_ship.heat_shield.mk)
 	assert_gt(regions.size(), 1)
-	assert_eq(_voyage.offers.size(), regions.size())
+	var stations: int = 0
+	for body: CelestialBody in system.bodies:
+		stations += 1 if body.is_dockable() else 0
+	assert_eq(_voyage.offers.size(), regions.size() + stations, "and a visit per station")
 	for i: int in regions.size():
 		var offer: MissionBrief = _voyage.offers[i]
 		var region: Region = regions[i]
@@ -49,8 +52,10 @@ func test_star_system_has_planets_moons_a_station_and_locked_planets() -> void:
 		for region: Region in body.regions:
 			assert_eq(system.body_of(region), body)
 			assert_not_null(region.biome)
-		if body.kind in [CelestialBody.Kind.STATION, CelestialBody.Kind.GAS_GIANT]:
-			assert_false(body.is_reachable(99), "no docking yet, nowhere to land")
+		if body.kind == CelestialBody.Kind.STATION:
+			assert_eq(body.is_reachable(1), body.map != null, "docked at from the start")
+		elif body.kind == CelestialBody.Kind.GAS_GIANT:
+			assert_false(body.is_reachable(99), "nowhere to land")
 		elif not body.is_reachable(_ship.heat_shield.mk):
 			locked.append(body)
 	for kind: CelestialBody.Kind in CelestialBody.Kind.values():
@@ -148,7 +153,9 @@ func test_finished_mission_brings_new_offers() -> void:
 	for i: int in _voyage.offers.size():
 		assert_does_not_have(old_offers, _voyage.offers[i])
 		assert_eq(_voyage.offers[i].region, old_offers[i].region, "the same regions")
-		assert_ne(_voyage.offers[i].world_seed, old_offers[i].world_seed, "a new section")
+		assert_eq(_voyage.offers[i].station, old_offers[i].station, "and stations")
+		if _voyage.offers[i].region:
+			assert_ne(_voyage.offers[i].world_seed, old_offers[i].world_seed, "a new section")
 	assert_true(_voyage.can_select())
 
 

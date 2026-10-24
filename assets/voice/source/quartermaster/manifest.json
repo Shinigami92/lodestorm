@@ -141,7 +141,7 @@
     "f7e48a90d5d76cfc": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
+      "seed": 3,
       "text": "Wie kann ich dir helfen?"
     }
   },

@@ -15,6 +15,9 @@
     "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
     "seed": 1,
     "picked_from": "round4/brannik/qwen3_s1_de.flac",
-    "picked": "2026-10-24"
+    "picked": "2026-10-24",
+    "reroll": {
+      "f7e48a90d5d76cfc": 3
+    }
   }
 }

@@ -27,8 +27,8 @@ down) and the melee clips, upper body only too: the holds "ReadyBlade" (Riven), 
 forearm across the chest), the attacks "Slash", "SlashBack", "Overhead", "Thrust", "Punch" and "Bash" (wind-up, a
 stroke of ATTACK_STROKE frames the game fits to the attack's time, staying at the end), the braced tool's loops "Cut"
 (leaning in, shaking) and "Drill" (out at the thrust's end, shaking) and the gauntlet's "Cock" (drawn back for a
-charged punch, trembling). Poses are built from world-space rotations per bone and two-bone IK for arms and legs, then converted to
-the bones' local rotations (pose_of()).
+charged punch, trembling). Poses and the locomotion clips are shared with the NPCs (tools/blender/humanoid.py); the
+aim and melee poses are the player's own.
 """
 
 import math
@@ -47,19 +47,15 @@ from mathutils import Matrix, Vector
 
 import common as C
 import generated as G
-from common import T, rx, ry, rz
+import humanoid as H
+from common import T, rx, rz
+from humanoid import I3, SIDES, Pose, apply, lerp, rest_pose, smooth
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
 TAG = ARGV[1] if len(ARGV) > 1 else "r0"
 
 ASSET = "Player"
-FPS = 30
-RUN_SPEED = 6.0  # m/s the locomotion clips are authored at (PlayerSettings.move_speed)
-RUN_FRAMES = 20  # one stride (two steps) in 0.67 s
-WALK_SPEED = 1.3  # m/s the walk clip is authored at (PlayerAnimator.walk_speed)
-WALK_FRAMES = 32  # one stride (two steps) in 1.07 s
-I3 = Matrix.Identity(3)
 
 # --- skeleton -------------------------------------------------------------------------------------
 # Fitted to the generated suit (see "suit" below): its joints in its A-pose, measured on the mesh normalized to
@@ -89,7 +85,6 @@ SUIT_LIMBS = {
     "Toes": (0.28, -0.13, 0.05),
     "ToesTip": (0.29, -0.22, 0.04),
 }
-SIDES = (("Left", 1.0), ("Right", -1.0))
 
 
 def fit(p) -> Vector:
@@ -139,8 +134,9 @@ for _side, _s in SIDES:
         (f"{_side}Foot", tuple(_ankle), tuple(_toes), f"{_side}LowerLeg"),
         (f"{_side}Toes", tuple(_toes), tuple(_toes + Vector((0, TOES_TIP.y, TOES_TIP.z))), f"{_side}Foot"),
     ]
-HEAD = {n: Vector(h) for n, h, _t, _p in BONES}
-PARENT = {n: p for n, _h, _t, p in BONES}
+# The boots are wide: the feet stand apart, the hanging arms' wrists clear of the bulky hips.
+BODY = H.Body(BONES, foot_x=0.17, wrist_x=0.4, wrist_z=0.93)
+PARENT = BODY.parent
 NEXT_JOINT = {"Hips": "Spine", "Spine": "Chest", "Chest": "UpperChest", "UpperChest": "Neck", "Neck": "Head"}
 NEXT_JOINT["Head"] = "HeadTop"
 for _side, _s in SIDES:
@@ -148,25 +144,6 @@ for _side, _s in SIDES:
         NEXT_JOINT[f"{_side}{_a}"] = f"{_side}{_b}"
     for _a, _b in itertools.pairwise(("UpperLeg", "LowerLeg", "Foot", "Toes", "ToesTip")):
         NEXT_JOINT[f"{_side}{_a}"] = f"{_side}{_b}"
-
-
-def build_skeleton(root: bpy.types.Object) -> bpy.types.Object:
-    data = bpy.data.armatures.new("Skeleton")
-    arm = bpy.data.objects.new("Skeleton", data)
-    C.link(arm, root)
-    bpy.context.view_layer.objects.active = arm
-    bpy.ops.object.mode_set(mode="EDIT")
-    for name, head, tail, parent in BONES:
-        eb = data.edit_bones.new(name)
-        eb.head, eb.tail = head, tail
-        eb.roll = 0.0
-        if parent:
-            eb.parent = data.edit_bones[parent]
-    bpy.ops.object.mode_set(mode="OBJECT")
-    for pb in arm.pose.bones:
-        pb.rotation_mode = "QUATERNION"
-    data.display_type = "STICK"
-    return arm
 
 
 # --- suit -------------------------------------------------------------------------------------------
@@ -406,7 +383,7 @@ def markers(arm: bpy.types.Object, suit: bpy.types.Object) -> None:
         ("ShieldGrip", "LeftLowerArm", _shield_grip()),  # placed in the shield's hold
     ):
         if name == "WeaponGrip":
-            apply(arm, idle(0.0, aim=True))
+            apply(arm, aim())
         elif name == "ShieldGrip":
             apply(arm, ready_shield())
         e = bpy.data.objects.new(name, None)
@@ -421,114 +398,10 @@ def markers(arm: bpy.types.Object, suit: bpy.types.Object) -> None:
     rest_pose(arm)
 
 
-# --- posing -----------------------------------------------------------------------------------------
-
-
-def frame(direction: Vector, pole: Vector) -> Matrix:
-    y = direction.normalized()
-    z = (pole - y * pole.dot(y)).normalized()
-    return Matrix((y.cross(z), y, z)).transposed()
-
-
-def turn_between(rest_dir, rest_pole, dir_, pole) -> Matrix:
-    """World rotation taking a bone from its rest direction (and pole side) to the given ones."""
-    return frame(dir_, pole) @ frame(Vector(rest_dir), Vector(rest_pole)).transposed()
-
-
-def two_bone(a: Vector, target: Vector, l1: float, l2: float, pole: Vector) -> tuple:
-    """Joint and end positions of a two-bone chain from a reaching for target, bending towards pole."""
-    d = target - a
-    dist = min(max(d.length, 1e-4), (l1 + l2) * 0.999)
-    u = d.normalized()
-    w = (pole - u * pole.dot(u)).normalized()
-    cos_a = (l1 * l1 + dist * dist - l2 * l2) / (2 * l1 * dist)
-    sin_a = math.sqrt(max(0.0, 1 - cos_a * cos_a))
-    joint = a + (u * cos_a + w * sin_a) * l1
-    return joint, a + u * dist
-
-
-class Pose:
-    """World-space rotations per bone (relative to the rest pose) plus the hips' offset; arms and legs by IK."""
-
-    def __init__(self, hips_offset=(0, 0, 0), hips=I3):
-        self.offset = Vector(hips_offset)
-        self.w = {"Root": I3.copy(), "Hips": hips}
-
-    def spine(self, spine=None, chest=None, upper=None, neck=None, head=None) -> None:
-        last = self.w["Hips"]
-        for name, rot in (("Spine", spine), ("Chest", chest), ("UpperChest", upper), ("Neck", neck), ("Head", head)):
-            last = rot if rot is not None else last
-            self.w[name] = last
-        for side, _s in SIDES:
-            self.w[f"{side}Shoulder"] = self.w["UpperChest"]
-
-    def pos(self, bone: str) -> Vector:
-        parent = PARENT[bone]
-        if parent is None:
-            return HEAD[bone].copy()
-        p = self.pos(parent) + self.w[parent] @ (HEAD[bone] - HEAD[parent])
-        return p + self.offset if bone == "Hips" else p
-
-    def arm(self, side: str, wrist: Vector, pole: Vector, hand_dir: Vector, palm: Vector) -> None:
-        s = 1.0 if side == "Left" else -1.0
-        a = self.pos(f"{side}UpperArm")
-        elbow, end = two_bone(a, Vector(wrist), UPPER_ARM_LEN, LOWER_ARM_LEN, Vector(pole))
-        rest = (s, 0, 0)
-        self.w[f"{side}UpperArm"] = turn_between(rest, (0, 1, 0), elbow - a, pole)
-        self.w[f"{side}LowerArm"] = turn_between(rest, (0, 1, 0), end - elbow, pole)
-        self.w[f"{side}Hand"] = turn_between(rest, (0, 0, -1), Vector(hand_dir), Vector(palm))
-
-    def leg(self, side: str, ankle: Vector, pole: Vector, pitch: float = 0.0, yaw: float = 0.0) -> None:
-        a = self.pos(f"{side}UpperLeg")
-        knee, end = two_bone(a, Vector(ankle), UPPER_LEG_LEN, LOWER_LEG_LEN, Vector(pole))
-        rest = (0, 0, -1)
-        self.w[f"{side}UpperLeg"] = turn_between(rest, (0, -1, 0), knee - a, pole)
-        self.w[f"{side}LowerLeg"] = turn_between(rest, (0, -1, 0), end - knee, pole)
-        self.w[f"{side}Foot"] = rz(yaw) @ rx(pitch)
-        self.w[f"{side}Toes"] = self.w[f"{side}Foot"]
-
-
-def apply(arm: bpy.types.Object, pose: Pose) -> None:
-    """Set the armature's pose bones from a Pose (local rotation q = R^-1 W_parent^-1 W R)."""
-    for name, _h, _t, parent in BONES:
-        pb = arm.pose.bones[name]
-        rest = arm.data.bones[name].matrix_local.to_3x3()
-        w = pose.w.get(name, I3)
-        wp = pose.w.get(parent, I3) if parent else I3
-        q = (rest.transposed() @ wp.transposed() @ w @ rest).to_quaternion()
-        if pb.rotation_quaternion.dot(q) < 0:  # keep keys on one hemisphere (no flips between frames)
-            q.negate()
-        pb.rotation_quaternion = q
-        pb.location = rest.transposed() @ pose.offset if name == "Hips" else Vector()
-
-
-def rest_pose(arm: bpy.types.Object) -> None:
-    for pb in arm.pose.bones:
-        pb.rotation_quaternion = (1, 0, 0, 0)
-        pb.location = (0, 0, 0)
-    bpy.context.view_layer.update()
-
-
 # --- clips ------------------------------------------------------------------------------------------
 
 GRIP = Vector((-0.17, -0.3, 1.1))  # Harl's origin (pistol grip) in the aim pose; muzzle ~1.25 m up
 FOREGRIP = GRIP + Vector((0, -0.35, 0.086))  # harl.glb "Foregrip"
-
-
-def smooth(t: float) -> float:
-    t = min(max(t, 0.0), 1.0)
-    return t * t * (3 - 2 * t)
-
-
-FOOT_X = 0.17  # the feet's distance from the middle when standing (the boots are wide)
-WRIST_X_HANGING = 0.4  # the hanging arms' wrists, clear of the bulky hips
-
-
-def relaxed_arms(p: Pose, swing: dict | None = None) -> None:
-    for side, s in SIDES:
-        f = (swing or {}).get(side, 0.0)
-        wrist = Vector((s * WRIST_X_HANGING, -0.02 - f, 0.93 + 0.12 * abs(f)))
-        p.arm(side, wrist, Vector((s * 0.3, 1, 0)), Vector((s * 0.15, -0.25, -1)), Vector((-s, 0, 0)))
 
 
 def aim_upper(p: Pose) -> None:
@@ -545,114 +418,9 @@ def aim_upper(p: Pose) -> None:
     )
 
 
-def idle(t: float, aim: bool = False) -> Pose:
-    breath = math.sin(2 * math.pi * t)
-    p = Pose((0, 0, -0.035 - 0.004 * breath))
-    p.spine(chest=rx(-1.2 * breath), upper=rx(-2.0 * breath), neck=I3, head=I3)
-    if aim:
-        aim_upper(p)
-    else:
-        relaxed_arms(p)
-    for side, s in SIDES:
-        p.leg(side, Vector((s * FOOT_X, -0.01, ANKLE_Z)), Vector((s * 0.15, -1, 0)), 0.0, s * 6)
-    return p
-
-
-def run(t: float, move: Vector) -> Pose:
-    """One stride at phase t (0..1) moving along `move` (unit, armature XY; forward is -Y)."""
-    stance, stride = 0.27, 0.78
-    fwd = -move.y  # forward share of the movement
-    side_share = move.x
-    bob = math.cos(2 * math.pi * 2 * (t - stance / 2))
-    yaw = 7 * math.sin(2 * math.pi * t) * fwd
-    lean_axis = Vector((0, 0, 1)).cross(Vector((move.x, move.y, 0)))
-    lean = Matrix.Rotation(math.radians(9 if fwd >= -0.5 else 5), 3, lean_axis)
-    p = Pose(move * 0.05 + Vector((0, 0, -0.085 - 0.03 * bob)), rz(yaw) @ ry(-3 * side_share))
-    p.spine(
-        spine=lean @ rz(yaw * 0.4),
-        chest=lean @ rz(-yaw * 0.2),
-        upper=lean @ rz(-yaw * 0.6),
-        neck=rz(-yaw * 0.3),
-        head=I3,
-    )
-    swing = {}
-    for side, s in SIDES:
-        u = (t + (0.0 if side == "Left" else 0.5)) % 1.0
-        if u < stance:
-            w = u / stance
-            x, lift, pitch = stride / 2 - stride * w, 0.0, 22 * smooth((w - 0.6) / 0.4)
-        else:
-            w = (u - stance) / (1 - stance)
-            x = -stride / 2 + stride * (0.5 - 0.5 * math.cos(math.pi * w)) - 0.14 * math.sin(math.pi * w) * (1 - w)
-            lift = 0.3 * math.sin(math.pi * min(w * 1.15, 1.0))
-            pitch = 50 * math.sin(math.pi * w) * (1 - w) - 12 * smooth((w - 0.75) / 0.25)
-        # Keep the feet apart when stepping sideways.
-        base = Vector((s * (FOOT_X - 0.01 + 0.04 * abs(side_share)), 0.03 * s * side_share, 0))
-        pitch *= 1 if fwd >= -0.5 else -0.6
-        # The foot rolls over its toes (heel up) or its heel (toes up), not around the ankle.
-        lift += 0.14 * math.sin(math.radians(max(pitch, 0))) + 0.07 * math.sin(math.radians(max(-pitch, 0)))
-        ankle = base + Vector((move.x, move.y, 0)) * x + Vector((0, 0, ANKLE_Z + lift))
-        p.leg(side, ankle, Vector((s * 0.15, -1, 0)), pitch)
-        swing[side] = -0.5 * x * fwd
-    swing = {"Left": swing["Right"], "Right": swing["Left"]}  # arms swing with the opposite leg
-    relaxed_arms(p, swing)
-    return p
-
-
-def walk(t: float) -> Pose:
-    """One walking stride at phase t (0..1), forward at WALK_SPEED: each foot is down for 60 % of the stride
-    (both down around each step), moving back under the body at the walking speed, so it stays planted; the
-    heel strikes and the foot rolls off its toes, a low swing, a small bob (highest over the standing foot),
-    upright, the arms swinging a little."""
-    stance = 0.6
-    stride = WALK_SPEED * stance * WALK_FRAMES / FPS  # the ground the body covers while a foot is down
-    bob = math.cos(2 * math.pi * 2 * (t - stance / 2))
-    yaw = 4 * math.sin(2 * math.pi * t)
-    lean = Matrix.Rotation(math.radians(2), 3, Vector((1, 0, 0)))
-    p = Pose(Vector((0, 0, -0.03 + 0.012 * bob)), rz(yaw))
-    p.spine(spine=lean @ rz(yaw * 0.4), chest=rz(-yaw * 0.2), upper=rz(-yaw * 0.6), neck=rz(-yaw * 0.3), head=I3)
-    swing = {}
-    for side, s in SIDES:
-        u = (t + (0.0 if side == "Left" else 0.5)) % 1.0
-        if u < stance:
-            w = u / stance
-            x, lift = stride / 2 - stride * w, 0.0
-            pitch = -10 * (1 - smooth(w / 0.15)) + 18 * smooth((w - 0.75) / 0.25)
-        else:
-            w = (u - stance) / (1 - stance)
-            x = -stride / 2 + stride * (0.5 - 0.5 * math.cos(math.pi * w))
-            lift = 0.08 * math.sin(math.pi * w)
-            pitch = 18 * (1 - smooth(w / 0.3)) + 20 * math.sin(math.pi * w) * (1 - w) - 10 * smooth((w - 0.8) / 0.2)
-        # The foot rolls over its toes (heel up) or its heel (toes up), not around the ankle.
-        lift += 0.14 * math.sin(math.radians(max(pitch, 0))) + 0.07 * math.sin(math.radians(max(-pitch, 0)))
-        ankle = Vector((s * (FOOT_X - 0.01), -x, ANKLE_Z + lift))
-        p.leg(side, ankle, Vector((s * 0.15, -1, 0)), pitch)
-        swing[side] = -0.35 * x
-    swing = {"Left": swing["Right"], "Right": swing["Left"]}  # arms swing with the opposite leg
-    relaxed_arms(p, swing)
-    return p
-
-
-def die(t: float) -> Pose:
-    """Knees buckle (to 0.3), then the body tips forward and lies face down (1.0)."""
-    k = smooth(t / 0.3)
-    f = smooth((t - 0.25) / 0.6)
-    lean = rx(20 * k + 70 * f)
-    hips = Vector((0, -0.05 * k - 0.3 * f, -0.4 * k - 0.32 * f))
-    p = Pose(hips, rx(10 * k + 70 * f))
-    p.spine(spine=lean, chest=lean, upper=lean, neck=lean @ rz(25 * f), head=lean @ rz(40 * f))
-    for side, s in SIDES:
-        ankle = Vector((s * FOOT_X, -0.01 + 0.45 * f, ANKLE_Z - 0.02 * f))
-        p.leg(side, ankle, Vector((s * 0.2, -1 + 0.6 * f, -1.6 * f)), 165 * f)  # ends with the soles up
-        wrist = Vector((s * (WRIST_X_HANGING + 0.12 * f), -0.05 - 0.75 * f, 0.93 - 0.85 * f))
-        p.arm(
-            side,
-            wrist,
-            Vector((s * 0.5, 1 - f, 0.5 * f)),
-            Vector((s * 0.2, -0.3 - f, -1 + f)),
-            Vector((-s * (1 - f), 0, -f)),
-        )
-    return p
+def aim() -> Pose:
+    """Standing, holding Harl."""
+    return H.idle(BODY, 0.0, aim_upper)
 
 
 # --- melee ------------------------------------------------------------------------------------------
@@ -671,7 +439,7 @@ SIDE_HANDLE = (-0.2, 0.04, -0.06)  # Jag's and Auger's handle for the left hand
 
 def _grip_in_hand() -> tuple:
     """The grip's offset and rotation in the right hand's rest frame (the marker is placed in the aim pose)."""
-    p = idle(0.0, aim=True)
+    p = aim()
     h = p.w["RightHand"]
     return h.transposed() @ (GRIP - p.pos("RightHand")), h.transposed() @ GRIP_TURN
 
@@ -708,14 +476,10 @@ def left_on(p: Pose, point: Vector, hand_dir, palm, pole) -> None:
 
 def stance(lean: float = 0.0, turn: float = 0.0) -> Pose:
     """The idle legs with the upper body leaning forward and turned left (degrees, spread over the spine)."""
-    p = idle(0.0)
+    p = H.idle(BODY, 0.0)
     tilt = lambda share: rz(turn * share) @ rx(lean * share)
     p.spine(spine=tilt(0.3), chest=tilt(0.6), upper=tilt(1.0), neck=rz(-turn * 0.6), head=I3)
     return p
-
-
-def lerp(a, b, t: float):
-    return a + (b - a) * t
 
 
 def guard(p: Pose, raise_: float = 1.0) -> None:
@@ -898,18 +662,10 @@ def tremor(t: float) -> Vector:
     return Vector((0.006 * math.sin(3 * a) + 0.003 * math.sin(7 * a), 0.006 * math.sin(5 * a), 0.008 * math.cos(4 * a)))
 
 
-MOVES = {
-    "Run": Vector((0, -1, 0)),
-    "RunBack": Vector((0, 1, 0)),
-    "StrafeLeft": Vector((1, 0, 0)),
-    "StrafeRight": Vector((-1, 0, 0)),
-}
 CLIPS = {  # name: (frames, pose(t) for t in 0..1)
-    "Idle": (60, lambda t: idle(t)),
-    **{name: (RUN_FRAMES, lambda t, m=m: run(t, m)) for name, m in MOVES.items()},
-    "Walk": (WALK_FRAMES, walk),
-    "Aim": (1, lambda t: idle(0.0, aim=True)),
-    "Die": (36, die),
+    **H.locomotion(BODY),
+    "Aim": (1, lambda t: aim()),
+    "Die": (36, lambda t: H.die(BODY, t)),
     "ReadyBlade": (1, lambda t: ready_blade()),
     "ReadyHammer": (1, lambda t: ready_hammer()),
     "Brace": (1, lambda t: brace()),
@@ -927,41 +683,21 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
 }
 
 
-def bake_clips(arm: bpy.types.Object) -> None:
-    ad = arm.animation_data_create()
-    for name, (frames, fn) in CLIPS.items():
-        ad.action = None
-        for f in range(frames + 1):
-            apply(arm, fn(f / frames if frames else 0.0))
-            for pb in arm.pose.bones:
-                pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)
-                if pb.name == "Hips":
-                    pb.keyframe_insert("location", frame=f, group=pb.name)
-        act = ad.action
-        act.name = name
-        track = ad.nla_tracks.new()
-        track.name = name
-        track.strips.new(name, 0, act)
-        track.mute = True
-        ad.action = None
-    rest_pose(arm)
-
-
 # --- preview ----------------------------------------------------------------------------------------
 
 
 def preview(arm: bpy.types.Object, tag: str) -> list:
     C.preview_scene(crystals=False, figure_location=(30, 30, 0))
     shots = []
-    poses = [("aim", idle(0.0, aim=True)), ("idle", idle(0.25))]
-    poses += [(f"run{i}", run(i / 4, MOVES["Run"])) for i in range(4)]
-    poses += [(f"walk{i}", walk(i / 4)) for i in range(4)]
+    poses = [("aim", aim()), ("idle", H.idle(BODY, 0.25))]
+    poses += [(f"run{i}", H.run(BODY, i / 4, H.MOVES["Run"])) for i in range(4)]
+    poses += [(f"walk{i}", H.walk(BODY, i / 4)) for i in range(4)]
     poses += [
-        ("back", run(0.1, MOVES["RunBack"])),
-        ("strafeL", run(0.1, MOVES["StrafeLeft"])),
-        ("strafeR", run(0.6, MOVES["StrafeRight"])),
+        ("back", H.run(BODY, 0.1, H.MOVES["RunBack"])),
+        ("strafeL", H.run(BODY, 0.1, H.MOVES["StrafeLeft"])),
+        ("strafeR", H.run(BODY, 0.6, H.MOVES["StrafeRight"])),
     ]
-    poses += [("die3", die(0.35)), ("die10", die(1.0))]
+    poses += [("die3", H.die(BODY, 0.35)), ("die10", H.die(BODY, 1.0))]
     target = (0, 0, 0.95)
     for name, pose in poses:
         apply(arm, pose)
@@ -969,7 +705,7 @@ def preview(arm: bpy.types.Object, tag: str) -> list:
         path = OUT / "wip" / f"{tag}_{name}.png"
         C.render(path, view="hero", samples=24, size=512, target=target, zoom=0.62)
         shots.append(path)
-    apply(arm, idle(0.0, aim=True))
+    apply(arm, aim())
     for view, zoom in (("iso", 0.42), ("back", 0.6)):
         path = OUT / "wip" / f"{tag}_aim_{view}.png"
         C.render(path, view=view, samples=32, size=512, target=target, zoom=zoom)
@@ -1087,7 +823,7 @@ def preview_clips(arm: bpy.types.Object, only: list) -> None:
 def main() -> None:
     C.reset(ASSET)
     root = C.asset_root(ASSET)
-    arm = build_skeleton(root)
+    arm = H.build_skeleton(root, BODY)
     suit, _band = build_suit(root, arm)
     markers(arm, suit)
     print("STATS", C.stats(), C.tris_per_object())
@@ -1096,8 +832,8 @@ def main() -> None:
         return
     preview(arm, TAG if MODE == "wip" else "final")
     if MODE == "final":
-        bake_clips(arm)
-        bpy.context.scene.render.fps = FPS
+        H.bake_clips(arm, CLIPS)
+        bpy.context.scene.render.fps = H.FPS
         C.save_blend(OUT / "player_procedural.blend")
         C.export_glb(OUT / "player_draft.glb")
 

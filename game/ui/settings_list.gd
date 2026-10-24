@@ -9,7 +9,7 @@ extends GridContainer
 
 ## Each language's name, written in that language.
 const LANGUAGE_NAMES: Dictionary[String, String] = {"en": "English", "de": "Deutsch"}
-## The voice sample playing, so the next one replaces it.
+## Plays the voice sample (one at a time: the next one replaces it).
 var _voice_sample: AudioStreamPlayer
 
 @onready var _languages: HBoxContainer = %Languages
@@ -20,6 +20,7 @@ var _voice_sample: AudioStreamPlayer
 
 
 func _ready() -> void:
+	_voice_sample = VoiceLines.sample_player(self)
 	var group := ButtonGroup.new()
 	var current: String = current_language()
 	for code: String in languages():
@@ -77,7 +78,7 @@ func _on_language_pressed(code: String) -> void:
 
 func _on_voice_language_pressed(code: String) -> void:
 	GameSettings.set_voice_language(code)
-	_voice_sample = VoiceLines.play_sample(self, _voice_sample)
+	VoiceLines.play_sample(_voice_sample)
 
 
 ## Lights the voice language spoken now (or "Off").

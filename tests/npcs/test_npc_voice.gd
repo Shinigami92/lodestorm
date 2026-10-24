@@ -131,6 +131,23 @@ func test_the_voice_language_is_picked_in_the_settings_and_saved() -> void:
 	assert_eq(VoiceLines.spoken_language(), "")
 
 
+func test_each_pick_plays_the_sample_again() -> void:
+	var list := SETTINGS_LIST.instantiate() as SettingsList
+	add_child_autofree(list)
+	var row := list.get_node("%VoiceLanguages") as HBoxContainer
+	var sample := list.get_node("VoiceSample") as AudioStreamPlayer
+	assert_eq(sample.bus, &"Voice")
+	for code: String in ["de", "en", "de"]:
+		(row.get_node(code) as Button).pressed.emit()
+		var line: String = VoiceLines.SAMPLE_LINE
+		assert_eq(sample.stream.resource_path, VoiceLines.path(VoiceLines.SAMPLE_NPC, code, line))
+		# A sample that ended keeps its player (it used to free itself, and the next pick failed).
+		sample.stop()
+		sample.finished.emit()
+		await wait_process_frames(1)
+		assert_true(is_instance_valid(sample), code)
+
+
 func test_voices_have_their_own_volume() -> void:
 	assert_has(Sfx.BUSES, &"Voice")
 	assert_gt(AudioServer.get_bus_index(&"Voice"), 0)

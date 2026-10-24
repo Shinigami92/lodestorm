@@ -49,20 +49,21 @@ static func stream(npc: StringName, line: String) -> AudioStream:
 	return null
 
 
-## Plays `SAMPLE_LINE` by `SAMPLE_NPC` in the voice language, flat on the Voice bus under `holder`
-## (also while paused), stopping `previous` (an earlier sample). Returns its player, or null
-## without a recording (or with voices off).
-static func play_sample(holder: Node, previous: AudioStreamPlayer) -> AudioStreamPlayer:
-	if is_instance_valid(previous):
-		previous.queue_free()
+## Plays `SAMPLE_LINE` by `SAMPLE_NPC` in the voice language on `player` (flat, see
+## `sample_player`), from the start; just stops it without a recording (or with voices off).
+static func play_sample(player: AudioStreamPlayer) -> void:
+	player.stop()
 	var recording: AudioStream = stream(SAMPLE_NPC, SAMPLE_LINE)
-	if not recording:
-		return null
+	if recording:
+		player.stream = recording
+		player.play()
+
+
+## A player for `play_sample` under `holder`: on the Voice bus, also while the game is paused.
+static func sample_player(holder: Node) -> AudioStreamPlayer:
 	var player := AudioStreamPlayer.new()
-	player.stream = recording
+	player.name = "VoiceSample"
 	player.bus = &"Voice"
 	player.process_mode = Node.PROCESS_MODE_ALWAYS
 	holder.add_child(player)
-	player.play()
-	player.finished.connect(player.queue_free)
 	return player

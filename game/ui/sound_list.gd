@@ -14,11 +14,12 @@ const SAMPLES: Dictionary[StringName, Sound] = {
 	&"Ambience": preload("res://assets/audio/sfx/mission/storm.tres"),
 }
 
-## The voice sample playing, so the next one replaces it.
+## Plays the voice sample (one at a time: the next one replaces it).
 var _voice_sample: AudioStreamPlayer
 
 
 func _ready() -> void:
+	_voice_sample = VoiceLines.sample_player(self)
 	for bus: StringName in Sfx.BUSES:
 		var row := get_node("%" + bus) as HBoxContainer
 		var slider := row.get_node(^"Slider") as HSlider
@@ -33,7 +34,7 @@ func _on_volume_changed(level: float, bus: StringName, row: HBoxContainer) -> vo
 	if bus in SAMPLES:
 		Sfx.play_ui(SAMPLES[bus], bus)
 	elif bus == &"Voice":
-		_voice_sample = VoiceLines.play_sample(self, _voice_sample)
+		VoiceLines.play_sample(_voice_sample)
 
 
 static func _show_volume(row: HBoxContainer, level: float) -> void:

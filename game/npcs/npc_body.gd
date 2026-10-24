@@ -1,7 +1,8 @@
 class_name NpcBody
 extends Node3D
-## Someone standing in the world (see GAME_DESIGN.md, Spaceship: NPCs), who `profile` says: the
-## suit model in their darker tint with the collar light in their own color, turning towards whom
+## Someone standing in the world (see GAME_DESIGN.md, Spaceship: NPCs), who `profile` says: their
+## own model, or the suit model in their darker tint with the collar light in their own color (for
+## those without one yet), playing its "Idle" and "Walk" (`NpcAnimator`), turning towards whom
 ## it `faces` (else the nearest player close by, else back to where it stands facing), and their
 ## name plate while a player is near (not while they use a menu). The profile's `accessory` goes on
 ## over the suit, each part following its bone. The crew (`Npc`, which adds
@@ -13,14 +14,17 @@ const NOTICE_RANGE: float = 3.0
 const PLATE_RANGE: float = 4.0
 ## How fast it turns (per s, smoothed).
 const TURN_SPEED: float = 5.0
-## Where the top of the head is, in m above the feet (e.g. a speech bubble sits above it).
-const HEAD_HEIGHT: float = 1.9
+## Where the top of the suit's helmet is, in m above the feet.
+const SUIT_HEAD_HEIGHT: float = 1.9
+## How far above the head the name plate floats, in m.
+const PLATE_ABOVE_HEAD: float = 0.2
 
 ## Who it is: the name plate and the suit's look.
 @export var profile: NpcProfile:
 	set(value):
 		profile = value
 		if is_node_ready():
+			_load_model()
 			_dress()
 			_wear()
 
@@ -35,19 +39,24 @@ const HEAD_HEIGHT: float = 1.9
 var faces: Node3D
 ## Whether the name plate may show (e.g. hidden while someone talks to them).
 var plate_allowed: bool = true
+## Where the top of the head is, in m above the feet (e.g. a speech bubble sits above it): the
+## model's "HeadTop" marker, the suit's helmet without one.
+var head_height: float = SUIT_HEAD_HEIGHT
 
 ## The bone attachments holding the accessory's parts.
 var _worn: Array[BoneAttachment3D] = []
 
+## The suit model the scene starts with (shown while the profile has no model of its own).
+var _suit_scene: PackedScene
+
 @onready var _model: Node3D = $Model
-@onready var _animator: PlayerAnimator = $Animator
+@onready var _animator: NpcAnimator = $Animator
 @onready var _plate: Label3D = $NamePlate
 
 
 func _ready() -> void:
-	_animator.aiming = false
-	_animator.walks = true
-	_animator.setup(_model)
+	_suit_scene = load(_model.scene_file_path)
+	_load_model()
 	_dress()
 	_wear()
 	_plate.visible = false
@@ -73,12 +82,12 @@ func get_plate_text() -> String:
 
 ## Plays the legs walking forward at `speed` (m/s; 0: standing).
 func walk(speed: float) -> void:
-	_animator.local_velocity = Vector2(0.0, speed)
+	_animator.speed = speed
 
 
 ## Whether the legs walk.
 func is_walking() -> bool:
-	return not _animator.local_velocity.is_zero_approx()
+	return _animator.speed > 0.0
 
 
 ## Whether the name plate shows right now.
@@ -88,7 +97,7 @@ func is_plate_shown() -> bool:
 
 ## The top of the head, in world space.
 func get_head_position() -> Vector3:
-	return global_position + Vector3.UP * HEAD_HEIGHT
+	return global_position + Vector3.UP * head_height
 
 
 ## Turns towards `faces`, else the nearest player close by, else back to where it stands facing
@@ -107,7 +116,27 @@ func _turn(delta: float) -> void:
 	rotation.y = lerp_angle(rotation.y, yaw, 1.0 - exp(-TURN_SPEED * delta))
 
 
-## The suit in their darker tint, the collar light in their own color.
+## Puts in the profile's own model (else the suit) in place of the one there, sets up its clips and
+## measures where its head is.
+func _load_model() -> void:
+	var scene: PackedScene = profile.model if profile and profile.model else _suit_scene
+	if _model.scene_file_path != scene.resource_path:
+		var model := scene.instantiate() as Node3D
+		remove_child(_model)
+		_model.queue_free()
+		model.name = "Model"
+		add_child(model)
+		move_child(model, 0)
+		_model = model
+	_animator.setup(_model)
+	var top := _model.find_child("HeadTop", true, false) as Node3D
+	head_height = (
+		(global_transform.affine_inverse() * top.global_position).y if top else SUIT_HEAD_HEIGHT
+	)
+	_plate.position.y = head_height + PLATE_ABOVE_HEAD
+
+
+## The suit in their darker tint, the collar light in their own color (not on an own model).
 func _dress() -> void:
 	if not profile:
 		return

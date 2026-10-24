@@ -10,7 +10,7 @@ everyone has ("Idle", the run directions, "Walk", "Die").
 Blender Z-up meters, the body faces -Y, its left is +X. A body's rest pose is its own (the player's is a T-pose):
 each limb bone's rest direction is its head to the next joint, and its rest pole the side its joint bends towards
 (the elbows back, the knees forward, given or measured where the limb is bent at rest); the hands' rest pole is the
-back of the hand. A Pose sets world rotations relative to the rest pose, so every clip plays on every body; the
+way the palm faces. A Pose sets world rotations relative to the rest pose, so every clip plays on every body; the
 measures that differ between bodies (where the feet stand, where the hanging hands are) come from the Body.
 """
 
@@ -31,7 +31,7 @@ I3 = Matrix.Identity(3)
 SIDES = (("Left", 1.0), ("Right", -1.0))
 ARM_POLE = Vector((0, 1, 0))  # an arm straight at rest bends its elbow back
 LEG_POLE = Vector((0, -1, 0))  # a leg straight at rest bends its knee forward
-PALM = Vector((0, 0, -1))  # the back of a hand at rest (T-pose: palms down)
+PALM = Vector((0, 0, -1))  # the way a palm faces at rest (T-pose: down)
 
 
 def _pole(a: Vector, joint: Vector, end: Vector, default: Vector) -> Vector:

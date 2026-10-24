@@ -12,9 +12,13 @@ extends Resource
 @export var display_name: String
 ## What they do, e.g. "Quartermaster" (the English text, translated).
 @export var role: String
-## Their own color: the suit's collar light (the player's shows health instead).
+## Their own model (e.g. assets/npcs/nell/nell.glb: a person made with MakeHuman, with "Idle" and
+## "Walk", see docs/TECHNICAL.md, People). None: the players' suit, in `suit_tint`.
+@export var model: PackedScene
+## Their own color: the suit's collar light (the player's shows health instead), their name in a
+## radio call.
 @export var accent_color: Color = Color(0.3, 0.85, 1.0)
-## Multiplies the suit's colors, so crew look darker than players.
+## Multiplies the suit's colors, so crew look darker than players (not on an own model).
 @export var suit_tint: Color = Color(0.7, 0.7, 0.75)
 ## What they wear over the suit, so they read apart from the camera (greybox until their own model,
 ## e.g. the pilot's headset): a scene whose children are named after the suit model's bones and

@@ -73,7 +73,7 @@ func _ready() -> void:
 	voice.bus = &"Voice"
 	voice.unit_size = VOICE_UNIT_SIZE
 	voice.max_distance = VOICE_MAX_DISTANCE
-	voice.position = Vector3.UP * NpcBody.HEAD_HEIGHT
+	voice.position = Vector3.UP * body.head_height
 	add_child(voice)
 
 
@@ -86,7 +86,7 @@ func _process(delta: float) -> void:
 	if _new_marker.visible:
 		_new_marker_time += delta
 		_new_marker.rotation.y = _new_marker_time * 1.5
-		_new_marker.position.y = NpcBody.HEAD_HEIGHT + 0.5 + 0.04 * sin(_new_marker_time * 3.0)
+		_new_marker.position.y = body.head_height + 0.5 + 0.04 * sin(_new_marker_time * 3.0)
 	if user:
 		_place_bubble()
 		_auto_continue(delta)

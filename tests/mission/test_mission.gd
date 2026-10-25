@@ -39,7 +39,7 @@ func test_ramp_is_closed_by_default() -> void:
 
 
 func test_button_next_to_door_lowers_ramp() -> void:
-	await _move(_player, _ship.to_global(Vector3(13.5, 2.5, -6.0)))
+	await _move(_player, _ship.to_global(Vector3(13.5, 2.5, 6.0)))
 	assert_eq(_player.interact_target, _ship.ramp_button)
 	assert_true((_ship.ramp_button.get_node("Highlight") as Node3D).visible)
 	Input.action_press(&"interact")

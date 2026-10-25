@@ -125,6 +125,7 @@ var _button_material := StandardMaterial3D.new()
 @onready var _upper_hull: Node3D = $Hull/Upper
 @onready var _upper_cut: Node3D = $Hull/Upper/Cut
 @onready var _upper_rooms: Node3D = $Rooms/Upper
+@onready var _exterior: ShipExterior = $Exterior
 @onready var _lifts: Node3D = $Lifts
 @onready var _countdown: Label3D = $Countdown
 @onready var _button_face: MeshInstance3D = $RampButton/Face
@@ -367,6 +368,7 @@ func _apply_view() -> void:
 	for lift: Node in _lifts.get_children():
 		CutAway.show(lift.get_node(^"UpperGate"), _view != View.LOWER)
 	CutAway.show(_upper_cut, _view == View.OUTSIDE)
+	CutAway.show(_exterior, _view == View.OUTSIDE)
 	for overlay: Node in get_tree().get_nodes_in_group(OVERLAY_GROUP):
 		if is_ancestor_of(overlay):
 			(overlay as Node3D).visible = _view == View.UPPER

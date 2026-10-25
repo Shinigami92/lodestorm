@@ -31,6 +31,9 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "ship"))
+
+from hull_layout import LOWER_SIDE, TAIL_HALF_WIDTH, TAIL_TOP
 
 from greybox import Greybox, g, sid, vec, windows_for, write, xform
 
@@ -48,9 +51,12 @@ ZO = 28.0
 X_FRAME, X_HALL, X_MID, X_GALLERY, X_END = 8.0, 56.0, 91.0, 126.0, 170.0
 Z_HALL = 12.0  # the hall's back (-) and front (+) walls
 # Heights of the sections' ceilings.
-H_HANGAR, H_HALL, H_ROOM = 18.0, 10.0, 6.0
-# The pressure frame's opening: the ship's hull fills it (its sides at z +-15, its roof at 11.5).
-MOUTH_HALF, MOUTH_TOP = 15.0, 12.0
+H_HANGAR, H_HALL, H_ROOM = 20.0, 10.0, 6.0
+# The pressure frame's opening: the ship's tail fills it, its nacelles too (game/ship/hull_layout.py).
+MOUTH_HALF, MOUTH_TOP = TAIL_HALF_WIDTH + 0.2, TAIL_TOP + 0.8
+assert MOUTH_HALF < ZO - 0.25 and MOUTH_TOP + 1.5 <= H_HANGAR, "the ship's tail doesn't fit the hangar"
+# Where the clamps' pads hold the hull: against its lower sides, under the nacelles.
+CLAMP_Z = LOWER_SIDE + 0.3
 CARGO_DOOR = 8.0  # the wide doors between the hangar, the hall and the gallery
 
 CUT = ("cut", "station")
@@ -81,10 +87,10 @@ wall("FrameWall", "z", X_FRAME, -ZO, ZO, 0, H_HANGAR, [(0, 2 * MOUTH_HALF)], *CU
 box("FrameJambBack", (1.5, MOUTH_TOP, 1.5), (X_FRAME + 0.5, MOUTH_TOP / 2, -MOUTH_HALF - 0.75), "cut")
 box("FrameJambFront", (1.5, MOUTH_TOP, 1.5), (X_FRAME + 0.5, MOUTH_TOP / 2, MOUTH_HALF + 0.75), "cut")
 box("FrameHeader", (1.5, 1.5, 2 * MOUTH_HALF + 3), (X_FRAME + 0.5, MOUTH_TOP + 0.75, 0), "cut")
-# Clamp mounts beside the hull (the clamps themselves move and always show, see CLAMPS); low
-# enough to keep the hull in view.
+# Clamp mounts beside the hull, under the nacelles (the clamps themselves move and always show,
+# see CLAMPS); low enough to keep the hull in view.
 for side, name in [(-1, "Back"), (1, "Front")]:
-    box(f"ClampMount{name}", (2.5, 10.5, 1.5), (10.75, 5.25, side * 21.0), "cut")
+    box(f"ClampMount{name}", (5.0, 6.0, 1.5), (11.5, 3.0, side * (CLAMP_Z + 6.3)), "cut")
 
 # --- walls between the sections: the rooms are wide, so every inner wall stands between the camera
 # and a room beside it (on its -x or -z side) and is cut away down to its stub ---
@@ -359,13 +365,13 @@ for name, sign, areas, height, _tint in ROOMS:
 
 # --- the clamps: closed, their pads lie against the hull's sides; SpaceStation opens them ---
 nodes += ['[node name="Clamps" type="Node3D" parent="."]', ""]
-# Behind the hull two above each other; in front low along its lower edge, under the cut-away decks,
-# so they don't cover the cargo bay while they take hold.
-CLAMPS = [(10.75, 4.0, -1), (10.75, 9.0, -1), (9.75, 2.0, 1), (13.25, 2.0, 1)]
+# On the hull's lower sides under the nacelles: behind it two above each other, in front low along
+# its lower edge, under the cut-away decks, so they don't cover the cargo bay while they take hold.
+CLAMPS = [(11.5, 2.4, -1), (11.5, 4.8, -1), (9.75, 2.4, 1), (13.25, 2.4, 1)]
 for i, (x, y, side) in enumerate(CLAMPS):
     nodes += [
         f'[node name="Clamp{i + 1}" type="Node3D" parent="Clamps"]',
-        f"transform = {xform((x, y, side * (MOUTH_HALF + 0.3)))}",
+        f"transform = {xform((x, y, side * CLAMP_Z))}",
         "",
         f'[node name="Pad" type="MeshInstance3D" parent="Clamps/Clamp{i + 1}"]',
         'mesh = SubResource("BoxMesh_clamp_pad")',

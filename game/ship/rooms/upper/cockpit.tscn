@@ -3,9 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://bm2aoqjie67tb" path="res://game/stations/flight/flight_console.tscn" id="18_flight_console"]
 [ext_resource type="StandardMaterial3D" uid="uid://d0bdki1n4b0el" path="res://game/ship/materials/prop.tres" id="mat_prop"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Cockpit"]
-albedo_color = Color(0.3, 0.36, 0.48, 1)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_screen"]
 albedo_color = Color(0.3, 0.85, 1, 1)
 emission_enabled = true
@@ -25,21 +22,6 @@ size = Vector3(0.8, 1, 0.8)
 size = Vector3(1.2, 1.1, 8)
 
 [node name="Cockpit" type="Node3D"]
-
-[node name="Floor" type="CSGPolygon3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.005, 0)
-cast_shadow = 0
-polygon = PackedVector2Array(9, -14.75, 2, -14.75, -9, -7, -9, 7, 2, 14.75, 9, 14.75)
-depth = 0.01
-material = SubResource("StandardMaterial3D_floor_Cockpit")
-
-[node name="Light" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -4, 3.7, 0)
-light_color = Color(0.8, 0.9, 1, 1)
-light_energy = 5.0
-spot_range = 3.8
-spot_angle = 76.2
-spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
 layers = 4

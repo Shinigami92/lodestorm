@@ -4,13 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://bfb5jhhy2trv5" path="res://game/npcs/crew/cook.tres" id="91_profile"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_MessHall"]
-albedo_color = Color(0.5, 0.42, 0.36, 1)
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_floor_MessHall"]
-material = SubResource("StandardMaterial3D_floor_MessHall")
-size = Vector2(16, 29)
-
 [sub_resource type="BoxMesh" id="BoxMesh_prop"]
 material = ExtResource("mat_prop")
 
@@ -18,19 +11,6 @@ material = ExtResource("mat_prop")
 size = Vector3(8, 0.9, 1.6)
 
 [node name="MessHall" type="Node3D"]
-
-[node name="Floor" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
-cast_shadow = 0
-mesh = SubResource("PlaneMesh_floor_MessHall")
-
-[node name="Light" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
-light_color = Color(1, 0.95, 0.85, 1)
-light_energy = 5.0
-spot_range = 3.8
-spot_angle = 77.4
-spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
 layers = 4

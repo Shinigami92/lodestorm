@@ -2,13 +2,6 @@
 
 [ext_resource type="StandardMaterial3D" uid="uid://bd4esevpwqv63" path="res://game/ship/materials/bed.tres" id="mat_bed"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Crew2"]
-albedo_color = Color(0.4, 0.4, 0.44, 1)
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_floor_Crew2"]
-material = SubResource("StandardMaterial3D_floor_Crew2")
-size = Vector2(4.5, 11.5)
-
 [sub_resource type="BoxMesh" id="BoxMesh_bed"]
 material = ExtResource("mat_bed")
 
@@ -16,19 +9,6 @@ material = ExtResource("mat_bed")
 size = Vector3(1.2, 0.5, 2.2)
 
 [node name="Crew2" type="Node3D"]
-
-[node name="Floor" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
-cast_shadow = 0
-mesh = SubResource("PlaneMesh_floor_Crew2")
-
-[node name="Light" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
-light_color = Color(1, 0.95, 0.85, 1)
-light_energy = 5.0
-spot_range = 3.8
-spot_angle = 59.1
-spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
 layers = 4

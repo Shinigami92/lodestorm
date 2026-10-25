@@ -28,7 +28,6 @@
 [ext_resource type="PackedScene" uid="uid://n6hnmmk4vwfx" path="res://game/ship/rooms/upper/crew_8.tscn" id="77_crew_8"]
 [ext_resource type="PackedScene" uid="uid://bd66ics55wo5u" path="res://game/ship/rooms/lower/specimen_lab.tscn" id="92_specimen_lab"]
 [ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="93_neon_sign"]
-[ext_resource type="PackedScene" uid="uid://cl2py7gio13px" path="res://game/ship/ship_door.tscn" id="94_ship_door"]
 [ext_resource type="PackedScene" uid="uid://ds53bpwny3pdg" path="res://game/ship/rooms/lower/medical_bay.tscn" id="78_medical_bay"]
 [ext_resource type="PackedScene" uid="uid://2jwixpr1oqas" path="res://game/ship/rooms/lower/nose_corridor.tscn" id="79_nose_corridor"]
 [ext_resource type="PackedScene" uid="uid://ce4h8o3dea7nk" path="res://game/ship/rooms/lower/engine_room.tscn" id="80_engine_room"]
@@ -492,11 +491,6 @@ uppercase = true
 
 [node name="CargoBay" parent="Rooms" unique_id=1705099306 instance=ExtResource("89_cargo_bay")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
-
-[node name="Doors" type="Node3D" parent="."]
-
-[node name="CargoBayDoor" parent="Doors" instance=ExtResource("94_ship_door")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.25, 2.52, 0)
 
 [node name="Lifts" type="Node3D" parent="." unique_id=1586470543]
 

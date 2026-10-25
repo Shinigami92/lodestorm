@@ -50,6 +50,7 @@ from hull_layout import (
     RAMP_DOOR_HEIGHT,
     RAMP_WIDTH,
     RANGE_DOOR,
+    ROOMS,
     SHELL_SPLITS,
     SLAB,
     TOP,
@@ -175,6 +176,109 @@ if outside:
     sys.exit("outside the hull's skin: " + ", ".join(outside))
 
 
+# Lintels whose opening isn't a room's door: the ramp's, the lifts' gates (the lifts have their own).
+NOT_DOORS = ("DoorLintel", "LobbyCorridorBack", "CargoShaftFront", "CargoWallUpper")
+# The rooms' light, near neutral (each room's own color is its accent, RoomLook).
+LAMP_COLOR = "Color(1, 0.95, 0.88, 1)"
+WASH_COLOR = "Color(0.95, 0.97, 1, 1)"
+# Big rooms' key light casts shadows (floor area in m²); the rest don't, to keep the shadow atlas small.
+SHADOW_AREA = 120.0
+LAMP_STEP = 7.0  # ceiling lamps and wall washes about this far apart along a room
+DOWN = "1, 0, 0, 0, 0, 1, 0, -1, 0"  # a spot light's basis pointing straight down
+# A spot light's basis pointing down at 60° towards -z (a room's back wall).
+TO_BACK = "1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5"
+
+
+def doors():
+    """(name, group, center of the opening's bottom, basis, width, height) of every room's door: one per
+    lintel over a doorway, in the lintel's group (a door in a wall cut away for the camera goes with it)."""
+    found = []
+    for name, size, center, group, _stub, kind, _yaw in box_kit.walls:
+        if "Lintel" not in name or kind == "shape" or any(name.startswith(n) for n in NOT_DOORS):
+            continue
+        along_x = size[0] > size[2]
+        width = size[0] if along_x else size[2]
+        if width < 0.5:
+            continue
+        bottom = center[1] - size[1] / 2 - box_kit.door
+        basis = "1, 0, 0, 0, 1, 0, 0, 0, 1" if along_x else "0, 0, 1, 0, 1, 0, -1, 0, 0"
+        found.append((name + "Door", group, (center[0], bottom, center[2]), basis, width, box_kit.door))
+    return found
+
+
+def room_box(name, deck, xs, zs):
+    """A room's floor height, ceiling height and extent (x0, x1, z0, z1); the nose rooms reach past their
+    straight stretch into the nose."""
+    floor = UP if deck == "Upper" else LOW
+    ceiling = TOP if deck in ("Upper", None) else SLAB
+    x0, x1 = xs
+    if name == "Cockpit":
+        x0, ceiling = COCKPIT_OUTLINE[2][0] + 1.0, COCKPIT_TOP
+    elif name == "SpecimenLab":
+        x0 = LAB_OUTLINE[2][0] + 0.5
+    return floor, ceiling, (x0, x1, zs[0], zs[1])
+
+
+def spread(a, b, step):
+    """Positions from a to b about `step` apart, centered (at least one)."""
+    n = max(1, round((b - a) / step))
+    return [a + (b - a) * (i + 0.5) / n for i in range(n)]
+
+
+def room_lights():
+    """Every room's lights and reflection probe as scene lines: lamps in the ceiling (the middle one the key
+    light, with shadows in big rooms), spots washing the back wall, a box-projected probe with the rooms' own
+    ambient. Lower rooms' lights always shine; the upper deck's are in its group, off while the viewer is
+    below."""
+    lines = []
+    for name, deck, xs, zs in ROOMS:
+        floor, ceiling, (x0, x1, z0, z1) = room_box(name, deck, xs, zs)
+        parent = "Upper" if deck == "Upper" else "."
+        height = ceiling - floor
+        reach = height + 2.5
+        energy = 4.0 * max(1.0, height / 4.0)
+        zc = (z0 + z1) / 2
+        lamps = spread(x0, x1, LAMP_STEP)
+        key = len(lamps) // 2
+        corridor = name.endswith("Corridor")
+        shadows = (x1 - x0) * (z1 - z0) >= SHADOW_AREA and not corridor
+        for i, x in enumerate(lamps):
+            lines += [
+                f'[node name="{name}Lamp{i + 1}" type="SpotLight3D" parent="{parent}"]',
+                f"transform = {xform((x, ceiling - 0.3, zc), DOWN)}",
+                f"light_color = {LAMP_COLOR}",
+                f"light_energy = {g(energy * (1.25 if i == key else 1.0))}",
+            ]
+            if i == key and shadows:
+                lines.append("shadow_enabled = true")
+            lines += [f"spot_range = {g(reach)}", "spot_angle = 60.0", "spot_angle_attenuation = 0.7", ""]
+        if z0 < 0 and not corridor:
+            for i, x in enumerate(spread(x0, x1, LAMP_STEP)):
+                lines += [
+                    f'[node name="{name}Wash{i + 1}" type="SpotLight3D" parent="{parent}"]',
+                    f"transform = {xform((x, ceiling - 0.8, z0 + 1.6), TO_BACK)}",
+                    f"light_color = {WASH_COLOR}",
+                    "light_energy = 2.0",
+                    "spot_range = 5.5",
+                    "spot_angle = 55.0",
+                    "",
+                ]
+        lines += [
+            f'[node name="{name}Reflections" type="ReflectionProbe" parent="{parent}"]',
+            f"transform = {xform(((x0 + x1) / 2, floor + height / 2 - 0.2, zc))}",
+            f"size = {vec((x1 - x0 + 1.5, height + 1.6, z1 - z0 + 1.5))}",
+            "intensity = 0.4",
+            "blend_distance = 0.4",
+            "box_projection = true",
+            "interior = true",
+            "ambient_mode = 2",
+            "ambient_color = Color(0.24, 0.235, 0.23, 1)",
+            "ambient_color_energy = 1.8",
+            "",
+        ]
+    return lines
+
+
 def shell_parts():
     """The kit's model per group that exists: (group, path, ext_resource id)."""
     parts = []
@@ -229,9 +333,21 @@ def main():
     for key, size in sorted(shapes.items()):
         subs += [f'[sub_resource type="BoxShape3D" id="{key}"]', f"size = {vec(size)}", ""]
 
+    # The rooms' doors, lights and reflections.
+    ext = [("PackedScene", "res://game/ship/ship_door.tscn", "door")]
+    for name, group, bottom, basis, width, height in doors():
+        nodes += [
+            f'[node name="{name}" parent="{GROUP_PARENT[group]}" instance=ExtResource("door")]',
+            f"transform = {xform(bottom, basis)}",
+            f"width = {g(width)}",
+            f"height = {g(height)}",
+            "",
+        ]
+    nodes += room_lights()
+
     # The kit's shell where it replaces the greybox.
     parts = shell_parts()
-    ext = [("Script", "res://game/ship/ship_shell.gd", "shell_script")] if parts else []
+    ext += [("Script", "res://game/ship/ship_shell.gd", "shell_script")] if parts else []
     for group, path, rid in parts:
         ext.append(("PackedScene", path, rid))
         name = "Shell" + "".join(w.capitalize() for w in group.split("_"))

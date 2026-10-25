@@ -5,13 +5,6 @@
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://cxih2upgkspuc" path="res://game/npcs/crew/medic.tres" id="91_profile"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_MedicalBay"]
-albedo_color = Color(0.4, 0.52, 0.5, 1)
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_floor_MedicalBay"]
-material = SubResource("StandardMaterial3D_floor_MedicalBay")
-size = Vector2(22.5, 11.5)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_respawn_pad"]
 albedo_color = Color(0.35, 0.75, 0.55, 1)
 emission_enabled = true
@@ -33,19 +26,6 @@ rings = 1
 size = Vector3(1.2, 0.7, 2.2)
 
 [node name="MedicalBay" type="Node3D"]
-
-[node name="Floor" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
-cast_shadow = 0
-mesh = SubResource("PlaneMesh_floor_MedicalBay")
-
-[node name="Light" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
-light_color = Color(0.9, 1, 0.95, 1)
-light_energy = 5.0
-spot_range = 3.8
-spot_angle = 73.7
-spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
 layers = 4

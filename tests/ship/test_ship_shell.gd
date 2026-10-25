@@ -52,7 +52,7 @@ func test_room_looks_by_name() -> void:
 
 
 func test_door_opens_before_a_player_arrives() -> void:
-	var door := _ship.get_node("Doors/CargoBayDoor") as ShipDoor
+	var door := _ship.get_node("Hull/CargoWallLowerLintelDoor") as ShipDoor
 	await _move(_ship.to_global(Vector3(-15.0, 2.7, -8.0)))
 	await wait_physics_frames(int(door.close_delay * 60.0) + 40)
 	assert_eq(door.openness, 0.0, "nobody near: closed")
@@ -64,7 +64,7 @@ func test_door_opens_before_a_player_arrives() -> void:
 
 
 func test_door_stays_open_a_moment_then_closes() -> void:
-	var door := _ship.get_node("Doors/CargoBayDoor") as ShipDoor
+	var door := _ship.get_node("Hull/CargoWallLowerLintelDoor") as ShipDoor
 	await _move(door.global_position + door.global_basis.z * 2.0)
 	await wait_physics_frames(40)
 	await _move(_ship.to_global(Vector3(-15.0, 2.7, -8.0)))
@@ -76,9 +76,21 @@ func test_door_stays_open_a_moment_then_closes() -> void:
 
 ## Doors never block: nothing in them collides.
 func test_door_has_no_collision() -> void:
-	var door := _ship.get_node("Doors/CargoBayDoor") as ShipDoor
+	var door := _ship.get_node("Hull/CargoWallLowerLintelDoor") as ShipDoor
 	assert_eq(door.find_children("*", "CollisionObject3D", true, false).size(), 0)
 	assert_eq(door.find_children("*", "CollisionShape3D", true, false).size(), 0)
+
+
+## Every room's door comes from the layout (not the ramp's or the lifts' gates), and every room has
+## its lamps and its reflections.
+func test_doors_and_lights_from_the_layout() -> void:
+	var hull := _ship.get_node("Hull")
+	var doors: Array[Node] = hull.find_children("*Door", "ShipDoor", true, false)
+	assert_eq(doors.size(), 27)
+	assert_null(hull.find_child("DoorLintelDoor", true, false), "the ramp keeps its own door")
+	for room: String in ["Cockpit", "Bridge", "Armory", "Cabin1", "Crew8", "MessHall", "CargoBay"]:
+		assert_not_null(hull.find_child(room + "Lamp1", true, false), room)
+		assert_not_null(hull.find_child(room + "Reflections", true, false), room)
 
 
 ## A sign's backing grows with its translated text.

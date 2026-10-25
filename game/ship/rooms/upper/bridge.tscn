@@ -5,27 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://b3d5d8411ot80" path="res://game/npcs/crew/pilot.tres" id="91_profile"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_Bridge"]
-albedo_color = Color(0.36, 0.42, 0.52, 1)
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_floor_Bridge"]
-material = SubResource("StandardMaterial3D_floor_Bridge")
-size = Vector2(22.5, 29)
-
 [node name="Bridge" type="Node3D"]
-
-[node name="Floor" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
-cast_shadow = 0
-mesh = SubResource("PlaneMesh_floor_Bridge")
-
-[node name="Light" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.7, 0)
-light_color = Color(0.8, 0.9, 1, 1)
-light_energy = 5.0
-spot_range = 3.8
-spot_angle = 77.1
-spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
 layers = 4

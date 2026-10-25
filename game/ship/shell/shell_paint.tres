@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://04e2b16ot6n8"]
+
+[ext_resource type="Shader" uid="uid://cbyd3dlniynwi" path="res://assets/shaders/ship_shell.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://d0a4ab5d46q0n" path="res://assets/ship/textures/paint_albedo.png" id="2_albedo"]
+[ext_resource type="Texture2D" uid="uid://bweldxdektwl4" path="res://assets/ship/textures/paint_nra.png" id="3_nra"]
+
+[resource]
+resource_name = "shell_paint"
+shader = ExtResource("1_shader")
+shader_parameter/albedo_tex = ExtResource("2_albedo")
+shader_parameter/nra_tex = ExtResource("3_nra")
+shader_parameter/tile = 3.0
+shader_parameter/macro_strength = 0.04

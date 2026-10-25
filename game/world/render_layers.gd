@@ -1,13 +1,13 @@
 class_name RenderLayers
 extends RefCounted
-## The render layers, as bits of `VisualInstance3D.layers` and of the cull masks of cameras,
-## lights and decals.
+## The render layers, as bits of `VisualInstance3D.layers` and of the cull masks of cameras, lights
+## and decals.
 
 ## The ground, rocks, props and everything else.
 const WORLD: int = 1
-## Players' and aliens' bodies, what players carry (the weapon, the cargo tubes, the armor pips)
-## and what floats around them (the ship pointer, arriving ore, the pause panel): the decals
-## projected onto the ground (a charge's lane, the aim reticle) leave them out.
+## Players' and aliens' bodies, what players carry (the weapon, the cargo tubes, the armor pips) and
+## what floats around them (the ship pointer, arriving ore, the pause panel): the decals projected
+## onto the ground (a charge's lane, the aim reticle) leave them out.
 const CHARACTERS: int = 2
 ## Markings on the ground: the suit's and the miners' (the suit ring, the target brackets, the
 ## miners' rings: they're pulled towards the camera, `ground_marking.gdshaderinc`, so a decal would
@@ -20,6 +20,10 @@ const MARKINGS: int = 4
 ## range's barrier, Mantle's), weapons' and aliens' effects (blasts, beams, bolts, flames, clouds,
 ## sprays), the flight's clouds and streaks, and text and plates. Decals leave them out.
 const EFFECTS: int = 8
+## Insides lit by their own lamps: the ship's shell (walls, floors). The cool rim light leaves them
+## out (it casts no shadows, so it would shine through the cut-away roof); decals reach them like
+## the world.
+const INTERIOR: int = 16
 
 
 ## Puts the visuals under `root` (its own too) on `layer` only.

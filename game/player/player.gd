@@ -195,6 +195,7 @@ var _scanner := OreScanner.new()
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	add_to_group(ShipDoor.OPENERS)
 	_animator.setup(_model)
 	_suit_light.band = _model.find_child("SuitLight") as GeometryInstance3D
 	_update_overlay()

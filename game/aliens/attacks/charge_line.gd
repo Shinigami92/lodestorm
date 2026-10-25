@@ -66,7 +66,7 @@ func _decal(texture: Texture2D, along: float) -> Decal:
 	decal.modulate = COLOR
 	decal.upper_fade = 0.0
 	decal.lower_fade = 0.0
-	decal.cull_mask = RenderLayers.WORLD
+	decal.cull_mask = RenderLayers.WORLD | RenderLayers.INTERIOR
 	return decal
 
 

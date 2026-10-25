@@ -156,6 +156,11 @@
       "variants": 1,
       "recordings": []
     },
+    "mission/door": {
+      "made_by": "build.py",
+      "variants": 2,
+      "recordings": []
+    },
     "mission/ramp": {
       "made_by": "build.py",
       "variants": 1,

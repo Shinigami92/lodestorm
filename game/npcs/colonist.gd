@@ -41,6 +41,8 @@ var _remark: int = 0
 
 
 func _ready() -> void:
+	if not route.is_empty():
+		body.add_to_group(ShipDoor.OPENERS)
 	body.tint = tint
 	body.profile = profile
 	bubble.visible = false

@@ -1,4 +1,4 @@
-"""Recipes of the mission's sounds: the ship's ramp, the countdown's beeps, the storm's warning,
+"""Recipes of the mission's sounds: the ship's ramp and doors, the countdown's beeps, the storm's warning,
 its building and its hit, and the biomes' hazards (the vents)."""
 
 import math
@@ -56,6 +56,17 @@ def ramp(rng: random.Random, take: str, variant: int) -> Signal:
     return reverb(
         mix((latch, 0.6), (whine, 0.35, 0.05), (hiss, 0.08, 0.05), (rattle, 0.2), (clunk, 1.0, seconds)), 0.5, 0.6, 0.15
     )
+
+
+@sound("mission/door", variants=2)
+def door(rng: random.Random, take: str, variant: int) -> Signal:
+    """A sliding door aboard opening (0.4 s): a short pneumatic hiss, the leaves running in their
+    tracks and a soft knock as they stop in the wall."""
+    seconds = 0.6
+    hiss = shape(bandpass(noise(rng, seconds), jitter(rng, 2600, 0.15), 1.2), env(seconds, 0.01, 0.12, 0.35))
+    run = shape(lowpass(crackle(rng, 0.4, 90), 900), env(0.4, 0.05, 0.25, 0.1))
+    knock = thump(jitter(rng, 120, 0.1), 60, 0.005, 0.12, 0.15)
+    return reverb(mix((hiss, 0.35), (run, 0.25, 0.03), (knock, 0.5, 0.4)), 0.3, 0.4, 0.15)
 
 
 @sound("mission/countdown_beep")

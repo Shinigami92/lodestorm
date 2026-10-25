@@ -47,7 +47,7 @@ func _ready() -> void:
 	_decal.upper_fade = 0.0
 	_decal.lower_fade = 0.0
 	_decal.normal_fade = NORMAL_FADE
-	_decal.cull_mask = RenderLayers.WORLD
+	_decal.cull_mask = RenderLayers.WORLD | RenderLayers.INTERIOR
 	add_child(_decal)
 	visible = false
 

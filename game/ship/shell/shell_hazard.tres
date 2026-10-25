@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://dnbdngnp0pjin"]
+
+[ext_resource type="Shader" uid="uid://cbyd3dlniynwi" path="res://assets/shaders/ship_shell.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://cc3cckll1w1aq" path="res://assets/ship/textures/epoxy_albedo.png" id="2_albedo"]
+[ext_resource type="Texture2D" uid="uid://carh5rufdrhfm" path="res://assets/ship/textures/epoxy_nra.png" id="3_nra"]
+
+[resource]
+resource_name = "shell_hazard"
+shader = ExtResource("1_shader")
+shader_parameter/albedo_tex = ExtResource("2_albedo")
+shader_parameter/nra_tex = ExtResource("3_nra")
+shader_parameter/tile = 3.0
+shader_parameter/tint = Color(1.9, 1.4, 0.15, 1)
+shader_parameter/grime = 0.0
+shader_parameter/stripes = true
+shader_parameter/metal_from_texture = false

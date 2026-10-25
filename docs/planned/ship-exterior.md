@@ -50,8 +50,3 @@ new hull needs it. Values are **TBD (playtest)** unless said otherwise.
   and color on the right shape.
 - Performance: one mesh per cut group with the kit merged in, about 150k triangles for the whole outside,
   2048 textures (trim sheet and a baked weathering mask), checked with the frame time on the landed view.
-
-## The station
-
-- The skin and nacelles are bigger than the box: the hangar's pressure frame and the four clamps at Waypost
-  Ostra are resized to fit (in the station's greybox builder), so docking still looks right.

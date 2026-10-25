@@ -58,7 +58,7 @@ func test_flight_ends_docking() -> void:
 	assert_almost_eq(station.position.distance_to(_ship.position), 0.0, 0.01, "in place")
 	assert_gt(flight.clamp_amount(), 0.99, "the clamps take hold")
 	var held: Node3D = station.get_node("Clamps/Clamp1")
-	assert_almost_eq(absf(held.position.z), 15.3, 0.05, "against the hull")
+	assert_almost_eq(absf(held.position.z), 17.8, 0.05, "against the hull's lower side")
 	flight.skip()
 	assert_true(flight.is_docked())
 	assert_false(flight.is_flying())

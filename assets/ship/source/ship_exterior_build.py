@@ -151,6 +151,8 @@ def check_profile() -> None:
 
 
 check_profile()
+assert max(h for _, h, _ in PROFILE) <= L.TAIL_TOP, "the hull outgrows the tail's top"
+assert max(w for w, h, _ in PROFILE if h < 7.0) <= L.LOWER_SIDE, "the lower sides outgrow the clamps"
 
 
 def offset(profile, d: float):
@@ -451,6 +453,8 @@ def nacelles() -> None:
     wc, hc = nacelle_center()
     x1 = TAIL_X + 0.3
     x0 = x1 - NACELLE_LENGTH
+    # A station's hangar is built around the tail (game/ship/hull_layout.py).
+    assert wc + r * 1.04 <= L.TAIL_HALF_WIDTH and hc + r * 1.04 <= L.TAIL_TOP, "the nacelles outgrow the tail"
     along = Matrix.Rotation(math.pi / 2, 4, "Y")
     for s in (-1, 1):
         y = s * wc

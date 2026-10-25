@@ -35,6 +35,12 @@ RAMP_LENGTH = 5.0
 LEG_X = [-70.0, -33.0, 4.0]
 LEG_Z = 19.7
 LEG_PAD = (5.2, 4.6)
+# The hull's model at the tail, where it reaches into a station's hangar: its half width with the
+# nacelles (z), its top (y), and the half width of its lower sides under the nacelles (z), where the
+# docking clamps hold it (the exterior's build script checks its model against these).
+TAIL_HALF_WIDTH = 27.1
+TAIL_TOP = 16.7
+LOWER_SIDE = 17.5
 
 RANGE_X = (-51.5, -22)
 ARMORY_X = (-21.5, -3.5)

@@ -114,7 +114,7 @@ Alongside, any time:
 
 - Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
 - The ship's exterior ([`planned/ship-exterior.md`](planned/ship-exterior.md)):
-  - [ ] **A** blockout in the game: the hull's shape (two variants first), the nacelles, the nose, the legs folding in space and flight, the wider ramp, the cut groups aboard, the station's frame and clamps
+  - [x] **A** blockout in the game: the hull's shape (two variants first), the nacelles, the nose, the legs folding in space and flight, the wider ramp, the cut groups aboard, the station's frame and clamps
   - [ ] **B** detail and textures: the greeble kit, panels, weathering, lights, markings
   - [ ] **C** effects: the nozzles' glow and heat haze in flight, dust at touchdown and take-off, the nose's landing lights
 - Leftovers of the first models: dress the generated cliffs with the cliff chunks (`Cliff_*` in `assets/rocks/rocks.glb`) and the wall ore clusters (`Ore_<ore>_wall` in `assets/ores/<ore>.glb`), which needs placement along the cliff edges

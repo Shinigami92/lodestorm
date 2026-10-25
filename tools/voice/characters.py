@@ -150,6 +150,88 @@ CHARACTERS: dict[str, dict] = {
             ),
         ],
     },
+    "kade": {
+        "name": "Kade",
+        "role": "Depot master",
+        "description": (
+            "A broad-shouldered man in his early fifties, the depot master of an orbital colony station, talking to "
+            "a prospecting crew across the supply depot's counter. Solid, slightly rough baritone voice, lower "
+            "mid-range, not deep or gravelly. Gruff but fair, organized and matter-of-fact, a man who keeps the books "
+            "and knows every crate; friendly in a plain, unhurried way, never loud. Plain and conversational "
+            "rather than narrating. Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "You must be the crew from the ship in the hangar. I'm Kade, and I run the supply depot. "
+                    "Every crate that comes aboard this station passes my counter first."
+                ),
+                (
+                    "Ihr seid sicher die Crew vom Schiff im Hangar. Ich bin Kade und leite das Versorgungsdepot. "
+                    "Jede Kiste, die an Bord dieser Station kommt, geht zuerst über meinen Tresen."
+                ),
+            ),
+            (
+                (
+                    "It's not a good rate, and it's not meant to be. "
+                    "It's for when you're short of one ore and have far too much of another."
+                ),
+                (
+                    "Das ist kein guter Kurs, und das soll er auch nicht sein. "
+                    "Er ist für den Fall, dass dir ein Erz fehlt und du von einem anderen viel zu viel hast."
+                ),
+            ),
+            (
+                "Me? I keep the books. I know how many crates of anything we have, down to the last bolt.",
+                "Ich? Ich führe die Bücher. Ich weiß, wie viele Kisten wir von allem haben, bis zur letzten Schraube.",
+            ),
+        ],
+    },
+    "selin": {
+        "name": "Selin",
+        "role": "Council member",
+        "description": (
+            "A woman in her early sixties, the long-serving head of an orbital colony's council and one of its first "
+            "settlers, welcoming a prospecting crew at the council's long table. Mature, seasoned low alto voice with "
+            "a little natural grain of age, calm and measured, clear and composed. Years of hard decisions have made "
+            "her steady and a little weary, but determined. She chooses her words with care and speaks with the "
+            "quiet authority of someone people have followed for a long time, warm but reserved. Plain and "
+            "conversational, not giving a speech, not theatrical, not breathy or seductive. "
+            "Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "Welcome to Waypost Ostra. I'm Selin, and I speak for the colony's council. "
+                    "We're glad to have another prospecting crew in the system."
+                ),
+                (
+                    "Willkommen auf Waypost Ostra. Ich bin Selin und spreche für den Rat der Kolonie. "
+                    "Wir sind froh über jede weitere Prospektoren-Crew im System."
+                ),
+            ),
+            (
+                (
+                    "Back then, we thought we'd be able to support ourselves within a few years. "
+                    "That turned out to be a lot harder than any of us expected."
+                ),
+                (
+                    "Damals dachten wir, wir könnten uns in ein paar Jahren selbst versorgen. "
+                    "Das hat sich als viel schwerer herausgestellt, als wir alle erwartet hatten."
+                ),
+            ),
+            (
+                (
+                    "People say I'm too careful with my words. Maybe they're right. "
+                    "But on a station this small, a careless word travels fast."
+                ),
+                (
+                    "Man sagt mir nach, ich wähle meine Worte zu vorsichtig. Vielleicht stimmt das. "
+                    "Aber auf einer so kleinen Station spricht sich ein unbedachtes Wort schnell herum."
+                ),
+            ),
+        ],
+    },
 }
 
 # Round 1 renders this line with each voice-design take: long enough to hear the voice, in both languages later

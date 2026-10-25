@@ -1,0 +1,20 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Welcome to Waypost Ostra. I'm Selin, and I speak for the colony's council. We're glad to have another prospecting crew in the system.",
+    "description": "A woman in her early sixties, the long-serving head of an orbital colony's council and one of its first settlers, welcoming a prospecting crew at the council's long table. Mature, seasoned low alto voice with a little natural grain of age, calm and measured, clear and composed. Years of hard decisions have made her steady and a little weary, but determined. She chooses her words with care and speaks with the quiet authority of someone people have followed for a long time, warm but reserved. Plain and conversational, not giving a speech, not theatrical, not breathy or seductive. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 4,
+    "picked_from": "ostra2/selin/qwen3_s4.flac",
+    "picked": "2026-10-25"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Willkommen auf Waypost Ostra. Ich bin Selin und spreche für den Rat der Kolonie. Wir sind froh über jede weitere Prospektoren-Crew im System.",
+    "description": "A woman in her early sixties, the long-serving head of an orbital colony's council and one of its first settlers, welcoming a prospecting crew at the council's long table. Mature, seasoned low alto voice with a little natural grain of age, calm and measured, clear and composed. Years of hard decisions have made her steady and a little weary, but determined. She chooses her words with care and speaks with the quiet authority of someone people have followed for a long time, warm but reserved. Plain and conversational, not giving a speech, not theatrical, not breathy or seductive. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 2,
+    "picked_from": "ostra2/selin/qwen3_s2_de.flac",
+    "picked": "2026-10-25"
+  }
+}

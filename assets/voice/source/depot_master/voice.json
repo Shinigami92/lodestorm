@@ -1,0 +1,20 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "You must be the crew from the ship in the hangar. I'm Kade, and I run the supply depot. Every crate that comes aboard this station passes my counter first.",
+    "description": "A broad-shouldered man in his early fifties, the depot master of an orbital colony station, talking to a prospecting crew across the supply depot's counter. Solid, slightly rough baritone voice, lower mid-range, not deep or gravelly. Gruff but fair, organized and matter-of-fact, a man who keeps the books and knows every crate; friendly in a plain, unhurried way, never loud. Plain and conversational rather than narrating. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 1,
+    "picked_from": "ostra1/kade/qwen3_s1.flac",
+    "picked": "2026-10-25"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Ihr seid sicher die Crew vom Schiff im Hangar. Ich bin Kade und leite das Versorgungsdepot. Jede Kiste, die an Bord dieser Station kommt, geht zuerst über meinen Tresen.",
+    "description": "A broad-shouldered man in his early fifties, the depot master of an orbital colony station, talking to a prospecting crew across the supply depot's counter. Solid, slightly rough baritone voice, lower mid-range, not deep or gravelly. Gruff but fair, organized and matter-of-fact, a man who keeps the books and knows every crate; friendly in a plain, unhurried way, never loud. Plain and conversational rather than narrating. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 14,
+    "picked_from": "ostra2/kade/qwen3_s14_de.flac",
+    "picked": "2026-10-25"
+  }
+}

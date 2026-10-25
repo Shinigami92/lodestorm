@@ -1,0 +1,162 @@
+{
+  "de": {
+    "09b6f27995db60f3": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wir sind uns nicht immer einig, aber jede Entscheidung fällt öffentlich. Alle auf der Station dürfen kommen und zuhören."
+    },
+    "0e072dd0b5e48bdb": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Diese Station ist das Herz der Kolonie. Unsere Leute wohnen hier, der Rat tagt hier, und jede Versorgungsfahrt endet hier."
+    },
+    "1102220bfae7f640": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Damals dachten wir, wir könnten uns in ein paar Jahren selbst versorgen. Das hat sich als viel schwerer herausgestellt, als wir alle erwartet hatten."
+    },
+    "44429f7f8efd9f11": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sieh dich um und sprich mit den Leuten. Wenn du Fragen zur Kolonie oder zum Rat hast, komm zu mir."
+    },
+    "47cddb69c379b8dd": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich war unter den Ersten hier, damals, als diese Station kaum mehr war als ein Andockring und ein paar Module."
+    },
+    "5222f9a1fea46322": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Planet unter uns ist Torvane. Dort unten lagen die ersten Landeplätze der Kolonie, deshalb kennen wir ihn am besten."
+    },
+    "586e86ccc2f61371": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du ihn sehen willst, geh zur Aussichtsgalerie am anderen Ende der Station. Der Blick von dort lohnt den Weg."
+    },
+    "609cf7fbca40a67c": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Willkommen auf Waypost Ostra. Ich bin Selin und spreche für den Rat der Kolonie. Wir sind froh über jede weitere Prospektoren-Crew im System."
+    },
+    "6f5537e236a761be": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Es gibt dort trockene Staubebenen und einen weiten Sumpf voller riesiger Pflanzen. Der Schwarm ist überall, aber auf Torvane ist er am schwächsten."
+    },
+    "877a4c9d210d1cd5": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Man sagt mir nach, ich wähle meine Worte zu vorsichtig. Vielleicht stimmt das. Aber auf einer so kleinen Station spricht sich ein unbedachtes Wort schnell herum."
+    },
+    "9c3cb662918d3386": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Rat besteht aus einer Handvoll Leuten, die die Kolonie gewählt hat, um die schweren Entscheidungen zu treffen: wer welche Vorräte bekommt, welche Reparaturen zuerst drankommen und mit welchen Crews wir arbeiten."
+    },
+    "e04d80e497cf39ea": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wir tagen an diesem Tisch. Er ist der einzige auf der Station, der groß genug ist, also landet auch jeder Streit hier."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie kann ich dir helfen?"
+    }
+  },
+  "en": {
+    "09b6f27995db60f3": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We don't always agree, but every decision is made in the open. Anyone on the station can come and listen."
+    },
+    "0e072dd0b5e48bdb": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "This station is the heart of the colony. Our people live here, the council meets here, and every supply run ends here."
+    },
+    "1102220bfae7f640": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Back then, we thought we'd be able to support ourselves within a few years. That turned out to be a lot harder than any of us expected."
+    },
+    "44429f7f8efd9f11": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Look around and talk to people. If you have questions about the colony or the council, come and see me."
+    },
+    "47cddb69c379b8dd": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I was among the first to come here, back when this station was little more than a docking ring and a few modules."
+    },
+    "5222f9a1fea46322": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The planet below us is Torvane. The colony's first landing sites were down there, so it's the planet we know best."
+    },
+    "586e86ccc2f61371": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If you want to see it, go to the observation gallery at the far end of the station. The view from there is worth the walk."
+    },
+    "609cf7fbca40a67c": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Welcome to Waypost Ostra. I'm Selin, and I speak for the colony's council. We're glad to have another prospecting crew in the system."
+    },
+    "6f5537e236a761be": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "There are dry dust flats and a wide swamp full of giant growth. The hive is everywhere, but on Torvane it's at its weakest."
+    },
+    "877a4c9d210d1cd5": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "People say I'm too careful with my words. Maybe they're right. But on a station this small, a careless word travels fast."
+    },
+    "9c3cb662918d3386": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The council is a handful of people the colonists chose to make the hard decisions: who gets which supplies, which repairs come first and which crews we work with."
+    },
+    "e04d80e497cf39ea": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We meet at this table. It's the only one on the station that's big enough, so every argument ends up here too."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How can I help you?"
+    }
+  }
+}

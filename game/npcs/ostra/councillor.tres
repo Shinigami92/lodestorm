@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
-[ext_resource type="PackedScene" uid="uid://chyfw6w2med20" path="res://assets/npcs/selin/selin.glb" id="4_model"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
 script = ExtResource("3_topic")
@@ -42,7 +41,7 @@ script = ExtResource("1_profile")
 id = &"councillor"
 display_name = "Selin"
 role = "Council member"
-model = ExtResource("4_model")
+model = "uid://chyfw6w2med20"
 accent_color = Color(0.55, 0.95, 0.8, 1)
 suit_tint = Color(0.7, 0.72, 0.76, 1)
 dialogue = SubResource("Resource_dialogue")

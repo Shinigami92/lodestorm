@@ -71,8 +71,12 @@ auto_translate_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Text" type="Label" parent="Layout/Panel/Rows"]
+[node name="Text" type="RichTextLabel" parent="Layout/Panel/Rows"]
 unique_name_in_owner = true
 auto_translate_mode = 2
 layout_mode = 2
+mouse_filter = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
 autowrap_mode = 3

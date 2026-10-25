@@ -2,14 +2,16 @@ class_name RadioBubble
 extends Control
 ## A radio call's content (in a transparent `WorldPanel` beside the player, see `PlayerRadio`): a
 ## speech bubble's dark panel without a tail, its top row an antenna and who calls ("Tamsin ·
-## Radio") in their color, the line below. It keeps to the bottom right of its screen and takes
-## only the size the line needs (a short call stays narrow, close to the player), wrapping a long
-## one at the screen's width.
+## Radio") in their color, the line below (names highlighted, see `Keywords`). It keeps to the
+## bottom right of its screen and takes only the size the line needs (a short call stays narrow,
+## close to the player), wrapping a long one at the screen's width.
+
+var _line: String = ""
 
 @onready var _layout: Control = %Layout
 @onready var _panel: PanelContainer = %Panel
 @onready var _caller: Label = %Caller
-@onready var _text: Label = %Text
+@onready var _text: RichTextLabel = %Text
 @onready var _antenna: Control = %Antenna
 
 
@@ -23,19 +25,20 @@ func show_call(caller_name: String, color: Color, text: String) -> void:
 	_caller.add_theme_color_override(&"font_color", color)
 	_antenna.modulate = color
 	_antenna.queue_redraw()
-	_text.text = text
+	_line = text
+	_text.text = Keywords.highlight(text)
 	# Autowrap gives a label no width of its own: as wide as the line, at most the screen's.
 	var style: StyleBox = _panel.get_theme_stylebox(&"panel")
 	var widest: float = size.x - style.get_margin(SIDE_LEFT) - style.get_margin(SIDE_RIGHT)
-	var font: Font = _text.get_theme_font(&"font")
-	var font_size: int = _text.get_theme_font_size(&"font_size")
+	var font: Font = _text.get_theme_font(&"normal_font")
+	var font_size: int = _text.get_theme_font_size(&"normal_font_size")
 	var width: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 	_text.custom_minimum_size.x = minf(ceilf(width) + 2.0, widest)
 
 
-## The line shown (for tests and probes).
+## The line shown, without its highlights (for tests and probes).
 func get_line() -> String:
-	return _text.text
+	return _line
 
 
 ## Who calls, as the top row shows it.

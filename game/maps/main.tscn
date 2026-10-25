@@ -86,5 +86,5 @@ mission = NodePath("../Mission")
 voyage = NodePath("../Voyage")
 
 [node name="TitleView" parent="." node_paths=PackedStringArray("ship") instance=ExtResource("9_title")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.376, 7.45, 47.376)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -53.033, 7.45, 53.033)
 ship = NodePath("../Ship")

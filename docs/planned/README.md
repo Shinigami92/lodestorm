@@ -24,6 +24,7 @@ Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md
 | [`story.md`](story.md) | the flare shield, the six acts, the expedition (Calder, Pell), the people's threads, after the ending | M4, step 16 D and on |
 | [`coop-ore.md`](coop-ore.md) | every player's own hold, the whole haul for everyone, ship and quest costs taken from the haul | M4, steps 4, 11, 16; M7 |
 | [`voice.md`](voice.md) | the voice-over spike, voices without cloning real people, the pipeline, playback and the radio filter | M5, after the models |
+| [`ship-exterior.md`](ship-exterior.md) | the ship's outside: the hull's shape, thrusters, nose, folding legs, the wider ramp, the look, how it's built | M5 |
 | [`art.md`](art.md) | each body's light, how dark, the storm's light, four player colors with numbers | M5, M7 |
 | [`vr-view.md`](vr-view.md) | the VR head on the desktop camera's line, the haze, the sky per body, the land beyond the map | M5 (sky, far ring), M6 |
 | [`coop-revive.md`](coop-revive.md) | going down before dying in co-op, reviving by standing close, respawning after 30 s | M7 |

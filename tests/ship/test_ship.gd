@@ -31,7 +31,7 @@ func test_ramp_faces_screen_right() -> void:
 
 
 func test_camera_sees_inside_while_aboard() -> void:
-	var roof: GeometryInstance3D = _ship.get_node("Hull/Upper/Cut/Roof")
+	var roof: GeometryInstance3D = _shell("Upper/Cut/ShellUpperCut")
 	assert_eq(roof.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
 	await _move(_player, _outside())
 	assert_eq(roof.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
@@ -40,9 +40,9 @@ func test_camera_sees_inside_while_aboard() -> void:
 ## On the lower deck, the upper deck only casts shadows; on the upper deck, the lower deck's front
 ## shows again and the upper deck's walls facing the camera are cut away.
 func test_camera_sees_the_viewers_deck() -> void:
-	var upper_floor: GeometryInstance3D = _ship.get_node("Hull/Upper/SlabMiddle")
-	var lower_front: GeometryInstance3D = _ship.get_node("Hull/LowerCut/FrontWallLowerPart1")
-	var upper_front: GeometryInstance3D = _ship.get_node("Hull/Upper/Cut/FrontWallUpperPart1")
+	var upper_floor: GeometryInstance3D = _shell("Upper/ShellUpper")
+	var lower_front: GeometryInstance3D = _shell("LowerCut/ShellLowerCut")
+	var upper_front: GeometryInstance3D = _shell("Upper/Cut/ShellUpperCut")
 	var holo_table: Node3D = _room("Bridge").get_node("HoloTable")
 	assert_eq(upper_floor.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
 	assert_eq(lower_front.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
@@ -97,13 +97,15 @@ func test_corridors_run_through_the_ship() -> void:
 
 
 ## Walls between the camera and a room only cast shadows while players are aboard; a low stub of
-## them stays visible.
+## them stays visible (the shell's: the cut walls in its cut group's model, their stubs in the
+## hull's).
 func test_inner_walls_facing_camera_are_cut_down() -> void:
-	var cut: GeometryInstance3D = _ship.get_node("Hull/LowerCut/LowerCorridorBack1")
+	var cut: GeometryInstance3D = _shell("LowerCut/ShellLowerCut")
 	assert_eq(cut.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
-	var wall_stub: MeshInstance3D = _ship.get_node("Hull/LowerCorridorBack1Stub")
-	assert_eq(wall_stub.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
-	assert_lt(wall_stub.get_aabb().size.y, 1.5)
+	var stubs: GeometryInstance3D = _shell("ShellHull")
+	assert_eq(stubs.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	var shape: CollisionShape3D = _ship.get_node("Hull/LowerCorridorBack1Shape")
+	assert_gt((shape.shape as BoxShape3D).size.y, 3.0, "the cut wall still blocks")
 
 
 func test_player_starts_in_cabin_1() -> void:
@@ -202,6 +204,14 @@ func _inside() -> Vector3:
 ## On the ground right of the ramp.
 func _outside() -> Vector3:
 	return _ship.to_global(Vector3(22.0, 0.0, 0.0))
+
+
+## The walls' mesh of the shell's model under the hull's node `path` (a cut-away group's model).
+func _shell(path: String) -> GeometryInstance3D:
+	var model: Node = _ship.get_node("Hull/" + path)
+	for node: Node in model.find_children("Shell*", "MeshInstance3D", true, false):
+		return node as GeometryInstance3D
+	return null
 
 
 func _room(room_name: String) -> Node3D:

@@ -3,13 +3,6 @@
 [ext_resource type="Script" uid="uid://cultwlahxlbt4" path="res://game/ship/floor_guide.gd" id="8_floor_guide"]
 [ext_resource type="StandardMaterial3D" uid="uid://bpk3xig2xe43q" path="res://game/ship/materials/guide.tres" id="mat_guide"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_CargoBay"]
-albedo_color = Color(0.4, 0.42, 0.45, 1)
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_floor_CargoBay"]
-material = SubResource("StandardMaterial3D_floor_CargoBay")
-size = Vector2(17.5, 29)
-
 [sub_resource type="PrismMesh" id="PrismMesh_arrow"]
 material = ExtResource("mat_guide")
 size = Vector3(0.9, 0.7, 0.02)
@@ -19,19 +12,6 @@ material = ExtResource("mat_guide")
 size = Vector3(0.3, 0.6, 0.02)
 
 [node name="CargoBay" type="Node3D"]
-
-[node name="Floor" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
-cast_shadow = 0
-mesh = SubResource("PlaneMesh_floor_CargoBay")
-
-[node name="Light" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 8.2, 0)
-light_color = Color(1, 0.95, 0.85, 1)
-light_energy = 5.0
-spot_range = 8.3
-spot_angle = 64.2
-spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
 layers = 4

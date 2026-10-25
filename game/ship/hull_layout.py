@@ -64,15 +64,17 @@ NICHE_HEIGHT = 3.1
 
 # Where the shell is the kit's model (assets/ship/source/ship_shell_build.py) instead of greybox boxes:
 # regions (x0, x1, y0, y1, z0, z1) a wall piece's center lies in, and the x positions where walls along x
-# are split so their pieces end at a region's edge. So far the armory with its stretch of the lower
-# corridor (the test room); the rest follows.
-SHELL_REGIONS = [(-21.8, -3.2, LOW - 1.0, UP - 0.4, -ZI - 2.0, 0.0)]
-SHELL_SPLITS = [-21.75, -3.25]
+# are split so their pieces end at a region's edge. The whole ship.
+SHELL_REGIONS = [(-110.0, 20.0, -5.0, 25.0, -40.0, 40.0)]
+SHELL_SPLITS: list[float] = []
 
 
 def dressed(center):
-    """Whether the wall piece centered at `center` (x, y, z) is the kit's."""
+    """Whether the wall piece centered at `center` (x, y, z) is the kit's. Not the lower deck's floor slab:
+    it stays the greybox's under the kit's floors, the ship's outline on the holo table."""
     x, y, z = center
+    if y < LOW - 0.4:
+        return False
     return any(x0 <= x <= x1 and y0 <= y <= y1 and z0 <= z <= z1 for x0, x1, y0, y1, z0, z1 in SHELL_REGIONS)
 
 

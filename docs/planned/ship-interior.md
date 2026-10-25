@@ -20,7 +20,7 @@ its canopy in the nose, the bigger bridge, the specimen lab below the cockpit, w
   hatch into each sponson (a maintenance bay looking into the nacelle), and a crawlway along the spine over
   the upper deck (it would need its own cut-away level), e.g. for a quest or a story moment.
 
-Built so far (B): the kit and the test room, the armory with its stretch of the lower corridor: the ship's cross-section (chamfers with light lines, slanted feet, round rims on the cut walls), rounded door and niche frames, clean paint and a glossy epoxy floor, the room looks, the armory's lights and reflections, one door (the cargo bay's), the armory's sign and one guide (see [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)). The rest follows with C and D.
+Built (B, C): the ship's cross-section everywhere (chamfers with light lines, slanted feet, rims on the cut walls), rounded door and niche frames and room corners, clean paint and a glossy epoxy floor, the room looks, the rooms' lights and reflections and every room's door from the layout, the conduit run, lamp housings in the ceilings; the armory's sign and one guide (see [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)). The signs and guides follow with D.
 
 ## Doors
 
@@ -54,8 +54,8 @@ faces towards the camera and the lobbies' back walls (both corridor walls are 1 
   marble-like blotches), the detail coming from what stands in the rooms. Refs: `local/art-references/
   ship-interior/` (batch 5, and `armory_friend.png` for the clean look, see its `INDEX.md`), without batch
   5's faults (the same cyan everywhere, small boxy rooms, few windows).
-- **Next shell cues** (with C): rounded room corners in the plan, pipe runs along the rims, recessed wall
-  bays for the rooms' equipment.
+- **Next:** recessed wall bays for the rooms' equipment, with the rooms' key objects and dressing (their
+  own rounds).
 - **The detail goes where the camera looks:** most on the back walls and floors; the stubs' tops capped (a
   dark band showing the wall's thickness, so cut walls read as cut); side walls plainer; ceilings simpler,
   but built (the VR head can look up in close views, see [`vr-view.md`](vr-view.md); aboard they stay cut

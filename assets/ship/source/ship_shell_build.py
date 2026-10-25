@@ -117,7 +117,9 @@ PAINT, DARK, PLATE, GRATING, HAZARD, MARKING, ACCENT, LAMP = range(len(MATS))
 
 GROUPS = {"hull": "Hull", "lower_cut": "LowerCut", "upper": "Upper", "upper_cut": "UpperCut"}
 CUT = ("lower_cut", "upper_cut")  # only cast shadows: plain cores
-FLOOR_TOP = 0.02  # the floor plates' height over the deck
+FLOOR_TOP = 0.008  # the floor plates' height over the deck (under the rooms' painted names)
+MARK = 0.006  # the edge markings' height over the plates
+CORNER = 0.8  # the radius rounding a room's corners in the plan
 
 
 class Shell:
@@ -183,6 +185,12 @@ class Piece:
         # The deck it stands on: what's seen of it lies between its floor and ceiling.
         upper = center[1] >= L.UP - 0.1
         self.floor, self.ceiling = (L.UP, L.TOP) if upper else (L.LOW, L.SLAB)
+        if center[0] > L.ROOMS[-1][2][0] - 0.1:  # the cargo bay: one room through both decks
+            self.floor, self.ceiling = L.LOW, L.TOP
+        elif upper and center[0] < -81.0:  # the cockpit, under the nose's sloping top
+            self.ceiling = L.COCKPIT_TOP
+        # Floors, slabs, the roof, a niche's floor and lid: plain cores.
+        self.flat = self.height < min(self.length, self.thick)
 
     def at(self, u: float, v: float, w: float) -> Vector:
         """Godot coordinates of (u, v, w); v from the piece's bottom."""
@@ -230,7 +238,7 @@ RIM = 0.12  # how far the rounded rim on a cut wall's top stands out of the wall
 def profile(shell: Shell, piece: Piece) -> None:
     """A ship's cross-section instead of a box: on every face seen, a slope up to the ceiling with a light
     line in it, a slanted foot on the floor (pieces of any size, so doors and niches keep the line)."""
-    if piece.group in CUT or piece.length < 0.3:
+    if piece.group in CUT or piece.length < 0.3 or piece.flat:
         return
     part = shell.part(piece.group, "Shell")
     lo, hi = -piece.length / 2, piece.length / 2
@@ -252,14 +260,17 @@ def profile(shell: Shell, piece: Piece) -> None:
 
 
 def rim(shell: Shell, piece: Piece) -> None:
-    """The wall's thickness where the camera cuts it: a heavy rounded rim along the top of a wall that
-    reaches up to the deck above."""
-    if piece.group in CUT or not piece.reaches_ceiling() or piece.length < 0.3:
+    """The wall's thickness where the camera cuts it: a rounded rim along the top of a wall that reaches up
+    to the deck above (heavy on the hull's outer walls)."""
+    if piece.group in CUT or not piece.reaches_ceiling() or piece.length < 0.3 or piece.flat:
         return
     part = shell.part(piece.group, "Shell")
-    v = piece.height
+    # The hull's outer walls get the heavy rim, the walls between rooms a slim one.
+    outer = abs(piece.center.z) > L.ZI
+    radius = piece.thick / 2 + (RIM if outer else 0.03)
+    v = piece.height - radius  # its top at the wall's: nothing pokes into the deck above
     a, b = piece.at(-piece.length / 2, v, 0), piece.at(piece.length / 2, v, 0)
-    part.rod(to_blender(a), to_blender(b), piece.thick / 2 + RIM, seg=16, mi=DARK)
+    part.rod(to_blender(a), to_blender(b), radius, seg=16, mi=DARK)
 
 
 def rounded_frame(part, piece: Piece, width: float, height: float, bottom: float, w0: float, w1: float) -> None:
@@ -318,37 +329,87 @@ def dress_niche(shell: Shell, piece: Piece) -> None:
     rounded_frame(part, piece, piece.length - 0.5, L.NICHE_HEIGHT, -L.NICHE_HEIGHT, side * t, side * (t + 0.16))
 
 
+def deck_group(deck) -> str:
+    return "upper" if deck == "Upper" else "hull"
+
+
 def floors(shell: Shell) -> None:
-    """The dressed rooms' floors: plates with amber edge markings; the corridor's stretch a grating
-    strip down its middle."""
-    for name, deck, (x0, x1), (z0, z1) in L.ROOMS:
-        y = L.UP if deck == "Upper" else L.LOW
-        if name.endswith("Corridor"):  # only its stretch inside the region
-            region = next((r for r in L.SHELL_REGIONS if r[2] <= y + 1.0 <= r[3]), None)
-            if not region:
-                continue
-            x0, x1 = max(x0, region[0] + 0.05), min(x1, region[1])
-        if x1 <= x0 or not L.dressed(((x0 + x1) / 2, y + 1.0, (z0 + z1) / 2)):
+    """The rooms' floors: one plate with amber edge markings (the corridors' with a grating strip down their
+    middle, the nose rooms' following their outline), and a room on the back outer wall gets an accent strip
+    along it."""
+    for name, deck, xs, zs in L.ROOMS:
+        floor, ceiling, (x0, x1, z0, z1) = H.room_box(name, deck, xs, zs)
+        part = shell.part(deck_group(deck), name)
+        outline = {"Cockpit": L.COCKPIT_OUTLINE, "SpecimenLab": L.LAB_OUTLINE}.get(name)
+        if outline:
+            ring = [(x, floor, z) for x, z in L.outline(outline)]
+            extrude(part, ring, Vector((0, FLOOR_TOP, 0)), PLATE)
             continue
-        part = shell.part("upper" if deck == "Upper" else "hull", name)
-        mid = ((x0 + x1) / 2, y + FLOOR_TOP / 2, (z0 + z1) / 2)
+        mid = ((x0 + x1) / 2, floor + FLOOR_TOP / 2, (z0 + z1) / 2)
         gbox(part, mid, (x1 - x0, FLOOR_TOP, z1 - z0), mi=PLATE)
+        y = floor + FLOOR_TOP + MARK / 2
         if name.endswith("Corridor"):
-            gbox(part, (mid[0], y + FLOOR_TOP + 0.004, mid[2]), (x1 - x0, 0.01, 1.6), mi=GRATING)
+            gbox(part, (mid[0], y, mid[2]), (x1 - x0, MARK, 1.6), mi=GRATING)
             for s in (-1, 1):
-                gbox(part, (mid[0], y + FLOOR_TOP + 0.004, mid[2] + s * 0.95), (x1 - x0, 0.012, 0.1), mi=MARKING)
+                gbox(part, (mid[0], y, mid[2] + s * 0.95), (x1 - x0, MARK, 0.1), mi=MARKING)
             continue
         inset = 0.45
         for z in (z0 + inset, z1 - inset):
-            gbox(part, (mid[0], y + FLOOR_TOP + 0.004, z), (x1 - x0 - 2 * inset, 0.012, 0.1), mi=MARKING)
+            gbox(part, (mid[0], y, z), (x1 - x0 - 2 * inset, MARK, 0.1), mi=MARKING)
         for x in (x0 + inset, x1 - inset):
-            gbox(part, (x, y + FLOOR_TOP + 0.004, mid[2]), (0.1, 0.012, z1 - z0 - 2 * inset), mi=MARKING)
-        # The room's accent: a lamp strip along its back wall under the ceiling.
+            gbox(part, (x, y, mid[2]), (0.1, MARK, z1 - z0 - 2 * inset), mi=MARKING)
         if z0 == -L.ZI:
-            top = L.SLAB if deck != "Upper" else L.TOP
             # An object of its own: instance shader parameters share slots across one object's materials.
-            accent = shell.part("upper" if deck == "Upper" else "hull", name + "Accent")
-            gbox(accent, (mid[0], top - 0.35, z0 + 0.06), (x1 - x0 - 1.0, 0.07, 0.06), mi=ACCENT)
+            accent = shell.part(deck_group(deck), name + "Accent")
+            gbox(accent, (mid[0], ceiling - 0.35, z0 + 0.06), (x1 - x0 - 1.0, 0.07, 0.06), mi=ACCENT)
+
+
+def corners(shell: Shell) -> None:
+    """Rounded room corners in the plan: a fillet from the floor to the ceiling in each corner of a room (not
+    the corridors, lobbies or the nose rooms). Only the corners on the back outer wall stay standing; the
+    others are on walls cut away for the camera and go with them."""
+    steps = 8
+    for name, deck, xs, zs in L.ROOMS:
+        if name.endswith(("Corridor", "Lobby")) or name in ("Cockpit", "SpecimenLab"):
+            continue
+        floor, ceiling, (x0, x1, z0, z1) = H.room_box(name, deck, xs, zs)
+        r = min(CORNER, (x1 - x0) / 4, (z1 - z0) / 4)
+        for cx, sx in ((x0, 1), (x1, -1)):
+            for cz, sz in ((z0, 1), (z1, -1)):
+                seen = cz == -L.ZI
+                group = deck_group(deck) if seen else ("upper_cut" if deck == "Upper" else "lower_cut")
+                # The corner, then the arc from one wall to the other around (cx + r, cz + r).
+                ring = [(cx, floor, cz)]
+                for i in range(steps + 1):
+                    a = math.pi / 2 * i / steps
+                    ring.append((cx + sx * r * (1 - math.cos(a)), floor, cz + sz * r * (1 - math.sin(a))))
+                extrude(shell.part(group, "Shell"), ring, Vector((0, ceiling - floor, 0)), PAINT)
+
+
+def conduit(shell: Shell) -> None:
+    """The drive core's conduits from the engine room to the cargo bay: two pipes along the lower deck's back
+    outer wall under its chamfer, held by brackets."""
+    part = shell.part("hull", "Shell")
+    z = -L.ZI + 0.35
+    x0, x1 = -80.5, L.ROOMS[-1][2][1]
+    for y, radius in ((L.SLAB - 0.95, 0.11), (L.SLAB - 1.25, 0.07)):
+        part.rod(to_blender((x0, y, z)), to_blender((x1, y, z)), radius, seg=12, mi=DARK)
+    x = x0 + 1.0
+    while x < x1:
+        gbox(part, (x, L.SLAB - 1.1, -L.ZI + 0.2), (0.12, 0.55, 0.4), mi=DARK)
+        x += 2.5
+
+
+def fixtures(shell: Shell) -> None:
+    """A lamp housing in the ceiling over each of the rooms' lamps (hull_build.room_lights), with its glowing
+    panel; with the ceiling's group (cut away aboard, seen when the head looks up in VR)."""
+    for name, deck, xs, zs in L.ROOMS:
+        _floor, ceiling, (x0, x1, z0, z1) = H.room_box(name, deck, xs, zs)
+        group = "upper_cut" if deck in ("Upper", None) else "upper"
+        part = shell.part(group, "Shell")
+        for x in H.spread(x0, x1, H.LAMP_STEP):
+            gbox(part, (x, ceiling - 0.06, (z0 + z1) / 2), (1.4, 0.12, 0.5), mi=DARK)
+            gbox(part, (x, ceiling - 0.125, (z0 + z1) / 2), (1.2, 0.01, 0.35), mi=LAMP)
 
 
 def build() -> dict[str, list]:
@@ -370,6 +431,9 @@ def build() -> dict[str, list]:
         if piece.stub_group:
             dress_stub(shell, piece)
     floors(shell)
+    corners(shell)
+    conduit(shell)
+    fixtures(shell)
     return shell.finish()
 
 

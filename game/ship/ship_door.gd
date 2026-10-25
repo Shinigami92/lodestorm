@@ -36,6 +36,7 @@ func _ready() -> void:
 		box.material = leaf_material
 		leaf.mesh = box
 		leaf.name = "Left" if side < 0.0 else "Right"
+		leaf.layers = RenderLayers.INTERIOR
 		add_child(leaf)
 		_leaves.append(leaf)
 	_place_leaves()

@@ -1,12 +1,15 @@
 extends GutTest
-## Decals (the aim reticle, a charge's lane) only reach `RenderLayers.WORLD`, so only surfaces may
-## sit there: text, sprites, particles, holograms and effects (shader or see-through materials) go
-## on another layer, or the reticle paints itself onto them. Lit, opaque meshes, glowing light
-## strips and the ship's windows (upright, the reticle fades out on them) stay on WORLD.
+## Decals (the aim reticle, a charge's lane) only reach `RenderLayers.WORLD` and `INTERIOR` (the
+## ship's shell), so only surfaces may sit there: text, sprites, particles, holograms and effects
+## (shader or see-through materials) go on another layer, or the reticle paints itself onto them.
+## Lit, opaque meshes, glowing light strips and the ship's windows (upright, the reticle fades out
+## on them) stay on WORLD.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 ## Shaders of surfaces: decals land on them.
-const SURFACE_SHADERS: Array[String] = ["terrain.gdshader", "ore_crystal.gdshader"]
+const SURFACE_SHADERS: Array[String] = [
+	"terrain.gdshader", "ore_crystal.gdshader", "ship_shell.gdshader", "ship_accent.gdshader"
+]
 
 
 func test_only_surfaces_catch_decals() -> void:
@@ -20,9 +23,9 @@ func test_only_surfaces_catch_decals() -> void:
 	var wrong: Array[String] = []
 	for node: Node in map.find_children("*", "GeometryInstance3D", true, false):
 		var visual := node as GeometryInstance3D
-		if visual.layers & RenderLayers.WORLD and _is_effect(visual):
+		if visual.layers & (RenderLayers.WORLD | RenderLayers.INTERIOR) and _is_effect(visual):
 			wrong.append(str(map.get_path_to(visual)))
-	assert_eq(wrong.size(), 0, "on RenderLayers.WORLD:\n" + "\n".join(wrong))
+	assert_eq(wrong.size(), 0, "on RenderLayers.WORLD or INTERIOR:\n" + "\n".join(wrong))
 
 
 ## Whether `visual` isn't a surface: text, a sprite, particles, a shader or see-through material.

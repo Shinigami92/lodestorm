@@ -376,16 +376,15 @@ def mend_dent(outfit: bpy.types.Object, spot: np.ndarray, radius: float) -> None
                 corner[uv].uv = color_uv
             new.append(f)
     behind = {  # what's left of the walls, stretched up to the moved edge: hidden behind the cap
-        f
-        for v in moved
-        for f in v.link_faces
-        if f not in new and side * (surface - f.calc_center_median().y) > 0.004
+        f for v in moved for f in v.link_faces if f not in new and side * (surface - f.calc_center_median().y) > 0.004
     }
     bmesh.ops.delete(bm, geom=list(behind), context="FACES")
     count = len(new)
     bm.to_mesh(me)
     bm.free()
-    print("DENT at", center.round(3), "surface", round(surface, 3), len(gone) + len(behind), "faces cut,", count, "capped")
+    print(
+        "DENT at", center.round(3), "surface", round(surface, 3), len(gone) + len(behind), "faces cut,", count, "capped"
+    )
 
 
 def center_cuffs(outfit: bpy.types.Object, arm: bpy.types.Object, directions: dict, hands, fit: Fit) -> None:

@@ -28,14 +28,17 @@ func test_own_model_with_its_head_and_props() -> void:
 		assert_eq(grip.get_child_count(), 1, "the prop's model on " + String(prop))
 
 
-## Kade and Selin wear their generated heads (no MakeHuman face): the name plate goes above their hair.
+## Kade and Selin wear their generated heads (no MakeHuman face): the name plate goes above
+## their hair.
 func test_own_head_models() -> void:
 	for case: Array in [[KADE, 1.79], [SELIN, 1.66]]:
 		var body := BODY.instantiate() as NpcBody
 		add_child_autofree(body)
 		body.profile = case[0] as NpcProfile
 		await wait_process_frames(2)
-		assert_almost_eq(body.head_height, case[1] as float, 0.05, (case[0] as NpcProfile).display_name)
+		assert_almost_eq(
+			body.head_height, case[1] as float, 0.05, (case[0] as NpcProfile).display_name
+		)
 
 
 func test_works_while_nobody_is_close() -> void:

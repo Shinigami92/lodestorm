@@ -181,7 +181,8 @@ def rings() -> None:
     for i, x in enumerate([-66.0, -51.75, -27.5, -3.25]):
         sec = offset(PROFILE, 0.18)
         sec = [(w, h, M_HULL2) for w, h, _ in sec]
-        loft(f"Ring{i}", [(x - 0.5, sec), (x + 0.5, sec)], bevel=(0.06, 1))
+        # Open: a band around the skin (capped, it would be a solid disc through the ship).
+        loft(f"Ring{i}", [(x - 0.5, sec), (x + 0.5, sec)], caps=(False, False), bevel=(0.06, 1))
 
 
 SPONSON_X = (-10.0, TAIL_X)

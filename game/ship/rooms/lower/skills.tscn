@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://q60mjf3tw6d4" path="res://game/stations/skill_graph/skill_graph.tscn" id="20_skill_graph"]
 [ext_resource type="StandardMaterial3D" uid="uid://d0bdki1n4b0el" path="res://game/ship/materials/prop.tres" id="mat_prop"]
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_prop"]
 material = ExtResource("mat_prop")
@@ -11,14 +12,12 @@ size = Vector3(4, 1.1, 0.8)
 
 [node name="Skills" type="Node3D"]
 
-[node name="Sign" type="Label3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
-pixel_size = 0.01
+[node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 1.75, -5.72)
 text = "Skills"
-font_size = 96
-outline_size = 24
-uppercase = true
+color = Color(0.72, 0.5, 1, 1)
+font_size = 56
+anchor = 1
 
 [node name="Counter" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 3)

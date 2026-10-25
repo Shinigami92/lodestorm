@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://bd66ics55wo5u"]
 
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
+
 [node name="SpecimenLab" type="Node3D"]
 
-[node name="Sign" type="Label3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 3.5)
-pixel_size = 0.01
+[node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
+transform = Transform3D(0.682, 0, 0.731, 0, 1, 0, -0.731, 0, 0.682, -2.295, 2.3, -12.684)
 text = "Specimen lab"
-font_size = 96
-outline_size = 24
-uppercase = true
+color = Color(0.55, 1, 0.75, 1)
+font_size = 56
+

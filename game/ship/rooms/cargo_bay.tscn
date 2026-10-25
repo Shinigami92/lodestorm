@@ -1,77 +1,28 @@
 [gd_scene format=3 uid="uid://mvfidldmdr6j"]
 
-[ext_resource type="Script" uid="uid://cultwlahxlbt4" path="res://game/ship/floor_guide.gd" id="8_floor_guide"]
-[ext_resource type="StandardMaterial3D" uid="uid://bpk3xig2xe43q" path="res://game/ship/materials/guide.tres" id="mat_guide"]
-
-[sub_resource type="PrismMesh" id="PrismMesh_arrow"]
-material = ExtResource("mat_guide")
-size = Vector3(0.9, 0.7, 0.02)
-
-[sub_resource type="BoxMesh" id="BoxMesh_arrow_shaft"]
-material = ExtResource("mat_guide")
-size = Vector3(0.3, 0.6, 0.02)
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 
 [node name="CargoBay" type="Node3D"]
 
-[node name="Sign" type="Label3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -3.6, 0.02, 12.4)
-pixel_size = 0.01
+[node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.1, -14.47)
 text = "Cargo bay"
-font_size = 96
-outline_size = 24
-uppercase = true
+color = Color(1, 0.7, 0.22, 1)
+font_size = 56
 
 [node name="Guides" type="Node3D" parent="."]
 
-[node name="ToLowerDeck" type="Node3D" parent="Guides"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, 1.2)
-script = ExtResource("8_floor_guide")
-
-[node name="Arrow" type="Node3D" parent="Guides/ToLowerDeck"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.59, 0.02, 0)
-
-[node name="Head" type="MeshInstance3D" parent="Guides/ToLowerDeck/Arrow"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
-cast_shadow = 0
-mesh = SubResource("PrismMesh_arrow")
-
-[node name="Shaft" type="MeshInstance3D" parent="Guides/ToLowerDeck/Arrow"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_arrow_shaft")
-
-[node name="Text" type="Label3D" parent="Guides/ToLowerDeck"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
-pixel_size = 0.01
-modulate = Color(1, 0.8, 0.45, 1)
+[node name="ToLowerDeck" parent="Guides" instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.7, -14.47)
 text = "Armory · Upgrades\nRange · Medical · Engine"
-font_size = 48
-outline_size = 14
-uppercase = true
+color = Color(1, 0.72, 0.3, 1)
+font_size = 32
+arrow = 1
 
-[node name="ToLift" type="Node3D" parent="Guides"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.1, 0, -2.1)
-script = ExtResource("8_floor_guide")
-
-[node name="Arrow" type="Node3D" parent="Guides/ToLift"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -1.14)
-
-[node name="Head" type="MeshInstance3D" parent="Guides/ToLift/Arrow"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.15)
-cast_shadow = 0
-mesh = SubResource("PrismMesh_arrow")
-
-[node name="Shaft" type="MeshInstance3D" parent="Guides/ToLift/Arrow"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.4)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_arrow_shaft")
-
-[node name="Text" type="Label3D" parent="Guides/ToLift"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
-pixel_size = 0.01
-modulate = Color(1, 0.8, 0.45, 1)
+[node name="ToLift" parent="Guides" instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.15, 2.9, -14.47)
 text = "Lift\nMess · Cabins · Bridge"
-font_size = 48
-outline_size = 14
-uppercase = true
+color = Color(1, 0.72, 0.3, 1)
+font_size = 36
+arrow = 3
+

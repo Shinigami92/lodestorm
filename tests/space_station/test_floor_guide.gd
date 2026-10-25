@@ -1,12 +1,13 @@
 extends GutTest
 
-const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+## The floor guides are Waypost Ostra's (the ship's are neon signs on its walls).
+const STATION := preload("res://game/space_station/ostra/ostra.tscn")
 
 var _guides: Array[FloorGuide] = []
 
 
 func before_each() -> void:
-	var map: Node3D = TEST_MAP.instantiate() as Node3D
+	var map: Node3D = STATION.instantiate() as Node3D
 	add_child_autofree(map)
 	_guides.clear()
 	for guide: Node in map.find_children("*", "FloorGuide", true, false):
@@ -17,8 +18,8 @@ func after_each() -> void:
 	TranslationServer.set_locale("en")
 
 
-func test_ship_has_guides() -> void:
-	assert_gt(_guides.size(), 10)
+func test_station_has_guides() -> void:
+	assert_gt(_guides.size(), 5)
 
 
 func test_english_text_is_shown_as_is() -> void:
@@ -57,7 +58,8 @@ func test_translation_wraps_between_rooms_within_english_width() -> void:
 	for guide: FloorGuide in _guides:
 		var text: Label3D = guide.get_node("Text") as Label3D
 		var german: String = guide.tr(english[guide])
-		assert_ne(german, english[guide], "%s is translated" % guide.name)
+		if english[guide] != "Bar":  # the same word in German
+			assert_ne(german, english[guide], "%s is translated" % guide.name)
 		var rooms: String = text.text.replace("\n", FloorGuide.SEPARATOR)
 		assert_eq(rooms, german.replace("\n", FloorGuide.SEPARATOR), "only line breaks change")
 		for line: String in text.text.split("\n"):

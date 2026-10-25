@@ -2,11 +2,14 @@
 class_name NeonSign
 extends Node3D
 ## A sign aboard like bent neon tubes on a dark backing (docs/planned/ship-interior.md): a room's
-## name in its accent color on its wall, or a guide in amber with an arrow. The text is translated
-## (Label3D) and the backing grows with it; a faint light throws the color on the wall. Faces +z
-## (its wall behind it).
+## name in its accent color on its wall, or a guide in amber with an arrow (on the left when it
+## points left, else on the right). The text is translated (Label3D, lines split by a line break)
+## and the backing grows with it, from its `anchor`; a faint light throws the color on the wall.
+## Faces +z (its wall behind it).
 
 enum Arrow { NONE, LEFT, RIGHT, UP, DOWN }
+## Where the sign's origin is on its width: a sign beside a door grows away from the door.
+enum Anchor { CENTER, LEFT, RIGHT }
 
 const FONT: FontFile = preload("res://assets/fonts/tilt_neon/TiltNeon.ttf")
 const PIXEL_SIZE: float = 0.01
@@ -31,6 +34,10 @@ const BACKING_COLOR := Color(0.035, 0.035, 0.04)
 @export var arrow: Arrow = Arrow.NONE:
 	set(value):
 		arrow = value
+		_rebuild()
+@export var anchor: Anchor = Anchor.CENTER:
+	set(value):
+		anchor = value
 		_rebuild()
 ## Now and then dims for a moment, like an old tube.
 @export var flickers: bool = false
@@ -72,10 +79,20 @@ func get_width() -> float:
 	return _text_width() + (_arrow_space() if arrow != Arrow.NONE else 0.0) + 2.0 * MARGIN
 
 
+## The sign's height in meters (its lines, or the arrow, and margins).
+func get_height() -> float:
+	var lines: float = tr(text).count("\n") + 1.0 if not text.is_empty() else 0.0
+	var text_height: float = lines * FONT.get_height(font_size) * PIXEL_SIZE * 0.9
+	return maxf(text_height, ARROW_LENGTH * 0.6) + 2.0 * MARGIN
+
+
 func _text_width() -> float:
 	if text.is_empty():
 		return 0.0
-	return FONT.get_string_size(tr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x * PIXEL_SIZE
+	var size: Vector2 = FONT.get_multiline_string_size(
+		tr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size
+	)
+	return size.x * PIXEL_SIZE
 
 
 func _arrow_space() -> float:
@@ -89,10 +106,17 @@ func _rebuild() -> void:
 		_parts.free()
 	_parts = Node3D.new()
 	_parts.name = "Parts"
-	add_child(_parts, false, INTERNAL_MODE_FRONT)
+	# An ordinary child (without an owner, so not saved): the ship's cut-away reaches it.
+	add_child(_parts)
 	var tube := Color(color.r, color.g, color.b) * energy
-	var height: float = maxf(font_size * PIXEL_SIZE * 0.85, ARROW_LENGTH * 0.6) + 2.0 * MARGIN
+	var height: float = get_height()
 	var width: float = get_width()
+	match anchor:
+		Anchor.LEFT:
+			_parts.position.x = width / 2.0
+		Anchor.RIGHT:
+			_parts.position.x = -width / 2.0
+	var arrow_first: bool = arrow == Arrow.LEFT
 	var backing := MeshInstance3D.new()
 	var box := BoxMesh.new()
 	box.size = Vector3(width, height, 0.05)
@@ -104,7 +128,7 @@ func _rebuild() -> void:
 	backing.mesh = box
 	backing.position.z = -0.025
 	_parts.add_child(backing)
-	var left: float = -width / 2.0 + MARGIN
+	var left: float = -width / 2.0 + MARGIN + (_arrow_space() if arrow_first else 0.0)
 	_label = Label3D.new()
 	_label.text = text
 	_label.font = FONT
@@ -119,7 +143,8 @@ func _rebuild() -> void:
 	_label.layers = RenderLayers.EFFECTS
 	_parts.add_child(_label)
 	if arrow != Arrow.NONE:
-		var at := Vector3(width / 2.0 - MARGIN - ARROW_LENGTH * 0.3, 0.0, 0.04)
+		var side: float = -1.0 if arrow_first else 1.0
+		var at := Vector3(side * (width / 2.0 - MARGIN - ARROW_LENGTH * 0.3), 0.0, 0.04)
 		if text.is_empty():
 			at.x = 0.0
 		_add_arrow(at, tube)

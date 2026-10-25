@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://c4cyv6r7rc7df" path="res://game/stations/med_bed/med_bed.tscn" id="med_bed"]
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://cxih2upgkspuc" path="res://game/npcs/crew/medic.tres" id="91_profile"]
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_respawn_pad"]
 albedo_color = Color(0.35, 0.75, 0.55, 1)
@@ -27,14 +28,11 @@ size = Vector3(1.2, 0.7, 2.2)
 
 [node name="MedicalBay" type="Node3D"]
 
-[node name="Sign" type="Label3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
-pixel_size = 0.01
+[node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, -5.72)
 text = "Medical bay"
-font_size = 96
-outline_size = 24
-uppercase = true
+color = Color(0.75, 1, 0.85, 1)
+font_size = 56
 
 [node name="RespawnPad" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)

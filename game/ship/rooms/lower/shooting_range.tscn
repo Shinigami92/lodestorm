@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://curuiumocswp3" path="res://game/camera/camera_zone.gd" id="6_camera_zone"]
 [ext_resource type="Shader" uid="uid://bflh6hi53tf0h" path="res://assets/shaders/hologram.gdshader" id="5_hologram"]
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_target"]
 albedo_color = Color(0.85, 0.82, 0.75, 1)
@@ -53,14 +54,11 @@ size = Vector3(2, 3, 0.5)
 
 [node name="ShootingRange" type="Node3D"]
 
-[node name="Sign" type="Label3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
-pixel_size = 0.01
+[node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 2.15, -5.72)
 text = "Shooting range"
-font_size = 96
-outline_size = 24
-uppercase = true
+color = Color(1, 0.3, 0.25, 1)
+font_size = 56
 
 [node name="Target1" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.85, 0.8, -3)

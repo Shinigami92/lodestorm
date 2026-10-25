@@ -3,17 +3,16 @@ the nose with the cockpit's canopy, two nacelles on sponsons at the tail, six le
 docs/planned/ship-exterior.md).
 
 Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
-    tools/blender.sh assets/ship/source/ship_exterior_build.py wip <tag> [variant] [views] [legs]
+    tools/blender.sh assets/ship/source/ship_exterior_build.py wip <tag> [views] [legs]
     tools/blender.sh assets/ship/source/ship_exterior_build.py final
 
-variant: "ct" (taller and rounder with a dorsal trench, default), "b" (the box's skin with the trench) or
-"c" (round without it); views: comma-separated from iso, ramp, title, side, top, front (default all);
-legs: "down" (landed, default) or "up" (in flight, in space). Renders go to
-tmp/ship_exterior/<tag>_<variant>_<view>.png. "final" exports the default variant to
-assets/ship/ship_exterior.glb (legs down; the game moves them).
+views: comma-separated from iso, ramp, title, side, top, front (default all); legs: "down" (landed,
+default) or "up" (in flight, in space). Renders go to tmp/ship_exterior/<tag>_<view>.png. "final"
+exports assets/ship/ship_exterior.glb (legs down; the game moves them).
 
-The layout comes from game/ship/hull_layout.py (Godot axes: +x tail, +z towards the camera, y up). Here
-Blender's axes: +x tail, -y towards the camera, z up. Sections are (w, h): w across (|y|), h up.
+The layout and the skin's shape come from game/ship/hull_layout.py (Godot axes: +x tail, +z towards the
+camera, y up), which the greybox hull checks its rooms against. Here Blender's axes: +x tail, -y towards
+the camera, z up. Sections are (w, h): w across (|y|), h up.
 """
 
 import math
@@ -37,9 +36,8 @@ import common as C
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
 TAG = ARGV[1] if len(ARGV) > 1 else "r0"
-VARIANT = ARGV[2] if len(ARGV) > 2 else "ct"
-VIEWS = ARGV[3].split(",") if len(ARGV) > 3 else ["iso", "ramp", "title", "side", "top", "front"]
-LEGS_DOWN = (ARGV[4] if len(ARGV) > 4 else "down") == "down"
+VIEWS = ARGV[2].split(",") if len(ARGV) > 2 else ["iso", "ramp", "title", "side", "top", "front"]
+LEGS_DOWN = (ARGV[3] if len(ARGV) > 3 else "down") == "down"
 C.reset("Ship")
 
 # --- materials -------------------------------------------------------------------------------------
@@ -74,84 +72,18 @@ M_HULL, M_DARK, M_GLASS, M_GLOW, M_EYE, M_AMBER, M_NOZZLE, M_HULL2 = range(len(M
 X0, X1 = L.BOX_X
 W_BOX = L.BOX_Z
 H0, H1 = L.BOX_Y
-MARGIN = 0.3  # the skin's thickness: it keeps this far outside the box everywhere
-BELLY = H0 - MARGIN
-# Window belts: dark recessed bands along each deck, the windows in them.
-BELTS = [(L.LOW + 0.7, L.LOW + 3.3), (L.UP + 0.8, L.UP + 3.2)]
-BELT_DEPTH = 0.45
-
-# Half sections from the belly's middle round to the top's middle (mirrored for the other side): (w, h,
-# material of the stretch up to the next point).
-PROFILES = {
-    # The box's skin: a flat belly, the lower sides bulging out, the upper sides leaning in, the shoulders
-    # rising into two ridges with a dark trench between them along the top.
-    "b": [
-        (0.0, BELLY, M_HULL2),
-        (13.0, BELLY, M_HULL2),
-        (15.7, BELLY + 0.05, M_HULL),
-        (16.5, 2.6, M_HULL),
-        (16.6, BELTS[0][0] - 0.2, M_DARK),
-        (16.6 - BELT_DEPTH, BELTS[0][0], M_DARK),
-        (16.6 - BELT_DEPTH, BELTS[0][1], M_DARK),
-        (16.6, BELTS[0][1] + 0.2, M_HULL),
-        (16.4, BELTS[1][0] - 0.2, M_DARK),
-        (16.4 - BELT_DEPTH, BELTS[1][0], M_DARK),
-        (16.2 - BELT_DEPTH, BELTS[1][1], M_DARK),
-        (16.2, BELTS[1][1] + 0.2, M_HULL),
-        (15.5, 12.0, M_HULL),
-        (14.0, 13.5, M_HULL),
-        (9.6, 13.7, M_DARK),
-        (8.9, 12.8, M_DARK),
-        (0.0, 12.8, M_DARK),
-    ],
-    # Taller and rounder: the box sits low in it, the round top well above the roof.
-    "c": [
-        (0.0, BELLY, M_HULL2),
-        (12.5, BELLY, M_HULL2),
-        (15.6, BELLY + 0.1, M_HULL),
-        (16.9, 2.6, M_HULL),
-        (17.3, BELTS[0][0] - 0.2, M_DARK),
-        (17.3 - BELT_DEPTH, BELTS[0][0], M_DARK),
-        (17.4 - BELT_DEPTH, BELTS[0][1], M_DARK),
-        (17.5, BELTS[0][1] + 0.2, M_HULL),
-        (17.4, BELTS[1][0] - 0.2, M_DARK),
-        (17.4 - BELT_DEPTH, BELTS[1][0], M_DARK),
-        (17.2 - BELT_DEPTH, BELTS[1][1], M_DARK),
-        (17.2, BELTS[1][1] + 0.2, M_HULL),
-        (16.6, 12.6, M_HULL),
-        (15.3, 14.4, M_HULL),
-        (12.8, 16.0, M_HULL),
-        (8.8, 17.0, M_HULL),
-        (4.2, 17.5, M_HULL),
-        (0.0, 17.6, M_HULL),
-    ],
-}
-# Round like c, with b's trench along the top between two rounded ridges.
-PROFILES["ct"] = PROFILES["c"][:15] + [(10.8, 16.6, M_DARK), (10.1, 15.9, M_DARK), (0.0, 15.9, M_DARK)]
-PROFILE = PROFILES[VARIANT]
-TRENCH = VARIANT in ("b", "ct")
+MARGIN = L.SKIN_MARGIN  # the skin's thickness: it keeps this far outside the box everywhere
+BELTS = L.BELTS
+TAGS = {"hull": M_HULL, "hull2": M_HULL2, "dark": M_DARK}
+# Half section from the belly's middle round to the top's middle: (w, h, material of the stretch up to
+# the next point); the last points are the dorsal trench's floor.
+PROFILE = [(w, h, TAGS[tag]) for w, h, tag in L.SKIN]
 TRENCH_FLOOR = PROFILE[-1][1]
 TOP_H = max(h for _, h, _ in PROFILE)
 
-
-def check_profile() -> None:
-    """Fails if the box (with the skin's thickness) isn't inside the section."""
-    poly = [(w, h) for w, h, _ in PROFILE] + [(-w, h) for w, h, _ in reversed(PROFILE)]
-
-    def inside(x: float, y: float) -> bool:
-        hit = False
-        for i in range(len(poly)):
-            (x0, y0), (x1, y1) = poly[i], poly[(i + 1) % len(poly)]
-            if (y0 > y) != (y1 > y) and x < x0 + (y - y0) * (x1 - x0) / (y1 - y0):
-                hit = not hit
-        return hit
-
-    for h in [H0 - MARGIN * 0.7] + [H0 + (H1 - H0) * i / 10 for i in range(11)] + [H1 + MARGIN * 0.7]:
-        assert inside(W_BOX + MARGIN * 0.7, h), f"variant {VARIANT}: the box pokes out of the skin at h {h:.2f}"
-
-
-check_profile()
-assert max(h for _, h, _ in PROFILE) <= L.TAIL_TOP, "the hull outgrows the tail's top"
+for _h in [H0 + (H1 - H0) * i / 10 for i in range(11)]:
+    assert L.inside_skin(X0, W_BOX, _h, MARGIN * 0.7), f"the box pokes out of the skin at h {_h:.2f}"
+assert TOP_H <= L.TAIL_TOP, "the hull outgrows the tail's top"
 assert max(w for w, h, _ in PROFILE if h < 7.0) <= L.LOWER_SIDE, "the lower sides outgrow the clamps"
 
 
@@ -224,27 +156,11 @@ def loft(name: str, stations, caps=(True, True), bevel=None, solid: float = 0.0)
 
 # --- the skin --------------------------------------------------------------------------------------
 
-NOSE_X0 = X0 - 0.4  # the taper starts in front of the box's nose wall
-NOSE_TIP = X0 - 25.0
-NOSE_HC = 5.6  # the height the nose closes towards (the sensor eye's center)
-NOSE_MIN = (0.28, 0.4)  # the tip's section, as a share of the full one (across, up)
-TAIL_X = X1 + MARGIN
-
-
-def nose_scale(x: float) -> tuple[float, float]:
-    """The section's scale (across, up) at x: in the nose, rounded in the top view, the top sloping down
-    to the eye in the side view."""
-    if x >= NOSE_X0:
-        return 1.0, 1.0
-    t = min(1.0, (NOSE_X0 - x) / (NOSE_X0 - NOSE_TIP))
-    across = math.sqrt(max(0.0, 1 - t**2.2))
-    up = 1 - t**1.25
-    return NOSE_MIN[0] + (1 - NOSE_MIN[0]) * across, NOSE_MIN[1] + (1 - NOSE_MIN[1]) * up
+NOSE_X0, NOSE_TIP, NOSE_HC, TAIL_X = L.NOSE_X0, L.NOSE_TIP, L.NOSE_HC, L.TAIL_X
 
 
 def section_at(x: float, profile=None):
-    sw, sh = nose_scale(x)
-    return [(w * sw, NOSE_HC + (h - NOSE_HC) * sh, m) for w, h, m in (profile or PROFILE)]
+    return L.skin_section(x, profile or PROFILE)
 
 
 def skin_h_top(x: float) -> float:
@@ -308,7 +224,10 @@ def room_glow() -> None:
     """Warm panes where the rooms' windows are (the greybox walls' glass), seen through the holes."""
     p = C.Part("RoomGlow", MATS, bevel=None)
     for _deck, floor, side, x, width in windows():
-        p.box((x, -side * (W_BOX - 0.4), floor + 2.0), (width, 0.1, 2.0), mi=M_GLOW)
+        p.box((x, -side * (L.ZI + 0.25 + L.NICHE), floor + 2.0), (width, 0.1, 2.0), mi=M_GLOW)
+    x_front, _ = L.COCKPIT_OUTLINE[-1]
+    for z, width in L.COCKPIT_WINDOWS:
+        p.box((x_front + 0.2, -z, L.UP + 2.0), (0.1, width, 2.0), mi=M_GLOW)
     p.box((X1 - 0.6, 0.0, L.LOW + L.RAMP_DOOR_HEIGHT / 2), (0.1, L.RAMP_WIDTH, L.RAMP_DOOR_HEIGHT), mi=M_GLOW)
     # Only in the renders: in the game the rooms themselves show through.
     preview_obj(p.finish(None))
@@ -318,36 +237,29 @@ def room_glow() -> None:
 
 
 def dorsal() -> None:
-    """The machinery along the top: radiators and vents in the trench (b) or on the round top (c), the
-    sensor dome and the antenna mast."""
+    """The machinery along the top: radiators and vents in the trench, the sensor dome and the antenna
+    mast."""
     p = C.Part("Dorsal", MATS, bevel=(0.05, 2))
-    if TRENCH:
-        floor = TRENCH_FLOOR
-        ridge = max(w for w, h, _ in PROFILE if h > floor + 0.5 and w < 13.0)
-        ridge_h = max(h for _, h, _ in PROFILE)
-        for i in range(7):
-            x = -66.0 + i * 9.0
-            p.box((x, 0.0, floor + 0.4), (6.5, 6.0, 0.8), mi=M_HULL2)
-            for k in range(5):
-                p.box((x - 2.4 + k * 1.2, 0.0, floor + 0.95), (0.25, 5.2, 0.4), mi=M_DARK)
-        p.sphere((-70.0, ridge - 1.0, ridge_h), 1.5, seg=16, rings=8, mi=M_HULL)
-        p.rod((-8.0, -(ridge - 1.0), ridge_h), (-8.0, -(ridge - 1.0), ridge_h + 6.5), 0.15, mi=M_DARK)
-        p.box((-8.0, -(ridge - 1.0), ridge_h + 4.5), (0.1, 2.2, 0.1), mi=M_DARK)
-    else:
-        for i in range(6):
-            x = -64.0 + i * 10.0
-            for s in (-1, 1):
-                p.box((x, s * 6.0, TOP_H - 0.6), (7.0, 3.6, 1.0), mi=M_DARK)
-        p.sphere((-70.0, 0.0, TOP_H - 0.2), 1.6, seg=16, rings=8, mi=M_HULL)
-        p.rod((-8.0, 2.0, TOP_H - 0.5), (-8.0, 2.0, TOP_H + 6.0), 0.15, mi=M_DARK)
+    floor = TRENCH_FLOOR
+    ridge = max(w for w, h, _ in PROFILE if h > floor + 0.5 and w < 13.0)
+    ridge_h = max(h for _, h, _ in PROFILE)
+    for i in range(7):
+        x = -66.0 + i * 9.0
+        p.box((x, 0.0, floor + 0.4), (6.5, 6.0, 0.8), mi=M_HULL2)
+        for k in range(5):
+            p.box((x - 2.4 + k * 1.2, 0.0, floor + 0.95), (0.25, 5.2, 0.4), mi=M_DARK)
+    p.sphere((-70.0, ridge - 1.0, ridge_h), 1.5, seg=16, rings=8, mi=M_HULL)
+    p.rod((-8.0, -(ridge - 1.0), ridge_h), (-8.0, -(ridge - 1.0), ridge_h + 6.5), 0.15, mi=M_DARK)
+    p.box((-8.0, -(ridge - 1.0), ridge_h + 4.5), (0.1, 2.2, 0.1), mi=M_DARK)
     p.finish(ROOT_OBJ)
 
 
 def canopy() -> None:
-    """The cockpit's canopy on the nose: a raised hood with framed panes sloping down to the front."""
+    """The cockpit's canopy on the nose, over the cockpit: a raised hood with framed panes sloping down
+    to the front."""
     p = C.Part("Canopy", MATS, bevel=(0.05, 2))
-    x_back, x_front = X0 + 4.0, X0 - 11.0
-    top = skin_h_top(X0) + 0.6
+    x_back, x_front = L.COCKPIT_OUTLINE[1][0] + 2.0, L.COCKPIT_OUTLINE[-1][0] - 3.0
+    top = skin_h_top(x_back) + 0.6
     low = skin_h_top(x_front) - 0.6
     half_back, half_front = 8.5, 5.0
     # The hood: a wedge from its back (at the roof) to its front edge low on the nose.
@@ -403,7 +315,7 @@ NACELLE_LENGTH = 32.0
 
 
 def nacelle_center() -> tuple[float, float]:
-    return (21.5, 11.0) if VARIANT == "b" else (22.4, 12.0)
+    return 22.4, 12.0
 
 
 def sponsons() -> None:
@@ -611,7 +523,7 @@ def render(view: str) -> None:
         camera(Vector((mid.x, 0, 200)), Vector((mid.x, 0.001, 0)), ortho=135)
     elif view == "front":
         camera(Vector((X1 + 150, 0, 9)), Vector((X1, 0, 9)), ortho=60)
-    path = OUT / f"{TAG}_{VARIANT}_{view}.png"
+    path = OUT / f"{TAG}_{view}.png"
     path.parent.mkdir(parents=True, exist_ok=True)
     scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
@@ -635,7 +547,7 @@ preview()
 if MODE == "wip":
     for v in VIEWS:
         render(v)
-    C.save_blend(OUT / f"{TAG}_{VARIANT}.blend")
+    C.save_blend(OUT / f"{TAG}.blend")
 elif MODE == "final":
     C.export_glb(ROOT / "assets" / "ship" / "ship_exterior.glb")
     print("tris", C.stats())

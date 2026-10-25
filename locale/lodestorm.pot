@@ -1888,6 +1888,10 @@ msgstr ""
 msgid "Miners"
 msgstr ""
 
+#: game/ship/rooms/lower/specimen_lab.tscn
+msgid "Specimen lab"
+msgstr ""
+
 #: game/ship/rooms/lower/weapons.tscn
 msgid "Weapons"
 msgstr ""

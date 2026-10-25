@@ -26,6 +26,7 @@
 [ext_resource type="PackedScene" uid="uid://pioxtj57jlvk" path="res://game/ship/rooms/upper/crew_7.tscn" id="75_crew_7"]
 [ext_resource type="PackedScene" uid="uid://bw62jq8ykdwru" path="res://game/ship/rooms/upper/crew_4.tscn" id="76_crew_4"]
 [ext_resource type="PackedScene" uid="uid://n6hnmmk4vwfx" path="res://game/ship/rooms/upper/crew_8.tscn" id="77_crew_8"]
+[ext_resource type="PackedScene" uid="uid://bd66ics55wo5u" path="res://game/ship/rooms/lower/specimen_lab.tscn" id="92_specimen_lab"]
 [ext_resource type="PackedScene" uid="uid://ds53bpwny3pdg" path="res://game/ship/rooms/lower/medical_bay.tscn" id="78_medical_bay"]
 [ext_resource type="PackedScene" uid="uid://2jwixpr1oqas" path="res://game/ship/rooms/lower/nose_corridor.tscn" id="79_nose_corridor"]
 [ext_resource type="PackedScene" uid="uid://ce4h8o3dea7nk" path="res://game/ship/rooms/lower/engine_room.tscn" id="80_engine_room"]
@@ -129,7 +130,10 @@ size = Vector3(0.42, 0.02, 0.64)
 size = Vector3(0.3, 0.06, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_interior"]
-size = Vector3(95, 8.5, 29)
+size = Vector3(95, 10, 31.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_interior_nose"]
+size = Vector3(18.75, 10, 29.5)
 
 [node name="Ship" type="Node3D" unique_id=1468279383]
 script = ExtResource("1_script")
@@ -143,6 +147,9 @@ flight = NodePath("../Flight")
 [node name="Rooms" type="Node3D" parent="." unique_id=332082984]
 
 [node name="Lower" type="Node3D" parent="Rooms" unique_id=860414341]
+
+[node name="SpecimenLab" parent="Rooms/Lower" instance=ExtResource("92_specimen_lab")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -85.25, 2.5, 0)
 
 [node name="MedicalBay" parent="Rooms/Lower" unique_id=2047369333 instance=ExtResource("78_medical_bay")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -8.75)
@@ -288,10 +295,10 @@ uppercase = true
 [node name="Upper" type="Node3D" parent="Rooms" unique_id=1958295115]
 
 [node name="Cockpit" parent="Rooms/Upper" unique_id=1320851103 instance=ExtResource("61_cockpit")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.5, 7, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 7, 0)
 
 [node name="Bridge" parent="Rooms/Upper" unique_id=1943368321 instance=ExtResource("62_bridge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 7, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 7, 0)
 
 [node name="UpperLobby" parent="Rooms/Upper" unique_id=502766582 instance=ExtResource("63_upper_lobby")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 7, 6)
@@ -654,11 +661,15 @@ cast_shadow = 0
 mesh = SubResource("BoxMesh_button_face")
 
 [node name="Interior" type="Area3D" parent="." unique_id=732979715]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 6.75, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 7.5, 0)
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Interior" unique_id=941260892]
 shape = SubResource("BoxShape3D_interior")
+
+[node name="Nose" type="CollisionShape3D" parent="Interior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56.875, 0, 0)
+shape = SubResource("BoxShape3D_interior_nose")
 
 [node name="Boarding" type="Marker3D" parent="." unique_id=310733272]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 2.5, 0)

@@ -12,9 +12,20 @@ extends Resource
 @export var display_name: String
 ## What they do, e.g. "Quartermaster" (the English text, translated).
 @export var role: String
-## Their own color: the suit's collar light (the player's shows health instead).
+## Their own model (e.g. assets/npcs/nell/nell.glb: a person made with MakeHuman, with "Idle" and
+## "Walk", see docs/TECHNICAL.md, People). None: the players' suit, in `suit_tint`.
+@export var model: PackedScene
+## Clips of their model they play now and then while no player is close, one at a time with a pause
+## of standing between them (e.g. the bartender wiping the counter, polishing a glass, shelving a
+## bottle; see `NpcAnimator`).
+@export var activities: Array[StringName] = []
+## What their hands hold while they work: a prop's model per grip, put on the model's "<name>Grip"
+## marker (its bone shows and hides it, by the clips), e.g. "Glass": assets/props/bar/glass.glb.
+@export var props: Dictionary[StringName, PackedScene] = {}
+## Their own color: the suit's collar light (the player's shows health instead), their name in a
+## radio call.
 @export var accent_color: Color = Color(0.3, 0.85, 1.0)
-## Multiplies the suit's colors, so crew look darker than players.
+## Multiplies the suit's colors, so crew look darker than players (not on an own model).
 @export var suit_tint: Color = Color(0.7, 0.7, 0.75)
 ## What they wear over the suit, so they read apart from the camera (greybox until their own model,
 ## e.g. the pilot's headset): a scene whose children are named after the suit model's bones and

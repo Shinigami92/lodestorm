@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://csbgcijbw6of8" path="res://game/npcs/npc_body.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://yj82i5sgqayt" path="res://assets/player/player.glb" id="2_model"]
-[ext_resource type="Script" uid="uid://dqnkf5jxxct5w" path="res://game/player/player_animator.gd" id="3_animator"]
+[ext_resource type="Script" uid="uid://bi3trku1rg8nc" path="res://game/npcs/npc_animator.gd" id="3_animator"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35

@@ -1,0 +1,31 @@
+{
+  "made_by": "TRELLIS.2 (image to 3D) on a concept image made with Z-Image Turbo, both run locally in ComfyUI",
+  "used_for": "what Nell wears and her hair (her body, face and skeleton are MakeHuman's), see nell_build.py",
+  "concept": {
+    "file": "nell_concept.png",
+    "model": "Z-Image Turbo (z_image_turbo_bf16, Tongyi-MAI, Apache-2.0)",
+    "text_encoder": "qwen_3_4b",
+    "size": [
+      1024,
+      1024
+    ],
+    "seed": 6,
+    "steps": 8,
+    "cfg": 1.0,
+    "sampler": "res_multistep / simple, shift 3",
+    "prompt": "photorealistic AAA sci-fi game character render, detailed weathered PBR materials, dark moody low-key lighting with a strong cool rim light, plain dark grey studio background, no holographic panels. Subject: Nell, the bartender of a frontier space station, a sturdy woman in her forties with light skin and a calm knowing look, brown hair pulled back tightly from her face into one long braid hanging down her back, a dark slate-blue work jacket with the sleeves rolled up to the elbows, tattooed forearms, brown leather apron straps over the shoulders with metal buckles, a mottled pale grey canvas bib apron with brown stains reaching down to the knees, a brown leather belt with small pouches worn over the apron, fingerless dark leather gloves, dark grey cargo trousers with knee pads, brown lace-up work boots, standing in a relaxed A-pose, both arms held out and away from the body at 45 degrees with a clear gap between the arms and the torso, empty open hands with spread fingers, nothing in the hands, legs slightly apart, feet flat, full body visible from head to boots, centered, single character, front view, facing the camera.",
+    "reference": "local batch-8 concept nell 02_v2 (the look this one keeps, re-rendered in an A-pose)"
+  },
+  "mesh": {
+    "file": "nell_trellis.glb",
+    "tool": "tools/trellis.py",
+    "model": "TRELLIS.2 (trellis_2_bf16, Microsoft, MIT)",
+    "image_encoder": "DINOv3 ViT-L (dino_v3_vit_l, Meta, DINOv3 License)",
+    "background_removal": "BiRefNet (birefnet, MIT)",
+    "comfyui": "0.42.0",
+    "seed": 42,
+    "faces": 80000,
+    "texture_size": 4096,
+    "date": "2026-10-25"
+  }
+}

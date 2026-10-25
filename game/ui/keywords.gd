@@ -1,10 +1,11 @@
 class_name Keywords
 extends RefCounted
 ## Names in spoken lines (speech bubbles and radio calls, not cards) stand out in their own color:
-## people, the star and its planets, moons, stations and regions, the weapons, ores and alloys,
-## read from where they're defined, so a renamed one stays highlighted. Alien strains aren't among
-## them: their names are common words (German "Heiler", "Wächter"). A name is matched as a whole
-## word in the language shown, also with a German genitive "s" ("Gaulms Monde").
+## people, the star and its planets, moons, stations and regions (a body also by its short name,
+## "Ostra"), the weapons, ores and alloys, read from where they're defined, so a renamed one stays
+## highlighted. Alien strains aren't among them: their names are common words (German "Heiler",
+## "Wächter"). A name is matched as a whole word in the language shown, also with a German genitive
+## "s" ("Gaulms Monde").
 
 ## The color names show in, apart from the text's pale blue and the frame's cyan.
 const COLOR := Color(1.0, 0.85, 0.5)
@@ -37,6 +38,7 @@ static func names() -> PackedStringArray:
 	found.append(system.display_name)
 	for body: CelestialBody in system.bodies:
 		found.append(body.display_name)
+		found.append(body.short_name)
 		for region: Region in body.regions:
 			found.append(region.display_name)
 	var arsenal := load(ARSENAL) as Arsenal

@@ -34,6 +34,15 @@ func test_names_are_colored() -> void:
 	)
 
 
+func test_a_station_is_also_found_by_its_short_name() -> void:
+	TranslationServer.set_locale("de")
+	var color: String = Keywords.COLOR.to_html(false)
+	assert_eq(
+		Keywords.highlight("Auf Ostra, Waypost Ostra"),
+		"Auf [color=#%s]Ostra[/color], [color=#%s]Waypost Ostra[/color]" % [color, color]
+	)
+
+
 func test_only_whole_names_match() -> void:
 	assert_eq(Keywords.highlight("Out of range, Nellie."), "Out of range, Nellie.")
 	assert_eq(Keywords.highlight("brask"), "brask", "the case counts")

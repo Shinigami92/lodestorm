@@ -3,6 +3,7 @@
 [ext_resource type="StandardMaterial3D" uid="uid://d0bdki1n4b0el" path="res://game/ship/materials/prop.tres" id="mat_prop"]
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://bfb5jhhy2trv5" path="res://game/npcs/crew/cook.tres" id="91_profile"]
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_prop"]
 material = ExtResource("mat_prop")
@@ -12,14 +13,11 @@ size = Vector3(8, 0.9, 1.6)
 
 [node name="MessHall" type="Node3D"]
 
-[node name="Sign" type="Label3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 4.5)
-pixel_size = 0.01
+[node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.95, -14.47)
 text = "Mess hall"
-font_size = 96
-outline_size = 24
-uppercase = true
+color = Color(1, 0.8, 0.4, 1)
+font_size = 56
 
 [node name="Table1" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -7)

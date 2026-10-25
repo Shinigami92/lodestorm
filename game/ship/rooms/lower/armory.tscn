@@ -9,10 +9,10 @@
 [node name="Armory" type="Node3D"]
 
 [node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, -5.62)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 2.65, -5.2)
 text = "Armory"
 color = Color(1, 0.6, 0.16, 1)
-font_size = 64
+font_size = 56
 
 [node name="Locker1" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("12_loadout_locker")]
 wall = NodePath("../WeaponWall")

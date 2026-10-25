@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cj12d1sv1uynn"]
 
 [ext_resource type="StandardMaterial3D" uid="uid://bd4esevpwqv63" path="res://game/ship/materials/bed.tres" id="mat_bed"]
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_bed"]
 material = ExtResource("mat_bed")
@@ -10,14 +11,11 @@ size = Vector3(1.2, 0.5, 2.2)
 
 [node name="Crew1" type="Node3D"]
 
-[node name="Sign" type="Label3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 2.75)
-pixel_size = 0.01
+[node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.95, -5.72)
 text = "Crew 1"
-font_size = 72
-outline_size = 24
-uppercase = true
+color = Color(1, 0.72, 0.48, 1)
+font_size = 36
 
 [node name="Bed" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 0.25, -4.45)

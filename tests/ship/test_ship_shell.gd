@@ -93,6 +93,25 @@ func test_doors_and_lights_from_the_layout() -> void:
 		assert_not_null(hull.find_child(room + "Reflections", true, false), room)
 
 
+## Every room's name is a neon sign on a wall in the room's accent color (no paint on the floor),
+## and the guides are signs with arrows.
+func test_room_names_and_guides_are_signs() -> void:
+	for deck: Node in _ship.get_node("Rooms").get_children():
+		for room: Node in [deck] + deck.get_children():
+			var sign_node: Node = room.get_node_or_null("Sign")
+			if not sign_node:
+				continue
+			var neon := sign_node as NeonSign
+			assert_not_null(neon, "%s's name is a neon sign" % room.name)
+			if neon:
+				var look: RoomLook = ShipShell.LOOKS.get_look(room.name)
+				assert_eq(neon.color, look.accent_color, String(room.name))
+	assert_eq(_ship.find_children("*", "FloorGuide", true, false).size(), 0)
+	for guides: String in ["Rooms/Lower/Guides", "Rooms/Upper/Guides"]:
+		for guide: Node in _ship.get_node(guides).get_children():
+			assert_ne((guide as NeonSign).arrow, NeonSign.Arrow.NONE, guide.name)
+
+
 ## A sign's backing grows with its translated text.
 func test_neon_sign_fits_its_text() -> void:
 	var neon := _ship.get_node("Rooms/Lower/Armory/Sign") as NeonSign

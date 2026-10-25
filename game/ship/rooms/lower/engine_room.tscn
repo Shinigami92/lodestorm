@@ -3,17 +3,16 @@
 [ext_resource type="PackedScene" uid="uid://c1173nrdfc7v8" path="res://game/stations/heat_shield/drive_core.tscn" id="1_drive_core"]
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://dvd7ogckuu0u5" path="res://game/npcs/crew/engineer.tres" id="91_profile"]
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 
 [node name="EngineRoom" type="Node3D"]
 
-[node name="Sign" type="Label3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, -4.25)
-pixel_size = 0.01
+[node name="Sign" parent="." instance=ExtResource("30_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 1.75, -5.72)
 text = "Engine room"
-font_size = 96
-outline_size = 24
-uppercase = true
+color = Color(1, 0.42, 0.12, 1)
+font_size = 56
+anchor = 1
 
 [node name="DriveCore" parent="." instance=ExtResource("1_drive_core")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 0.5)

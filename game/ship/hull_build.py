@@ -312,7 +312,12 @@ def main():
     nodes = ['[node name="Hull" type="StaticBody3D"]', ""]
     for parent, name in [(".", "LowerCut"), (".", "Upper"), ("Upper", "Cut")]:
         nodes += [f'[node name="{name}" type="Node3D" parent="{parent}"]', ""]
-    nodes += box_kit.nodes()
+    walls = box_kit.nodes()
+    # The lower deck's floor slab stays greybox (the ship's outline on the holo table) just under the
+    # kit's floor plates: casting shadows that close, it would darken them.
+    floor = walls.index('[node name="Floor" type="MeshInstance3D" parent="."]')
+    walls.insert(floor + 1, "cast_shadow = 0")
+    nodes += walls
 
     # The nose's and the legs' shapes (the model is ShipExterior's): the nose keeps players and aliens
     # out from under it, each leg's pad blocks them where it stands.

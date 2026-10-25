@@ -1,0 +1,31 @@
+{
+  "made_by": "TRELLIS.2 (image to 3D) on a concept image made with Z-Image Turbo, both run locally in ComfyUI",
+  "used_for": "what Kade wears and his head (face, hair and beard); his skeleton, its weights and his hands are MakeHuman's, see kade_build.py",
+  "concept": {
+    "file": "kade_concept.png",
+    "model": "Z-Image Turbo (z_image_turbo_bf16, Tongyi-MAI, Apache-2.0)",
+    "text_encoder": "qwen_3_4b",
+    "size": [
+      1024,
+      1024
+    ],
+    "seed": 6,
+    "steps": 8,
+    "cfg": 1.0,
+    "sampler": "res_multistep / simple, shift 3",
+    "prompt": "photorealistic AAA sci-fi game character render, detailed weathered PBR materials, dark moody low-key lighting with a strong cool rim light, plain dark grey studio background, no holographic panels. Subject: Kade, the depot master of a frontier space station, a broad-shouldered heavy-set man in his early fifties with light weathered skin and a gruff but fair look, short dark brown hair graying at the sides and swept back, a full thick beard gray at the chin, a stained pale beige-grey heavy work jacket and matching work overalls, a dark charcoal front panel down the chest and a high collar lined with orange, orange high-visibility reflective stripes across the chest, around the sleeves' cuffs and around the shins, a dark padded guard on the right shoulder, a brown leather strap across the chest, a wide dark utility belt with small pouches, thick black padded work gloves with wrist straps, dark armored knee pads, heavy black work boots, standing in a relaxed A-pose, both arms held out and away from the body at 45 degrees with a clear gap between the arms and the torso, empty open hands with spread fingers, nothing in the hands, nothing on the back, legs slightly apart, feet flat, full body visible from head to boots, centered, single character, front view, facing the camera.",
+    "reference": "local batch-8 concept kade 03_v3 (the look this one keeps, re-rendered in an A-pose)"
+  },
+  "mesh": {
+    "file": "kade_trellis.glb",
+    "tool": "tools/trellis.py",
+    "model": "TRELLIS.2 (trellis_2_bf16, Microsoft, MIT)",
+    "image_encoder": "DINOv3 ViT-L (dino_v3_vit_l, Meta, DINOv3 License)",
+    "background_removal": "BiRefNet (birefnet, MIT)",
+    "comfyui": "0.42.0",
+    "seed": 42,
+    "faces": 80000,
+    "texture_size": 4096,
+    "date": "2026-10-25"
+  }
+}

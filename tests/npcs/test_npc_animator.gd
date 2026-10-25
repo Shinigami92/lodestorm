@@ -4,6 +4,7 @@ extends GutTest
 
 const BODY := preload("res://game/npcs/npc_body.tscn")
 const NELL: NpcProfile = preload("res://game/npcs/ostra/bartender.tres")
+const KADE: NpcProfile = preload("res://game/npcs/ostra/depot_master.tres")
 
 var _body: NpcBody
 var _animator: NpcAnimator
@@ -24,6 +25,15 @@ func test_own_model_with_its_head_and_props() -> void:
 		var grip := _body.find_child(String(prop) + "Grip", true, false) as Node3D
 		assert_not_null(grip, String(prop))
 		assert_eq(grip.get_child_count(), 1, "the prop's model on " + String(prop))
+
+
+## Kade wears his generated head (no MakeHuman face): the name plate goes above its hair.
+func test_own_head_model() -> void:
+	var kade := BODY.instantiate() as NpcBody
+	add_child_autofree(kade)
+	kade.profile = KADE
+	await wait_process_frames(2)
+	assert_almost_eq(kade.head_height, 1.79, 0.05, "the top of his hair")
 
 
 func test_works_while_nobody_is_close() -> void:

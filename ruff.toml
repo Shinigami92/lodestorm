@@ -20,4 +20,4 @@ ignore = [
 # The shared helpers in tools/blender/ (and tools/greybox.py for the greybox builders) and the ore kit's geometry module, put on sys.path by the
 # scripts that import them; the sound recipes next to assets/audio/source/build.py; the concept
 # tools in tools/concepts/ (batches, db, gen)
-known-first-party = ["bake", "batches", "common", "creature", "db", "gen", "generated", "greybox", "humanoid", "ore_geo", "people", "synth", "aliens", "mining", "mission", "player", "refinery", "stations", "weapons"]
+known-first-party = ["bake", "batches", "common", "creature", "db", "dressing", "gen", "generated", "greybox", "humanoid", "ore_geo", "people", "synth", "aliens", "mining", "mission", "player", "refinery", "stations", "weapons"]

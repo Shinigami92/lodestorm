@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="Sound" format=3 uid="uid://16w4etgedft3"]
+
+[ext_resource type="Script" uid="uid://bprf7wey4pgyv" path="res://game/audio/sound.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://dv5xv2sqps8o4" path="res://assets/audio/sfx/mission/door_1.wav" id="2_variant"]
+[ext_resource type="AudioStream" uid="uid://bi8x4u5rf3lk3" path="res://assets/audio/sfx/mission/door_2.wav" id="3_variant"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
+random_pitch = 1.06
+streams_count = 2
+stream_0/stream = ExtResource("2_variant")
+stream_1/stream = ExtResource("3_variant")
+
+[resource]
+script = ExtResource("1_script")
+stream = SubResource("AudioStreamRandomizer_variants")
+volume_db = -12.0
+limit = 2
+unit_size = 5.0
+max_distance = 25.0

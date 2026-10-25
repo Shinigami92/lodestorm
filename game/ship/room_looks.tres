@@ -1,0 +1,108 @@
+[gd_resource type="Resource" script_class="RoomLooks" format=3 uid="uid://wyds8ad3qh6n"]
+
+[ext_resource type="Script" uid="uid://cw0q8ecu56quv" path="res://game/ship/room_looks.gd" id="1_looks"]
+[ext_resource type="Script" uid="uid://7uc1y3mu8dqt" path="res://game/ship/room_look.gd" id="2_look"]
+
+[sub_resource type="Resource" id="Resource_Cockpit"]
+script = ExtResource("2_look")
+floor_tint = Color(0.85, 0.92, 1.05, 1)
+accent_color = Color(0.35, 0.7, 1, 1)
+
+[sub_resource type="Resource" id="Resource_Bridge"]
+script = ExtResource("2_look")
+floor_tint = Color(0.85, 0.92, 1.05, 1)
+accent_color = Color(0.35, 0.7, 1, 1)
+
+[sub_resource type="Resource" id="Resource_UpperLobby"]
+script = ExtResource("2_look")
+floor_tint = Color(0.95, 0.95, 0.97, 1)
+accent_color = Color(0.95, 0.88, 0.75, 1)
+
+[sub_resource type="Resource" id="Resource_UpperCorridor"]
+script = ExtResource("2_look")
+floor_tint = Color(0.95, 0.95, 0.97, 1)
+accent_color = Color(0.95, 0.88, 0.75, 1)
+
+[sub_resource type="Resource" id="Resource_MessHall"]
+script = ExtResource("2_look")
+floor_tint = Color(1.05, 0.98, 0.85, 1)
+accent_color = Color(1, 0.8, 0.4, 1)
+
+[sub_resource type="Resource" id="Resource_Cabin"]
+script = ExtResource("2_look")
+floor_tint = Color(1.02, 0.95, 0.88, 1)
+accent_color = Color(1, 0.72, 0.48, 1)
+
+[sub_resource type="Resource" id="Resource_Crew"]
+script = ExtResource("2_look")
+floor_tint = Color(1, 0.95, 0.9, 1)
+accent_color = Color(1, 0.72, 0.48, 1)
+
+[sub_resource type="Resource" id="Resource_SpecimenLab"]
+script = ExtResource("2_look")
+floor_tint = Color(0.9, 1.02, 0.96, 1)
+accent_color = Color(0.55, 1, 0.75, 1)
+
+[sub_resource type="Resource" id="Resource_MedicalBay"]
+script = ExtResource("2_look")
+floor_tint = Color(0.92, 1.02, 0.98, 1)
+accent_color = Color(0.75, 1, 0.85, 1)
+
+[sub_resource type="Resource" id="Resource_NoseCorridor"]
+script = ExtResource("2_look")
+floor_tint = Color(0.95, 0.95, 0.97, 1)
+accent_color = Color(0.95, 0.88, 0.75, 1)
+
+[sub_resource type="Resource" id="Resource_EngineRoom"]
+script = ExtResource("2_look")
+floor_tint = Color(1.05, 0.92, 0.82, 1)
+accent_color = Color(1, 0.42, 0.12, 1)
+
+[sub_resource type="Resource" id="Resource_LowerLobby"]
+script = ExtResource("2_look")
+floor_tint = Color(0.95, 0.95, 0.97, 1)
+accent_color = Color(0.95, 0.88, 0.75, 1)
+
+[sub_resource type="Resource" id="Resource_ShootingRange"]
+script = ExtResource("2_look")
+floor_tint = Color(0.95, 0.97, 0.95, 1)
+accent_color = Color(1, 0.3, 0.25, 1)
+
+[sub_resource type="Resource" id="Resource_Armory"]
+script = ExtResource("2_look")
+floor_tint = Color(1.02, 1, 0.95, 1)
+accent_color = Color(1, 0.6, 0.16, 1)
+
+[sub_resource type="Resource" id="Resource_LowerCorridor"]
+script = ExtResource("2_look")
+floor_tint = Color(0.95, 0.95, 0.97, 1)
+accent_color = Color(0.95, 0.88, 0.75, 1)
+
+[sub_resource type="Resource" id="Resource_Weapons"]
+script = ExtResource("2_look")
+floor_tint = Color(1.04, 0.95, 0.88, 1)
+accent_color = Color(1, 0.48, 0.28, 1)
+
+[sub_resource type="Resource" id="Resource_Armor"]
+script = ExtResource("2_look")
+floor_tint = Color(0.92, 1, 1, 1)
+accent_color = Color(0.3, 0.9, 0.85, 1)
+
+[sub_resource type="Resource" id="Resource_Skills"]
+script = ExtResource("2_look")
+floor_tint = Color(0.97, 0.94, 1.04, 1)
+accent_color = Color(0.72, 0.5, 1, 1)
+
+[sub_resource type="Resource" id="Resource_Miners"]
+script = ExtResource("2_look")
+floor_tint = Color(0.94, 1.02, 0.94, 1)
+accent_color = Color(0.55, 0.95, 0.55, 1)
+
+[sub_resource type="Resource" id="Resource_CargoBay"]
+script = ExtResource("2_look")
+floor_tint = Color(1, 0.96, 0.88, 1)
+accent_color = Color(1, 0.7, 0.22, 1)
+
+[resource]
+script = ExtResource("1_looks")
+looks = Dictionary[StringName, ExtResource("2_look")]({&"Cockpit": SubResource("Resource_Cockpit"), &"Bridge": SubResource("Resource_Bridge"), &"UpperLobby": SubResource("Resource_UpperLobby"), &"UpperCorridor": SubResource("Resource_UpperCorridor"), &"MessHall": SubResource("Resource_MessHall"), &"Cabin": SubResource("Resource_Cabin"), &"Crew": SubResource("Resource_Crew"), &"SpecimenLab": SubResource("Resource_SpecimenLab"), &"MedicalBay": SubResource("Resource_MedicalBay"), &"NoseCorridor": SubResource("Resource_NoseCorridor"), &"EngineRoom": SubResource("Resource_EngineRoom"), &"LowerLobby": SubResource("Resource_LowerLobby"), &"ShootingRange": SubResource("Resource_ShootingRange"), &"Armory": SubResource("Resource_Armory"), &"LowerCorridor": SubResource("Resource_LowerCorridor"), &"Weapons": SubResource("Resource_Weapons"), &"Armor": SubResource("Resource_Armor"), &"Skills": SubResource("Resource_Skills"), &"Miners": SubResource("Resource_Miners"), &"CargoBay": SubResource("Resource_CargoBay")})

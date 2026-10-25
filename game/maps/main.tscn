@@ -23,6 +23,10 @@ tonemap_mode = 4
 glow_enabled = true
 glow_intensity = 0.6
 glow_hdr_threshold = 1.2
+ssr_enabled = true
+ssr_max_steps = 48
+ssr_fade_in = 0.1
+ssr_fade_out = 1.5
 
 [node name="TestMap" type="Node3D" unique_id=1166237391]
 
@@ -39,6 +43,7 @@ shadow_enabled = true
 transform = Transform3D(-0.707107, 0.264887, -0.655618, 0, 0.927184, 0.374607, 0.707107, 0.264887, -0.655618, 0, 10, 0)
 light_color = Color(0.55, 0.72, 1, 1)
 light_energy = 0.45
+light_cull_mask = 4294967279
 
 [node name="Ship" parent="." unique_id=674942379 node_paths=PackedStringArray("viewer") instance=ExtResource("2_ship")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -20.506, 0, 20.506)

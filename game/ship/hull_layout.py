@@ -60,7 +60,21 @@ COCKPIT_WINDOWS = [(-3.6, 5.5), (3.6, 5.5)]
 # NICHE_SIDE m wider than the glass on each side and NICHE_HEIGHT m high.
 NICHE = 1.0
 NICHE_SIDE = 0.5
-NICHE_HEIGHT = 3.5
+NICHE_HEIGHT = 3.1
+
+# Where the shell is the kit's model (assets/ship/source/ship_shell_build.py) instead of greybox boxes:
+# regions (x0, x1, y0, y1, z0, z1) a wall piece's center lies in, and the x positions where walls along x
+# are split so their pieces end at a region's edge. So far the armory with its stretch of the lower
+# corridor (the test room); the rest follows.
+SHELL_REGIONS = [(-21.8, -3.2, LOW - 1.0, UP - 0.4, -ZI - 2.0, 0.0)]
+SHELL_SPLITS = [-21.75, -3.25]
+
+
+def dressed(center):
+    """Whether the wall piece centered at `center` (x, y, z) is the kit's."""
+    x, y, z = center
+    return any(x0 <= x <= x1 and y0 <= y <= y1 and z0 <= z <= z1 for x0, x1, y0, y1, z0, z1 in SHELL_REGIONS)
+
 
 RANGE_X = (-51.5, -22)
 ARMORY_X = (-21.5, -3.5)

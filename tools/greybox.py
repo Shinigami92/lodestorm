@@ -86,6 +86,19 @@ class Greybox:
         self.walls = []
         self.glass = []
         self.prisms = []
+        # x positions where walls along x are split into separate pieces (e.g. where a dressed region
+        # ends).
+        self.splits = []
+        # Whether a wall piece (by its center) is drawn by a model of its own: then only its collision
+        # shape is written, no mesh and no stub.
+        self.dressed = None
+
+    def _split(self, name, b0, b1):
+        """(name, b0, b1) per piece of a stretch along x, split at `splits` (suffixed a, b, ...)."""
+        cuts = [b0] + [s for s in sorted(self.splits) if b0 + 0.001 < s < b1 - 0.001] + [b1]
+        if len(cuts) == 2:
+            return [(name, b0, b1)]
+        return [(name + chr(ord("a") + i), cuts[i], cuts[i + 1]) for i in range(len(cuts) - 1)]
 
     def wall(
         self, name, axis, fixed, a0, a1, y0, y1, doors=(), group=None, stub_group=None, front=None, door_height=None
@@ -116,7 +129,13 @@ class Greybox:
         edges.append(a1)
         for i in range(0, len(edges), 2):
             suffix = "" if len(edges) == 2 else str(i // 2 + 1)
-            piece(name + suffix, edges[i], edges[i + 1], y0, y1, stub_group)
+            parts = (
+                self._split(name + suffix, edges[i], edges[i + 1])
+                if axis == "x"
+                else [(name + suffix, edges[i], edges[i + 1])]
+            )
+            for pname, b0, b1 in parts:
+                piece(pname, b0, b1, y0, y1, stub_group)
         for i, (c, w) in enumerate(sorted(doors)):
             suffix = "" if len(doors) == 1 else str(i + 1)
             piece(name + "Lintel" + suffix, c - w / 2, c + w / 2, y0 + door_height, y1, None)
@@ -177,7 +196,9 @@ class Greybox:
             edges += [c - w / 2, c + w / 2]
         edges.append(a1)
         for i in range(0, len(edges), 2):
-            piece(f"{name}Part{i // 2 + 1}", edges[i], edges[i + 1], y0, y1)
+            parts = self._split(f"{name}Part{i // 2 + 1}", edges[i], edges[i + 1])
+            for pname, b0, b1 in parts if axis == "x" else [(f"{name}Part{i // 2 + 1}", edges[i], edges[i + 1])]:
+                piece(pname, b0, b1, y0, y1)
         for i, (c, w) in enumerate(sorted(wins)):
             piece(f"{name}Sill{i + 1}", c - w / 2, c + w / 2, y0, y0 + sill)
             piece(f"{name}Header{i + 1}", c - w / 2, c + w / 2, y0 + sill + height, y1)
@@ -197,10 +218,10 @@ class Greybox:
             edges += [c - w / 2 - widen, c + w / 2 + widen]
         edges.append(a1)
         for i in range(0, len(edges), 2):
-            b0, b1 = edges[i], edges[i + 1]
-            if b1 - b0 > 0.001:
-                size, center = (b1 - b0, y1 - y0, 0.5), ((b0 + b1) / 2, (y0 + y1) / 2, fixed)
-                add((f"{name}Part{i // 2 + 1}", size, center, group, stub_group, "both", 0.0))
+            for pname, b0, b1 in self._split(f"{name}Part{i // 2 + 1}", edges[i], edges[i + 1]):
+                if b1 - b0 > 0.001:
+                    size, center = (b1 - b0, y1 - y0, 0.5), ((b0 + b1) / 2, (y0 + y1) / 2, fixed)
+                    add((pname, size, center, group, stub_group, "both", 0.0))
         # Between the wall's outer face and the niche's back wall (both 0.5 thick).
         inner, outer = fixed + out * 0.25, back - out * 0.25
         for i, (c, w) in enumerate(sorted(wins)):
@@ -238,13 +259,16 @@ class Greybox:
     def default_group(self):
         return next(iter(self.groups))
 
+    def is_dressed(self, piece):
+        return bool(self.dressed and self.dressed(piece[2]))
+
     def subresources(self):
         """The wall material, the walls' shapes and meshes, the glass and the stubs."""
         mid = self.material_id
         subs = [f'[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_{mid}"]'] + self.material_lines + [""]
         for s in unique({w[1] for w in self.walls if w[5] != "mesh"}):
             subs += [f'[sub_resource type="BoxShape3D" id="BoxShape3D_{sid(s)}"]', f"size = {vec(s)}", ""]
-        for s in unique({w[1] for w in self.walls if w[5] != "shape"}):
+        for s in unique({w[1] for w in self.walls if w[5] != "shape" and not self.is_dressed(w)}):
             subs += [
                 f'[sub_resource type="BoxMesh" id="BoxMesh_{sid(s)}"]',
                 f'material = SubResource("StandardMaterial3D_{mid}")',
@@ -266,7 +290,7 @@ class Greybox:
             corners = ", ".join(f"{g(x)}, {g(y)}, {g(z)}" for y in (y0, y1) for x, z in points)
             subs += [f'[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_{name}"]']
             subs += [f"points = PackedVector3Array({corners})", ""]
-        for s in unique({(w[1][0], self.stub, w[1][2] - 0.02) for w in self.walls if w[4]}):
+        for s in unique({(w[1][0], self.stub, w[1][2] - 0.02) for w in self.walls if w[4] and not self.is_dressed(w)}):
             subs += [
                 f'[sub_resource type="BoxMesh" id="BoxMesh_stub_{sid(s)}"]',
                 f'material = SubResource("StandardMaterial3D_{mid}")',
@@ -279,16 +303,19 @@ class Greybox:
         """The walls' collision shapes (under `body`) and meshes (under their group's node), their
         stubs and the glass."""
         nodes = []
-        for name, size, center, group, stub_group, kind, yaw in self.walls:
+        for piece in self.walls:
+            name, size, center, group, stub_group, kind, yaw = piece
             basis = yawed(yaw)
-            if kind != "mesh":
+            if self.is_dressed(piece):
+                kind, stub_group = "shape" if kind != "mesh" else "", None
+            if kind not in ("mesh", ""):
                 nodes += [
                     f'[node name="{name}Shape" type="CollisionShape3D" parent="{body}"]',
                     f"transform = {xform(center, basis)}",
                     f'shape = SubResource("BoxShape3D_{sid(size)}")',
                     "",
                 ]
-            if kind != "shape":
+            if kind in ("both", "mesh"):
                 nodes += [
                     f'[node name="{name}" type="MeshInstance3D" parent="{self.groups[group]}"]',
                     f"transform = {xform(center, basis)}",

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://r27phcqt0kpl"]
+
+[ext_resource type="Script" uid="uid://yuviqwby2m41" path="res://game/ship/neon_sign.gd" id="1_script"]
+
+[node name="NeonSign" type="Node3D"]
+script = ExtResource("1_script")

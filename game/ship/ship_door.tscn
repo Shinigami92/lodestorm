@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cl2py7gio13px"]
+
+[ext_resource type="Script" uid="uid://3ahrwsapfcq6" path="res://game/ship/ship_door.gd" id="1_script"]
+
+[node name="ShipDoor" type="Node3D"]
+script = ExtResource("1_script")

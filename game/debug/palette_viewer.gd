@@ -224,6 +224,10 @@ static func groups() -> Array[Group]:
 		if profile:
 			crew.add(profile.display_name, profile.accent_color)
 	result.append(crew)
+	var rooms := Group.new("Rooms aboard", false)
+	for room: StringName in ShipShell.LOOKS.looks:
+		rooms.add(String(room).capitalize(), ShipShell.LOOKS.looks[room].accent_color)
+	result.append(rooms)
 	return result
 
 

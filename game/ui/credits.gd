@@ -11,6 +11,11 @@ const TEAM: String = "Shinigami92"
 const TOOLS: PackedStringArray = [
 	"Godot Engine", "Blender", "Claude Code", "GUT", "gdtoolkit", "godot-ai", "ruff"
 ]
+## The licenses of the fonts the game ships (their texts are exported with them, see
+## export_presets.cfg's include filter).
+const FONT_LICENSES: Dictionary[String, String] = {
+	"Tilt Neon": "res://assets/fonts/tilt_neon/OFL.txt",
+}
 const BODY_COLOR := Color(1.0, 1.0, 1.0, 0.8)
 ## Font size of the license texts: smaller than the body text (long legal text, read rarely), still
 ## at the smallest size that reads.
@@ -34,6 +39,9 @@ var _end_time: float = 0.0
 func _ready() -> void:
 	_team.text = TEAM
 	_tools.text = "\n".join(TOOLS)
+	for font_name: String in FONT_LICENSES:
+		var license: String = FileAccess.get_file_as_string(FONT_LICENSES[font_name])
+		_add_license_text(font_name + "\n\n" + license)
 	_add_license_text(Engine.get_license_text())
 	var components: PackedStringArray = []
 	for component: Dictionary in Engine.get_copyright_info():

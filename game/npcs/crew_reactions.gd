@@ -234,7 +234,7 @@ func _on_weapon_unlocked(player: Player, _weapon_type: WeaponType) -> void:
 ## The first player to step out onto a body nobody has walked on yet (not one leaving the tree, e.g.
 ## while the map closes: its radio has gone first).
 func _on_player_left(player: Player) -> void:
-	if not player.radio.is_inside_tree():
+	if not is_inside_tree() or not player.radio.is_inside_tree():
 		return
 	var body: CelestialBody = ship.voyage.at_body if ship.voyage else null
 	if not body or body.kind == CelestialBody.Kind.STATION:

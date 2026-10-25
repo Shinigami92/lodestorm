@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://b1vgvfnpuirho"]
+
+[ext_resource type="Shader" uid="uid://cbyd3dlniynwi" path="res://assets/shaders/ship_shell.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://bvm335ye7528l" path="res://assets/ship/textures/grating_albedo.png" id="2_albedo"]
+[ext_resource type="Texture2D" uid="uid://en3gts8bmg4d" path="res://assets/ship/textures/grating_nra.png" id="3_nra"]
+
+[resource]
+resource_name = "shell_grating"
+shader = ExtResource("1_shader")
+shader_parameter/albedo_tex = ExtResource("2_albedo")
+shader_parameter/nra_tex = ExtResource("3_nra")
+shader_parameter/tile = 1.0
+shader_parameter/grime = 0.0
+shader_parameter/normal_strength = 1.5
+shader_parameter/hex_tiling = false
+shader_parameter/macro_strength = 0.05

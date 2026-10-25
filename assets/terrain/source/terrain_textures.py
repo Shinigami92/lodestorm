@@ -938,4 +938,5 @@ def main() -> None:
         build(name, preview)
 
 
-main()
+if __name__ == "__main__":
+    main()

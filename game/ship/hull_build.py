@@ -11,6 +11,11 @@ moving a room means changing it there, rebuilding, and moving the room's scene a
 floor by hand. Axes and sections: see hull_layout.py. Everything built must stay inside the skin of
 the hull's model (hull_layout.inside_skin): the script fails otherwise.
 
+Where the shell is the kit's model (hull_layout.SHELL_REGIONS), the pieces keep only their collision
+shapes, and the model's part per group (assets/ship/shell/<group>.glb, built by
+assets/ship/source/ship_shell_build.py, which imports this script for its pieces) is placed under the
+group's node with ShipShell (game/ship/ship_shell.gd).
+
 Groups (see Ship): "hull" always shows; "lower_cut" only casts shadows while the viewer is on the
 lower deck; "upper" only casts shadows while the viewer is on the lower deck; "upper_cut" (inside
 upper) only casts shadows while the viewer is aboard. A wall in front of what the camera must see
@@ -45,11 +50,13 @@ from hull_layout import (
     RAMP_DOOR_HEIGHT,
     RAMP_WIDTH,
     RANGE_DOOR,
+    SHELL_SPLITS,
     SLAB,
     TOP,
     UP,
     VENDORS,
     ZI,
+    dressed,
     inside_skin,
     outer_windows,
     outline,
@@ -64,6 +71,8 @@ STUB = 1.0
 GROUP_PARENT = {"hull": ".", "lower_cut": "LowerCut", "upper": "Upper", "upper_cut": "Upper/Cut"}
 HULL_MATERIAL = ["albedo_color = Color(0.3, 0.31, 0.33, 1)", "metallic = 0.2", "roughness = 0.6"]
 box_kit = Greybox(GROUP_PARENT, "hull", HULL_MATERIAL, stub=STUB, door=3.0, sill=1.0, window_height=2.0)
+box_kit.splits = SHELL_SPLITS
+box_kit.dressed = dressed
 wall = box_kit.wall
 box = box_kit.box
 outer_wall = box_kit.outer_wall
@@ -165,52 +174,77 @@ outside = sorted(
 if outside:
     sys.exit("outside the hull's skin: " + ", ".join(outside))
 
-# --- sub-resources ---
-subs = box_kit.subresources()
-# The nose's shape keeps players out from under it, below the specimen lab's floor.
-nose_top = LOW - LAB_FLOOR
-subs += [
-    '[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_nose"]',
-    f"points = PackedVector3Array(-81, {g(GEAR)}, -15, -81, {g(GEAR)}, 15, -81, {g(nose_top)}, -15, -81, {g(nose_top)}, 15, -91, {g(GEAR)}, 0, -91, {g(nose_top)}, 0)",
-    "",
-]
 
-shapes = {}
+def shell_parts():
+    """The kit's model per group that exists: (group, path, ext_resource id)."""
+    parts = []
+    for group in GROUP_PARENT:
+        path = ROOT / "assets" / "ship" / "shell" / f"{group}.glb"
+        if path.exists():
+            parts.append((group, f"res://assets/ship/shell/{group}.glb", f"shell_{group}"))
+    return parts
 
 
-def shape(size):
-    """Id of a BoxShape3D sub-resource of `size` (added to `subs` at the end)."""
-    key = "BoxShape3D_n_" + sid(size)
-    shapes[key] = size
-    return key
+def main():
+    # --- sub-resources ---
+    subs = box_kit.subresources()
+    # The nose's shape keeps players out from under it, below the specimen lab's floor.
+    nose_top = LOW - LAB_FLOOR
+    subs += [
+        '[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_nose"]',
+        f"points = PackedVector3Array(-81, {g(GEAR)}, -15, -81, {g(GEAR)}, 15, -81, {g(nose_top)}, -15, -81, {g(nose_top)}, 15, -91, {g(GEAR)}, 0, -91, {g(nose_top)}, 0)",
+        "",
+    ]
 
+    shapes = {}
 
-# --- nodes ---
-nodes = ['[node name="Hull" type="StaticBody3D"]', ""]
-for parent, name in [(".", "LowerCut"), (".", "Upper"), ("Upper", "Cut")]:
-    nodes += [f'[node name="{name}" type="Node3D" parent="{parent}"]', ""]
-nodes += box_kit.nodes()
+    def shape(size):
+        """Id of a BoxShape3D sub-resource of `size` (added to `subs` at the end)."""
+        key = "BoxShape3D_n_" + sid(size)
+        shapes[key] = size
+        return key
 
-# The nose's and the legs' shapes (the model is ShipExterior's): the nose keeps players and aliens
-# out from under it, each leg's pad blocks them where it stands.
-nodes += [
-    '[node name="NoseShape" type="CollisionShape3D" parent="."]',
-    'shape = SubResource("ConvexPolygonShape3D_nose")',
-    "",
-]
-for i, x in enumerate(LEG_X):
-    for j, z in enumerate([-LEG_Z, LEG_Z]):
+    # --- nodes ---
+    nodes = ['[node name="Hull" type="StaticBody3D"]', ""]
+    for parent, name in [(".", "LowerCut"), (".", "Upper"), ("Upper", "Cut")]:
+        nodes += [f'[node name="{name}" type="Node3D" parent="{parent}"]', ""]
+    nodes += box_kit.nodes()
+
+    # The nose's and the legs' shapes (the model is ShipExterior's): the nose keeps players and aliens
+    # out from under it, each leg's pad blocks them where it stands.
+    nodes += [
+        '[node name="NoseShape" type="CollisionShape3D" parent="."]',
+        'shape = SubResource("ConvexPolygonShape3D_nose")',
+        "",
+    ]
+    for i, x in enumerate(LEG_X):
+        for j, z in enumerate([-LEG_Z, LEG_Z]):
+            nodes += [
+                f'[node name="Leg{2 * i + j + 1}Shape" type="CollisionShape3D" parent="."]',
+                f"transform = {xform((x, GEAR / 2, z))}",
+                f'shape = SubResource("{shape((LEG_PAD[0], GEAR, LEG_PAD[1]))}")',
+                "",
+            ]
+
+    for key, size in sorted(shapes.items()):
+        subs += [f'[sub_resource type="BoxShape3D" id="{key}"]', f"size = {vec(size)}", ""]
+
+    # The kit's shell where it replaces the greybox.
+    parts = shell_parts()
+    ext = [("Script", "res://game/ship/ship_shell.gd", "shell_script")] if parts else []
+    for group, path, rid in parts:
+        ext.append(("PackedScene", path, rid))
+        name = "Shell" + "".join(w.capitalize() for w in group.split("_"))
         nodes += [
-            f'[node name="Leg{2 * i + j + 1}Shape" type="CollisionShape3D" parent="."]',
-            f"transform = {xform((x, GEAR / 2, z))}",
-            f'shape = SubResource("{shape((LEG_PAD[0], GEAR, LEG_PAD[1]))}")',
+            f'[node name="{name}" parent="{GROUP_PARENT[group]}" instance=ExtResource("{rid}")]',
+            'script = ExtResource("shell_script")',
             "",
         ]
 
-for key, size in sorted(shapes.items()):
-    subs += [f'[sub_resource type="BoxShape3D" id="{key}"]', f"size = {vec(size)}", ""]
+    out = write(OUT, ROOT, ext, subs, nodes, "hull_build.py")
+    if out:
+        print(len(box_kit.walls), "wall pieces,", len(box_kit.glass), "windows,", out.count("[node "), "nodes")
 
-# --- write ---
-out = write(OUT, ROOT, [], subs, nodes, "hull_build.py")
-if out:
-    print(len(box_kit.walls), "wall pieces,", len(box_kit.glass), "windows,", out.count("[node "), "nodes")
+
+if __name__ == "__main__":
+    main()

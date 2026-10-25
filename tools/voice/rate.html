@@ -45,6 +45,9 @@
   .text.open { display: block; }
   .card audio { width: calc(100% - 16px); margin: 0 8px 6px; height: 36px; }
   .card input { margin: 0 8px; padding: 4px 8px; }
+  .card .kind { color: var(--muted); }
+  .group { grid-column: 1 / -1; margin: 8px 0 -4px; color: var(--muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+  .group:first-child { margin-top: 0; }
   .empty { color: var(--muted); padding: 40px 0; text-align: center; grid-column: 1 / -1; }
   .overlay { position: fixed; inset: 0; display: none; z-index: 3; }
   .overlay.open { display: flex; }
@@ -77,6 +80,7 @@
       <option value="all">All</option><option value="unrated">Unrated</option>
       <option value="5">★5</option><option value="4">★4+</option><option value="3">★3½ and less</option>
     </select>
+    <select id="lang" aria-label="Voice language" hidden></select>
     <span class="grow"></span>
     <span id="status"></span>
     <button id="helpbtn" title="Keyboard keys (?)">?</button>
@@ -105,13 +109,16 @@
     <tr><td><kbd>N</kbd></td><td>write a note on the selected take</td></tr>
     <tr><td><kbd>[</kbd> <kbd>]</kbd></td><td>previous / next character</td></tr>
     <tr><td><kbd>B</kbd></td><td>the Best view: each character's favorites (4 stars and up) from all rounds</td></tr>
+    <tr><td><kbd>S</kbd></td><td>the Settled view: each voiced NPC's anchor and every line the game plays, per language</td></tr>
     <tr><td><kbd>D</kbd></td><td>duel the tied favorites of this character</td></tr>
     <tr><td><kbd>Esc</kbd></td><td>close</td></tr>
   </table>
   <p style="color:var(--muted);margin-bottom:0">Takes stay anonymous until rated. Tabs: ✓ every take rated, ⚔ the favorites are tied (duel them). Everything saves at once.</p>
 </div></div>
 <script>
-const BEST = "best";
+const BEST = "best", SETTLED = "settled";
+const LANGUAGE_NAMES = { en: "English", de: "German" };
+let settled = {};
 let data = { rounds: {}, duels: {} }, round = "", character = "", focus = 0, cards = [], pair = null, pending = null;
 const $ = (id) => document.getElementById(id);
 const store = { get: (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
@@ -135,11 +142,11 @@ function saveSoon(target, body) {
 }
 
 const roundNames = () => Object.keys(data.rounds);
-const characters = () => round === BEST
+const characters = () => round === SETTLED ? Object.keys(settled) : round === BEST
   ? [...new Set(roundNames().flatMap((r) => Object.keys(data.rounds[r])))]
   : Object.keys(data.rounds[round] ?? {});
 const entryOf = (r, c) => data.rounds[r]?.[c];
-const nameOf = (c) => entryOf(roundNames().find((r) => entryOf(r, c)), c)?.name ?? c;
+const nameOf = (c) => round === SETTLED ? settled[c]?.name ?? c : entryOf(roundNames().find((r) => entryOf(r, c)), c)?.name ?? c;
 // The Best view gathers a character's takes of 4 stars and up from every round, best first
 function takesOf(c) {
   if (round !== BEST) return entryOf(round, c)?.takes ?? [];
@@ -195,9 +202,23 @@ function renderHeader() {
     return `${takes.filter((t) => t.stars).length}/${takes.length}`;
   };
   $("round").replaceChildren(
+    el("option", { value: SETTLED }, "♪ Settled voices"),
     el("option", { value: BEST }, "★ Best of all rounds"),
     ...roundNames().reverse().map((r) => el("option", { value: r }, `${r} (${count(r)})`)));
   $("round").value = round;
+  $("filter").hidden = round === SETTLED;
+  $("lang").hidden = round !== SETTLED;
+  if (round === SETTLED) {
+    const npc = settled[character];
+    const languages = Object.keys(npc?.languages ?? {});
+    $("lang").replaceChildren(...languages.map((l) => el("option", { value: l }, l)));
+    $("lang").value = languageOf(npc);
+    const voice = npc?.languages[$("lang").value];
+    $("about").textContent = voice ? `${npc.name} · ${npc.role}: anchor from ${voice.picked_from} (${voice.model}, seed ${voice.seed}, picked ${voice.picked}). ${voice.description}` : "";
+    $("tabs").replaceChildren(...characters().map((c) =>
+      el("button", { class: c === character ? "on" : "", onclick: () => { character = c; focus = 0; render(); } }, nameOf(c))));
+    return;
+  }
   // The Best view describes the character with the description of its top take
   const e = round === BEST ? entryOf(takesOf(character)[0]?.round ?? roundNames().find((r) => entryOf(r, character)), character) : entryOf(round, character);
   const description = round === BEST ? takesOf(character)[0]?.description ?? e?.description : e?.description;
@@ -210,9 +231,14 @@ function renderHeader() {
   }));
 }
 
+// The Settled view's language: the one picked before, if this NPC has it
+const languageOf = (npc) => { const l = store.get("voiceLanguage", "en"); return npc?.languages[l] ? l : Object.keys(npc?.languages ?? {})[0] ?? l; };
+
 function render() {
   location.hash = `${round}/${character}`;
   renderHeader();
+  $("charnote").parentElement.hidden = round === SETTLED;
+  if (round === SETTLED) { renderSettled(); return; }
   const note = $("charnote");
   note.style.visibility = round === BEST ? "hidden" : "";
   note.value = entryOf(round, character)?.note ?? "";
@@ -220,8 +246,37 @@ function render() {
   $("duelbtn").disabled = d.pairs.length === 0;
   $("duelbtn").textContent = d.pairs.length ? `Duel (${d.pairs.length - d.open.length}/${d.pairs.length})` : "Duel";
   cards = [];
-  const takes = visible(character);
-  $("grid").replaceChildren(...takes.length ? takes.map((t) => card(t, d)) : [el("div", { class: "empty" }, "No takes match this filter.")]);
+  // Grouped by the language they speak, English first; a heading only when there's more than one
+  const languages = [...new Set(visible(character).map((t) => t.language ?? "en"))].sort((a, b) => (a !== "en") - (b !== "en") || a.localeCompare(b));
+  const groups = languages.map((l) => [l, visible(character).filter((t) => (t.language ?? "en") === l)]);
+  $("grid").replaceChildren(...groups.length
+    ? groups.flatMap(([l, takes]) => [...groups.length > 1 ? [el("div", { class: "group" }, `${LANGUAGE_NAMES[l] ?? l} · ${takes.length}`)] : [], ...takes.map((t) => card(t, d))])
+    : [el("div", { class: "empty" }, "No takes match this filter.")]);
+  select(Math.min(focus, cards.length - 1), false);
+}
+
+// What the game plays: the NPC's anchor in the picked language, then every rendered line in the game's order
+function renderSettled() {
+  cards = [];
+  const npc = settled[character];
+  const voice = npc?.languages[languageOf(npc)];
+  if (!voice) { $("grid").replaceChildren(el("div", { class: "empty" }, "No NPC has an anchor yet.")); return; }
+  const items = [{ kind: "Anchor", text: voice.text, src: `/voice/${voice.anchor}` },
+    ...voice.lines.map((l, i) => ({ kind: `Line ${i + 1}/${voice.lines.length}`, text: l.text, src: `/voice/${l.file}` }))];
+  $("grid").replaceChildren(...items.map((item) => {
+    const text = el("div", { class: "text" }, `“${item.text}”`);
+    text.addEventListener("click", () => text.classList.toggle("open"));
+    const audio = el("audio", { controls: "", preload: "none", src: item.src });
+    const box = el("div", { class: "card" }, el("div", { class: "row" }, el("b", { class: "kind" }, item.kind)), text, audio);
+    const index = cards.length;
+    box.addEventListener("mouseenter", () => select(index, false));
+    audio.addEventListener("play", () => { document.querySelectorAll("audio").forEach((a) => a !== audio && a.pause()); box.classList.add("playing"); });
+    audio.addEventListener("pause", () => box.classList.remove("playing"));
+    // Plays on through the lines, like listening to the NPC
+    audio.addEventListener("ended", () => { const next = cards[index + 1]; if (next) { select(index + 1); next.audio.play(); } });
+    cards.push({ box, audio });
+    return box;
+  }));
   select(Math.min(focus, cards.length - 1), false);
 }
 
@@ -327,7 +382,7 @@ async function refresh() {
 function apply() {
   if (!pending || busy()) return;
   data = pending; pending = null;
-  if (round !== BEST && !data.rounds[round]) round = roundNames().at(-1);
+  if (round !== BEST && round !== SETTLED && !data.rounds[round]) round = roundNames().at(-1);
   if (!characters().includes(character)) character = characters()[0];
   render();
 }
@@ -335,7 +390,8 @@ document.addEventListener("focusout", () => setTimeout(apply));
 document.addEventListener("pause", () => setTimeout(apply), true);
 document.addEventListener("ended", () => setTimeout(apply), true);
 
-$("round").onchange = (e) => { round = e.target.value; if (!characters().includes(character)) character = characters()[0]; focus = 0; render(); };
+$("lang").onchange = (e) => { store.set("voiceLanguage", e.target.value); focus = 0; render(); };
+$("round").onchange = async (e) => { round = e.target.value; if (round === SETTLED) await loadSettled(); if (!characters().includes(character)) character = characters()[0]; focus = 0; render(); };
 $("filter").onchange = (e) => { store.set("voiceFilter", e.target.value); render(); };
 $("charnote").addEventListener("input", (e) => {
   const entry = entryOf(round, character);
@@ -374,24 +430,36 @@ document.addEventListener("keydown", (e) => {
     cards[focus].audio.currentTime = 0;
     cards[focus].audio.play();
   }
-  else if (/^[0-5]$/.test(e.key) && c) c.doRate(keyValue(+e.key, c.value()));
-  else if (e.key.toLowerCase() === "n" && c) { e.preventDefault(); c.note.focus(); }
+  else if (/^[0-5]$/.test(e.key) && c?.doRate) c.doRate(keyValue(+e.key, c.value()));
+  else if (e.key.toLowerCase() === "n" && c?.note) { e.preventDefault(); c.note.focus(); }
   else if (e.key === "[") goCharacter(-1);
   else if (e.key === "]") goCharacter(1);
   else if (e.key.toLowerCase() === "b") { round = round === BEST ? roundNames().at(-1) : BEST; focus = 0; render(); }
-  else if (e.key.toLowerCase() === "d") startDuel();
+  else if (e.key.toLowerCase() === "d" && round !== SETTLED) startDuel();
+  else if (e.key.toLowerCase() === "s") showSettled();
   else if (e.key === "?") $("help").classList.add("open");
 });
 
 window.addEventListener("hashchange", () => {
   const [r, c] = decodeURIComponent(location.hash.slice(1)).split("/");
   if (r === round && c === character) return;
+  if (r === SETTLED) { showSettled(c); return; }
   if (r === BEST || data.rounds[r]) { round = r; if (c) character = c; render(); }
 });
+
+async function loadSettled() { settled = await (await fetch("/api/settled")).json(); }
+async function showSettled(c) {
+  await loadSettled();
+  round = SETTLED;
+  if (c in settled) character = c; else if (!(character in settled)) character = characters()[0];
+  focus = 0;
+  render();
+}
 
 async function load() {
   data = await (await fetch("/api/rounds")).json();
   const [r, c] = decodeURIComponent(location.hash.slice(1)).split("/");
+  if (r === SETTLED) { showSettled(c); return; }
   round = r === BEST || data.rounds[r] ? r : roundNames().at(-1);
   if (!round) { $("grid").replaceChildren(el("div", { class: "empty" }, "No takes in local/voice yet.")); return; }
   character = characters().includes(c) ? c : characters()[0];

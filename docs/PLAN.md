@@ -88,6 +88,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Voice-over **B** (first part): `tools/voice.sh` renders every line of the NPCs with anchors, Brannik and Nell voiced in English and German, spoken from their head as the bubble shows, the Voice bus with its volume, the voice language as its own setting (English, Deutsch, Off; following the texts until picked)
 - People's own models (M5's first), ahead of their milestone: a MakeHuman body (the face, the skeleton with Godot's humanoid bone names so the shared clips play on everyone, the player's pose code shared) wearing a generated outfit and hair (TRELLIS.2 on an A-pose concept, fitted over the body and taking its weights), the NPCs playing their model's `Idle` and `Walk` and, while no player is close, their work at their place (clips with props, their own models, in the hands), the name plate and bubbles at the model's head; Nell the first, wiping the counter, polishing glasses and shelving bottles; Kade and Selin, keeping their generated heads, the outfit's fitting shared by everyone (`dressing.py`) (see [`planned/people.md`](planned/people.md))
 - Talks continuing by themselves: a setting ("Dialogue: Continue by itself", off by default), a voiced line moving on a pause after its voice, one without a voice after its reading time, the list coming back after the last line, a bar filling on "Continue"; skipping still works
+- Voice-over **B** (Kade and Selin): both voiced in English and German, every line; the listening page's Settled view (each voiced NPC's anchor and every rendered line per language) and its takes grouped by language
 
 ## Todo
 
@@ -130,7 +131,7 @@ Alongside, any time:
 - The sky per body and the far ring of land beyond the map ([`planned/vr-view.md`](planned/vr-view.md)); each body's light, the darkness floor and the storm's light steps ([`planned/art.md`](planned/art.md))
 - Basic VFX for mining, shooting, reloading, storm (the sound effects come earlier, M4 step 9)
 - People's own models ([`planned/people.md`](planned/people.md); the pipeline, Nell, Kade and Selin are done): Rook, Kade's work at the counter with his slate, Selin's at the council's table with her tablet, then the crew after their round of looks, then the colonists; lip sync and blinking; the player's suit with rigid hard parts, a visor reflecting the scene and later a MakeHuman body under the armor
-- Voice-over, after the models ([`planned/voice.md`](planned/voice.md); **A**, the spike, and the first part of **B** are done): the radio filter and the Radio bus; the other NPCs with the tool
+- Voice-over, after the models ([`planned/voice.md`](planned/voice.md); **A**, the spike, and the first part of **B** are done): the radio filter and the Radio bus; the other NPCs with the tool (Brannik, Nell, Kade and Selin are done)
 
 ### M6: VR
 

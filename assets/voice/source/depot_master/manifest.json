@@ -1,0 +1,198 @@
+{
+  "de": {
+    "0172e2eaa8031754": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du wissen willst, was das Depot macht oder wie es der Kolonie geht, frag einfach mich. Ich bin immer hier."
+    },
+    "0a87a18b502a020f": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich selbst war noch nie unten auf der Oberfläche. Ich habe die Stürme auf den Aufnahmen der Crews gesehen, und das hat mir gereicht."
+    },
+    "1021b21b46ec22bd": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich? Ich führe die Bücher. Ich weiß, wie viele Kisten wir von allem haben, bis zur letzten Schraube."
+    },
+    "1e51577dfff52e00": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Kolonie fehlt fast alles, und das meiste, was sie am Laufen hält, ist Erz, das Crews wie eure von den Planeten heraufbringen."
+    },
+    "268dcc0d31630876": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist kein guter Kurs, und das soll er auch nicht sein. Er ist für den Fall, dass dir ein Erz fehlt und du von einem anderen viel zu viel hast."
+    },
+    "3c1029c3acaa2f09": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ihr seid sicher die Crew vom Schiff im Hangar. Ich bin Kade und leite das Versorgungsdepot. Jede Kiste, die an Bord dieser Station kommt, geht zuerst über meinen Tresen."
+    },
+    "3ccf03008d3269eb": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Erz, das es nur auf einem einzigen Planeten gibt, kann ich nicht herausgeben. Du kannst es eintauschen, aber wenn du es brauchst, musst du selbst hinunter und es abbauen."
+    },
+    "465fdd805cd18343": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Von Erz können wir nie genug bekommen. Ohne Erz stehen die Werkstätten still, und nichts wird mehr repariert."
+    },
+    "5313188d9a755b05": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ein paar Tausend Leute leben auf dieser Station. Die meisten kamen mit den Frachtern der Kolonie, mit kaum mehr als dem, was sie tragen konnten."
+    },
+    "56dcb46b12dc0a94": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Regale hinter mir sehen voll aus, aber die meisten dieser Kisten sind schon jemandem versprochen. Was heute reinkommt, ist nächste Woche weg."
+    },
+    "64a7455cb8b41176": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Aber ich kenne gern die Leute, die das Erz heraufbringen. Also komm vorbei, wann immer ihr angedockt seid, auch wenn es nur zum Reden ist."
+    },
+    "79c91dc7254cd25b": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die beiden Trichter auf meiner Theke sind die Erzbörse. Du gibst ein Erz hinein und bekommst ein anderes heraus, aber nur drei zu eins."
+    },
+    "7b3f311250fc2305": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Alles, was die Kolonie isst, atmet und verbaut, lagert hier: Essen, Luftfilter, Ersatzteile und Metall."
+    },
+    "7ecc979172044699": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Einen Teil unseres Essens bauen wir selbst an, und das meiste Wasser und die Luft bereiten wir auf, aber Metall wächst nicht nach. Es muss abgebaut werden, und dafür muss man runter auf die Planeten."
+    },
+    "a01b8e0d9aaf7b46": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Deshalb zählt die Kolonie auf Prospektoren-Crews wie eure. Ohne euch wären die Vorräte dieser Station in einem Jahr aufgebraucht."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie kann ich dir helfen?"
+    }
+  },
+  "en": {
+    "0172e2eaa8031754": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If you want to know what the depot does or how the colony is doing, just ask me. I'm always here."
+    },
+    "0a87a18b502a020f": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I've never been down to the surface myself. I've seen the storms in the crews' recordings, and that was enough for me."
+    },
+    "1021b21b46ec22bd": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Me? I keep the books. I know how many crates of anything we have, down to the last bolt."
+    },
+    "1e51577dfff52e00": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The colony is short of nearly everything, and most of what keeps it going is ore that crews like yours bring up from the planets."
+    },
+    "268dcc0d31630876": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "It's not a good rate, and it's not meant to be. It's for when you're short of one ore and have far too much of another."
+    },
+    "3c1029c3acaa2f09": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "You must be the crew from the ship in the hangar. I'm Kade, and I run the supply depot. Every crate that comes aboard this station passes my counter first."
+    },
+    "3ccf03008d3269eb": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ore that only one planet has, I can't give out. You can trade it in, but if you need it, you have to go down there and mine it yourself."
+    },
+    "465fdd805cd18343": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ore is the one thing we can never get enough of. Without it, the workshops stop, and nothing gets repaired."
+    },
+    "5313188d9a755b05": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "A few thousand people live aboard this station. Most of them came in on the colony's haulers, with little more than what they could carry."
+    },
+    "56dcb46b12dc0a94": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The shelves behind me look full, but most of those crates are already promised to someone. What comes in today is gone by next week."
+    },
+    "64a7455cb8b41176": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "But I like to know the people who bring the ore up. So come by whenever you're docked, even if it's only to talk."
+    },
+    "79c91dc7254cd25b": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The two hoppers on my counter are the ore exchange. You put one ore in and get another one out, but only at three for one."
+    },
+    "7b3f311250fc2305": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Everything the colony eats, breathes and builds with is stored here: food, air filters, spare parts and metal."
+    },
+    "7ecc979172044699": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We grow some of our food and recycle most of our water and air, but metal doesn't grow. It has to be mined, and that means going down to the planets."
+    },
+    "a01b8e0d9aaf7b46": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's why the colony counts on prospecting crews like yours. Without you, this station would run dry within a year."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How can I help you?"
+    }
+  }
+}

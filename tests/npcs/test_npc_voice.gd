@@ -10,6 +10,8 @@ const SOUND_LIST: PackedScene = preload("res://game/ui/sound_list.tscn")
 const VOICED: Array[NpcProfile] = [
 	preload("res://game/npcs/crew/quartermaster.tres"),
 	preload("res://game/npcs/ostra/bartender.tres"),
+	preload("res://game/npcs/ostra/depot_master.tres"),
+	preload("res://game/npcs/ostra/councillor.tres"),
 ]
 ## The NPCs voiced only on the radio: their reactions.
 const VOICED_ON_RADIO: Array[NpcProfile] = [preload("res://game/npcs/crew/pilot.tres")]

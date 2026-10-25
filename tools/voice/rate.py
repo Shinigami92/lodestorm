@@ -1,18 +1,20 @@
 """Local listening page for the voice spike: python tools/voice/rate.py [port]   (default 8191)
 
 Shows every local/voice/<round>/<character>/*.flac (new takes appear while a round renders), with (half) stars and a
-note per take and a note per character, a Best view of each character's favorites across all rounds and duels
-between tied favorites. Takes are anonymous ("Take 7c2", from a hash of the file name) until rated, so the engine
+note per take and a note per character, a Best view of each character's favorites across all rounds, duels
+between tied favorites and a Settled view of what the game has: each voiced NPC's anchors and rendered lines. Takes are anonymous ("Take 7c2", from a hash of the file name) until rated, so the engine
 name doesn't steer the ear. Everything is saved in the voice database (db.py); the page is rate.html.
 """
 
 import hashlib
 import json
 import pathlib
+import re
 import sys
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+import lines
 from characters import CHARACTERS
 
 import db
@@ -72,6 +74,32 @@ def rounds() -> dict:
     return {"rounds": out, "duels": duels}
 
 
+def settled() -> dict:
+    """The NPCs with anchors: {npc: {"name", "role", "languages": {language: voice.json's entry | {"lines": [{"file",
+    "text"}]}}}}, the lines in the game's order; files are relative to assets/voice/."""
+    profiles = lines.profiles()
+    out = {}
+    for npc in lines.voiced():
+        info = json.loads((lines.SOURCE / npc / "voice.json").read_text(encoding="utf-8"))
+        manifest = lines.load_manifest(npc)
+        text = profiles[npc].read_text(encoding="utf-8")
+        resource = text[text.rfind("[resource]") :]
+        fields = dict(re.findall(r'^(display_name|role) = "(.*)"$', resource, re.MULTILINE))
+        order = [lines.line_hash(line) for line in lines.npc_lines(npc, info.get("lines") == "reactions")]
+        languages = {}
+        for language, entry in info.items():
+            if not isinstance(entry, dict) or "anchor" not in entry:
+                continue
+            rendered = manifest.get(language, {})
+            found = [h for h in order if h in rendered and (lines.OUT / npc / language / f"{h}.ogg").exists()]
+            languages[language] = entry | {
+                "anchor": f"source/{npc}/{entry['anchor']}",
+                "lines": [{"file": f"{npc}/{language}/{h}.ogg", "text": rendered[h]["text"]} for h in found],
+            }
+        out[npc] = {"name": fields.get("display_name", npc), "role": fields.get("role", ""), "languages": languages}
+    return out
+
+
 def save(data: dict) -> None:
     con = db.connect()
     if data["kind"] == "rating":
@@ -118,6 +146,15 @@ class Handler(BaseHTTPRequestHandler):
             f = (db.ROOT / path[7:]).resolve()
             if db.ROOT.resolve() in f.parents and f.suffix == ".flac" and f.exists():
                 self.send(200, f.read_bytes(), "audio/flac")
+            else:
+                self.send(404, b"", "text/plain")
+        elif path == "/api/settled":
+            self.send(200, json.dumps(settled()).encode(), "application/json")
+        elif path.startswith("/voice/"):
+            f = (lines.OUT / path[7:]).resolve()
+            kinds = {".flac": "audio/flac", ".ogg": "audio/ogg"}
+            if lines.OUT.resolve() in f.parents and f.suffix in kinds and f.exists():
+                self.send(200, f.read_bytes(), kinds[f.suffix])
             else:
                 self.send(404, b"", "text/plain")
         else:

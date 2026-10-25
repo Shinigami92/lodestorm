@@ -5,6 +5,7 @@ extends GutTest
 const BODY := preload("res://game/npcs/npc_body.tscn")
 const NELL: NpcProfile = preload("res://game/npcs/ostra/bartender.tres")
 const KADE: NpcProfile = preload("res://game/npcs/ostra/depot_master.tres")
+const SELIN: NpcProfile = preload("res://game/npcs/ostra/councillor.tres")
 
 var _body: NpcBody
 var _animator: NpcAnimator
@@ -27,13 +28,14 @@ func test_own_model_with_its_head_and_props() -> void:
 		assert_eq(grip.get_child_count(), 1, "the prop's model on " + String(prop))
 
 
-## Kade wears his generated head (no MakeHuman face): the name plate goes above its hair.
-func test_own_head_model() -> void:
-	var kade := BODY.instantiate() as NpcBody
-	add_child_autofree(kade)
-	kade.profile = KADE
-	await wait_process_frames(2)
-	assert_almost_eq(kade.head_height, 1.79, 0.05, "the top of his hair")
+## Kade and Selin wear their generated heads (no MakeHuman face): the name plate goes above their hair.
+func test_own_head_models() -> void:
+	for case: Array in [[KADE, 1.79], [SELIN, 1.66]]:
+		var body := BODY.instantiate() as NpcBody
+		add_child_autofree(body)
+		body.profile = case[0] as NpcProfile
+		await wait_process_frames(2)
+		assert_almost_eq(body.head_height, case[1] as float, 0.05, (case[0] as NpcProfile).display_name)
 
 
 func test_works_while_nobody_is_close() -> void:

@@ -57,6 +57,7 @@ class Fit:
     glove_up: float = 0.0  # the gloves reach this far up the forearm from the wrist (the skin kept that far in)
     stray: int = 300  # pieces of the outfit with fewer faces left at the hands are the generated hand's: dropped
     center_cuffs: float = 0.0  # this far up the forearm the outfit moves so its cut sleeve is around the wrist
+    dents: tuple = ()  # dents the generator left ((x, y, z) behind or in front of one, its radius), as loaded: closed
     bare_arms: bool = True  # generated skin left on the arms and the neck: moved to the body's tone
     own_head: bool = False  # the generated head stays (face, hair, beard; on the Head bone), the body's goes
     head_blend: tuple = (0.02, 0.06)  # own head: from how far to how far above the neck's joint it's the Head's
@@ -162,6 +163,18 @@ def match_skin(outfit: bpy.types.Object, skin: bpy.types.Object, tone, texels, n
     print("SKIN tone", tone.round(3), "->", target.round(3), "on", len(faces), "faces")
 
 
+def match_body(skin: bpy.types.Object, tone) -> None:
+    """Shifts the body's skin (what shows of it: the hands) to the generated face's tone (its own head stays)."""
+    img = G.base_color_image(skin.data.materials[0])
+    rgba = G.image_pixels(img)
+    texels = rgba[..., :3].mean(2) > 0.25  # skin, not the texture's empty background
+    have = rgba[texels, :3].mean(0)
+    rgba[texels, :3] = np.clip(rgba[texels, :3] + (tone - have), 0, 1)
+    img.pixels.foreach_set(rgba.ravel())
+    img.pack()
+    print("BODY tone", have.round(3), "->", np.asarray(tone).round(3))
+
+
 def fit_hair(outfit: bpy.types.Object, m: dict, fit: Fit) -> None:
     """Fits the hair over the skull: the outfit's head (above the eyes, fading out down to the collar) scaled and
     moved per axis so it covers the skull with a small gap."""
@@ -189,9 +202,13 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict, person: Person) -> None:
     root = C.collection(person.name).objects[person.name]
     outfit = P.load_outfit(fit.outfit, root, skin, m["top"] + fit.hair_above_skull, fit.band)
     decimate(outfit, fit.tris)
+    for spot, radius in fit.dents:
+        mend_dent(outfit, np.array(spot), radius)
     tone, texels = cut_skin(outfit, m, fit)
     if fit.bare_arms:
         match_skin(outfit, skin, tone, texels, m["neck"], fit)
+    if fit.own_head:
+        match_body(skin, tone)
     if not fit.own_head:
         fit_hair(outfit, m, fit)
     directions, _palms = P.limb_directions(outfit, arm, m["waist"])
@@ -229,7 +246,8 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict, person: Person) -> None:
     outfit.parent = arm
     outfit.modifiers.new("Armature", "ARMATURE").object = arm
     H.rest_pose(arm)
-    gloves(skin, names, fit, hands(body) > -fit.glove_up if fit.glove_up else None)
+    wrist = hands(body)  # the glove's reach up the forearm: from the wrist in
+    gloves(skin, names, fit, (wrist > -fit.glove_up) & (wrist < 0.01) if fit.glove_up else None)
     keep = [names.index(b) for b in KEEP if not (fit.own_head and b in ("Head", "Neck"))]
     owner = body_w.argmax(1)
     shown = np.isin(owner, keep) | in_cuffs  # the head and neck, the hands from inside the cuffs
@@ -283,6 +301,91 @@ def beyond_wrists(arm: bpy.types.Object, directions: dict, fit: Fit):
         return out
 
     return beyond
+
+
+def mend_dent(outfit: bpy.types.Object, spot: np.ndarray, radius: float) -> None:
+    """Closes a dent the generator left (a pit or a tunnel into the surface, dark in the render): a ray from `spot`
+    towards the body's middle (front to back) finds it; its faces (from there on, those within `radius` of that line
+    lying deeper than the surface around it) are deleted, the openings' edges moved up onto that surface and capped
+    there in the cloth's color around it."""
+    import bmesh
+    from mathutils.bvhtree import BVHTree
+
+    co = G.vertices(outfit.data)
+    tree = BVHTree.FromPolygons([Vector(p) for p in co], [tuple(p.vertices) for p in outfit.data.polygons])
+    side = np.sign(spot[1])
+    ray = Vector((0, -side, 0))
+    hit = tree.ray_cast(Vector(spot), ray)
+    center = np.array(hit[0])
+    ring, ring_faces = [], []  # the surface around it: where rays a little outside the dent meet it
+    for a in np.linspace(0, 2 * np.pi, 12, endpoint=False):
+        start = Vector(spot) + Vector((np.cos(a), 0, np.sin(a))) * radius * 1.5
+        h = tree.ray_cast(start, ray)
+        if h[0] is not None:
+            ring.append(h[0][1])
+            ring_faces.append(h[2])
+    surface = float(np.median(ring))
+    img = G.base_color_image(outfit.data.materials[0])
+    bright = G.face_values(outfit.data, G.image_pixels(img)[..., :3].mean(2))[ring_faces]
+    around = ring_faces[int(np.argmax(bright))]  # the cloth's lightest color around it (the flat cap, a little
+    me = outfit.data  # recessed, catches less light than the folds)
+    color_uv = Vector(me.uv_layers.active.data[me.polygons[around].loop_start].uv)
+    centers = P.face_centers(outfit)
+    across = np.linalg.norm((centers - center)[:, [0, 2]], axis=1)
+    deep = (across < radius) & (side * (surface - centers[:, 1]) > 0.008) & (side * centers[:, 1] > 0)
+    bm = bmesh.new()
+    bm.from_mesh(outfit.data)
+    bm.faces.ensure_lookup_table()
+    gone, todo = set(), [bm.faces[hit[2]]]
+    while todo:  # the dent's faces: connected to the one the ray met
+        f = todo.pop()
+        if f.index in gone or not deep[f.index]:
+            continue
+        gone.add(f.index)
+        todo.extend(g for e in f.edges for g in e.link_faces)
+    bmesh.ops.delete(bm, geom=[bm.faces[i] for i in gone], context="FACES")
+    uv = bm.loops.layers.uv.active
+    rim = {
+        e
+        for e in bm.edges
+        if e.is_boundary and all(np.linalg.norm((np.array(v.co) - center)[[0, 2]]) < 2 * radius for v in e.verts)
+    }
+    new, moved = [], set()
+    while rim:  # each opening: walk its open edges, fan them to a vertex in their middle
+        loop, edge = [], rim.pop()
+        v = edge.verts[0]
+        while edge is not None:
+            loop.append(v)
+            v = edge.other_vert(v)
+            edge = next((x for x in v.link_edges if x in rim), None)
+            rim.discard(edge)
+        if len(loop) < 3:
+            continue
+        for x in loop:  # the opening's edge onto the surface around it: a flat cap there hides what's behind
+            if side * (surface - x.co.y) > 0.0:
+                x.co.y = surface - side * 0.003
+                moved.add(x)
+        middle = bm.verts.new(np.mean([np.array(x.co) for x in loop], axis=0))
+        for a, b in zip(loop, loop[1:] + loop[:1], strict=True):
+            f = bm.faces.new((middle, a, b))
+            f.normal_update()
+            if f.normal.y * side < 0:
+                f.normal_flip()
+            f.smooth = True
+            for corner in f.loops:
+                corner[uv].uv = color_uv
+            new.append(f)
+    behind = {  # what's left of the walls, stretched up to the moved edge: hidden behind the cap
+        f
+        for v in moved
+        for f in v.link_faces
+        if f not in new and side * (surface - f.calc_center_median().y) > 0.004
+    }
+    bmesh.ops.delete(bm, geom=list(behind), context="FACES")
+    count = len(new)
+    bm.to_mesh(me)
+    bm.free()
+    print("DENT at", center.round(3), "surface", round(surface, 3), len(gone) + len(behind), "faces cut,", count, "capped")
 
 
 def center_cuffs(outfit: bpy.types.Object, arm: bpy.types.Object, directions: dict, hands, fit: Fit) -> None:

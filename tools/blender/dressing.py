@@ -54,6 +54,9 @@ class Fit:
     glove_dark: float = 0.13  # a face this dark near the wrist is the generated glove
     glove: tuple = (0.07, 0.065, 0.065)  # the gloves painted on the body's hands
     gloved: tuple = FINGERLESS  # which bones of each hand the gloves cover
+    glove_up: float = 0.0  # the gloves reach this far up the forearm from the wrist (the skin kept that far in)
+    stray: int = 300  # pieces of the outfit with fewer faces left at the hands are the generated hand's: dropped
+    center_cuffs: float = 0.0  # this far up the forearm the outfit moves so its cut sleeve is around the wrist
     bare_arms: bool = True  # generated skin left on the arms and the neck: moved to the body's tone
     own_head: bool = False  # the generated head stays (face, hair, beard; on the Head bone), the body's goes
     head_blend: tuple = (0.02, 0.06)  # own head: from how far to how far above the neck's joint it's the Head's
@@ -66,6 +69,7 @@ class Person:
     looks: dict  # each body part's export material: tint (sRGB), roughness, whether its alpha cuts
     fit: Fit
     out: pathlib.Path  # assets/npcs/<name>/: the .glb there, its .blend in source/
+    wrist_out: float = 0.05  # the hanging wrists this far outside the shoulders (m; wider over a bulky outfit)
 
     @property
     def renders(self) -> pathlib.Path:
@@ -201,7 +205,10 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict, person: Person) -> None:
     reach = hands(P.face_centers(outfit))
     cut = (reach > -0.005) | ((reach > -fit.cuff) & dark)  # the hands and the gloves' cuffs
     print("HANDS cut", P.delete_faces(outfit, cut), "faces")
-    in_cuffs = hands(body) > -fit.cuff
+    drop_strays(outfit, arm, fit)
+    if fit.center_cuffs:
+        center_cuffs(outfit, arm, directions, hands, fit)
+    in_cuffs = hands(body) > -max(fit.cuff, fit.glove_up)
     co = G.vertices(outfit.data)
     w, near = P.transfer_weights(co, body, body_w)
     if fit.skirt:
@@ -222,6 +229,7 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict, person: Person) -> None:
     outfit.parent = arm
     outfit.modifiers.new("Armature", "ARMATURE").object = arm
     H.rest_pose(arm)
+    gloves(skin, names, fit, hands(body) > -fit.glove_up if fit.glove_up else None)
     keep = [names.index(b) for b in KEEP if not (fit.own_head and b in ("Head", "Neck"))]
     owner = body_w.argmax(1)
     shown = np.isin(owner, keep) | in_cuffs  # the head and neck, the hands from inside the cuffs
@@ -233,7 +241,6 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict, person: Person) -> None:
         for name in ("Eyes", "Brows", "Lashes"):
             if name in parts:
                 bpy.data.objects.remove(parts.pop(name))
-    gloves(skin, names, fit)
     parts["Outfit"] = outfit
 
 
@@ -278,12 +285,78 @@ def beyond_wrists(arm: bpy.types.Object, directions: dict, fit: Fit):
     return beyond
 
 
-def gloves(skin: bpy.types.Object, names: list, fit: Fit) -> None:
-    """Gloves painted on the body's hands: dark worn leather over the faces of the gloved bones."""
+def center_cuffs(outfit: bpy.types.Object, arm: bpy.types.Object, directions: dict, hands, fit: Fit) -> None:
+    """Moves the outfit's sleeve ends across the arm so their cut edges are around the wrists: the body's hand comes
+    out of the middle of the cuff (a bulky sleeve or a heavy gauntlet pulls the outfit's arm line off its opening).
+    Fades in over fit.center_cuffs up the forearm."""
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(outfit.data)
+    edge = np.zeros(len(bm.verts), bool)
+    for e in bm.edges:
+        if e.is_boundary:
+            edge[e.verts[0].index] = edge[e.verts[1].index] = True
+    bm.free()
+    co = G.vertices(outfit.data)
+    reach = hands(co)
+    for side, s in H.SIDES:
+        wrist = np.array(arm.pose.bones[f"{side}Hand"].head)
+        d = np.array(directions[f"{side}LowerArm"])
+        mine = (s * co[:, 0] > 0.15) & (reach > -fit.center_cuffs)
+        rim = mine & edge & (reach > -0.04)
+        if not rim.any():
+            continue
+        off = wrist - co[rim].mean(0)
+        off -= (off @ d) * d  # across the arm only
+        k = G.smoothstep(-fit.center_cuffs, -0.02, reach)
+        co[mine] += k[mine, None] * off
+        print("CUFF", side, "moved", round(float(np.linalg.norm(off)), 3), "m onto the wrist")
+    G.set_vertices(outfit.data, co)
+
+
+def drop_strays(outfit: bpy.types.Object, arm: bpy.types.Object, fit: Fit) -> None:
+    """Drops what's left of the generated hands: small pieces (fewer than fit.stray faces) whose middle lies within
+    30 cm of a posed wrist (splayed fingers beyond the cut)."""
+    me = outfit.data
+    parent = np.arange(len(me.vertices))
+
+    def find(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    for p in me.polygons:
+        root = find(p.vertices[0])
+        for v in p.vertices[1:]:
+            other = find(v)
+            if other != root:
+                parent[other] = root
+    piece = np.array([find(p.vertices[0]) for p in me.polygons])
+    ids, counts = np.unique(piece, return_counts=True)
+    centers = P.face_centers(outfit)
+    wrists = [np.array(arm.pose.bones[f"{side}Hand"].head) for side, _s in H.SIDES]
+    stray = np.zeros(len(piece), bool)
+    for i in ids[counts < fit.stray]:
+        mine = piece == i
+        middle = centers[mine].mean(0)
+        if min(np.linalg.norm(middle - wrist) for wrist in wrists) < 0.3:
+            stray |= mine
+    print("HANDS strays", P.delete_faces(outfit, stray), "faces")
+
+
+def gloves(skin: bpy.types.Object, names: list, fit: Fit, up: np.ndarray | None) -> None:
+    """Gloves painted on the body's hands: dark worn leather over the faces of the gloved bones (and where `up` is
+    set for all of a face's vertices: up the forearm)."""
     w = P.weight_matrix(skin, names)
     gloved = [names.index(f"{side}{b}") for side, _s in H.SIDES for b in fit.gloved]
     owner = w.argmax(1)
-    faces = [p for p in skin.data.polygons if np.isin(owner[list(p.vertices)], gloved).all()]
+    faces = [
+        p
+        for p in skin.data.polygons
+        if np.isin(owner[list(p.vertices)], gloved).all() or (up is not None and up[list(p.vertices)].all())
+    ]
     img = G.base_color_image(skin.data.materials[0])
     size = img.size[0]
     cover = G.uv_cover(skin.data, faces, size, grow=1)
@@ -334,16 +407,17 @@ def preview(arm: bpy.types.Object, body: H.Body, out: pathlib.Path, tag: str, wo
             path = out / "wip" / f"{tag}_{name}_{view}.png"
             C.render_from(path, loc, (0, 0, 0.85), 40, 32, 512)
             shots.append(path)
-    for name, pose in (("hand_rest", None), ("hand_idle", H.idle(body, 0.25))):
-        if pose:
-            H.apply(arm, pose)
-        else:
-            H.rest_pose(arm)
-        bpy.context.view_layer.update()
-        at = arm.pose.bones["LeftHand"].head
-        path = out / "wip" / f"{tag}_{name}.png"
-        C.render_from(path, at + Vector((0.1, -0.7, 0.15)), at, 50, 32, 512)
-        shots.append(path)
+    for side, s in H.SIDES:
+        for name, pose in ((f"hand_{side.lower()}_rest", None), (f"hand_{side.lower()}_idle", H.idle(body, 0.25))):
+            if pose:
+                H.apply(arm, pose)
+            else:
+                H.rest_pose(arm)
+            bpy.context.view_layer.update()
+            at = arm.pose.bones[f"{side}Hand"].head
+            path = out / "wip" / f"{tag}_{name}.png"
+            C.render_from(path, at + Vector((0.1 * s, -0.7, 0.15)), at, 50, 32, 512)
+            shots.append(path)
     H.apply(arm, H.idle(body, 0.25))
     bpy.context.view_layer.update()
     for name, loc, target in (
@@ -372,7 +446,7 @@ def make(person: Person, extras, clips, work, mode: str, tag: str) -> None:
     dress(arm, parts, m, person)
     head_top(arm, parts)
     extras(arm)
-    body = P.body_of(arm)
+    body = P.body_of(arm, wrist_out=person.wrist_out)
     print("STATS", C.stats(), C.tris_per_object())
     preview(arm, body, person.renders, tag if mode == "wip" else "final", work(body))
     if mode == "final":

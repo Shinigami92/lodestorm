@@ -56,16 +56,19 @@ LOOKS = {
     "Skin": ((1.0, 1.0, 1.0), 0.55, False),
 }
 # Overalls (nothing hangs loose), no bare skin below the collar, thick black gloves over his whole hands (their
-# generated gauntlets stay up to the wrist); his head is the generated one.
+# generated gauntlets stay up to the wrist, the glove reaches under them); his head is the generated one.
 FIT = D.Fit(
     SOURCE / "trellis" / "kade_trellis.glb",
     bare_arms=False,
     cuff=0.0,
     glove=(0.035, 0.035, 0.038),
     gloved=D.FULL,
+    glove_up=0.05,
+    center_cuffs=0.15,
     own_head=True,
 )
-PERSON = D.Person("Kade", BODY, LOOKS, FIT, ROOT / "assets" / "npcs" / "kade")
+# His hands hang clear of the belt's pouches.
+PERSON = D.Person("Kade", BODY, LOOKS, FIT, ROOT / "assets" / "npcs" / "kade", wrist_out=0.12)
 
 
 def props(_arm: bpy.types.Object) -> None:

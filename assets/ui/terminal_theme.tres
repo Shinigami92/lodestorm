@@ -168,6 +168,7 @@ HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
 HSlider/styles/slider = SubResource("StyleBoxFlat_slider")
 HSeparator/styles/separator = SubResource("StyleBoxLine_separator")
 Label/colors/font_color = Color(0.78, 0.9, 1, 1)
+RichTextLabel/colors/default_color = Color(0.78, 0.9, 1, 1)
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
 Title/base_type = &"Label"
 Title/colors/font_color = Color(0.3, 0.85, 1, 1)

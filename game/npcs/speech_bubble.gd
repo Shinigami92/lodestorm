@@ -3,7 +3,8 @@ extends Control
 ## A speech bubble's content (in a transparent `WorldPanel` above the one speaking): the line in a
 ## dark panel with a cyan frame, and a tail below its middle pointing down at the speaker. It keeps
 ## to the bottom of its screen and takes only the height the line needs, so the tail stays just
-## above the speaker's head. The whole line shows at once (no typing out).
+## above the speaker's head. The whole line shows at once (no typing out), names highlighted (see
+## `Keywords`).
 
 ## Gap between the head and the tail, in m.
 const HEAD_GAP: float = 0.05
@@ -13,9 +14,11 @@ const TAIL_WIDTH: float = 44.0
 ## to the crew (`Npc`'s `view_height`). Wider views scale them up (`view_scale`).
 const VIEW_HEIGHT: float = 3.2
 
+var _line: String = ""
+
 @onready var _layout: Control = %Layout
 @onready var _panel: PanelContainer = %Panel
-@onready var _text: Label = %Text
+@onready var _text: RichTextLabel = %Text
 @onready var _tail: Control = %Tail
 
 
@@ -45,12 +48,13 @@ static func view_scale(tree: SceneTree) -> float:
 
 ## Shows `text` (already translated).
 func show_line(text: String) -> void:
-	_text.text = text
+	_line = text
+	_text.text = Keywords.highlight(text)
 
 
-## The line shown (for tests and probes).
+## The line shown, without its highlights (for tests and probes).
 func get_line() -> String:
-	return _text.text
+	return _line
 
 
 ## The size its content needs (for the fit test).

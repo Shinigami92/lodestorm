@@ -14,6 +14,9 @@ const MK_ABOVE_TIER: int = 2
 @export var id: StringName = &""
 ## Player-facing name.
 @export var display_name: String = ""
+## What people call it in passing, e.g. "Ostra" for Waypost Ostra (highlighted in spoken lines
+## like its name, see `Keywords`); empty: only its full name.
+@export var short_name: String = ""
 @export var kind: Kind = Kind.PLANET
 ## How dangerous it is, growing from the outermost planet (1) inwards; a moon has its planet's.
 ## The ship's heat shield needs this MK level to reach it (see `HeatShield`). Scales its aliens and

@@ -154,7 +154,8 @@ func _turn(delta: float) -> void:
 ## Puts in the profile's own model (else the suit) in place of the one there, sets up its clips
 ## (with the profile's activities and props, on its own model) and measures where its head is.
 func _load_model() -> void:
-	var scene: PackedScene = profile.model if profile and profile.model else _suit_scene
+	var own_model: bool = profile != null and not profile.model.is_empty()
+	var scene: PackedScene = load(profile.model) as PackedScene if own_model else _suit_scene
 	if _model.scene_file_path != scene.resource_path:
 		var model := scene.instantiate() as Node3D
 		remove_child(_model)
@@ -164,12 +165,12 @@ func _load_model() -> void:
 		move_child(model, 0)
 		_model = model
 	var activities: Array[StringName] = []
-	if profile and profile.model:
+	if own_model:
 		activities = profile.activities
 	_animator.setup(_model, activities)
 	_skeleton = _model.find_child("Skeleton3D") as Skeleton3D
 	_hips = _skeleton.find_bone("Hips") if _skeleton else -1
-	if profile and profile.model:
+	if own_model:
 		for prop: StringName in profile.props:
 			var grip := _model.find_child(String(prop) + "Grip", true, false) as Node3D
 			if not grip:

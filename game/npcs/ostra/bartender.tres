@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
-[ext_resource type="PackedScene" uid="uid://b42gv4simpcog" path="res://assets/npcs/nell/nell.glb" id="4_model"]
 [ext_resource type="PackedScene" uid="uid://dry73vsd0sv1" path="res://assets/props/bar/glass.glb" id="5_glass"]
 [ext_resource type="PackedScene" uid="uid://dt6ykg2bmcsti" path="res://assets/props/bar/bottle.glb" id="6_bottle"]
 [ext_resource type="PackedScene" uid="uid://bnvcr1g7yh4dw" path="res://assets/props/bar/rag.glb" id="7_rag"]
@@ -110,7 +109,7 @@ script = ExtResource("1_profile")
 id = &"bartender"
 display_name = "Nell"
 role = "Bartender"
-model = ExtResource("4_model")
+model = "uid://b42gv4simpcog"
 activities = Array[StringName]([&"WipeCounter", &"PolishGlass", &"ShelveBottle"])
 props = Dictionary[StringName, PackedScene]({
 &"Bottle": ExtResource("6_bottle"),

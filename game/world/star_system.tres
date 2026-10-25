@@ -113,6 +113,7 @@ regions = Array[ExtResource("3_region")]([SubResource("Region_basin"), SubResour
 script = ExtResource("2_body")
 id = &"ostra"
 display_name = "Waypost Ostra"
+short_name = "Ostra"
 kind = 2
 color = Color(0.55, 0.85, 1.0, 1)
 size = 0.5

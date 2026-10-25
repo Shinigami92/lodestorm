@@ -1,11 +1,13 @@
 extends GutTest
 ## An NPC's own model (`NpcBody`, `NpcAnimator`): Nell's model with her head height and her props,
-## her work at the bar now and then while nobody is close, stopping when a player comes close.
+## her work at the bar now and then while nobody is close, stopping when a player comes close; the
+## suit sitting down and getting up.
 
 const BODY := preload("res://game/npcs/npc_body.tscn")
 const NELL: NpcProfile = preload("res://game/npcs/ostra/bartender.tres")
 const KADE: NpcProfile = preload("res://game/npcs/ostra/depot_master.tres")
 const SELIN: NpcProfile = preload("res://game/npcs/ostra/councillor.tres")
+const COLONIST: NpcProfile = preload("res://game/npcs/ostra/colonists/hauler_pilot.tres")
 
 var _body: NpcBody
 var _animator: NpcAnimator
@@ -55,3 +57,26 @@ func test_works_while_nobody_is_close() -> void:
 	_body.faces = null
 	await wait_seconds(0.4)
 	assert_ne(_animator.working(), first, "the next is another one")
+
+
+## The suit (the colonists) sits down and gets up over the blend time, its head lower while it sits;
+## an own model without the clip stays standing.
+func test_the_suit_sits_down_and_gets_up() -> void:
+	assert_false(_animator.can_sit(), "Nell's model has no sitting clip")
+	var body := BODY.instantiate() as NpcBody
+	add_child_autofree(body)
+	body.profile = COLONIST
+	var animator := body.get_node("Animator") as NpcAnimator
+	await wait_process_frames(2)
+	assert_true(animator.can_sit())
+	var standing: float = body.get_head_position().y
+	body.sitting = true
+	await wait_seconds(animator.sit_blend_time * 0.5)
+	assert_between(body.get_sit_amount(), 0.1, 0.9, "sitting down")
+	await wait_seconds(animator.sit_blend_time * 0.5 + 0.2)
+	assert_eq(body.get_sit_amount(), 1.0)
+	assert_between(standing - body.get_head_position().y, 0.3, 0.5, "the head as low as it sits")
+	body.sitting = false
+	await wait_seconds(animator.sit_blend_time + 0.2)
+	assert_eq(body.get_sit_amount(), 0.0, "up again")
+	assert_almost_eq(body.get_head_position().y, standing, 0.001)

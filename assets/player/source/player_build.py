@@ -20,7 +20,8 @@ mesh, skinned: each part weighted to its nearest bone, blended across the joints
 
 Animations (one action per clip, each in its own NLA track, all at 30 fps): "Idle" (loop), "Run", "RunBack",
 "StrafeLeft", "StrafeRight" (loops, authored at RUN_SPEED: the game scales their speed by the actual one), "Walk"
-(loop, authored at WALK_SPEED: the station's colonists walking),
+(loop, authored at WALK_SPEED: the station's colonists walking), "Sit" (loop: a colonist sitting on a seat, see
+humanoid.sit()),
 "Aim" (upper-body pose holding Harl; the game layers it over the legs), "Die" (once, ends lying face
 down) and the melee clips, upper body only too: the holds "ReadyBlade" (Riven), "ReadyHammer" (Dray), "Brace"
 (Jag, Auger: two-handed at the hip), "ReadyFist" (Clout: the gauntlet raised) and "ReadyShield" (Mantle: the left
@@ -666,6 +667,7 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
     **H.locomotion(BODY),
     "Aim": (1, lambda t: aim()),
     "Die": (36, lambda t: H.die(BODY, t)),
+    "Sit": (60, lambda t: H.sit(BODY, t)),
     "ReadyBlade": (1, lambda t: ready_blade()),
     "ReadyHammer": (1, lambda t: ready_hammer()),
     "Brace": (1, lambda t: brace()),
@@ -697,7 +699,7 @@ def preview(arm: bpy.types.Object, tag: str) -> list:
         ("strafeL", H.run(BODY, 0.1, H.MOVES["StrafeLeft"])),
         ("strafeR", H.run(BODY, 0.6, H.MOVES["StrafeRight"])),
     ]
-    poses += [("die3", H.die(BODY, 0.35)), ("die10", H.die(BODY, 1.0))]
+    poses += [("die3", H.die(BODY, 0.35)), ("die10", H.die(BODY, 1.0)), ("sit", H.sit(BODY, 0.25))]
     target = (0, 0, 0.95)
     for name, pose in poses:
         apply(arm, pose)

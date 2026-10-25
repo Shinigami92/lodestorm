@@ -160,6 +160,7 @@ for i, x in enumerate([62.0, 70.0, 78.0, 86.0]):
 # --- furniture for the station's people (see PEOPLE): the depot's counter, the council's long
 # table with its chairs, the bar's counter and booths, stalls along the concourse (scenery: no
 # shops), benches in the gallery facing the windows ---
+SEAT = 0.45  # the seats' height: the sitting clip's (SEAT_HEIGHT in tools/blender/humanoid.py)
 box("DepotCounter", (6, 1.1, 0.9), (73.5, 0.55, -20.5))
 # It ends short of the room's name on the floor.
 box("CouncilTable", (2.4, 0.8, 5.5), (108.5, 0.4, -21.25))
@@ -173,16 +174,19 @@ box("BarCounter", (0.9, 1.1, 9), (59, 0.55, 20))
 box("BackBar", (0.3, 1.38, 1.3), (57.85, 0.69, 20.75))
 for i, z in enumerate([20.3, 20.55, 20.9, 21.2]):
     box(f"BackBarBottle{i + 1}", (0.07, 0.25, 0.07), (57.85, 1.505, z))
+# A booth: a table between two benches (seats SEAT high, a backrest along the outer edge), room for
+# sitting knees between the table and the seats.
 for i, z in enumerate([16.5, 23.0]):
-    box(f"BoothTable{i + 1}", (1.6, 0.75, 1.2), (88.5, 0.375, z))
+    box(f"BoothTable{i + 1}", (1.6, 0.75, 1.0), (88.5, 0.375, z))
     for side, sname in [(-1, "Back"), (1, "Front")]:
-        box(f"BoothBench{i + 1}{sname}", (1.8, 1.1, 0.6), (88.5, 0.55, z + side * 1.3))
+        box(f"BoothBench{i + 1}{sname}", (1.8, SEAT, 0.8), (88.5, SEAT / 2, z + side * 1.3))
+        box(f"BoothBackrest{i + 1}{sname}", (1.8, 1.1, 0.15), (88.5, 0.55, z + side * 1.775))
 # A stall: its counter towards the hall, a rack behind the one standing at it.
 for i, x in enumerate([100.0, 110.0, 120.0]):
     box(f"Stall{i + 1}", (3, 1.0, 1.2), (x, 0.5, 18))
     box(f"StallRack{i + 1}", (3, 2.2, 0.4), (x, 1.1, 15.2))
 for i, x in enumerate([140.0, 156.0]):
-    box(f"Bench{i + 1}", (5, 0.5, 0.8), (x, 0.25, -20))
+    box(f"Bench{i + 1}", (5, SEAT, 0.8), (x, SEAT / 2, -20))
 
 # --- outside: solar wings behind the station, a mast on the council's roof ---
 for i, x in enumerate([32.0, 148.0]):
@@ -385,7 +389,10 @@ for i, (x, y, side) in enumerate(CLAMPS):
 
 # --- the station's people: the named NPCs at their places (profile, where (x, z), facing yaw in
 # degrees: 0 towards the camera, 90 towards +x), then the ambient colonists, each with a profile of
-# their own (profile, tint, where, yaw, route: the waypoints they walk in a loop; none: they stand) ---
+# their own (profile, tint, where, yaw, route: the waypoints they walk in a loop, a waypoint with a
+# yaw (x, z, yaw) the seat where they sit down for a while; none: they stand, or sit for good when
+# in SEATED). A seat's spot is where the feet are: the hips sit 0.4 m behind it (SIT_BACK in
+# tools/blender/humanoid.py), 0.25 m in from the seat's front edge ---
 NPC_SCENE = "res://game/npcs/npc.tscn"
 COLONIST_SCENE = "res://game/npcs/colonist.tscn"
 EXCHANGE_SCENE = "res://game/stations/exchange/ore_exchange.tscn"
@@ -409,13 +416,26 @@ COLONISTS = [
     ("BarterTrader", "barter_trader", (0.8, 0.85, 0.95), (120, 16.4), 0, []),
     ("Gardener", "gardener", (0.9, 1, 0.85), (110, 19.4), 180, []),
     ("DockHand", "dock_hand", (0.9, 0.95, 1), (60.4, 24), -90, []),
-    ("HaulerPilot", "hauler_pilot", (0.85, 0.9, 1), (148, -25.4), 180, []),
+    # On the first gallery bench, looking out of the windows.
+    ("HaulerPilot", "hauler_pilot", (0.85, 0.9, 1), (141, -20.55), 180, []),
+    # Facing each other in the booth by the counter (the other one is Rook's).
+    ("WaterTechnician", "water_technician", (0.85, 0.95, 0.95), (88.3, 15.75), 0, []),
+    ("Metalworker", "metalworker", (1, 0.9, 0.8), (88.7, 17.25), 180, []),
     ("DepotClerk", "depot_clerk", (1, 1, 1), (86, -24.9), 180, []),
     ("Loader", "loader", (1, 0.95, 0.85), (28, -21), 90, [(48, -21), (28, -21)]),
     ("Courier", "courier", (0.95, 1, 0.95), (36, 2), 90, [(140, 2), (36, 2)]),
     ("MaintenanceTech", "maintenance_tech", (0.9, 0.9, 1), (80, -8), 90, [(112, -8), (80, -8)]),
-    ("Teacher", "teacher", (1, 0.9, 0.95), (134, -14), 90, [(164, -14), (164, 14), (134, 14), (134, -14)]),
+    # Around the gallery, sitting down on the second bench for a while (round its end, on the window side).
+    (
+        "Teacher",
+        "teacher",
+        (1, 0.9, 0.95),
+        (134, -14),
+        90,
+        [(151, -22), (156.5, -20.55, 180), (160, -22), (164, -14), (164, 14), (134, 14), (134, -14)],
+    ),
 ]
+SEATED = {"HaulerPilot", "WaterTechnician", "Metalworker"}
 
 
 def yaw(degrees):
@@ -452,7 +472,12 @@ for name, profile, tint, (px, pz), facing, route in COLONISTS:
         f"tint = Color({', '.join(g(c) for c in tint)}, 1)",
     ]
     if route:
-        nodes += ["route = PackedVector3Array(" + ", ".join(f"{g(x)}, 0, {g(z)}" for x, z in route) + ")"]
+        nodes += ["route = PackedVector3Array(" + ", ".join(f"{g(w[0])}, 0, {g(w[1])}" for w in route) + ")"]
+    for i, waypoint in enumerate(route):
+        if len(waypoint) == 3:
+            nodes += [f"seat_stop = {i}", f"seat_yaw = {g(waypoint[2])}"]
+    if name in SEATED:
+        nodes += ["seated = true"]
     nodes += [""]
 
 # --- the ore exchange: its hoppers on the depot's counter (its origin: the counter's middle on the

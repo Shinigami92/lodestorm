@@ -1349,6 +1349,30 @@ msgstr ""
 msgid "Your suit looks like it's seen some hard work. Keep it out of my queue if you can. It's long enough already."
 msgstr ""
 
+#: game/npcs/ostra/colonists/metalworker.tres
+msgid "Metalworker"
+msgstr ""
+
+#: game/npcs/ostra/colonists/metalworker.tres
+msgid "The ore you crews bring up ends up in my workshop. Most of it comes out again as pipes and patches."
+msgstr ""
+
+#: game/npcs/ostra/colonists/metalworker.tres
+msgid "My ears are still ringing from the workshop. In here it's almost quiet."
+msgstr ""
+
+#: game/npcs/ostra/colonists/metalworker.tres
+msgid "Every hull plate on this station has been patched at least once. A few of those patches are mine."
+msgstr ""
+
+#: game/npcs/ostra/colonists/metalworker.tres
+msgid "Give me enough metal, and I'll build anything this station needs. I never get enough metal."
+msgstr ""
+
+#: game/npcs/ostra/colonists/metalworker.tres
+msgid "We come here after every shift. Same booth, same drinks, same arguments."
+msgstr ""
+
 #: game/npcs/ostra/colonists/teacher.tres
 msgid "Teacher"
 msgstr ""
@@ -1371,6 +1395,30 @@ msgstr ""
 
 #: game/npcs/ostra/colonists/teacher.tres
 msgid "If you have a story from down there, the children would love to hear it. Keep the scary parts short."
+msgstr ""
+
+#: game/npcs/ostra/colonists/water_technician.tres
+msgid "Water technician"
+msgstr ""
+
+#: game/npcs/ostra/colonists/water_technician.tres
+msgid "Every drop you drink on this station has been through my pipes more often than you'd like to know."
+msgstr ""
+
+#: game/npcs/ostra/colonists/water_technician.tres
+msgid "My first break in two days. The pumps can manage one hour without me."
+msgstr ""
+
+#: game/npcs/ostra/colonists/water_technician.tres
+msgid "Don't tell Nell, but her water tastes of the recyclers too. Everyone's does."
+msgstr ""
+
+#: game/npcs/ostra/colonists/water_technician.tres
+msgid "We lose a little water every week, and I still haven't found out where it goes."
+msgstr ""
+
+#: game/npcs/ostra/colonists/water_technician.tres
+msgid "My friend here keeps the workshops running, and I keep the water running. Between us, the station keeps going."
 msgstr ""
 
 #: game/npcs/ostra/councillor.tres

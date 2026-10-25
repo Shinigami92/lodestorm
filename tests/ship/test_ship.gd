@@ -56,8 +56,8 @@ func test_camera_sees_the_viewers_deck() -> void:
 
 ## Windows look out of the ship; the ones in walls cut away for the camera go with their wall.
 func test_windows_go_with_their_wall() -> void:
-	var back: Node3D = _ship.get_node("Hull/BackWallLowerGlass1")
-	var front: Node3D = _ship.get_node("Hull/LowerCut/FrontWallLowerGlass1")
+	var back: Node3D = _ship.get_node("Hull/BackWallLowerNiche1Glass1")
+	var front: Node3D = _ship.get_node("Hull/LowerCut/FrontWallLowerNiche1Glass1")
 	assert_gt(get_tree().get_nodes_in_group(CutAway.HIDE_GROUP).size(), 20)
 	assert_true(back.visible)
 	assert_false(front.visible, "cut away while aboard")

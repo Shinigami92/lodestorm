@@ -8,7 +8,8 @@ hull's model, ShipExterior). Run it after changing the layout, from the repo roo
 Only hull.tscn is written; the rooms are scenes of their own (game/ship/rooms/), placed in
 ship.tscn. They must match the layout (game/ship/hull_layout.py: ROOMS, position and size), so
 moving a room means changing it there, rebuilding, and moving the room's scene and resizing its
-floor by hand. Axes and sections: see hull_layout.py.
+floor by hand. Axes and sections: see hull_layout.py. Everything built must stay inside the skin of
+the hull's model (hull_layout.inside_skin): the script fails otherwise.
 
 Groups (see Ship): "hull" always shows; "lower_cut" only casts shadows while the viewer is on the
 lower deck; "upper" only casts shadows while the viewer is on the lower deck; "upper_cut" (inside
@@ -26,13 +27,21 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from hull_layout import (
     ARMORY_X,
     CABIN_X,
+    COCKPIT_OUTLINE,
+    COCKPIT_TOP,
+    COCKPIT_WINDOWS,
     CREW_X,
     CW,
     GEAR,
+    LAB_FLOOR,
+    LAB_OUTLINE,
     LEG_PAD,
     LEG_X,
     LEG_Z,
     LOW,
+    NICHE,
+    NICHE_HEIGHT,
+    NICHE_SIDE,
     RAMP_DOOR_HEIGHT,
     RAMP_WIDTH,
     RANGE_DOOR,
@@ -41,7 +50,9 @@ from hull_layout import (
     UP,
     VENDORS,
     ZI,
+    inside_skin,
     outer_windows,
+    outline,
 )
 
 from greybox import Greybox, g, sid, vec, write, xform
@@ -65,8 +76,8 @@ UPPER_FRONT = ("upper_cut", "upper")
 box("Floor", (96, 1, 30), (-33, LOW - 0.5, 0))
 # The tail wall with the ramp door.
 JAMB = ZI - RAMP_WIDTH / 2
-box("RightWallBack", (0.5, 8.5, JAMB), (14.75, (LOW + TOP) / 2, -(ZI - JAMB / 2)))
-box("RightWallFront", (0.5, 8.5, JAMB), (14.75, (LOW + TOP) / 2, ZI - JAMB / 2), "lower_cut")
+box("RightWallBack", (0.5, TOP - LOW, JAMB), (14.75, (LOW + TOP) / 2, -(ZI - JAMB / 2)))
+box("RightWallFront", (0.5, TOP - LOW, JAMB), (14.75, (LOW + TOP) / 2, ZI - JAMB / 2), "lower_cut")
 LINTEL = TOP - LOW - RAMP_DOOR_HEIGHT
 box("DoorLintel", (0.5, LINTEL, RAMP_WIDTH), (14.75, TOP - LINTEL / 2, 0), "lower_cut")
 # Keeps players and aliens from walking under the ship, between the legs.
@@ -77,6 +88,21 @@ box("SlabNose", (23, 0.5, 29), (-69, SLAB + 0.25, 0), "upper")
 box("SlabLobbyBack", (5.5, 0.5, 6.5), (-54.75, SLAB + 0.25, -11.25), "upper")
 box("SlabLobbyFront", (5.5, 0.5, 17.5), (-54.75, SLAB + 0.25, 5.75), "upper")
 box("SlabMiddle", (49, 0.5, 29), (-27.5, SLAB + 0.25, 0), "upper")
+
+# --- the nose rooms: the specimen lab below, the cockpit above, past the box's nose wall ---
+box_kit.prism("LabFloor", outline(LAB_OUTLINE), LOW - LAB_FLOOR, LOW)
+box_kit.prism("CockpitSlab", outline(COCKPIT_OUTLINE), SLAB, UP, "upper")
+box_kit.prism("CockpitRoof", outline(COCKPIT_OUTLINE), COCKPIT_TOP, COCKPIT_TOP + 0.5, "upper_cut")
+for nose, half, y0, y1, cut, kept in [
+    ("Lab", LAB_OUTLINE, LOW, UP, LOWER_FRONT, "hull"),
+    ("Cockpit", COCKPIT_OUTLINE, UP, COCKPIT_TOP, UPPER_FRONT, "upper"),
+]:
+    (_, _), (x0, z0), (x1, z1) = half
+    box_kit.segment(f"{nose}SideBack", (x0, z0), (x1, z1), y0, y1, kept)
+    box_kit.segment(f"{nose}SideFront", (x1, -z1), (x0, -z0), y0, y1, *cut)
+wall("LabFront", "z", LAB_OUTLINE[2][0], LAB_OUTLINE[2][1], -LAB_OUTLINE[2][1], LOW, UP)
+x_front, z_front = COCKPIT_OUTLINE[2]
+outer_wall("CockpitFront", "z", x_front, z_front, -z_front, UP, COCKPIT_TOP, COCKPIT_WINDOWS, "upper")
 
 # --- walls through both decks ---
 for name, x in [("NoseSectionWall", -57.75), ("LobbyWall", -51.75)]:
@@ -94,6 +120,7 @@ wall("CargoShaftFrontUpper", "x", -9.25, -3, 2.5, UP, TOP, group="upper_cut", st
 wall("CargoShaftSide", "z", 2.25, -ZI, -9.5, LOW, TOP)
 
 # --- lower deck ---
+wall("NoseWallLower", "z", -80.75, -ZI, ZI, LOW, UP, doors=[(0, 3)], front=LOWER_FRONT)
 wall("NoseCorridorBack", "x", -CW, -80.5, -58, LOW, SLAB, [(-69.25, 3)], "lower_cut", "hull")
 wall("NoseCorridorFront", "x", CW, -80.5, -58, LOW, SLAB, [(-69.25, 3)], "lower_cut", "hull")
 range_doors = [(RANGE_DOOR, 2), ((ARMORY_X[0] + ARMORY_X[1]) / 2, 3)]
@@ -105,7 +132,7 @@ for i, (_, _, b) in enumerate(VENDORS[:-1]):
     wall(f"VendorWall{i + 1}", "z", b + 0.25, 3, ZI, LOW, SLAB, front=LOWER_FRONT)
 
 # --- upper deck ---
-wall("CockpitWall", "z", -72.25, -ZI, ZI, UP, TOP, doors=[(0, 3)], group="upper", front=UPPER_FRONT)
+wall("CockpitWall", "z", -80.75, -ZI, ZI, UP, TOP, doors=[(0, 3)], group="upper", front=UPPER_FRONT)
 blocks = CABIN_X + CREW_X
 for i, (_, b) in enumerate(blocks):
     name = "MessWall" if i == len(blocks) - 1 else f"CabinWall{i + 1}"
@@ -115,21 +142,36 @@ cabin_doors = [((a + b) / 2, 1.5) for a, b in blocks]
 wall("UpperCorridorBack", "x", -CW, -51.5, -19.5, UP, TOP, cabin_doors, "upper_cut", "upper")
 wall("UpperCorridorFront", "x", CW, -51.5, -19.5, UP, TOP, cabin_doors, "upper_cut", "upper")
 
-# --- outer walls with windows ---
-outer_wall("BackWallLower", "x", -14.75, -81, 15, LOW, UP, outer_windows("Lower", -1))
-outer_wall("BackWallUpper", "x", -14.75, -81, 15, UP, TOP, outer_windows("Upper", -1))
-outer_wall("FrontWallLower", "x", 14.75, -81, 15, LOW, UP, outer_windows("Lower", 1), "lower_cut", "hull")
-outer_wall("FrontWallUpper", "x", 14.75, -81, 15, UP, TOP, outer_windows("Upper", 1), "upper_cut", "upper")
-# The nose cone sits in front of the lower deck; the cockpit looks out over it.
-outer_wall("NoseWallLower", "z", -80.75, -ZI, ZI, LOW, UP, [])
-outer_wall("NoseWallUpper", "z", -80.75, -ZI, ZI, UP, TOP, [(-4.5, 7), (4.5, 7)])
+# --- outer walls, the windows in niches ---
+# Along the box, and on into the nose rooms' straight stretch (the cockpit's under its lower ceiling;
+# the lab's windows without niches, the belly rises under them).
+for side, name, lower, upper in [(-1, "Back", ("hull",), ("upper",)), (1, "Front", LOWER_FRONT, UPPER_FRONT)]:
+    z = side * (ZI + 0.25)
+    for deck, y0, y1, x0, x1, groups, floor_group in [
+        ("Lab", LOW, UP, LAB_OUTLINE[1][0], -81, lower, None),
+        ("Lower", LOW, UP, -81, 15, lower, "hull"),
+        ("Cockpit", UP, COCKPIT_TOP, COCKPIT_OUTLINE[1][0], -81, upper, "upper"),
+        ("Upper", UP, TOP, -81, 15, upper, "upper"),
+    ]:
+        wins = [(c, w) for c, w in outer_windows("Upper" if y0 == UP else "Lower", side) if x0 < c < x1]
+        niche = (side, NICHE, NICHE_SIDE, NICHE_HEIGHT, LAB_FLOOR, floor_group) if floor_group else None
+        outer_wall(f"{name}Wall{deck}", "x", z, x0, x1, y0, y1, wins, *groups, niche=niche)
 
+
+# --- the skin: everything stays inside the hull's model ---
+outside = sorted(
+    {name for name, (x, y, z) in box_kit.corners() if name != "Underside" and not inside_skin(x, z, y, 0.2)}
+)
+if outside:
+    sys.exit("outside the hull's skin: " + ", ".join(outside))
 
 # --- sub-resources ---
 subs = box_kit.subresources()
+# The nose's shape keeps players out from under it, below the specimen lab's floor.
+nose_top = LOW - LAB_FLOOR
 subs += [
     '[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_nose"]',
-    f"points = PackedVector3Array(-81, {g(GEAR)}, -15, -81, {g(GEAR)}, 15, -81, {g(UP)}, -15, -81, {g(UP)}, 15, -91, {g(GEAR)}, 0, -91, {g(UP)}, 0)",
+    f"points = PackedVector3Array(-81, {g(GEAR)}, -15, -81, {g(GEAR)}, 15, -81, {g(nose_top)}, -15, -81, {g(nose_top)}, 15, -91, {g(GEAR)}, 0, -91, {g(nose_top)}, 0)",
     "",
 ]
 

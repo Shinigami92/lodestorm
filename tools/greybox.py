@@ -4,11 +4,13 @@ outer walls with windows on a `Greybox`, adds what's its own (floors, lights, pr
 .tscn with `write`, which keeps the scene's and its resources' UIDs (tools/uids.sh adds them to a
 new file) and fails with --check when the file differs.
 
-Walls are boxes along x or z; a wall in front of what the camera must see goes into a group that
+Walls are boxes along x or z (or turned, between two points); floors that aren't rectangles are
+prisms (a CSG polygon for the look, a convex shape to stand on). A wall in front of what the camera must see goes into a group that
 only casts shadows while the viewer is inside (see CutAway in game/camera/cut_away.gd), leaving a
 low stub in a group that always shows. Groups map to parent nodes (`groups`: group -> node path).
 """
 
+import math
 import pathlib
 import re
 import sys
@@ -31,6 +33,16 @@ def vec(v):
 
 def xform(origin, basis="1, 0, 0, 0, 1, 0, 0, 0, 1"):
     return f"Transform3D({basis}, {', '.join(g(c) for c in origin)})"
+
+
+def yawed(angle):
+    """The basis of a turn by `angle` (radians) around y."""
+    c, s = math.cos(angle), math.sin(angle)
+    return f"{g(c)}, 0, {g(s)}, 0, 1, 0, {g(-s)}, 0, {g(c)}"
+
+
+# A CSG polygon lies in its XY plane and grows along -Z: turned so it lies in XZ and grows up.
+FLAT = "1, 0, 0, 0, 0, -1, 0, 1, 0"
 
 
 def scaled(size, origin):
@@ -59,8 +71,9 @@ def windows_for(x0, x1, spacing=9, width=4.0, margin=1.5):
 
 
 class Greybox:
-    """Wall pieces (name, size, center, group, stub_group or None, kind: "both", "shape" or "mesh")
-    and window panes (name, size, center, group, sill), turned into sub-resources and nodes."""
+    """Wall pieces (name, size, center, group, stub_group or None, kind: "both", "shape" or "mesh",
+    yaw), window panes (name, size, center, group) and prisms (name, points, y0, y1, group, kind),
+    turned into sub-resources and nodes."""
 
     def __init__(self, groups, material_id, material_lines, stub=1.0, door=3.0, sill=1.0, window_height=2.0):
         self.groups = groups
@@ -72,6 +85,7 @@ class Greybox:
         self.window_height = window_height
         self.walls = []
         self.glass = []
+        self.prisms = []
 
     def wall(
         self, name, axis, fixed, a0, a1, y0, y1, doors=(), group=None, stub_group=None, front=None, door_height=None
@@ -94,7 +108,7 @@ class Greybox:
                 size, center = (0.5, c1 - c0, b1 - b0), (fixed, (c0 + c1) / 2, mid)
                 if front and b0 >= 1.0:
                     gr, sg = front
-            self.walls.append((pname, size, center, gr, sg, "both"))
+            self.walls.append((pname, size, center, gr, sg, "both", 0.0))
 
         edges = [a0]
         for c, w in sorted(doors):
@@ -108,19 +122,45 @@ class Greybox:
             piece(name + "Lintel" + suffix, c - w / 2, c + w / 2, y0 + door_height, y1, None)
 
     def box(self, name, size, center, group=None, kind="both"):
-        self.walls.append((name, size, center, group or self.default_group(), None, kind))
+        self.walls.append((name, size, center, group or self.default_group(), None, kind, 0.0))
 
-    def outer_wall(self, name, axis, fixed, a0, a1, y0, y1, wins, group=None, stub_group=None, sill=None, height=None):
+    def segment(self, name, p0, p1, y0, y1, group=None, stub_group=None):
+        """A wall from p0 to p1 (x, z: its center line), y0 to y1, turned to run between them."""
+        dx, dz = p1[0] - p0[0], p1[1] - p0[1]
+        length = math.hypot(dx, dz)
+        center = ((p0[0] + p1[0]) / 2, (y0 + y1) / 2, (p0[1] + p1[1]) / 2)
+        piece = (name, (length, y1 - y0, 0.5), center, group or self.default_group(), stub_group, "both")
+        self.walls.append(piece + (math.atan2(-dz, dx),))
+
+    def prism(self, name, points, y0, y1, group=None, kind="both"):
+        """A convex polygon (x, z points, in order) from y0 up to y1: a floor or a ceiling that
+        isn't a rectangle."""
+        self.prisms.append((name, points, y0, y1, group or self.default_group(), kind))
+
+    def outer_wall(
+        self, name, axis, fixed, a0, a1, y0, y1, wins, group=None, stub_group=None, sill=None, height=None, niche=None
+    ):
         """One collision shape for the whole wall; its mesh goes around the windows (sill below,
-        header above), with glass in them."""
+        header above), with glass in them. With `niche` = (out, depth, widen, niche_height, floor,
+        floor_group) (only along x), each window sits at the back of a niche instead: an opening in
+        the wall `widen` m wider than the window on each side and `niche_height` high, the niche
+        reaching `depth` m further out (`out`: +1 or -1, towards +z or -z) with its side walls, a
+        lid, and a `floor` m thick floor piece (in `floor_group`) from the wall's outer face."""
         group = group or self.default_group()
         sill = self.sill if sill is None else sill
         height = self.window_height if height is None else height
+        if niche:
+            self._niche_wall(name, fixed, a0, a1, y0, y1, wins, group, stub_group, sill, height, niche)
+            return
         if axis == "x":
             size, center = (a1 - a0, y1 - y0, 0.5), ((a0 + a1) / 2, (y0 + y1) / 2, fixed)
         else:
             size, center = (0.5, y1 - y0, a1 - a0), (fixed, (y0 + y1) / 2, (a0 + a1) / 2)
-        self.walls.append((name, size, center, group, stub_group, "shape"))
+        self.walls.append((name, size, center, group, stub_group, "shape", 0.0))
+        self._window_wall(name, axis, fixed, a0, a1, y0, y1, wins, group, sill, height)
+
+    def _window_wall(self, name, axis, fixed, a0, a1, y0, y1, wins, group, sill, height):
+        """A wall's meshes around its windows (its collision shape is the caller's), and the glass."""
 
         def piece(pname, b0, b1, c0, c1):
             if b1 - b0 <= 0.001 or c1 - c0 <= 0.001:
@@ -130,7 +170,7 @@ class Greybox:
                 s, c = (b1 - b0, c1 - c0, 0.5), (mid, (c0 + c1) / 2, fixed)
             else:
                 s, c = (0.5, c1 - c0, b1 - b0), (fixed, (c0 + c1) / 2, mid)
-            self.walls.append((pname, s, c, group, None, "mesh"))
+            self.walls.append((pname, s, c, group, None, "mesh", 0.0))
 
         edges = [a0]
         for c, w in sorted(wins):
@@ -146,6 +186,54 @@ class Greybox:
                 self.glass.append((f"{name}Glass{i + 1}", (w, height, 0.06), (c, wy, fixed), group))
             else:
                 self.glass.append((f"{name}Glass{i + 1}", (0.06, height, w), (fixed, wy, c), group))
+
+    def _niche_wall(self, name, fixed, a0, a1, y0, y1, wins, group, stub_group, sill, height, niche):
+        out, depth, widen, niche_height, floor, floor_group = niche
+        back = fixed + out * depth
+        top = y0 + niche_height
+        add = self.walls.append
+        edges = [a0]
+        for c, w in sorted(wins):
+            edges += [c - w / 2 - widen, c + w / 2 + widen]
+        edges.append(a1)
+        for i in range(0, len(edges), 2):
+            b0, b1 = edges[i], edges[i + 1]
+            if b1 - b0 > 0.001:
+                size, center = (b1 - b0, y1 - y0, 0.5), ((b0 + b1) / 2, (y0 + y1) / 2, fixed)
+                add((f"{name}Part{i // 2 + 1}", size, center, group, stub_group, "both", 0.0))
+        # Between the wall's outer face and the niche's back wall (both 0.5 thick).
+        inner, outer = fixed + out * 0.25, back - out * 0.25
+        for i, (c, w) in enumerate(sorted(wins)):
+            n = i + 1
+            o0, o1 = c - w / 2 - widen, c + w / 2 + widen
+            if y1 - top > 0.001:
+                add((f"{name}Over{n}", (o1 - o0, y1 - top, 0.5), (c, (top + y1) / 2, fixed), group, None, "both", 0.0))
+            for k, x in enumerate((o0 + 0.25, o1 - 0.25)):
+                size, center = (0.5, niche_height, abs(outer - inner)), (x, (y0 + top) / 2, (inner + outer) / 2)
+                add((f"{name}Niche{n}Side{k + 1}", size, center, group, stub_group, "both", 0.0))
+            lid = ((o1 - o0, 0.3, depth + 0.5), (c, top + 0.15, (fixed + back) / 2))
+            add((f"{name}Niche{n}Lid", *lid, group, None, "both", 0.0))
+            ground = ((o1 - o0, floor, depth), (c, y0 - floor / 2, (inner + back + out * 0.25) / 2))
+            add((f"{name}Niche{n}Floor", *ground, floor_group, None, "both", 0.0))
+            size, center = (o1 - o0, niche_height, 0.5), (c, (y0 + top) / 2, back)
+            add((f"{name}Niche{n}", size, center, group, stub_group, "shape", 0.0))
+            self._window_wall(f"{name}Niche{n}", "x", back, o0, o1, y0, top, [(c, w)], group, sill, height)
+
+    def corners(self):
+        """Every piece's and prism's corners (x, y, z) with its name, e.g. to check them against a
+        hull around them."""
+        for name, size, center, _group, _stub, _kind, yaw in self.walls:
+            c, s = math.cos(yaw), math.sin(yaw)
+            for dx in (-0.5, 0.5):
+                for dy in (-0.5, 0.5):
+                    for dz in (-0.5, 0.5):
+                        lx, lz = dx * size[0], dz * size[2]
+                        point = (center[0] + lx * c + lz * s, center[1] + dy * size[1], center[2] - lx * s + lz * c)
+                        yield name, point
+        for name, points, y0, y1, _group, _kind in self.prisms:
+            for x, z in points:
+                yield name, (x, y0, z)
+                yield name, (x, y1, z)
 
     def default_group(self):
         return next(iter(self.groups))
@@ -172,6 +260,12 @@ class Greybox:
                 f"size = {vec(s)}",
                 "",
             ]
+        for name, points, y0, y1, _group, kind in self.prisms:
+            if kind == "mesh":
+                continue
+            corners = ", ".join(f"{g(x)}, {g(y)}, {g(z)}" for y in (y0, y1) for x, z in points)
+            subs += [f'[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_{name}"]']
+            subs += [f"points = PackedVector3Array({corners})", ""]
         for s in unique({(w[1][0], self.stub, w[1][2] - 0.02) for w in self.walls if w[4]}):
             subs += [
                 f'[sub_resource type="BoxMesh" id="BoxMesh_stub_{sid(s)}"]',
@@ -185,18 +279,19 @@ class Greybox:
         """The walls' collision shapes (under `body`) and meshes (under their group's node), their
         stubs and the glass."""
         nodes = []
-        for name, size, center, group, stub_group, kind in self.walls:
+        for name, size, center, group, stub_group, kind, yaw in self.walls:
+            basis = yawed(yaw)
             if kind != "mesh":
                 nodes += [
                     f'[node name="{name}Shape" type="CollisionShape3D" parent="{body}"]',
-                    f"transform = {xform(center)}",
+                    f"transform = {xform(center, basis)}",
                     f'shape = SubResource("BoxShape3D_{sid(size)}")',
                     "",
                 ]
             if kind != "shape":
                 nodes += [
                     f'[node name="{name}" type="MeshInstance3D" parent="{self.groups[group]}"]',
-                    f"transform = {xform(center)}",
+                    f"transform = {xform(center, basis)}",
                     f'mesh = SubResource("BoxMesh_{sid(size)}")',
                     "",
                 ]
@@ -205,8 +300,25 @@ class Greybox:
                 y0 = center[1] - size[1] / 2
                 nodes += [
                     f'[node name="{name}Stub" type="MeshInstance3D" parent="{self.groups[stub_group]}"]',
-                    f"transform = {xform((center[0], y0 + self.stub / 2, center[2]))}",
+                    f"transform = {xform((center[0], y0 + self.stub / 2, center[2]), basis)}",
                     f'mesh = SubResource("BoxMesh_stub_{sid(s)}")',
+                    "",
+                ]
+        for name, points, y0, y1, group, kind in self.prisms:
+            if kind != "mesh":
+                nodes += [
+                    f'[node name="{name}Shape" type="CollisionShape3D" parent="{body}"]',
+                    f'shape = SubResource("ConvexPolygonShape3D_{name}")',
+                    "",
+                ]
+            if kind != "shape":
+                polygon = ", ".join(f"{g(x)}, {g(z)}" for x, z in points)
+                nodes += [
+                    f'[node name="{name}" type="CSGPolygon3D" parent="{self.groups[group]}"]',
+                    f"transform = {xform((0, y0, 0), FLAT)}",
+                    f"polygon = PackedVector2Array({polygon})",
+                    f"depth = {g(y1 - y0)}",
+                    f'material = SubResource("StandardMaterial3D_{self.material_id}")',
                     "",
                 ]
         # Glass lets light in and doesn't cast shadows; it's shown or hidden with its wall.

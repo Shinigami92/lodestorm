@@ -10,7 +10,7 @@ albedo_color = Color(0.36, 0.42, 0.52, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor_Bridge"]
 material = SubResource("StandardMaterial3D_floor_Bridge")
-size = Vector2(14, 29)
+size = Vector2(22.5, 29)
 
 [node name="Bridge" type="Node3D"]
 
@@ -29,7 +29,7 @@ spot_angle_attenuation = 0.5
 
 [node name="Sign" type="Label3D" parent="."]
 layers = 4
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 4.5)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 4, 0.02, 4.5)
 pixel_size = 0.01
 text = "Bridge"
 font_size = 96
@@ -42,7 +42,7 @@ uppercase = true
 holo_table = NodePath("../HoloTable")
 
 [node name="PilotFlightSpot" type="Marker3D" parent="."]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -13.5, 0, -2.6)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -27.5, 0, -2.6)
 
 [node name="Pilot" parent="." node_paths=PackedStringArray("flight_spot") instance=ExtResource("90_npc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -3)

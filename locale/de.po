@@ -1890,6 +1890,10 @@ msgstr "Krankenstation"
 msgid "Miners"
 msgstr "Schürfer"
 
+#: game/ship/rooms/lower/specimen_lab.tscn
+msgid "Specimen lab"
+msgstr "Probenlabor"
+
 #: game/ship/rooms/lower/weapons.tscn
 msgid "Weapons"
 msgstr "Waffen"

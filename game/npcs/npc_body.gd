@@ -4,9 +4,11 @@ extends Node3D
 ## own model, or the suit model in their darker tint with the collar light in their own color (for
 ## those without one yet), playing its "Idle" and "Walk" (`NpcAnimator`), turning towards whom
 ## it `faces` (else the nearest player close by, else back to where it stands facing), and their
-## name plate while a player is near (not while they use a menu). The profile's `accessory` goes on
-## over the suit, each part following its bone. The crew (`Npc`, which adds
-## talking) and the station's ambient colonists (`Colonist`, which adds walking) share it.
+## name plate while a player is near (not while they use a menu). While `sitting` (on a seat behind
+## where it stands), it doesn't turn, and its head (the plate, a speech bubble) is as low as the
+## clip has it. The profile's `accessory` goes on over the suit, each part following its bone. The
+## crew (`Npc`, which adds talking) and the station's ambient colonists (`Colonist`, which adds
+## walking and sitting) share it.
 
 ## How close (in m) a player must be for it to turn towards them.
 const NOTICE_RANGE: float = 3.0
@@ -37,6 +39,12 @@ const PLATE_ABOVE_HEAD: float = 0.2
 
 ## Whom it turns towards; null: the nearest player close by.
 var faces: Node3D
+## Whether it sits on the seat behind where it stands (its model's "Sit" clip, see `NpcAnimator`;
+## the suit has it): it sits down and gets up over `NpcAnimator.sit_blend_time`, facing ahead.
+var sitting: bool = false:
+	set(value):
+		sitting = value
+		_animator.sitting = value
 ## Whether the name plate may show (e.g. hidden while someone talks to them).
 var plate_allowed: bool = true
 ## Where the top of the head is, in m above the feet (e.g. a speech bubble sits above it): the
@@ -48,6 +56,9 @@ var _worn: Array[BoneAttachment3D] = []
 
 ## The suit model the scene starts with (shown while the profile has no model of its own).
 var _suit_scene: PackedScene
+## The model's skeleton and its hips bone (how far the hips are down while sitting).
+var _skeleton: Skeleton3D
+var _hips: int = -1
 
 @onready var _model: Node3D = $Model
 @onready var _animator: NpcAnimator = $Animator
@@ -69,6 +80,7 @@ func _process(delta: float) -> void:
 	_plate.visible = plate_allowed and near != null and near.menu == null
 	if _plate.visible:
 		_plate.text = get_plate_text()
+		_plate.position.y = head_height + _sit_drop() + PLATE_ABOVE_HEAD
 
 
 ## Their name and role, as the name plate shows them (only the role without a name).
@@ -90,26 +102,47 @@ func is_walking() -> bool:
 	return _animator.speed > 0.0
 
 
+## Sits down or gets up at once (`sitting` without blending; e.g. someone already sitting when the
+## place loads).
+func settle() -> void:
+	_animator.settle()
+
+
+## How far it sits right now: 0 standing, 1 sitting (in between while sitting down or getting up).
+func get_sit_amount() -> float:
+	return _animator.sit_amount()
+
+
 ## Whether the name plate shows right now.
 func is_plate_shown() -> bool:
 	return _plate.visible
 
 
-## The top of the head, in world space.
+## The top of the head, in world space (lower while sitting).
 func get_head_position() -> Vector3:
-	return global_position + Vector3.UP * head_height
+	return global_position + Vector3.UP * (head_height + _sit_drop())
+
+
+## How far the head is down from standing because it sits (negative; 0 standing): as far as the
+## hips are below their rest height.
+func _sit_drop() -> float:
+	if _animator.sit_amount() <= 0.0 or _hips < 0:
+		return 0.0
+	var pose: Vector3 = _skeleton.global_transform * _skeleton.get_bone_global_pose(_hips).origin
+	var rest: Vector3 = _skeleton.global_transform * _skeleton.get_bone_global_rest(_hips).origin
+	return pose.y - rest.y
 
 
 ## Turns towards `faces`, else the nearest player close by, else back to where it stands facing
 ## (its parent's forward).
 func _turn(delta: float) -> void:
 	var target: Node3D = faces
-	if not target:
+	if not target and not sitting:
 		target = Player.nearest(get_tree(), global_position, NOTICE_RANGE)
 	# Works on its activities only while nobody is close (it turns to them instead).
 	_animator.may_work = target == null
 	var yaw: float = 0.0
-	if target:
+	if target and not sitting:
 		var parent: Node3D = get_parent_node_3d()
 		var offset: Vector3 = target.global_position - global_position
 		var local: Vector3 = parent.global_basis.inverse() * offset if parent else offset
@@ -134,6 +167,8 @@ func _load_model() -> void:
 	if profile and profile.model:
 		activities = profile.activities
 	_animator.setup(_model, activities)
+	_skeleton = _model.find_child("Skeleton3D") as Skeleton3D
+	_hips = _skeleton.find_bone("Hips") if _skeleton else -1
 	if profile and profile.model:
 		for prop: StringName in profile.props:
 			var grip := _model.find_child(String(prop) + "Grip", true, false) as Node3D

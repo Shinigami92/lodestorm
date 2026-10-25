@@ -1,6 +1,7 @@
 extends GutTest
 ## Waypost Ostra's people: the named NPCs at their places with their topics, the bartender's
-## rumors following the heat shield, and the ambient colonists walking and saying their remarks.
+## rumors following the heat shield, and the ambient colonists walking, sitting and saying their
+## remarks.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const NAMED: Dictionary[String, NpcProfile] = {
@@ -191,6 +192,71 @@ func test_a_colonist_remarks_while_a_player_stays_close() -> void:
 	_player.global_position = gardener.global_position + Vector3(0.0, 0.0, 1.5)
 	await wait_physics_frames(2)
 	assert_eq(gardener.get_remark(), remarks[1], "the next one after coming back")
+
+
+## Some sit for good: on a gallery bench looking out, two facing each other in a booth.
+func test_seated_colonists_sit_at_their_seats() -> void:
+	var facing: Dictionary[String, Vector3] = {
+		"HaulerPilot": Vector3.FORWARD,
+		"WaterTechnician": Vector3.BACK,
+		"Metalworker": Vector3.FORWARD,
+	}
+	_player.global_position = _station.global_position + Vector3(0.0, 0.0, 200.0)
+	await wait_physics_frames(2)
+	for who: String in facing:
+		var colonist := _station.get_node("People/" + who) as Colonist
+		assert_true(colonist.is_sitting(), who)
+		assert_eq(colonist.body.get_sit_amount(), 1.0, who + " already sits when the station loads")
+		assert_false(colonist.is_walking(), who)
+		var way: Vector3 = _station.global_basis.inverse() * colonist.global_basis.z
+		assert_almost_eq(way.normalized(), facing[who], Vector3.ONE * 0.01, who)
+		var head: float = colonist.body.get_head_position().y - colonist.global_position.y
+		assert_lt(head, colonist.body.head_height - 0.3, who + "'s head is lower")
+		assert_gt(head, 1.0, who + "'s head is above the seat")
+
+
+## A seated colonist stays seated and facing ahead when a player comes close, and remarks as usual.
+func test_a_seated_colonist_remarks_without_getting_up() -> void:
+	var pilot := _station.get_node("People/HaulerPilot") as Colonist
+	var basis: Basis = pilot.body.global_basis
+	_player.global_position = pilot.global_position + pilot.global_basis.x * 1.5
+	await wait_physics_frames(30)
+	assert_true(pilot.is_sitting())
+	assert_almost_eq(pilot.body.global_basis.z, basis.z, Vector3.ONE * 0.01, "doesn't turn")
+	assert_eq(pilot.get_remark(), pilot.profile.remarks[0])
+	# Straight above the (lower) head on screen.
+	var up: Vector3 = pilot.get_viewport().get_camera_3d().global_basis.y.normalized()
+	var above: Vector3 = pilot.bubble.global_position - pilot.body.get_head_position()
+	assert_almost_eq(above.normalized(), up, Vector3.ONE * 0.01, "the bubble above the lower head")
+
+
+## A walker sits down at its seat stop, facing the seat's way, gets up after a while and walks on.
+func test_a_walker_sits_at_its_seat_stop_and_walks_on() -> void:
+	var teacher := _station.get_node("People/Teacher") as Colonist
+	assert_gte(teacher.seat_stop, 0, "the teacher has a seat stop")
+	teacher.sit_time = 1.0
+	_player.global_position = teacher.global_position + Vector3(0.0, 0.0, 40.0)
+	teacher.next = teacher.seat_stop
+	teacher.position = teacher.route[teacher.seat_stop] - Vector3(0.01, 0.0, 0.0)
+	await wait_physics_frames(2)
+	assert_true(teacher.is_sitting(), "sits down")
+	assert_eq(teacher.next, (teacher.seat_stop + 1) % teacher.route.size())
+	assert_false(teacher.is_walking())
+	await wait_physics_frames(50)
+	var way: Vector3 = _station.global_basis.inverse() * teacher.global_basis.z
+	var seat_way := Vector3(
+		sin(deg_to_rad(teacher.seat_yaw)), 0.0, cos(deg_to_rad(teacher.seat_yaw))
+	)
+	assert_almost_eq(way.normalized(), seat_way, Vector3.ONE * 0.05, "turned to the seat's way")
+	assert_gt(teacher.body.get_sit_amount(), 0.9)
+	await wait_physics_frames(30)
+	assert_false(teacher.is_sitting(), "gets up after a while")
+	assert_false(teacher.is_walking(), "not while still getting up")
+	var animator := teacher.body.get_node("Animator") as NpcAnimator
+	var stand_up: int = ceili(animator.sit_blend_time * Engine.physics_ticks_per_second)
+	await wait_physics_frames(stand_up + 10)
+	assert_true(teacher.is_walking(), "walks on once up")
+	assert_eq(teacher.body.get_sit_amount(), 0.0)
 
 
 ## Where an NPC faces, in the station's axes.

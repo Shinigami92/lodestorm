@@ -2,9 +2,10 @@ class_name NpcAnimator
 extends AnimationTree
 ## Plays an NPC model's clips: "Idle" while standing, "Walk" while walking, sped up or slowed down
 ## to the walking speed (every person's model has both, the suit's too, see docs/TECHNICAL.md,
-## People); both loop (set here, so the import settings stay default). While it `may_work`, it
-## plays one of its `activities` now and then (once, over the standing: e.g. wiping the counter;
-## never the same twice in a row),
+## People); both loop (set here, so the import settings stay default). While `sitting`, it blends
+## into "Sit" (the suit's: the colonists; a model without it stays standing). While it `may_work`
+## (and stands), it plays one of its `activities` now and then (once, over the standing: e.g.
+## wiping the counter; never the same twice in a row),
 ## with a pause of `work_pause` seconds between them; when it may not any more (a player came
 ## close), the one under way fades out.
 
@@ -19,13 +20,21 @@ extends AnimationTree
 @export var work_pause: Vector2 = Vector2(3.0, 8.0)
 ## Seconds an activity fades in, and out at its end or when stopped.
 @export var work_fade: float = 0.5
+## Seconds to blend between standing and sitting (sitting down, getting up).
+@export var sit_blend_time: float = 0.8
 
 ## How fast it walks forward, in m/s (0: standing).
 var speed: float = 0.0
 ## Whether it may play its activities (no player close, not walking).
 var may_work: bool = true
+## Whether it sits (on a seat behind where it stands, see `can_sit`).
+var sitting: bool = false
 
 var _walk_amount: float = 0.0
+## How far it sits: 0 standing, 1 sitting.
+var _sit_amount: float = 0.0
+## Whether the model has the "Sit" clip.
+var _can_sit: bool = false
 ## The activity clips the model has.
 var _activities: Array[StringName] = []
 ## Seconds left until the next activity may start.
@@ -49,6 +58,13 @@ func setup(model: Node3D, activities: Array[StringName] = []) -> void:
 	blend.connect_node(&"walk", 0, &"Idle")
 	blend.connect_node(&"walk", 1, &"walk_speed")
 	var below: StringName = &"walk"
+	_can_sit = player.has_animation(&"Sit")
+	if _can_sit:
+		blend.add_node(&"Sit", _clip(player, &"Sit"))
+		blend.add_node(&"sit", AnimationNodeBlend2.new())
+		blend.connect_node(&"sit", 0, below)
+		blend.connect_node(&"sit", 1, &"Sit")
+		below = &"sit"
 	_activities.clear()
 	for activity: StringName in activities:
 		if not player.has_animation(activity):
@@ -67,7 +83,25 @@ func setup(model: Node3D, activities: Array[StringName] = []) -> void:
 	blend.connect_node(&"output", 0, below)
 	tree_root = blend
 	active = true
+	settle()
 	_pause_left = randf_range(work_pause.x, work_pause.y)
+
+
+## Whether the model can sit (has the "Sit" clip).
+func can_sit() -> bool:
+	return _can_sit
+
+
+## Sits or stands at once, without blending (e.g. someone already sitting when the place loads).
+func settle() -> void:
+	_sit_amount = 1.0 if sitting and _can_sit else 0.0
+	if _can_sit:
+		set(&"parameters/sit/blend_amount", _sit_amount)
+
+
+## How far it sits right now: 0 standing, 1 sitting (in between while sitting down or getting up).
+func sit_amount() -> float:
+	return _sit_amount
 
 
 ## The activity playing right now (empty: none).
@@ -85,6 +119,10 @@ func _process(delta: float) -> void:
 	_walk_amount = move_toward(_walk_amount, 1.0 if walking else 0.0, delta / walk_blend_time)
 	set(&"parameters/walk/blend_amount", _walk_amount)
 	set(&"parameters/walk_speed/scale", maxf(speed / walk_speed, min_time_scale))
+	if _can_sit:
+		var goal: float = 1.0 if sitting else 0.0
+		_sit_amount = move_toward(_sit_amount, goal, delta / sit_blend_time)
+		set(&"parameters/sit/blend_amount", _sit_amount)
 	_work(delta)
 
 
@@ -93,7 +131,7 @@ func _work(delta: float) -> void:
 	if _activities.is_empty():
 		return
 	var current: StringName = working()
-	if not may_work or speed > 0.05:
+	if not may_work or speed > 0.05 or sitting:
 		if not current.is_empty():
 			set(
 				"parameters/%s/request" % _shot_name(current),

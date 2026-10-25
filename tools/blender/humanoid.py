@@ -1,6 +1,7 @@
 """Shared helpers for people (the player, the NPCs): a skeleton with Godot's humanoid bone names
 (SkeletonProfileHumanoid), posed from world-space rotations per bone and two-bone IK for arms and legs, and the clips
-everyone has ("Idle", the run directions, "Walk", "Die").
+everyone has ("Idle", the run directions, "Walk", "Die"); sit() poses sitting on a seat (the suit's "Sit", for the
+colonists).
 
     import humanoid as H
     body = H.Body(bones, foot_x=0.17, wrist_x=0.4, wrist_z=0.93)  # bones: (name, head, tail, parent) at rest
@@ -374,6 +375,27 @@ def die(body: Body, t: float) -> Pose:
             Vector((s * 0.2, -0.3 - f, -1 + f)),
             Vector((-s * (1 - f), 0, -f)),
         )
+    return p
+
+
+SEAT_HEIGHT = 0.45  # m: the seats people sit on (Waypost Ostra's benches, game/space_station/ostra/ostra_build.py)
+SIT_BACK = 0.4  # m: how far behind where it stood the hip joints sit down (a seat's spot is where its feet are)
+HIP_ABOVE_SEAT = 0.08  # m: the hip joints above the seat (the flesh, or the suit, under them)
+
+
+def sit(body: Body, t: float) -> Pose:
+    """Sitting upright on a seat SEAT_HEIGHT high behind where it stood, breathing at phase t (0..1): the hip joints
+    SIT_BACK back, the thighs forward, the feet on the floor where it stood, the hands resting on the thighs."""
+    breath = math.sin(2 * math.pi * t)
+    hip = body.head["LeftUpperLeg"]
+    drop = SEAT_HEIGHT + HIP_ABOVE_SEAT - hip.z
+    p = Pose(body, (0, SIT_BACK - hip.y, drop + 0.003 * breath))
+    p.spine(spine=rx(4), chest=rx(4 - 1.2 * breath), upper=rx(4 - 2.0 * breath), neck=rx(-6), head=rx(-4))
+    for side, s in SIDES:
+        p.leg(side, Vector((s * (body.foot_x + 0.03), -0.02, body.ankle_z)), Vector((s * 0.2, -1, 0.4)), 0.0, s * 8)
+        thigh = p.pos(f"{side}UpperLeg").lerp(p.pos(f"{side}LowerLeg"), 0.6)
+        p.arm(side, thigh + Vector((s * 0.03, 0.04, 0.1)), Vector((s * 0.6, 1, -0.2)), Vector((0, -1, -0.5)), PALM)
+        p.curl(side, RELAXED_CURL)
     return p
 
 

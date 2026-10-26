@@ -48,6 +48,12 @@
       "seed": 1,
       "text": "Von Erz können wir nie genug bekommen. Ohne Erz stehen die Werkstätten still, und nichts wird mehr repariert."
     },
+    "52c6a4f68307d05b": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Was brauchst du?"
+    },
     "5313188d9a755b05": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -60,11 +66,23 @@
       "seed": 1,
       "text": "Die Regale hinter mir sehen voll aus, aber die meisten dieser Kisten sind schon jemandem versprochen. Was heute reinkommt, ist nächste Woche weg."
     },
+    "61a017fbaa980e9a": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mach's kurz, ich muss Kisten zählen."
+    },
     "64a7455cb8b41176": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Aber ich kenne gern die Leute, die das Erz heraufbringen. Also komm vorbei, wann immer ihr angedockt seid, auch wenn es nur zum Reden ist."
+    },
+    "730ecae4e32b4c49": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Frag nur."
     },
     "79c91dc7254cd25b": {
       "anchor": "4dc636caa23416cd",
@@ -90,11 +108,11 @@
       "seed": 1,
       "text": "Deshalb zählt die Kolonie auf Prospektoren-Crews wie eure. Ohne euch wären die Vorräte dieser Station in einem Jahr aufgebraucht."
     },
-    "f7e48a90d5d76cfc": {
+    "f1c4cb5bbac4d56c": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Wie kann ich dir helfen?"
+      "text": "Was kann das Depot für dich tun?"
     }
   },
   "en": {
@@ -146,6 +164,12 @@
       "seed": 1,
       "text": "Ore is the one thing we can never get enough of. Without it, the workshops stop, and nothing gets repaired."
     },
+    "52c6a4f68307d05b": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What do you need?"
+    },
     "5313188d9a755b05": {
       "anchor": "06a309e0b3e2b83b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -158,11 +182,23 @@
       "seed": 1,
       "text": "The shelves behind me look full, but most of those crates are already promised to someone. What comes in today is gone by next week."
     },
+    "61a017fbaa980e9a": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Make it quick, I've got crates to count."
+    },
     "64a7455cb8b41176": {
       "anchor": "06a309e0b3e2b83b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "But I like to know the people who bring the ore up. So come by whenever you're docked, even if it's only to talk."
+    },
+    "730ecae4e32b4c49": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ask away."
     },
     "79c91dc7254cd25b": {
       "anchor": "06a309e0b3e2b83b",
@@ -188,11 +224,11 @@
       "seed": 1,
       "text": "That's why the colony counts on prospecting crews like yours. Without you, this station would run dry within a year."
     },
-    "f7e48a90d5d76cfc": {
+    "f1c4cb5bbac4d56c": {
       "anchor": "06a309e0b3e2b83b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "How can I help you?"
+      "text": "What can the depot do for you?"
     }
   }
 }

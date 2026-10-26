@@ -1,5 +1,17 @@
 {
   "de": {
+    "069d67e7d093d10b": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich kann an mehreren Teilen gleichzeitig arbeiten, aber pro Teil nur an einer Stufe. Wenn du es dir anders überlegst, sag mir, dass ich aufhören soll, und du bekommst alles zurück."
+    },
+    "0a4e832f201c2315": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Frag ruhig, aber pass auf die Werkbank auf."
+    },
     "1c51716fbe49f224": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -12,11 +24,11 @@
       "seed": 1,
       "text": "Wie weit ich gehen kann, hängt vom Hitzeschild ab. Mit jeder neuen Platte im Maschinenraum kann ich eine Stufe mehr draufsetzen."
     },
-    "25a67a9ee8ea15c8": {
+    "228627270b15737c": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Wähl ein Teil aus, und die Karte sagt dir, was die nächste Stufe bewirkt, was sie kostet und wie lange sie dauert. Das Erz kommt aus deinem Laderaum."
+      "text": "Was führt dich an meine Werkbank?"
     },
     "30eaa0a515e13111": {
       "anchor": "6be268e10ec28642",
@@ -29,12 +41,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Willkommen im Waffenraum. Im Regal hängt jede Waffe, die ich kenne, und an der Werkbank mache ich deine besser."
-    },
-    "7b079ad92016e5c2": {
-      "anchor": "6be268e10ec28642",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Ich kann an mehreren Teilen gleichzeitig arbeiten, aber pro Teil nur an einer Stufe. Wenn du es dir anders überlegst, drück zweimal auf Anhalten, und du bekommst alles zurück."
     },
     "826e02a71cea1c25": {
       "anchor": "6be268e10ec28642",
@@ -66,6 +72,12 @@
       "seed": 1,
       "text": "Sobald sie gebaut ist, gehört sie dir. Probier sie am Schießstand aus, bevor du sie auf eine Mission mitnimmst."
     },
+    "c00d30863f1f4642": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Woran arbeiten wir?"
+    },
     "c6cd3afcc3fcf036": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -84,11 +96,11 @@
       "seed": 1,
       "text": "Nicht jeden Tag darf ich etwas Neues nach diesen alten Zeichnungen bauen. Bring sie heil zurück, dann mache ich sie weiter besser."
     },
-    "daac4d652cff48bb": {
+    "e798899107f92938": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Leg eine Waffe, die du noch nicht besitzt, auf die Werkbank, und ihre Karte zeigt, was der Bau kostet. Ohne ihren Bauplan kann ich allerdings nichts machen."
+      "text": "Leg eine Waffe, die du noch nicht besitzt, auf die Werkbank, und ich sage dir, was der Bau kostet. Ohne ihren Bauplan kann ich allerdings nichts machen."
     },
     "ef794f7f28f06b9a": {
       "anchor": "6be268e10ec28642",
@@ -96,14 +108,32 @@
       "seed": 1,
       "text": "Sein Licht auf der Waffe pulsiert, während ich daran arbeite. Die neue Stufe zählt, sobald sie fertig ist und du wieder an Bord bist."
     },
-    "f7e48a90d5d76cfc": {
+    "f4baa7ff5a197f1c": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Wie kann ich dir helfen?"
+      "text": "Soll ich etwas verbessern?"
+    },
+    "ff2493089a75a41c": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Such dir ein Teil aus, und ich sage dir, was die nächste Stufe bewirkt, was sie kostet und wie lange sie dauert. Das Erz kommt aus deinem Laderaum."
     }
   },
   "en": {
+    "069d67e7d093d10b": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I can work on several parts at once, but only on one level per part. If you change your mind, tell me to stop, and you get the whole cost back."
+    },
+    "0a4e832f201c2315": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ask away, just mind the bench."
+    },
     "1c51716fbe49f224": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -116,11 +146,11 @@
       "seed": 1,
       "text": "How far I can go depends on the heat shield. Every new plate in the engine room lets me add one more level."
     },
-    "25a67a9ee8ea15c8": {
+    "228627270b15737c": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Select a part, and the card tells you what the next level does, what it costs, and how long it takes. The ore comes from your hold."
+      "text": "What brings you to my bench?"
     },
     "30eaa0a515e13111": {
       "anchor": "663d8198f7a23d6c",
@@ -133,12 +163,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
-    },
-    "7b079ad92016e5c2": {
-      "anchor": "663d8198f7a23d6c",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "I can work on several parts at once, but only on one level per part. If you change your mind, press Stop twice, and you get the whole cost back."
     },
     "826e02a71cea1c25": {
       "anchor": "663d8198f7a23d6c",
@@ -170,6 +194,12 @@
       "seed": 1,
       "text": "Once it's built, it's yours. Try it at the shooting range before you take it on a mission."
     },
+    "c00d30863f1f4642": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What are we working on?"
+    },
     "c6cd3afcc3fcf036": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -188,11 +218,11 @@
       "seed": 1,
       "text": "It's not every day I get to build something new from those old drawings. Bring it back in one piece, and I'll keep improving it."
     },
-    "daac4d652cff48bb": {
+    "e798899107f92938": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Lay a weapon you don't own yet on the bench, and its card shows what it costs to build. Without its blueprint, though, there's nothing I can do."
+      "text": "Lay a weapon you don't own yet on the bench, and I'll tell you what it costs to build. Without its blueprint, though, there's nothing I can do."
     },
     "ef794f7f28f06b9a": {
       "anchor": "663d8198f7a23d6c",
@@ -200,11 +230,17 @@
       "seed": 1,
       "text": "Its light on the weapon breathes while I work on it. The new level counts once it's done and you're back aboard."
     },
-    "f7e48a90d5d76cfc": {
+    "f4baa7ff5a197f1c": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "How can I help you?"
+      "text": "Need something improved?"
+    },
+    "ff2493089a75a41c": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Pick a part, and I'll tell you what the next level does, what it costs, and how long it takes. The ore comes from your hold."
     }
   }
 }

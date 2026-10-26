@@ -56,12 +56,50 @@ func test_first_talk_plays_the_greeting() -> void:
 		_npc.press()
 	assert_null(_npc.topic, "back to the list")
 	assert_true(_ship.story.is_set(greeting.id), "heard")
-	assert_eq(speech.get_line(), _npc.profile.dialogue.prompt)
+	assert_eq(speech.get_line(), _npc.prompt)
+	assert_has(_npc.profile.dialogue.prompts, _npc.prompt, "one of his prompts")
 	assert_eq(
 		_titles(),
 		["Ammo", "Spare magazines", "Reloading", "Shooting range"],
 		"timing needs reloading, Brask owning one"
 	)
+
+
+func test_a_prompt_is_picked_for_each_talk_never_the_same_twice() -> void:
+	_ship.story.set_flag(_npc.profile.dialogue.greeting.id)
+	var prompts: Array[String] = _npc.profile.dialogue.prompts
+	assert_gte(prompts.size(), 3, "a few prompts to pick from")
+	var seen: Array[String] = []
+	var last: String = ""
+	for i: int in 40:
+		_npc.open(_player)
+		assert_has(prompts, _npc.prompt)
+		assert_ne(_npc.prompt, last, "never the one of the talk before")
+		assert_eq((_npc.bubble.content as SpeechBubble).get_line(), _npc.prompt)
+		last = _npc.prompt
+		if _npc.prompt not in seen:
+			seen.append(_npc.prompt)
+		_npc.close()
+	assert_eq(seen.size(), prompts.size(), "all of them come up")
+
+
+func test_without_prompts_the_default_one() -> void:
+	var dialogue := Dialogue.new()
+	assert_eq(dialogue.get_prompts(), [Dialogue.DEFAULT_PROMPT] as Array[String])
+	assert_eq(dialogue.pick_prompt(Dialogue.DEFAULT_PROMPT), Dialogue.DEFAULT_PROMPT)
+
+
+func test_a_guest_hears_the_guest_lines() -> void:
+	var shield: Topic = (
+		(load("res://game/npcs/crew/engineer.tres") as NpcProfile).dialogue.topics[0]
+	)
+	assert_eq(shield.id, &"engineer.shield")
+	assert_false(shield.guest_lines.is_empty(), "the shield is the host's: a guest hears others")
+	assert_eq(shield.lines_for(false), shield.lines)
+	assert_eq(shield.lines_for(true), shield.guest_lines)
+	var plain: Topic = _npc.profile.dialogue.topics[0]
+	assert_eq(plain.lines_for(true), plain.lines, "without guest lines, the same for everyone")
+	assert_false(_npc.is_guest(), "playing alone, the player is the host")
 
 
 func test_greeting_plays_only_once() -> void:

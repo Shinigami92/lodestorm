@@ -42,6 +42,12 @@
       "seed": 1,
       "text": "In Pale Basin auf Lisk liegt ein Schiffsrumpf halb im Eis begraben. Wer immer es geflogen hat, ist längst fort, aber vielleicht ist noch eine Kiste an Bord."
     },
+    "252b7e307ffadb58": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nur zu, ich höre zu."
+    },
     "28af944f2488e9f5": {
       "anchor": "723542c79895f99e",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -102,6 +108,12 @@
       "seed": 1,
       "text": "Wenn du also wissen willst, was dich irgendwo erwartet, frag mich. Ich erzähle dir, was ich gehört habe."
     },
+    "5794f7c853c0aa9e": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Neuigkeiten oder einen Drink? Ich hab beides."
+    },
     "59298e9f5a24b4a6": {
       "anchor": "723542c79895f99e",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -126,6 +138,12 @@
       "seed": 1,
       "text": "In Glassmere ist der Boden aus Glas, und irgendwo darauf steht ein altes Lager mit einem Funkfeuer. Wer es aufgebaut hat, ist weiter vorgedrungen als alle anderen."
     },
+    "66ddb37329e32543": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Was willst du wissen?"
+    },
     "7a82934abe2fe665": {
       "anchor": "723542c79895f99e",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -137,6 +155,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Auf Sunward Scar liegt ein Wrack so nah am Stern, dass sein Metall ganz dunkel geworden ist. Nur wenige Crews haben es aus der Nähe gesehen."
+    },
+    "86d8022d07d41129": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Was darf ich dir bringen?"
     },
     "b2d2f396695f191f": {
       "anchor": "723542c79895f99e",
@@ -192,12 +216,6 @@
       "seed": 1,
       "text": "In Drift Basin auf Orrel liegt ein Wrack halb im Salz versunken. Die Crews sagen, es sieht aus, als wäre es schon immer dort gewesen."
     },
-    "f7e48a90d5d76cfc": {
-      "anchor": "723542c79895f99e",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 8,
-      "text": "Wie kann ich dir helfen?"
-    },
     "fe6a7766b49f438e": {
       "anchor": "723542c79895f99e",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -247,6 +265,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "In Pale Basin on Lisk, a ship's hull lies half buried in the ice. Whoever flew it is long gone, but there may still be a crate aboard."
+    },
+    "252b7e307ffadb58": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Go on, I'm listening."
     },
     "28af944f2488e9f5": {
       "anchor": "fa812c9290e8d92d",
@@ -308,6 +332,12 @@
       "seed": 1,
       "text": "So if you want to know what's waiting for you somewhere, ask me. I'll tell you what I've heard."
     },
+    "5794f7c853c0aa9e": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "News or a drink? I've got both."
+    },
     "59298e9f5a24b4a6": {
       "anchor": "fa812c9290e8d92d",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -332,6 +362,12 @@
       "seed": 1,
       "text": "In Glassmere, the ground is glass, and somewhere on it stands an old camp with a beacon. Whoever set it up came farther in than anyone else."
     },
+    "66ddb37329e32543": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What do you want to know?"
+    },
     "7a82934abe2fe665": {
       "anchor": "fa812c9290e8d92d",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -343,6 +379,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "On Sunward Scar, there's a wreck so close to the star that its metal has turned dark. Only a few crews have seen it up close."
+    },
+    "86d8022d07d41129": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What can I get you?"
     },
     "b2d2f396695f191f": {
       "anchor": "fa812c9290e8d92d",
@@ -397,12 +439,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "In Drift Basin on Orrel, a wreck lies half sunk in the salt. The crews say it looks as if it had always been there."
-    },
-    "f7e48a90d5d76cfc": {
-      "anchor": "fa812c9290e8d92d",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "How can I help you?"
     },
     "fe6a7766b49f438e": {
       "anchor": "fa812c9290e8d92d",

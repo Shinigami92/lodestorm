@@ -22,21 +22,21 @@ requires = Array[StringName]([&"pilot.greeting"])
 script = ExtResource("3_topic")
 id = &"pilot.regions"
 title = "Picking a region"
-lines = Array[String](["Each region's card tells you how dangerous it is, how long you have before the storm, and which ores you'll find there.", "Some regions give you more time than others. If you're not sure where to go, start with an easy one.", "When you've found a spot you like, press Set as destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."])
+lines = Array[String](["For each region, the table shows how dangerous it is, how long you have before the storm, and which ores you'll find there.", "Some regions give you more time than others. If you're not sure where to go, start with an easy one.", "When you've found a spot you like, set it as our destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."])
 requires = Array[StringName]([&"pilot.greeting"])
 
 [sub_resource type="Resource" id="Resource_flight"]
 script = ExtResource("3_topic")
 id = &"pilot.flight"
 title = "Flying"
-lines = Array[String](["Once the destination is set, go to the flight console in the cockpit, right next door, and press Set course. Anyone can do that, not just me.", "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down.", "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."])
+lines = Array[String](["Once the destination is set, go to the flight console in the cockpit, right next door, and set the course there. Anyone can do that, not just me.", "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down.", "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."])
 requires = Array[StringName]([&"pilot.greeting"])
 
 [sub_resource type="Resource" id="Resource_ostra"]
 script = ExtResource("3_topic")
 id = &"pilot.ostra"
 title = "Waypost Ostra"
-lines = Array[String](["Waypost Ostra is the colony's station. It circles Torvane, and you'll find it at the navigator just like a region.", "While we're docked there, the ramp goes up and down whenever you like, and there's no storm and no timer. Take your time and talk to the people there.", "When we leave, I wait until everyone is back aboard. Nobody gets left behind at Ostra."])
+lines = Array[String](["Waypost Ostra is the colony's station. It circles Torvane, and you'll find it at the navigator just like a region.", "While we're docked there, the ramp goes up and down whenever you like, and there's no storm to worry about. Take your time and talk to the people there.", "When we leave, I wait until everyone is back aboard. Nobody gets left behind at Ostra."])
 requires = Array[StringName]([&"pilot.greeting"])
 
 [sub_resource type="Resource" id="Resource_about"]
@@ -49,6 +49,7 @@ requires = Array[StringName]([&"pilot.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
+prompts = Array[String](["What's on your mind?", "Need something from me?", "Ask away, I've got a minute.", "Where do you want to go next?"])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_navigator"), SubResource("Resource_regions"), SubResource("Resource_flight"), SubResource("Resource_ostra"), SubResource("Resource_about")])
 
 [sub_resource type="Resource" id="Reaction_planet_opened_cassor"]

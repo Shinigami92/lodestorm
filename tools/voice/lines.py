@@ -1,8 +1,8 @@
 """What the voiced NPCs say and where their recordings go: shared by render.py and status.py (standard library only).
 
 An NPC is voiced once assets/voice/source/<npc id>/ holds its anchors (anchor.py): one per voice language, listed
-in voice.json. Its lines are its dialogue's (the profile .tres in game/npcs/ with that id): the prompt and every
-line of the greeting, the topics and the reactions (its radio calls), in English (the translation keys) and translated from locale/<language>.po. A line's recording is
+in voice.json. Its lines are its dialogue's (the profile .tres in game/npcs/ with that id): the prompts and every
+line of the greeting, the topics (and their guest lines) and the reactions (its radio calls), in English (the translation keys) and translated from locale/<language>.po. A line's recording is
 assets/voice/<npc id>/<language>/<hash>.ogg, the hash being the first 16 hex digits of the SHA-256 of the English
 line, so the game finds a line's file from its text (`VoiceLines`). manifest.json next to the anchors records what
 made each file (the text spoken, the anchor's hash, the model, the seed).
@@ -65,7 +65,7 @@ def file_hash(path: pathlib.Path) -> str:
 
 def default_prompt() -> str:
     script = (ROOT / "game" / "npcs" / "dialogue.gd").read_text(encoding="utf-8")
-    return json.loads(re.search(r"var prompt: String = (\".*\")", script).group(1))
+    return json.loads(re.search(r"const DEFAULT_PROMPT: String = (\".*\")", script).group(1))
 
 
 def profiles() -> dict[str, pathlib.Path]:
@@ -83,8 +83,8 @@ def profiles() -> dict[str, pathlib.Path]:
 
 
 def npc_lines(npc: str) -> list[str]:
-    """The NPC's lines in English: the prompt (with a dialogue), then the greeting's, every topic's and reaction's,
-    in file order, and an ambient colonist's remarks."""
+    """The NPC's lines in English: the prompts (with a dialogue; the default one without any), then the greeting's,
+    every topic's (and its guest lines) and reaction's, in file order, and an ambient colonist's remarks."""
     for path in sorted((ROOT / "game" / "npcs").rglob("*.tres")):
         text = path.read_text(encoding="utf-8")
         resource = text[text.rfind("[resource]") :]
@@ -92,12 +92,12 @@ def npc_lines(npc: str) -> list[str]:
             break
     else:
         raise SystemExit(f"No NPC profile with id {npc} in game/npcs/")
-    prompt = re.search(r'^prompt = (".*")$', text, re.MULTILINE)
+    prompts = re.search(r"^prompts = Array\[String\]\((\[.*\])\)$", text, re.MULTILINE)
     lines = []
     if re.search(r"^dialogue = ", resource, re.MULTILINE):
-        lines.append(json.loads(prompt.group(1)) if prompt else default_prompt())
+        lines += json.loads(prompts.group(1)) if prompts else [default_prompt()]
     for block in re.split(r"\n(?=\[)", text):
-        for found in re.finditer(r"^(?:lines|remarks) = Array\[String\]\((\[.*\])\)$", block, re.MULTILINE):
+        for found in re.finditer(r"^(?:lines|guest_lines|remarks) = Array\[String\]\((\[.*\])\)$", block, re.MULTILINE):
             lines += json.loads(found.group(1))
     return list(dict.fromkeys(lines))
 

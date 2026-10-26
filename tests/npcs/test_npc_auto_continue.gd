@@ -2,7 +2,8 @@ extends GutTest
 ## Talks that continue by themselves (`GameSettings.dialogue_auto_continue`): off by default, a
 ## voiced line moves on a pause after its voice, one without a voice after its reading time, the
 ## list comes back after the last line, pressing still moves on at once, the bar on "Continue",
-## and the setting on the settings page.
+## pausing and resuming it (the card's pause button, `place_miner`), and the setting on the
+## settings page.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const SETTINGS_LIST: PackedScene = preload("res://game/ui/settings_list.tscn")
@@ -98,6 +99,65 @@ func test_pressing_still_moves_on_at_once() -> void:
 	_npc.close()
 
 
+func test_pausing_holds_the_line_and_the_voice_until_resumed() -> void:
+	GameSettings.dialogue_auto_continue = true
+	_npc.open(_player)
+	await wait_process_frames(2)
+	var card := _npc.card_menu as TalkCard
+	var pause: Button = card.get_pause_button()
+	assert_true(pause.visible, "beside Continue while the line moves on by itself")
+	assert_eq(pause.icon, TalkCard.PAUSE_ICON)
+	assert_almost_eq(pause.size.x, pause.size.y, 1.0, "square")
+	var row: Control = pause.get_parent() as Control
+	assert_eq(row, card.get_button("Continue").get_parent(), "in Continue's row")
+	assert_not_null(_npc.voice.stream, "the greeting is voiced")
+	_wait(1.0)
+	pause.pressed.emit()
+	assert_true(_npc.auto_paused)
+	assert_true(_npc.voice.stream_paused, "the voice stops in the middle of the line")
+	assert_eq(pause.icon, TalkCard.PLAY_ICON, "shows play while paused")
+	var held: float = _npc.get_auto_progress()
+	_wait(600.0)
+	assert_eq(_npc.line, 0, "the line stays")
+	assert_almost_eq(_npc.get_auto_progress(), held, 0.001, "the bar stops")
+	_press(&"place_miner")
+	assert_false(_npc.auto_paused, "the key resumes it")
+	assert_false(_npc.voice.stream_paused, "the voice goes on where it stopped")
+	assert_eq(pause.icon, TalkCard.PAUSE_ICON)
+	_press(&"place_miner")
+	assert_true(_npc.auto_paused, "the key pauses it too")
+	_npc.press()
+	assert_eq(_npc.line, 1, "Continue still moves on")
+	assert_false(_npc.auto_paused, "and the next line plays normally")
+	assert_false(_npc.voice.stream_paused)
+	assert_eq(pause.icon, TalkCard.PAUSE_ICON)
+	_wait(_npc.voice.stream.get_length() + Npc.AUTO_PAUSE + 0.1)
+	assert_eq(_npc.line, 2, "goes on by itself again")
+	pause.pressed.emit()
+	_npc.close()
+	assert_false(_npc.voice.stream_paused)
+	_npc.open(_player)
+	assert_false(_npc.auto_paused, "a new talk starts unpaused")
+	_npc.close()
+
+
+func test_no_pause_button_without_auto_continue_or_on_the_list() -> void:
+	_npc.open(_player)
+	await wait_process_frames(2)
+	var card := _npc.card_menu as TalkCard
+	assert_false(card.get_pause_button().visible, "auto-continue off")
+	_press(&"place_miner")
+	assert_false(_npc.auto_paused, "nothing to pause")
+	_npc.close()
+	GameSettings.dialogue_auto_continue = true
+	_npc.get_story().set_flag(_npc.profile.dialogue.greeting.id)
+	_npc.open(_player)
+	await wait_process_frames(2)
+	assert_null(_npc.topic, "the list")
+	assert_false(card.get_pause_button().visible, "nothing moves on by itself on the list")
+	_npc.close()
+
+
 func test_picked_in_the_settings_and_saved() -> void:
 	SaveGame.directory = DIRECTORY
 	var list := SETTINGS_LIST.instantiate() as SettingsList
@@ -123,3 +183,12 @@ func _wait(seconds: float) -> void:
 func _bar_shown() -> bool:
 	var bar: ColorRect = (_npc.card_menu as TalkCard).get_progress_bar()
 	return bar != null and bar.visible
+
+
+## Presses and releases `action` as an input event.
+func _press(action: StringName) -> void:
+	for pressed: bool in [true, false]:
+		var event := InputEventAction.new()
+		event.action = action
+		event.pressed = pressed
+		get_viewport().push_input(event)

@@ -23,7 +23,7 @@ requires = Array[StringName]([&"quartermaster.greeting"])
 script = ExtResource("3_topic")
 id = &"quartermaster.spares"
 title = "Spare magazines"
-lines = Array[String](["Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore.", "Out there, they show up as short marks in the ring around your feet, inside its right half, whenever you reload. A mark that's only an outline is a magazine you've used up.", "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."])
+lines = Array[String](["Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore.", "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."])
 requires = Array[StringName]([&"quartermaster.greeting"])
 
 [sub_resource type="Resource" id="Resource_reload"]
@@ -37,14 +37,14 @@ requires = Array[StringName]([&"quartermaster.greeting"])
 script = ExtResource("3_topic")
 id = &"quartermaster.timing"
 title = "Timing reload"
-lines = Array[String](["Here's a trick: press reload a second time while you're reloading. The right half of the ring around your feet fills up while you reload, and it has a white mark.", "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead.", "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."])
+lines = Array[String](["Here's a trick: reload a second time while you're still reloading. Every reload has one right moment for it, and you'll learn to feel when it comes.", "Hit that moment, and the reload is finished at once. Too early or too late, and it takes longer instead.", "If you don't reload a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."])
 requires = Array[StringName]([&"quartermaster.reload"])
 
 [sub_resource type="Resource" id="Resource_brask"]
 script = ExtResource("3_topic")
 id = &"quartermaster.shotgun"
 title = "Brask"
-lines = Array[String](["So you've got Brask now, the shotgun. It has no magazine: it loads one shell after another, and keeps the shells that are already in.", "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded.", "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip a press, and that bonus starts over."])
+lines = Array[String](["So you've got Brask now, the shotgun. It has no magazine: it loads one shell after another, and keeps the shells that are already in.", "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded.", "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip one, and that bonus starts over."])
 requires = Array[StringName]([&"quartermaster.greeting"])
 requires_weapon = ExtResource("4_brask")
 
@@ -58,6 +58,7 @@ requires = Array[StringName]([&"quartermaster.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
+prompts = Array[String](["How can I help you?", "Something on your mind?", "Go ahead, I'm listening.", "Questions about your gear?"])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResource("Resource_spares"), SubResource("Resource_reload"), SubResource("Resource_timing"), SubResource("Resource_brask"), SubResource("Resource_range")])
 
 [sub_resource type="Resource" id="Reaction_first_run_won_solo"]

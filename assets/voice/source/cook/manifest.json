@@ -24,11 +24,23 @@
       "seed": 1,
       "text": "Hungry? Sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you."
     },
+    "2aeed7d3a682d07e": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Go on, I've got a pot on, but I'm listening."
+    },
     "318a44f5af81cf16": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door."
+    },
+    "6289d1005f65cde6": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Pull up a chair. What's on your mind?"
     },
     "803ecea533ff334c": {
       "anchor": "8ddec42848e6413f",
@@ -65,6 +77,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Everyone comes through my mess hall sooner or later. So if you want to know what's going on aboard, I'm the one to ask."
+    },
+    "f1be5a379c938dfc": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hungry, or just curious?"
     }
   }
 }

@@ -20,7 +20,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"AlloyType": [&"display_name"],
 	"CelestialBody": [&"display_name"],
 	"CrewReaction": [&"lines"],
-	"Dialogue": [&"prompt"],
+	"Dialogue": [&"prompts"],
 	"LocationBiome": [&"display_name"],
 	"OreType": [&"display_name"],
 	"NpcProfile": [&"role", &"remarks"],
@@ -30,7 +30,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	# Only for the clusters built into it.
 	"SkillTree": [],
 	"StarSystem": [&"display_name"],
-	"Topic": [&"title", &"lines"],
+	"Topic": [&"title", &"lines", &"guest_lines"],
 	"Upgrade": [&"display_name", &"description"],
 	"WeaponPart": [&"display_name", &"description"],
 	# The name stays the same in every language.

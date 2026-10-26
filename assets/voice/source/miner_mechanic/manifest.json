@@ -24,6 +24,12 @@
       "seed": 1,
       "text": "Die Miner haben da draußen hart gearbeitet, das sieht man. Solche Ladungen halten dieses Schiff am Laufen."
     },
+    "4eab799865d8aad2": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mach's kurz. Die Miner reparieren sich nicht von selbst."
+    },
     "502ac30940a351d8": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -47,6 +53,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Solange du in seiner Nähe bleibst, füllt sein Schlauch Erz in deinen Rücken. Heb ihn auf, bevor du gehst, dann bekommst du auch, was noch in seinem Tank ist."
+    },
+    "6bb185ec558b6d61": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Geht's um die Miner?"
     },
     "78df0bafcf779a61": {
       "anchor": "b3d782e0b74c1da4",
@@ -84,11 +96,11 @@
       "seed": 1,
       "text": "Das nenne ich eine Ladung. Die Miner graben am besten, wenn niemand die Aliens an sie heranlässt. Das ist der ganze Trick."
     },
-    "b17d17d156bd7058": {
+    "9810cfa01d93a350": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Rüste den Bohrer eines Miners auf der Plattform auf, und seine Karte zeigt, welche Erze er mit voller Geschwindigkeit abbaut. Wenn du einen Miner aufstellst, kommt der schnellste für dieses Erz."
+      "text": "Hm. Erzähl."
     },
     "cb12ad8fec11dd38": {
       "anchor": "b3d782e0b74c1da4",
@@ -101,6 +113,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Ich grabe in diesem System schon länger als jeder andere an Bord. Auch länger als die meisten auf Ostra."
+    },
+    "d53d6512f89f0896": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Rüste den Bohrer eines Miners auf der Plattform auf, und ich sage dir, welche Erze er mit voller Geschwindigkeit schafft. Wenn du einen Miner aufstellst, kommt der schnellste für dieses Erz."
     },
     "fb5a469be3252d9b": {
       "anchor": "b3d782e0b74c1da4",
@@ -140,6 +158,12 @@
       "seed": 1,
       "text": "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
     },
+    "4eab799865d8aad2": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Make it quick. The miners won't fix themselves."
+    },
     "502ac30940a351d8": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -163,6 +187,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "While you stay near it, its hose fills your back with ore. Pick it up before you leave, and you also get what's still in its tank."
+    },
+    "6bb185ec558b6d61": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Something about the miners?"
     },
     "78df0bafcf779a61": {
       "anchor": "7e5f365715a8dd68",
@@ -200,11 +230,11 @@
       "seed": 1,
       "text": "That's a haul. The miners dig best when nobody lets the aliens near them. That's the whole trick."
     },
-    "b17d17d156bd7058": {
+    "9810cfa01d93a350": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Upgrade a miner's drill on the pad, and its card shows which ores it mines at full speed. When you place a miner, the fastest one for that ore goes."
+      "text": "Hm. Go on."
     },
     "cb12ad8fec11dd38": {
       "anchor": "7e5f365715a8dd68",
@@ -217,6 +247,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "I've been digging in this system longer than anyone else aboard. Longer than most people at Ostra, too."
+    },
+    "d53d6512f89f0896": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Upgrade a miner's drill on the pad, and I'll tell you which ores it gets through at full speed. When you place a miner, the fastest one for that ore goes."
     },
     "fb5a469be3252d9b": {
       "anchor": "7e5f365715a8dd68",

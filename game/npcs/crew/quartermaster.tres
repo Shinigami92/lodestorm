@@ -87,6 +87,7 @@ script = ExtResource("1_profile")
 id = &"quartermaster"
 display_name = "Brannik"
 role = "Quartermaster"
+model = "uid://r7da5xautqps"
 accent_color = Color(0.65, 0.45, 1, 1)
 dialogue = SubResource("Resource_dialogue")
 reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_run_won_solo"), SubResource("Reaction_first_run_won_coop"), SubResource("Reaction_weapon_built"), SubResource("Reaction_big_haul")])

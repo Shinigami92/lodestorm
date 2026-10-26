@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
-[ext_resource type="PackedScene" uid="uid://dqwsbxro53s6q" path="res://game/npcs/crew/accessories/pilot.tscn" id="4_accessory"]
 [ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="9_reaction"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
@@ -135,8 +134,8 @@ script = ExtResource("1_profile")
 id = &"pilot"
 display_name = "Tamsin"
 role = "Pilot"
+model = "uid://w8awig3b43xq"
 accent_color = Color(0.3, 0.72, 1, 1)
-accessory = ExtResource("4_accessory")
 cabin = 2
 dialogue = SubResource("Resource_dialogue")
 reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_cassor"), SubResource("Reaction_planet_opened_zairen"), SubResource("Reaction_first_landing_torvane"), SubResource("Reaction_first_landing_lisk"), SubResource("Reaction_first_landing_vehra"), SubResource("Reaction_first_landing_cassor"), SubResource("Reaction_first_landing_mirr"), SubResource("Reaction_first_landing_orrel"), SubResource("Reaction_first_landing_iska"), SubResource("Reaction_first_landing_skelde"), SubResource("Reaction_first_landing_zairen"), SubResource("Reaction_storm_warning_solo"), SubResource("Reaction_storm_warning_coop")])

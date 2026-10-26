@@ -6,9 +6,8 @@ extends Node3D
 ## it `faces` (else the nearest player close by, else back to where it stands facing), and their
 ## name plate while a player is near (not while they use a menu). While `sitting` (on a seat behind
 ## where it stands), it doesn't turn, and its head (the plate, a speech bubble) is as low as the
-## clip has it. The profile's `accessory` goes on over the suit, each part following its bone. The
-## crew (`Npc`, which adds talking) and the station's ambient colonists (`Colonist`, which adds
-## walking and sitting) share it.
+## clip has it. The crew (`Npc`, which adds talking) and the station's ambient colonists
+## (`Colonist`, which adds walking and sitting) share it.
 
 ## How close (in m) a player must be for it to turn towards them.
 const NOTICE_RANGE: float = 3.0
@@ -28,7 +27,6 @@ const PLATE_ABOVE_HEAD: float = 0.2
 		if is_node_ready():
 			_load_model()
 			_dress()
-			_wear()
 
 ## Multiplies the profile's suit tint (e.g. colonists of one role in different suits).
 @export var tint: Color = Color.WHITE:
@@ -51,9 +49,6 @@ var plate_allowed: bool = true
 ## model's "HeadTop" marker, the suit's helmet without one.
 var head_height: float = SUIT_HEAD_HEIGHT
 
-## The bone attachments holding the accessory's parts.
-var _worn: Array[BoneAttachment3D] = []
-
 ## The suit model the scene starts with (shown while the profile has no model of its own).
 var _suit_scene: PackedScene
 ## The model's skeleton and its hips bone (how far the hips are down while sitting).
@@ -69,7 +64,6 @@ func _ready() -> void:
 	_suit_scene = load(_model.scene_file_path)
 	_load_model()
 	_dress()
-	_wear()
 	_plate.visible = false
 
 
@@ -206,38 +200,3 @@ func _dress() -> void:
 		light.emission_energy_multiplier = 2.0
 		band.material_override = light
 		band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-
-
-## Puts on the profile's accessory: each of its parts on the bone it's named after, where it sits
-## in the model's rest pose.
-func _wear() -> void:
-	for worn: BoneAttachment3D in _worn:
-		worn.queue_free()
-	_worn.clear()
-	if not profile or not profile.accessory:
-		return
-	var skeleton := _model.find_child("Skeleton3D") as Skeleton3D
-	var outfit := profile.accessory.instantiate() as Node3D
-	# Its parts move under the skeleton, out of the outfit's scene.
-	for owned: Node in outfit.find_children("*", "", true, false):
-		owned.owner = null
-	var skeleton_in_model: Transform3D = (
-		_model.global_transform.affine_inverse() * skeleton.global_transform
-	)
-	for child: Node in outfit.get_children():
-		var part := child as Node3D
-		var bone: int = skeleton.find_bone(part.name)
-		if bone < 0:
-			push_error('NpcBody: "%s" is no bone of the suit model' % part.name)
-			continue
-		var attachment := BoneAttachment3D.new()
-		attachment.name = "Worn" + part.name
-		attachment.bone_name = part.name
-		skeleton.add_child(attachment)
-		_worn.append(attachment)
-		var bone_in_model: Transform3D = skeleton_in_model * skeleton.get_bone_global_rest(bone)
-		var in_model: Transform3D = part.transform
-		outfit.remove_child(part)
-		attachment.add_child(part)
-		part.transform = bone_in_model.affine_inverse() * in_model
-	outfit.free()

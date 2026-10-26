@@ -1,0 +1,32 @@
+{
+  "made_by": "TRELLIS.2 (image to 3D) on a concept image made with Z-Image Turbo, both run locally in ComfyUI",
+  "used_for": "what Hollis wears and his head (face and hair); his skeleton, its weights and his hands are MakeHuman's, see hollis_build.py",
+  "concept": {
+    "file": "hollis_concept.png",
+    "model": "Z-Image Turbo (z_image_turbo_bf16, Tongyi-MAI, Apache-2.0)",
+    "text_encoder": "qwen_3_4b",
+    "size": [
+      1024,
+      1024
+    ],
+    "seed": 5,
+    "steps": 8,
+    "cfg": 1.0,
+    "sampler": "res_multistep / simple, shift 3",
+    "prompt": "photorealistic AAA sci-fi game character render, detailed weathered PBR materials, dark moody low-key lighting with a strong cool rim light, plain dark grey studio background, no holographic panels. Subject: Hollis, the miner mechanic of a mining ship, a wiry slightly stooped old man in his late sixties, deeply tanned leathery skin, a white stubble beard, long thin gray hair tied back, gruff but kind eyes, a scuffed silver hard hat with a small headlamp, a faded heavy olive-tan canvas work jacket open over a dark green shirt, a thin green glowing light band around the collar, a small round crew patch on the shoulder, a brown leather belt with a pouch, old brown prospector's trousers with round leather knee pads, grease on his bare hands, heavy brown lace-up boots, standing in a relaxed A-pose, both arms held out and away from the body at 45 degrees with a clear gap between the arms and the torso, empty open hands with spread fingers, nothing in the hands, nothing on the back, no holster, no weapon, nothing strapped to the legs, legs slightly apart, feet flat, full body visible from head to boots, centered, single character, front view, facing the camera.",
+    "reference": "local batch-10 concept hollis_v2 (the look this one keeps, re-rendered in an A-pose; seed 5 of 6)"
+  },
+  "mesh": {
+    "file": "hollis_trellis.glb",
+    "tool": "tools/trellis.py",
+    "model": "TRELLIS.2 (trellis_2_bf16, Microsoft, MIT)",
+    "image_encoder": "DINOv3 ViT-L (dino_v3_vit_l, Meta, DINOv3 License)",
+    "background_removal": "BiRefNet (birefnet, MIT)",
+    "comfyui": "0.42.0",
+    "seed": 7,
+    "faces": 80000,
+    "texture_size": 4096,
+    "date": "2026-10-26",
+    "note": "seed 7 of 42, 7: the better face"
+  }
+}

@@ -68,20 +68,15 @@ func test_their_topics_are_their_own_and_open_after_talking() -> void:
 			assert_false(topic.lines.is_empty(), String(topic.id))
 
 
-func test_each_new_one_wears_something_of_their_own() -> void:
-	var looks: Array[PackedScene] = []
+func test_each_has_a_model_of_their_own() -> void:
+	var models: Array[String] = []
 	for path: String in CREW:
 		var npc := _ship.get_node(path) as Npc
-		var worn: Array[Node] = npc.body.find_children("Worn*", "BoneAttachment3D", true, false)
-		if npc.name == "Quartermaster":
-			assert_eq(worn.size(), 0, "the quartermaster: no accessory (yet)")
-			continue
-		assert_gt(worn.size(), 0, path)
-		for attachment: Node in worn:
-			var parts: Array[Node] = attachment.find_children("*", "MeshInstance3D", true, false)
-			assert_gt(parts.size(), 0, attachment.name)
-		assert_does_not_have(looks, npc.profile.accessory, path)
-		looks.append(npc.profile.accessory)
+		var model := npc.body.get_node("Model") as Node3D
+		assert_string_starts_with(model.scene_file_path, "res://assets/npcs/", path)
+		assert_does_not_have(models, model.scene_file_path, path)
+		models.append(model.scene_file_path)
+		assert_not_null(model.find_child("HeadTop", true, false), path + ": their head's top")
 
 
 func test_pilot_flies_from_the_cockpit() -> void:

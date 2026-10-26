@@ -1,0 +1,32 @@
+{
+  "made_by": "TRELLIS.2 (image to 3D) on a concept image made with Z-Image Turbo, both run locally in ComfyUI",
+  "used_for": "what Wren wears and her head (face and hair); her skeleton, its weights and her hands are MakeHuman's, see wren_build.py",
+  "concept": {
+    "file": "wren_concept.png",
+    "model": "Z-Image Turbo (z_image_turbo_bf16, Tongyi-MAI, Apache-2.0)",
+    "text_encoder": "qwen_3_4b",
+    "size": [
+      1024,
+      1024
+    ],
+    "seed": 4,
+    "steps": 8,
+    "cfg": 1.0,
+    "sampler": "res_multistep / simple, shift 3",
+    "prompt": "photorealistic AAA sci-fi game character render, detailed weathered PBR materials, dark moody low-key lighting with a strong cool rim light, plain dark grey studio background, no holographic panels. Subject: Wren, the suit technician of a mining ship, a small slim young woman in her early twenties, light olive skin, an open curious cheerful smile, a short choppy black bob with teal-dyed tips, a fitted light-grey technician jumpsuit with many small pockets, the sleeves pushed up to the forearms, a dark high collar with a thin teal glowing light band, a small round crew patch on the shoulder, a small glowing teal display on her left forearm, black fingerless gloves, a dark belt with small pouches, round dark knee pads, black boots, standing in a relaxed A-pose, both arms held out and away from the body at 45 degrees with a clear gap between the arms and the torso, empty open hands with spread fingers, nothing in the hands, nothing on the back, no holster, no weapon, nothing strapped to the legs, legs slightly apart, feet flat, full body visible from head to boots, centered, single character, front view, facing the camera.",
+    "reference": "local batch-10 concept wren_v1 (the look this one keeps, re-rendered in an A-pose; seed 4 of 6)"
+  },
+  "mesh": {
+    "file": "wren_trellis.glb",
+    "tool": "tools/trellis.py",
+    "model": "TRELLIS.2 (trellis_2_bf16, Microsoft, MIT)",
+    "image_encoder": "DINOv3 ViT-L (dino_v3_vit_l, Meta, DINOv3 License)",
+    "background_removal": "BiRefNet (birefnet, MIT)",
+    "comfyui": "0.42.0",
+    "seed": 7,
+    "faces": 80000,
+    "texture_size": 4096,
+    "date": "2026-10-26",
+    "note": "seed 7 of 42, 7: the better face"
+  }
+}

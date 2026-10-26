@@ -41,6 +41,7 @@ script = ExtResource("1_profile")
 id = &"rival_captain"
 display_name = "Rook"
 role = "Prospector captain"
+model = "uid://ca77wnexkh6be"
 accent_color = Color(0.95, 0.3, 0.25, 1)
 suit_tint = Color(0.66, 0.62, 0.6, 1)
 dialogue = SubResource("Resource_dialogue")

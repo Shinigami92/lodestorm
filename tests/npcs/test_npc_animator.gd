@@ -7,6 +7,7 @@ const BODY := preload("res://game/npcs/npc_body.tscn")
 const NELL: NpcProfile = preload("res://game/npcs/ostra/bartender.tres")
 const KADE: NpcProfile = preload("res://game/npcs/ostra/depot_master.tres")
 const SELIN: NpcProfile = preload("res://game/npcs/ostra/councillor.tres")
+const ROOK: NpcProfile = preload("res://game/npcs/ostra/rival_captain.tres")
 const COLONIST: NpcProfile = preload("res://game/npcs/ostra/colonists/hauler_pilot.tres")
 
 var _body: NpcBody
@@ -30,10 +31,10 @@ func test_own_model_with_its_head_and_props() -> void:
 		assert_eq(grip.get_child_count(), 1, "the prop's model on " + String(prop))
 
 
-## Kade and Selin wear their generated heads (no MakeHuman face): the name plate goes above
-## their hair.
+## Kade, Selin and Rook wear their generated heads (no MakeHuman face): the name plate goes
+## above their hair.
 func test_own_head_models() -> void:
-	for case: Array in [[KADE, 1.79], [SELIN, 1.66]]:
+	for case: Array in [[KADE, 1.79], [SELIN, 1.66], [ROOK, 1.88]]:
 		var body := BODY.instantiate() as NpcBody
 		add_child_autofree(body)
 		body.profile = case[0] as NpcProfile

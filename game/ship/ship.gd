@@ -30,7 +30,7 @@ extends Node3D
 ## bay), after the heat shield's plate took what it still needs while it's the ship's project
 ## (`store_haul`); the refinery at the bay's far end turns it into alloys (`Refinery`). Dead
 ## players respawn at
-## `Respawn` in the medical bay.
+## `Respawn` in the medical bay. The crew find their way aboard over its `navigation`.
 
 ## Emitted when a player steps out of the ship.
 signal player_left(player: Player)
@@ -99,6 +99,8 @@ var furnaces := Furnaces.new()
 var reactions := CrewReactions.new()
 ## Lets the levels and skill ranks under way take effect once done.
 var progress_clock: ProgressClock
+## Where the crew can walk aboard.
+var navigation: ShipNavigation
 ## Says once where to heal when a hurt player stands at the ramp button.
 var ramp_hint: RampHint
 
@@ -154,6 +156,9 @@ func _ready() -> void:
 	reactions.name = "Reactions"
 	reactions.ship = self
 	add_child(reactions)
+	navigation = ShipNavigation.new()
+	navigation.name = "Navigation"
+	add_child(navigation)
 
 
 func _physics_process(delta: float) -> void:

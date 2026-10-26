@@ -127,11 +127,11 @@ func _sit_drop() -> float:
 	return pose.y - rest.y
 
 
-## Turns towards `faces`, else the nearest player close by, else back to where it stands facing
-## (its parent's forward).
+## Turns towards `faces`, else the nearest player close by (not while walking: it looks where it
+## goes), else back to where it stands facing (its parent's forward).
 func _turn(delta: float) -> void:
 	var target: Node3D = faces
-	if not target and not sitting:
+	if not target and not sitting and not is_walking():
 		target = Player.nearest(get_tree(), global_position, NOTICE_RANGE)
 	# Works on its activities only while nobody is close (it turns to them instead).
 	_animator.may_work = target == null

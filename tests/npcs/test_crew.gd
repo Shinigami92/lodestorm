@@ -1,6 +1,6 @@
 extends GutTest
 ## The eight crew members aboard (`Npc`): each at their post, telling them apart, the pilot in the
-## cockpit while the ship flies.
+## cockpit while a destination is chosen and the ship flies (walking there and back).
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 ## Each crew member's spot in the ship, and their name plate (in English, then in German).
@@ -79,18 +79,69 @@ func test_each_has_a_model_of_their_own() -> void:
 		assert_not_null(model.find_child("HeadTop", true, false), path + ": their head's top")
 
 
-func test_pilot_flies_from_the_cockpit() -> void:
+func test_pilot_walks_to_the_cockpit_sits_and_walks_back() -> void:
 	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
-	var on_bridge: Vector3 = pilot.global_position
-	var in_cockpit: Vector3 = pilot.flight_spot.global_position
-	var cockpit := _ship.get_node("Rooms/Upper/Cockpit") as Node3D
-	var console := cockpit.get_node("FlightConsole") as Node3D
-	assert_lt(in_cockpit.distance_to(console.global_position), 3.0, "beside the flight console")
+	var home: Vector3 = pilot.global_position
+	var seat: Vector3 = pilot.flight_seat.global_position
+	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as Node3D
+	assert_lt(seat.distance_to(console.global_position), 2.0, "the seat at the flight console")
 	assert_true(_ship.flight.take_off())
-	await wait_process_frames(2)
-	assert_true(_ship.flight.is_flying())
-	assert_almost_eq(pilot.global_position, in_cockpit, Vector3.ONE * 0.01, "in the cockpit")
-	_ship.flight.skip()
-	await wait_process_frames(2)
+	await _until(func() -> bool: return pilot.body.is_walking(), 10.0)
+	await wait_physics_frames(30)
+	assert_true(pilot.body.is_walking(), "she walks, she doesn't appear there")
+	assert_true(pilot.is_underway())
+	assert_gt(pilot.global_position.distance_to(home), 0.5, "on her way")
+	await _until(func() -> bool: return pilot.body.sitting, 40.0)
+	assert_true(pilot.body.sitting, "sits down in the pilot seat")
+	assert_almost_eq(pilot.global_position, seat, Vector3.ONE * 0.05)
+	assert_false(_ship.flight.is_flying(), "the take-off is over before she's there")
+	await wait_physics_frames(int((Npc.SEAT_LINGER - 1.0) * Engine.physics_ticks_per_second))
+	assert_true(pilot.body.sitting, "she still sits a while after the flight")
+	await _until(func() -> bool: return pilot.body.is_walking(), 5.0)
+	assert_false(pilot.body.sitting, "then gets up")
+	await _until(func() -> bool: return not pilot.is_underway(), 60.0)
+	assert_almost_eq(pilot.global_position, home, Vector3.ONE * 0.05, "back on the bridge")
+
+
+func test_a_chosen_destination_sends_her_to_the_seat_to_wait_for_the_course() -> void:
+	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var voyage: Voyage = _ship.voyage
+	assert_true(voyage.choose(voyage.offers[1]), "Set as destination")
+	await _until(func() -> bool: return pilot.body.is_walking(), 10.0)
+	assert_true(pilot.body.is_walking(), "she's on her way before the course is set")
+	await _until(func() -> bool: return pilot.body.sitting, 40.0)
+	assert_true(pilot.body.sitting)
 	assert_false(_ship.flight.is_flying())
-	assert_almost_eq(pilot.global_position, on_bridge, Vector3.ONE * 0.01, "back on the bridge")
+	await wait_physics_frames(int(Npc.SEAT_LINGER * 2.0 * Engine.physics_ticks_per_second))
+	assert_true(pilot.body.sitting, "waits there for the course")
+	voyage.destination = null
+	await _until(func() -> bool: return pilot.body.is_walking(), Npc.SEAT_LINGER + 3.0)
+	assert_false(pilot.body.sitting, "no destination any more: back to the bridge")
+
+
+func test_walking_back_she_stops_for_a_player() -> void:
+	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var player := _map.get_node("Player") as Player
+	_ship.flight.take_off()
+	await _until(func() -> bool: return pilot.body.sitting, 40.0)
+	await _until(func() -> bool: return pilot.body.is_walking(), 15.0)
+	await wait_physics_frames(60)
+	player.global_position = pilot.global_position + pilot.global_basis.z * 1.5
+	player.reset_physics_interpolation()
+	await wait_physics_frames(10)
+	var stopped: Vector3 = pilot.global_position
+	await wait_physics_frames(60)
+	assert_false(pilot.body.is_walking(), "stands while a player is close")
+	assert_almost_eq(pilot.global_position, stopped, Vector3.ONE * 0.01)
+	player.global_position = pilot.global_position + Vector3(0.0, 0.0, 8.0)
+	player.reset_physics_interpolation()
+	await wait_physics_frames(30)
+	assert_true(pilot.body.is_walking(), "walks on once they're gone")
+
+
+## Waits physics frames until `done` holds, `seconds` at most.
+func _until(done: Callable, seconds: float) -> void:
+	for i: int in int(seconds * Engine.physics_ticks_per_second):
+		if done.call():
+			return
+		await wait_physics_frames(1)

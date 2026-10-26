@@ -21,8 +21,9 @@ extends Station
 ## `place_miner`) stops the wait and the voice in the middle of the line until it's resumed (the
 ## voice goes on where it stopped); moving on (a line, a topic, the list) plays normally again.
 ## They walk aboard instead of appearing somewhere (`NpcWalker`, over the ship's navigation): with
-## a `flight_seat`, they walk there once the ship flies (faster, `HURRY_SPEED`, stopping for nobody
-## on the way), sit down and watch the autopilot, stay seated `SEAT_LINGER` s after it has landed
+## a `flight_seat`, they walk there once a destination is chosen at the navigator, or once the ship
+## flies (faster, `HURRY_SPEED`, stopping for nobody on the way), sit down and wait for the course
+## or watch the autopilot, stay seated `SEAT_LINGER` s after it has landed
 ## or docked (a short flight that's over before they're there: they still sit down for that long),
 ## get up and walk back to their spot (at `WALK_SPEED`, stopping while a player is
 ## within `NpcBody.NOTICE_RANGE` m). While someone talks to them, they stay where they are.
@@ -383,8 +384,8 @@ func is_underway() -> bool:
 	return _walker.is_underway()
 
 
-## Where they want to be now (in their parent's space): the `flight_seat` while the ship flies
-## (until they've sat there `SEAT_LINGER` s after), else their spot.
+## Where they want to be now (in their parent's space): the `flight_seat` while a destination is
+## chosen or the ship flies (until they've sat there `SEAT_LINGER` s after), else their spot.
 func get_post() -> Transform3D:
 	if not _wants_seat():
 		return _home
@@ -396,7 +397,7 @@ func get_post() -> Transform3D:
 ## first to leave the seat; stays put while someone talks to them.
 func _take_post(delta: float) -> void:
 	if ship and flight_seat:
-		if ship.flight.is_flying():
+		if ship.flight.is_flying() or _destination_chosen():
 			_seat_trip = true
 			_linger = SEAT_LINGER
 		elif body.sitting and body.get_sit_amount() >= 1.0:
@@ -423,6 +424,12 @@ func _take_post(delta: float) -> void:
 	rotation.y = lerp_angle(rotation.y, yaw, 1.0 - exp(-TURN_SPEED * delta))
 	if seat and not body.sitting and absf(angle_difference(rotation.y, yaw)) < 0.05:
 		body.sitting = true
+
+
+## Whether a destination is chosen at the navigator that the ship isn't at or flying to yet.
+func _destination_chosen() -> bool:
+	var voyage: Voyage = ship.voyage if ship else null
+	return voyage != null and voyage.destination != null and voyage.destination != voyage.brief
 
 
 func _wants_seat() -> bool:

@@ -1,6 +1,6 @@
 extends GutTest
 ## The eight crew members aboard (`Npc`): each at their post, telling them apart, the pilot in the
-## cockpit while the ship flies (walking there and back).
+## cockpit while a destination is chosen and the ship flies (walking there and back).
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 ## Each crew member's spot in the ship, and their name plate (in English, then in German).
@@ -101,6 +101,22 @@ func test_pilot_walks_to_the_cockpit_sits_and_walks_back() -> void:
 	assert_false(pilot.body.sitting, "then gets up")
 	await _until(func() -> bool: return not pilot.is_underway(), 60.0)
 	assert_almost_eq(pilot.global_position, home, Vector3.ONE * 0.05, "back on the bridge")
+
+
+func test_a_chosen_destination_sends_her_to_the_seat_to_wait_for_the_course() -> void:
+	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var voyage: Voyage = _ship.voyage
+	assert_true(voyage.choose(voyage.offers[1]), "Set as destination")
+	await _until(func() -> bool: return pilot.body.is_walking(), 10.0)
+	assert_true(pilot.body.is_walking(), "she's on her way before the course is set")
+	await _until(func() -> bool: return pilot.body.sitting, 40.0)
+	assert_true(pilot.body.sitting)
+	assert_false(_ship.flight.is_flying())
+	await wait_physics_frames(int(Npc.SEAT_LINGER * 2.0 * Engine.physics_ticks_per_second))
+	assert_true(pilot.body.sitting, "waits there for the course")
+	voyage.destination = null
+	await _until(func() -> bool: return pilot.body.is_walking(), Npc.SEAT_LINGER + 3.0)
+	assert_false(pilot.body.sitting, "no destination any more: back to the bridge")
 
 
 func test_walking_back_she_stops_for_a_player() -> void:

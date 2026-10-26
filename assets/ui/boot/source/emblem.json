@@ -1,0 +1,20 @@
+{
+  "made_by": "Z-Image Turbo (text to image), run locally in ComfyUI",
+  "used_for": "the game's emblem on the boot screen and the boot splash (cut out by emblem_build.py)",
+  "concept": {
+    "file": "emblem_concept.png",
+    "model": "Z-Image Turbo (z_image_turbo_bf16, Tongyi-MAI, Apache-2.0)",
+    "text_encoder": "qwen_3_4b",
+    "size": [
+      1024,
+      1024
+    ],
+    "seed": 9002,
+    "steps": 8,
+    "cfg": 1.0,
+    "sampler": "res_multistep / simple, shift 3",
+    "prompt": "game logo emblem, centered on a pure black background, flat front view, isolated, no text, no letters, clean readable silhouette that works small, dark realistic sci-fi, brushed gunmetal and dark steel, a strong cool rim light, the only saturated colors are a glowing cyan and a little amber, subtle glow. A jagged faceted ore crystal glowing cyan from within at the center, wrapped by a tight swirling ring of storm clouds and dust spiralling around it, a few thin amber lightning arcs",
+    "reference": "tools/concepts/batches/batch9.py, crystal_vortex 03_v3 (rated best of 28: five emblem ideas and two wordmarks, 4 seeds each; the wordmarks misspelled the name)",
+    "date": "2026-10-26"
+  }
+}

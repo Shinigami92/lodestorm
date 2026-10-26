@@ -90,6 +90,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Talks continuing by themselves: a setting ("Dialogue: Continue by itself", off by default), a voiced line moving on a pause after its voice, one without a voice after its reading time, the list coming back after the last line, a bar filling on "Continue"; skipping still works
 - Voice-over **B** (Kade and Selin): both voiced in English and German, every line; the listening page's Settled view (each voiced NPC's anchor and every rendered line per language) and its takes grouped by language
 - Colonists sitting, not only walking: a sitting clip (`Sit`, shared posing, on the suit), seated colonists (a hauler pilot on a gallery bench, two new colonists in a bar booth, a water technician and a metalworker, their remarks in English and German), a walker sitting down on a bench for a while (the teacher), booth benches with backrests at the clip's seat height; seated ones remark without turning or getting up, their bubble and plate at the lower head (see [`planned/station.md`](planned/station.md))
+- Boot screen: the game's emblem (generated) and name instead of Godot's logo on the boot splash, then the same picture in the world with a ring filling while the map loads on a worker thread, the title fading in from black
 
 ## Todo
 

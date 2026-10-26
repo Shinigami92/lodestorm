@@ -41,6 +41,7 @@ requires = Array[StringName]([&"depot_master.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
+prompts = Array[String](["What do you need?", "Make it quick, I've got crates to count.", "Ask away.", "What can the depot do for you?"])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_depot"), SubResource("Resource_exchange"), SubResource("Resource_colony"), SubResource("Resource_kade")])
 
 [resource]

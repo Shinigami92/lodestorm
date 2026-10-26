@@ -6,6 +6,18 @@
       "seed": 1,
       "text": "Was kann ich für dich tun?"
     },
+    "42fe0be27f2dabd4": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie fühlst du dich?"
+    },
+    "4857a3d2f4490214": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bleib liegen, bis du ganz geheilt bist, dann steh auf, und du bist bereit."
+    },
     "4c04f280335f6cb5": {
       "anchor": "37663f4133ad7864",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -72,11 +84,17 @@
       "seed": 1,
       "text": "Leg dich auf ein freies Bett, und es heilt dich ganz. Je kleiner die Wunde, desto schneller ist es vorbei."
     },
-    "d21d10846f19b039": {
+    "cd1bdca6f8da7108": {
       "anchor": "37663f4133ad7864",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Die Karte neben dir zeigt, wie sich deine Gesundheit auffüllt. Wenn sie voll ist, drück auf Aufstehen, und du bist bereit."
+      "text": "Frag mich ruhig. Ich habe einen Moment Zeit."
+    },
+    "df35cc07bbb2b424": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bedrückt dich etwas?"
     },
     "e9d70a4f2b1afa35": {
       "anchor": "37663f4133ad7864",
@@ -97,6 +115,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "What can I do for you?"
+    },
+    "42fe0be27f2dabd4": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How are you feeling?"
+    },
+    "4857a3d2f4490214": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Stay on it until you're fully healed, then get up, and you're ready to go."
     },
     "4c04f280335f6cb5": {
       "anchor": "bb5c2753a28d1330",
@@ -164,11 +194,17 @@
       "seed": 1,
       "text": "Lie down on a free bed, and it heals you up to full health. The smaller the wound, the sooner it's done."
     },
-    "d21d10846f19b039": {
+    "cd1bdca6f8da7108": {
       "anchor": "bb5c2753a28d1330",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "The card beside you shows your health filling up. When it's full, press Get up, and you're ready to go."
+      "text": "Ask me anything. I have a moment."
+    },
+    "df35cc07bbb2b424": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Is something bothering you?"
     },
     "e9d70a4f2b1afa35": {
       "anchor": "bb5c2753a28d1330",

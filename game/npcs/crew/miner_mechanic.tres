@@ -29,7 +29,7 @@ requires = Array[StringName]([&"miner_mechanic.greeting"])
 script = ExtResource("3_topic")
 id = &"miner_mechanic.drills"
 title = "Drills"
-lines = Array[String](["Some ores are harder than others. A drill that's too soft still gets through, but only at a quarter of the speed.", "Upgrade a miner's drill on the pad, and its card shows which ores it mines at full speed. When you place a miner, the fastest one for that ore goes."])
+lines = Array[String](["Some ores are harder than others. A drill that's too soft still gets through, but only at a quarter of the speed.", "Upgrade a miner's drill on the pad, and I'll tell you which ores it gets through at full speed. When you place a miner, the fastest one for that ore goes."])
 requires = Array[StringName]([&"miner_mechanic.greeting"])
 
 [sub_resource type="Resource" id="Resource_dry"]
@@ -49,7 +49,7 @@ requires = Array[StringName]([&"miner_mechanic.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
-prompt = "What do you need?"
+prompts = Array[String](["What do you need?", "Hm. Go on.", "Make it quick. The miners won't fix themselves.", "Something about the miners?"])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_placing"), SubResource("Resource_fleet"), SubResource("Resource_drills"), SubResource("Resource_dry"), SubResource("Resource_about")])
 
 [sub_resource type="Resource" id="Reaction_big_haul"]

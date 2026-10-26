@@ -72,17 +72,23 @@
       "seed": 1,
       "text": "Das nenne ich eine Ladung. Mit so viel Erz an Bord sind ein paar von diesen Upgrades endlich drin."
     },
-    "59d16f5d69ce63da": {
+    "75c21ccc8f3d3385": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Drückst du gar kein zweites Mal, dauert es einfach so lange wie immer. Probier es also zuerst am Schießstand aus, dort kostet es dich nichts."
+      "text": "Was liegt dir auf dem Herzen?"
     },
-    "69b73afe0ae377f2": {
+    "7a327e3653a38812": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Drückst du genau dann, wenn der Ring die weiße Markierung erreicht, ist das Nachladen sofort fertig. Drückst du zu früh oder zu spät, dauert es stattdessen länger."
+      "text": "Ein Trick: Lade ein zweites Mal nach, während du noch nachlädst. Jedes Nachladen hat dafür einen richtigen Moment, und du wirst lernen, ihn zu spüren."
+    },
+    "7fc75664a84c9650": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Fragen zu deiner Ausrüstung?"
     },
     "8416a0862f4a44e9": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -126,6 +132,18 @@
       "seed": 1,
       "text": "Wenn du Fragen zu Munition oder zum Nachladen hast, frag einfach mich. Besser hier als draußen, wenn dir ein Schwarm im Nacken sitzt."
     },
+    "bcad7e375997f866": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Timing-Trick klappt bei jeder einzelnen Patrone. Klappt er bei mehreren Patronen hintereinander, lädt jede etwas schneller. Verfehlst du eine oder lässt eine aus, fängt dieser Vorteil von vorn an."
+    },
+    "c1c7f5b4a6904c22": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Schieß los, ich höre zu."
+    },
     "ca08b26b8055dbba": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -144,17 +162,17 @@
       "seed": 1,
       "text": "Drückst du mitten im Nachladen ab, hört sie mit dem Nachladen auf und feuert, was schon geladen ist."
     },
-    "e0b554a01315667c": {
+    "e0a5519bf9c60944": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Draußen siehst du sie als kurze Striche im Ring um deine Füße, innen in seiner rechten Hälfte, sobald du nachlädst. Ist ein Strich nur noch umrandet, ist dieses Magazin aufgebraucht."
+      "text": "Lädst du gar kein zweites Mal nach, dauert es einfach so lange wie immer. Probier es also zuerst am Schießstand aus, dort kostet es dich nichts."
     },
-    "e773ea61a4eb0b36": {
+    "e9451b2c2f481113": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Der Timing-Trick klappt bei jeder einzelnen Patrone. Klappt er bei mehreren Patronen hintereinander, lädt jede etwas schneller. Verfehlst du eine oder drückst bei einer nicht, fängt dieser Vorteil von vorn an."
+      "text": "Triffst du den Moment, ist das Nachladen sofort fertig. Zu früh oder zu spät, und es dauert stattdessen länger."
     },
     "eb0641cf7f5dd6b6": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -167,12 +185,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Schon wieder eine große Ladung. Wenn das so weitergeht, haben Dace und Wren keine ruhige Minute mehr."
-    },
-    "ecd831d72f9428ca": {
-      "anchor": "a4a1fdb2cb84ecb9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Ein Trick: Drück während des Nachladens ein zweites Mal auf Nachladen. Die rechte Hälfte des Rings um deine Füße füllt sich beim Nachladen, und sie hat eine weiße Markierung."
     },
     "eced603dac6aeb28": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -266,17 +278,23 @@
       "seed": 1,
       "text": "Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach."
     },
-    "59d16f5d69ce63da": {
+    "75c21ccc8f3d3385": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
+      "text": "Something on your mind?"
     },
-    "69b73afe0ae377f2": {
+    "7a327e3653a38812": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead."
+      "text": "Here's a trick: reload a second time while you're still reloading. Every reload has one right moment for it, and you'll learn to feel when it comes."
+    },
+    "7fc75664a84c9650": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Questions about your gear?"
     },
     "8416a0862f4a44e9": {
       "anchor": "772c7907f9411bf4",
@@ -320,6 +338,18 @@
       "seed": 1,
       "text": "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
     },
+    "bcad7e375997f866": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip one, and that bonus starts over."
+    },
+    "c1c7f5b4a6904c22": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Go ahead, I'm listening."
+    },
     "ca08b26b8055dbba": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -338,17 +368,17 @@
       "seed": 1,
       "text": "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded."
     },
-    "e0b554a01315667c": {
+    "e0a5519bf9c60944": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Out there, they show up as short marks in the ring around your feet, inside its right half, whenever you reload. A mark that's only an outline is a magazine you've used up."
+      "text": "If you don't reload a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
     },
-    "e773ea61a4eb0b36": {
+    "e9451b2c2f481113": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip a press, and that bonus starts over."
+      "text": "Hit that moment, and the reload is finished at once. Too early or too late, and it takes longer instead."
     },
     "eb0641cf7f5dd6b6": {
       "anchor": "772c7907f9411bf4",
@@ -361,12 +391,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."
-    },
-    "ecd831d72f9428ca": {
-      "anchor": "772c7907f9411bf4",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Here's a trick: press reload a second time while you're reloading. The right half of the ring around your feet fills up while you reload, and it has a white mark."
     },
     "eced603dac6aeb28": {
       "anchor": "772c7907f9411bf4",

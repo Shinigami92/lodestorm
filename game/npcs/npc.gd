@@ -8,14 +8,18 @@ extends Station
 ## show in a speech bubble above their head (`Bubble`, a `SpeechBubble`), and the card beside
 ## them (a `TalkCard`) lists the open topics of their `Dialogue` or moves the topic on. Each line
 ## is also spoken from their head, in their recorded voice (`VoiceLines`, on the Voice bus), and
-## stops when the next one comes; the prompt is spoken when the talk starts without the greeting.
+## stops when the next one comes; the prompt (one of theirs, picked for each talk) is spoken when
+## the talk starts without the greeting. A guest aboard (a co-op player who isn't the host) hears a
+## topic's guest lines where it has them (`Topic.lines_for`).
 ## The greeting plays by itself the first time. Up and down pick a topic, `interact` plays it (or
 ## the next line), `pause` steps back from a topic to the list and closes from there. What's been
 ## heard is a flag in the ship's `Story`.
 ## With "Continue by itself" on (`GameSettings.dialogue_auto_continue`), a topic's line moves on
 ## by itself: a voiced one `AUTO_PAUSE` s after the voice ends, one without a voice after its
 ## reading time (`reading_time`); after the last line the list comes back. The card's "Continue"
-## fills up meanwhile; pressing it still moves on at once.
+## fills up meanwhile; pressing it still moves on at once. Pausing it (the card's pause button, or
+## `place_miner`) stops the wait and the voice in the middle of the line until it's resumed (the
+## voice goes on where it stopped); moving on (a line, a topic, the list) plays normally again.
 ## With a `flight_spot`, they stand there while the ship flies (the pilot at the cockpit's
 ## controls), and back at their spot once it has landed or docked.
 
@@ -45,6 +49,10 @@ var topic: Topic
 var line: int = 0
 ## The highlighted entry of the list: an open topic (`get_choices`), or after them "Goodbye".
 var choice: int = 0
+## What they say while the list shows, this talk (the English text, see `Dialogue.pick_prompt`).
+var prompt: String = ""
+## Whether moving on by itself and the voice are paused (until resumed or the next line).
+var auto_paused: bool = false
 ## Speaks their lines, from their head.
 var voice: AudioStreamPlayer3D
 
@@ -151,16 +159,39 @@ func has_news(listener: Player = null) -> bool:
 ## What their bubble says now (translated): the topic's line, or the prompt while listing.
 func get_line() -> String:
 	if topic:
-		return tr(topic.lines[line]) if line < topic.lines.size() else ""
-	return tr(profile.dialogue.prompt) if profile and profile.dialogue else ""
+		var told: Array[String] = get_topic_lines()
+		return tr(told[line]) if line < told.size() else ""
+	return tr(prompt) if not prompt.is_empty() else ""
 
 
-## How far the line shown is towards moving on by itself (0..1), or -1 when it won't (no topic
-## told, or auto-continue off).
+## The lines of the topic being told for the player talking to them (a guest's where it has them,
+## see `Topic.lines_for`); none while the list shows.
+func get_topic_lines() -> Array[String]:
+	return topic.lines_for(is_guest()) if topic else ([] as Array[String])
+
+
+## Whether the player talking to them is a guest aboard (in co-op, not the host): the ship and its
+## decisions are the host's.
+func is_guest() -> bool:
+	return not multiplayer.is_server()
+
+
+## How far the line shown is towards moving on by itself (0..1, also while paused), or -1 when it
+## won't (no topic told, or auto-continue off).
 func get_auto_progress() -> float:
 	if not topic or _line_time <= 0.0 or not GameSettings.dialogue_auto_continue:
 		return -1.0
 	return clampf(_line_waited / _line_time, 0.0, 1.0)
+
+
+## Pauses moving on by itself and the voice in the middle of the line, or resumes both from where
+## they stopped (only while it applies, see `get_auto_progress`). Returns whether it did.
+func toggle_auto_pause() -> bool:
+	if get_auto_progress() < 0.0:
+		return false
+	_set_paused(not auto_paused)
+	refresh()
+	return true
 
 
 ## How long `text` (a shown line) stays when it moves on by itself without a voice, in s.
@@ -172,10 +203,10 @@ static func reading_time(text: String) -> float:
 func talk_about(told: Topic) -> void:
 	topic = told
 	line = 0
-	if topic.lines.is_empty():
+	if get_topic_lines().is_empty():
 		_finish_topic()
-	_show()
 	_speak()
+	_show()
 
 
 ## Shows the next line; after the last one the topic counts as heard and the list comes back.
@@ -183,10 +214,10 @@ func advance() -> void:
 	if not topic:
 		return
 	line += 1
-	if line >= topic.lines.size():
+	if line >= get_topic_lines().size():
 		_finish_topic()
-	_show()
 	_speak()
+	_show()
 
 
 ## Does what `interact` does: the next line of the topic, or the highlighted list entry (a topic,
@@ -221,6 +252,7 @@ func leave_topic() -> bool:
 	if not topic:
 		return false
 	topic = null
+	_set_paused(false)
 	_show()
 	voice.stop()
 	return true
@@ -234,9 +266,17 @@ func _back() -> bool:
 	return leave_topic()
 
 
+## `place_miner` pauses or resumes moving on by itself (see `toggle_auto_pause`).
+func _shortcut(event: InputEvent) -> bool:
+	return event.is_action_pressed(&"place_miner") and toggle_auto_pause()
+
+
 func _opened() -> void:
 	topic = null
 	choice = 0
+	_set_paused(false)
+	if profile and profile.dialogue:
+		prompt = profile.dialogue.pick_prompt(prompt)
 	_place_focus()
 	super()
 	bubble.visible = true
@@ -246,7 +286,7 @@ func _opened() -> void:
 		talk_about(greeting)
 	else:
 		_show()
-		_say(profile.dialogue.prompt if profile and profile.dialogue else "")
+		_say(prompt)
 	_place_bubble()
 
 
@@ -255,6 +295,7 @@ func _closed() -> void:
 	topic = null
 	bubble.visible = false
 	bubble.set_on_top(false)
+	_set_paused(false)
 	voice.stop()
 
 
@@ -275,14 +316,22 @@ func _show() -> void:
 ## Speaks the topic's line shown, or stops when the list is back; starts the line's wait for
 ## moving on by itself (its voice and `AUTO_PAUSE`, else its `reading_time`).
 func _speak() -> void:
-	var told: bool = topic != null and line < topic.lines.size()
-	var recording: AudioStream = _say(topic.lines[line] if told else "")
+	_set_paused(false)
+	var lines: Array[String] = get_topic_lines()
+	var told: bool = line < lines.size()
+	var recording: AudioStream = _say(lines[line] if told else "")
 	_line_waited = 0.0
 	_line_time = 0.0
 	if told:
 		_line_time = (
 			recording.get_length() + AUTO_PAUSE if recording else reading_time(get_line())
 		)
+
+
+## Pauses or resumes moving on by itself and the voice.
+func _set_paused(paused: bool) -> void:
+	auto_paused = paused
+	voice.stream_paused = paused
 
 
 ## Speaks `english` (a line's English text) in their voice, stopping what they said before; just
@@ -297,9 +346,9 @@ func _say(english: String) -> AudioStream:
 
 
 ## Moves the topic on by itself once the line shown has waited long enough (with auto-continue
-## on), and shows how far it is on the card.
+## on, not paused), and shows how far it is on the card.
 func _auto_continue(delta: float) -> void:
-	if get_auto_progress() >= 0.0:
+	if get_auto_progress() >= 0.0 and not auto_paused:
 		_line_waited += delta
 		if _line_waited >= _line_time:
 			advance()

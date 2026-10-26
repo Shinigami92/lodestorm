@@ -18,6 +18,24 @@
       "seed": 1,
       "text": "Damals dachten wir, wir könnten uns in ein paar Jahren selbst versorgen. Das hat sich als viel schwerer herausgestellt, als wir alle erwartet hatten."
     },
+    "117299d4af20944e": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kann der Rat dir bei etwas helfen?"
+    },
+    "12958a9c2157158f": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Frag, und ich antworte, so gut ich kann."
+    },
+    "12a109e734fbf8fc": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Was kann ich für dich tun?"
+    },
     "44429f7f8efd9f11": {
       "anchor": "14158481aef7c3cc",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -29,6 +47,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Ich war unter den Ersten hier, damals, als diese Station kaum mehr war als ein Andockring und ein paar Module."
+    },
+    "4bc3217c0316ba61": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ja? Was möchtest du wissen?"
     },
     "5222f9a1fea46322": {
       "anchor": "14158481aef7c3cc",
@@ -71,12 +95,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Wir tagen an diesem Tisch. Er ist der einzige auf der Station, der groß genug ist, also landet auch jeder Streit hier."
-    },
-    "f7e48a90d5d76cfc": {
-      "anchor": "14158481aef7c3cc",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Wie kann ich dir helfen?"
     }
   },
   "en": {
@@ -98,6 +116,24 @@
       "seed": 1,
       "text": "Back then, we thought we'd be able to support ourselves within a few years. That turned out to be a lot harder than any of us expected."
     },
+    "117299d4af20944e": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Is there something the council can help with?"
+    },
+    "12958a9c2157158f": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ask, and I'll answer as best I can."
+    },
+    "12a109e734fbf8fc": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What can I do for you?"
+    },
     "44429f7f8efd9f11": {
       "anchor": "d0c62621f6133826",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -109,6 +145,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "I was among the first to come here, back when this station was little more than a docking ring and a few modules."
+    },
+    "4bc3217c0316ba61": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Yes? What would you like to know?"
     },
     "5222f9a1fea46322": {
       "anchor": "d0c62621f6133826",
@@ -151,12 +193,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "We meet at this table. It's the only one on the station that's big enough, so every argument ends up here too."
-    },
-    "f7e48a90d5d76cfc": {
-      "anchor": "d0c62621f6133826",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "How can I help you?"
     }
   }
 }

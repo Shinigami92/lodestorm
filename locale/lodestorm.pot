@@ -103,6 +103,18 @@ msgid "What'll it be?"
 msgstr ""
 
 #: game/npcs/crew/cook.tres
+msgid "Hungry, or just curious?"
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Go on, I've got a pot on, but I'm listening."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Pull up a chair. What's on your mind?"
+msgstr ""
+
+#: game/npcs/crew/cook.tres
 #: game/npcs/crew/engineer.tres
 #: game/npcs/crew/gunsmith.tres
 #: game/npcs/crew/medic.tres
@@ -174,15 +186,20 @@ msgid "Engineer"
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
-#: game/npcs/crew/gunsmith.tres
-#: game/npcs/crew/pilot.tres
-#: game/npcs/crew/quartermaster.tres
-#: game/npcs/crew/suit_tech.tres
+msgid "Yes? What can I tell you?"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Ask me anything. I'm only half busy."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "What would you like to know?"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
 #: game/npcs/ostra/bartender.tres
-#: game/npcs/ostra/councillor.tres
-#: game/npcs/ostra/depot_master.tres
-#: game/npcs/ostra/rival_captain.tres
-msgid "How can I help you?"
+msgid "Go on, I'm listening."
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
@@ -202,7 +219,7 @@ msgid "The closer we get to the star, the hotter it burns, so the shield needs a
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
-msgid "A plate costs ore. Select it, and its card shows how much is paid already and how much your hold has."
+msgid "A plate costs ore. Look at the next one on the shield, and I'll tell you how much is paid already and how much your hold has."
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
@@ -210,7 +227,19 @@ msgid "Make it the ship's project, and every run pays into it first, before the 
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
-msgid "As soon as a plate is paid, I install it. If you're out there with others, though, only the host can work on the shield."
+msgid "As soon as a plate is paid, I install it, and we can fly one step closer to the star."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "A plate costs ore. Once it's the ship's project, every run pays into it first, before the haul is shared, so you help pay for it too."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Which plate comes next and what's paid from the hold is up to the crew this ship belongs to. Your own hold stays yours, for your own gear."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "As soon as a plate is paid, I install it, and we can all fly one step closer to the star."
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
@@ -298,6 +327,22 @@ msgid "Gunsmith"
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
+msgid "What are we working on?"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Need something improved?"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Ask away, just mind the bench."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "What brings you to my bench?"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
 msgid "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
 msgstr ""
 
@@ -314,7 +359,7 @@ msgid "Pick one of your weapons at the rack and lay it on the bench. Every weapo
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
-msgid "Select a part, and the card tells you what the next level does, what it costs, and how long it takes. The ore comes from your hold."
+msgid "Pick a part, and I'll tell you what the next level does, what it costs, and how long it takes. The ore comes from your hold."
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
@@ -334,7 +379,7 @@ msgid "Its light on the weapon breathes while I work on it. The new level counts
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
-msgid "I can work on several parts at once, but only on one level per part. If you change your mind, press Stop twice, and you get the whole cost back."
+msgid "I can work on several parts at once, but only on one level per part. If you change your mind, tell me to stop, and you get the whole cost back."
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
@@ -342,7 +387,7 @@ msgid "New weapons"
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
-msgid "Lay a weapon you don't own yet on the bench, and its card shows what it costs to build. Without its blueprint, though, there's nothing I can do."
+msgid "Lay a weapon you don't own yet on the bench, and I'll tell you what it costs to build. Without its blueprint, though, there's nothing I can do."
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
@@ -382,7 +427,20 @@ msgid "Medic"
 msgstr ""
 
 #: game/npcs/crew/medic.tres
+#: game/npcs/ostra/councillor.tres
 msgid "What can I do for you?"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "How are you feeling?"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Ask me anything. I have a moment."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Is something bothering you?"
 msgstr ""
 
 #: game/npcs/crew/medic.tres
@@ -418,7 +476,7 @@ msgid "Lie down on a free bed, and it heals you up to full health. The smaller t
 msgstr ""
 
 #: game/npcs/crew/medic.tres
-msgid "The card beside you shows your health filling up. When it's full, press Get up, and you're ready to go."
+msgid "Stay on it until you're fully healed, then get up, and you're ready to go."
 msgstr ""
 
 #: game/npcs/crew/medic.tres
@@ -462,7 +520,20 @@ msgid "Miner mechanic"
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
+#: game/npcs/ostra/depot_master.tres
 msgid "What do you need?"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Hm. Go on."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Make it quick. The miners won't fix themselves."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Something about the miners?"
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
@@ -518,7 +589,7 @@ msgid "Some ores are harder than others. A drill that's too soft still gets thro
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
-msgid "Upgrade a miner's drill on the pad, and its card shows which ores it mines at full speed. When you place a miner, the fastest one for that ore goes."
+msgid "Upgrade a miner's drill on the pad, and I'll tell you which ores it gets through at full speed. When you place a miner, the fastest one for that ore goes."
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
@@ -562,6 +633,22 @@ msgid "Pilot"
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
+msgid "What's on your mind?"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Need something from me?"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Ask away, I've got a minute."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Where do you want to go next?"
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
 msgid "There you are. I keep us flying, and every trip starts here at the navigator. Come over to the holo table whenever you want to pick where we go next."
 msgstr ""
 
@@ -590,7 +677,7 @@ msgid "Picking a region"
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
-msgid "Each region's card tells you how dangerous it is, how long you have before the storm, and which ores you'll find there."
+msgid "For each region, the table shows how dangerous it is, how long you have before the storm, and which ores you'll find there."
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
@@ -598,7 +685,7 @@ msgid "Some regions give you more time than others. If you're not sure where to 
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
-msgid "When you've found a spot you like, press Set as destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."
+msgid "When you've found a spot you like, set it as our destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
@@ -606,7 +693,7 @@ msgid "Flying"
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
-msgid "Once the destination is set, go to the flight console in the cockpit, right next door, and press Set course. Anyone can do that, not just me."
+msgid "Once the destination is set, go to the flight console in the cockpit, right next door, and set the course there. Anyone can do that, not just me."
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
@@ -627,7 +714,7 @@ msgid "Waypost Ostra is the colony's station. It circles Torvane, and you'll fin
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
-msgid "While we're docked there, the ramp goes up and down whenever you like, and there's no storm and no timer. Take your time and talk to the people there."
+msgid "While we're docked there, the ramp goes up and down whenever you like, and there's no storm to worry about. Take your time and talk to the people there."
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
@@ -723,6 +810,22 @@ msgid "Quartermaster"
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
+msgid "How can I help you?"
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Something on your mind?"
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Go ahead, I'm listening."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Questions about your gear?"
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
 msgid "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
 msgstr ""
 
@@ -769,10 +872,6 @@ msgid "Every ranged weapon you take along starts each mission with two spare mag
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Out there, they show up as short marks in the ring around your feet, inside its right half, whenever you reload. A mark that's only an outline is a magazine you've used up."
-msgstr ""
-
-#: game/npcs/crew/quartermaster.tres
 msgid "Your suit can't make new spare magazines out there. Once they're gone, you pay for every reload with the ore you carry."
 msgstr ""
 
@@ -797,15 +896,15 @@ msgid "Timing reload"
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Here's a trick: press reload a second time while you're reloading. The right half of the ring around your feet fills up while you reload, and it has a white mark."
+msgid "Here's a trick: reload a second time while you're still reloading. Every reload has one right moment for it, and you'll learn to feel when it comes."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Press right when the ring reaches the white mark, and the reload is finished at once. Press too early or too late, and it takes longer instead."
+msgid "Hit that moment, and the reload is finished at once. Too early or too late, and it takes longer instead."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-msgid "If you don't press a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
+msgid "If you don't reload a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -821,7 +920,7 @@ msgid "Pull the trigger in the middle of a reload, and it stops reloading and fi
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-msgid "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip a press, and that bonus starts over."
+msgid "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip one, and that bonus starts over."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -878,6 +977,22 @@ msgid "Suit tech"
 msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
+msgid "Hi again! What do you need?"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Something wrong with your suit?"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Ask me anything!"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "What can I do for you today?"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
 msgid "Hi! I keep your suits running: the armor here, and the skills next door."
 msgstr ""
 
@@ -908,27 +1023,11 @@ msgid "Next door is the skill graph. Every skill teaches your suit something new
 msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
-msgid "Some skills need another one first, and the card tells you which. The ones you can learn and pay for right now pulse."
+msgid "Some skills need another one first, and I'll tell you which. The ones you can learn and pay for right now pulse."
 msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
 msgid "Learning one costs ore from your hold and takes a while, just like an upgrade. Some skills have several ranks, each a bit stronger."
-msgstr ""
-
-#: game/npcs/crew/suit_tech.tres
-msgid "The suit ring"
-msgstr ""
-
-#: game/npcs/crew/suit_tech.tres
-msgid "The ring around your feet out there is your suit talking to you. Its left half is your health, the right half your ammo."
-msgstr ""
-
-#: game/npcs/crew/suit_tech.tres
-msgid "Red marks on it point to where a hit came from, and an arrow on its edge shows the way back to the ship."
-msgstr ""
-
-#: game/npcs/crew/suit_tech.tres
-msgid "In the settings, you can make it bigger or keep it showing all the time."
 msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
@@ -945,6 +1044,18 @@ msgstr ""
 
 #: game/npcs/ostra/bartender.tres
 msgid "Bartender"
+msgstr ""
+
+#: game/npcs/ostra/bartender.tres
+msgid "What can I get you?"
+msgstr ""
+
+#: game/npcs/ostra/bartender.tres
+msgid "News or a drink? I've got both."
+msgstr ""
+
+#: game/npcs/ostra/bartender.tres
+msgid "What do you want to know?"
 msgstr ""
 
 #: game/npcs/ostra/bartender.tres
@@ -1426,6 +1537,18 @@ msgid "Council member"
 msgstr ""
 
 #: game/npcs/ostra/councillor.tres
+msgid "Yes? What would you like to know?"
+msgstr ""
+
+#: game/npcs/ostra/councillor.tres
+msgid "Ask, and I'll answer as best I can."
+msgstr ""
+
+#: game/npcs/ostra/councillor.tres
+msgid "Is there something the council can help with?"
+msgstr ""
+
+#: game/npcs/ostra/councillor.tres
 msgid "Welcome to Waypost Ostra. I'm Selin, and I speak for the colony's council. We're glad to have another prospecting crew in the system."
 msgstr ""
 
@@ -1483,6 +1606,18 @@ msgstr ""
 
 #: game/npcs/ostra/depot_master.tres
 msgid "Depot master"
+msgstr ""
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Make it quick, I've got crates to count."
+msgstr ""
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Ask away."
+msgstr ""
+
+#: game/npcs/ostra/depot_master.tres
+msgid "What can the depot do for you?"
 msgstr ""
 
 #: game/npcs/ostra/depot_master.tres
@@ -1566,6 +1701,22 @@ msgid "Prospector captain"
 msgstr ""
 
 #: game/npcs/ostra/rival_captain.tres
+msgid "What, need more advice already?"
+msgstr ""
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Go on, ask. I've got time."
+msgstr ""
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Still here? What do you want to know?"
+msgstr ""
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Ask away. I don't charge for advice. Yet."
+msgstr ""
+
+#: game/npcs/ostra/rival_captain.tres
 msgid "Well, look who's here. Another crew that thinks it can make a living down on those planets. I'm Rook, captain of the best prospecting crew in the system."
 msgstr ""
 
@@ -1598,7 +1749,7 @@ msgid "Staying alive"
 msgstr ""
 
 #: game/npcs/ostra/rival_captain.tres
-msgid "When the countdown runs out, the storm hits, and out there it kills you within seconds. Be back aboard before then, no matter how much ore is still waiting."
+msgid "Listen for your ship's storm warning, and be back aboard before the storm hits. Out there, it kills you within seconds, no matter how much ore is still waiting."
 msgstr ""
 
 #: game/npcs/ostra/rival_captain.tres

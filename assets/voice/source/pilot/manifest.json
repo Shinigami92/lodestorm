@@ -1,5 +1,17 @@
 {
   "de": {
+    "015ae668cd649456": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Frag ruhig, ich hab kurz Zeit."
+    },
+    "0c7b5cd34b9361d5": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Solange wir dort angedockt sind, geht die Rampe hoch und runter, wann immer du willst, und um einen Sturm musst du dir keine Sorgen machen. Lass dir Zeit und rede mit den Leuten dort."
+    },
     "0ff3b4900078ed4c": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -24,17 +36,23 @@
       "seed": 1,
       "text": "Der Holotisch zeigt das ganze System. Zoom an einen Planeten oder Mond heran, um seine Regionen zu sehen, und an eine Region, um die Stelle zu sehen, an der wir landen würden."
     },
-    "23fa96c2c8047a79": {
+    "22fd7649278d31e4": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Wenn du eine Stelle gefunden hast, die dir gefällt, drück auf Als Ziel setzen. Jedes Mal, wenn du eine Region wählst, landen wir auf einem neuen Stück davon, also gleicht keine Reise der anderen."
+      "text": "Brauchst du was von mir?"
     },
     "284d6320b337e01e": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Die Lichtsäulen sind Erzvorkommen, jedes in der Farbe seines Erzes, und sehenswerte Orte haben eine eigene Farbe. So kannst du deinen Weg planen, bevor du überhaupt losgehst."
+    },
+    "39ce373b5607b7de": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wohin willst du als Nächstes?"
     },
     "3cc1d41e02f69863": {
       "anchor": "3581bf6c2d6006f9",
@@ -48,11 +66,11 @@
       "seed": 1,
       "text": "Der Sturm zieht auf. Alle zurück zum Schiff."
     },
-    "5146e33157b38b5f": {
+    "48be71d6ac66cf3e": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Die Karte jeder Region sagt dir, wie gefährlich sie ist, wie viel Zeit du bis zum Sturm hast und welche Erze du dort findest."
+      "text": "Sobald das Ziel steht, geh zur Flugkonsole im Cockpit gleich nebenan und setz dort den Kurs. Das kann jeder, nicht nur ich."
     },
     "56c60e4987cb52eb": {
       "anchor": "3581bf6c2d6006f9",
@@ -78,23 +96,17 @@
       "seed": 1,
       "text": "Aber diese Stürme sind etwas anderes. So ein Wetter habe ich noch nirgends erlebt. Wenn da draußen also die Warnung kommt, lass mich bitte nicht auf dich warten."
     },
-    "703352c970a32abd": {
+    "7425a78406147b44": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Sobald das Ziel steht, geh zur Flugkonsole im Cockpit gleich nebenan und drück auf Kurs setzen. Das kann jeder, nicht nur ich."
+      "text": "Für jede Region zeigt der Tisch, wie gefährlich sie ist, wie viel Zeit du bis zum Sturm hast und welche Erze du dort findest."
     },
     "767187d88f57700e": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Sturm zieht auf. Komm zurück zum Schiff."
-    },
-    "7a8647a6fd2ba6f7": {
-      "anchor": "3581bf6c2d6006f9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Solange wir dort angedockt sind, geht die Rampe hoch und runter, wann immer du willst, und es gibt weder Sturm noch Timer. Lass dir Zeit und rede mit den Leuten dort."
     },
     "7aa7a888197fcd2c": {
       "anchor": "3581bf6c2d6006f9",
@@ -144,6 +156,12 @@
       "seed": 1,
       "text": "Da bist du ja. Ich halte uns in der Luft, und jede Reise beginnt hier am Navigator. Komm an den Holotisch, wann immer du aussuchen willst, wohin es als Nächstes geht."
     },
+    "a3e9a84f1ff987f6": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Was gibt's?"
+    },
     "a5bb04564a210f5c": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -192,17 +210,17 @@
       "seed": 1,
       "text": "Cassor ist jetzt auf dem Navigator, und sein Mond Mirr auch. Näher am Stern ziehen die Stürme früher auf, also melde ich mich ab jetzt früher."
     },
+    "f325a372da7a664b": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du eine Stelle gefunden hast, die dir gefällt, mach sie zu unserem Ziel. Jedes Mal, wenn du eine Region wählst, landen wir auf einem neuen Stück davon, also gleicht keine Reise der anderen."
+    },
     "f37ccbb8db26a8c1": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Cassor. Salzebenen und dichter Bewuchs, und der Boden dazwischen hält nicht immer. Da draußen gibt es Erdlöcher."
-    },
-    "f7e48a90d5d76cfc": {
-      "anchor": "3581bf6c2d6006f9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Wie kann ich dir helfen?"
     },
     "f889d730db3145a3": {
       "anchor": "3581bf6c2d6006f9",
@@ -212,6 +230,18 @@
     }
   },
   "en": {
+    "015ae668cd649456": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ask away, I've got a minute."
+    },
+    "0c7b5cd34b9361d5": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "While we're docked there, the ramp goes up and down whenever you like, and there's no storm to worry about. Take your time and talk to the people there."
+    },
     "0ff3b4900078ed4c": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -236,17 +266,23 @@
       "seed": 1,
       "text": "The holo table shows the whole system. Zoom in on a planet or a moon to see its regions, and zoom in on a region to see the spot where we would land."
     },
-    "23fa96c2c8047a79": {
+    "22fd7649278d31e4": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "When you've found a spot you like, press Set as destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."
+      "text": "Need something from me?"
     },
     "284d6320b337e01e": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The beams are ore nodes, each in its ore's color, and places worth a look have a color of their own. So you can plan your way before you even leave."
+    },
+    "39ce373b5607b7de": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Where do you want to go next?"
     },
     "3cc1d41e02f69863": {
       "anchor": "b39c4473829e205a",
@@ -260,11 +296,11 @@
       "seed": 1,
       "text": "Storm's coming in. Everyone back to the ship."
     },
-    "5146e33157b38b5f": {
+    "48be71d6ac66cf3e": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Each region's card tells you how dangerous it is, how long you have before the storm, and which ores you'll find there."
+      "text": "Once the destination is set, go to the flight console in the cockpit, right next door, and set the course there. Anyone can do that, not just me."
     },
     "56c60e4987cb52eb": {
       "anchor": "b39c4473829e205a",
@@ -290,23 +326,17 @@
       "seed": 1,
       "text": "But these storms are something else. I've never seen weather like this anywhere. So when the warning comes out there, please don't make me wait for you."
     },
-    "703352c970a32abd": {
+    "7425a78406147b44": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Once the destination is set, go to the flight console in the cockpit, right next door, and press Set course. Anyone can do that, not just me."
+      "text": "For each region, the table shows how dangerous it is, how long you have before the storm, and which ores you'll find there."
     },
     "767187d88f57700e": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Storm's coming in. Get back to the ship."
-    },
-    "7a8647a6fd2ba6f7": {
-      "anchor": "b39c4473829e205a",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "While we're docked there, the ramp goes up and down whenever you like, and there's no storm and no timer. Take your time and talk to the people there."
     },
     "7aa7a888197fcd2c": {
       "anchor": "b39c4473829e205a",
@@ -356,6 +386,12 @@
       "seed": 1,
       "text": "There you are. I keep us flying, and every trip starts here at the navigator. Come over to the holo table whenever you want to pick where we go next."
     },
+    "a3e9a84f1ff987f6": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What's on your mind?"
+    },
     "a5bb04564a210f5c": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -404,17 +440,17 @@
       "seed": 1,
       "text": "Cassor is on the navigator now, and its moon Mirr with it. Closer to the star, the storms come in sooner, so I'll call earlier from now on."
     },
+    "f325a372da7a664b": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "When you've found a spot you like, set it as our destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."
+    },
     "f37ccbb8db26a8c1": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Cassor. Salt flats and thick growth, and the ground in between doesn't always hold. There are sinkholes out there."
-    },
-    "f7e48a90d5d76cfc": {
-      "anchor": "b39c4473829e205a",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "How can I help you?"
     },
     "f889d730db3145a3": {
       "anchor": "b39c4473829e205a",

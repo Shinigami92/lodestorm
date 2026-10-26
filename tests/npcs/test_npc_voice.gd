@@ -96,7 +96,8 @@ func test_lines_are_spoken_as_they_show() -> void:
 func test_the_prompt_is_spoken_when_the_talk_starts_without_the_greeting() -> void:
 	_ship.story.set_flag(_npc.profile.dialogue.greeting.id)
 	await _talk()
-	assert_eq(_recording(), VoiceLines.path(&"quartermaster", "en", _npc.profile.dialogue.prompt))
+	assert_eq(_recording(), VoiceLines.path(&"quartermaster", "en", _npc.prompt))
+	assert_has(_npc.profile.dialogue.prompts, _npc.prompt)
 
 
 func test_the_voice_follows_the_texts_until_one_is_picked() -> void:
@@ -119,7 +120,7 @@ func test_the_voice_follows_the_texts_until_one_is_picked() -> void:
 
 func test_voices_off_say_nothing() -> void:
 	GameSettings.voice_language = VoiceLines.OFF
-	assert_null(VoiceLines.stream(&"quartermaster", _npc.profile.dialogue.prompt))
+	assert_null(VoiceLines.stream(&"quartermaster", VoiceLines.SAMPLE_LINE))
 	await _talk()
 	assert_false(_npc.voice.playing)
 
@@ -177,12 +178,13 @@ func test_voices_have_their_own_volume() -> void:
 	GameSettings.volumes.clear()
 
 
-## The English lines of `profile`: the prompt, the greeting's and every topic's.
+## The English lines of `profile`: the prompts, the greeting's and every topic's (also a guest's).
 func _lines(profile: NpcProfile) -> Array[String]:
 	var lines: Array[String] = []
-	lines.append(profile.dialogue.prompt)
+	lines.append_array(profile.dialogue.get_prompts())
 	for topic: Topic in [profile.dialogue.greeting] + profile.dialogue.topics:
 		lines.append_array(topic.lines)
+		lines.append_array(topic.guest_lines)
 	for reaction: CrewReaction in profile.reactions:
 		lines.append_array(reaction.lines)
 	return lines

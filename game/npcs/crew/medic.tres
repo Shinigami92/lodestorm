@@ -22,7 +22,7 @@ requires = Array[StringName]([&"medic.greeting"])
 script = ExtResource("3_topic")
 id = &"medic.beds"
 title = "Med beds"
-lines = Array[String](["Lie down on a free bed, and it heals you up to full health. The smaller the wound, the sooner it's done.", "The card beside you shows your health filling up. When it's full, press Get up, and you're ready to go.", "There are four beds, so all of you can lie down at the same time."])
+lines = Array[String](["Lie down on a free bed, and it heals you up to full health. The smaller the wound, the sooner it's done.", "Stay on it until you're fully healed, then get up, and you're ready to go.", "There are four beds, so all of you can lie down at the same time."])
 requires = Array[StringName]([&"medic.greeting"])
 
 [sub_resource type="Resource" id="Resource_falling"]
@@ -42,7 +42,7 @@ requires = Array[StringName]([&"medic.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
-prompt = "What can I do for you?"
+prompts = Array[String](["What can I do for you?", "How are you feeling?", "Ask me anything. I have a moment.", "Is something bothering you?"])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_wounds"), SubResource("Resource_beds"), SubResource("Resource_falling"), SubResource("Resource_about")])
 
 [sub_resource type="Resource" id="Reaction_first_death"]

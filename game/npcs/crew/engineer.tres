@@ -15,7 +15,8 @@ lines = Array[String](["Ah, good, come and look at this: the drive core, and the
 script = ExtResource("3_topic")
 id = &"engineer.shield"
 title = "The heat shield"
-lines = Array[String](["The closer we get to the star, the hotter it burns, so the shield needs a new plate for every step further in. The installed plates glow, and the next one fills up as it's paid.", "A plate costs ore. Select it, and its card shows how much is paid already and how much your hold has.", "Make it the ship's project, and every run pays into it first, before the rest goes into your hold. Or pay the rest from your hold right away.", "As soon as a plate is paid, I install it. If you're out there with others, though, only the host can work on the shield."])
+lines = Array[String](["The closer we get to the star, the hotter it burns, so the shield needs a new plate for every step further in. The installed plates glow, and the next one fills up as it's paid.", "A plate costs ore. Look at the next one on the shield, and I'll tell you how much is paid already and how much your hold has.", "Make it the ship's project, and every run pays into it first, before the rest goes into your hold. Or pay the rest from your hold right away.", "As soon as a plate is paid, I install it, and we can fly one step closer to the star."])
+guest_lines = Array[String](["The closer we get to the star, the hotter it burns, so the shield needs a new plate for every step further in. The installed plates glow, and the next one fills up as it's paid.", "A plate costs ore. Once it's the ship's project, every run pays into it first, before the haul is shared, so you help pay for it too.", "Which plate comes next and what's paid from the hold is up to the crew this ship belongs to. Your own hold stays yours, for your own gear.", "As soon as a plate is paid, I install it, and we can all fly one step closer to the star."])
 requires = Array[StringName]([&"engineer.greeting"])
 
 [sub_resource type="Resource" id="Resource_further_in"]
@@ -49,6 +50,7 @@ requires = Array[StringName]([&"engineer.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
+prompts = Array[String](["Yes? What can I tell you?", "Ask me anything. I'm only half busy.", "What would you like to know?", "Go on, I'm listening."])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_shield"), SubResource("Resource_further_in"), SubResource("Resource_hold"), SubResource("Resource_refinery"), SubResource("Resource_about")])
 
 [sub_resource type="Resource" id="Reaction_planet_opened_vehra"]

@@ -1,0 +1,70 @@
+{
+  "en": {
+    "0328e9e1d2e36668": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Have a drink at the bar while you're there. Nell hears even more gossip than I do, and that's saying something."
+    },
+    "23934cb1babd93ea": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If you want news from the rest of the colony, dock at Waypost Ostra. Tamsin can take you there any time."
+    },
+    "28d0305ba9436b31": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And I'm up here, of course."
+    },
+    "296a39b720ffa7ce": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hungry? Sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you."
+    },
+    "318a44f5af81cf16": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door."
+    },
+    "803ecea533ff334c": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I signed on to cook, but mostly I listen. Over a hot meal, people say more than they'd ever admit."
+    },
+    "a79c755c52dbdf13": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Moons around a gas giant! When I signed on, I never thought I'd see Gaulm out of a window. Somebody has to tell me what it looks like from down there."
+    },
+    "bfe4447353106799": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Most of what I hear is nonsense. Some of it isn't. The trick is telling the difference."
+    },
+    "ca4b3ea1584c3bf9": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What'll it be?"
+    },
+    "d0b30538669e3f60": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollis keeps the miners going. Ilse has the medical bay at the nose, and Okoro is down in the engine room with the heat shield."
+    },
+    "d65f91969975af43": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Everyone comes through my mess hall sooner or later. So if you want to know what's going on aboard, I'm the one to ask."
+    }
+  }
+}

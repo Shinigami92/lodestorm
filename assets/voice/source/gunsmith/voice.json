@@ -1,0 +1,20 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better.",
+    "description": "A man in his mid-thirties, the gunsmith of a mining ship, talking to a crew member at his workbench in the weapons room. Medium baritone voice, quiet and thoughtful, with a craftsman's calm focus. Friendly and easygoing, curious, a little reflective, not gruff and not a soldier. Plain and conversational rather than narrating. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 6,
+    "picked_from": "crew1/dace/qwen3_s6.flac",
+    "picked": "2026-10-26"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Willkommen im Waffenraum. Im Regal hängt jede Waffe, die ich kenne, und an der Werkbank mache ich deine besser.",
+    "description": "Clone of Dace's English anchor, speaker embedding only (x-vector)",
+    "model": "Qwen3-TTS-12Hz-1.7B-Base",
+    "seed": 1,
+    "picked_from": "crew6/dace/clone_xvec_s1_de.flac",
+    "picked": "2026-10-26"
+  }
+}

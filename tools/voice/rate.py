@@ -85,7 +85,7 @@ def settled() -> dict:
         text = profiles[npc].read_text(encoding="utf-8")
         resource = text[text.rfind("[resource]") :]
         fields = dict(re.findall(r'^(display_name|role) = "(.*)"$', resource, re.MULTILINE))
-        order = [lines.line_hash(line) for line in lines.npc_lines(npc, info.get("lines") == "reactions")]
+        order = [lines.line_hash(line) for line in lines.npc_lines(npc)]
         languages = {}
         for language, entry in info.items():
             if not isinstance(entry, dict) or "anchor" not in entry:

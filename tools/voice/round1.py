@@ -44,7 +44,10 @@ def cast():
         if ONLY and key not in ONLY:
             continue
         description = c["description"]
-        if LANGUAGE == "de":
+        if LANGUAGE == "de" and "description_de" in c:
+            # Where the English description names an accent, the German one has its own
+            description = c["description_de"]
+        elif LANGUAGE == "de":
             # A German take needs a German speaker, or voice design adds an English accent
             description = description.replace("Native English speaker", "Native German speaker")
         yield key, description, c["lines"][ANCHOR_LINE_INDEX][column]

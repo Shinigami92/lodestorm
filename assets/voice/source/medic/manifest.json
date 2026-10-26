@@ -1,0 +1,186 @@
+{
+  "de": {
+    "12a109e734fbf8fc": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Was kann ich für dich tun?"
+    },
+    "4c04f280335f6cb5": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du allein unterwegs bist, endet die Mission, sobald du fällst. Du wachst hier auf, und für den nächsten Einsatz braucht es ein neues Ziel."
+    },
+    "61cd3d679ef8ebb5": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Komm rein. Das ist meine Krankenstation, und ich sehe dich lieber hereinkommen als hier aufwachen."
+    },
+    "6f60b027cb952f62": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Aber was da draußen auch passiert, hier wachst du wieder auf. Frag mich ruhig alles, was dir hilft, heil zu bleiben."
+    },
+    "82194cc3b911600a": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ganz ruhig, atme erst mal durch. Du bist da draußen gefallen und in meiner Krankenstation aufgewacht. Das passiert jedem einmal. Sorgen wir dafür, dass es nicht oft passiert."
+    },
+    "a2b0c323ce500190": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Deine Wunden verschwinden nicht einfach, wenn sich die Rampe schließt. Wenn du verletzt zurückkommst, beginnst du die nächste Mission genauso verletzt."
+    },
+    "a536d02e3a5324b5": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Leg dich also vor dem nächsten Einsatz auf eins der Medizinbetten hier. Das kostet dich nichts."
+    },
+    "b0140844da873bea": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Früher habe ich die Klinik auf Ostra geleitet. Laut den Berichten des Rats sind die Stürme kein Grund zur Sorge."
+    },
+    "b0d5619faf82dc6f": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mit anderen bleibst du liegen, bis die Mission vorbei ist. Also passt aufeinander auf."
+    },
+    "b67c2fd7fc29ebac": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Dann zähle ich die Verletzungen, die von diesen Einsätzen zurückkommen. Die Zahlen passen nicht zu den Berichten, also führe ich meine eigenen."
+    },
+    "bc9e68bf7d88e71a": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du da draußen fällst, verlierst du das Erz, das du trägst, und wachst hier mit voller Gesundheit auf."
+    },
+    "c6aa9e3e726707fa": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Leg dich auf ein freies Bett, und es heilt dich ganz. Je kleiner die Wunde, desto schneller ist es vorbei."
+    },
+    "d21d10846f19b039": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Karte neben dir zeigt, wie sich deine Gesundheit auffüllt. Wenn sie voll ist, drück auf Aufstehen, und du bist bereit."
+    },
+    "e9d70a4f2b1afa35": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Es gibt vier Betten, also könnt ihr euch alle gleichzeitig hinlegen."
+    },
+    "fcd3a6d4e98b2071": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Falls du es vergisst, erinnert dich der Rampenknopf einmal daran. Danach liegt es bei dir."
+    }
+  },
+  "en": {
+    "12a109e734fbf8fc": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What can I do for you?"
+    },
+    "4c04f280335f6cb5": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "When you're alone out there, falling ends the mission. You wake up here, and the next run needs a new destination."
+    },
+    "61cd3d679ef8ebb5": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Come in. This is my medical bay, and I'd rather see you walk in here than wake up here."
+    },
+    "6f60b027cb952f62": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "But whatever happens out there, this is where you wake up again. Ask me anything about staying in one piece."
+    },
+    "82194cc3b911600a": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Easy, take a breath. You fell out there and woke up in my medical bay. It happens to everyone once. Let's make sure it doesn't happen often."
+    },
+    "a2b0c323ce500190": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Your wounds don't just go away when the ramp closes. If you come back hurt, you start the next mission just as hurt."
+    },
+    "a536d02e3a5324b5": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So before you go out again, lie down on one of the med beds here. It doesn't cost you anything."
+    },
+    "b0140844da873bea": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I used to run the clinic at Ostra. The council's reports say the storms are nothing to worry about."
+    },
+    "b0d5619faf82dc6f": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "With others, you stay down until the mission is over. So look out for each other."
+    },
+    "b67c2fd7fc29ebac": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Then I count the injuries that come back from these runs. The numbers don't match the reports, so I'm keeping my own."
+    },
+    "bc9e68bf7d88e71a": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If you fall out there, you lose the ore you're carrying, and you wake up here at full health."
+    },
+    "c6aa9e3e726707fa": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Lie down on a free bed, and it heals you up to full health. The smaller the wound, the sooner it's done."
+    },
+    "d21d10846f19b039": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The card beside you shows your health filling up. When it's full, press Get up, and you're ready to go."
+    },
+    "e9d70a4f2b1afa35": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "There are four beds, so all of you can lie down at the same time."
+    },
+    "fcd3a6d4e98b2071": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If you forget, the ramp button reminds you once. After that, it's up to you."
+    }
+  }
+}

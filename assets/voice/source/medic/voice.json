@@ -1,0 +1,20 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Come in. This is my medical bay, and I'd rather see you walk in here than wake up here. But whatever happens out there, this is where you wake up again.",
+    "description": "A woman in her mid-fifties, the medic of a mining ship who used to run the colony's clinic, talking to a crew member in her medical bay. Clear, firm mid-range voice, a little dry, brisk and composed. Caring but no-nonsense, with a skeptical edge: she has seen too many injuries to be impressed by official reports. Plain and conversational, not theatrical, not breathy or seductive. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 1,
+    "picked_from": "crew1/ilse/qwen3_s1.flac",
+    "picked": "2026-10-26"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Komm rein. Das ist meine Krankenstation, und ich sehe dich lieber hereinkommen als hier aufwachen. Aber was da draußen auch passiert, hier wachst du wieder auf.",
+    "description": "A woman in her mid-fifties, the medic of a mining ship who used to run the colony's clinic, talking to a crew member in her medical bay. Clear, firm mid-range voice, a little dry, brisk and composed. Caring but no-nonsense, with a skeptical edge: she has seen too many injuries to be impressed by official reports. Plain and conversational, not theatrical, not breathy or seductive. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 1,
+    "picked_from": "crew1/ilse/qwen3_s1_de.flac",
+    "picked": "2026-10-26"
+  }
+}

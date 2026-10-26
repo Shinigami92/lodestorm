@@ -140,6 +140,8 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const subjects = () => Object.keys(info[batch]?.subjects ?? {});
 const filesOf = (s) => info[batch].subjects[s] ?? [];
+// A subject's name with its label from the batch module (e.g. "brannik · Quartermaster")
+const named = (s) => (info[batch]?.labels?.[s] ? `${s} · ${info[batch].labels[s]}` : s);
 const st = (s) => (state[s] ??= { files: {}, note: "", duels: [] });
 const entry = (s, f) => (st(s).files[f] ??= { stars: 0, note: "" });
 const stars = (s, f) => state[s]?.files[f]?.stars ?? 0;
@@ -225,7 +227,7 @@ function renderHeader() {
     const files = filesOf(s);
     const done = files.length && files.every((f) => stars(s, f));
     const tie = done && duelInfo(s).open.length;
-    return `<button class="${s === subject ? "on" : ""} ${tie ? "tie" : done ? "done" : ""}" data-s="${esc(s)}">${esc(s)}</button>`;
+    return `<button class="${s === subject ? "on" : ""} ${tie ? "tie" : done ? "done" : ""}" data-s="${esc(s)}">${esc(named(s))}</button>`;
   };
   $("tabs").innerHTML = `<button class="best ${subject === BEST ? "on" : ""}" data-s="${BEST}">${BEST}</button>` + subjects().map(tab).join("");
   const on = document.querySelector(".tabs .on");
@@ -260,7 +262,7 @@ function renderBest() {
   $("subjbar").style.display = "none";
   // Notes on subjects without images (e.g. a rating per framing) show above the grid
   const loose = Object.entries(state).filter(([s, v]) => v.note && !subjects().includes(s));
-  $("loose").innerHTML = loose.map(([s, v]) => `<div><b>${esc(s)}:</b> ${esc(v.note)}</div>`).join("");
+  $("loose").innerHTML = loose.map(([s, v]) => `<div><b>${esc(named(s))}:</b> ${esc(v.note)}</div>`).join("");
   $("loose").style.display = loose.length ? "" : "none";
   $("grid").innerHTML = subjects().map((s) => {
     const b = best(s);
@@ -268,7 +270,7 @@ function renderBest() {
     const n = stars(s, b.file);
     const badge = b.tie ? `<span class="badge tie" title="tied: duel to decide">tie</span>` : n ? `<span class="badge">${"★".repeat(n)}</span>` : "";
     return `<div class="card" data-s="${esc(s)}" data-f="${esc(b.file)}" data-jump="1"><img src="/img/${batch}/${s}/${b.file}" alt="${esc(s)}" loading="lazy">
-      <div class="row"><b>${esc(s)} · ${esc(b.file.replace(".png", ""))}</b>${badge}</div></div>`;
+      <div class="row"><b>${esc(named(s))} · ${esc(b.file.replace(".png", ""))}</b>${badge}</div></div>`;
   }).join("");
   fit();
 }
@@ -301,7 +303,7 @@ function showViewer() {
   const { s, f } = view;
   const list = visible(s).length ? visible(s) : filesOf(s);
   $("vimg").src = `/img/${batch}/${s}/${f}`;
-  $("vname").textContent = `${s} / ${f.replace(".png", "")} · ${list.indexOf(f) + 1}/${list.length}`;
+  $("vname").textContent = `${named(s)} / ${f.replace(".png", "")} · ${list.indexOf(f) + 1}/${list.length}`;
   $("vstars").innerHTML = starButtons(s, f, 'data-v="1"');
   $("vnote").value = state[s]?.files[f]?.note ?? "";
 }

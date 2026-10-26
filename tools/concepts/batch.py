@@ -7,7 +7,7 @@ seed and size into the concept database (db.py). Rate them with rate.py.
 
 A batch module defines GROUPS, a list of (styles, subjects, seed base): styles are (name, text) pairs put in
 front of every subject's prompt; an empty text means the subject carries its own style (seed-only variants).
-Optional: SIZE (default 1024).
+Optional: SIZE (default 1024); LABELS ({subject: text}, shown beside the subject on the rating page).
 """
 
 import importlib

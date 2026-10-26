@@ -35,12 +35,7 @@ def check(npc: str, prune: bool) -> tuple[int, int, int, int]:
     """Prints an NPC's status; returns how many lines are missing, outdated, untranslated and stale."""
     manifest = lines.load_manifest(npc)
     languages = lines.plan(npc, manifest)
-    voice = (lines.SOURCE / npc / "voice.json").read_text(encoding="utf-8")
-    scope = ""
-    if '"lines": "reactions"' in voice:
-        talks = len(set(lines.npc_lines(npc)) - set(lines.npc_lines(npc, True)))
-        scope = f" (radio calls only; {plural(talks, 'line')} of their talks aboard not voiced yet)"
-    print(f"{npc}{scope}")
+    print(npc)
     totals = [0, 0, 0, 0]
     for language in languages:
         missing = [line for line in language.lines if line.text and not line.out.exists()]

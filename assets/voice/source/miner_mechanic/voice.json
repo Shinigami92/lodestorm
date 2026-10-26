@@ -1,0 +1,20 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well.",
+    "description": "A man in his late sixties, the oldest prospector in the system and now the miner mechanic of a mining ship, talking to a crew member beside a drilling machine. Low, raspy, worn voice, slower and older than a quartermaster's, a man of few words. Gruff but kind underneath, dry and unhurried, with short pauses. Plain and conversational rather than narrating. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 3,
+    "picked_from": "crew1/hollis/qwen3_s3.flac",
+    "picked": "2026-10-26"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Hm. Du kommst wegen der Miner. Gut. Sie bezahlen alles auf diesem Schiff, also behandle sie anständig.",
+    "description": "A man in his late sixties, the oldest prospector in the system and now the miner mechanic of a mining ship, talking to a crew member beside a drilling machine. Low, raspy, worn voice, slower and older than a quartermaster's, a man of few words. Gruff but kind underneath, dry and unhurried, with short pauses. Plain and conversational rather than narrating. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 2,
+    "picked_from": "crew1/hollis/qwen3_s2_de.flac",
+    "picked": "2026-10-26"
+  }
+}

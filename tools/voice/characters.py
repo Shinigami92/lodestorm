@@ -232,6 +232,199 @@ CHARACTERS: dict[str, dict] = {
             ),
         ],
     },
+    "okoro": {
+        "name": "Okoro",
+        "role": "Engineer",
+        "description": (
+            "A tall man of about fifty, the engineer of a mining ship and a scientist who came out to study a "
+            "restless star, showing a crew member the drive core in the engine room. Warm, resonant baritone voice, "
+            "articulate and precise, with a teacher's patience. Proud of his work and absorbed in it, a quiet "
+            "enthusiasm when he explains something, never loud. Plain and conversational rather than narrating. "
+            "Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "Ah, good, come and look at this: the drive core, and the heat shield around it. "
+                    "It's what keeps us alive when we fly closer to the star."
+                ),
+                (
+                    "Ah, gut, komm und sieh dir das an: der Antriebskern und der Hitzeschild darum. "
+                    "Er hält uns am Leben, wenn wir näher an den Stern heranfliegen."
+                ),
+            ),
+            (
+                (
+                    "I came out here to study the star. "
+                    "Kesh is restless, more than anyone expected when the colony was planned."
+                ),
+                (
+                    "Ich bin hergekommen, um den Stern zu erforschen. "
+                    "Kesh ist unruhig, mehr, als irgendwer erwartet hat, als die Kolonie geplant wurde."
+                ),
+            ),
+        ],
+    },
+    "ilse": {
+        "name": "Ilse",
+        "role": "Medic",
+        "description": (
+            "A woman in her mid-fifties, the medic of a mining ship who used to run the colony's clinic, talking to "
+            "a crew member in her medical bay. Clear, firm mid-range voice, a little dry, brisk and composed. "
+            "Caring but no-nonsense, with a skeptical edge: she has seen too many injuries to be impressed by "
+            "official reports. Plain and conversational, not theatrical, not breathy or seductive. "
+            "Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "Come in. This is my medical bay, and I'd rather see you walk in here than wake up here. "
+                    "But whatever happens out there, this is where you wake up again."
+                ),
+                (
+                    "Komm rein. Das ist meine Krankenstation, und ich sehe dich lieber hereinkommen als hier aufwachen. "
+                    "Aber was da draußen auch passiert, hier wachst du wieder auf."
+                ),
+            ),
+            (
+                ("I used to run the clinic at Ostra. The council's reports say the storms are nothing to worry about."),
+                (
+                    "Früher habe ich die Klinik auf Ostra geleitet. "
+                    "Laut den Berichten des Rats sind die Stürme kein Grund zur Sorge."
+                ),
+            ),
+        ],
+    },
+    "dace": {
+        "name": "Dace",
+        "role": "Gunsmith",
+        "description": (
+            "A man in his mid-thirties, the gunsmith of a mining ship, talking to a crew member at his workbench in "
+            "the weapons room. Medium baritone voice, quiet and thoughtful, with a craftsman's calm focus. Friendly "
+            "and easygoing, curious, a little reflective, not gruff and not a soldier. Plain and conversational "
+            "rather than narrating. Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "Welcome to the weapons room. The rack holds every weapon I know of, "
+                    "and the bench is where I make yours better."
+                ),
+                (
+                    "Willkommen im Waffenraum. Im Regal hängt jede Waffe, die ich kenne, "
+                    "und an der Werkbank mache ich deine besser."
+                ),
+            ),
+            (
+                (
+                    "Most of what's on that rack I've only ever seen in drawings. "
+                    "Sometimes I wonder what they needed weapons like these for."
+                ),
+                (
+                    "Das meiste in diesem Regal kenne ich nur aus Zeichnungen. "
+                    "Manchmal frage ich mich, wofür sie solche Waffen gebraucht haben."
+                ),
+            ),
+        ],
+    },
+    "wren": {
+        "name": "Wren",
+        "role": "Suit tech",
+        "description": (
+            "A young woman in her early twenties, the suit technician of a mining ship, born on an orbital station "
+            "and on her first trip away from it, talking to a crew member in the armor room. Bright, light voice, "
+            "quick and cheerful, eager and open, a little fast when she's excited. Natural and genuine, not childish, "
+            "not cute, not breathy or seductive. Plain and conversational. "
+            "Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "Hi! I keep your suits running: the armor here, and the skills next door. "
+                    "Your suit does a lot more than keep the air in."
+                ),
+                (
+                    "Hi! Ich halte eure Anzüge in Schuss: die Panzerung hier und die Fähigkeiten nebenan. "
+                    "Dein Anzug kann viel mehr, als nur die Luft drinnen zu halten."
+                ),
+            ),
+            (
+                ("I was born on Ostra. Before I joined you, I'd never been off the station, not even once."),
+                (
+                    "Ich bin auf Ostra geboren. Bevor ich zu euch kam, war ich noch nie von der Station weg, "
+                    "kein einziges Mal."
+                ),
+            ),
+        ],
+    },
+    "hollis": {
+        "name": "Hollis",
+        "role": "Miner mechanic",
+        "description": (
+            "A man in his late sixties, the oldest prospector in the system and now the miner mechanic of a mining "
+            "ship, talking to a crew member beside a drilling machine. Low, raspy, worn voice, slower and older "
+            "than a quartermaster's, a man of few words. Gruff but kind underneath, dry and unhurried, with short "
+            "pauses. Plain and conversational rather than narrating. "
+            "Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                ("Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well."),
+                (
+                    "Hm. Du kommst wegen der Miner. Gut. "
+                    "Sie bezahlen alles auf diesem Schiff, also behandle sie anständig."
+                ),
+            ),
+            (
+                (
+                    "I knew some of the people on the first expedition. Good people. "
+                    "Nobody has heard from them in a long time."
+                ),
+                (
+                    "Ich kannte ein paar Leute von der ersten Expedition. Gute Leute. "
+                    "Seit Langem hat niemand mehr etwas von ihnen gehört."
+                ),
+            ),
+        ],
+    },
+    "fenna": {
+        "name": "Fenna",
+        "role": "Cook",
+        # Her anchor came from this wording (round crew4, "south"); "a Black woman" alone changed nothing
+        "description": (
+            "A Black woman in her mid-forties, the cook of a mining ship, talking to a crew member in the mess hall. "
+            "Easygoing and unhurried, a smile in her voice, a good listener with quiet humor. Plain and "
+            "conversational, not theatrical, not breathy or seductive. Deep, rich, warm contralto with a slightly "
+            "husky edge. An African American woman from the American South, with a soft Southern African American "
+            "accent and a relaxed, rolling rhythm."
+        ),
+        "description_de": (
+            "A Black woman in her mid-forties, the cook of a mining ship, talking to a crew member in the mess hall. "
+            "Rich, warm, full alto voice with a smile in it, easygoing and unhurried, a good listener who doesn't "
+            "need to fill every silence. Friendly and down-to-earth, with quiet humor. Plain and conversational, "
+            "not theatrical, not breathy or seductive. "
+            "Native German speaker, an Afro-German woman, with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "Hungry? Sit down anywhere. It's not fancy, but it's warm, "
+                    "and nobody out there is going to cook for you."
+                ),
+                (
+                    "Hunger? Setz dich, wo du willst. Es ist nichts Besonderes, aber es ist warm, "
+                    "und da draußen kocht dir niemand etwas."
+                ),
+            ),
+            (
+                ("I signed on to cook, but mostly I listen. Over a hot meal, people say more than they'd ever admit."),
+                (
+                    "Angeheuert habe ich zum Kochen, aber vor allem höre ich zu. "
+                    "Bei einer warmen Mahlzeit erzählen die Leute mehr, als sie je zugeben würden."
+                ),
+            ),
+        ],
+    },
 }
 
 # Round 1 renders this line with each voice-design take: long enough to hear the voice, in both languages later

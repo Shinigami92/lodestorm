@@ -1,0 +1,20 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Hi! I keep your suits running: the armor here, and the skills next door. Your suit does a lot more than keep the air in.",
+    "description": "A young woman in her early twenties, the suit technician of a mining ship, born on an orbital station and on her first trip away from it, talking to a crew member in the armor room. Bright, light voice, quick and cheerful, eager and open, a little fast when she's excited. Natural and genuine, not childish, not cute, not breathy or seductive. Plain and conversational. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 5,
+    "picked_from": "crew1/wren/qwen3_s5.flac",
+    "picked": "2026-10-26"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Hi! Ich halte eure Anzüge in Schuss: die Panzerung hier und die Fähigkeiten nebenan. Dein Anzug kann viel mehr, als nur die Luft drinnen zu halten.",
+    "description": "A young woman in her early twenties, the suit technician of a mining ship, born on an orbital station and on her first trip away from it, talking to a crew member in the armor room. Bright, light voice, quick and cheerful, eager and open, a little fast when she's excited. Natural and genuine, not childish, not cute, not breathy or seductive. Plain and conversational. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 12,
+    "picked_from": "crew2/wren/qwen3_s12_de.flac",
+    "picked": "2026-10-26"
+  }
+}

@@ -18,11 +18,47 @@
       "seed": 1,
       "text": "Zairen. Die Hitze hat den Boden zu Glas geschmolzen, und manche Scherben sind scharf genug, um zu verletzen. Ich warte genau hier."
     },
+    "1a406bcf60d25033": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Holotisch zeigt das ganze System. Zoom an einen Planeten oder Mond heran, um seine Regionen zu sehen, und an eine Region, um die Stelle zu sehen, an der wir landen würden."
+    },
+    "23fa96c2c8047a79": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du eine Stelle gefunden hast, die dir gefällt, drück auf Als Ziel setzen. Jedes Mal, wenn du eine Region wählst, landen wir auf einem neuen Stück davon, also gleicht keine Reise der anderen."
+    },
+    "284d6320b337e01e": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Lichtsäulen sind Erzvorkommen, jedes in der Farbe seines Erzes, und sehenswerte Orte haben eine eigene Farbe. So kannst du deinen Weg planen, bevor du überhaupt losgehst."
+    },
+    "3cc1d41e02f69863": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Davor habe ich die Frachter geflogen, die die Kolonie hergebracht haben. Monatelang durch die Dunkelheit, mit Tausenden schlafenden Menschen hinter mir."
+    },
     "4070638e4bb197fc": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Sturm zieht auf. Alle zurück zum Schiff."
+    },
+    "5146e33157b38b5f": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Karte jeder Region sagt dir, wie gefährlich sie ist, wie viel Zeit du bis zum Sturm hast und welche Erze du dort findest."
+    },
+    "56c60e4987cb52eb": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich bringe uns überallhin, wo das Schiff hinkommt. Wo wir landen, entscheidest aber du: Schließlich gehst du da raus."
     },
     "582f19e32531a0b6": {
       "anchor": "3581bf6c2d6006f9",
@@ -36,11 +72,29 @@
       "seed": 1,
       "text": "Willkommen auf Vehra. Eis, Salz und Staub, und alles ein bisschen rauer als auf Torvane. Ich halte die Triebwerke warm."
     },
+    "6722f25bae40598b": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Aber diese Stürme sind etwas anderes. So ein Wetter habe ich noch nirgends erlebt. Wenn da draußen also die Warnung kommt, lass mich bitte nicht auf dich warten."
+    },
+    "703352c970a32abd": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sobald das Ziel steht, geh zur Flugkonsole im Cockpit gleich nebenan und drück auf Kurs setzen. Das kann jeder, nicht nur ich."
+    },
     "767187d88f57700e": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Sturm zieht auf. Komm zurück zum Schiff."
+    },
+    "7a8647a6fd2ba6f7": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Solange wir dort angedockt sind, geht die Rampe hoch und runter, wann immer du willst, und es gibt weder Sturm noch Timer. Lass dir Zeit und rede mit den Leuten dort."
     },
     "7aa7a888197fcd2c": {
       "anchor": "3581bf6c2d6006f9",
@@ -66,6 +120,12 @@
       "seed": 1,
       "text": "Das Wetter schlägt um. Macht fertig und kommt an Bord."
     },
+    "91efa153878ac5e1": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Waypost Ostra ist die Station der Kolonie. Sie kreist um Torvane, und du findest sie am Navigator genau wie eine Region."
+    },
     "94bda7790c627d03": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -78,11 +138,29 @@
       "seed": 1,
       "text": "Das Wetter schlägt um. Mach fertig und komm an Bord."
     },
+    "a3aaad6d49e6fc6b": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Da bist du ja. Ich halte uns in der Luft, und jede Reise beginnt hier am Navigator. Komm an den Holotisch, wann immer du aussuchen willst, wohin es als Nächstes geht."
+    },
     "a5bb04564a210f5c": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Wir sind auf Orrel, einem von Gaulms Monden. Wieder Salz und Bewuchs, aber hier schlägt alles härter zu als bisher."
+    },
+    "a78a9772ce87c133": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Flug dauert eine Weile, also nutz die Zeit. Geh nach hinten in die Waffenkammer, such dir deine Waffen aus und sei an der Rampe, wenn wir aufsetzen."
+    },
+    "a9080d9effbfce6c": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Diese letzte Ansicht liegt so, wie das Schiff aufsetzen wird, mit der Rampe rechts wie hier drinnen. Was du dort neben dem Schiff siehst, findest du draußen auch neben dem Schiff."
     },
     "bf59427c16c1abe5": {
       "anchor": "3581bf6c2d6006f9",
@@ -96,6 +174,18 @@
       "seed": 1,
       "text": "Der Sturm ist im Anmarsch. Die Rampe ist unten, also komm zurück."
     },
+    "dbba97d6d2cc0030": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn wir ablegen, warte ich, bis alle wieder an Bord sind. Auf Ostra wird niemand zurückgelassen."
+    },
+    "dd8dcdebddd89260": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Manche Regionen lassen dir mehr Zeit als andere. Wenn du nicht weißt, wohin, fang mit einer leichten an."
+    },
     "ea86a104090612c3": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -107,6 +197,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Cassor. Salzebenen und dichter Bewuchs, und der Boden dazwischen hält nicht immer. Da draußen gibt es Erdlöcher."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie kann ich dir helfen?"
+    },
+    "f889d730db3145a3": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Während einer Mission können wir keinen neuen Kurs setzen. Sobald alle wieder an Bord sind und die Rampe oben ist, heben wir von selbst wieder ab."
     }
   },
   "en": {
@@ -128,11 +230,47 @@
       "seed": 1,
       "text": "Zairen. The heat has turned the ground to glass, and some of the shards are sharp enough to hurt. I'll be waiting right here."
     },
+    "1a406bcf60d25033": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The holo table shows the whole system. Zoom in on a planet or a moon to see its regions, and zoom in on a region to see the spot where we would land."
+    },
+    "23fa96c2c8047a79": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "When you've found a spot you like, press Set as destination. Every time you pick a region, we land on a new stretch of it, so no two trips are quite the same."
+    },
+    "284d6320b337e01e": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The beams are ore nodes, each in its ore's color, and places worth a look have a color of their own. So you can plan your way before you even leave."
+    },
+    "3cc1d41e02f69863": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Before this, I flew the haulers that brought the colony here. Months in the dark, with thousands of people asleep behind me."
+    },
     "4070638e4bb197fc": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Storm's coming in. Everyone back to the ship."
+    },
+    "5146e33157b38b5f": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Each region's card tells you how dangerous it is, how long you have before the storm, and which ores you'll find there."
+    },
+    "56c60e4987cb52eb": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I'll take us anywhere the ship can reach. Where we land is your call, though: you're the ones who walk out there."
     },
     "582f19e32531a0b6": {
       "anchor": "b39c4473829e205a",
@@ -146,11 +284,29 @@
       "seed": 1,
       "text": "Welcome to Vehra. Ice, salt and dust, and all of it a little harsher than on Torvane. I'll keep the engines warm."
     },
+    "6722f25bae40598b": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "But these storms are something else. I've never seen weather like this anywhere. So when the warning comes out there, please don't make me wait for you."
+    },
+    "703352c970a32abd": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Once the destination is set, go to the flight console in the cockpit, right next door, and press Set course. Anyone can do that, not just me."
+    },
     "767187d88f57700e": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Storm's coming in. Get back to the ship."
+    },
+    "7a8647a6fd2ba6f7": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "While we're docked there, the ramp goes up and down whenever you like, and there's no storm and no timer. Take your time and talk to the people there."
     },
     "7aa7a888197fcd2c": {
       "anchor": "b39c4473829e205a",
@@ -176,6 +332,12 @@
       "seed": 1,
       "text": "Here comes the weather. Finish up, all of you, and get back aboard."
     },
+    "91efa153878ac5e1": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Waypost Ostra is the colony's station. It circles Torvane, and you'll find it at the navigator just like a region."
+    },
     "94bda7790c627d03": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -188,11 +350,29 @@
       "seed": 1,
       "text": "Here comes the weather. Finish up and get back aboard."
     },
+    "a3aaad6d49e6fc6b": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "There you are. I keep us flying, and every trip starts here at the navigator. Come over to the holo table whenever you want to pick where we go next."
+    },
     "a5bb04564a210f5c": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "We're on Orrel, one of Gaulm's moons. Salt and growth again, but everything here hits harder than anywhere before."
+    },
+    "a78a9772ce87c133": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down."
+    },
+    "a9080d9effbfce6c": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That last view lies the way the ship will touch down, with the ramp on the right like in here. Whatever you see beside the ship there, you'll find beside the ship outside."
     },
     "bf59427c16c1abe5": {
       "anchor": "b39c4473829e205a",
@@ -206,6 +386,18 @@
       "seed": 1,
       "text": "The storm is on its way. The ramp is down, so come on back."
     },
+    "dbba97d6d2cc0030": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "When we leave, I wait until everyone is back aboard. Nobody gets left behind at Ostra."
+    },
+    "dd8dcdebddd89260": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Some regions give you more time than others. If you're not sure where to go, start with an easy one."
+    },
     "ea86a104090612c3": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -217,6 +409,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Cassor. Salt flats and thick growth, and the ground in between doesn't always hold. There are sinkholes out there."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How can I help you?"
+    },
+    "f889d730db3145a3": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."
     }
   }
 }

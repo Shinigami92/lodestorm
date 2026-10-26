@@ -2,8 +2,7 @@
 
 An NPC is voiced once assets/voice/source/<npc id>/ holds its anchors (anchor.py): one per voice language, listed
 in voice.json. Its lines are its dialogue's (the profile .tres in game/npcs/ with that id): the prompt and every
-line of the greeting, the topics and the reactions (only the reactions, its radio calls, with "lines": "reactions"
-in voice.json), in English (the translation keys) and translated from locale/<language>.po. A line's recording is
+line of the greeting, the topics and the reactions (its radio calls), in English (the translation keys) and translated from locale/<language>.po. A line's recording is
 assets/voice/<npc id>/<language>/<hash>.ogg, the hash being the first 16 hex digits of the SHA-256 of the English
 line, so the game finds a line's file from its text (`VoiceLines`). manifest.json next to the anchors records what
 made each file (the text spoken, the anchor's hash, the model, the seed).
@@ -83,9 +82,9 @@ def profiles() -> dict[str, pathlib.Path]:
     return found
 
 
-def npc_lines(npc: str, reactions_only: bool = False) -> list[str]:
+def npc_lines(npc: str) -> list[str]:
     """The NPC's lines in English: the prompt (with a dialogue), then the greeting's, every topic's and reaction's,
-    in file order, and an ambient colonist's remarks; only the reactions' with reactions_only."""
+    in file order, and an ambient colonist's remarks."""
     for path in sorted((ROOT / "game" / "npcs").rglob("*.tres")):
         text = path.read_text(encoding="utf-8")
         resource = text[text.rfind("[resource]") :]
@@ -95,12 +94,9 @@ def npc_lines(npc: str, reactions_only: bool = False) -> list[str]:
         raise SystemExit(f"No NPC profile with id {npc} in game/npcs/")
     prompt = re.search(r'^prompt = (".*")$', text, re.MULTILINE)
     lines = []
-    if re.search(r"^dialogue = ", resource, re.MULTILINE) and not reactions_only:
+    if re.search(r"^dialogue = ", resource, re.MULTILINE):
         lines.append(json.loads(prompt.group(1)) if prompt else default_prompt())
     for block in re.split(r"\n(?=\[)", text):
-        # A reaction's block names its event.
-        if reactions_only and not re.search(r"^event = ", block, re.MULTILINE):
-            continue
         for found in re.finditer(r"^(?:lines|remarks) = Array\[String\]\((\[.*\])\)$", block, re.MULTILINE):
             lines += json.loads(found.group(1))
     return list(dict.fromkeys(lines))
@@ -147,8 +143,7 @@ def plan(npc: str, manifest: dict) -> list[Language]:
     """What a voiced NPC's recordings should be, per voice language, with `manifest`'s entries (filled in place)."""
     folder = SOURCE / npc
     voice = json.loads((folder / "voice.json").read_text(encoding="utf-8"))
-    scope = voice.pop("lines", "all")
-    english_lines = npc_lines(npc, scope == "reactions")
+    english_lines = npc_lines(npc)
     model = comfy.CLONERS[ENGINE][1]
     languages = []
     for language, anchor in voice.items():

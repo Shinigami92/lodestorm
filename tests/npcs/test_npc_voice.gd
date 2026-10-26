@@ -12,9 +12,15 @@ const VOICED: Array[NpcProfile] = [
 	preload("res://game/npcs/ostra/bartender.tres"),
 	preload("res://game/npcs/ostra/depot_master.tres"),
 	preload("res://game/npcs/ostra/councillor.tres"),
+	preload("res://game/npcs/crew/engineer.tres"),
+	preload("res://game/npcs/crew/medic.tres"),
+	preload("res://game/npcs/crew/gunsmith.tres"),
+	preload("res://game/npcs/crew/suit_tech.tres"),
+	preload("res://game/npcs/crew/miner_mechanic.tres"),
+	preload("res://game/npcs/crew/pilot.tres"),
 ]
-## The NPCs voiced only on the radio: their reactions.
-const VOICED_ON_RADIO: Array[NpcProfile] = [preload("res://game/npcs/crew/pilot.tres")]
+## The NPCs voiced only in English so far (in German, they speak English).
+const VOICED_IN_ENGLISH: Array[NpcProfile] = [preload("res://game/npcs/crew/cook.tres")]
 const DIRECTORY: String = "user://test_npc_voice/"
 
 var _map: Node3D
@@ -42,22 +48,30 @@ func after_each() -> void:
 
 
 func test_every_line_has_its_recording_in_every_voice_language() -> void:
-	for profile: NpcProfile in VOICED + VOICED_ON_RADIO:
+	for profile: NpcProfile in VOICED:
 		for language: String in VoiceLines.LANGUAGES:
 			for line: String in _lines(profile):
 				assert_true(
 					ResourceLoader.exists(VoiceLines.path(profile.id, language, line)),
 					"%s (%s): %s" % [profile.id, language, line]
 				)
+	for profile: NpcProfile in VOICED_IN_ENGLISH:
+		for line: String in _lines(profile):
+			assert_true(
+				ResourceLoader.exists(VoiceLines.path(profile.id, "en", line)),
+				"%s (en): %s" % [profile.id, line]
+			)
 
 
 func test_no_recording_is_left_over() -> void:
-	for profile: NpcProfile in VOICED + VOICED_ON_RADIO:
+	for profile: NpcProfile in VOICED + VOICED_IN_ENGLISH:
 		var keys: Array[String] = []
 		for line: String in _lines(profile):
 			keys.append(VoiceLines.path(profile.id, "en", line).get_file().get_basename())
 		for language: String in VoiceLines.LANGUAGES:
 			var folder: String = "%s/%s/%s" % [VoiceLines.ROOT, profile.id, language]
+			if not DirAccess.dir_exists_absolute(folder):
+				continue
 			for file: String in DirAccess.get_files_at(folder):
 				if file.get_extension() == "ogg":
 					assert_has(
@@ -166,10 +180,9 @@ func test_voices_have_their_own_volume() -> void:
 ## The English lines of `profile`: the prompt, the greeting's and every topic's.
 func _lines(profile: NpcProfile) -> Array[String]:
 	var lines: Array[String] = []
-	if profile not in VOICED_ON_RADIO:
-		lines.append(profile.dialogue.prompt)
-		for topic: Topic in [profile.dialogue.greeting] + profile.dialogue.topics:
-			lines.append_array(topic.lines)
+	lines.append(profile.dialogue.prompt)
+	for topic: Topic in [profile.dialogue.greeting] + profile.dialogue.topics:
+		lines.append_array(topic.lines)
 	for reaction: CrewReaction in profile.reactions:
 		lines.append_array(reaction.lines)
 	return lines

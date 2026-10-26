@@ -1,0 +1,162 @@
+{
+  "de": {
+    "14c5e30f8a553f68": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Dein Anzug kann viel mehr, als nur die Luft drinnen zu halten. Frag mich, und ich erzähle dir, was er alles lernen kann."
+    },
+    "2d4785d593dff871": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Ring um deine Füße da draußen ist dein Anzug, der mit dir spricht. Seine linke Hälfte ist deine Gesundheit, die rechte deine Munition."
+    },
+    "4accce84b3ff882e": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Lichter oben auf deinem Helm zeigen ihre Stufe. Wie jedes Upgrade wird sie aus deinem Laderaum bezahlt und braucht eine Weile, bis sie fertig ist."
+    },
+    "6a2489d0dec42e7d": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Am Anpassungsrahmen kann ich die Panzerung deines Anzugs verstärken. Jede Stufe gibt dir mehr Gesundheit, damit du da draußen mehr einstecken kannst."
+    },
+    "7368f154637e76e0": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn ihr da unten herumlauft, auf einem echten Planeten unter einem echten Himmel, bin ich also ein bisschen neidisch. Erzähl mir irgendwann, wie es dort ist."
+    },
+    "847bb4f25d095000": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nebenan ist der Fähigkeitenbaum. Jede Fähigkeit bringt deinem Anzug etwas Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
+    },
+    "bdbca703ed087f2f": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Eine zu lernen kostet Erz aus deinem Laderaum und dauert eine Weile, genau wie ein Upgrade. Manche Fähigkeiten haben mehrere Ränge, jeder ein bisschen stärker."
+    },
+    "e11143f6adb792e0": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Manche Fähigkeiten setzen eine andere voraus, und die Karte sagt dir, welche. Die, die du jetzt gleich lernen und bezahlen kannst, pulsieren."
+    },
+    "e2f615e705d5a784": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In den Einstellungen kannst du ihn größer machen oder ihn immer anzeigen lassen."
+    },
+    "e405e3727c82d9e9": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich bin auf Ostra geboren. Bevor ich zu euch kam, war ich noch nie von der Station weg, kein einziges Mal."
+    },
+    "f6016ff167470c5b": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Rote Markierungen darauf zeigen, woher ein Treffer kam, und ein Pfeil an seinem Rand zeigt den Weg zurück zum Schiff."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie kann ich dir helfen?"
+    },
+    "fbb91c9120b8b1db": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hi! Ich halte eure Anzüge in Schuss: die Panzerung hier und die Fähigkeiten nebenan."
+    }
+  },
+  "en": {
+    "14c5e30f8a553f68": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."
+    },
+    "2d4785d593dff871": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The ring around your feet out there is your suit talking to you. Its left half is your health, the right half your ammo."
+    },
+    "4accce84b3ff882e": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The lights on top of your helmet show its level. Like every upgrade, it's paid from your hold and takes a while to finish."
+    },
+    "6a2489d0dec42e7d": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "At the fitting frame, I can reinforce your suit's armor. Every level gives you more health, so you can take more hits out there."
+    },
+    "7368f154637e76e0": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."
+    },
+    "847bb4f25d095000": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Next door is the skill graph. Every skill teaches your suit something new, like a quick dash or more spare magazines."
+    },
+    "bdbca703ed087f2f": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Learning one costs ore from your hold and takes a while, just like an upgrade. Some skills have several ranks, each a bit stronger."
+    },
+    "e11143f6adb792e0": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Some skills need another one first, and the card tells you which. The ones you can learn and pay for right now pulse."
+    },
+    "e2f615e705d5a784": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In the settings, you can make it bigger or keep it showing all the time."
+    },
+    "e405e3727c82d9e9": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I was born on Ostra. Before I joined you, I'd never been off the station, not even once."
+    },
+    "f6016ff167470c5b": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Red marks on it point to where a hit came from, and an arrow on its edge shows the way back to the ship."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How can I help you?"
+    },
+    "fbb91c9120b8b1db": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hi! I keep your suits running: the armor here, and the skills next door."
+    }
+  }
+}

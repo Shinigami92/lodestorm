@@ -1,0 +1,11 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Hungry? Sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you.",
+    "description": "A Black woman in her mid-forties, the cook of a mining ship, talking to a crew member in the mess hall. Easygoing and unhurried, a smile in her voice, a good listener with quiet humor. Plain and conversational, not theatrical, not breathy or seductive. Deep, rich, warm contralto with a slightly husky edge. An African American woman from the American South, with a soft Southern African American accent and a relaxed, rolling rhythm.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 3,
+    "picked_from": "crew4/fenna/qwen3_south_s3.flac",
+    "picked": "2026-10-26"
+  }
+}

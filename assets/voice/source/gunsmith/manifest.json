@@ -1,0 +1,210 @@
+{
+  "de": {
+    "1c51716fbe49f224": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Manchmal frage ich mich, wofür sie solche Waffen gebraucht haben."
+    },
+    "2029a9eecadff7e4": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie weit ich gehen kann, hängt vom Hitzeschild ab. Mit jeder neuen Platte im Maschinenraum kann ich eine Stufe mehr draufsetzen."
+    },
+    "25a67a9ee8ea15c8": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wähl ein Teil aus, und die Karte sagt dir, was die nächste Stufe bewirkt, was sie kostet und wie lange sie dauert. Das Erz kommt aus deinem Laderaum."
+    },
+    "30eaa0a515e13111": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das meiste in diesem Regal kenne ich nur aus Zeichnungen. Die erste Expedition hat Entwürfe mitgebracht, die keine Werkstatt der Kolonie je gebaut hatte."
+    },
+    "5076350f2e485859": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Willkommen im Waffenraum. Im Regal hängt jede Waffe, die ich kenne, und an der Werkbank mache ich deine besser."
+    },
+    "7b079ad92016e5c2": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich kann an mehreren Teilen gleichzeitig arbeiten, aber pro Teil nur an einer Stufe. Wenn du es dir anders überlegst, drück zweimal auf Anhalten, und du bekommst alles zurück."
+    },
+    "826e02a71cea1c25": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Gute Arbeit braucht Zeit. Wenn du ein Upgrade startest, läuft es weiter, auch während du auf einer Mission bist oder in deiner Kabine schläfst."
+    },
+    "88628c5f1df566cb": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die durchsichtigen im Regal besitzt du noch nicht. Ich brauche den Bauplan einer Waffe, bevor ich sie dir bauen kann."
+    },
+    "8db8cff94433ab28": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mit dem Bauplan baue ich sie sofort. Das kostet nur das Erz, ohne Wartezeit."
+    },
+    "8f02f369d05b95e6": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Such dir im Regal eine deiner Waffen aus und leg sie auf die Werkbank. Jede Waffe hat drei Teile, die ich verbessern kann, und jedes Teil hat seine eigene Lichterreihe auf der Waffe."
+    },
+    "af49d6658e2a2814": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sobald sie gebaut ist, gehört sie dir. Probier sie am Schießstand aus, bevor du sie auf eine Mission mitnimmst."
+    },
+    "c6cd3afcc3fcf036": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Eine neue Waffe, frisch von meiner Werkbank. Bring sie zuerst zum Schießstand, bevor du sie mit nach draußen nimmst."
+    },
+    "c9ecaa79a7ab8eeb": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "An jede Waffe muss man sich erst gewöhnen. Gib der neuen ein paar Missionen, bevor du urteilst."
+    },
+    "cf4a25336bece5ea": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nicht jeden Tag darf ich etwas Neues nach diesen alten Zeichnungen bauen. Bring sie heil zurück, dann mache ich sie weiter besser."
+    },
+    "daac4d652cff48bb": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Leg eine Waffe, die du noch nicht besitzt, auf die Werkbank, und ihre Karte zeigt, was der Bau kostet. Ohne ihren Bauplan kann ich allerdings nichts machen."
+    },
+    "ef794f7f28f06b9a": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sein Licht auf der Waffe pulsiert, während ich daran arbeite. Die neue Stufe zählt, sobald sie fertig ist und du wieder an Bord bist."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wie kann ich dir helfen?"
+    }
+  },
+  "en": {
+    "1c51716fbe49f224": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sometimes I wonder what they needed weapons like these for."
+    },
+    "2029a9eecadff7e4": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How far I can go depends on the heat shield. Every new plate in the engine room lets me add one more level."
+    },
+    "25a67a9ee8ea15c8": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Select a part, and the card tells you what the next level does, what it costs, and how long it takes. The ore comes from your hold."
+    },
+    "30eaa0a515e13111": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Most of what's on that rack I've only ever seen in drawings. The first expedition brought designs no colony workshop had ever made."
+    },
+    "5076350f2e485859": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
+    },
+    "7b079ad92016e5c2": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I can work on several parts at once, but only on one level per part. If you change your mind, press Stop twice, and you get the whole cost back."
+    },
+    "826e02a71cea1c25": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Good work takes time. Once you start an upgrade, it keeps going, even while you're out on a mission or asleep in your cabin."
+    },
+    "88628c5f1df566cb": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The see-through ones on the rack you don't own yet. I need a weapon's blueprint before I can build it for you."
+    },
+    "8db8cff94433ab28": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "With the blueprint, I build it right away. It only costs the ore, no waiting."
+    },
+    "8f02f369d05b95e6": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Pick one of your weapons at the rack and lay it on the bench. Every weapon has three parts I can improve, and each part has its own row of lights on the weapon."
+    },
+    "af49d6658e2a2814": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Once it's built, it's yours. Try it at the shooting range before you take it on a mission."
+    },
+    "c6cd3afcc3fcf036": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "A new weapon, fresh off my bench. Take it to the shooting range first, before you take it out there."
+    },
+    "c9ecaa79a7ab8eeb": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Every weapon takes some getting used to. Give the new one a few missions before you judge it."
+    },
+    "cf4a25336bece5ea": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "It's not every day I get to build something new from those old drawings. Bring it back in one piece, and I'll keep improving it."
+    },
+    "daac4d652cff48bb": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Lay a weapon you don't own yet on the bench, and its card shows what it costs to build. Without its blueprint, though, there's nothing I can do."
+    },
+    "ef794f7f28f06b9a": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Its light on the weapon breathes while I work on it. The new level counts once it's done and you're back aboard."
+    },
+    "f7e48a90d5d76cfc": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "How can I help you?"
+    }
+  }
+}

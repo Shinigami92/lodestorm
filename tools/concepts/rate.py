@@ -34,13 +34,24 @@ def describe(batch: str) -> tuple[str, str]:
     return re.split(r" \(|[:,.]", about, maxsplit=1)[0], about
 
 
+def labels(batch: str) -> dict[str, str]:
+    """A batch module's optional LABELS literal ({subject: "Quartermaster"}), shown beside the subject's name."""
+    module = HERE / "batches" / f"{batch}.py"
+    if not module.exists():
+        return {}
+    for node in ast.parse(module.read_text(encoding="utf-8")).body:
+        if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "LABELS" for t in node.targets):
+            return ast.literal_eval(node.value)
+    return {}
+
+
 def natural(path: pathlib.Path) -> list:
     """Sort key putting batch10 after batch9."""
     return [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", path.name)]
 
 
 def batches() -> dict[str, dict]:
-    """{batch: {"title", "about", "rated", "total", "subjects": {subject: [file, ...]}}}, in batch number order."""
+    """{batch: {"title", "about", "rated", "total", "subjects": {subject: [file, ...]}, "labels"}}, in batch number order."""
     con = db.connect()
     out: dict[str, dict] = {}
     for b in sorted((p for p in db.ROOT.iterdir() if p.is_dir()), key=natural):
@@ -58,6 +69,7 @@ def batches() -> dict[str, dict]:
             "total": sum(len(f) for f in subjects.values()),
             "rated": sum((s, f) in stars for s, files in subjects.items() for f in files),
             "subjects": subjects,
+            "labels": labels(b.name),
         }
     return out
 

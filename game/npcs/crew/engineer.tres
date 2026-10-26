@@ -76,6 +76,7 @@ id = &"engineer"
 display_name = "Okoro"
 role = "Engineer"
 model = "uid://5umo47aw6531"
+activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(1, 0.5, 0.12, 1)
 cabin = 3
 dialogue = SubResource("Resource_dialogue")

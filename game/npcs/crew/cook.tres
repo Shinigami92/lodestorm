@@ -50,6 +50,7 @@ id = &"cook"
 display_name = "Fenna"
 role = "Cook"
 model = "uid://vo056vbv74lc"
+activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(1, 0.55, 0.8, 1)
 cabin = 8
 dialogue = SubResource("Resource_dialogue")

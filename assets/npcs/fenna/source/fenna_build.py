@@ -14,6 +14,8 @@ with how). Skeleton "Skeleton" (Godot's humanoid bone names, MPFB's A-pose rest)
 shared pose code. Meshes: "Skin" (her hands are what's left of it), "Outfit"; empty "HeadTop" on the head (where the
 name plate and the bubbles go).
 
+The crew's shared clips too (tools/blender/fidgets.py: "LookAround", "Stretch", "CheckWrist", "Tap").
+
 Writes assets/npcs/fenna/fenna.glb and its source assets/npcs/fenna/source/fenna.blend; renders go to
 tmp/assets/npcs/fenna/.
 """
@@ -29,6 +31,7 @@ import bpy
 
 import common as C
 import dressing as D
+import fidgets
 import humanoid as H
 
 ARGV = C.args()
@@ -81,11 +84,12 @@ def clips(body: H.Body) -> dict:
     return {
         "Idle": (60, lambda t: H.idle(body, t)),
         "Walk": (H.WALK_FRAMES, lambda t: H.walk(body, t)),
+        **fidgets.clips(body),
     }
 
 
-def work(_body: H.Body) -> list:
-    return []
+def work(body: H.Body) -> list:
+    return fidgets.work(body)
 
 
 D.make(PERSON, props, clips, work, MODE, TAG)

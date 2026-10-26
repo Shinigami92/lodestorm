@@ -136,6 +136,7 @@ id = &"pilot"
 display_name = "Tamsin"
 role = "Pilot"
 model = "uid://w8awig3b43xq"
+activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.3, 0.72, 1, 1)
 cabin = 2
 dialogue = SubResource("Resource_dialogue")

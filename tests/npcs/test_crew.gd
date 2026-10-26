@@ -1,6 +1,7 @@
 extends GutTest
 ## The eight crew members aboard (`Npc`): each at their post, telling them apart, the pilot in the
-## cockpit while a destination is chosen and the ship flies (walking there and back).
+## cockpit while a destination is chosen and the ship flies (walking there and back), moving on
+## between their spot and their work spots and doing there only what fits.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 ## Each crew member's spot in the ship, and their name plate (in English, then in German).
@@ -89,17 +90,17 @@ func test_pilot_walks_to_the_cockpit_sits_and_walks_back() -> void:
 	await _until(func() -> bool: return pilot.body.is_walking(), 10.0)
 	await wait_physics_frames(30)
 	assert_true(pilot.body.is_walking(), "she walks, she doesn't appear there")
-	assert_true(pilot.is_underway())
+	assert_true(pilot.routine.is_underway())
 	assert_gt(pilot.global_position.distance_to(home), 0.5, "on her way")
 	await _until(func() -> bool: return pilot.body.sitting, 40.0)
 	assert_true(pilot.body.sitting, "sits down in the pilot seat")
 	assert_almost_eq(pilot.global_position, seat, Vector3.ONE * 0.05)
 	assert_false(_ship.flight.is_flying(), "the take-off is over before she's there")
-	await wait_physics_frames(int((Npc.SEAT_LINGER - 1.0) * Engine.physics_ticks_per_second))
+	await wait_physics_frames(int((NpcRoutine.SEAT_LINGER - 1.0) * Engine.physics_ticks_per_second))
 	assert_true(pilot.body.sitting, "she still sits a while after the flight")
 	await _until(func() -> bool: return pilot.body.is_walking(), 5.0)
 	assert_false(pilot.body.sitting, "then gets up")
-	await _until(func() -> bool: return not pilot.is_underway(), 60.0)
+	await _until(func() -> bool: return not pilot.routine.is_underway(), 60.0)
 	assert_almost_eq(pilot.global_position, home, Vector3.ONE * 0.05, "back on the bridge")
 
 
@@ -112,10 +113,10 @@ func test_a_chosen_destination_sends_her_to_the_seat_to_wait_for_the_course() ->
 	await _until(func() -> bool: return pilot.body.sitting, 40.0)
 	assert_true(pilot.body.sitting)
 	assert_false(_ship.flight.is_flying())
-	await wait_physics_frames(int(Npc.SEAT_LINGER * 2.0 * Engine.physics_ticks_per_second))
+	await wait_physics_frames(int(NpcRoutine.SEAT_LINGER * 2.0 * Engine.physics_ticks_per_second))
 	assert_true(pilot.body.sitting, "waits there for the course")
 	voyage.destination = null
-	await _until(func() -> bool: return pilot.body.is_walking(), Npc.SEAT_LINGER + 3.0)
+	await _until(func() -> bool: return pilot.body.is_walking(), NpcRoutine.SEAT_LINGER + 3.0)
 	assert_false(pilot.body.sitting, "no destination any more: back to the bridge")
 
 
@@ -137,6 +138,45 @@ func test_walking_back_she_stops_for_a_player() -> void:
 	player.reset_physics_interpolation()
 	await wait_physics_frames(30)
 	assert_true(pilot.body.is_walking(), "walks on once they're gone")
+
+
+func test_everyone_has_work_spots_with_what_their_model_can_do() -> void:
+	for path: String in CREW:
+		var npc := _ship.get_node(path) as Npc
+		assert_gte(npc.work_spots.size(), 2, path)
+		for spot: WorkSpot in npc.work_spots:
+			assert_not_null(spot, path)
+			assert_false(spot.activities.is_empty(), spot.name)
+			for activity: StringName in spot.activities:
+				assert_has(npc.profile.activities, activity, "%s: %s" % [spot.name, activity])
+			assert_eq(spot.get_parent(), npc.get_parent(), spot.name + ": in their room")
+
+
+func test_they_move_on_to_a_work_spot_and_back() -> void:
+	var cook := _ship.get_node("Rooms/Upper/MessHall/Cook") as Npc
+	var home: Vector3 = cook.global_position
+	var routine: NpcRoutine = cook.routine
+	assert_null(routine.get_work_spot(), "at her own spot first")
+	await wait_physics_frames(2)
+	var animator := cook.body.get_node("Animator") as NpcAnimator
+	assert_eq(animator.allowed, NpcRoutine.HOME_ACTIVITIES, "nothing to tap at her own spot")
+	routine.move_on()
+	var spot: WorkSpot = routine.get_work_spot()
+	assert_not_null(spot, "from her own spot always to a work spot")
+	await _until(func() -> bool: return cook.body.is_walking(), 10.0)
+	assert_true(cook.body.is_walking(), "she walks there")
+	await _until(func() -> bool: return not routine.is_underway(), 30.0)
+	assert_almost_eq(cook.global_position, spot.global_position, Vector3.ONE * 0.05)
+	await wait_physics_frames(30)
+	assert_eq(animator.allowed, spot.activities, "only what fits there")
+	var facing: Vector3 = cook.global_basis.z
+	assert_gt(facing.dot(spot.global_basis.z), 0.95, "facing the way the spot faces")
+	routine.move_on()
+	assert_ne(routine.get_work_spot(), spot, "never the same place again")
+	if routine.get_work_spot() == null:
+		await _until(func() -> bool: return cook.body.is_walking(), 10.0)
+		await _until(func() -> bool: return not routine.is_underway(), 30.0)
+		assert_almost_eq(cook.global_position, home, Vector3.ONE * 0.05, "back at her spot")
 
 
 ## Waits physics frames until `done` holds, `seconds` at most.

@@ -1,0 +1,40 @@
+name: godot-ai plugin
+
+# Renovate only bumps the server in .mcp.json; this commits the matching editor plugin to its PR.
+# Pushes made with GITHUB_TOKEN don't start workflows, so CI is dispatched for the new commit
+# (its required checks are then reported on the PR's head).
+on:
+  push:
+    branches: [renovate/godot-ai]
+
+concurrency:
+  group: godot-ai-plugin
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  update:
+    name: Update the godot-ai plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Replace addons/godot_ai/
+        run: tools/update-godot-ai.sh
+
+      - name: Commit and run CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --cached --quiet; then exit 0; fi
+          version="$(sed -n 's/^version="\(.*\)"$/\1/p' addons/godot_ai/plugin.cfg)"
+          # The author Renovate ignores (gitIgnoredAuthors), so it keeps rebasing the branch
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "chore(deps): update godot-ai plugin to v$version"
+          git push
+          gh workflow run ci.yml --ref "$GITHUB_REF_NAME"

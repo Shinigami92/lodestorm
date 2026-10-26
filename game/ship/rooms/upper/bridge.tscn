@@ -19,10 +19,10 @@ font_size = 56
 [node name="Navigator" parent="." node_paths=PackedStringArray("holo_table") instance=ExtResource("11_navigator")]
 holo_table = NodePath("../HoloTable")
 
-[node name="PilotFlightSpot" type="Marker3D" parent="."]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -27.5, 0, -2.6)
+[node name="PilotSeatSpot" type="Marker3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -27.6, 0, -1.5)
 
-[node name="Pilot" parent="." node_paths=PackedStringArray("flight_spot") instance=ExtResource("90_npc")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -3)
+[node name="Pilot" parent="." node_paths=PackedStringArray("flight_seat") instance=ExtResource("90_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
 profile = ExtResource("91_profile")
-flight_spot = NodePath("../PilotFlightSpot")
+flight_seat = NodePath("../PilotSeatSpot")

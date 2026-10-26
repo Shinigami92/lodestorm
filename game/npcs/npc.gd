@@ -20,8 +20,12 @@ extends Station
 ## fills up meanwhile; pressing it still moves on at once. Pausing it (the card's pause button, or
 ## `place_miner`) stops the wait and the voice in the middle of the line until it's resumed (the
 ## voice goes on where it stopped); moving on (a line, a topic, the list) plays normally again.
-## With a `flight_spot`, they stand there while the ship flies (the pilot at the cockpit's
-## controls), and back at their spot once it has landed or docked.
+## They walk aboard instead of appearing somewhere (`NpcWalker`, over the ship's navigation): with
+## a `flight_seat`, they walk there once the ship flies (faster, `HURRY_SPEED`, stopping for nobody
+## on the way), sit down and watch the autopilot, stay seated `SEAT_LINGER` s after it has landed
+## or docked (a short flight that's over before they're there: they still sit down for that long),
+## get up and walk back to their spot (at `WALK_SPEED`, stopping while a player is
+## within `NpcBody.NOTICE_RANGE` m). While someone talks to them, they stay where they are.
 
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
 ## player, at this height, so the card on their right stays in view.
@@ -37,11 +41,19 @@ const VOICE_MAX_DISTANCE: float = 30.0
 const AUTO_PAUSE: float = 1.0
 const READ_BASE: float = 2.0
 const READ_PER_LETTER: float = 0.06
+## Walking speed, and the one on the way to the `flight_seat`, in m/s. TBD (playtest).
+const WALK_SPEED: float = 1.3
+const HURRY_SPEED: float = 2.0
+## Seconds they stay in the `flight_seat` once the ship has landed or docked. TBD (playtest).
+const SEAT_LINGER: float = 5.0
+## How fast they turn to face the way their spot or seat faces (per s, smoothed).
+const TURN_SPEED: float = 5.0
 
 ## Who they are and what they talk about.
 @export var profile: NpcProfile
-## Where they stand while the ship flies (greybox: they're just there); none: always at their spot.
-@export var flight_spot: Node3D
+## Where they sit while the ship flies (the seat's spot: their feet, facing the way it faces; the
+## seat behind it, see `NpcBody.sitting`); none: they stay at their spot.
+@export var flight_seat: Node3D
 
 ## The topic being told, or null while the card lists the topics.
 var topic: Topic
@@ -65,6 +77,11 @@ var _line_time: float = 0.0
 var _line_waited: float = 0.0
 ## Their spot (where they stand in the scene).
 var _home: Transform3D
+## Whether they're on their way to the `flight_seat` or sitting there (from the flight's start
+## until they've sat `SEAT_LINGER` s after it), and the seconds left to sit after the flight.
+var _seat_trip: bool = false
+var _linger: float = 0.0
+var _walker: NpcWalker
 
 @onready var bubble: WorldPanel = $Bubble
 @onready var body: NpcBody = $Body
@@ -75,6 +92,7 @@ func _ready() -> void:
 	super()
 	_home = transform
 	body.profile = profile
+	_walker = NpcWalker.new(self, body)
 	bubble.visible = false
 	voice = AudioStreamPlayer3D.new()
 	voice.name = "Voice"
@@ -85,9 +103,12 @@ func _ready() -> void:
 	add_child(voice)
 
 
+func _physics_process(delta: float) -> void:
+	_take_post(delta)
+
+
 func _process(delta: float) -> void:
 	super(delta)
-	_take_post()
 	body.faces = user
 	body.plate_allowed = not user
 	_new_marker.visible = not user and has_news(_listener())
@@ -357,18 +378,55 @@ func _auto_continue(delta: float) -> void:
 		card_shown.show_progress(get_auto_progress())
 
 
-## Stands at `flight_spot` while the ship flies, else at their spot; stays put while someone
-## talks to them.
-func _take_post() -> void:
-	if not flight_spot or user:
+## Whether they're on their way somewhere (walking, or standing for a player in the way).
+func is_underway() -> bool:
+	return _walker.is_underway()
+
+
+## Where they want to be now (in their parent's space): the `flight_seat` while the ship flies
+## (until they've sat there `SEAT_LINGER` s after), else their spot.
+func get_post() -> Transform3D:
+	if not _wants_seat():
+		return _home
+	var parent: Node3D = get_parent_node_3d()
+	return parent.global_transform.affine_inverse() * flight_seat.global_transform
+
+
+## Walks to their post (`get_post`) and takes it: facing its way, sitting down at the seat; gets up
+## first to leave the seat; stays put while someone talks to them.
+func _take_post(delta: float) -> void:
+	if ship and flight_seat:
+		if ship.flight.is_flying():
+			_seat_trip = true
+			_linger = SEAT_LINGER
+		elif body.sitting and body.get_sit_amount() >= 1.0:
+			_linger -= delta
+			_seat_trip = _linger > 0.0
+	if user:
+		_walker.stop()
 		return
-	var post: Transform3D = _home
-	if ship and ship.flight.is_flying():
-		var parent: Node3D = get_parent_node_3d()
-		post = parent.global_transform.affine_inverse() * flight_spot.global_transform
-	if not transform.is_equal_approx(post):
-		transform = post
-		reset_physics_interpolation()
+	var post: Transform3D = get_post()
+	var seat: bool = _wants_seat()
+	if body.sitting and not seat:
+		body.sitting = false
+	if body.get_sit_amount() > 0.0 and not body.sitting:
+		return  # getting up
+	var hurry: bool = seat
+	if not hurry and Player.nearest(get_tree(), global_position, NpcBody.NOTICE_RANGE):
+		_walker.stop()
+		return
+	var navigation: ShipNavigation = ship.navigation if ship else null
+	var speed: float = HURRY_SPEED if hurry else WALK_SPEED
+	if not _walker.walk_to(post.origin, speed, navigation, delta):
+		return
+	var yaw: float = post.basis.get_euler().y
+	rotation.y = lerp_angle(rotation.y, yaw, 1.0 - exp(-TURN_SPEED * delta))
+	if seat and not body.sitting and absf(angle_difference(rotation.y, yaw)) < 0.05:
+		body.sitting = true
+
+
+func _wants_seat() -> bool:
+	return flight_seat != null and _seat_trip
 
 
 ## Who the "something new" marker is for: the player talking to them, else the nearest one.

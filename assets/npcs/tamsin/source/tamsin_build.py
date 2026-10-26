@@ -10,9 +10,9 @@ Run from the repo root (see docs/TECHNICAL.md, People):
 Made of two (tools/blender/people.py, dressing.py): her body is MakeHuman's (MPFB's sliders and a CC0 skin: her
 skeleton, its weights and her hands); what she wears and her head (face and hair, on the head's bone: it doesn't
 blink or move its lips) are generated (source/trellis/: the A-pose concept, the TRELLIS.2 model and trellis.json
-with how). Skeleton "Skeleton" (Godot's humanoid bone names, MPFB's A-pose rest), clips "Idle" and "Walk" from the
-shared pose code. Meshes: "Skin" (her hands are what's left of it), "Outfit"; empty "HeadTop" on the head (where the
-name plate and the bubbles go).
+with how). Skeleton "Skeleton" (Godot's humanoid bone names, MPFB's A-pose rest), clips "Idle", "Walk" and "Sit"
+(in the cockpit's pilot seat while the ship flies) from the shared pose code. Meshes: "Skin" (her hands are what's
+left of it), "Outfit"; empty "HeadTop" on the head (where the name plate and the bubbles go).
 
 Writes assets/npcs/tamsin/tamsin.glb and its source assets/npcs/tamsin/source/tamsin.blend; renders go to
 tmp/assets/npcs/tamsin/.
@@ -78,6 +78,7 @@ def clips(body: H.Body) -> dict:
     return {
         "Idle": (60, lambda t: H.idle(body, t)),
         "Walk": (H.WALK_FRAMES, lambda t: H.walk(body, t)),
+        "Sit": (60, lambda t: H.sit(body, t)),
     }
 
 

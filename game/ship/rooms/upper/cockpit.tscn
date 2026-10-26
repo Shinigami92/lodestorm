@@ -16,8 +16,11 @@ material = ExtResource("mat_prop")
 [sub_resource type="BoxMesh" id="BoxMesh_screen"]
 material = SubResource("StandardMaterial3D_screen")
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_n_0_8x1x0_8"]
-size = Vector3(0.8, 1, 0.8)
+[sub_resource type="BoxShape3D" id="BoxShape3D_seat"]
+size = Vector3(0.55, 0.45, 0.55)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_back"]
+size = Vector3(0.1, 0.75, 0.55)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_n_1_2x1_1x8"]
 size = Vector3(1.2, 1.1, 8)
@@ -46,23 +49,41 @@ cast_shadow = 0
 mesh = SubResource("BoxMesh_screen")
 
 [node name="PilotSeat" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.35, 0.5, -1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.45, 0, -1.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PilotSeat"]
-shape = SubResource("BoxShape3D_n_0_8x1x0_8")
+[node name="Seat" type="CollisionShape3D" parent="PilotSeat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0)
+shape = SubResource("BoxShape3D_seat")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PilotSeat"]
-transform = Transform3D(0.8, 0, 0, 0, 1, 0, 0, 0, 0.8, 0, 0, 0)
+[node name="SeatMesh" type="MeshInstance3D" parent="PilotSeat"]
+transform = Transform3D(0.55, 0, 0, 0, 0.45, 0, 0, 0, 0.55, 0, 0.225, 0)
+mesh = SubResource("BoxMesh_prop")
+
+[node name="Back" type="CollisionShape3D" parent="PilotSeat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, 0.825, 0)
+shape = SubResource("BoxShape3D_back")
+
+[node name="BackMesh" type="MeshInstance3D" parent="PilotSeat"]
+transform = Transform3D(0.1, 0, 0, 0, 0.75, 0, 0, 0, 0.55, 0.32, 0.825, 0)
 mesh = SubResource("BoxMesh_prop")
 
 [node name="CopilotSeat" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.35, 0.5, 1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.45, 0, 1.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CopilotSeat"]
-shape = SubResource("BoxShape3D_n_0_8x1x0_8")
+[node name="Seat" type="CollisionShape3D" parent="CopilotSeat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0)
+shape = SubResource("BoxShape3D_seat")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="CopilotSeat"]
-transform = Transform3D(0.8, 0, 0, 0, 1, 0, 0, 0, 0.8, 0, 0, 0)
+[node name="SeatMesh" type="MeshInstance3D" parent="CopilotSeat"]
+transform = Transform3D(0.55, 0, 0, 0, 0.45, 0, 0, 0, 0.55, 0, 0.225, 0)
+mesh = SubResource("BoxMesh_prop")
+
+[node name="Back" type="CollisionShape3D" parent="CopilotSeat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, 0.825, 0)
+shape = SubResource("BoxShape3D_back")
+
+[node name="BackMesh" type="MeshInstance3D" parent="CopilotSeat"]
+transform = Transform3D(0.1, 0, 0, 0, 0.75, 0, 0, 0, 0.55, 0.32, 0.825, 0)
 mesh = SubResource("BoxMesh_prop")
 
 [node name="FlightConsole" parent="." instance=ExtResource("18_flight_console")]

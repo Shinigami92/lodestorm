@@ -56,6 +56,7 @@ id = &"gunsmith"
 display_name = "Dace"
 role = "Gunsmith"
 model = "uid://bj5ctmig16w2c"
+activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.95, 0.28, 0.25, 1)
 cabin = 5
 dialogue = SubResource("Resource_dialogue")

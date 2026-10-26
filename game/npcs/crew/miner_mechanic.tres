@@ -63,6 +63,7 @@ id = &"miner_mechanic"
 display_name = "Hollis"
 role = "Miner mechanic"
 model = "uid://8e2njl0pikb5"
+activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.55, 0.9, 0.3, 1)
 cabin = 7
 dialogue = SubResource("Resource_dialogue")

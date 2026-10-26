@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://cxih2upgkspuc" path="res://game/npcs/crew/medic.tres" id="91_profile"]
 [ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
+[ext_resource type="Script" uid="uid://dppq7a1sy5iu8" path="res://game/npcs/work_spot.gd" id="95_work_spot"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_respawn_pad"]
 albedo_color = Color(0.35, 0.75, 0.55, 1)
@@ -95,6 +96,17 @@ bed = NodePath("../Bed3")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -4.6)
 bed = NodePath("../Bed4")
 
-[node name="Medic" parent="." instance=ExtResource("90_npc")]
+[node name="Medic" parent="." node_paths=PackedStringArray("work_spots") instance=ExtResource("90_npc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
 profile = ExtResource("91_profile")
+work_spots = [NodePath("../MedicBed2"), NodePath("../MedicBed3")]
+
+[node name="MedicBed2" type="Marker3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -4, 0, -2.9)
+script = ExtResource("95_work_spot")
+activities = Array[StringName]([&"CheckWrist", &"LookAround"])
+
+[node name="MedicBed3" type="Marker3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 0, -2.9)
+script = ExtResource("95_work_spot")
+activities = Array[StringName]([&"CheckWrist", &"LookAround"])

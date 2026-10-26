@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://b3d5d8411ot80" path="res://game/npcs/crew/pilot.tres" id="91_profile"]
 [ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
+[ext_resource type="Script" uid="uid://dppq7a1sy5iu8" path="res://game/npcs/work_spot.gd" id="95_work_spot"]
 
 [node name="Bridge" type="Node3D"]
 
@@ -22,7 +23,18 @@ holo_table = NodePath("../HoloTable")
 [node name="PilotSeatSpot" type="Marker3D" parent="."]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -27.6, 0, -1.5)
 
-[node name="Pilot" parent="." node_paths=PackedStringArray("flight_seat") instance=ExtResource("90_npc")]
+[node name="Pilot" parent="." node_paths=PackedStringArray("flight_seat", "work_spots") instance=ExtResource("90_npc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
 profile = ExtResource("91_profile")
 flight_seat = NodePath("../PilotSeatSpot")
+work_spots = [NodePath("../PilotHoloTable"), NodePath("../PilotWindow")]
+
+[node name="PilotHoloTable" type="Marker3D" parent="."]
+transform = Transform3D(-0.224951, 0, -0.97437, 0, 1, 0, 0.97437, 0, -0.224951, 2.5, 0, 0.57)
+script = ExtResource("95_work_spot")
+activities = Array[StringName]([&"Tap"])
+
+[node name="PilotWindow" type="Marker3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 7.5, 0, -12.4)
+script = ExtResource("95_work_spot")
+activities = Array[StringName]([&"LookAround", &"CheckWrist"])

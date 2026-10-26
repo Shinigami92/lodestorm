@@ -43,6 +43,7 @@ id = &"suit_tech"
 display_name = "Wren"
 role = "Suit tech"
 model = "uid://gv0ici1ifm8d"
+activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.3, 0.95, 0.85, 1)
 cabin = 6
 dialogue = SubResource("Resource_dialogue")

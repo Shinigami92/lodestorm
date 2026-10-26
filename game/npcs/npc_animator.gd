@@ -5,7 +5,7 @@ extends AnimationTree
 ## People); both loop (set here, so the import settings stay default). While `sitting`, it blends
 ## into "Sit" (the suit's: the colonists; a model without it stays standing). While it `may_work`
 ## (and stands), it plays one of its `activities` now and then (once, over the standing: e.g.
-## wiping the counter; never the same twice in a row),
+## wiping the counter; never the same twice in a row; only the `allowed` ones where it stands),
 ## with a pause of `work_pause` seconds between them; when it may not any more (a player came
 ## close), the one under way fades out.
 
@@ -29,6 +29,8 @@ var speed: float = 0.0
 var may_work: bool = true
 ## Whether it sits (on a seat behind where it stands, see `can_sit`).
 var sitting: bool = false
+## The activities it may play where it stands now (e.g. tapping only at a console); empty: all.
+var allowed: Array[StringName] = []
 
 var _walk_amount: float = 0.0
 ## How far it sits: 0 standing, 1 sitting.
@@ -131,7 +133,12 @@ func _work(delta: float) -> void:
 	if _activities.is_empty():
 		return
 	var current: StringName = working()
-	if not may_work or speed > 0.05 or sitting:
+	if (
+		not may_work
+		or speed > 0.05
+		or sitting
+		or (not current.is_empty() and not _may_play(current))
+	):
 		if not current.is_empty():
 			set(
 				"parameters/%s/request" % _shot_name(current),
@@ -143,13 +150,21 @@ func _work(delta: float) -> void:
 		return
 	_pause_left -= delta
 	if _pause_left <= 0.0:
-		var choices: Array[StringName] = _activities.filter(
-			func(a: StringName) -> bool: return a != _last or _activities.size() == 1
+		var playable: Array[StringName] = _activities.filter(_may_play)
+		var choices: Array[StringName] = playable.filter(
+			func(a: StringName) -> bool: return a != _last or playable.size() == 1
 		)
+		_pause_left = randf_range(work_pause.x, work_pause.y)
+		if choices.is_empty():
+			return
 		var next: StringName = choices.pick_random()
 		_last = next
 		set("parameters/%s/request" % _shot_name(next), AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
-		_pause_left = randf_range(work_pause.x, work_pause.y)
+
+
+## Whether `activity` may play where it stands (see `allowed`).
+func _may_play(activity: StringName) -> bool:
+	return allowed.is_empty() or activity in allowed
 
 
 func _shot_name(activity: StringName) -> StringName:

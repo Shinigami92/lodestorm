@@ -107,6 +107,17 @@ func get_sit_amount() -> float:
 	return _animator.sit_amount()
 
 
+## Lets it play only `activities` of its profile's where it stands now (empty: all of them; see
+## `NpcAnimator.allowed`).
+func allow_activities(activities: Array[StringName]) -> void:
+	_animator.allowed = activities
+
+
+## The activity it plays right now (empty: none).
+func get_activity() -> StringName:
+	return _animator.working()
+
+
 ## Whether the name plate shows right now.
 func is_plate_shown() -> bool:
 	return _plate.visible

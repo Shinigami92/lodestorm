@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://xtv7qgd52xd4" path="res://game/npcs/npc.tscn" id="90_npc"]
 [ext_resource type="Resource" uid="uid://dvd7ogckuu0u5" path="res://game/npcs/crew/engineer.tres" id="91_profile"]
 [ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
+[ext_resource type="Script" uid="uid://dppq7a1sy5iu8" path="res://game/npcs/work_spot.gd" id="95_work_spot"]
 
 [node name="EngineRoom" type="Node3D"]
 
@@ -17,6 +18,17 @@ anchor = 1
 [node name="DriveCore" parent="." instance=ExtResource("1_drive_core")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 0.5)
 
-[node name="Engineer" parent="." instance=ExtResource("90_npc")]
+[node name="Engineer" parent="." node_paths=PackedStringArray("work_spots") instance=ExtResource("90_npc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -1.5)
 profile = ExtResource("91_profile")
+work_spots = [NodePath("../EngineerCore"), NodePath("../EngineerWatch")]
+
+[node name="EngineerCore" type="Marker3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -5.4, 0, 0.5)
+script = ExtResource("95_work_spot")
+activities = Array[StringName]([&"Tap"])
+
+[node name="EngineerWatch" type="Marker3D" parent="."]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, -3, 0, 3)
+script = ExtResource("95_work_spot")
+activities = Array[StringName]([&"LookAround", &"CheckWrist"])

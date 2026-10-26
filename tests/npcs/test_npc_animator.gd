@@ -1,7 +1,7 @@
 extends GutTest
 ## An NPC's own model (`NpcBody`, `NpcAnimator`): Nell's model with her head height and her props,
-## her work at the bar now and then while nobody is close, stopping when a player comes close; the
-## suit sitting down and getting up.
+## her work at the bar now and then while nobody is close, stopping when a player comes close, only
+## the allowed ones where she stands; the crew's shared clips; the suit sitting down and getting up.
 
 const BODY := preload("res://game/npcs/npc_body.tscn")
 const NELL: NpcProfile = preload("res://game/npcs/ostra/bartender.tres")
@@ -58,6 +58,36 @@ func test_works_while_nobody_is_close() -> void:
 	_body.faces = null
 	await wait_seconds(0.4)
 	assert_ne(_animator.working(), first, "the next is another one")
+
+
+func test_only_the_allowed_activities_play() -> void:
+	_body.allow_activities([&"PolishGlass"] as Array[StringName])
+	await wait_seconds(_animator.work_fade + 0.2)
+	for i: int in 6:
+		await wait_seconds(0.3)
+		var playing: StringName = _animator.working()
+		assert_true(playing in [&"", &"PolishGlass"], "only polishing here, not " + String(playing))
+	_body.allow_activities([&"Nothing"] as Array[StringName])
+	await wait_seconds(_animator.work_fade + 0.2)
+	assert_eq(_animator.working(), &"", "nothing it has fits: it stands")
+	_body.allow_activities([] as Array[StringName])
+	await wait_seconds(0.4)
+	assert_true(NELL.activities.has(_animator.working()), "empty: all of hers again")
+
+
+## Every crew member's model has the crew's shared clips (tools/blender/fidgets.py) and their
+## profile lists them.
+func test_the_crew_have_the_shared_clips() -> void:
+	for file: String in DirAccess.get_files_at("res://game/npcs/crew"):
+		if not file.ends_with(".tres"):
+			continue
+		var profile := load("res://game/npcs/crew/" + file) as NpcProfile
+		var model := (load(profile.model) as PackedScene).instantiate() as Node3D
+		var player: AnimationPlayer = model.find_child("AnimationPlayer", true, false)
+		for clip: StringName in [&"LookAround", &"Stretch", &"CheckWrist", &"Tap"]:
+			assert_true(player.has_animation(clip), "%s: %s" % [profile.display_name, clip])
+			assert_has(profile.activities, clip, profile.display_name)
+		model.free()
 
 
 ## The suit (the colonists) sits down and gets up over the blend time, its head lower while it sits;

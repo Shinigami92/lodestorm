@@ -31,6 +31,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 FINGERLESS = ("Hand", "ThumbMetacarpal")  # a glove's bones: the palm, the back of the hand and the thumb's root
 FULL = (*FINGERLESS, *(f"{f}{j}" for f, js in H.FINGERS.items() for j in js))  # and every finger
+BARE = ()  # no gloves: the body's bare hands
 
 
 @dataclasses.dataclass
@@ -46,6 +47,7 @@ class Fit:
     skirt: tuple | None = None  # loose cloth below the waist: from how far to how far off the body it blends into
     skirt_width: float = 0.22  # the skirt's weights: half its width (the thighs' share across it)
     arms_from: float = 0.24  # the arms' faces: this far from the middle and farther (in the outfit's A-pose)
+    arms_below: float = 0.0  # the arms' line is found from this far below the waist up (hands hanging lower)
     chin: float = 0.07  # the generated skin is cut from this far above the neck's joint up
     arm_root: float = 0.1  # the outfit's arms are shortened from this far past the shoulder's joint
     arm_reach: float = 0.2  # an arm's points lie this close to its line
@@ -57,9 +59,11 @@ class Fit:
     glove_up: float = 0.0  # the gloves reach this far up the forearm from the wrist (the skin kept that far in)
     stray: int = 300  # pieces of the outfit with fewer faces left at the hands are the generated hand's: dropped
     center_cuffs: float = 0.0  # this far up the forearm the outfit moves so its cut sleeve is around the wrist
+    taper_cuffs: float = 0.0  # this far up the forearm the cut sleeve (or bare forearm) narrows onto the wrist
     dents: tuple = ()  # dents the generator left ((x, y, z) behind or in front of one, its radius), as loaded: closed
     bare_arms: bool = True  # generated skin left on the arms and the neck: moved to the body's tone
     own_head: bool = False  # the generated head stays (face, hair, beard; on the Head bone), the body's goes
+    forearm_tone: bool = False  # own head: the hands take the bare forearms' tone (not the face's: a cap's shade)
     head_blend: tuple = (0.02, 0.06)  # own head: from how far to how far above the neck's joint it's the Head's
 
 
@@ -163,6 +167,18 @@ def match_skin(outfit: bpy.types.Object, skin: bpy.types.Object, tone, texels, n
     print("SKIN tone", tone.round(3), "->", target.round(3), "on", len(faces), "faces")
 
 
+def warm_tone(outfit: bpy.types.Object, faces: list) -> tuple:
+    """The generated skin's color (mean, sRGB) where the given faces are in its texture, its warm texels only (not a
+    white cuff, a dark band or soot)."""
+    img = G.base_color_image(outfit.data.materials[0])
+    px = G.image_pixels(img)[G.uv_cover(outfit.data, faces, img.size[0], grow=0), :3]
+    px = px[(px[:, 0] - px[:, 2] > 0.06) & (px.mean(1) > 0.08)]
+    bright = px.mean(1)
+    tone = px[(bright > np.percentile(bright, 30)) & (bright < np.percentile(bright, 90))].mean(0)
+    print("FOREARM tone", tone.round(3), "from", len(faces), "faces")
+    return tone
+
+
 def match_body(skin: bpy.types.Object, tone) -> None:
     """Shifts the body's skin (what shows of it: the hands) to the generated face's tone (its own head stays)."""
     img = G.base_color_image(skin.data.materials[0])
@@ -207,11 +223,11 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict, person: Person) -> None:
     tone, texels = cut_skin(outfit, m, fit)
     if fit.bare_arms:
         match_skin(outfit, skin, tone, texels, m["neck"], fit)
-    if fit.own_head:
+    if fit.own_head and not fit.forearm_tone:
         match_body(skin, tone)
     if not fit.own_head:
         fit_hair(outfit, m, fit)
-    directions, _palms = P.limb_directions(outfit, arm, m["waist"])
+    directions, _palms = P.limb_directions(outfit, arm, m["waist"] - fit.arms_below)
     P.pose_limbs(arm, directions)
     fit_arms(outfit, arm, directions, fit)
     body = P.posed_vertices(skin)
@@ -220,11 +236,15 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict, person: Person) -> None:
     rgba = G.image_pixels(G.base_color_image(outfit.data.materials[0]))
     dark = G.face_values(outfit.data, rgba[..., :3].mean(2)) < fit.glove_dark
     reach = hands(P.face_centers(outfit))
+    if fit.own_head and fit.forearm_tone:
+        match_body(skin, warm_tone(outfit, [p for p in outfit.data.polygons if -0.08 < reach[p.index] < -0.02]))
     cut = (reach > -0.005) | ((reach > -fit.cuff) & dark)  # the hands and the gloves' cuffs
     print("HANDS cut", P.delete_faces(outfit, cut), "faces")
     drop_strays(outfit, arm, fit)
     if fit.center_cuffs:
         center_cuffs(outfit, arm, directions, hands, fit)
+    if fit.taper_cuffs:
+        taper_cuffs(outfit, arm, directions, hands, P.posed_vertices(skin), fit)
     in_cuffs = hands(body) > -max(fit.cuff, fit.glove_up)
     co = G.vertices(outfit.data)
     w, near = P.transfer_weights(co, body, body_w)
@@ -417,6 +437,30 @@ def center_cuffs(outfit: bpy.types.Object, arm: bpy.types.Object, directions: di
     G.set_vertices(outfit.data, co)
 
 
+def taper_cuffs(outfit: bpy.types.Object, arm: bpy.types.Object, directions: dict, hands, body, fit: Fit) -> None:
+    """Narrows the outfit's cut forearm ends onto the body's wrists (a little wider): an open end wider than the wrist
+    shows its dark inside around the body's hand. Fades in over fit.taper_cuffs up the forearm; only narrows."""
+    co = G.vertices(outfit.data)
+    reach = hands(co)
+    at_wrist = np.abs(hands(body)) < 0.01
+    for side, s in H.SIDES:
+        wrist = np.array(arm.pose.bones[f"{side}Hand"].head)
+        d = np.array(directions[f"{side}LowerArm"])
+        ring = at_wrist & (s * body[:, 0] > 0.15)
+        if not ring.any():
+            continue
+        rel = body[ring] - wrist
+        radius = float(np.linalg.norm(rel - (rel @ d)[:, None] * d, axis=1).mean()) * 1.1
+        mine = (s * co[:, 0] > 0.15) & (reach > -fit.taper_cuffs)
+        rel = co[mine] - wrist
+        off = rel - (rel @ d)[:, None] * d  # across the arm
+        r = np.maximum(np.linalg.norm(off, axis=1), 1e-6)
+        k = G.smoothstep(-fit.taper_cuffs, -0.01, reach[mine])
+        co[mine] -= off * (k * (1 - np.minimum(1, radius / r)))[:, None]
+        print("TAPER", side, "onto a", round(radius, 3), "m wrist")
+    G.set_vertices(outfit.data, co)
+
+
 def drop_strays(outfit: bpy.types.Object, arm: bpy.types.Object, fit: Fit) -> None:
     """Drops what's left of the generated hands: small pieces (fewer than fit.stray faces) whose middle lies within
     30 cm of a posed wrist (splayed fingers beyond the cut)."""
@@ -522,8 +566,9 @@ def preview(arm: bpy.types.Object, body: H.Body, out: pathlib.Path, tag: str, wo
             shots.append(path)
     H.apply(arm, H.idle(body, 0.25))
     bpy.context.view_layer.update()
+    neck = arm.pose.bones["Neck"].head.z  # the face shot follows the head (tall or short)
     for name, loc, target in (
-        ("face", (0.25, -0.9, 1.6), (0, 0, 1.55)),
+        ("face", (0.25, -0.9, neck + 0.01), (0, 0, neck - 0.04)),
         ("forearm", (0.75, -0.75, 1.2), (0.25, -0.05, 0.95)),
         ("waist", (-0.3, 1.3, 1.1), (0, 0, 1.0)),
     ):

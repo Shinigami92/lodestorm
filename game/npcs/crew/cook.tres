@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
-[ext_resource type="PackedScene" uid="uid://blasvrv7cg3v2" path="res://game/npcs/crew/accessories/cook.tscn" id="4_accessory"]
 [ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="9_reaction"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
@@ -50,8 +49,8 @@ script = ExtResource("1_profile")
 id = &"cook"
 display_name = "Fenna"
 role = "Cook"
+model = "uid://vo056vbv74lc"
 accent_color = Color(1, 0.55, 0.8, 1)
-accessory = ExtResource("4_accessory")
 cabin = 8
 dialogue = SubResource("Resource_dialogue")
 reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_gaulm")])

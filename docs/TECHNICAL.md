@@ -226,7 +226,8 @@ What every station shares, so a subclass doesn't look it up itself: `mission` (f
 
 | Workflow | Trigger | Steps |
 |---|---|---|
-| `ci.yml` | PR, merge queue, push to `main` | gdformat check, gdlint, ruff, unit tests (headless Godot), import check |
+| `ci.yml` | PR, merge queue, push to `main`, dispatch | gdformat check, gdlint, ruff, unit tests (headless Godot), import check |
+| `godot-ai-plugin.yml` | push to `renovate/godot-ai` | commit the editor plugin matching `.mcp.json`, dispatch `ci.yml` (see Dependency updates) |
 | `build.yml` | push to `main` | Export Windows + Linux (+ macOS later) builds, upload as workflow artifacts |
 | `release.yml` (later, M8) | git tag `v*` | Export builds, create GitHub Release with zipped builds attached |
 | `steam-deploy.yml` (later) | release / manual | Upload build to Steam via SteamCMD to a beta branch |
@@ -248,7 +249,7 @@ Export templates: the full archive is >1 GB, so `setup-godot` (with `export-temp
 | GitHub Actions | `.github/workflows/*.yml`, `.github/actions/*/action.yml` | pinned to commit digests (`config:best-practices`) |
 | gdtoolkit, ruff | `requirements-dev.txt` | |
 | Godot | `.godot-version` | own PR (only `-stable` releases); open the project in the new editor so it updates `project.godot`, check GUT compatibility |
-| godot-ai | `.mcp.json` | own PR; replace `addons/godot_ai/` with the matching plugin in the same PR, `tests/project/test_addon_versions.gd` fails until the versions match |
+| godot-ai | `.mcp.json` | own PR (branch `renovate/godot-ai`); the `godot-ai-plugin.yml` workflow runs `tools/update-godot-ai.sh` there, commits the matching plugin in `addons/godot_ai/` and dispatches CI for that commit (pushes with `GITHUB_TOKEN` start no workflows). `tests/project/test_addon_versions.gd` fails until the versions match. The Mend-hosted Renovate app doesn't run our own commands as `postUpgradeTasks`, hence the workflow; Renovate ignores its commits (`gitIgnoredAuthors`) and keeps rebasing. By hand: `tools/update-godot-ai.sh` |
 
 Vendored addons without a server counterpart (GUT) are updated by hand: GUT releases are tied to Godot versions.
 

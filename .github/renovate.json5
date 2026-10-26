@@ -14,12 +14,14 @@
       "matchDepNames": ["godotengine/godot"]
     },
     {
-      // The editor plugin in addons/godot_ai/ must be updated by hand in the same PR
-      // (tests/project/test_addon_versions.gd fails until it matches)
+      // Own branch renovate/godot-ai: the godot-ai-plugin workflow commits the matching editor
+      // plugin in addons/godot_ai/ to it (tests/project/test_addon_versions.gd fails until then)
       "groupName": "godot-ai",
       "matchDepNames": ["godot-ai"]
     }
   ],
+  // The godot-ai-plugin workflow's commits don't count as manual edits, so Renovate keeps rebasing
+  "gitIgnoredAuthors": ["41898282+github-actions[bot]@users.noreply.github.com"],
   "customManagers": [
     {
       "customType": "regex",

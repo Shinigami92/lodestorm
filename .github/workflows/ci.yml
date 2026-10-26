@@ -5,6 +5,8 @@ on:
   merge_group:
   push:
     branches: [main]
+  # Started by the godot-ai-plugin workflow after it commits to Renovate's branch
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}

@@ -56,20 +56,20 @@ func test_slider_tunes_settings_live() -> void:
 
 
 func test_storm_shortcuts_need_running_timer() -> void:
-	_overlay.call(&"start_storm")
+	_overlay.call(&"_start_storm")
 	assert_eq(_mission.time_left, _mission.settings.duration, "no effect before the start")
 	_mission.state = Mission.State.RUNNING
-	_overlay.call(&"skip_to_warning")
+	_overlay.call(&"_skip_to_warning")
 	assert_eq(_mission.time_left, _mission.settings.warning_time)
-	_overlay.call(&"start_storm")
+	_overlay.call(&"_start_storm")
 	assert_eq(_mission.time_left, 0.0)
 
 
 func test_kill_and_heal_players() -> void:
 	_player.take_damage(10.0)
-	_overlay.call(&"heal_players")
+	_overlay.call(&"_heal_players")
 	assert_eq(_player.health, _player.settings.max_health)
-	_overlay.call(&"kill_players")
+	_overlay.call(&"_kill_players")
 	assert_true(_player.dead)
 
 
@@ -79,7 +79,7 @@ func test_god_mode_keeps_players_unhurt_but_kill_still_works() -> void:
 	_player.take_damage(30.0)
 	assert_eq(_player.health, _player.settings.max_health)
 	assert_signal_emitted(_player.vitals, "hurt", "the hit still shows")
-	_overlay.call(&"kill_players")
+	_overlay.call(&"_kill_players")
 	assert_true(_player.dead)
 	assert_true(PlayerVitals.god_mode, "stays on")
 	_switch("God mode").button_pressed = false
@@ -99,7 +99,7 @@ func test_alien_ai_switch() -> void:
 
 func test_kill_aliens() -> void:
 	assert_gt(get_tree().get_nodes_in_group(Alien.GROUP).size(), 0, "the test map has aliens")
-	_overlay.call(&"kill_aliens")
+	_overlay.call(&"_kill_aliens")
 	assert_eq(get_tree().get_nodes_in_group(Alien.GROUP).size(), 0)
 
 
@@ -116,7 +116,7 @@ func test_hatch_hunters() -> void:
 	var nests: int = get_tree().get_nodes_in_group(AlienNest.GROUP).size()
 	assert_gt(nests, 0, "the test map has nests")
 	var nest: AlienNest = _overlay.call(&"_nearest_nest")
-	_overlay.call(&"hatch_hunters")
+	_overlay.call(&"_hatch_hunters")
 	# The pack hatches one alien after another.
 	await wait_physics_frames(roundi(nest.settings.hatch_gap * Engine.physics_ticks_per_second) + 2)
 	var hunters: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP).filter(
@@ -129,7 +129,7 @@ func test_hatch_hunters() -> void:
 
 func test_hatch_raiders() -> void:
 	var nest: AlienNest = _overlay.call(&"_nearest_nest")
-	_overlay.call(&"hatch_raiders")
+	_overlay.call(&"_hatch_raiders")
 	var raiders: Array[Node] = get_tree().get_nodes_in_group(Alien.GROUP).filter(
 		func(alien: Alien) -> bool: return alien.role == Alien.Role.RAIDER
 	)
@@ -149,14 +149,14 @@ func test_nearest_nest_is_the_one_closest_to_the_player() -> void:
 func test_break_miners() -> void:
 	var node: OreNode = _voyage.location.get_node("OreNodes/KyriteA") as OreNode
 	var miner: Miner = node.place_miner(_player.miner_scene)
-	_overlay.call(&"break_miners")
+	_overlay.call(&"_break_miners")
 	assert_true(miner.broken)
 
 
 func test_install_shield_opens_the_next_planet() -> void:
 	var ship: Ship = _mission.ship
 	var before: int = _voyage.offers.size()
-	_overlay.call(&"install_shield")
+	_overlay.call(&"_install_shield")
 	assert_eq(ship.heat_shield.mk, 2)
 	assert_gt(_voyage.offers.size(), before)
 
@@ -166,7 +166,7 @@ func test_refinery_shortcuts() -> void:
 	var cobrel: AlloyType = AlloyCatalog.all().alloys[0]
 	_overlay.call(&"_unlock_furnace")
 	assert_eq(ship.furnaces.unlocked, 1)
-	_overlay.call(&"fill_hold")
+	_overlay.call(&"_fill_hold")
 	assert_gt(_player.hold.amount(cobrel), 0.0, "the rack too")
 	var before: float = _player.hold.amount(cobrel)
 	_player.refining.start(0, cobrel, 3, _player.hold, Time.get_unix_time_from_system())
@@ -182,7 +182,7 @@ func test_open_all_offers_every_region() -> void:
 		# A mission per region, a visit per station.
 		offers += body.regions.size() + (1 if body.is_dockable() else 0)
 	assert_lt(_voyage.offers.size(), offers)
-	_overlay.call(&"open_all_bodies")
+	_overlay.call(&"_open_all_bodies")
 	assert_eq(_mission.ship.heat_shield.mk, _mission.ship.heat_shield.max_mk())
 	assert_eq(_voyage.offers.size(), offers)
 

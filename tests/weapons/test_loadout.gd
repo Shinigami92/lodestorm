@@ -146,6 +146,6 @@ func test_switched_weapon_stays_holstered_aboard() -> void:
 
 func test_debug_overlay_unlocks_every_weapon() -> void:
 	var overlay: CanvasLayer = get_tree().root.get_node("DebugOverlay") as CanvasLayer
-	overlay.call(&"unlock_weapons")
+	overlay.call(&"_unlock_weapons")
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		assert_true(_player.arsenal.owns(weapon_type))

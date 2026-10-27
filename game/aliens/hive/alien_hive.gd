@@ -21,6 +21,13 @@ extends Resource
 ## `LocationBiome.favored_strains`).
 @export var favored_weight: float = 2.0
 
+@export_group("Tiers")
+## Each tier above 1 (planets farther in, see `CelestialBody.tier`) adds this share of the aliens'
+## health (the nests' and the apex's too) ...
+@export var health_per_tier: float = 0.3
+## ... and of their damage (more nests: `VoyageSettings.nests_per_tier`).
+@export var damage_per_tier: float = 0.2
+
 @export_group("Apex")
 ## The hive's apex (the Ravager): at most one per location, roaming (see `ApexLair`); null: none.
 @export var apex: AlienStrain
@@ -38,6 +45,8 @@ func table(
 ) -> HatchTable:
 	var hatching := HatchTable.new()
 	hatching.hive = self
+	hatching.health_factor = health_at(tier)
+	hatching.damage_factor = damage_at(tier)
 	if biome:
 		hatching.favored = biome.favored_strains
 	var first: int = first_tier()
@@ -57,6 +66,16 @@ func table(
 			weights.append(favored_weight if strain in hatching.favored else 1.0)
 		hatching.from[next[rng.rand_weighted(PackedFloat32Array(weights))]] = preview_from
 	return hatching
+
+
+## How much more health aliens have on a body of `tier` than on a tier 1 one.
+func health_at(tier: int) -> float:
+	return MissionSettings.per_tier(health_per_tier, tier)
+
+
+## How much more damage aliens do on a body of `tier` than on a tier 1 one.
+func damage_at(tier: int) -> float:
+	return MissionSettings.per_tier(damage_per_tier, tier)
 
 
 ## How likely a location on a body of `tier` has the apex.

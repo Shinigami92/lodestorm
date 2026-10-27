@@ -10,6 +10,10 @@ var hive: AlienHive
 var from: Dictionary[AlienStrain, float] = {}
 ## The biome's favored strains.
 var favored: Array[AlienStrain] = []
+## How much more health and damage its aliens have (the nests' health too) than on a tier 1 body
+## (`AlienHive.health_at`, `damage_at`).
+var health_factor: float = 1.0
+var damage_factor: float = 1.0
 
 
 ## Whether `strain` hatches at escalation `level`.

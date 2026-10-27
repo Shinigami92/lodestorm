@@ -34,7 +34,7 @@ func before_each() -> void:
 
 
 func test_health_scales_like_the_aliens_and_per_player() -> void:
-	var tier_factor: float = _mission.settings.alien_health_at(_mission.tier())
+	var tier_factor: float = _nest.table.health_factor
 	assert_almost_eq(_nest.body.max_health, _nest.settings.health * tier_factor, 1e-3)
 	assert_eq(_nest.body.health, _nest.body.max_health, "unhurt")
 	var teammate := Node.new()

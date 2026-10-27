@@ -133,7 +133,7 @@ var home := Vector3.INF
 var route: Array[Vector3] = []
 
 ## How much stronger than its strain it is (more health, more damage): bodies farther in have
-## stronger aliens (see `MissionSettings.alien_health_at`). Set before it enters the tree.
+## stronger aliens (see `AlienHive.health_at`). Set before it enters the tree.
 var health_factor: float = 1.0
 var damage_factor: float = 1.0
 ## A scream's boost, the hive's frenzy and a tender's link on it.

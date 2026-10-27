@@ -19,12 +19,8 @@ extends Resource
 @export var respawn_delay: float = 3.0
 
 @export_group("Tiers")
-## Each tier above 1 (planets farther in, see `CelestialBody.tier`) adds this share of the aliens'
-## health ...
-@export var alien_health_per_tier: float = 0.3
-## ... and of their damage (the nests: `VoyageSettings.nests_per_tier`).
-@export var alien_damage_per_tier: float = 0.2
-## The star's influence: each tier above 1 starts the storm's warning this many seconds earlier ...
+## The star's influence (the aliens': `AlienHive.health_per_tier`): each tier above 1 starts the
+## storm's warning this many seconds earlier ...
 @export var warning_time_per_tier: float = 10.0
 ## ... and adds this share of the storm damage's growth.
 @export var storm_growth_per_tier: float = 0.25
@@ -38,16 +34,6 @@ func warning_time_at(tier: int) -> float:
 ## How much the storm damage per second grows each second of storm on a body of `tier`.
 func storm_growth_at(tier: int) -> float:
 	return storm_damage_growth * per_tier(storm_growth_per_tier, tier)
-
-
-## How much more health aliens have on a body of `tier` than on a tier 1 one.
-func alien_health_at(tier: int) -> float:
-	return per_tier(alien_health_per_tier, tier)
-
-
-## How much more damage aliens do on a body of `tier` than on a tier 1 one.
-func alien_damage_at(tier: int) -> float:
-	return per_tier(alien_damage_per_tier, tier)
 
 
 ## 1 on a tier 1 body, plus `share` for every tier above.

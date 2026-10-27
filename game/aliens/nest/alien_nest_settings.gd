@@ -47,7 +47,7 @@ extends Resource
 ## many nests (nests whose guards don't fit wait without them).
 @export_range(0.0, 1.0) var guard_share: float = 0.5
 ## Health of a nest on a tier 1 body (more farther in, like the aliens', see
-## `MissionSettings.alien_health_at`); every player beyond the first adds `health_per_player` of it.
+## `AlienHive.health_at`); every player beyond the first adds `health_per_player` of it.
 @export var health: float = 600.0
 @export var health_per_player: float = 0.5
 ## Taken off every hit's damage, like an alien's armor (see `Alien.MIN_DAMAGE_SHARE`).

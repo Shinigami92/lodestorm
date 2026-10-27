@@ -335,8 +335,8 @@ func _process(_delta: float) -> void:
 					"Tier %d: aliens x%.2f health, x%.2f damage; warning %.0f s; upgrades up to MK%d"
 					% [
 						mission.tier(),
-						mission.settings.alien_health_at(mission.tier()),
-						mission.settings.alien_damage_at(mission.tier()),
+						(load(HIVE_PATH) as AlienHive).health_at(mission.tier()),
+						(load(HIVE_PATH) as AlienHive).damage_at(mission.tier()),
 						mission.warning_time(),
 						mission.ship.heat_shield.upgrade_cap(),
 					]

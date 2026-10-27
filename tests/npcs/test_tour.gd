@@ -122,6 +122,8 @@ func test_he_rides_the_lift_to_the_lower_deck() -> void:
 	await _until(
 		func() -> bool: return _brannik.routine._walker.ride == NpcWalker.Ride.WAITING, 15.0
 	)
+	# He calls it on his next step at the gate.
+	await wait_physics_frames(2)
 	assert_eq(lift.deck, Lift.Deck.UPPER, "called up to his deck")
 	await _until(
 		func() -> bool: return _brannik.routine._walker.ride == NpcWalker.Ride.BOARDING, 10.0

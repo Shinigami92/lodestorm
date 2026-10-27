@@ -36,6 +36,8 @@ tools/lint.sh   # gdformat --check + gdlint, ruff format --check + ruff check (o
 tools/test.sh   # GUT unit tests, headless (needs GODOT4_EDITOR)
 ```
 
+On a fresh checkout, `tools/import.sh` imports the project headless first (the tests need the import cache). After writing or patching `.tscn`/`.tres` files outside the editor, run `tools/uids.sh` (a test checks every reference has its UID).
+
 `tools/export.sh` builds the Windows and Linux release exports into `builds/` (needs the export templates, see [CI/CD](docs/TECHNICAL.md#3-cicd-github-actions)).
 
 Machine-specific paths live in environment variables, never in the repo:
@@ -43,7 +45,10 @@ Machine-specific paths live in environment variables, never in the repo:
 | Variable | Used by | Example |
 |---|---|---|
 | `GODOT4_EDITOR` | command-line scripts, VS Code [godot-tools](https://marketplace.visualstudio.com/items?itemName=geequlim.godot-tools) (`.vscode/settings.json`) | `E:\Godot\Godot_v<version>-stable_win64.exe` |
+| `BLENDER` | `tools/blender.sh` (asset build scripts, headless) | path to the Blender executable |
 | `BLENDER_MCP_PATH` | Blender MCP server (`.mcp.json`) | path to the `mcp/` folder of a [blender_mcp](https://projects.blender.org/lab/blender_mcp) clone |
+
+The asset tools for concept images, image-to-3D models and voice lines have their own variables, listed with them in [Asset pipeline](docs/TECHNICAL.md#4-asset-pipeline); the MCP servers' setup is in [MCP servers](docs/TECHNICAL.md#mcp-servers-mcpjson).
 
 ## Workflow
 
@@ -51,7 +56,7 @@ Machine-specific paths live in environment variables, never in the repo:
 2. **Fork and branch** from `main`; keep one topic per branch. `main` is protected: every change goes through a pull request.
 3. **Keep pull requests small** and focused. Describe what changed and why, and how you tested it (desktop, gamepad, VR if relevant).
 4. **CI must pass** (formatting, linting, tests, import check); failing jobs block the merge. There are no git hooks, run `tools/lint.sh` and `tools/test.sh` yourself.
-5. If your change affects a documented decision, **update the docs** in the same pull request.
+5. If your change affects a documented decision, **update the docs** in the same pull request: a decided design goes into [`docs/planned/`](docs/planned/README.md); once it's built, its part moves into [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) (describing what was built) and its line in [`docs/PLAN.md`](docs/PLAN.md) moves to Done.
 6. Pull requests are **squash-merged**, and the **pull request title becomes the commit message** on `main`, so the title must follow the [commit message](#commit-messages) format. Commits inside your branch can be anything.
 
 ## Code and assets

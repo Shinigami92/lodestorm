@@ -96,6 +96,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Crew life aboard **A** (the lines): NPCs only talk about what exists in their world (17 lines rewritten and one dropped that named the timer, the ring around the player's feet, the holo cards and their buttons or "host"; Wren's ring topic gone), guest lines for a co-op guest (Okoro's heat shield), four prompts per named NPC picked at random for each talk (never the one before), a pause button for "Continue by itself" (F, or X on the gamepad); every new line voiced in English and German (Fenna English)
 - Crew life aboard **B** (walking aboard): the crew walk instead of appearing somewhere, over a navigation mesh of the ship's floors (baked on a worker thread when first needed, on its own map, without the tops of furniture), doors opening for them, stopping for a player close by; Tamsin walks to the cockpit once a destination is chosen (or the ship takes off), sits in the pilot seat waiting for the course (a real seat now, her model with a `Sit` clip) until 5 s after it has landed or docked, and walks back; Tamsin between the holo table and the bridge's door, Brannik in front of the weapon wall
 - Crew life aboard **C** (little things to do): the crew's shared clips on every crew model (looking around, stretching, checking the wrist, tapping at a console; `tools/blender/fidgets.py` on the key poses Nell's work shares), two work spots per crew member in their room, walked to every 20–40 s, each playing only what fits there
+- Crew life aboard **D** (Brannik's tour): on a new game Brannik waits in front of the cabins and offers to show the ship; twelve stops from the mess hall to his armory, waiting for the player at each and saying its line aside (bubble and voice), "Go on"/"End the tour" when talked to, ending when the player walks off; the crew ride the lift between the decks (calling it, holding it while stepping on); every new line voiced in English and German
 
 ## Todo
 
@@ -116,7 +117,6 @@ Each step builds on the ones before it (steps 1–13 are done, crew joining wait
 
 Alongside, any time:
 
-- [ ] **Crew life aboard** ([`planned/crew.md`](planned/crew.md), Crew life aboard; A–C are done): **D** Brannik's tour (with the crew riding the lift)
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)

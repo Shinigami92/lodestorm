@@ -21,7 +21,12 @@ extends Station
 ## `place_miner`) stops the wait and the voice in the middle of the line until it's resumed (the
 ## voice goes on where it stopped); moving on (a line, a topic, the list) plays normally again.
 ## Where they are and go aboard is their `routine` (an `NpcRoutine`: walking, the `flight_seat`
-## while the ship flies, their `work_spots`).
+## while the ship flies, their `work_spots`, a tour).
+## With a `Tour` (their profile's), their first talk while they wait at its start is its offer
+## instead of their greeting, its invite ("Show me the ship") is among their topics once the offer
+## is heard and starts the tour when heard to the end (the talk closes); during the tour the card
+## offers only going on and ending it. A tour's stops are said aside (`say_aside`): in the bubble
+## above their head without a talk, and in their voice.
 
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
 ## player, at this height, so the card on their right stays in view.
@@ -63,6 +68,8 @@ var routine: NpcRoutine
 
 ## Used without a ship (e.g. tests of a lone NPC).
 var _own_story := Story.new()
+## Whether the bubble shows a line said aside (`say_aside`), not a talk.
+var _aside: bool = false
 var _new_marker_time: float = 0.0
 ## How long the line shown waits before it moves on by itself (0: it doesn't), and for how long it
 ## has waited.
@@ -95,7 +102,7 @@ func _physics_process(delta: float) -> void:
 func _process(delta: float) -> void:
 	super(delta)
 	body.faces = user
-	body.plate_allowed = not user
+	body.plate_allowed = not user and not _aside
 	_new_marker.visible = not user and has_news(_listener())
 	if _new_marker.visible:
 		_new_marker_time += delta
@@ -104,6 +111,8 @@ func _process(delta: float) -> void:
 	if user:
 		_place_bubble()
 		_auto_continue(delta)
+	elif _aside:
+		SpeechBubble.place(bubble, body.get_head_position(), SpeechBubble.view_scale(get_tree()))
 
 
 ## The story the topics heard go into: the ship's.
@@ -125,10 +134,16 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 	if not listener:
 		listener = user
 	var story: Story = get_story()
+	var tour: Tour = profile.tour
+	if tour and routine and routine.tour:
+		choices.append_array([tour.resume, tour.abort])
+		return choices
 	var reaches: Array[StringName] = get_reached_bodies()
 	for listed: Topic in profile.dialogue.topics:
 		if listed.is_open(listener, story, reaches):
 			choices.append(listed)
+	if tour and tour.invite.is_open(listener, story):
+		choices.append(tour.invite)
 	return choices
 
 
@@ -156,7 +171,7 @@ func is_new(listed: Topic) -> bool:
 func has_news(listener: Player = null) -> bool:
 	if not profile or not profile.dialogue:
 		return false
-	var greeting: Topic = profile.dialogue.greeting
+	var greeting: Topic = _greeting()
 	if greeting and is_new(greeting):
 		return true
 	return get_choices(listener).any(is_new)
@@ -285,9 +300,10 @@ func _opened() -> void:
 		prompt = profile.dialogue.pick_prompt(prompt)
 	_place_focus()
 	super()
+	_aside = false
 	bubble.visible = true
 	bubble.set_on_top(true)
-	var greeting: Topic = profile.dialogue.greeting if profile and profile.dialogue else null
+	var greeting: Topic = _greeting()
 	if greeting and is_new(greeting):
 		talk_about(greeting)
 	else:
@@ -305,10 +321,29 @@ func _closed() -> void:
 	voice.stop()
 
 
+## The topic told is heard to the end; a tour's topics then close the talk and start the tour,
+## go on with it or end it.
 func _finish_topic() -> void:
-	get_story().set_flag(topic.id)
+	var heard: Topic = topic
+	get_story().set_flag(heard.id)
 	topic = null
 	choice = mini(choice, get_choices().size())
+	var tour: Tour = profile.tour if profile else null
+	if not tour or heard not in [tour.invite, tour.resume, tour.abort]:
+		return
+	if heard == tour.invite:
+		routine.start_tour(user)
+	elif heard == tour.abort:
+		routine.end_tour()
+	close.call_deferred()
+
+
+## The greeting their first talk starts with: their tour's offer while they wait at its start,
+## else their dialogue's.
+func _greeting() -> Topic:
+	if routine and routine.is_waiting():
+		return profile.tour.offer
+	return profile.dialogue.greeting if profile and profile.dialogue else null
 
 
 ## Shows the current state on the card and in the bubble.
@@ -342,6 +377,24 @@ func _set_paused(paused: bool) -> void:
 
 ## Speaks `english` (a line's English text) in their voice, stopping what they said before; just
 ## stops without a recording of it. Returns the recording, or null.
+## Says `english` (a line's English text) aside, without a talk: in the bubble above their head
+## and in their voice; "" stops and hides it. Returns how long it stays: the voice and
+## `AUTO_PAUSE`, else its `reading_time`.
+func say_aside(english: String) -> float:
+	if user:
+		return 0.0
+	var recording: AudioStream = _say(english)
+	_aside = not english.is_empty()
+	bubble.visible = _aside
+	bubble.set_on_top(_aside)
+	if not _aside:
+		return 0.0
+	var speech := bubble.content as SpeechBubble
+	if speech:
+		speech.show_line(tr(english))
+	return recording.get_length() + AUTO_PAUSE if recording else reading_time(tr(english))
+
+
 func _say(english: String) -> AudioStream:
 	voice.stop()
 	var recording: AudioStream = VoiceLines.stream(profile.id, english) if profile else null

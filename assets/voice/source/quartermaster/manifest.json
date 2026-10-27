@@ -1,5 +1,17 @@
 {
   "de": {
+    "012f6faa4934becb": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Und das ist meine Waffenkammer, hier endet die Führung. Gleich dort hinten sind der Frachtraum und die Rampe. Frag mich zu deinen Waffen und deiner Munition, wann immer du willst."
+    },
+    "034dca9c8e15f423": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Dann folg mir. Wir fangen in der Messe an und hören in meiner Waffenkammer auf, und ich warte an jeder Station auf dich."
+    },
     "09d770f36e0d96c1": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -24,6 +36,12 @@
       "seed": 1,
       "text": "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
     },
+    "2ceb2cfe51442f5e": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Brücke. Tamsin fliegt das Schiff, und hier am Holotisch suchst du mit ihr aus, wohin es als Nächstes geht. Jede Reise beginnt an diesem Tisch."
+    },
     "31c71c57cefcd838": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -42,11 +60,23 @@
       "seed": 1,
       "text": "Gleich nebenan ist der Schießstand. Wenn du eine neue Waffe bekommst, probier sie dort aus, bevor du sie auf eine Mission mitnimmst."
     },
+    "36cb1c3c54a32ca2": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Maschinenraum. Okoro hält den Antriebskern am Laufen, und der Hitzeschild um ihn herum entscheidet, wie nah wir an den Stern heranfliegen können."
+    },
     "37bb55673f8bd0e4": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Sind deine Ersatzmagazine aufgebraucht, kannst du ohne Erz nicht mehr nachladen. Stell also früh deine Miner auf, oder nimm Dray mit: Ein Hammer braucht keine Munition."
+    },
+    "3a8f91c167071f4a": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Gut, dann weiter."
     },
     "3ff7cdc9f47a3b3a": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -66,11 +96,23 @@
       "seed": 1,
       "text": "Draußen stellt dein Anzug neue Munition aus dem Erz her, das du auf dem Rücken trägst. Jede Erzsorte funktioniert. Er verbraucht immer zuerst das Erz mit der niedrigsten Qualität, damit dein seltenes Erz am längsten reicht."
     },
+    "49865bb936146038": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Waffenraum von Dace. Er baut neue Waffen nach ihren Bauplänen, und an seiner Werkbank macht er deine besser."
+    },
     "4c367ec7aee8bc9c": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Das nenne ich eine Ladung. Mit so viel Erz an Bord sind ein paar von diesen Upgrades endlich drin."
+    },
+    "6175fbfc34123137": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Da bist du ja. Vor der ersten Mission führe ich dich einmal durchs Schiff, damit du weißt, wer was macht und wo du alle findest."
     },
     "75c21ccc8f3d3385": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -78,11 +120,23 @@
       "seed": 1,
       "text": "Was liegt dir auf dem Herzen?"
     },
+    "7664a5ee7bc42cd5": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Schießstand. Probier hier jede neue Waffe zuerst aus. Kein Schuss verlässt den Raum, und Nachladen kostet dich nichts."
+    },
     "7a327e3653a38812": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Ein Trick: Lade ein zweites Mal nach, während du noch nachlädst. Jedes Nachladen hat dafür einen richtigen Moment, und du wirst lernen, ihn zu spüren."
+    },
+    "7e2c9e4fe8cea4bc": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Krankenstation. Hier flickt Ilse dich zusammen, und wenn du da draußen fällst, wachst du hier wieder auf."
     },
     "7fc75664a84c9650": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -108,6 +162,12 @@
       "seed": 1,
       "text": "Gut, dass du da bist. Lass uns vor der nächsten Mission kurz die Waffenkammer durchgehen. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind."
     },
+    "a681176f9a47b4ee": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier kümmert sich Wren um deinen Anzug. Bessere Panzerung heißt, dass du da draußen mehr Treffer einstecken kannst."
+    },
     "abd92813c294757c": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -126,11 +186,23 @@
       "seed": 1,
       "text": "Du kannst nachladen, wann immer du willst, solange du noch ein Ersatzmagazin oder Erz dafür hast. Ist das Magazin leer, lädt deine Waffe von selbst nach."
     },
+    "b0c420a275bb105c": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nebenan ist das Cockpit. Sobald ein Ziel feststeht, wird hier an der Flugkonsole der Kurs gesetzt, und das kann jeder."
+    },
     "b41b090f5202edbd": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Wenn du Fragen zu Munition oder zum Nachladen hast, frag einfach mich. Besser hier als draußen, wenn dir ein Schwarm im Nacken sitzt."
+    },
+    "b88960da19d8f9bb": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollis und die Miner. Sie holen da draußen das Erz aus dem Boden, während du ihnen die Aliens vom Leib hältst."
     },
     "bcad7e375997f866": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -150,11 +222,23 @@
       "seed": 1,
       "text": "Wie ich höre, hast du eine neue Waffe. Wenn du sie mitnehmen willst, wähl sie vor der nächsten Mission an deinem Spind aus."
     },
+    "cf0050f3073e3be4": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "In Ordnung. Du weißt ja, wo du mich findest: in der Waffenkammer auf dem Unterdeck."
+    },
     "cf048b47b8c5609c": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Während du nachlädst, gehst du langsamer. Such dir also einen Moment aus, in dem dir nichts direkt auf den Fersen ist."
+    },
+    "cf7b7e340d347cfc": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Fähigkeitenbaum. Hier lernt dein Anzug Neues, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
     },
     "db25df64127d711b": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -167,6 +251,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Lädst du gar kein zweites Mal nach, dauert es einfach so lange wie immer. Probier es also zuerst am Schießstand aus, dort kostet es dich nichts."
+    },
+    "e6c28b794d2ee1b0": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Es dauert nicht lange. Wenn du dich lieber allein umsiehst, ist das auch in Ordnung. Du findest mich in der Waffenkammer."
     },
     "e9451b2c2f481113": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -192,6 +282,12 @@
       "seed": 1,
       "text": "Gute Ladung. Aber wer leichtsinnig wird, hat nicht lange Glück. Die nächste Mission kann genauso schnell schiefgehen."
     },
+    "efd9e7017c930276": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mit diesem Lift geht es aufs Unterdeck. Hier oben sind die Kabinen und die Brücke, und alles für deine Ausrüstung ist unten."
+    },
     "f41a96465b5015be": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -203,9 +299,27 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 3,
       "text": "Wie kann ich dir helfen?"
+    },
+    "fd7039eadb8de59b": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist die Messe. Fenna kocht für uns alle, und sie bekommt alles mit, was an Bord passiert. Es lohnt sich also, hier vorbeizuschauen."
     }
   },
   "en": {
+    "012f6faa4934becb": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "And this is my armory, where the tour ends. The cargo bay and the ramp are right through there. Ask me about your weapons and ammo whenever you like."
+    },
+    "034dca9c8e15f423": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Follow me, then. We start in the mess hall and end in my armory, and I'll wait for you at every stop."
+    },
     "09d770f36e0d96c1": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -230,6 +344,12 @@
       "seed": 1,
       "text": "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
     },
+    "2ceb2cfe51442f5e": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The bridge. Tamsin flies the ship, and here at the holo table you pick with her where we go next. Every trip starts at that table."
+    },
     "31c71c57cefcd838": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -248,11 +368,23 @@
       "seed": 1,
       "text": "Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
     },
+    "36cb1c3c54a32ca2": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The engine room. Okoro keeps the drive core running, and the heat shield around it decides how close to the star we can fly."
+    },
     "37bb55673f8bd0e4": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Once your spare magazines are used up, you can't reload without ore. So get your miners going early, or take Dray along: a hammer needs no ammo."
+    },
+    "3a8f91c167071f4a": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Right, let's keep going."
     },
     "3ff7cdc9f47a3b3a": {
       "anchor": "772c7907f9411bf4",
@@ -272,11 +404,23 @@
       "seed": 1,
       "text": "Out there, your suit makes new rounds from the ore you carry on your back. Any kind of ore works. It always uses the lowest-quality ore first, so your rare ore lasts longest."
     },
+    "49865bb936146038": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Dace's weapons room. He builds new weapons from their blueprints, and at his bench he makes yours better."
+    },
     "4c367ec7aee8bc9c": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach."
+    },
+    "6175fbfc34123137": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "There you are. Before the first mission, let me walk you through the ship once, so you know who does what and where to find them."
     },
     "75c21ccc8f3d3385": {
       "anchor": "772c7907f9411bf4",
@@ -284,11 +428,23 @@
       "seed": 1,
       "text": "Something on your mind?"
     },
+    "7664a5ee7bc42cd5": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The shooting range. Try every new weapon in here first. No shot leaves the room, and reloading costs you nothing."
+    },
     "7a327e3653a38812": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Here's a trick: reload a second time while you're still reloading. Every reload has one right moment for it, and you'll learn to feel when it comes."
+    },
+    "7e2c9e4fe8cea4bc": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The medical bay. Ilse patches you up here, and if you fall out there, this is where you wake up again."
     },
     "7fc75664a84c9650": {
       "anchor": "772c7907f9411bf4",
@@ -314,6 +470,12 @@
       "seed": 1,
       "text": "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
     },
+    "a681176f9a47b4ee": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wren looks after your suit in here. Better armor means you can take more hits out there."
+    },
     "abd92813c294757c": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -332,11 +494,23 @@
       "seed": 1,
       "text": "You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself."
     },
+    "b0c420a275bb105c": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Next door is the cockpit. Once a destination is set, the course is set at the flight console in here, and anyone can do that."
+    },
     "b41b090f5202edbd": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."
+    },
+    "b88960da19d8f9bb": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollis and the miners. They dig the ore out there, while you keep the aliens off them."
     },
     "bcad7e375997f866": {
       "anchor": "772c7907f9411bf4",
@@ -356,11 +530,23 @@
       "seed": 1,
       "text": "I hear you've got a new weapon. If you want to take it along, pick it at your locker before the next mission."
     },
+    "cf0050f3073e3be4": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "All right. You know where to find me: in the armory, on the lower deck."
+    },
     "cf048b47b8c5609c": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "While you reload, you walk slower. So pick a moment when nothing is right on your heels."
+    },
+    "cf7b7e340d347cfc": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The skill graph. Your suit learns new things in here, like a quick dash or more spare magazines."
     },
     "db25df64127d711b": {
       "anchor": "772c7907f9411bf4",
@@ -373,6 +559,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "If you don't reload a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
+    },
+    "e6c28b794d2ee1b0": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "It won't take long. If you'd rather look around on your own, that's fine too. You'll find me in the armory."
     },
     "e9451b2c2f481113": {
       "anchor": "772c7907f9411bf4",
@@ -398,6 +590,12 @@
       "seed": 1,
       "text": "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast."
     },
+    "efd9e7017c930276": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "This lift takes us down to the lower deck. Up here are the cabins and the bridge, and everything for your gear is down there."
+    },
     "f41a96465b5015be": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -409,6 +607,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "How can I help you?"
+    },
+    "fd7039eadb8de59b": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "This is the mess hall. Fenna cooks for all of us, and she hears everything that goes on aboard, so it's worth stopping by."
     }
   }
 }

@@ -32,6 +32,8 @@ var _npc: Npc
 func before_each() -> void:
 	GameSettings.voice_language = ""
 	_map = TEST_MAP.instantiate() as Node3D
+	# Past his tour's offer (see test_tour.gd): he's at the armory with his greeting.
+	(_map.get_node("Ship") as Ship).story.set_flag(&"quartermaster.tour_offer")
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_ship = _map.get_node("Ship") as Ship
@@ -178,7 +180,8 @@ func test_voices_have_their_own_volume() -> void:
 	GameSettings.volumes.clear()
 
 
-## The English lines of `profile`: the prompts, the greeting's and every topic's (also a guest's).
+## The English lines of `profile`: the prompts, the greeting's and every topic's (also a guest's),
+## its reactions' and its tour's.
 func _lines(profile: NpcProfile) -> Array[String]:
 	var lines: Array[String] = []
 	lines.append_array(profile.dialogue.get_prompts())
@@ -187,6 +190,12 @@ func _lines(profile: NpcProfile) -> Array[String]:
 		lines.append_array(topic.guest_lines)
 	for reaction: CrewReaction in profile.reactions:
 		lines.append_array(reaction.lines)
+	var tour: Tour = profile.tour
+	if tour:
+		for topic: Topic in [tour.offer, tour.invite, tour.resume, tour.abort]:
+			lines.append_array(topic.lines)
+		for stop: TourStop in tour.stops:
+			lines.append_array(stop.lines)
 	return lines
 
 

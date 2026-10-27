@@ -4,6 +4,9 @@ extends Node3D
 ## `departure_delay`; players who rode along have to step off before it leaves again. A player
 ## waiting at the gate on the other deck calls it over while nobody rides it. Gates close the shaft
 ## on every deck the platform isn't standing at, so nobody walks under it or falls down the shaft.
+## The crew ride it too (`NpcWalker`): they call it to their deck while nobody rides it (`call_to`),
+## hold it while they step on (`boarding`: players on it wait for them) and send it off once they
+## stand on it (`send`).
 
 enum Deck { LOWER, UPPER }
 
@@ -18,6 +21,8 @@ enum Deck { LOWER, UPPER }
 var deck: Deck = Deck.LOWER
 ## Whether the platform is riding.
 var moving: bool = false
+## Whether a crew member is stepping on: it doesn't leave until they send it.
+var boarding: bool = false
 
 ## Riders who came along on the last ride; they don't send it off again until they step off.
 var _arrived: Array[Player] = []
@@ -47,6 +52,9 @@ func _physics_process(delta: float) -> void:
 
 	var riders: Array[Player] = _players(_riders)
 	_arrived = _arrived.filter(func(player: Player) -> bool: return player in riders)
+	if boarding:
+		_waited = 0.0
+		return
 	if riders.any(func(player: Player) -> bool: return player not in _arrived):
 		_waited += delta
 		if _waited >= departure_delay:
@@ -65,6 +73,30 @@ func is_open(at: Deck) -> bool:
 ## The platform's height above the lower deck right now.
 func platform_height() -> float:
 	return _platform.position.y
+
+
+## Calls the platform to `at` (a crew member waiting at its gate there), unless it rides or someone
+## stands on it.
+func call_to(at: Deck) -> void:
+	if not moving and deck != at and _players(_riders).is_empty():
+		_ride(at)
+
+
+## Sends the platform to `to` (a crew member standing on it).
+func send(to: Deck) -> void:
+	boarding = false
+	if not moving and deck != to:
+		_ride(to)
+
+
+## The middle of the platform's floor right now (global).
+func platform_floor() -> Vector3:
+	return to_global(Vector3.UP * _platform.position.y)
+
+
+## The floor in the gate's opening on `at` (global; the shaft opens towards +z).
+func gate_floor(at: Deck) -> Vector3:
+	return to_global(Vector3(0.0, _height(at), _gates[at].position.z))
 
 
 func _ride(to: Deck) -> void:

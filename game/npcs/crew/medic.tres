@@ -10,12 +10,13 @@ script = ExtResource("3_topic")
 id = &"medic.greeting"
 title = "Hello"
 lines = Array[String](["Come in. This is my medical bay, and I'd rather see you walk in here than wake up here.", "But whatever happens out there, this is where you wake up again. Ask me anything about staying in one piece."])
+away_lines = Array[String](["The medical bay at the nose is mine, and I'd rather see you walk in there than wake up there.", "But whatever happens out there, that's where you wake up again. Ask me anything about staying in one piece."])
 
 [sub_resource type="Resource" id="Resource_wounds"]
 script = ExtResource("3_topic")
 id = &"medic.wounds"
 title = "Wounds"
-lines = Array[String](["Your wounds don't just go away when the ramp closes. If you come back hurt, you start the next mission just as hurt.", "So before you go out again, lie down on one of the med beds here. It doesn't cost you anything.", "If you forget, the ramp button reminds you once. After that, it's up to you."])
+lines = Array[String](["Your wounds don't just go away when the ramp closes. If you come back hurt, you start the next mission just as hurt.", "So before you go out again, lie down on one of my med beds. It doesn't cost you anything.", "If you forget, the ramp button reminds you once. After that, it's up to you."])
 requires = Array[StringName]([&"medic.greeting"])
 
 [sub_resource type="Resource" id="Resource_beds"]
@@ -29,7 +30,7 @@ requires = Array[StringName]([&"medic.greeting"])
 script = ExtResource("3_topic")
 id = &"medic.falling"
 title = "Falling out there"
-lines = Array[String](["If you fall out there, you lose the ore you're carrying, and you wake up here at full health.", "When you're alone out there, falling ends the mission. You wake up here, and the next run needs a new destination.", "With others, you stay down until the mission is over. So look out for each other."])
+lines = Array[String](["If you fall out there, you lose the ore you're carrying, and you wake up in my medical bay at full health.", "When you're alone out there, falling ends the mission. You wake up in my medical bay, and the next run needs a new destination.", "With others, you stay down until the mission is over. So look out for each other."])
 requires = Array[StringName]([&"medic.greeting"])
 
 [sub_resource type="Resource" id="Resource_about"]

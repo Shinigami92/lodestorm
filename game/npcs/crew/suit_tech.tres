@@ -8,7 +8,8 @@
 script = ExtResource("3_topic")
 id = &"suit_tech.greeting"
 title = "Hello"
-lines = Array[String](["Hi! I keep your suits running: the armor here, and the skills next door.", "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."])
+lines = Array[String](["Hi! I keep your suits running: the armor in my room, and the skills in the room next to it.", "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."])
+
 
 [sub_resource type="Resource" id="Resource_armor"]
 script = ExtResource("3_topic")
@@ -21,7 +22,7 @@ requires = Array[StringName]([&"suit_tech.greeting"])
 script = ExtResource("3_topic")
 id = &"suit_tech.skills"
 title = "Skills"
-lines = Array[String](["Next door is the skill graph. Every skill teaches your suit something new, like a quick dash or more spare magazines.", "Some skills need another one first, and I'll tell you which. The ones you can learn and pay for right now pulse.", "Learning one costs ore from your hold and takes a while, just like an upgrade. Some skills have several ranks, each a bit stronger."])
+lines = Array[String](["The skill graph is in the room next to mine. Every skill teaches your suit something new, like a quick dash or more spare magazines.", "Some skills need another one first, and I'll tell you which. The ones you can learn and pay for right now pulse.", "Learning one costs ore from your hold and takes a while, just like an upgrade. Some skills have several ranks, each a bit stronger."])
 requires = Array[StringName]([&"suit_tech.greeting"])
 
 [sub_resource type="Resource" id="Resource_about"]

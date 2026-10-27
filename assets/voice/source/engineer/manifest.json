@@ -96,12 +96,6 @@
       "seed": 1,
       "text": "Eine Platte kostet Erz. Ist sie das Schiffsprojekt, zahlt jede Mission zuerst darauf ein, bevor die Ausbeute geteilt wird, also zahlst du mit."
     },
-    "95db2cbf31ca8f45": {
-      "anchor": "d41e7c855e6c7261",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Dieser Schild ist die beste Antwort, die ich bisher habe. Jede Platte, die wir einbauen, bringt mir etwas Neues bei, und ich schreibe alles auf."
-    },
     "9c66cea7598dab35": {
       "anchor": "d41e7c855e6c7261",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -137,6 +131,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Die neue Platte hält. Vehra ist jetzt in Reichweite, der nächste Planet weiter innen. Die Aliens dort halten mehr aus als auf Torvane."
+    },
+    "b33dc78478d061f2": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ah, gut. Komm mal im Maschinenraum vorbei und sieh dir den Antriebskern und den Hitzeschild darum an. Er hält uns am Leben, wenn wir näher an den Stern heranfliegen."
+    },
+    "b3e3826831c6688a": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Schild um den Antriebskern ist die beste Antwort, die ich bisher habe. Jede Platte, die wir einbauen, bringt mir etwas Neues bei, und ich schreibe alles auf."
     },
     "c1b13ca284b34009": {
       "anchor": "d41e7c855e6c7261",
@@ -272,12 +278,6 @@
       "seed": 1,
       "text": "A plate costs ore. Once it's the ship's project, every run pays into it first, before the haul is shared, so you help pay for it too."
     },
-    "95db2cbf31ca8f45": {
-      "anchor": "d2ad127d30de6e63",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "This shield is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
-    },
     "9c66cea7598dab35": {
       "anchor": "d2ad127d30de6e63",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -313,6 +313,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The new plate holds. Vehra is in reach now, the next planet inwards. The aliens there are tougher than on Torvane."
+    },
+    "b33dc78478d061f2": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ah, good. Come by the engine room sometime and look at the drive core, and the heat shield around it. It's what keeps us alive when we fly closer to the star."
+    },
+    "b3e3826831c6688a": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The shield around the drive core is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
     },
     "c1b13ca284b34009": {
       "anchor": "d2ad127d30de6e63",

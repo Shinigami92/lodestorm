@@ -180,14 +180,15 @@ func test_voices_have_their_own_volume() -> void:
 	GameSettings.volumes.clear()
 
 
-## The English lines of `profile`: the prompts, the greeting's and every topic's (also a guest's),
-## its reactions' and its tour's.
+## The English lines of `profile`: the prompts, the greeting's and every topic's (also a guest's and
+## the ones for elsewhere), its reactions' and its tour's.
 func _lines(profile: NpcProfile) -> Array[String]:
 	var lines: Array[String] = []
 	lines.append_array(profile.dialogue.get_prompts())
 	for topic: Topic in [profile.dialogue.greeting] + profile.dialogue.topics:
 		lines.append_array(topic.lines)
 		lines.append_array(topic.guest_lines)
+		lines.append_array(topic.away_lines)
 	for reaction: CrewReaction in profile.reactions:
 		lines.append_array(reaction.lines)
 	var tour: Tour = profile.tour

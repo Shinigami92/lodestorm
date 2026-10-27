@@ -24,6 +24,12 @@
       "seed": 1,
       "text": "Der Kolonie fehlt fast alles, und das meiste, was sie am Laufen hält, ist Erz, das Crews wie eure von den Planeten heraufbringen."
     },
+    "224b33a72d88c56b": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Regale im Depot sehen voll aus, aber die meisten dieser Kisten sind schon jemandem versprochen. Was heute reinkommt, ist nächste Woche weg."
+    },
     "268dcc0d31630876": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -60,12 +66,6 @@
       "seed": 1,
       "text": "Ein paar Tausend Leute leben auf dieser Station. Die meisten kamen mit den Frachtern der Kolonie, mit kaum mehr als dem, was sie tragen konnten."
     },
-    "56dcb46b12dc0a94": {
-      "anchor": "4dc636caa23416cd",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Die Regale hinter mir sehen voll aus, aber die meisten dieser Kisten sind schon jemandem versprochen. Was heute reinkommt, ist nächste Woche weg."
-    },
     "61a017fbaa980e9a": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -90,12 +90,6 @@
       "seed": 1,
       "text": "Die beiden Trichter auf meiner Theke sind die Erzbörse. Du gibst ein Erz hinein und bekommst ein anderes heraus, aber nur drei zu eins."
     },
-    "7b3f311250fc2305": {
-      "anchor": "4dc636caa23416cd",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Alles, was die Kolonie isst, atmet und verbaut, lagert hier: Essen, Luftfilter, Ersatzteile und Metall."
-    },
     "7ecc979172044699": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -113,6 +107,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Was kann das Depot für dich tun?"
+    },
+    "f8ffe1e3398c62db": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Alles, was die Kolonie isst, atmet und verbaut, lagert in meinem Depot: Essen, Luftfilter, Ersatzteile und Metall."
     }
   },
   "en": {
@@ -139,6 +139,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The colony is short of nearly everything, and most of what keeps it going is ore that crews like yours bring up from the planets."
+    },
+    "224b33a72d88c56b": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The depot's shelves look full, but most of those crates are already promised to someone. What comes in today is gone by next week."
     },
     "268dcc0d31630876": {
       "anchor": "06a309e0b3e2b83b",
@@ -176,12 +182,6 @@
       "seed": 1,
       "text": "A few thousand people live aboard this station. Most of them came in on the colony's haulers, with little more than what they could carry."
     },
-    "56dcb46b12dc0a94": {
-      "anchor": "06a309e0b3e2b83b",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "The shelves behind me look full, but most of those crates are already promised to someone. What comes in today is gone by next week."
-    },
     "61a017fbaa980e9a": {
       "anchor": "06a309e0b3e2b83b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -206,12 +206,6 @@
       "seed": 1,
       "text": "The two hoppers on my counter are the ore exchange. You put one ore in and get another one out, but only at three for one."
     },
-    "7b3f311250fc2305": {
-      "anchor": "06a309e0b3e2b83b",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Everything the colony eats, breathes and builds with is stored here: food, air filters, spare parts and metal."
-    },
     "7ecc979172044699": {
       "anchor": "06a309e0b3e2b83b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -229,6 +223,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "What can the depot do for you?"
+    },
+    "f8ffe1e3398c62db": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Everything the colony eats, breathes and builds with is stored in my depot: food, air filters, spare parts and metal."
     }
   }
 }

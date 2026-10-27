@@ -10,6 +10,7 @@ script = ExtResource("3_topic")
 id = &"pilot.greeting"
 title = "Hello"
 lines = Array[String](["There you are. I keep us flying, and every trip starts here at the navigator. Come over to the holo table whenever you want to pick where we go next.", "I'll take us anywhere the ship can reach. Where we land is your call, though: you're the ones who walk out there."])
+away_lines = Array[String](["There you are. I keep us flying, and every trip starts at the navigator on the bridge. Meet me at the holo table whenever you want to pick where we go next.", "I'll take us anywhere the ship can reach. Where we land is your call, though: you're the ones who walk out there."])
 
 [sub_resource type="Resource" id="Resource_navigator"]
 script = ExtResource("3_topic")
@@ -29,7 +30,7 @@ requires = Array[StringName]([&"pilot.greeting"])
 script = ExtResource("3_topic")
 id = &"pilot.flight"
 title = "Flying"
-lines = Array[String](["Once the destination is set, go to the flight console in the cockpit, right next door, and set the course there. Anyone can do that, not just me.", "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down.", "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."])
+lines = Array[String](["Once the destination is set, the course is set at the flight console in the cockpit. Anyone can do that, not just me.", "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down.", "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."])
 requires = Array[StringName]([&"pilot.greeting"])
 
 [sub_resource type="Resource" id="Resource_ostra"]

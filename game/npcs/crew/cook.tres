@@ -10,12 +10,13 @@ script = ExtResource("3_topic")
 id = &"cook.greeting"
 title = "Hello"
 lines = Array[String](["Hungry? Sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you.", "Everyone comes through my mess hall sooner or later. So if you want to know what's going on aboard, I'm the one to ask."])
+away_lines = Array[String](["Hungry? Come by the mess hall and sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you.", "Everyone comes through my mess hall sooner or later. So if you want to know what's going on aboard, I'm the one to ask."])
 
 [sub_resource type="Resource" id="Resource_crew"]
 script = ExtResource("3_topic")
 id = &"cook.crew"
 title = "The crew"
-lines = Array[String](["Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door.", "Hollis keeps the miners going. Ilse has the medical bay at the nose, and Okoro is down in the engine room with the heat shield.", "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And I'm up here, of course."])
+lines = Array[String](["Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door.", "Hollis keeps the miners going. Ilse has the medical bay at the nose, and Okoro is down in the engine room with the heat shield.", "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And you'll always find me in the mess hall."])
 requires = Array[StringName]([&"cook.greeting"])
 
 [sub_resource type="Resource" id="Resource_news"]
@@ -35,7 +36,7 @@ requires = Array[StringName]([&"cook.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
-prompts = Array[String](["What'll it be?", "Hungry, or just curious?", "Go on, I've got a pot on, but I'm listening.", "Pull up a chair. What's on your mind?"])
+prompts = Array[String](["What'll it be?", "Hungry, or just curious?", "Go on, I've got a pot on, but I'm listening.", "Hey, you. What's on your mind?"])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_crew"), SubResource("Resource_news"), SubResource("Resource_about")])
 
 [sub_resource type="Resource" id="Reaction_planet_opened_gaulm"]

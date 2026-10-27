@@ -36,17 +36,17 @@
       "seed": 1,
       "text": "Am Anpassungsrahmen kann ich die Panzerung deines Anzugs verstärken. Jede Stufe gibt dir mehr Gesundheit, damit du da draußen mehr einstecken kannst."
     },
+    "6b2e129aac54f94f": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hi! Ich halte eure Anzüge in Schuss: die Panzerung in meinem Raum und die Fähigkeiten im Raum daneben."
+    },
     "7368f154637e76e0": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Wenn ihr da unten herumlauft, auf einem echten Planeten unter einem echten Himmel, bin ich also ein bisschen neidisch. Erzähl mir irgendwann, wie es dort ist."
-    },
-    "847bb4f25d095000": {
-      "anchor": "dc880a8ce29f2392",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Nebenan ist der Fähigkeitenbaum. Jede Fähigkeit bringt deinem Anzug etwas Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
     },
     "86c748b906dfdd27": {
       "anchor": "dc880a8ce29f2392",
@@ -72,11 +72,11 @@
       "seed": 1,
       "text": "Ich bin auf Ostra geboren. Bevor ich zu euch kam, war ich noch nie von der Station weg, kein einziges Mal."
     },
-    "fbb91c9120b8b1db": {
+    "e6454a1194964752": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Hi! Ich halte eure Anzüge in Schuss: die Panzerung hier und die Fähigkeiten nebenan."
+      "text": "Der Fähigkeitenbaum ist im Raum neben meinem. Jede Fähigkeit bringt deinem Anzug etwas Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
     }
   },
   "en": {
@@ -116,17 +116,17 @@
       "seed": 1,
       "text": "At the fitting frame, I can reinforce your suit's armor. Every level gives you more health, so you can take more hits out there."
     },
+    "6b2e129aac54f94f": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hi! I keep your suits running: the armor in my room, and the skills in the room next to it."
+    },
     "7368f154637e76e0": {
       "anchor": "1bb393d288e21b8b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."
-    },
-    "847bb4f25d095000": {
-      "anchor": "1bb393d288e21b8b",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Next door is the skill graph. Every skill teaches your suit something new, like a quick dash or more spare magazines."
     },
     "86c748b906dfdd27": {
       "anchor": "1bb393d288e21b8b",
@@ -152,11 +152,11 @@
       "seed": 1,
       "text": "I was born on Ostra. Before I joined you, I'd never been off the station, not even once."
     },
-    "fbb91c9120b8b1db": {
+    "e6454a1194964752": {
       "anchor": "1bb393d288e21b8b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Hi! I keep your suits running: the armor here, and the skills next door."
+      "text": "The skill graph is in the room next to mine. Every skill teaches your suit something new, like a quick dash or more spare magazines."
     }
   }
 }

@@ -113,8 +113,8 @@ msgid "Go on, I've got a pot on, but I'm listening."
 msgstr "Erzähl ruhig. Ich hab was auf dem Herd, aber ich höre zu."
 
 #: game/npcs/crew/cook.tres
-msgid "Pull up a chair. What's on your mind?"
-msgstr "Nimm dir einen Stuhl. Was liegt dir auf dem Herzen?"
+msgid "Hey, you. What's on your mind?"
+msgstr "Na, du. Was liegt dir auf dem Herzen?"
 
 #: game/npcs/crew/cook.tres
 #: game/npcs/crew/engineer.tres
@@ -140,6 +140,10 @@ msgid "Everyone comes through my mess hall sooner or later. So if you want to kn
 msgstr "Früher oder später kommt jeder durch meine Messe. Wenn du also wissen willst, was an Bord los ist, frag am besten mich."
 
 #: game/npcs/crew/cook.tres
+msgid "Hungry? Come by the mess hall and sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you."
+msgstr "Hunger? Komm in die Messe und setz dich, wo du willst. Es ist nichts Besonderes, aber es ist warm, und da draußen kocht dir niemand etwas."
+
+#: game/npcs/crew/cook.tres
 msgid "The crew"
 msgstr "Die Crew"
 
@@ -152,8 +156,8 @@ msgid "Hollis keeps the miners going. Ilse has the medical bay at the nose, and 
 msgstr "Hollis hält die Miner am Laufen. Ilse hat die Krankenstation im Bug, und Okoro ist unten im Maschinenraum beim Hitzeschild."
 
 #: game/npcs/crew/cook.tres
-msgid "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And I'm up here, of course."
-msgstr "Tamsin fliegt das Schiff. Du findest sie auf der Brücke oder während des Flugs im Cockpit. Und ich bin natürlich hier oben."
+msgid "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And you'll always find me in the mess hall."
+msgstr "Tamsin fliegt das Schiff. Du findest sie auf der Brücke oder während des Flugs im Cockpit. Und mich findest du immer in der Messe."
 
 #: game/npcs/crew/cook.tres
 msgid "News"
@@ -211,6 +215,10 @@ msgstr "Ah, gut, komm und sieh dir das an: der Antriebskern und der Hitzeschild 
 #: game/npcs/crew/engineer.tres
 msgid "I look after the engine room and the cargo bay. If you want to know how we get further in, or what happens to the ore you bring back, ask me."
 msgstr "Ich kümmere mich um den Maschinenraum und den Frachtraum. Wenn du wissen willst, wie wir weiter hineinkommen oder was mit dem Erz passiert, das du mitbringst, frag mich."
+
+#: game/npcs/crew/engineer.tres
+msgid "Ah, good. Come by the engine room sometime and look at the drive core, and the heat shield around it. It's what keeps us alive when we fly closer to the star."
+msgstr "Ah, gut. Komm mal im Maschinenraum vorbei und sieh dir den Antriebskern und den Hitzeschild darum an. Er hält uns am Leben, wenn wir näher an den Stern heranfliegen."
 
 #: game/npcs/crew/engineer.tres
 msgid "The heat shield"
@@ -301,8 +309,8 @@ msgid "I came out here to study the star. Kesh is restless, more than anyone exp
 msgstr "Ich bin hergekommen, um den Stern zu erforschen. Kesh ist unruhig, mehr, als irgendwer erwartet hat, als die Kolonie geplant wurde."
 
 #: game/npcs/crew/engineer.tres
-msgid "This shield is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
-msgstr "Dieser Schild ist die beste Antwort, die ich bisher habe. Jede Platte, die wir einbauen, bringt mir etwas Neues bei, und ich schreibe alles auf."
+msgid "The shield around the drive core is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
+msgstr "Der Schild um den Antriebskern ist die beste Antwort, die ich bisher habe. Jede Platte, die wir einbauen, bringt mir etwas Neues bei, und ich schreibe alles auf."
 
 #: game/npcs/crew/engineer.tres
 msgid "The new plate holds. Vehra is in reach now, the next planet inwards. The aliens there are tougher than on Torvane."
@@ -337,12 +345,12 @@ msgid "Need something improved?"
 msgstr "Soll ich etwas verbessern?"
 
 #: game/npcs/crew/gunsmith.tres
-msgid "Ask away, just mind the bench."
-msgstr "Frag ruhig, aber pass auf die Werkbank auf."
+msgid "Ask away, I've got a moment."
+msgstr "Frag ruhig, ich hab gerade einen Moment."
 
 #: game/npcs/crew/gunsmith.tres
-msgid "What brings you to my bench?"
-msgstr "Was führt dich an meine Werkbank?"
+msgid "Got a weapon that needs work?"
+msgstr "Hast du eine Waffe, an der ich arbeiten soll?"
 
 #: game/npcs/crew/gunsmith.tres
 msgid "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
@@ -351,6 +359,10 @@ msgstr "Willkommen im Waffenraum. Im Regal hängt jede Waffe, die ich kenne, und
 #: game/npcs/crew/gunsmith.tres
 msgid "The see-through ones on the rack you don't own yet. I need a weapon's blueprint before I can build it for you."
 msgstr "Die durchsichtigen im Regal besitzt du noch nicht. Ich brauche den Bauplan einer Waffe, bevor ich sie dir bauen kann."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "The weapons room is mine. The rack there holds every weapon I know of, and my bench is where I make yours better."
+msgstr "Der Waffenraum gehört mir. Im Regal dort hängt jede Waffe, die ich kenne, und an meiner Werkbank mache ich deine besser."
 
 #: game/npcs/crew/gunsmith.tres
 msgid "Upgrades"
@@ -454,6 +466,14 @@ msgid "But whatever happens out there, this is where you wake up again. Ask me a
 msgstr "Aber was da draußen auch passiert, hier wachst du wieder auf. Frag mich ruhig alles, was dir hilft, heil zu bleiben."
 
 #: game/npcs/crew/medic.tres
+msgid "The medical bay at the nose is mine, and I'd rather see you walk in there than wake up there."
+msgstr "Die Krankenstation im Bug gehört mir, und ich sehe dich dort lieber hereinkommen als dort aufwachen."
+
+#: game/npcs/crew/medic.tres
+msgid "But whatever happens out there, that's where you wake up again. Ask me anything about staying in one piece."
+msgstr "Aber was da draußen auch passiert, dort wachst du wieder auf. Frag mich ruhig alles, was dir hilft, heil zu bleiben."
+
+#: game/npcs/crew/medic.tres
 msgid "Wounds"
 msgstr "Wunden"
 
@@ -462,8 +482,8 @@ msgid "Your wounds don't just go away when the ramp closes. If you come back hur
 msgstr "Deine Wunden verschwinden nicht einfach, wenn sich die Rampe schließt. Wenn du verletzt zurückkommst, beginnst du die nächste Mission genauso verletzt."
 
 #: game/npcs/crew/medic.tres
-msgid "So before you go out again, lie down on one of the med beds here. It doesn't cost you anything."
-msgstr "Leg dich also vor dem nächsten Einsatz auf eins der Medizinbetten hier. Das kostet dich nichts."
+msgid "So before you go out again, lie down on one of my med beds. It doesn't cost you anything."
+msgstr "Leg dich also vor dem nächsten Einsatz auf eins meiner Medizinbetten. Das kostet dich nichts."
 
 #: game/npcs/crew/medic.tres
 msgid "If you forget, the ramp button reminds you once. After that, it's up to you."
@@ -490,12 +510,12 @@ msgid "Falling out there"
 msgstr "Wenn du fällst"
 
 #: game/npcs/crew/medic.tres
-msgid "If you fall out there, you lose the ore you're carrying, and you wake up here at full health."
-msgstr "Wenn du da draußen fällst, verlierst du das Erz, das du trägst, und wachst hier mit voller Gesundheit auf."
+msgid "If you fall out there, you lose the ore you're carrying, and you wake up in my medical bay at full health."
+msgstr "Wenn du da draußen fällst, verlierst du das Erz, das du trägst, und wachst mit voller Gesundheit in meiner Krankenstation auf."
 
 #: game/npcs/crew/medic.tres
-msgid "When you're alone out there, falling ends the mission. You wake up here, and the next run needs a new destination."
-msgstr "Wenn du allein unterwegs bist, endet die Mission, sobald du fällst. Du wachst hier auf, und für den nächsten Einsatz braucht es ein neues Ziel."
+msgid "When you're alone out there, falling ends the mission. You wake up in my medical bay, and the next run needs a new destination."
+msgstr "Wenn du allein unterwegs bist, endet die Mission, sobald du fällst. Du wachst in meiner Krankenstation auf, und für den nächsten Einsatz braucht es ein neues Ziel."
 
 #: game/npcs/crew/medic.tres
 msgid "With others, you stay down until the mission is over. So look out for each other."
@@ -543,8 +563,8 @@ msgid "Hm. You're here about the miners. Good. They pay for everything on this s
 msgstr "Hm. Du kommst wegen der Miner. Gut. Sie bezahlen alles auf diesem Schiff, also behandle sie anständig."
 
 #: game/npcs/crew/miner_mechanic.tres
-msgid "M-01 there in its cradle is yours. Out there, the miners dig while you keep the aliens off them."
-msgstr "M-01 dort in der Halterung gehört dir. Da draußen graben die Miner, während du ihnen die Aliens vom Leib hältst."
+msgid "Your own miner, M-01, waits in its cradle. Out there, the miners dig while you keep the aliens off them."
+msgstr "Dein eigener Miner, M-01, wartet in seiner Halterung. Da draußen graben die Miner, während du ihnen die Aliens vom Leib hältst."
 
 #: game/npcs/crew/miner_mechanic.tres
 msgid "Placing miners"
@@ -659,6 +679,10 @@ msgid "I'll take us anywhere the ship can reach. Where we land is your call, tho
 msgstr "Ich bringe uns überallhin, wo das Schiff hinkommt. Wo wir landen, entscheidest aber du: Schließlich gehst du da raus."
 
 #: game/npcs/crew/pilot.tres
+msgid "There you are. I keep us flying, and every trip starts at the navigator on the bridge. Meet me at the holo table whenever you want to pick where we go next."
+msgstr "Da bist du ja. Ich halte uns in der Luft, und jede Reise beginnt am Navigator auf der Brücke. Komm zu mir an den Holotisch, wann immer du aussuchen willst, wohin es als Nächstes geht."
+
+#: game/npcs/crew/pilot.tres
 msgid "The navigator"
 msgstr "Der Navigator"
 
@@ -695,8 +719,8 @@ msgid "Flying"
 msgstr "Fliegen"
 
 #: game/npcs/crew/pilot.tres
-msgid "Once the destination is set, go to the flight console in the cockpit, right next door, and set the course there. Anyone can do that, not just me."
-msgstr "Sobald das Ziel steht, geh zur Flugkonsole im Cockpit gleich nebenan und setz dort den Kurs. Das kann jeder, nicht nur ich."
+msgid "Once the destination is set, the course is set at the flight console in the cockpit. Anyone can do that, not just me."
+msgstr "Sobald das Ziel steht, wird der Kurs an der Flugkonsole im Cockpit gesetzt. Das kann jeder, nicht nur ich."
 
 #: game/npcs/crew/pilot.tres
 msgid "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down."
@@ -828,8 +852,8 @@ msgid "Questions about your gear?"
 msgstr "Fragen zu deiner Ausrüstung?"
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
-msgstr "Gut, dass du da bist. Lass uns vor der nächsten Mission kurz die Waffenkammer durchgehen. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind."
+msgid "Good, you're here. Before the next mission, let me tell you how the armory works. Keeping your gear and your ammo in order is my job."
+msgstr "Gut, dass du da bist. Lass mich dir vor der nächsten Mission kurz erklären, wie die Waffenkammer funktioniert. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
@@ -931,8 +955,8 @@ msgid "Shooting range"
 msgstr "Schießstand"
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
-msgstr "Gleich nebenan ist der Schießstand. Wenn du eine neue Waffe bekommst, probier sie dort aus, bevor du sie auf eine Mission mitnimmst."
+msgid "Right next to my armory is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
+msgstr "Gleich neben meiner Waffenkammer ist der Schießstand. Wenn du eine neue Waffe bekommst, probier sie dort aus, bevor du sie auf eine Mission mitnimmst."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end."
@@ -1075,8 +1099,8 @@ msgid "What can I do for you today?"
 msgstr "Was kann ich heute für dich tun?"
 
 #: game/npcs/crew/suit_tech.tres
-msgid "Hi! I keep your suits running: the armor here, and the skills next door."
-msgstr "Hi! Ich halte eure Anzüge in Schuss: die Panzerung hier und die Fähigkeiten nebenan."
+msgid "Hi! I keep your suits running: the armor in my room, and the skills in the room next to it."
+msgstr "Hi! Ich halte eure Anzüge in Schuss: die Panzerung in meinem Raum und die Fähigkeiten im Raum daneben."
 
 #: game/npcs/crew/suit_tech.tres
 msgid "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."
@@ -1101,8 +1125,8 @@ msgid "Skills"
 msgstr "Fähigkeiten"
 
 #: game/npcs/crew/suit_tech.tres
-msgid "Next door is the skill graph. Every skill teaches your suit something new, like a quick dash or more spare magazines."
-msgstr "Nebenan ist der Fähigkeitenbaum. Jede Fähigkeit bringt deinem Anzug etwas Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
+msgid "The skill graph is in the room next to mine. Every skill teaches your suit something new, like a quick dash or more spare magazines."
+msgstr "Der Fähigkeitenbaum ist im Raum neben meinem. Jede Fähigkeit bringt deinem Anzug etwas Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
 
 #: game/npcs/crew/suit_tech.tres
 msgid "Some skills need another one first, and I'll tell you which. The ones you can learn and pay for right now pulse."
@@ -1161,8 +1185,8 @@ msgid "This place belongs to whoever needs it. Crews meet here, colonists come t
 msgstr "Dieser Ort gehört allen, die ihn brauchen. Crews treffen sich hier, Leute aus der Kolonie vergessen für eine Stunde ihre Arbeit, und der Rat tut so, als würde er hier nie etwas trinken."
 
 #: game/npcs/ostra/bartender.tres
-msgid "The best place to hear news is right here at the counter. Crews talk more freely with a drink in their hand."
-msgstr "Neuigkeiten hört man am besten genau hier an der Theke. Mit einem Glas in der Hand reden die Crews offener."
+msgid "The best place to hear news is at my counter. Crews talk more freely with a drink in their hand."
+msgstr "Neuigkeiten hört man am besten an meiner Theke. Mit einem Glas in der Hand reden die Crews offener."
 
 #: game/npcs/ostra/bartender.tres
 msgid "About Nell"
@@ -1659,6 +1683,10 @@ msgid "We don't always agree, but every decision is made in the open. Anyone on 
 msgstr "Wir sind uns nicht immer einig, aber jede Entscheidung fällt öffentlich. Alle auf der Station dürfen kommen und zuhören."
 
 #: game/npcs/ostra/councillor.tres
+msgid "We meet at the long table in the council office. It's the only one on the station that's big enough, so every argument ends up there too."
+msgstr "Wir tagen am langen Tisch im Ratsbüro. Er ist der einzige auf der Station, der groß genug ist, also landet auch jeder Streit dort."
+
+#: game/npcs/ostra/councillor.tres
 msgid "The planet below us is Torvane. The colony's first landing sites were down there, so it's the planet we know best."
 msgstr "Der Planet unter uns ist Torvane. Dort unten lagen die ersten Landeplätze der Kolonie, deshalb kennen wir ihn am besten."
 
@@ -1667,8 +1695,8 @@ msgid "There are dry dust flats and a wide swamp full of giant growth. The hive 
 msgstr "Es gibt dort trockene Staubebenen und einen weiten Sumpf voller riesiger Pflanzen. Der Schwarm ist überall, aber auf Torvane ist er am schwächsten."
 
 #: game/npcs/ostra/councillor.tres
-msgid "If you want to see it, go to the observation gallery at the far end of the station. The view from there is worth the walk."
-msgstr "Wenn du ihn sehen willst, geh zur Aussichtsgalerie am anderen Ende der Station. Der Blick von dort lohnt den Weg."
+msgid "If you want to see it, the observation gallery at the far end of the station has the best view. It's worth the walk."
+msgstr "Wenn du ihn sehen willst: Die Aussichtsgalerie am anderen Ende der Station hat den besten Blick. Der Weg lohnt sich."
 
 #: game/npcs/ostra/councillor.tres
 msgid "About Selin"
@@ -1719,12 +1747,12 @@ msgid "The depot"
 msgstr "Das Depot"
 
 #: game/npcs/ostra/depot_master.tres
-msgid "Everything the colony eats, breathes and builds with is stored here: food, air filters, spare parts and metal."
-msgstr "Alles, was die Kolonie isst, atmet und verbaut, lagert hier: Essen, Luftfilter, Ersatzteile und Metall."
+msgid "Everything the colony eats, breathes and builds with is stored in my depot: food, air filters, spare parts and metal."
+msgstr "Alles, was die Kolonie isst, atmet und verbaut, lagert in meinem Depot: Essen, Luftfilter, Ersatzteile und Metall."
 
 #: game/npcs/ostra/depot_master.tres
-msgid "The shelves behind me look full, but most of those crates are already promised to someone. What comes in today is gone by next week."
-msgstr "Die Regale hinter mir sehen voll aus, aber die meisten dieser Kisten sind schon jemandem versprochen. Was heute reinkommt, ist nächste Woche weg."
+msgid "The depot's shelves look full, but most of those crates are already promised to someone. What comes in today is gone by next week."
+msgstr "Die Regale im Depot sehen voll aus, aber die meisten dieser Kisten sind schon jemandem versprochen. Was heute reinkommt, ist nächste Woche weg."
 
 #: game/npcs/ostra/depot_master.tres
 msgid "Ore is the one thing we can never get enough of. Without it, the workshops stop, and nothing gets repaired."

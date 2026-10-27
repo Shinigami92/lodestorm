@@ -15,13 +15,14 @@ script = ExtResource("3_topic")
 id = &"councillor.council"
 title = "The council"
 lines = Array[String](["The council is a handful of people the colonists chose to make the hard decisions: who gets which supplies, which repairs come first and which crews we work with.", "We meet at this table. It's the only one on the station that's big enough, so every argument ends up here too.", "We don't always agree, but every decision is made in the open. Anyone on the station can come and listen."])
+away_lines = Array[String](["The council is a handful of people the colonists chose to make the hard decisions: who gets which supplies, which repairs come first and which crews we work with.", "We meet at the long table in the council office. It's the only one on the station that's big enough, so every argument ends up there too.", "We don't always agree, but every decision is made in the open. Anyone on the station can come and listen."])
 requires = Array[StringName]([&"councillor.greeting"])
 
 [sub_resource type="Resource" id="Resource_torvane"]
 script = ExtResource("3_topic")
 id = &"councillor.torvane"
 title = "Torvane"
-lines = Array[String](["The planet below us is Torvane. The colony's first landing sites were down there, so it's the planet we know best.", "There are dry dust flats and a wide swamp full of giant growth. The hive is everywhere, but on Torvane it's at its weakest.", "If you want to see it, go to the observation gallery at the far end of the station. The view from there is worth the walk."])
+lines = Array[String](["The planet below us is Torvane. The colony's first landing sites were down there, so it's the planet we know best.", "There are dry dust flats and a wide swamp full of giant growth. The hive is everywhere, but on Torvane it's at its weakest.", "If you want to see it, the observation gallery at the far end of the station has the best view. It's worth the walk."])
 requires = Array[StringName]([&"councillor.greeting"])
 
 [sub_resource type="Resource" id="Resource_selin"]

@@ -186,9 +186,11 @@ func get_line() -> String:
 
 
 ## The lines of the topic being told for the player talking to them (a guest's where it has them,
-## see `Topic.lines_for`); none while the list shows.
+## the ones for elsewhere outside their own room, see `Topic.lines_for`); none while the list shows.
 func get_topic_lines() -> Array[String]:
-	return topic.lines_for(is_guest()) if topic else ([] as Array[String])
+	if not topic:
+		return [] as Array[String]
+	return topic.lines_for(is_guest(), routine != null and routine.is_away())
 
 
 ## Whether the player talking to them is a guest aboard (in co-op, not the host): the ship and its

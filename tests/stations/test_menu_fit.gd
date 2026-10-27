@@ -410,7 +410,7 @@ func test_every_station_line_card_and_remark_fits_in_every_language() -> void:
 				assert_gte(share, MIN_TEXT_HEIGHT, label + " reads")
 
 
-## Every line of `npc`'s topics and their card fit in every language.
+## Every line of `npc`'s topics (also the ones for elsewhere) and their card fit in every language.
 func _assert_lines_fit(npc: Npc) -> void:
 	var profile: NpcProfile = npc.profile
 	_player.global_position = npc.use_point.global_position
@@ -437,6 +437,11 @@ func _assert_lines_fit(npc: Npc) -> void:
 				_assert_card_fits(npc, label)
 				_assert_bubble_fits(npc, label)
 				npc.advance()
+			# What they say outside their own room.
+			for line: int in topic.away_lines.size():
+				(npc.bubble.content as SpeechBubble).show_line(tr(topic.away_lines[line]))
+				await wait_process_frames(1)
+				_assert_bubble_fits(npc, "%s %s away line %d" % [locale, topic.id, line + 1])
 		npc.close()
 
 

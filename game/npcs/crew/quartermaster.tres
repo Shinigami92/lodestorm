@@ -12,7 +12,8 @@
 script = ExtResource("3_topic")
 id = &"quartermaster.greeting"
 title = "Hello"
-lines = Array[String](["Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job.", "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though.", "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay.", "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."])
+lines = Array[String](["Good, you're here. Before the next mission, let me tell you how the armory works. Keeping your gear and your ammo in order is my job.", "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though.", "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay.", "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."])
+
 
 [sub_resource type="Resource" id="Resource_ammo"]
 script = ExtResource("3_topic")
@@ -54,7 +55,7 @@ requires_weapon = ExtResource("4_brask")
 script = ExtResource("3_topic")
 id = &"quartermaster.range"
 title = "Shooting range"
-lines = Array[String](["Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission.", "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end.", "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."])
+lines = Array[String](["Right next to my armory is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission.", "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end.", "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."])
 requires = Array[StringName]([&"quartermaster.greeting"])
 
 [sub_resource type="Resource" id="Resource_dialogue"]

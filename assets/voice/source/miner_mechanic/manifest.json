@@ -1,5 +1,11 @@
 {
   "de": {
+    "25e0908c3518d83c": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Dein eigener Miner, M-01, wartet in seiner Halterung. Da draußen graben die Miner, während du ihnen die Aliens vom Leib hältst."
+    },
     "28b22e992ed23572": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -120,12 +126,6 @@
       "seed": 1,
       "text": "Rüste den Bohrer eines Miners auf der Plattform auf, und ich sage dir, welche Erze er mit voller Geschwindigkeit schafft. Wenn du einen Miner aufstellst, kommt der schnellste für dieses Erz."
     },
-    "fb5a469be3252d9b": {
-      "anchor": "b3d782e0b74c1da4",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "M-01 dort in der Halterung gehört dir. Da draußen graben die Miner, während du ihnen die Aliens vom Leib hältst."
-    },
     "fc9a0c417283a98d": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -134,6 +134,12 @@
     }
   },
   "en": {
+    "25e0908c3518d83c": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Your own miner, M-01, waits in its cradle. Out there, the miners dig while you keep the aliens off them."
+    },
     "28b22e992ed23572": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -253,12 +259,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Upgrade a miner's drill on the pad, and I'll tell you which ores it gets through at full speed. When you place a miner, the fastest one for that ore goes."
-    },
-    "fb5a469be3252d9b": {
-      "anchor": "7e5f365715a8dd68",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "M-01 there in its cradle is yours. Out there, the miners dig while you keep the aliens off them."
     },
     "fc9a0c417283a98d": {
       "anchor": "7e5f365715a8dd68",

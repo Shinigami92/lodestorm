@@ -12,12 +12,6 @@
       "seed": 1,
       "text": "If you want news from the rest of the colony, dock at Waypost Ostra. Tamsin can take you there any time."
     },
-    "28d0305ba9436b31": {
-      "anchor": "8ddec42848e6413f",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And I'm up here, of course."
-    },
     "296a39b720ffa7ce": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -36,17 +30,29 @@
       "seed": 1,
       "text": "Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door."
     },
-    "6289d1005f65cde6": {
+    "561f91ace7bdc001": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Pull up a chair. What's on your mind?"
+      "text": "Hungry? Come by the mess hall and sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you."
+    },
+    "7cdd4223838eb44d": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And you'll always find me in the mess hall."
     },
     "803ecea533ff334c": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "I signed on to cook, but mostly I listen. Over a hot meal, people say more than they'd ever admit."
+    },
+    "9d3e61f2cf8f5561": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hey, you. What's on your mind?"
     },
     "a79c755c52dbdf13": {
       "anchor": "8ddec42848e6413f",

@@ -42,6 +42,8 @@ var _docked_transform: Transform3D
 var _clamps: Dictionary[Node3D, Vector3] = {}
 var _ship: Ship
 
+## Its rooms' areas (from its builder), for what people say where they stand.
+@onready var room_plan: RoomPlan = $RoomPlan
 @onready var _cut: Node3D = $Walls/Cut
 @onready var _interior: Area3D = $Interior
 

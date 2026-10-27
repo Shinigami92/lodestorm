@@ -10,6 +10,7 @@ script = ExtResource("3_topic")
 id = &"gunsmith.greeting"
 title = "Hello"
 lines = Array[String](["Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better.", "The see-through ones on the rack you don't own yet. I need a weapon's blueprint before I can build it for you."])
+away_lines = Array[String](["The weapons room is mine. The rack there holds every weapon I know of, and my bench is where I make yours better.", "The see-through ones on the rack you don't own yet. I need a weapon's blueprint before I can build it for you."])
 
 [sub_resource type="Resource" id="Resource_upgrades"]
 script = ExtResource("3_topic")
@@ -42,7 +43,7 @@ requires = Array[StringName]([&"gunsmith.greeting"])
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
-prompts = Array[String](["What are we working on?", "Need something improved?", "Ask away, just mind the bench.", "What brings you to my bench?"])
+prompts = Array[String](["What are we working on?", "Need something improved?", "Ask away, I've got a moment.", "Got a weapon that needs work?"])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_upgrades"), SubResource("Resource_time"), SubResource("Resource_building"), SubResource("Resource_about")])
 
 [sub_resource type="Resource" id="Reaction_weapon_built"]

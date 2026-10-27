@@ -498,8 +498,23 @@ for name, (x0, x1), (z0, z1), height in interior:
         "",
     ]
 
+# --- the rooms' areas, for what people say where they stand (RoomPlan) ---
+plan_names, plan_areas = [], []
+for name, _sign, areas, height, _tint in ROOMS:
+    for (x0, x1), (z0, z1) in areas:
+        plan_names.append(f'&"{name}"')
+        plan_areas.append(f"AABB({g(x0)}, 0, {g(z0)}, {g(x1 - x0)}, {g(height)}, {g(z1 - z0)})")
+nodes += [
+    '[node name="RoomPlan" type="Node3D" parent="."]',
+    'script = ExtResource("room_plan")',
+    f"rooms = Array[StringName]([{', '.join(plan_names)}])",
+    f"areas = Array[AABB]([{', '.join(plan_areas)}])",
+    "",
+]
+
 ext = [
     ("Script", SCRIPT, "script"),
+    ("Script", "res://game/world/room_plan.gd", "room_plan"),
     ("Script", GUIDE_SCRIPT, "guide_script"),
     ("StandardMaterial3D", GUIDE_MATERIAL, "mat_guide"),
     ("StandardMaterial3D", PROP_MATERIAL, "mat_prop"),

@@ -10,6 +10,10 @@ const NAMED: Dictionary[String, NpcProfile] = {
 	"Nell": preload("res://game/npcs/ostra/bartender.tres"),
 	"Rook": preload("res://game/npcs/ostra/rival_captain.tres"),
 }
+## The room each of them is at home in (see `NpcRoutine.get_own_room`).
+const ROOMS: Dictionary[String, StringName] = {
+	"Kade": &"Depot", "Selin": &"Council", "Nell": &"Bar", "Rook": &"Bar"
+}
 
 var _map: Node3D
 var _player: Player
@@ -38,6 +42,8 @@ func test_named_npcs_stand_at_their_places() -> void:
 		var npc := _station.get_node("People/" + who) as Npc
 		assert_eq(npc.profile, NAMED[who], who)
 		assert_eq(npc.ship, _ship, who + " tells the docked ship's story")
+		assert_eq(npc.routine.get_own_room(), ROOMS[who], who + "'s own room")
+		assert_false(npc.routine.is_away(), who)
 	# Facing the room: the depot master towards the camera, the bartender across the counter.
 	assert_almost_eq(_facing("Kade"), Vector3.BACK, Vector3.ONE * 0.01)
 	assert_almost_eq(_facing("Nell"), Vector3.RIGHT, Vector3.ONE * 0.01)

@@ -54,12 +54,6 @@
       "seed": 1,
       "text": "Eine neue Waffe ist nur so gut wie die Hände, die sie halten. Verbring vor der nächsten Mission etwas Zeit am Schießstand."
     },
-    "33dcc9374efdc3f4": {
-      "anchor": "a4a1fdb2cb84ecb9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Gleich nebenan ist der Schießstand. Wenn du eine neue Waffe bekommst, probier sie dort aus, bevor du sie auf eine Mission mitnimmst."
-    },
     "36cb1c3c54a32ca2": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -155,12 +149,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Jede Fernkampfwaffe, die du mitnimmst, startet jede Mission mit zwei Ersatzmagazinen aus dem Vorrat des Schiffs. Beim Nachladen werden zuerst diese verbraucht, und sie kosten dich kein Erz."
-    },
-    "a5c39c66a0b88e52": {
-      "anchor": "a4a1fdb2cb84ecb9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Gut, dass du da bist. Lass uns vor der nächsten Mission kurz die Waffenkammer durchgehen. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind."
     },
     "a681176f9a47b4ee": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -264,6 +252,12 @@
       "seed": 1,
       "text": "Triffst du den Moment, ist das Nachladen sofort fertig. Zu früh oder zu spät, und es dauert stattdessen länger."
     },
+    "ea448e8871d3ab12": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Gleich neben meiner Waffenkammer ist der Schießstand. Wenn du eine neue Waffe bekommst, probier sie dort aus, bevor du sie auf eine Mission mitnimmst."
+    },
     "eb0641cf7f5dd6b6": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -293,6 +287,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Du hast jetzt also Brask, die Schrotflinte. Sie hat kein Magazin, sondern lädt eine Patrone nach der anderen und behält die Patronen, die schon drin sind."
+    },
+    "f5058d5b2408c764": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Gut, dass du da bist. Lass mich dir vor der nächsten Mission kurz erklären, wie die Waffenkammer funktioniert. Ich sorge dafür, dass deine Ausrüstung und deine Munition in Ordnung sind."
     },
     "f7e48a90d5d76cfc": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -361,12 +361,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "A new weapon is only as good as the hands holding it. Spend some time at the shooting range before the next mission."
-    },
-    "33dcc9374efdc3f4": {
-      "anchor": "772c7907f9411bf4",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Right next door is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
     },
     "36cb1c3c54a32ca2": {
       "anchor": "772c7907f9411bf4",
@@ -463,12 +457,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
-    },
-    "a5c39c66a0b88e52": {
-      "anchor": "772c7907f9411bf4",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Good, you're here. Before the next mission, let me go over the armory with you. Keeping your gear and your ammo in order is my job."
     },
     "a681176f9a47b4ee": {
       "anchor": "772c7907f9411bf4",
@@ -572,6 +560,12 @@
       "seed": 1,
       "text": "Hit that moment, and the reload is finished at once. Too early or too late, and it takes longer instead."
     },
+    "ea448e8871d3ab12": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Right next to my armory is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission."
+    },
     "eb0641cf7f5dd6b6": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -601,6 +595,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "So you've got Brask now, the shotgun. It has no magazine: it loads one shell after another, and keeps the shells that are already in."
+    },
+    "f5058d5b2408c764": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Good, you're here. Before the next mission, let me tell you how the armory works. Keeping your gear and your ammo in order is my job."
     },
     "f7e48a90d5d76cfc": {
       "anchor": "772c7907f9411bf4",

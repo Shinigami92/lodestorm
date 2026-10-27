@@ -30,7 +30,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	# Only for the clusters built into it.
 	"SkillTree": [],
 	"StarSystem": [&"display_name"],
-	"Topic": [&"title", &"lines", &"guest_lines"],
+	"Topic": [&"title", &"lines", &"guest_lines", &"away_lines"],
 	"TourStop": [&"lines"],
 	"Upgrade": [&"display_name", &"description"],
 	"WeaponPart": [&"display_name", &"description"],

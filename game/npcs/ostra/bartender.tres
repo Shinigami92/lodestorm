@@ -17,7 +17,7 @@ lines = Array[String](["Welcome to the only bar in orbit around Torvane. I'm Nel
 script = ExtResource("3_topic")
 id = &"bartender.bar"
 title = "The bar"
-lines = Array[String](["This place belongs to whoever needs it. Crews meet here, colonists come to forget their work for an hour, and the council pretends it never drinks here.", "The best place to hear news is right here at the counter. Crews talk more freely with a drink in their hand."])
+lines = Array[String](["This place belongs to whoever needs it. Crews meet here, colonists come to forget their work for an hour, and the council pretends it never drinks here.", "The best place to hear news is at my counter. Crews talk more freely with a drink in their hand."])
 requires = Array[StringName]([&"bartender.greeting"])
 
 [sub_resource type="Resource" id="Resource_nell"]

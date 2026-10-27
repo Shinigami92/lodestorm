@@ -6,12 +6,6 @@
       "seed": 1,
       "text": "Ich kann an mehreren Teilen gleichzeitig arbeiten, aber pro Teil nur an einer Stufe. Wenn du es dir anders überlegst, sag mir, dass ich aufhören soll, und du bekommst alles zurück."
     },
-    "0a4e832f201c2315": {
-      "anchor": "6be268e10ec28642",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Frag ruhig, aber pass auf die Werkbank auf."
-    },
     "1c51716fbe49f224": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -24,17 +18,17 @@
       "seed": 1,
       "text": "Wie weit ich gehen kann, hängt vom Hitzeschild ab. Mit jeder neuen Platte im Maschinenraum kann ich eine Stufe mehr draufsetzen."
     },
-    "228627270b15737c": {
-      "anchor": "6be268e10ec28642",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Was führt dich an meine Werkbank?"
-    },
     "30eaa0a515e13111": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Das meiste in diesem Regal kenne ich nur aus Zeichnungen. Die erste Expedition hat Entwürfe mitgebracht, die keine Werkstatt der Kolonie je gebaut hatte."
+    },
+    "43b3cfae9da0f815": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hast du eine Waffe, an der ich arbeiten soll?"
     },
     "5076350f2e485859": {
       "anchor": "6be268e10ec28642",
@@ -66,6 +60,12 @@
       "seed": 1,
       "text": "Such dir im Regal eine deiner Waffen aus und leg sie auf die Werkbank. Jede Waffe hat drei Teile, die ich verbessern kann, und jedes Teil hat seine eigene Lichterreihe auf der Waffe."
     },
+    "a9d28d3ca1bf13f1": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Waffenraum gehört mir. Im Regal dort hängt jede Waffe, die ich kenne, und an meiner Werkbank mache ich deine besser."
+    },
     "af49d6658e2a2814": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -89,6 +89,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "An jede Waffe muss man sich erst gewöhnen. Gib der neuen ein paar Missionen, bevor du urteilst."
+    },
+    "ce29366b8fa8c552": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Frag ruhig, ich hab gerade einen Moment."
     },
     "cf4a25336bece5ea": {
       "anchor": "6be268e10ec28642",
@@ -128,12 +134,6 @@
       "seed": 1,
       "text": "I can work on several parts at once, but only on one level per part. If you change your mind, tell me to stop, and you get the whole cost back."
     },
-    "0a4e832f201c2315": {
-      "anchor": "663d8198f7a23d6c",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Ask away, just mind the bench."
-    },
     "1c51716fbe49f224": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -146,17 +146,17 @@
       "seed": 1,
       "text": "How far I can go depends on the heat shield. Every new plate in the engine room lets me add one more level."
     },
-    "228627270b15737c": {
-      "anchor": "663d8198f7a23d6c",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "What brings you to my bench?"
-    },
     "30eaa0a515e13111": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Most of what's on that rack I've only ever seen in drawings. The first expedition brought designs no colony workshop had ever made."
+    },
+    "43b3cfae9da0f815": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Got a weapon that needs work?"
     },
     "5076350f2e485859": {
       "anchor": "663d8198f7a23d6c",
@@ -188,6 +188,12 @@
       "seed": 1,
       "text": "Pick one of your weapons at the rack and lay it on the bench. Every weapon has three parts I can improve, and each part has its own row of lights on the weapon."
     },
+    "a9d28d3ca1bf13f1": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The weapons room is mine. The rack there holds every weapon I know of, and my bench is where I make yours better."
+    },
     "af49d6658e2a2814": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -211,6 +217,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Every weapon takes some getting used to. Give the new one a few missions before you judge it."
+    },
+    "ce29366b8fa8c552": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ask away, I've got a moment."
     },
     "cf4a25336bece5ea": {
       "anchor": "663d8198f7a23d6c",

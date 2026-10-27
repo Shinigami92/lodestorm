@@ -60,12 +60,6 @@
       "seed": 1,
       "text": "Der Planet unter uns ist Torvane. Dort unten lagen die ersten Landeplätze der Kolonie, deshalb kennen wir ihn am besten."
     },
-    "586e86ccc2f61371": {
-      "anchor": "14158481aef7c3cc",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Wenn du ihn sehen willst, geh zur Aussichtsgalerie am anderen Ende der Station. Der Blick von dort lohnt den Weg."
-    },
     "609cf7fbca40a67c": {
       "anchor": "14158481aef7c3cc",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -90,11 +84,23 @@
       "seed": 1,
       "text": "Der Rat besteht aus einer Handvoll Leuten, die die Kolonie gewählt hat, um die schweren Entscheidungen zu treffen: wer welche Vorräte bekommt, welche Reparaturen zuerst drankommen und mit welchen Crews wir arbeiten."
     },
+    "c5d4bdca0ba50874": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn du ihn sehen willst: Die Aussichtsgalerie am anderen Ende der Station hat den besten Blick. Der Weg lohnt sich."
+    },
     "e04d80e497cf39ea": {
       "anchor": "14158481aef7c3cc",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Wir tagen an diesem Tisch. Er ist der einzige auf der Station, der groß genug ist, also landet auch jeder Streit hier."
+    },
+    "e39530d576b9654b": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wir tagen am langen Tisch im Ratsbüro. Er ist der einzige auf der Station, der groß genug ist, also landet auch jeder Streit dort."
     }
   },
   "en": {
@@ -158,12 +164,6 @@
       "seed": 1,
       "text": "The planet below us is Torvane. The colony's first landing sites were down there, so it's the planet we know best."
     },
-    "586e86ccc2f61371": {
-      "anchor": "d0c62621f6133826",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "If you want to see it, go to the observation gallery at the far end of the station. The view from there is worth the walk."
-    },
     "609cf7fbca40a67c": {
       "anchor": "d0c62621f6133826",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -188,11 +188,23 @@
       "seed": 1,
       "text": "The council is a handful of people the colonists chose to make the hard decisions: who gets which supplies, which repairs come first and which crews we work with."
     },
+    "c5d4bdca0ba50874": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If you want to see it, the observation gallery at the far end of the station has the best view. It's worth the walk."
+    },
     "e04d80e497cf39ea": {
       "anchor": "d0c62621f6133826",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "We meet at this table. It's the only one on the station that's big enough, so every argument ends up here too."
+    },
+    "e39530d576b9654b": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We meet at the long table in the council office. It's the only one on the station that's big enough, so every argument ends up there too."
     }
   }
 }

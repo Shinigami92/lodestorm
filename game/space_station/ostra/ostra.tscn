@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dd4x4eni5bhlc"]
 
 [ext_resource type="Script" uid="uid://buar6s2nnttlv" path="res://game/space_station/space_station.gd" id="script"]
+[ext_resource type="Script" uid="uid://d4mku8wpofnyn" path="res://game/world/room_plan.gd" id="room_plan"]
 [ext_resource type="Script" uid="uid://cultwlahxlbt4" path="res://game/ship/floor_guide.gd" id="guide_script"]
 [ext_resource type="StandardMaterial3D" uid="uid://bpk3xig2xe43q" path="res://game/ship/materials/guide.tres" id="mat_guide"]
 [ext_resource type="StandardMaterial3D" uid="uid://d0bdki1n4b0el" path="res://game/ship/materials/prop.tres" id="mat_prop"]
@@ -2714,3 +2715,8 @@ shape = SubResource("BoxShape3D_inside_70x10x56")
 [node name="Gallery" type="CollisionShape3D" parent="Interior"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 148, 5, 0)
 shape = SubResource("BoxShape3D_inside_44x10x56")
+
+[node name="RoomPlan" type="Node3D" parent="."]
+script = ExtResource("room_plan")
+rooms = Array[StringName]([&"Hangar", &"Concourse", &"Concourse", &"Depot", &"Council", &"Bar", &"Gallery"])
+areas = Array[AABB]([AABB(8, 0, -28, 48, 20, 56), AABB(56, 0, -12, 70, 10, 24), AABB(91, 0, 12, 35, 10, 16), AABB(56, 0, -28, 35, 6, 16), AABB(91, 0, -28, 35, 6, 16), AABB(56, 0, 12, 35, 6, 16), AABB(126, 0, -28, 44, 10, 56)])

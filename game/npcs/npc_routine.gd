@@ -19,6 +19,9 @@ extends RefCounted
 ## has, at their spot.
 ## Off the ship (a station's people), their spot moves with the station (it glides in while the
 ## ship docks), and they never walk over the ship's navigation.
+## They know which room they stand in (`get_room`, from their map's `RoomPlan`) and whether it's
+## their own (`is_away`: the room of their own spot), so what they say fits where they are (see
+## `Topic.away_lines`).
 
 ## Walking speed, and the one on the way to the `flight_seat` and leading a tour, in m/s. TBD
 ## (playtest).
@@ -54,6 +57,11 @@ var _walker: NpcWalker
 ## Whether the first update placed them (at the tour's start on a new game: the save is read by
 ## then).
 var _settled: bool = false
+## The rooms of the map they're on (found when first needed), the room they stand in (kept
+## through doorways) and the one of their own spot.
+var _plan: RoomPlan
+var _room: StringName = &""
+var _own_room: StringName = &""
 
 
 func _init(who: Npc) -> void:
@@ -74,6 +82,29 @@ func is_waiting() -> bool:
 	return given != null and tour == null and not npc.get_story().is_set(given.offer.id)
 
 
+## The room they stand in (its node name in the map, e.g. "Armory"; in a doorway still the one
+## they come from), or "" on a map without rooms.
+func get_room() -> StringName:
+	var plan: RoomPlan = _get_plan()
+	if plan:
+		_room = plan.room_at(npc.global_position, _room)
+	return _room
+
+
+## The room their own spot is in, or "" on a map without rooms.
+func get_own_room() -> StringName:
+	var plan: RoomPlan = _get_plan()
+	if plan and _own_room.is_empty():
+		_own_room = plan.room_at(_get_home().origin)
+	return _own_room
+
+
+## Whether they stand outside their own room (what they say there must fit without it).
+func is_away() -> bool:
+	var own: StringName = get_own_room()
+	return not own.is_empty() and get_room() != own
+
+
 ## Where they want to be now (global): the flight seat while a destination is chosen or the ship
 ## flies (until they've sat there `SEAT_LINGER` s after), else the tour's stop or start, else the
 ## work spot they're at (`get_work_spot`), else their own spot.
@@ -85,10 +116,7 @@ func get_post() -> Transform3D:
 		place = tour.get_marker()
 	elif is_waiting() and npc.ship:
 		place = npc.ship.get_node_or_null(NodePath("Tour/" + String(npc.profile.tour.start)))
-	if place:
-		return place.global_transform
-	var parent: Node3D = npc.get_parent_node_3d()
-	return parent.global_transform * _home if parent else _home
+	return place.global_transform if place else _get_home()
 
 
 ## The work spot they're at or on their way to, or null at their own spot.
@@ -171,6 +199,24 @@ func update(delta: float) -> void:
 		_move_on_left -= delta
 		if _move_on_left <= 0.0:
 			move_on()
+
+
+## Their own spot, global.
+func _get_home() -> Transform3D:
+	var parent: Node3D = npc.get_parent_node_3d()
+	return parent.global_transform * _home if parent else _home
+
+
+## The rooms of the ship or station they're on (the nearest one above them), or null.
+func _get_plan() -> RoomPlan:
+	var at: Node = npc.get_parent() if not _plan else null
+	while at and not _plan:
+		if at is Ship:
+			_plan = (at as Ship).room_plan
+		elif at is SpaceStation:
+			_plan = (at as SpaceStation).room_plan
+		at = at.get_parent()
+	return _plan
 
 
 ## Keeps track of the trip to the flight seat (see `_seat_trip`).

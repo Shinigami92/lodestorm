@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ddy8vwia8viwq"]
 
 [ext_resource type="PackedScene" uid="uid://cl2py7gio13px" path="res://game/ship/ship_door.tscn" id="door"]
+[ext_resource type="Script" uid="uid://d4mku8wpofnyn" path="res://game/world/room_plan.gd" id="room_plan"]
 [ext_resource type="Script" uid="uid://cfm685vlmsgy2" path="res://game/ship/ship_shell.gd" id="shell_script"]
 [ext_resource type="PackedScene" uid="uid://bxw4dr8ycxmwv" path="res://assets/ship/shell/hull.glb" id="shell_hull"]
 [ext_resource type="PackedScene" uid="uid://cl2spk5r76tnw" path="res://assets/ship/shell/lower_cut.glb" id="shell_lower_cut"]
@@ -3294,6 +3295,11 @@ interior = true
 ambient_mode = 2
 ambient_color = Color(0.24, 0.235, 0.23, 1)
 ambient_color_energy = 1.8
+
+[node name="RoomPlan" type="Node3D" parent="."]
+script = ExtResource("room_plan")
+rooms = Array[StringName]([&"Cockpit", &"Bridge", &"UpperLobby", &"UpperCorridor", &"MessHall", &"Cabin1", &"Cabin2", &"Cabin3", &"Cabin4", &"Crew1", &"Crew5", &"Crew2", &"Crew6", &"Crew3", &"Crew7", &"Crew4", &"Crew8", &"SpecimenLab", &"MedicalBay", &"NoseCorridor", &"EngineRoom", &"LowerLobby", &"ShootingRange", &"Armory", &"LowerCorridor", &"Weapons", &"Armor", &"Skills", &"Miners", &"CargoBay"])
+areas = Array[AABB]([AABB(-98, 7, -14.5, 17, 4, 29), AABB(-80.5, 7, -14.5, 22.5, 5.5, 29), AABB(-57.5, 7, -2.5, 5.5, 5.5, 17), AABB(-51.5, 7, -2.5, 32, 5.5, 5), AABB(-19.5, 7, -14.5, 16, 5.5, 29), AABB(-51.5, 7, -14.5, 5.5, 5.5, 11.5), AABB(-51.5, 7, 3, 5.5, 5.5, 11.5), AABB(-45.5, 7, -14.5, 5.5, 5.5, 11.5), AABB(-45.5, 7, 3, 5.5, 5.5, 11.5), AABB(-39.5, 7, -14.5, 4.5, 5.5, 11.5), AABB(-39.5, 7, 3, 4.5, 5.5, 11.5), AABB(-34.5, 7, -14.5, 4.5, 5.5, 11.5), AABB(-34.5, 7, 3, 4.5, 5.5, 11.5), AABB(-29.5, 7, -14.5, 4.5, 5.5, 11.5), AABB(-29.5, 7, 3, 4.5, 5.5, 11.5), AABB(-24.5, 7, -14.5, 4.5, 5.5, 11.5), AABB(-24.5, 7, 3, 4.5, 5.5, 11.5), AABB(-89, 2.5, -14.5, 8, 4, 29), AABB(-80.5, 2.5, -14.5, 22.5, 4, 11.5), AABB(-80.5, 2.5, -2.5, 22.5, 4, 5), AABB(-80.5, 2.5, 3, 22.5, 4, 11.5), AABB(-57.5, 2.5, -2.5, 5.5, 4, 17), AABB(-51.5, 2.5, -14.5, 29.5, 4, 11.5), AABB(-21.5, 2.5, -14.5, 18, 4, 11.5), AABB(-51.5, 2.5, -2.5, 48, 4, 5), AABB(-51.5, 2.5, 3, 11.625, 4, 11.5), AABB(-39.375, 2.5, 3, 11.625, 4, 11.5), AABB(-27.25, 2.5, 3, 11.625, 4, 11.5), AABB(-15.125, 2.5, 3, 11.625, 4, 11.5), AABB(-3, 2.5, -14.5, 17.5, 10, 29)])
 
 [node name="ShellHull" parent="." instance=ExtResource("shell_hull")]
 script = ExtResource("shell_script")

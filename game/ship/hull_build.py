@@ -225,6 +225,23 @@ def spread(a, b, step):
     return [a + (b - a) * (i + 0.5) / n for i in range(n)]
 
 
+def room_plan():
+    """The rooms' areas for RoomPlan (game/world/room_plan.gd): each room's extent from its floor to its
+    ceiling, in the ship's space."""
+    names, areas = [], []
+    for name, deck, xs, zs in ROOMS:
+        floor, ceiling, (x0, x1, z0, z1) = room_box(name, deck, xs, zs)
+        names.append(f'&"{name}"')
+        areas.append(f"AABB({g(x0)}, {g(floor)}, {g(z0)}, {g(x1 - x0)}, {g(ceiling - floor)}, {g(z1 - z0)})")
+    return [
+        '[node name="RoomPlan" type="Node3D" parent="."]',
+        'script = ExtResource("room_plan")',
+        f"rooms = Array[StringName]([{', '.join(names)}])",
+        f"areas = Array[AABB]([{', '.join(areas)}])",
+        "",
+    ]
+
+
 def room_lights():
     """Every room's lights and reflection probe as scene lines: lamps in the ceiling (the middle one the key
     light, with shadows in big rooms), spots washing the back wall, a box-projected probe with the rooms' own
@@ -339,7 +356,10 @@ def main():
         subs += [f'[sub_resource type="BoxShape3D" id="{key}"]', f"size = {vec(size)}", ""]
 
     # The rooms' doors, lights and reflections.
-    ext = [("PackedScene", "res://game/ship/ship_door.tscn", "door")]
+    ext = [
+        ("PackedScene", "res://game/ship/ship_door.tscn", "door"),
+        ("Script", "res://game/world/room_plan.gd", "room_plan"),
+    ]
     for name, group, bottom, basis, width, height in doors():
         nodes += [
             f'[node name="{name}" parent="{GROUP_PARENT[group]}" instance=ExtResource("door")]',
@@ -349,6 +369,7 @@ def main():
             "",
         ]
     nodes += room_lights()
+    nodes += room_plan()
 
     # The kit's shell where it replaces the greybox.
     parts = shell_parts()

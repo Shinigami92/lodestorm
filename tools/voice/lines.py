@@ -97,7 +97,9 @@ def npc_lines(npc: str) -> list[str]:
     if re.search(r"^dialogue = ", resource, re.MULTILINE):
         lines += json.loads(prompts.group(1)) if prompts else [default_prompt()]
     for block in re.split(r"\n(?=\[)", text):
-        for found in re.finditer(r"^(?:lines|guest_lines|remarks) = Array\[String\]\((\[.*\])\)$", block, re.MULTILINE):
+        for found in re.finditer(
+            r"^(?:lines|guest_lines|away_lines|remarks) = Array\[String\]\((\[.*\])\)$", block, re.MULTILINE
+        ):
             lines += json.loads(found.group(1))
     return list(dict.fromkeys(lines))
 

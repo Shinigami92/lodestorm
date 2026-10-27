@@ -144,6 +144,12 @@
       "seed": 1,
       "text": "Was willst du wissen?"
     },
+    "7293cbd51dbe9566": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Neuigkeiten hört man am besten an meiner Theke. Mit einem Glas in der Hand reden die Crews offener."
+    },
     "7a82934abe2fe665": {
       "anchor": "723542c79895f99e",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -197,12 +203,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "In Mirror Flats liegt ein Meteoritenkrater im Glas. Die Crews sagen, das Licht dort sei so hell, dass man die Aliens kaum kommen sieht."
-    },
-    "dbd125fad9cf4e57": {
-      "anchor": "723542c79895f99e",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Neuigkeiten hört man am besten genau hier an der Theke. Mit einem Glas in der Hand reden die Crews offener."
     },
     "e2a72d4f1f9b9b60": {
       "anchor": "723542c79895f99e",
@@ -368,6 +368,12 @@
       "seed": 1,
       "text": "What do you want to know?"
     },
+    "7293cbd51dbe9566": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The best place to hear news is at my counter. Crews talk more freely with a drink in their hand."
+    },
     "7a82934abe2fe665": {
       "anchor": "fa812c9290e8d92d",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -421,12 +427,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Mirror Flats has a meteorite crater in the glass. The crews say the light there is so bright you can barely see the aliens coming."
-    },
-    "dbd125fad9cf4e57": {
-      "anchor": "fa812c9290e8d92d",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "The best place to hear news is right here at the counter. Crews talk more freely with a drink in their hand."
     },
     "e2a72d4f1f9b9b60": {
       "anchor": "fa812c9290e8d92d",

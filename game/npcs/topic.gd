@@ -4,7 +4,10 @@ extends Resource
 ## NPC says about it, one speech bubble per line. It shows once the story flags it `requires` are
 ## set, to players who own its `requires_weapon`, and once the ship reaches its `requires_body`;
 ## hearing it to the end sets its `id` as a flag. With `guest_lines`, a guest aboard (a co-op player
-## who isn't the host) hears those instead (e.g. the heat shield is the host's to decide on).
+## who isn't the host) hears those instead (e.g. the heat shield is the host's to decide on). With
+## `away_lines`, the NPC says those while they stand outside their own room (`NpcRoutine.is_away`):
+## a topic whose `lines` need the room ("here", "next door", something they point at) says the
+## same elsewhere without it.
 
 ## Saved as a story flag once heard: the NPC's `NpcProfile.id`, a dot and the topic
 ## ("quartermaster.ammo", see `Story`), so it never changes.
@@ -16,6 +19,10 @@ extends Resource
 ## What the NPC says to a guest aboard instead of `lines` (the English texts, translated); none:
 ## the same `lines` for everyone.
 @export var guest_lines: Array[String] = []
+## What the NPC says instead of `lines` outside their own room (the English texts, translated;
+## a line that fits anywhere repeats the one of `lines`); none: `lines` fit anywhere. A guest's
+## `guest_lines` come first, so they must fit anywhere.
+@export var away_lines: Array[String] = []
 ## Story flags it needs before it shows (e.g. another topic's id).
 @export var requires: Array[StringName] = []
 ## A weapon it's about: it only shows to a player who owns it (e.g. Brask once built).
@@ -36,6 +43,9 @@ func is_open(listener: Player, story: Story, reaches: Array[StringName] = []) ->
 	return not requires_weapon or (listener != null and listener.arsenal.owns(requires_weapon))
 
 
-## The lines a `guest` aboard hears (`guest_lines` when it has them), else the host's (`lines`).
-func lines_for(guest: bool) -> Array[String]:
-	return guest_lines if guest and not guest_lines.is_empty() else lines
+## The lines a `guest` aboard hears (`guest_lines` when it has them), else the host's: `lines`,
+## or `away_lines` (when it has them) while the NPC is `away` from their own room.
+func lines_for(guest: bool, away: bool = false) -> Array[String]:
+	if guest and not guest_lines.is_empty():
+		return guest_lines
+	return away_lines if away and not away_lines.is_empty() else lines

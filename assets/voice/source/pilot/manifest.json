@@ -6,6 +6,12 @@
       "seed": 1,
       "text": "Frag ruhig, ich hab kurz Zeit."
     },
+    "06f653b859144b52": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Da bist du ja. Ich halte uns in der Luft, und jede Reise beginnt am Navigator auf der Brücke. Komm zu mir an den Holotisch, wann immer du aussuchen willst, wohin es als Nächstes geht."
+    },
     "0c7b5cd34b9361d5": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -66,12 +72,6 @@
       "seed": 1,
       "text": "Der Sturm zieht auf. Alle zurück zum Schiff."
     },
-    "48be71d6ac66cf3e": {
-      "anchor": "3581bf6c2d6006f9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Sobald das Ziel steht, geh zur Flugkonsole im Cockpit gleich nebenan und setz dort den Kurs. Das kann jeder, nicht nur ich."
-    },
     "56c60e4987cb52eb": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -107,6 +107,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Sturm zieht auf. Komm zurück zum Schiff."
+    },
+    "780796cf64410b3f": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sobald das Ziel steht, wird der Kurs an der Flugkonsole im Cockpit gesetzt. Das kann jeder, nicht nur ich."
     },
     "7aa7a888197fcd2c": {
       "anchor": "3581bf6c2d6006f9",
@@ -236,6 +242,12 @@
       "seed": 1,
       "text": "Ask away, I've got a minute."
     },
+    "06f653b859144b52": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "There you are. I keep us flying, and every trip starts at the navigator on the bridge. Meet me at the holo table whenever you want to pick where we go next."
+    },
     "0c7b5cd34b9361d5": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -296,12 +308,6 @@
       "seed": 1,
       "text": "Storm's coming in. Everyone back to the ship."
     },
-    "48be71d6ac66cf3e": {
-      "anchor": "b39c4473829e205a",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Once the destination is set, go to the flight console in the cockpit, right next door, and set the course there. Anyone can do that, not just me."
-    },
     "56c60e4987cb52eb": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -337,6 +343,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Storm's coming in. Get back to the ship."
+    },
+    "780796cf64410b3f": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Once the destination is set, the course is set at the flight console in the cockpit. Anyone can do that, not just me."
     },
     "7aa7a888197fcd2c": {
       "anchor": "b39c4473829e205a",

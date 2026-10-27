@@ -14,7 +14,7 @@ lines = Array[String](["You must be the crew from the ship in the hangar. I'm Ka
 script = ExtResource("3_topic")
 id = &"depot_master.depot"
 title = "The depot"
-lines = Array[String](["Everything the colony eats, breathes and builds with is stored here: food, air filters, spare parts and metal.", "The shelves behind me look full, but most of those crates are already promised to someone. What comes in today is gone by next week.", "Ore is the one thing we can never get enough of. Without it, the workshops stop, and nothing gets repaired."])
+lines = Array[String](["Everything the colony eats, breathes and builds with is stored in my depot: food, air filters, spare parts and metal.", "The depot's shelves look full, but most of those crates are already promised to someone. What comes in today is gone by next week.", "Ore is the one thing we can never get enough of. Without it, the workshops stop, and nothing gets repaired."])
 requires = Array[StringName]([&"depot_master.greeting"])
 
 [sub_resource type="Resource" id="Resource_exchange"]

@@ -115,6 +115,8 @@ var _ramp_heading: float = NAN
 var _button_material := StandardMaterial3D.new()
 
 @onready var ramp_button: Interactable = $RampButton
+## Its rooms' areas (from the hull's layout), for what people say where they stand.
+@onready var room_plan: RoomPlan = $Hull/RoomPlan
 @onready var flight: ShipFlight = $Flight
 @onready var _ramp: AnimatableBody3D = $Ramp
 @onready var _interior: Area3D = $Interior

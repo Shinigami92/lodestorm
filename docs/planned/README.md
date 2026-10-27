@@ -17,7 +17,7 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 | [`refinery.md`](refinery.md) | the station's alloy requests, furnaces through the quests, the engineer, later drill heads, the art pass | M4 (step 16), M5 |
 | [`station.md`](station.md) | Waypost Ostra: why players go there, requests instead of shops, more seats, co-op, its look | M4 (step 16), M5, M7 |
 | [`crew.md`](crew.md) | the crew joining, more transmissions, co-op | M4 (step 16), M7 |
-| [`npc-places.md`](npc-places.md) | Ostra's people walking after their first talk, the bar's closing time, smarter NPCs | M4 (alongside), later |
+| [`npc-places.md`](npc-places.md) | the bar's closing time, starting along their day, smarter NPCs | later |
 | [`people.md`](people.md) | the colonists' models, props, faces, fighting people, the player's suit | M5 |
 | [`risk-reward.md`](risk-reward.md) | rich ore by the nests, the late meteor, banking ore at a cargo hatch | M4 (step 14) |
 | [`skills.md`](skills.md) | the rescue drone, the hardened canister, rebuilding spares, the miner radar; where the skill graph is heading | M4 (step 15), M7 |

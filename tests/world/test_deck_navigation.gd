@@ -1,6 +1,7 @@
 extends GutTest
-## Where the crew can walk aboard (`ShipNavigation`): baked once it's first asked for a way, on its
-## own navigation map, through the doors and around the walls and stations, only on the floors.
+## Where the crew can walk aboard (the ship's `DeckNavigation`): baked once it's first asked for a
+## way, on its own navigation map, through the doors and around the walls and stations, only on
+## the floors.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 
@@ -16,7 +17,7 @@ func before_each() -> void:
 
 
 func test_baked_when_first_asked_on_its_own_map() -> void:
-	var navigation: ShipNavigation = _ship.navigation
+	var navigation: DeckNavigation = _ship.navigation
 	assert_false(navigation.is_baked(), "nothing baked before anyone walks")
 	var bridge: Vector3 = _ship.to_global(Vector3(-63.0, 7.0, -2.0))
 	var cockpit: Vector3 = _ship.to_global(Vector3(-96.0, 7.0, 0.0))
@@ -30,7 +31,7 @@ func test_baked_when_first_asked_on_its_own_map() -> void:
 
 
 func test_walls_and_stations_are_kept_clear() -> void:
-	var navigation: ShipNavigation = _ship.navigation
+	var navigation: DeckNavigation = _ship.navigation
 	navigation.bake()
 	await _baked(navigation)
 	var wall: Vector3 = _ship.to_global(Vector3(-16.0, 2.5, -2.75))
@@ -46,7 +47,7 @@ func test_walls_and_stations_are_kept_clear() -> void:
 	assert_almost_eq(top.y, table.y + 0.2, 0.15, "on the floor, never on the table's top")
 
 
-func _baked(navigation: ShipNavigation) -> void:
+func _baked(navigation: DeckNavigation) -> void:
 	for i: int in 300:
 		if navigation.is_baked():
 			break

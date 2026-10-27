@@ -111,7 +111,7 @@ id = &"bartender"
 display_name = "Nell"
 role = "Bartender"
 model = "uid://b42gv4simpcog"
-activities = Array[StringName]([&"WipeCounter", &"PolishGlass", &"ShelveBottle"])
+activities = Array[StringName]([&"WipeCounter", &"PolishGlass", &"ShelveBottle", &"WipeTable", &"ClearGlass", &"LookAround", &"Stretch", &"CheckWrist"])
 props = Dictionary[StringName, PackedScene]({
 &"Bottle": ExtResource("6_bottle"),
 &"Glass": ExtResource("5_glass"),

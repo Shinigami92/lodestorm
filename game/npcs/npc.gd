@@ -50,6 +50,8 @@ const READ_PER_LETTER: float = 0.06
 @export var flight_seat: Node3D
 ## Where else they work now and then (none: always at their spot).
 @export var work_spots: Array[WorkSpot] = []
+## What they do at their own spot when they have work spots; none: `NpcRoutine.HOME_ACTIVITIES`.
+@export var home_activities: Array[StringName] = []
 
 ## The topic being told, or null while the card lists the topics.
 var topic: Topic

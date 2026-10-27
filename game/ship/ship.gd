@@ -100,7 +100,7 @@ var reactions := CrewReactions.new()
 ## Lets the levels and skill ranks under way take effect once done.
 var progress_clock: ProgressClock
 ## Where the crew can walk aboard.
-var navigation: ShipNavigation
+var navigation: DeckNavigation
 ## Says once where to heal when a hurt player stands at the ramp button.
 var ramp_hint: RampHint
 
@@ -158,7 +158,7 @@ func _ready() -> void:
 	reactions.name = "Reactions"
 	reactions.ship = self
 	add_child(reactions)
-	navigation = ShipNavigation.new()
+	navigation = DeckNavigation.new()
 	navigation.name = "Navigation"
 	add_child(navigation)
 

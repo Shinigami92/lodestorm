@@ -14,11 +14,13 @@ extends RefCounted
 ## stop (faster, stopping for nobody: they lead) and say each stop's lines, then go back to their
 ## spot.
 ## With work spots (`Npc.work_spots`), they move on now and then (every `MOVE_ON_TIME` s) from where
-## they work to another of them or back to their own spot, and play there only what fits (a
-## spot's `activities`, at their own spot `HOME_ACTIVITIES`); without, everything their profile
-## has, at their spot.
-## Off the ship (a station's people), their spot moves with the station (it glides in while the
-## ship docks), and they never walk over the ship's navigation.
+## they work to another of them or back to their own spot (each as likely as its `weight`; one
+## outside their own room only once their greeting is heard), and play there only what fits (a
+## spot's `activities`, at their own spot `Npc.home_activities` or `HOME_ACTIVITIES`); without,
+## everything their profile has, at their spot. Away from their own spot (and on the way), they're
+## used at their feet (`Npc.use_point` within `USE_RANGE` m), unless the spot is `use_like_home`.
+## They walk over the navigation of the map they're on (the ship's, a station's: `DeckNavigation`);
+## a station's people's spots move with it (it glides in while the ship docks).
 ## They know which room they stand in (`get_room`, from their map's `RoomPlan`) and whether it's
 ## their own (`is_away`: the room of their own spot), so what they say fits where they are (see
 ## `Topic.away_lines`).
@@ -37,6 +39,8 @@ const HOME_ACTIVITIES: Array[StringName] = [&"LookAround", &"Stretch", &"CheckWr
 ## Seconds between moving on to another place to work (at random within this range). TBD
 ## (playtest).
 const MOVE_ON_TIME := Vector2(20.0, 40.0)
+## How far from their feet they're used away from their own spot (npc.tscn's "Use"), in m.
+const USE_RANGE: float = 1.8
 
 ## Whose routine it is.
 var npc: Npc
@@ -57,11 +61,19 @@ var _walker: NpcWalker
 ## Whether the first update placed them (at the tour's start on a new game: the save is read by
 ## then).
 var _settled: bool = false
-## The rooms of the map they're on (found when first needed), the room they stand in (kept
-## through doorways) and the one of their own spot.
+## The map they're on (the ship or a station, found when first needed), its rooms, the room they
+## stand in (kept through doorways) and the one of their own spot.
+var _map: Node3D
 var _plan: RoomPlan
 var _room: StringName = &""
 var _own_room: StringName = &""
+## How they're used at their own spot (the scene's "Use": where, how far, its footprint, and its
+## highlight), and whether it's placed that way now.
+var _use_home: Transform3D
+var _use_range: float = USE_RANGE
+var _use_footprint: Vector2 = Vector2.ZERO
+var _highlight_home: Vector3 = Vector3.ZERO
+var _used_home: bool = true
 
 
 func _init(who: Npc) -> void:
@@ -69,6 +81,13 @@ func _init(who: Npc) -> void:
 	_home = who.transform
 	_walker = NpcWalker.new(who, who.body)
 	_move_on_left = randf_range(MOVE_ON_TIME.x, MOVE_ON_TIME.y)
+	var use: Interactable = who.use_point
+	if use:
+		_use_home = use.transform
+		_use_range = use.interact_range
+		_use_footprint = use.footprint
+		var highlight := use.get_node_or_null(^"Highlight") as Node3D
+		_highlight_home = highlight.position if highlight else Vector3.ZERO
 
 
 ## Whether they're on their way somewhere (walking, or standing for a player in the way).
@@ -124,14 +143,26 @@ func get_work_spot() -> WorkSpot:
 	return _spot
 
 
-## Moves on to another place to work: one of their work spots (not the one they're at) or their
-## own spot, at random.
+## Moves on to another place to work: one of their work spots (not the one they're at; one outside
+## their own room only once their greeting is heard) or their own spot, at random by the spots'
+## `weight` (their own spot's is 1).
 func move_on() -> void:
 	var places: Array[WorkSpot] = [null]
-	places.append_array(npc.work_spots)
+	var greeted: bool = _greeted()
+	for spot: WorkSpot in npc.work_spots:
+		if greeted or _room_of(spot) == get_own_room():
+			places.append(spot)
 	places.erase(_spot)
-	var picked: WorkSpot = places.pick_random()
-	_spot = picked
+	var total: float = 0.0
+	for place: WorkSpot in places:
+		total += place.weight if place else 1.0
+	var roll: float = randf() * total
+	_spot = places.back() if not places.is_empty() else null
+	for place: WorkSpot in places:
+		roll -= place.weight if place else 1.0
+		if roll < 0.0:
+			_spot = place
+			break
 	_move_on_left = randf_range(MOVE_ON_TIME.x, MOVE_ON_TIME.y)
 
 
@@ -153,7 +184,6 @@ func end_tour() -> void:
 ## at a tour's stop, working at a work spot; gets up first to leave the seat; stays put while
 ## someone talks to them.
 func update(delta: float) -> void:
-	var ship: Ship = npc.ship
 	var body: NpcBody = npc.body
 	if not _settled:
 		_settled = true
@@ -163,6 +193,7 @@ func update(delta: float) -> void:
 	_count_seat_trip(delta)
 	if tour and tour.is_lost(delta):
 		end_tour()
+	_place_use()
 	if npc.user:
 		_walker.stop()
 		if tour:
@@ -178,10 +209,11 @@ func update(delta: float) -> void:
 	if not leads and Player.nearest(npc.get_tree(), npc.global_position, NpcBody.NOTICE_RANGE):
 		_walker.stop()
 		return
-	var navigation: ShipNavigation = ship.navigation if ship and ship.is_ancestor_of(npc) else null
+	var navigation: DeckNavigation = _get_navigation()
 	var speed: float = HURRY_SPEED if leads else WALK_SPEED
 	if not _walker.walk_to(post.origin, speed, navigation, delta):
 		return
+	_place_use()
 	var parent: Node3D = npc.get_parent_node_3d()
 	var yaw: float = (parent.global_basis.inverse() * post.basis).get_euler().y
 	npc.rotation.y = lerp_angle(npc.rotation.y, yaw, 1.0 - exp(-TURN_SPEED * delta))
@@ -207,16 +239,63 @@ func _get_home() -> Transform3D:
 	return parent.global_transform * _home if parent else _home
 
 
-## The rooms of the ship or station they're on (the nearest one above them), or null.
+## The rooms of the ship or station they're on, or null.
 func _get_plan() -> RoomPlan:
-	var at: Node = npc.get_parent() if not _plan else null
-	while at and not _plan:
-		if at is Ship:
-			_plan = (at as Ship).room_plan
-		elif at is SpaceStation:
-			_plan = (at as SpaceStation).room_plan
-		at = at.get_parent()
+	if not _plan:
+		var map: Node3D = _get_map()
+		if map is Ship:
+			_plan = (map as Ship).room_plan
+		elif map is SpaceStation:
+			_plan = (map as SpaceStation).room_plan
 	return _plan
+
+
+## Where they walk on the ship or station they're on, or null (straight to where they go).
+func _get_navigation() -> DeckNavigation:
+	var map: Node3D = _get_map()
+	if map is Ship:
+		return (map as Ship).navigation
+	if map is SpaceStation:
+		return (map as SpaceStation).navigation
+	return null
+
+
+## The ship or station they're on (the nearest one above them), or null.
+func _get_map() -> Node3D:
+	var at: Node = npc.get_parent() if not _map else null
+	while at and not _map:
+		if at is Ship or at is SpaceStation:
+			_map = at as Node3D
+		at = at.get_parent()
+	return _map
+
+
+## The room `spot` is in.
+func _room_of(spot: WorkSpot) -> StringName:
+	var plan: RoomPlan = _get_plan()
+	return plan.room_at(spot.global_position) if plan else &""
+
+
+## Whether their greeting is heard (or they have none).
+func _greeted() -> bool:
+	var dialogue: Dialogue = npc.profile.dialogue if npc.profile else null
+	return not dialogue or not dialogue.greeting or npc.get_story().is_set(dialogue.greeting.id)
+
+
+## Places where they're used: as at their own spot while they're there (or at a `use_like_home`
+## spot), else at their feet.
+func _place_use() -> void:
+	var use: Interactable = npc.use_point
+	var home: bool = not is_underway() and (not _spot or _spot.use_like_home)
+	if not use or home == _used_home:
+		return
+	_used_home = home
+	use.transform = _use_home if home else Transform3D.IDENTITY
+	use.interact_range = _use_range if home else USE_RANGE
+	use.footprint = _use_footprint if home else Vector2.ZERO
+	var highlight := use.get_node_or_null(^"Highlight") as Node3D
+	if highlight:
+		highlight.position = _highlight_home if home else Vector3(0.0, 0.02, 0.0)
 
 
 ## Keeps track of the trip to the flight seat (see `_seat_trip`).
@@ -236,7 +315,9 @@ func _count_seat_trip(delta: float) -> void:
 func _activities_here() -> Array[StringName]:
 	if _spot:
 		return _spot.activities
-	return HOME_ACTIVITIES if not npc.work_spots.is_empty() else ([] as Array[StringName])
+	if npc.work_spots.is_empty():
+		return [] as Array[StringName]
+	return npc.home_activities if not npc.home_activities.is_empty() else HOME_ACTIVITIES
 
 
 ## Whether a destination is chosen at the navigator that the ship isn't at or flying to yet.

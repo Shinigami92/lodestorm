@@ -16,6 +16,7 @@ and "Walk" from the shared pose code, her work at the bar from nell_clips.py. Me
 "Brows", "Lashes", "Outfit"; empty "HeadTop" on the head (where the name plate and the bubbles go); bones
 "PropRag", "PropGlass", "PropBottle" with the empties "RagGrip", "GlassGrip", "BottleGrip" (where the game puts
 the props' models, assets/props/bar/).
+The crew's shared clips too (tools/blender/fidgets.py: "LookAround", "Stretch", "CheckWrist", "Tap").
 
 Writes assets/npcs/nell/nell.glb and its source assets/npcs/nell/source/nell.blend; renders go to tmp/assets/npcs/nell/.
 """
@@ -33,6 +34,7 @@ import nell_clips
 
 import common as C
 import dressing as D
+import fidgets
 import humanoid as H
 import people as P
 
@@ -85,12 +87,15 @@ def clips(body: H.Body) -> dict:
     }
     for name, (frames, fn) in nell_clips.CLIPS.items():
         out[name] = (frames, lambda t, fn=fn: fn(body, t))
+    out.update(fidgets.clips(body))
     return out
 
 
 def work(body: H.Body) -> list:
     """Her work poses to render: wiping and polishing halfway, shelving a bottle at three moments."""
     shots = [(f"{n}5", fn(body, 0.5)) for n, fn in (("wipe", nell_clips.wipe), ("polish", nell_clips.polish))]
+    shots += [("table5", nell_clips.wipe_table(body, 0.5))]
+    shots += [(f"glass{i}", nell_clips.clear_glass(body, t)) for i, t in ((3, 0.33), (6, 0.6))]
     return shots + [(f"shelve{i}", nell_clips.shelve(body, t)) for i, t in ((2, 0.24), (5, 0.5), (7, 0.76))]
 
 

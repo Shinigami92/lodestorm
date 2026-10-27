@@ -411,6 +411,34 @@ PEOPLE = [
 # footprint around it (across, along the facing: from them to the counter's front) and the range
 # from there (short, so the camera framing both stays close).
 USE_ACROSS = {"Nell": (0.43, (9, 1.5), 1.0)}
+# Where else each of them goes now and then (WorkSpot, see NpcRoutine): name, where (x, z), facing, what they do
+# there, how likely (their own place: 1; the far ones now and then), and whether they're used there as at their place.
+# Outside their own room they only look around, and only once their greeting is heard. TBD (playtest).
+WORK_SPOTS = {
+    "Kade": [
+        ("Shelves", (78, -24.8), 180, ["LookAround", "CheckWrist"], 1, False),
+        # By the depot's door to the hangar, watching crates come in.
+        ("Door", (58.5, -20), -90, ["LookAround"], 1, False),
+    ],
+    "Selin": [
+        ("Window", (104, -26.8), 180, ["LookAround"], 1, False),
+        ("Gallery", (147, -25), 180, ["LookAround"], 0.5, False),
+        ("Concourse", (106, 9), 0, ["LookAround"], 0.5, False),
+    ],
+    "Nell": [
+        ("Counter", (58.27, 17), 90, ["WipeCounter", "PolishGlass"], 1, True),
+        # At the open end of the booth with the two guests (nell_clips.py: TABLE_EDGE, TABLE_TOP).
+        ("Booth", (87.4, 16.5), 90, ["WipeTable", "ClearGlass", "LookAround"], 0.5, False),
+    ],
+    "Rook": [
+        ("Counter", (60.6, 18), -90, ["LookAround"], 1, False),
+        # Looking over the docked ship's tail.
+        ("Hangar", (30, 9), -90, ["LookAround"], 0.5, False),
+        ("Gallery", (160, 22), 0, ["LookAround"], 0.5, False),
+    ],
+}
+# What they do at their own place, where it's not the shared clips' default (NpcRoutine.HOME_ACTIVITIES).
+HOME_ACTIVITIES = {"Nell": ["WipeCounter", "PolishGlass", "ShelveBottle"]}
 COLONISTS = [
     ("Mechanic", "mechanic", (0.95, 0.9, 0.8), (100, 16.4), 0, []),
     ("BarterTrader", "barter_trader", (0.8, 0.85, 0.95), (120, 16.4), 0, []),
@@ -445,13 +473,34 @@ def yaw(degrees):
 
 
 nodes += ['[node name="People" type="Node3D" parent="."]', ""]
+
+
+def names(items):
+    return ", ".join(f'&"{item}"' for item in items)
+
+
 for name, profile, (px, pz), facing in PEOPLE:
+    spots = WORK_SPOTS.get(name, [])
+    paths = ", ".join(f'NodePath("../{name}{spot[0]}")' for spot in spots)
     nodes += [
-        f'[node name="{name}" parent="People" instance=ExtResource("npc")]',
+        f'[node name="{name}" parent="People" node_paths=PackedStringArray("work_spots") instance=ExtResource("npc")]',
         f"transform = {xform((px, 0, pz), yaw(facing))}",
         f'profile = ExtResource("profile_{profile}")',
-        "",
+        f"work_spots = [{paths}]",
     ]
+    if name in HOME_ACTIVITIES:
+        nodes += [f"home_activities = Array[StringName]([{names(HOME_ACTIVITIES[name])}])"]
+    nodes += [""]
+    for spot, (sx, sz), sfacing, activities, weight, like_home in spots:
+        nodes += [
+            f'[node name="{name}{spot}" type="Marker3D" parent="People"]',
+            f"transform = {xform((sx, 0, sz), yaw(sfacing))}",
+            'script = ExtResource("work_spot")',
+            f"activities = Array[StringName]([{names(activities)}])",
+        ]
+        nodes += [f"weight = {g(weight)}"] if weight != 1 else []
+        nodes += ["use_like_home = true"] if like_home else []
+        nodes += [""]
     if name in USE_ACROSS:
         ahead, (across, along), reach = USE_ACROSS[name]
         nodes += [
@@ -515,6 +564,7 @@ nodes += [
 ext = [
     ("Script", SCRIPT, "script"),
     ("Script", "res://game/world/room_plan.gd", "room_plan"),
+    ("Script", "res://game/npcs/work_spot.gd", "work_spot"),
     ("Script", GUIDE_SCRIPT, "guide_script"),
     ("StandardMaterial3D", GUIDE_MATERIAL, "mat_guide"),
     ("StandardMaterial3D", PROP_MATERIAL, "mat_prop"),

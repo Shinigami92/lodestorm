@@ -77,7 +77,7 @@
 4.2 tests/weapons/test_pinner_grindle_quill.gd
 4.0 tests/weapons/test_fulgen_nadir.gd
 3.9 tests/audio/test_game_sounds.gd
-3.8 tests/ship/test_ship_navigation.gd
+3.8 tests/world/test_deck_navigation.gd
 3.2 tests/project/test_translations.gd
 3.0 tests/aliens/test_alien_combat.gd
 3.0 tests/player/test_cargo_rack.gd

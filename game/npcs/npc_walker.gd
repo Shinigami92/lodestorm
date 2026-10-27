@@ -1,10 +1,10 @@
 class_name NpcWalker
 extends RefCounted
-## Walks a crew member (`walker`, with its `body`) aboard to a goal (`walk_to`, global) over the
-## ship's navigation (`ShipNavigation`): along the way it finds there, then the last step straight
-## to the goal (a spot beside a seat or a console may lie just off the mesh), turning into the way
-## it walks. While walking it opens doors (`ShipDoor.OPENERS`). The way is asked for again now and
-## then until the mesh is baked, and whenever the goal changes.
+## Walks an NPC (`walker`, with its `body`) to a goal (`walk_to`, global) over the navigation of
+## the map they're on (`DeckNavigation`: the ship's or a station's): along the way it finds there,
+## then the last step straight to the goal (a spot beside a seat or a console may lie just off the
+## mesh), turning into the way it walks. While walking it opens doors (`ShipDoor.OPENERS`). The
+## way is asked for again now and then until the mesh is baked, and whenever the goal changes.
 ## A goal on the other deck takes the lift by the lobby (`LIFT`): they walk to its gate, call the
 ## platform, step on once the gate is open (holding it, so it doesn't leave without them), send it
 ## to the other deck and ride along (their feet on the platform), step off through the gate there
@@ -51,7 +51,7 @@ func is_underway() -> bool:
 
 ## Walks on towards `goal` (global; on either deck) at `speed` m/s over `navigation` for `delta`
 ## s. Returns whether it's there (then it stands, facing the way it came).
-func walk_to(goal: Vector3, speed: float, navigation: ShipNavigation, delta: float) -> bool:
+func walk_to(goal: Vector3, speed: float, navigation: DeckNavigation, delta: float) -> bool:
 	if not goal.is_equal_approx(_goal):
 		_goal = goal
 		_target = Vector3.INF
@@ -86,7 +86,7 @@ func stop() -> void:
 
 ## One step of taking the lift to the deck of `_goal`.
 func _ride_lift(
-	lift: Lift, ship: Node3D, speed: float, navigation: ShipNavigation, delta: float
+	lift: Lift, ship: Node3D, speed: float, navigation: DeckNavigation, delta: float
 ) -> void:
 	var here: Lift.Deck = _lift_deck(ship, walker.global_position)
 	var there: Lift.Deck = _lift_deck(ship, _goal)
@@ -113,7 +113,7 @@ func _ride_lift(
 			if lift.is_open(there):
 				# On the deck's floor (the platform stands a hair above it).
 				var feet: Vector3 = ship.to_local(walker.global_position)
-				feet.y = ShipNavigation.FLOORS[there]
+				feet.y = navigation.floors[there]
 				walker.global_position = ship.to_global(feet)
 				ride = Ride.LEAVING
 		Ride.LEAVING:
@@ -126,7 +126,7 @@ func _ride_lift(
 ## straight there; with `finish`, straight from the way's end to the target). Returns whether
 ## it's there.
 func _walk(
-	target: Vector3, speed: float, navigation: ShipNavigation, delta: float, finish: bool
+	target: Vector3, speed: float, navigation: DeckNavigation, delta: float, finish: bool
 ) -> bool:
 	if not target.is_equal_approx(_target):
 		_target = target
@@ -183,7 +183,7 @@ func _stand() -> void:
 
 ## Finds the way to `_target` over `navigation` (and, with `finish`, the target itself after it).
 ## Returns whether it found one.
-func _find_path(navigation: ShipNavigation, finish: bool) -> bool:
+func _find_path(navigation: DeckNavigation, finish: bool) -> bool:
 	var points: PackedVector3Array = navigation.find_path(walker.global_position, _target)
 	if points.is_empty():
 		return false

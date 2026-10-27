@@ -46,6 +46,7 @@ func place(rng: RandomNumberGenerator) -> void:
 		for spot: int in rng.randi_range(count.x, count.y):
 			var radius: float = radii.x if radii.x == radii.y else rng.randf_range(radii.x, radii.y)
 			var site: Vector3 = _location.find_site(
+				rng,
 				radius,
 				func(at: Vector2) -> bool: return _location.landing_distance(at) >= 10.0,
 				area.center,

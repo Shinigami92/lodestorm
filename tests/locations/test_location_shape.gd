@@ -19,13 +19,12 @@ func test_ore_pockets_and_nest_hollows() -> void:
 	var rarest: OreType = found[found.size() - 1]
 	for world_seed: int in SWEEP_SEEDS:
 		var location: GeneratedLocation = SWEEP.plan(world_seed, DUST)
-		var sites: Array[Vector3] = location.planned_ore_sites()
-		var types: Array[OreType] = location.planned_ore_types()
 		for area: LocationLayout.Area in location.layout.areas:
 			var inside: Array[OreType] = []
-			for i: int in sites.size():
-				if Vector2(sites[i].x, sites[i].z).distance_to(area.center) < area.radius * 1.3:
-					inside.append(types[i])
+			for site: LocationSites.OreSite in location.sites.ores:
+				var at := Vector2(site.position.x, site.position.z)
+				if at.distance_to(area.center) < area.radius * 1.3:
+					inside.append(site.ore)
 			if area.kind == LocationLayout.Kind.ORE_POCKET:
 				assert_has(inside, rarest, "seed %d" % world_seed)
 			elif area.kind == LocationLayout.Kind.NEST_HOLLOW:
@@ -143,20 +142,32 @@ func test_buttes_and_dry_washes() -> void:
 				assert_almost_eq(rise, LocationFeatures.BUTTE_HEIGHT, 1.5, label)
 			if area.kind != LocationLayout.Kind.DRY_WASH:
 				continue
+			# Along its bed, from the middle out: the first spot with both banks' ground as it was
+			# (the ground under an ore field or nest in the wash is flattened).
 			var middle: int = area.bed.size() >> 1
-			var at: Vector2 = area.bed[middle]
-			var across: Vector2 = (
-				(area.bed[middle + 1] - area.bed[middle - 1]).normalized().orthogonal()
-			)
-			var bank: Vector2 = (
-				at + across * (LocationFeatures.BED_HALF_WIDTH + LocationFeatures.BED_BANK + 1.0)
-			)
-			if not location.is_reachable(bank.x, bank.y):
-				bank = at * 2.0 - bank
-			if location.is_reachable(at.x, at.y) and location.is_reachable(bank.x, bank.y):
+			for step: int in range(1, area.bed.size() - 1):
+				var i: int = middle + (step >> 1) * (1 if step % 2 else -1)
+				if i < 1 or i > area.bed.size() - 2:
+					continue
+				var at: Vector2 = area.bed[i]
+				var across: Vector2 = (area.bed[i + 1] - area.bed[i - 1]).normalized().orthogonal()
+				var bank: Vector2 = (
+					at
+					+ across * (LocationFeatures.BED_HALF_WIDTH + LocationFeatures.BED_BANK + 1.0)
+				)
+				if not location.is_reachable(bank.x, bank.y):
+					bank = at * 2.0 - bank
+				if (
+					not location.is_reachable(at.x, at.y)
+					or not location.is_reachable(bank.x, bank.y)
+					or _near_site(location, Vector3(at.x, 0.0, at.y))
+					or _near_site(location, Vector3(bank.x, 0.0, bank.y))
+				):
+					continue
 				beds += 1
 				var below: float = terrain.height_at(bank.x, bank.y) - terrain.height_at(at.x, at.y)
 				assert_gt(below, LocationFeatures.BED_DEPTH * 0.5, label)
+				break
 		location.free()
 	assert_gt(buttes, 3)
 	assert_gt(beds, 0)
@@ -203,18 +214,21 @@ func _near_site(location: GeneratedLocation, at: Vector3) -> bool:
 		if center.distance_to(point) < part.info.footprint + reach:
 			return true
 	reach = GeneratedLocation.SITE_FALLOFF + location.cell
-	for nest: Vector3 in location.planned_nest_sites():
-		if Vector2(nest.x, nest.z).distance_to(point) < GeneratedLocation.NEST_SITE_RADIUS + reach:
+	for nest: Vector3 in location.sites.nest_positions():
+		if Vector2(nest.x, nest.z).distance_to(point) < LocationSites.NEST_RADIUS + reach:
 			return true
-	for ore: Vector3 in location.planned_ore_sites():
-		if Vector2(ore.x, ore.z).distance_to(point) < GeneratedLocation.ORE_SITE_RADIUS + reach:
+	for ore: Vector3 in location.sites.ore_positions():
+		if Vector2(ore.x, ore.z).distance_to(point) < LocationSites.ORE_RADIUS + reach:
 			return true
 	return false
 
 
+## The nests `area` holds (each knows its area), all of them inside it.
 func _nests_in(location: GeneratedLocation, area: LocationLayout.Area) -> int:
 	var nests: int = 0
-	for nest: Vector3 in location.planned_nest_sites():
-		if Vector2(nest.x, nest.z).distance_to(area.center) < area.radius * 1.3:
+	for nest: LocationSites.NestSite in location.sites.nests:
+		if nest.area == area:
+			var at := Vector2(nest.position.x, nest.position.z)
+			assert_lt(at.distance_to(area.center), area.radius * 1.3, "inside its area")
 			nests += 1
 	return nests

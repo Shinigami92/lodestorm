@@ -119,7 +119,7 @@ func test_points_of_interest_and_markers_lead() -> void:
 				assert_does_not_have(areas, part.area)
 				areas.append(part.area)
 				for ore: Vector3 in part.markers(PartMarker.Kind.ORE):
-					assert_true(_has_site(location.planned_ore_sites(), ore), biome.display_name)
+					assert_true(_has_site(location.sites.ore_positions(), ore), biome.display_name)
 			parts += location.parts.placed.size()
 			location.free()
 		assert_gt(parts, BIOME_SEEDS, biome.display_name)
@@ -132,15 +132,14 @@ func test_ore_markers_get_their_band() -> void:
 	var found: Array[OreType] = OreCatalog.sorted(glare.biome.ores)
 	for world_seed: int in SWEEP_SEEDS:
 		var location: GeneratedLocation = SWEEP.plan(world_seed, glare.biome, glare.set_pieces)
-		var sites: Array[Vector3] = location.planned_ore_sites()
-		var types: Array[OreType] = location.planned_ore_types()
 		for part: LocationParts.Placed in location.parts.placed:
 			if part.placement.scene != vein:
 				continue
 			for ore: Vector3 in part.markers(PartMarker.Kind.ORE):
-				for i: int in sites.size():
-					if Vector2(sites[i].x, sites[i].z).distance_to(Vector2(ore.x, ore.z)) < 0.01:
-						assert_eq(types[i], found[found.size() - 1])
+				for site: LocationSites.OreSite in location.sites.ores:
+					var at := Vector2(site.position.x, site.position.z)
+					if at.distance_to(Vector2(ore.x, ore.z)) < 0.01:
+						assert_eq(site.ore, found[found.size() - 1])
 		location.free()
 
 

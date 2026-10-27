@@ -182,8 +182,8 @@ func _generate() -> void:
 			_location.size,
 			layout.farthest(),
 			layout.farthest() / WALK_SPEED,
-			_location.planned_ore_sites().size(),
-			_location.planned_nest_sites().size(),
+			_location.sites.ores.size(),
+			_location.sites.nests.size(),
 			_location.parts.placed.size(),
 			_location.planned_hazards().size(),
 			_stuck.size(),
@@ -306,11 +306,10 @@ func _draw() -> void:
 		draw_string(
 			font, center + Vector2(8, -6), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE
 		)
-	var ore_sites: Array[Vector3] = _location.planned_ore_sites()
-	var ore_types: Array[OreType] = _location.planned_ore_types()
-	for i: int in ore_sites.size():
-		draw_circle(_to_screen(Vector2(ore_sites[i].x, ore_sites[i].z)), 4.0, ore_types[i].color)
-	for nest: Vector3 in _location.planned_nest_sites():
+	for ore: LocationSites.OreSite in _location.sites.ores:
+		var at := Vector2(ore.position.x, ore.position.z)
+		draw_circle(_to_screen(at), 4.0, ore.ore.color)
+	for nest: Vector3 in _location.sites.nest_positions():
 		draw_arc(_to_screen(Vector2(nest.x, nest.z)), 6.0, 0.0, TAU, 16, Color(1.0, 0.2, 0.2), 2.5)
 	_draw_parts(font)
 	var edges: PackedVector2Array = _location.planned_edges()

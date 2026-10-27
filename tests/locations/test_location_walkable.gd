@@ -32,7 +32,7 @@ func test_every_walkable_spot_leads_back() -> void:
 				var top: float = location.terrain.height_at(area.mesa.x, area.mesa.y)
 				var foot: float = location.terrain.height_at(area.center.x, area.center.y)
 				assert_gt(top - foot, 3.0, label + " mesa stands out")
-		for site: Vector3 in location.planned_ore_sites() + location.planned_nest_sites():
+		for site: Vector3 in location.sites.ore_positions() + location.sites.nest_positions():
 			assert_true(location.is_reachable(site.x, site.z), label)
 
 
@@ -88,7 +88,7 @@ func test_hazards_keep_off_the_way() -> void:
 						if location.is_on_lane(at.x, at.z) or not location.is_reachable(at.x, at.z):
 							on_lane += 1
 			assert_eq(on_lane, 0, label + ": on a lane or out of reach")
-			for site: Vector3 in location.planned_ore_sites() + location.planned_nest_sites():
+			for site: Vector3 in location.sites.ore_positions() + location.sites.nest_positions():
 				assert_gt(center.distance_to(Vector2(site.x, site.z)), zone.z, label)
 
 

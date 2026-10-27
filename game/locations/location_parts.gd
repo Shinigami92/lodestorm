@@ -138,29 +138,6 @@ func settle(rng: RandomNumberGenerator, location: GeneratedLocation) -> void:
 			push_warning("No room for the set piece %s" % part.placement.scene.resource_path)
 
 
-## Adds the ore sites of the parts' ore markers to `sites` (location-local, at height 0) and their
-## ores to `types`, of the band each asks for (`found`: the ores, commonest first). Returns how many
-## ore fields they count as (one per part).
-func ore_sites(found: Array[OreType], sites: Array[Vector3], types: Array[OreType]) -> int:
-	var fields: int = 0
-	for part: Placed in placed:
-		for i: int in part.info.marker_kinds.size():
-			if part.info.marker_kinds[i] != PartMarker.Kind.ORE:
-				continue
-			var site: Vector3 = part.marker_position(i)
-			sites.append(Vector3(site.x, 0.0, site.z))
-			match part.info.marker_bands[i]:
-				PartMarker.Band.COMMON:
-					types.append(found[0])
-				PartMarker.Band.MID:
-					types.append(found[floori(found.size() / 2.0)])
-				_:
-					types.append(found[found.size() - 1])
-		if part.info.count(PartMarker.Kind.ORE) > 0:
-			fields += 1
-	return fields
-
-
 ## Adds the parts' scenes to `location` (under `Parts`), with a crate on every crate marker: they
 ## hold `contents` in turn, then supply caches.
 func build(location: Node3D, contents: Array[CrateContent]) -> void:

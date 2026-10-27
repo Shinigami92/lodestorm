@@ -4,6 +4,7 @@ extends GutTest
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const NEST_SCENE: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")
+const HIVE: AlienHive = preload("res://game/aliens/hive/hive.tres")
 
 var _map: Node3D
 var _mission: Mission
@@ -29,8 +30,8 @@ func test_tier_1_keeps_the_settings() -> void:
 	assert_eq(_mission.tier(), 1)
 	assert_eq(_mission.warning_time(), _settings.warning_time)
 	assert_eq(_settings.storm_growth_at(1), _settings.storm_damage_growth)
-	assert_eq(_settings.alien_health_at(1), 1.0)
-	assert_eq(_settings.alien_damage_at(1), 1.0)
+	assert_eq(HIVE.health_at(1), 1.0)
+	assert_eq(HIVE.damage_at(1), 1.0)
 	for difficulty: MissionBrief.Difficulty in MissionBrief.Difficulty.values():
 		assert_eq(
 			_voyage_settings.nest_factor_at(difficulty, 1),
@@ -50,8 +51,8 @@ func test_each_tier_scales_aliens_nests_and_the_storm() -> void:
 	_voyage.skip_flight()
 	assert_eq(_mission.tier(), 6)
 	# Five tiers above the first.
-	assert_almost_eq(_settings.alien_health_at(6), 1.0 + 5 * _settings.alien_health_per_tier, 1e-5)
-	assert_almost_eq(_settings.alien_damage_at(6), 1.0 + 5 * _settings.alien_damage_per_tier, 1e-5)
+	assert_almost_eq(HIVE.health_at(6), 1.0 + 5 * HIVE.health_per_tier, 1e-5)
+	assert_almost_eq(HIVE.damage_at(6), 1.0 + 5 * HIVE.damage_per_tier, 1e-5)
 	var nests: float = (
 		_voyage_settings.nest_factors[offer.difficulty]
 		* (1.0 + 5 * _voyage_settings.nests_per_tier)
@@ -82,8 +83,8 @@ func test_aliens_hatch_stronger_farther_in() -> void:
 	_map.add_child(nest)
 	await wait_physics_frames(2)
 	var alien: Alien = nest.hatch(Alien.Role.HUNTER)
-	assert_eq(alien.health_factor, _settings.alien_health_at(3))
-	assert_eq(alien.damage_factor, _settings.alien_damage_at(3))
+	assert_eq(alien.health_factor, HIVE.health_at(3))
+	assert_eq(alien.damage_factor, HIVE.damage_at(3))
 	assert_gt(alien.health_factor, 1.0)
 	assert_almost_eq(alien.max_health(), alien.strain.max_health * alien.health_factor, 1e-4)
 	assert_eq(alien.health, alien.max_health(), "hatches unhurt")

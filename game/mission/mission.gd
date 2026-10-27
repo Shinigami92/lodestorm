@@ -143,6 +143,11 @@ func warning_time() -> float:
 	return settings.warning_time_at(tier())
 
 
+## Whether the storm's warning is on: the run's last `warning_time` seconds.
+func is_warning() -> bool:
+	return state == State.RUNNING and time_left <= warning_time()
+
+
 func _storm_damage(delta: float) -> void:
 	var damage: float = storm_damage_per_second() * delta
 	for player: Player in _players():

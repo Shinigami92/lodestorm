@@ -764,12 +764,13 @@ func _add_nests() -> void:
 		nest.position = sites.nests[i].position
 		nests.add_child(nest)
 	if table:
-		_add_apex(table.hive)
+		_add_apex(table)
 
 
 ## The hive's apex on some locations (see `AlienHive.apex_chance_at`, picked by the seed): it roams
 ## between the middles of the areas away from the landing site, starting in one of them.
-func _add_apex(hive: AlienHive) -> void:
+func _add_apex(table: HatchTable) -> void:
+	var hive: AlienHive = table.hive
 	var rng: RandomNumberGenerator = _stream("apex")
 	if rng.randf() >= hive.apex_chance_at(alien_tier):
 		return
@@ -787,6 +788,8 @@ func _add_apex(hive: AlienHive) -> void:
 	var lair := ApexLair.new()
 	lair.name = "Apex"
 	lair.strain = hive.apex
+	lair.health_factor = table.health_factor
+	lair.damage_factor = table.damage_factor
 	lair.route = route
 	lair.start = rng.randi() % route.size()
 	add_child(lair)

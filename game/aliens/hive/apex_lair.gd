@@ -10,16 +10,17 @@ extends Node3D
 var route: Array[Vector3] = []
 ## The route's point it starts at.
 var start: int = 0
+## How much more health and damage it has than on a tier 1 body (see `HatchTable`).
+var health_factor: float = 1.0
+var damage_factor: float = 1.0
 ## The apex, once it appeared (freed when it dies).
 var apex: Alien
 
 
 func _ready() -> void:
 	apex = strain.spawn(Alien.Role.GUARD)
-	var mission := get_tree().get_first_node_in_group(Mission.GROUP) as Mission
-	if mission:
-		apex.health_factor = mission.settings.alien_health_at(mission.tier())
-		apex.damage_factor = mission.settings.alien_damage_at(mission.tier())
+	apex.health_factor = health_factor
+	apex.damage_factor = damage_factor
 	for point: Vector3 in route:
 		apex.route.append(to_global(point))
 	if not route.is_empty():

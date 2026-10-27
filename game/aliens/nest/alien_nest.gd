@@ -14,7 +14,7 @@ extends Node3D
 ## the hive frenzies: its aliens are faster and hunters hatch at their highest rate. A scream
 ## (`Alien.called_for_help`) makes the nest nearest to the shrieker send its next pack right away,
 ## boosted like the shrieker's pack: its mouth flares and a ring sweeps out from it.
-## Aliens hatch stronger on bodies farther in (see `MissionSettings.alien_health_at`). Nests wait
+## Aliens hatch stronger on bodies farther in (see `AlienHive.health_at`). Nests wait
 ## while the living aliens reach the cap (`AlienNestSettings.alien_cap`), looking again every
 ## `CAP_RETRY`. A pack hatches one alien after another (`AlienNestSettings.hatch_gap` apart), and
 ## the whole hive hatches at most one per physics frame: setting one up takes a moment, a pack at
@@ -264,9 +264,8 @@ func hatch(role: Alien.Role, strain: AlienStrain = null) -> Alien:
 	if not strain:
 		strain = _any_strain(role)
 	var alien: Alien = strain.spawn(role)
-	if _find_mission():
-		alien.health_factor = _mission.settings.alien_health_at(_mission.tier())
-		alien.damage_factor = _mission.settings.alien_damage_at(_mission.tier())
+	alien.health_factor = table.health_factor
+	alien.damage_factor = table.damage_factor
 	var angle: float = _rng.randf() * TAU
 	var direction := Vector3(sin(angle), 0.0, cos(angle))
 	alien.position = direction * settings.hatch_radius
@@ -305,9 +304,7 @@ func answer_call(boost: float = 1.0, seconds: float = 0.0) -> Array[AlienStrain]
 func is_frenzied() -> bool:
 	if not _find_mission():
 		return false
-	if _mission.state == Mission.State.STORM:
-		return true
-	return _mission.state == Mission.State.RUNNING and _mission.time_left <= _mission.warning_time()
+	return _mission.state == Mission.State.STORM or _mission.is_warning()
 
 
 ## How far the hive has escalated, from 0 to 1 (the mission's progress; 0 without a mission).
@@ -368,12 +365,10 @@ func get_raiders() -> Array[Alien]:
 	return _raiders.duplicate()
 
 
-## Its health when unhurt: `settings.health`, scaled like the aliens' by the mission's tier and by
-## the players beyond the first (`settings.health_per_player`).
+## Its health when unhurt: `settings.health`, scaled like the aliens' by the body's tier (its
+## `table`) and by the players beyond the first (`settings.health_per_player`).
 func max_health() -> float:
-	var health: float = settings.health
-	if _find_mission():
-		health *= _mission.settings.alien_health_at(_mission.tier())
+	var health: float = settings.health * table.health_factor
 	var players: int = get_tree().get_nodes_in_group(Player.GROUP).size()
 	return health * (1.0 + settings.health_per_player * maxi(players - 1, 0))
 

@@ -37,6 +37,8 @@ extends Resource
 @export var remarks: Array[String] = []
 ## What a crew member says over the radio about things that happen (see `CrewReactions`).
 @export var reactions: Array[CrewReaction] = []
+## A walk through the ship they give (Brannik's), or none.
+@export var tour: Tour
 
 
 ## The lines they have for `event` about `subject`, worded for several players `together` or one

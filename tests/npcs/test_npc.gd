@@ -12,6 +12,8 @@ var _npc: Npc
 
 func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
+	# Past his tour's offer (see test_tour.gd): he's at the armory with his greeting.
+	(_map.get_node("Ship") as Ship).story.set_flag(&"quartermaster.tour_offer")
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_ship = _map.get_node("Ship") as Ship
@@ -60,7 +62,7 @@ func test_first_talk_plays_the_greeting() -> void:
 	assert_has(_npc.profile.dialogue.prompts, _npc.prompt, "one of his prompts")
 	assert_eq(
 		_titles(),
-		["Ammo", "Spare magazines", "Reloading", "Shooting range"],
+		["Ammo", "Spare magazines", "Reloading", "Shooting range", "Show me the ship"],
 		"timing needs reloading, Brask owning one"
 	)
 
@@ -119,7 +121,15 @@ func test_topics_open_up_and_lose_their_dot() -> void:
 	while _npc.topic:
 		_npc.press()
 	assert_eq(
-		_titles(), ["Ammo", "Spare magazines", "Reloading", "Timing reload", "Shooting range"]
+		_titles(),
+		[
+			"Ammo",
+			"Spare magazines",
+			"Reloading",
+			"Timing reload",
+			"Shooting range",
+			"Show me the ship"
+		]
 	)
 	assert_false(card.get_button("Reloading").text.begins_with(TalkCard.NEW_DOT), "heard")
 	assert_true(_npc.has_news(), "the others are new")

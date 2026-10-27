@@ -31,6 +31,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"SkillTree": [],
 	"StarSystem": [&"display_name"],
 	"Topic": [&"title", &"lines", &"guest_lines"],
+	"TourStop": [&"lines"],
 	"Upgrade": [&"display_name", &"description"],
 	"WeaponPart": [&"display_name", &"description"],
 	# The name stays the same in every language.

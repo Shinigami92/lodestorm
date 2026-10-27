@@ -18,6 +18,8 @@ func before_each() -> void:
 	GameSettings.voice_language = ""
 	GameSettings.dialogue_auto_continue = false
 	_map = TEST_MAP.instantiate() as Node3D
+	# Past his tour's offer (see test_tour.gd): he's at the armory with his greeting.
+	(_map.get_node("Ship") as Ship).story.set_flag(&"quartermaster.tour_offer")
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_npc = _map.get_node("Ship/Rooms/Lower/Armory/Quartermaster") as Npc

@@ -5,6 +5,8 @@
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
 [ext_resource type="Resource" uid="uid://7jm5s1jr48n5" path="res://game/weapons/types/brask/brask.tres" id="4_brask"]
 [ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="9_reaction"]
+[ext_resource type="Script" uid="uid://dbr2l4vrjyctn" path="res://game/npcs/tour.gd" id="10_tour"]
+[ext_resource type="Script" uid="uid://dkq75kl1xhc62" path="res://game/npcs/tour_stop.gd" id="11_tour_stop"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
 script = ExtResource("3_topic")
@@ -83,6 +85,100 @@ script = ExtResource("9_reaction")
 event = &"big_haul"
 lines = Array[String](["Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach.", "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast.", "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."])
 
+[sub_resource type="Resource" id="Tour_offer"]
+script = ExtResource("3_topic")
+id = &"quartermaster.tour_offer"
+title = "Hello"
+lines = Array[String](["There you are. Before the first mission, let me walk you through the ship once, so you know who does what and where to find them.", "It won't take long. If you'd rather look around on your own, that's fine too. You'll find me in the armory."])
+
+[sub_resource type="Resource" id="Tour_invite"]
+script = ExtResource("3_topic")
+id = &"quartermaster.tour"
+title = "Show me the ship"
+lines = Array[String](["Follow me, then. We start in the mess hall and end in my armory, and I'll wait for you at every stop."])
+requires = Array[StringName]([&"quartermaster.tour_offer"])
+
+[sub_resource type="Resource" id="Tour_resume"]
+script = ExtResource("3_topic")
+id = &"quartermaster.tour_resume"
+title = "Go on"
+lines = Array[String](["Right, let's keep going."])
+
+[sub_resource type="Resource" id="Tour_abort"]
+script = ExtResource("3_topic")
+id = &"quartermaster.tour_abort"
+title = "End the tour"
+lines = Array[String](["All right. You know where to find me: in the armory, on the lower deck."])
+
+[sub_resource type="Resource" id="Tour_stop_MessHall"]
+script = ExtResource("11_tour_stop")
+id = &"MessHall"
+lines = Array[String](["This is the mess hall. Fenna cooks for all of us, and she hears everything that goes on aboard, so it's worth stopping by."])
+
+[sub_resource type="Resource" id="Tour_stop_Bridge"]
+script = ExtResource("11_tour_stop")
+id = &"Bridge"
+lines = Array[String](["The bridge. Tamsin flies the ship, and here at the holo table you pick with her where we go next. Every trip starts at that table."])
+
+[sub_resource type="Resource" id="Tour_stop_Cockpit"]
+script = ExtResource("11_tour_stop")
+id = &"Cockpit"
+lines = Array[String](["Next door is the cockpit. Once a destination is set, the course is set at the flight console in here, and anyone can do that."])
+
+[sub_resource type="Resource" id="Tour_stop_Lift"]
+script = ExtResource("11_tour_stop")
+id = &"Lift"
+lines = Array[String](["This lift takes us down to the lower deck. Up here are the cabins and the bridge, and everything for your gear is down there."])
+
+[sub_resource type="Resource" id="Tour_stop_MedicalBay"]
+script = ExtResource("11_tour_stop")
+id = &"MedicalBay"
+lines = Array[String](["The medical bay. Ilse patches you up here, and if you fall out there, this is where you wake up again."])
+
+[sub_resource type="Resource" id="Tour_stop_EngineRoom"]
+script = ExtResource("11_tour_stop")
+id = &"EngineRoom"
+lines = Array[String](["The engine room. Okoro keeps the drive core running, and the heat shield around it decides how close to the star we can fly."])
+
+[sub_resource type="Resource" id="Tour_stop_ShootingRange"]
+script = ExtResource("11_tour_stop")
+id = &"ShootingRange"
+lines = Array[String](["The shooting range. Try every new weapon in here first. No shot leaves the room, and reloading costs you nothing."])
+
+[sub_resource type="Resource" id="Tour_stop_Weapons"]
+script = ExtResource("11_tour_stop")
+id = &"Weapons"
+lines = Array[String](["Dace's weapons room. He builds new weapons from their blueprints, and at his bench he makes yours better."])
+
+[sub_resource type="Resource" id="Tour_stop_Armor"]
+script = ExtResource("11_tour_stop")
+id = &"Armor"
+lines = Array[String](["Wren looks after your suit in here. Better armor means you can take more hits out there."])
+
+[sub_resource type="Resource" id="Tour_stop_Skills"]
+script = ExtResource("11_tour_stop")
+id = &"Skills"
+lines = Array[String](["The skill graph. Your suit learns new things in here, like a quick dash or more spare magazines."])
+
+[sub_resource type="Resource" id="Tour_stop_Miners"]
+script = ExtResource("11_tour_stop")
+id = &"Miners"
+lines = Array[String](["Hollis and the miners. They dig the ore out there, while you keep the aliens off them."])
+
+[sub_resource type="Resource" id="Tour_stop_Armory"]
+script = ExtResource("11_tour_stop")
+id = &"Armory"
+lines = Array[String](["And this is my armory, where the tour ends. The cargo bay and the ramp are right through there. Ask me about your weapons and ammo whenever you like."])
+
+[sub_resource type="Resource" id="Tour"]
+script = ExtResource("10_tour")
+start = &"Start"
+offer = SubResource("Tour_offer")
+invite = SubResource("Tour_invite")
+resume = SubResource("Tour_resume")
+abort = SubResource("Tour_abort")
+stops = Array[ExtResource("11_tour_stop")]([SubResource("Tour_stop_MessHall"), SubResource("Tour_stop_Bridge"), SubResource("Tour_stop_Cockpit"), SubResource("Tour_stop_Lift"), SubResource("Tour_stop_MedicalBay"), SubResource("Tour_stop_EngineRoom"), SubResource("Tour_stop_ShootingRange"), SubResource("Tour_stop_Weapons"), SubResource("Tour_stop_Armor"), SubResource("Tour_stop_Skills"), SubResource("Tour_stop_Miners"), SubResource("Tour_stop_Armory")])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"quartermaster"
@@ -93,3 +189,4 @@ activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"
 accent_color = Color(0.65, 0.45, 1, 1)
 dialogue = SubResource("Resource_dialogue")
 reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_run_won_solo"), SubResource("Reaction_first_run_won_coop"), SubResource("Reaction_weapon_built"), SubResource("Reaction_big_haul")])
+tour = SubResource("Tour")

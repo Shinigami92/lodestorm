@@ -129,7 +129,7 @@ func test_common_ore_close_to_ship_and_nests_far() -> void:
 		for nest: Node3D in location.get_node("AlienNests").get_children():
 			assert_gte(
 				_to_landing_site(location, nest.position),
-				location.biome.nest_min_distance * GeneratedLocation.NEST_STRAIGHT_SHARE
+				location.biome.nest_min_distance * LocationSites.NEST_STRAIGHT_SHARE
 			)
 
 

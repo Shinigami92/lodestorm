@@ -12,6 +12,10 @@ extends Node3D
 ## hold a point of interest or one of the region's set pieces (see `LocationParts`); their markers
 ## place ore, nests and crates first.
 ## Everything the generator places is greybox; the values are TBD (playtest).
+## The layout, the parts, the ground's shape and the hazard draw one after another from the seed
+## itself; the ore fields, the nests and everything after them each draw from a random stream of
+## their own (`random_stream`), so a stage added later, or one that draws more, leaves what the
+## others pick as it was.
 ## Generating takes a while, so it runs in two steps: `plan` does the heavy work without touching
 ## nodes or servers, so it can run on a worker thread while the location is outside the tree (the
 ## ship prepares the next location before and during the flight); `build` then adds the nodes. A
@@ -27,8 +31,6 @@ const MAX_WALK_SLOPE: float = 0.84
 ## How much the ground under an ore node or nest may rise from its lowest to its highest point
 ## (relative to the site's radius) before it's flattened.
 const MAX_SITE_RISE: float = 0.3
-const ORE_SITE_RADIUS: float = 3.0
-const NEST_SITE_RADIUS: float = 6.0
 ## Height of the invisible walls at the edges, in m.
 const BOUNDS_HEIGHT: float = 60.0
 ## How often a placement looks for a fitting spot before giving up.
@@ -44,9 +46,6 @@ const LANDING_MARGIN: float = 10.0
 const SITE_FALLOFF: float = 3.0
 ## The apex roams only between areas at least this far from the landing site (straight, m).
 const APEX_LANDING_DISTANCE: float = 40.0
-## How close a nest may be to the landing site in a straight line, relative to
-## `LocationBiome.nest_min_distance` (which counts along the passes).
-const NEST_STRAIGHT_SHARE: float = 0.6
 ## Ground around the biome's hazard that ore, nests and map parts keep off as well, in m.
 const HAZARD_MARGIN: float = 3.0
 ## Over how many m a raised bridge (`LocationBiome.bridge_rise`) rises from the areas it joins.
@@ -113,10 +112,11 @@ var layout: LocationLayout
 var size: float = 0.0
 ## Its points of interest and set pieces.
 var parts := LocationParts.new()
+## Where its ore nodes and nests go.
+var sites := LocationSites.new(self)
 ## The ground along its passes: their lanes, the ramps between terraces and the trails' paths.
 var passes: LocationPasses
 
-var _rng := RandomNumberGenerator.new()
 ## Grid points players can walk to from the ship (1 = reachable).
 var _reachable: PackedByteArray
 ## Grid points on a lane along a pass (1 = keep free; `passes.lanes`).
@@ -142,10 +142,6 @@ var _hazards := LocationHazards.new(self)
 var _features := LocationFeatures.new(self)
 ## Places scatter keeps away from (x, z, radius), location-local.
 var _clearings: Array[Vector3] = []
-## Location-local positions of the ore nodes, and of the nests, to be placed.
-var _ore_sites: Array[Vector3] = []
-var _ore_site_types: Array[OreType] = []
-var _nest_sites: Array[Vector3] = []
 ## Planned ground chunks: name, mesh arrays and collision faces of each.
 var _chunk_names: PackedStringArray = []
 var _chunk_arrays: Array[Array] = []
@@ -167,29 +163,25 @@ func plan() -> void:
 		return
 	while world_seed == 0:
 		world_seed = randi()
-	_rng.seed = world_seed
 	if not biome:
-		biome = biomes[_rng.randi() % biomes.size()]
+		biome = biomes[_stream("biome").randi() % biomes.size()]
+	var rng := RandomNumberGenerator.new()
+	rng.seed = world_seed
 	layout = LocationLayout.generate(
-		_rng, area_count, biome, landing_yard, landing_site.grow(LANDING_MARGIN)
+		rng, area_count, biome, landing_yard, landing_site.grow(LANDING_MARGIN)
 	)
-	parts.choose(_rng, layout, set_pieces, biome.part_pool, biome.parts_per_area)
-	_generate_ground()
+	parts.choose(rng, layout, set_pieces, biome.part_pool, biome.parts_per_area)
+	_generate_ground(rng)
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
-	parts.settle(_rng, self)
+	parts.settle(rng, self)
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
-	_hazards.place(_rng)
-	_pick_ore_sites()
-	_pick_nest_sites()
-	# Flattening the sites changed the ground a little, also under sites placed before.
-	for sites: Array[Vector3] in [_ore_sites, _nest_sites]:
-		for i: int in sites.size():
-			sites[i].y = terrain.height_at(sites[i].x, sites[i].z)
+	_hazards.place(rng)
+	sites.pick(ores if not ores.is_empty() else OreCatalog.sorted(biome.ores))
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	if _gaps:
-		_gaps.plan(_reachable, _rng)
+		_gaps.plan(_reachable, _stream("gaps"))
 	_plan_ground()
-	_scatter.plan(_rng, self)
+	_scatter.plan(_stream("scatter"), self)
 	_planned = true
 
 
@@ -284,27 +276,13 @@ func _flag(flags: PackedByteArray, x: float, z: float) -> bool:
 	return flags[terrain.index(grid.x, grid.y)] == 1
 
 
-## Where the ore nodes go (location-local), and their ores: known once planned.
-func planned_ore_sites() -> Array[Vector3]:
-	return _ore_sites
-
-
-func planned_ore_types() -> Array[OreType]:
-	return _ore_site_types
-
-
-## Where the nests go (location-local): known once planned.
-func planned_nest_sites() -> Array[Vector3]:
-	return _nest_sites
-
-
 ## Spots (location-local x, z) a player could fall to from walkable ground without a way back to
 ## the ship: should be none (see `LocationTerrain.stuck_spots`).
 func stuck_spots() -> PackedVector2Array:
 	return terrain.stuck_spots(_reachable, MAX_WALK_SLOPE, _blocked)
 
 
-func _generate_ground() -> void:
+func _generate_ground(rng: RandomNumberGenerator) -> void:
 	var bounds: Rect2 = landing_site
 	for area: LocationLayout.Area in layout.areas:
 		bounds = bounds.merge(
@@ -314,10 +292,10 @@ func _generate_ground() -> void:
 	var cells: int = ceili(side / cell)
 	size = cells * cell
 	terrain = LocationTerrain.new(bounds.get_center() - Vector2.ONE * size * 0.5, cells, cell)
-	var wobble: FastNoiseLite = _noise(1.0 / 30.0, 2)
-	var swells: FastNoiseLite = _noise(1.0 / biome.floor_relief_size, 3)
-	var rock: FastNoiseLite = _noise(1.0 / 90.0, 3)
-	var bumps: FastNoiseLite = _noise(1.0 / 12.0, 2)
+	var wobble: FastNoiseLite = make_noise(rng, 1.0 / 30.0, 2)
+	var swells: FastNoiseLite = make_noise(rng, 1.0 / biome.floor_relief_size, 3)
+	var rock: FastNoiseLite = make_noise(rng, 1.0 / 90.0, 3)
+	var bumps: FastNoiseLite = make_noise(rng, 1.0 / 12.0, 2)
 	var outside: PackedFloat32Array = terrain.distance_outside(_carve(wobble))
 	var walls := LocationWalls.new(terrain, biome, rock, view_direction)
 	if not _from_areas.is_empty():
@@ -327,9 +305,9 @@ func _generate_ground() -> void:
 			walls.deeper[i] = smoothstep(CANYON_FADE.x, CANYON_FADE.y, farther) * biome.canyon_depth
 	if biome.has_gaps():
 		# Only gap biomes draw these, so the other biomes' worlds stay as they were for their seeds.
-		var widths: FastNoiseLite = _noise(1.0 / 40.0, 2)
+		var widths: FastNoiseLite = make_noise(rng, 1.0 / 40.0, 2)
 		var pits: FastNoiseLite = (
-			_noise(1.0, 1) if biome.gap_shape == LocationBiome.GapShape.PITS else null
+			make_noise(rng, 1.0, 1) if biome.gap_shape == LocationBiome.GapShape.PITS else null
 		)
 		_gaps = LocationGaps.new(terrain, biome, widths, pits)
 		_widen_gaps()
@@ -498,8 +476,15 @@ func _stamp(
 			openness[index] = maxf(openness[index], inside)
 
 
-func _noise(frequency: float, octaves: int) -> FastNoiseLite:
-	return make_noise(_rng, frequency, octaves)
+## The random stream of a generator stage (`stage`: its name) for `world_seed`.
+static func random_stream(seed_of_world: int, stage: String) -> RandomNumberGenerator:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([seed_of_world, stage])
+	return rng
+
+
+func _stream(stage: String) -> RandomNumberGenerator:
+	return random_stream(world_seed, stage)
 
 
 ## Smooth noise for the generator, its seed drawn from `rng`.
@@ -518,145 +503,15 @@ func landing_distance(at: Vector2) -> float:
 	return offset.max(Vector2.ZERO).length()
 
 
-## Ore fields: a few nodes of one type close together, in the areas. The first two are close to
-## the ramp and have the commonest ore; every ore pocket gets the rarest; the rest spread over the
-## other areas (not the nest hollows), rarer the farther they lie along the passes.
-func _pick_ore_sites() -> void:
-	var found: Array[OreType] = ores if not ores.is_empty() else OreCatalog.sorted(biome.ores)
-	if found.is_empty():
-		return
-	var fields: int = parts.ore_sites(found, _ore_sites, _ore_site_types)
-	for i: int in _ore_sites.size():
-		_ore_sites[i].y = terrain.height_at(_ore_sites[i].x, _ore_sites[i].z)
-	var landing: LocationLayout.Area = layout.areas[0]
-	_add_ore_field(found[0], landing, true)
-	_add_ore_field(found[0], landing, true)
-	var others: Array[LocationLayout.Area] = []
-	for area: LocationLayout.Area in layout.areas:
-		var part: LocationParts.Placed = parts.part_in(area)
-		if part and part.info.count(PartMarker.Kind.ORE) > 0:
-			continue
-		if area.holds_rich_ore():
-			_add_ore_field(found[found.size() - 1], area, false)
-		elif area.kind not in [LocationLayout.Kind.LANDING, LocationLayout.Kind.NEST_HOLLOW]:
-			others.append(area)
-	var wanted: int = roundi(layout.areas.size() * biome.ore_fields_per_area)
-	var farthest: float = maxf(layout.farthest(), 1.0)
-	for attempt: int in wanted * 3:
-		if others.is_empty() or fields >= wanted:
-			break
-		var area: LocationLayout.Area = others[_rng.randi() % others.size()]
-		var rank: float = area.distance / farthest * found.size() + _rng.randf_range(-0.6, 0.6)
-		var ore_type: OreType = found[clampi(int(rank), 0, found.size() - 1)]
-		if _add_ore_field(ore_type, area, false):
-			fields += 1
-
-
-## Adds an ore field of `ore_type` in `area` (`near`: close to the ramp); false when there's no
-## room.
-func _add_ore_field(ore_type: OreType, area: LocationLayout.Area, near: bool) -> bool:
-	var fields: Array[Vector3] = []
-	for site: Vector3 in _ore_sites:
-		fields.append(site)
-	var center: Vector3 = find_site(
-		ORE_SITE_RADIUS,
-		func(at: Vector2) -> bool:
-			if near and at.distance_to(ramp_exit) < near_ore_distance.x:
-				return false
-			return landing_distance(at) >= 10.0 and _far_from(at, fields, ore_field_spacing),
-		ramp_exit if near else area.center,
-		near_ore_distance.y if near else area.radius * 0.8
-	)
-	if center == Vector3.INF:
-		return false
-	var count: int = _rng.randi_range(biome.ore_nodes_per_field.x, biome.ore_nodes_per_field.y)
-	for node: int in count:
-		var site: Vector3 = Vector3(center.x, 0.0, center.z)
-		if node > 0:
-			site = find_site(
-				ORE_SITE_RADIUS,
-				func(at: Vector2) -> bool:
-					return landing_distance(at) >= 10.0 and _far_from(at, _ore_sites, 7.0),
-				Vector2(center.x, center.z),
-				12.0
-			)
-		if site == Vector3.INF:
-			continue
-		add_site(site, ORE_SITE_RADIUS, 1.5)
-		_ore_sites.append(Vector3(site.x, terrain.height_at(site.x, site.z), site.z))
-		_ore_site_types.append(ore_type)
-	return true
-
-
-## Nests in the areas far enough from the ship: two in every nest hollow first, then spread over
-## the others, the areas every way out goes through last (so they rarely block the way back).
-func _pick_nest_sites() -> void:
-	var wanted: int = roundi(layout.areas.size() * biome.nests_per_area * nest_factor)
-	# The parts' nest markers first, where nests may be.
-	for part: LocationParts.Placed in parts.placed:
-		if part.area.distance < biome.nest_min_distance:
-			continue
-		for site: Vector3 in part.markers(PartMarker.Kind.NEST):
-			if _nest_sites.size() < wanted:
-				_nest_sites.append(Vector3(site.x, terrain.height_at(site.x, site.z), site.z))
-	var cut: PackedInt32Array = layout.cut_areas()
-	var first: Array[LocationLayout.Area] = []
-	var spread: Array[LocationLayout.Area] = []
-	var last: Array[LocationLayout.Area] = []
-	for i: int in layout.areas.size():
-		var area: LocationLayout.Area = layout.areas[i]
-		if area.kind == LocationLayout.Kind.LANDING or area.distance < biome.nest_min_distance:
-			continue
-		if area.kind == LocationLayout.Kind.NEST_HOLLOW:
-			first.append(area)
-			first.append(area)
-		elif i in cut:
-			last.append(area)
-		else:
-			spread.append(area)
-	var order: Array[LocationLayout.Area] = first
-	order.append_array(_shuffled(spread))
-	order.append_array(_shuffled(last))
-	if order.is_empty():
-		return
-	for attempt: int in maxi(wanted, order.size()) * 3:
-		if _nest_sites.size() >= wanted:
-			break
-		var area: LocationLayout.Area = order[attempt % order.size()]
-		var site: Vector3 = find_site(
-			NEST_SITE_RADIUS,
-			func(at: Vector2) -> bool:
-				return (
-					landing_distance(at) >= biome.nest_min_distance * NEST_STRAIGHT_SHARE
-					and _far_from(at, _nest_sites, nest_spacing)
-					and _far_from(at, _ore_sites, nest_ore_spacing)
-				),
-			area.center,
-			area.radius * 0.8
-		)
-		if site == Vector3.INF:
-			continue
-		add_site(site, NEST_SITE_RADIUS, 3.5)
-		_nest_sites.append(Vector3(site.x, terrain.height_at(site.x, site.z), site.z))
-
-
-func _shuffled(areas: Array[LocationLayout.Area]) -> Array[LocationLayout.Area]:
-	var mixed: Array[LocationLayout.Area] = areas.duplicate()
-	for i: int in range(mixed.size() - 1, 0, -1):
-		var j: int = _rng.randi_range(0, i)
-		var swap: LocationLayout.Area = mixed[i]
-		mixed[i] = mixed[j]
-		mixed[j] = swap
-	return mixed
-
-
-## A reachable, gentle spot off the lanes where `fits` agrees, within `spread` of `around`;
-## `Vector3.INF` when there is none.
-func find_site(radius: float, fits: Callable, around: Vector2, spread: float) -> Vector3:
+## A reachable, gentle spot off the lanes where `fits` agrees, within `spread` of `around` (tried
+## at random from `rng`); `Vector3.INF` when there is none.
+func find_site(
+	rng: RandomNumberGenerator, radius: float, fits: Callable, around: Vector2, spread: float
+) -> Vector3:
 	var area: Rect2 = terrain.rect().grow(-rim_width - radius)
 	for attempt: int in PLACEMENT_TRIES:
 		var at: Vector2 = (
-			around + Vector2.from_angle(_rng.randf() * TAU) * _rng.randf_range(0.0, spread)
+			around + Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(0.0, spread)
 		)
 		if area.has_point(at) and fits.call(at) and _is_gentle(at, radius):
 			return Vector3(at.x, 0.0, at.y)
@@ -731,13 +586,6 @@ func _grid_within(at: Vector2, radius: float) -> Array[Vector2i]:
 	return points
 
 
-func _far_from(at: Vector2, sites: Array[Vector3], distance: float) -> bool:
-	for site: Vector3 in sites:
-		if at.distance_to(Vector2(site.x, site.z)) < distance:
-			return false
-	return true
-
-
 ## Flattens the ground at `site` (blending back over `falloff` m) and keeps scatter away from it
 ## (`room` m beyond `radius`).
 func add_site(site: Vector3, radius: float, room: float, falloff: float = SITE_FALLOFF) -> void:
@@ -748,8 +596,9 @@ func add_site(site: Vector3, radius: float, room: float, falloff: float = SITE_F
 
 ## The ground's chunks: their mesh arrays (painted) and collision faces.
 func _plan_ground() -> void:
-	var shades: FastNoiseLite = _noise(1.0 / 40.0, 2)
-	var patches: FastNoiseLite = _noise(1.0 / 18.0, 2)
+	var rng: RandomNumberGenerator = _stream("paint")
+	var shades: FastNoiseLite = make_noise(rng, 1.0 / 40.0, 2)
+	var patches: FastNoiseLite = make_noise(rng, 1.0 / 18.0, 2)
 	var highest: PackedFloat32Array = terrain.highest_around(SCREE_REACH)
 	var paint: Callable = func(point: Vector3, _up: Vector3) -> Color:
 		return _ground_paint(point, shades, patches, highest)
@@ -890,13 +739,14 @@ func _add_ore_nodes() -> void:
 	var ore_nodes := Node3D.new()
 	ore_nodes.name = "OreNodes"
 	add_child(ore_nodes)
-	for i: int in _ore_sites.size():
+	var turns: RandomNumberGenerator = _stream("ore_turns")
+	for i: int in sites.ores.size():
 		var node := ORE_NODE.instantiate() as OreNode
 		node.name = "Ore%d" % (i + 1)
-		node.ore_type = _ore_site_types[i]
+		node.ore_type = sites.ores[i].ore
 		node.variant = i
-		node.position = _ore_sites[i]
-		node.rotation.y = _rng.randf() * TAU
+		node.position = sites.ores[i].position
+		node.rotation.y = turns.randf() * TAU
 		ore_nodes.add_child(node)
 
 
@@ -905,13 +755,13 @@ func _add_nests() -> void:
 	nests.name = "AlienNests"
 	add_child(nests)
 	var table: HatchTable = null
-	for i: int in _nest_sites.size():
+	for i: int in sites.nests.size():
 		var nest := ALIEN_NEST.instantiate() as AlienNest
 		if not table:
 			table = nest.hive.table(alien_tier, biome, preview_strain, world_seed)
 		nest.table = table
 		nest.name = "Nest%d" % (i + 1)
-		nest.position = _nest_sites[i]
+		nest.position = sites.nests[i].position
 		nests.add_child(nest)
 	if table:
 		_add_apex(table.hive)
@@ -920,8 +770,7 @@ func _add_nests() -> void:
 ## The hive's apex on some locations (see `AlienHive.apex_chance_at`, picked by the seed): it roams
 ## between the middles of the areas away from the landing site, starting in one of them.
 func _add_apex(hive: AlienHive) -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash([world_seed, "apex"])
+	var rng: RandomNumberGenerator = _stream("apex")
 	if rng.randf() >= hive.apex_chance_at(alien_tier):
 		return
 	var route: Array[Vector3] = []

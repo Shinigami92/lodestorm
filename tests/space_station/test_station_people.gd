@@ -50,6 +50,30 @@ func test_named_npcs_stand_at_their_places() -> void:
 	assert_null(Interactable.nearest(get_tree(), away), "close to the counter only")
 
 
+## While the station glides in, its people stay at their places on it: they never walk over the
+## docked ship's navigation.
+func test_named_npcs_keep_their_places_while_docking() -> void:
+	_ship.navigation.bake()
+	for i: int in 300:
+		if _ship.navigation.is_baked():
+			break
+		await wait_physics_frames(1)
+	assert_true(_ship.navigation.is_baked())
+	var places: Dictionary[String, Transform3D] = {}
+	for who: String in NAMED:
+		places[who] = (_station.get_node("People/" + who) as Node3D).transform
+	_ship.flight.phase = ShipFlight.Phase.DOCKING
+	_ship.flight.phase_time = 0.0
+	await wait_physics_frames(120)
+	assert_gt(_station.position.distance_to(_ship.position), 50.0, "still gliding in")
+	_ship.flight.skip()
+	await wait_physics_frames(5)
+	for who: String in NAMED:
+		var npc := _station.get_node("People/" + who) as Npc
+		assert_almost_eq(npc.position, places[who].origin, Vector3.ONE * 0.01, who)
+		assert_false(npc.body.is_walking(), who)
+
+
 func test_every_topic_is_theirs_and_follows_the_greeting() -> void:
 	for profile: NpcProfile in NAMED.values():
 		var dialogue: Dialogue = profile.dialogue

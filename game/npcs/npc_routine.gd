@@ -17,6 +17,8 @@ extends RefCounted
 ## they work to another of them or back to their own spot, and play there only what fits (a
 ## spot's `activities`, at their own spot `HOME_ACTIVITIES`); without, everything their profile
 ## has, at their spot.
+## Off the ship (a station's people), their spot moves with the station (it glides in while the
+## ship docks), and they never walk over the ship's navigation.
 
 ## Walking speed, and the one on the way to the `flight_seat` and leading a tour, in m/s. TBD
 ## (playtest).
@@ -38,7 +40,7 @@ var npc: Npc
 ## The tour they give right now, or null.
 var tour: NpcTour
 
-## Their own spot (where the scene places them), global (the ship never moves).
+## Their own spot (where the scene places them), in their parent's space.
 var _home: Transform3D
 ## Whether they're on their way to the flight seat or sitting there (from the flight's start until
 ## they've sat `SEAT_LINGER` s after it), and the seconds left to sit after the flight.
@@ -56,7 +58,7 @@ var _settled: bool = false
 
 func _init(who: Npc) -> void:
 	npc = who
-	_home = who.global_transform
+	_home = who.transform
 	_walker = NpcWalker.new(who, who.body)
 	_move_on_left = randf_range(MOVE_ON_TIME.x, MOVE_ON_TIME.y)
 
@@ -83,7 +85,10 @@ func get_post() -> Transform3D:
 		place = tour.get_marker()
 	elif is_waiting() and npc.ship:
 		place = npc.ship.get_node_or_null(NodePath("Tour/" + String(npc.profile.tour.start)))
-	return place.global_transform if place else _home
+	if place:
+		return place.global_transform
+	var parent: Node3D = npc.get_parent_node_3d()
+	return parent.global_transform * _home if parent else _home
 
 
 ## The work spot they're at or on their way to, or null at their own spot.
@@ -145,7 +150,7 @@ func update(delta: float) -> void:
 	if not leads and Player.nearest(npc.get_tree(), npc.global_position, NpcBody.NOTICE_RANGE):
 		_walker.stop()
 		return
-	var navigation: ShipNavigation = ship.navigation if ship else null
+	var navigation: ShipNavigation = ship.navigation if ship and ship.is_ancestor_of(npc) else null
 	var speed: float = HURRY_SPEED if leads else WALK_SPEED
 	if not _walker.walk_to(post.origin, speed, navigation, delta):
 		return

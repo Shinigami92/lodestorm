@@ -26,6 +26,8 @@ var body: CelestialBody
 var flight: ShipFlight
 ## Whose view the cutaway follows (the camera's player); without one, the first player inside.
 var viewer: Node3D
+## Where its people walk (a navigation mesh over its rooms' floors, see `DeckNavigation`).
+var navigation: DeckNavigation
 ## The ship that docks here, found when not set: aboard it, the station is cut away too.
 var ship: Ship:
 	get:
@@ -57,6 +59,11 @@ func _ready() -> void:
 	add_child(_make_planet())
 	CutAway.show(_cut, true)
 	_follow_flight()
+	navigation = DeckNavigation.new()
+	navigation.name = "Navigation"
+	navigation.bake_box = room_plan.get_bounds().grow(0.5)
+	navigation.floors = room_plan.get_floors()
+	add_child(navigation)
 
 
 func _process(_delta: float) -> void:

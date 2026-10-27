@@ -1,34 +1,41 @@
-class_name ShipNavigation
+class_name DeckNavigation
 extends Node3D
-## Where the crew can walk aboard (see docs/design/crew.md): a navigation mesh over the
-## ship's floors, baked from its colliders (walls, stations, furniture) once it's first asked for
-## a way (`find_path`), on a worker thread; until it's done, no way is found. It lives on its own
-## navigation map, so it never joins a location's (the aliens') or a station's. The ship never
-## moves (the world changes around it), so it's baked once. Doors have no collision and stay open
-## in it; a closed ramp or lift gate does too, it's a wall like any other. Only the decks' floors
-## are kept (`FLOORS`), not the tops of tables and counters. The decks aren't joined yet (walking
-## between them needs the lift, see planned/crew.md).
+## Where people can walk inside a map with decks (the ship, a station; see docs/design/crew.md):
+## a navigation mesh over its floors, baked from the colliders of its parent (walls, stations,
+## furniture) inside `bake_box` once it's first asked for a way (`find_path`), on a worker thread;
+## until it's done, no way is found. It lives on its own navigation map, so it never joins a
+## location's (the aliens') or another map's. It follows its parent when that moves (a station
+## gliding in while the ship docks). Doors have no collision and stay open in it; a closed ramp or
+## lift gate does too, it's a wall like any other. Only the decks' `floors` are kept, not the tops
+## of tables and counters. Decks aren't joined (walking between them needs the lift, see
+## `NpcWalker`).
 
-## The part of the ship that's baked, in ship space: the inside (both decks, without the ramp).
-const BAKE_BOX := AABB(Vector3(-100.0, 1.0, -15.0), Vector3(115.0, 9.0, 30.0))
 ## The mesh's resolution, in m.
 const CELL_SIZE: float = 0.125
 const CELL_HEIGHT: float = 0.1
 ## How wide a walker is (it keeps this far from walls) and how tall, in m.
 const AGENT_RADIUS: float = 0.375
 const AGENT_HEIGHT: float = 1.8
-## The decks' floors, in ship space (see game/ship/hull_layout.py: LOW, UP), and how far above or
-## below one the mesh may lie, in m.
-const FLOORS: Array[float] = [2.5, 7.0]
+## How far above or below a deck's floor the mesh may lie, in m.
 const FLOOR_TOLERANCE: float = 0.4
+## The ship's: the inside (both decks, without the ramp), and its decks' floors (see
+## game/ship/hull_layout.py: LOW, UP), in ship space.
+const SHIP_BAKE_BOX := AABB(Vector3(-100.0, 1.0, -15.0), Vector3(115.0, 9.0, 30.0))
+const SHIP_FLOORS: Array[float] = [2.5, 7.0]
 
-## The navigation map the ship's mesh is on (its own).
+## The part of the parent that's baked, in its space (set before the first `bake`).
+var bake_box: AABB = SHIP_BAKE_BOX
+## The decks' floors in the parent's space, lowest first (a lift's decks in this order).
+var floors: Array[float] = SHIP_FLOORS
+## The navigation map the mesh is on (its own).
 var map: RID
 
 var _region: RID
 var _mesh: NavigationMesh
 var _baking: bool = false
 var _baked: bool = false
+## Where the parent stood when the region was last placed.
+var _placed: Transform3D
 
 
 func _ready() -> void:
@@ -38,6 +45,11 @@ func _ready() -> void:
 	NavigationServer3D.map_set_active(map, true)
 	_region = NavigationServer3D.region_create()
 	NavigationServer3D.region_set_map(_region, map)
+
+
+func _physics_process(_delta: float) -> void:
+	if _baked and not get_parent_node_3d().global_transform.is_equal_approx(_placed):
+		_place()
 
 
 func _exit_tree() -> void:
@@ -57,7 +69,6 @@ func bake() -> void:
 	if _baking or _baked:
 		return
 	_baking = true
-	var ship: Node3D = get_parent_node_3d()
 	_mesh = NavigationMesh.new()
 	_mesh.cell_size = CELL_SIZE
 	_mesh.cell_height = CELL_HEIGHT
@@ -67,9 +78,9 @@ func bake() -> void:
 	_mesh.agent_max_slope = 30.0
 	_mesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
 	_mesh.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_ROOT_NODE_CHILDREN
-	_mesh.filter_baking_aabb = BAKE_BOX
+	_mesh.filter_baking_aabb = bake_box
 	var source := NavigationMeshSourceGeometryData3D.new()
-	NavigationServer3D.parse_source_geometry_data(_mesh, source, ship)
+	NavigationServer3D.parse_source_geometry_data(_mesh, source, get_parent_node_3d())
 	NavigationServer3D.bake_from_source_geometry_data_async(_mesh, source, _on_baked)
 
 
@@ -91,10 +102,16 @@ func closest_point(point: Vector3) -> Vector3:
 
 func _on_baked() -> void:
 	_keep_floors()
-	NavigationServer3D.region_set_transform(_region, get_parent_node_3d().global_transform)
 	NavigationServer3D.region_set_navigation_mesh(_region, _mesh)
+	_place()
 	_baking = false
 	_baked = true
+
+
+## Puts the mesh where the parent stands now.
+func _place() -> void:
+	_placed = get_parent_node_3d().global_transform
+	NavigationServer3D.region_set_transform(_region, _placed)
 
 
 ## Drops the mesh's polygons that aren't on a deck's floor (the tops of tables, consoles, seats).
@@ -112,9 +129,9 @@ func _keep_floors() -> void:
 		_mesh.add_polygon(polygon)
 
 
-## Whether `height` (in ship space) is on a deck's floor.
-static func _is_floor(height: float) -> bool:
-	for floor_y: float in FLOORS:
+## Whether `height` (in the parent's space) is on a deck's floor.
+func _is_floor(height: float) -> bool:
+	for floor_y: float in floors:
 		if absf(height - floor_y) <= FLOOR_TOLERANCE:
 			return true
 	return false

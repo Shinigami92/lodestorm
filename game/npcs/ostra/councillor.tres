@@ -44,6 +44,7 @@ id = &"councillor"
 display_name = "Selin"
 role = "Council member"
 model = "uid://chyfw6w2med20"
+activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist"])
 accent_color = Color(0.55, 0.95, 0.8, 1)
 suit_tint = Color(0.7, 0.72, 0.76, 1)
 dialogue = SubResource("Resource_dialogue")

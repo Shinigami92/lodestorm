@@ -31,6 +31,24 @@ func room_at(point: Vector3, keep: StringName = &"") -> StringName:
 	return keep
 
 
+## The box around every area, in this node's space.
+func get_bounds() -> AABB:
+	var bounds := AABB()
+	for i: int in areas.size():
+		bounds = areas[i] if i == 0 else bounds.merge(areas[i])
+	return bounds
+
+
+## The floors' heights in this node's space, lowest first, each once.
+func get_floors() -> Array[float]:
+	var heights: Array[float] = []
+	for area: AABB in areas:
+		if not heights.any(func(y: float) -> bool: return is_equal_approx(y, area.position.y)):
+			heights.append(area.position.y)
+	heights.sort()
+	return heights
+
+
 ## Whether `local` (in this node's space) lies in an area of `room`, grown by `margin` m around.
 func _contains(room: StringName, local: Vector3, margin: float) -> bool:
 	for i: int in areas.size():

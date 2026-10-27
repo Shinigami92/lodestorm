@@ -112,10 +112,10 @@ Each step builds on the ones before it (steps 1–13 are done, crew joining wait
   - [ ] **C** the cargo hatch at the ramp (independent: can come any time earlier)
 - [ ] **Step 15: more skills** ([`planned/skills.md`](planned/skills.md)): one PR with the rescue drone, the hardened canister, rebuilding spares and the miner radar (its amber pointer shows dry nodes too; the sentries with co-op, M7)
 - [ ] **Step 16: quests** ([`planned/quests.md`](planned/quests.md))
-  - [ ] **A** quests as data (quest, steps, goals, rewards, story flags), offering with the diamond marker, accepting, hand-ins, the goals deliver (filled from the hauls), reach a site, mine and build, the quest board on the bridge (quests, logs, jobs), tracking
-  - [ ] **B** quest sites in regions, the goals clear nests, recover fragments, recover an item and hunt, the navigator's diamonds, amber beams, radio lines
-  - [ ] **C** first content: the quartermaster's chain ending in Brask's blueprint, the engineer's first furnace (the other furnaces through later quests), the depot master's requests, reputation pips
-  - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first), the expedition's logs
+  - [ ] **A** quests as data (quest, steps, goals, rewards, story flags), offering with the diamond marker, accepting, hand-ins, the goals deliver (filled from the hauls), reach a site, mine and build, the quest board on the bridge (quests, logs, jobs), tracking, the story director (beats with conditions, one on every return, dockings counting as returns), the comms console's messages, the navigator's marker on stations where something waits
+  - [ ] **B** quest sites in regions, the goals clear nests, recover fragments, recover an item and hunt, the navigator's diamonds, amber beams, radio lines, overheard talks
+  - [ ] **C** first content: the quartermaster's chain ending in Brask's blueprint, the engineer's first furnace (the other furnaces through later quests), the depot master's requests, reputation pips; then its own PR: **crew joining** (four aboard at the start, the join flags, Dace, Wren and Fenna at Ostra and walking aboard, Hollis' camp in Hollow Mire, stand-in topics, gated lines and transmission turns, Vehra waiting for the whole crew, [`planned/crew.md`](planned/crew.md))
+  - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first), the expedition's logs, each act's time between missions (personal beats, talks, messages, Ostra's change and traffic, Ostra Control, colonists' remarks, steps back on earlier bodies; the frame in [`planned/world.md`](planned/world.md)); the crew gatherings, Brannik's range challenges and Fenna's dishes once the crew can sit
 
 Alongside, any time:
 

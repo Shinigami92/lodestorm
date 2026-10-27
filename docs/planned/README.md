@@ -23,6 +23,8 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 | [`skills.md`](skills.md) | the rescue drone, the hardened canister, rebuilding spares, the miner radar; where the skill graph is heading | M4 (step 15), M7 |
 | [`quests.md`](quests.md) | quests as data, goals, the quest board, requests, the story's acts, first content | M4 (step 16) |
 | [`story.md`](story.md) | the flare shield, the six acts, the expedition (Calder, Pell), the people's threads, after the ending | M4 (step 16 D and on) |
+| [`characters.md`](characters.md) | the named people's sheets for the writing rounds: background, wants, flaw, secret, arc, ties, voice; the crew's founding, the ship's past, who joins in act 1 | M4 (step 16 D and on) |
+| [`world.md`](world.md) | the frame for the writing rounds: the timeline, travel and the lane, the charter, the hive's origin, daily life, the colony's numbers, the smaller stations and traffic | M4 (step 16 D and on) |
 | [`coop-ore.md`](coop-ore.md) | ship and quest costs taken from the haul, the cargo hatch showing what they took | M4 (step 16), M7 |
 | [`voice.md`](voice.md) | the rest of the cast, the radio later, Fenna's voice, strained anchors | M5, M7 |
 | [`ship-exterior.md`](ship-exterior.md) | the ship's outside: detail and textures, effects | M5 |

@@ -138,8 +138,8 @@ Alongside, any time:
 - The biomes' textures and meshes (from M4 step 6, see [`planned/biomes.md`](planned/biomes.md)): per biome a ground texture set (floor, barrier, the barrier's lip), its scatter (5–8 rocks and plants) and its feature meshes (snow bridge, crust crossing, shard spikes, fungal stalks, lava), with parallel Blender agents (heavy on the GPU: ask first)
 - The sky per body and the far ring of land beyond the map ([`planned/vr-view.md`](planned/vr-view.md)); each body's light, the darkness floor and the storm's light steps ([`planned/art.md`](planned/art.md))
 - Basic VFX for mining, shooting, reloading, storm (the sound effects come earlier, M4 step 9)
-- People's own models ([`planned/people.md`](planned/people.md); the pipeline and everyone at Waypost Ostra are done): Kade's work at the counter with his slate, Selin's at the council's table with her tablet, the crew's work at their posts, then the colonists; lip sync and blinking; the player's suit with rigid hard parts, a visor reflecting the scene and later a MakeHuman body under the armor
-- Voice-over, after the models ([`planned/voice.md`](planned/voice.md); **A**, the spike, and the first part of **B** are done): the radio filter and the Radio bus; the other NPCs with the tool (Brannik, Nell, Kade, Selin and the crew are done; Fenna's German voice is left)
+- People's own models ([`planned/people.md`](planned/people.md); the pipeline, everyone at Waypost Ostra and the crew are done): Kade's work at the counter with his slate, Selin's at the council's table with her tablet, the crew's work at their posts with props (their shared clips and work spots are done), then the colonists; lip sync and blinking; the player's suit with rigid hard parts, a visor reflecting the scene and later a MakeHuman body under the armor
+- Voice-over, after the models ([`planned/voice.md`](planned/voice.md); **A**, the spike, and **B** for Brannik, Nell, Kade, Selin and the crew are done, with the radio filter): Rook and the colonists with the tool, Fenna's German voice
 
 ### M6: VR
 

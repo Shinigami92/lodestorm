@@ -168,7 +168,7 @@ func test_mouse_drag_pans_and_wheel_zooms() -> void:
 
 func test_debug_overlay_teaches_every_skill() -> void:
 	var overlay: CanvasLayer = get_tree().root.get_node("DebugOverlay") as CanvasLayer
-	overlay.call(&"learn_skills")
+	overlay.call(&"_learn_skills")
 	for skill: Skill in _station.tree.get_skills():
 		assert_eq(_player.skills.rank(skill), skill.max_rank(), skill.display_name)
 

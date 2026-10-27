@@ -339,7 +339,7 @@ func test_station_locks_while_a_mission_is_underway() -> void:
 
 func test_debug_overlay_fills_the_hold() -> void:
 	var overlay: CanvasLayer = get_tree().root.get_node("DebugOverlay") as CanvasLayer
-	overlay.call(&"fill_hold")
+	overlay.call(&"_fill_hold")
 	for ore_type: OreType in [KYRITE, OLVANE, VYREL] as Array[OreType]:
 		var stored: float = _player.hold.amount(ore_type)
 		assert_gt(stored, 0.0)

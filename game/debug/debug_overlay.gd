@@ -262,15 +262,15 @@ const TUNING: Dictionary[String, Array] = {
 	],
 }
 const PANEL_WIDTH: float = 460.0
-## Every weapon of the game, for `unlock_weapons`, `_give_blueprints` and the tuning.
+## Every weapon of the game, for `_unlock_weapons`, `_give_blueprints` and the tuning.
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
-## Every skill of the game, for `learn_skills`.
+## Every skill of the game, for `_learn_skills`.
 const SKILL_TREE: SkillTree = preload("res://game/progression/skills/tree/skill_tree.tres")
-## Every ore of the game: `fill_hold` and `give_ore` add each of them.
+## Every ore of the game: `_fill_hold` and `_give_ore` add each of them.
 const ALL_ORES: OreCatalog = preload("res://game/ores/all_ores.tres")
-## Every alloy of the game: `fill_hold` adds bars of each of them.
+## Every alloy of the game: `_fill_hold` adds bars of each of them.
 const ALL_ALLOYS: AlloyCatalog = preload("res://game/refinery/all_alloys.tres")
-## How much `fill_hold` adds of each ore, and how many bars of each alloy.
+## How much `_fill_hold` adds of each ore, and how many bars of each alloy.
 const HOLD_FILL: float = 900.0
 const ALLOY_FILL: float = 30.0
 const CARGO_FILL: float = 60.0
@@ -384,28 +384,28 @@ func toggle() -> void:
 
 
 ## Jumps to the start of the warning time (only while the timer runs).
-func skip_to_warning() -> void:
+func _skip_to_warning() -> void:
 	var mission: Mission = _mission()
 	if mission and mission.state == Mission.State.RUNNING:
 		mission.time_left = minf(mission.time_left, mission.warning_time())
 
 
 ## Lets the storm hit right away (only while the timer runs).
-func start_storm() -> void:
+func _start_storm() -> void:
 	var mission: Mission = _mission()
 	if mission and mission.state == Mission.State.RUNNING:
 		mission.time_left = 0.0
 
 
 ## Ends the ship's flight right away (only while it flies).
-func skip_flight() -> void:
+func _skip_flight() -> void:
 	var voyage := get_tree().get_first_node_in_group(Voyage.GROUP) as Voyage
 	if voyage and voyage.flight.is_flying():
 		voyage.skip_flight()
 
 
 ## Kills every player, in god mode too.
-func kill_players() -> void:
+func _kill_players() -> void:
 	var god_mode: bool = PlayerVitals.god_mode
 	PlayerVitals.god_mode = false
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -413,7 +413,7 @@ func kill_players() -> void:
 	PlayerVitals.god_mode = god_mode
 
 
-func kill_aliens() -> void:
+func _kill_aliens() -> void:
 	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
 		alien.take_damage(alien.health)
 
@@ -426,7 +426,7 @@ func _damage_nests() -> void:
 
 
 ## Lets the nest nearest to the local player hatch a pack of hunters right away.
-func hatch_hunters() -> void:
+func _hatch_hunters() -> void:
 	var nest: AlienNest = _nearest_nest()
 	if nest:
 		nest.hatch_pack()
@@ -434,14 +434,14 @@ func hatch_hunters() -> void:
 
 ## Lets the nest nearest to the local player hatch an alien of `strain` in its role right away
 ## (also one that doesn't hatch there).
-func hatch_strain(strain: AlienStrain) -> void:
+func _hatch_strain(strain: AlienStrain) -> void:
 	var nest: AlienNest = _nearest_nest()
 	if nest:
 		nest.hatch(strain.role, strain)
 
 
 ## Lets the nest nearest to the local player hatch a raider right away.
-func hatch_raiders() -> void:
+func _hatch_raiders() -> void:
 	var nest: AlienNest = _nearest_nest()
 	if nest:
 		nest.hatch(Alien.Role.RAIDER)
@@ -465,7 +465,7 @@ func _nearest_nest() -> AlienNest:
 	return nearest
 
 
-func break_miners() -> void:
+func _break_miners() -> void:
 	for miner: Miner in get_tree().get_nodes_in_group(Miner.GROUP):
 		miner.take_damage(miner.health)
 
@@ -492,7 +492,7 @@ func _radio_storm() -> void:
 
 
 ## Gives every player every weapon of the game, without building them.
-func unlock_weapons() -> void:
+func _unlock_weapons() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 			player.arsenal.unlock(weapon_type)
@@ -500,21 +500,21 @@ func unlock_weapons() -> void:
 
 ## Installs the next plate of every ship's heat shield without paying: the next planet inwards
 ## opens.
-func install_shield() -> void:
+func _install_shield() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
 		ship.heat_shield.install_next()
 
 
 ## Installs every plate of every ship's heat shield, to try later planets' biomes before they're
 ## reached.
-func open_all_bodies() -> void:
+func _open_all_bodies() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
 		while ship.heat_shield.install_next():
 			pass
 
 
 ## Teaches every player every skill at its highest rank, to try them without paying.
-func learn_skills() -> void:
+func _learn_skills() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		for skill: Skill in SKILL_TREE.get_skills():
 			while player.skills.raise(skill):
@@ -522,7 +522,7 @@ func learn_skills() -> void:
 
 
 ## Adds `CARGO_FILL` units of every ore type to each player's cargo, to test reloading.
-func give_ore() -> void:
+func _give_ore() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		for ore_type: OreType in ALL_ORES.ores:
 			player.add_cargo(ore_type, CARGO_FILL)
@@ -569,7 +569,7 @@ func _hurt_teammates() -> void:
 
 ## Adds `HOLD_FILL` units of every ore type and `ALLOY_FILL` bars of every alloy to every player's
 ## hold, to test the upgrade stations, the furnaces and the ingot rack.
-func fill_hold() -> void:
+func _fill_hold() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		for ore_type: OreType in ALL_ORES.ores:
 			player.hold.add(ore_type, HOLD_FILL)
@@ -605,7 +605,7 @@ func _build_miners() -> void:
 
 ## Deletes the save (the dev save in the editor) and reloads the map, without asking (only while
 ## alone, see `SaveGame.reset_progress`).
-func reset_save() -> void:
+func _reset_save() -> void:
 	var save_game := get_tree().get_first_node_in_group(SaveGame.GROUP) as SaveGame
 	if save_game:
 		save_game.reset_progress()
@@ -613,7 +613,7 @@ func reset_save() -> void:
 		SaveGame.erase()
 
 
-func heal_players() -> void:
+func _heal_players() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.heal()
 
@@ -658,16 +658,16 @@ func _build() -> void:
 	_live.custom_minimum_size.x = 1.0
 	state.add_child(_live)
 	var mission: GridContainer = _group(state, "Mission")
-	_time_buttons.append(_button(mission, "Skip to warning", skip_to_warning))
-	_time_buttons.append(_button(mission, "Storm now", start_storm))
-	_skip_flight_button = _button(mission, "Skip flight", skip_flight)
+	_time_buttons.append(_button(mission, "Skip to warning", _skip_to_warning))
+	_time_buttons.append(_button(mission, "Storm now", _start_storm))
+	_skip_flight_button = _button(mission, "Skip flight", _skip_flight)
 	var players: GridContainer = _group(state, "Players")
-	_button(players, "Heal players", heal_players)
-	_button(players, "Kill players", kill_players)
+	_button(players, "Heal players", _heal_players)
+	_button(players, "Kill players", _kill_players)
 	_button(players, "Add teammate", _add_teammate)
 	_button(players, "Remove teammates", _remove_teammates)
 	_button(players, "Hurt teammates", _hurt_teammates)
-	_button(players, "Give ore", give_ore)
+	_button(players, "Give ore", _give_ore)
 	_switch(
 		players,
 		"God mode",
@@ -676,10 +676,10 @@ func _build() -> void:
 	)
 	var aliens: GridContainer = _group(state, "Aliens")
 	_switch(aliens, "Alien AI", Alien.ai_on, func(on: bool) -> void: Alien.ai_on = on)
-	_nest_buttons.append(_button(aliens, "Hatch hunter packs", hatch_hunters))
-	_nest_buttons.append(_button(aliens, "Hatch raiders", hatch_raiders))
+	_nest_buttons.append(_button(aliens, "Hatch hunter packs", _hatch_hunters))
+	_nest_buttons.append(_button(aliens, "Hatch raiders", _hatch_raiders))
 	_nest_buttons.append(_button(aliens, "Damage nests", _damage_nests))
-	_kill_aliens_button = _button(aliens, "Kill aliens", kill_aliens)
+	_kill_aliens_button = _button(aliens, "Kill aliens", _kill_aliens)
 	var strains: GridContainer = _group(state, "Hatch a strain")
 	var hive: AlienHive = load(HIVE_PATH)
 	# By tier, in the hive's order within one.
@@ -698,24 +698,24 @@ func _build() -> void:
 		if strain == hive.apex:
 			role = "Apex"
 		var label: String = "%s (T%d, %s)" % [strain.display_name, strain.tier, role]
-		_nest_buttons.append(_button(strains, label, hatch_strain.bind(strain)))
+		_nest_buttons.append(_button(strains, label, _hatch_strain.bind(strain)))
 	var miners: GridContainer = _group(state, "Miners")
-	_break_miners_button = _button(miners, "Break miners", break_miners)
+	_break_miners_button = _button(miners, "Break miners", _break_miners)
 	var crew: GridContainer = _group(state, "Crew")
 	_button(crew, "Radio: all events", _transmit_reactions)
 	_button(crew, "Radio: storm", _radio_storm)
 	var progress: GridContainer = _group(state, "Progress")
 	_button(progress, "Give blueprints", _give_blueprints)
-	_button(progress, "Unlock weapons", unlock_weapons)
-	_button(progress, "Learn skills", learn_skills)
-	_button(progress, "Fill hold", fill_hold)
+	_button(progress, "Unlock weapons", _unlock_weapons)
+	_button(progress, "Learn skills", _learn_skills)
+	_button(progress, "Fill hold", _fill_hold)
 	_button(progress, "Unlock furnace", _unlock_furnace)
 	_button(progress, "Finish refining", _finish_refining)
 	_button(progress, "Finish jobs", _finish_jobs)
 	_button(progress, "Build miners", _build_miners)
-	_button(progress, "Install shield", install_shield)
-	_button(progress, "Open all", open_all_bodies)
-	_button(progress, "Reset save", reset_save)
+	_button(progress, "Install shield", _install_shield)
+	_button(progress, "Open all", _open_all_bodies)
+	_button(progress, "Reset save", _reset_save)
 
 	var tuning: VBoxContainer = _tab(tabs, "Tuning")
 	_button(tuning, "Reset tuning", reset_tuning)

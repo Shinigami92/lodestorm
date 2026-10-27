@@ -1,5 +1,5 @@
 extends GutTest
-## What the skills do for the player (see GAME_DESIGN.md, Progression).
+## What the skills do for the player (see docs/design/progression.md).
 
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")

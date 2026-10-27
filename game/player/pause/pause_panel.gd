@@ -1,6 +1,6 @@
 class_name PausePanel
 extends WorldPanel
-## The pause panel (see GAME_DESIGN.md, UI): `pause` with no menu open shows a holo card
+## The pause panel (see docs/design/ui.md): `pause` with no menu open shows a holo card
 ## (`PauseCard`) beside the player's suit ring, facing the camera, with "Resume", "Settings" and
 ## "Quit"; `pause` again (or "Resume") puts it away. Like the other 3D menus, the camera moves in
 ## while it's open, framing the player, the whole ring (its marks, pointers and the ship's

@@ -1,6 +1,6 @@
 """Harl: the player's rifle, industrial and weathered, with a glowing ammo counter (concept: weapon_house).
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/weapons/source/harl_build.py wip r1 [views]
     tools/blender.sh assets/weapons/source/harl_build.py final
     tools/blender.sh assets/weapons/source/harl_build.py sheet

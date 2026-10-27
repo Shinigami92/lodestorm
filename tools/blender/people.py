@@ -1,4 +1,4 @@
-"""Shared helpers for people (see docs/TECHNICAL.md, People): a MakeHuman body (MPFB 2, a Blender extension) shaped by
+"""Shared helpers for people (see docs/technical/characters.md, People): a MakeHuman body (MPFB 2, a Blender extension) shaped by
 its sliders, rigged with MPFB's "game_engine" skeleton renamed to Godot's humanoid bone names, so the shared clips
 (tools/blender/humanoid.py) play on everyone, wearing a generated outfit (TRELLIS.2) fitted over it.
 
@@ -82,7 +82,7 @@ def asset(kind: str, name: str) -> pathlib.Path:
     folder = data_dir() / kind / name
     found = sorted(folder.glob("*.mhmat" if kind == "skins" else "*.mhclo"))
     if not found:
-        raise FileNotFoundError(f"MPFB asset {kind}/{name} is not installed (see docs/TECHNICAL.md, People)")
+        raise FileNotFoundError(f"MPFB asset {kind}/{name} is not installed (see docs/technical/characters.md, People)")
     return found[0]
 
 
@@ -226,7 +226,7 @@ def body_of(arm: bpy.types.Object, *, foot_out: float = 0.03, wrist_out: float =
 
 # --- a generated outfit -----------------------------------------------------------------------------
 # What a person wears (and their hair) can come from a generated model (TRELLIS.2 on an A-pose concept, see
-# docs/TECHNICAL.md, Generated models), worn over the MakeHuman body: the body keeps its face, its skeleton and its
+# docs/technical/assets.md, Generated models), worn over the MakeHuman body: the body keeps its face, its skeleton and its
 # weights, the outfit is cut where the body shows (the face), its hair is fitted over the head, the body is posed
 # into the outfit's pose and the outfit takes the weights of the body under it (loose cloth below the waist, an
 # apron, from the hips into both thighs instead, so it doesn't tear between the legs), then both go back to the

@@ -1,9 +1,9 @@
 class_name SuitRing
 extends MeshInstance3D
-## The ring the suit projects on the ground around the player (a child of it; see GAME_DESIGN.md,
-## UI): everything a player reads in a fight. Its halves stay fixed to the screen: the health arc
-## on the left (green, amber below half, red and blinking below a quarter, flashing white on
-## damage, a red mark on the outer edge towards where a hit came from), the equipped ammo
+## The ring the suit projects on the ground around the player (a child of it; see
+## docs/design/ui.md): everything a player reads in a fight. Its halves stay fixed to the screen:
+## the health arc on the left (green, amber below half, red and blinking below a quarter, flashing
+## white on damage, a red mark on the outer edge towards where a hit came from), the equipped ammo
 ## weapon's ammo arc on the right in its ammo color (reloads and a drained battery recharging with
 ## their timing window, a charge filling it and turning white when full, a red flash when a reload
 ## can't start, a white one when a timed press finishes it; a vent like a reload), the heat of a

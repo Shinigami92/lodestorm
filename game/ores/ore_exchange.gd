@@ -1,6 +1,6 @@
 class_name OreExchange
 extends RefCounted
-## The ore exchange at Waypost Ostra's depot (see GAME_DESIGN.md, Stations): a safety valve at a
+## The ore exchange at Waypost Ostra's depot (see docs/design/station.md): a safety valve at a
 ## bad rate. Any ore in the player's hold goes in, `RATE` units for each unit of another ore that
 ## comes out; what comes out is a common or mid ore the hold ever had (signature ores can be traded
 ## away but never bought, so a planet's signature ore is still mined there, and ores never found

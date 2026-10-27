@@ -1,6 +1,6 @@
 """Ore crystal clusters: per ore type two ground variants and one wall cluster (concept: ores_v1..v4).
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/ores/source/ores_build.py wip r1                        # every ore, iso + hero
     tools/blender.sh assets/ores/source/ores_build.py wip r2 kyrite_a,olvane iso,miner
     tools/blender.sh assets/ores/source/ores_build.py wip r3 all types              # the "a" variants side by side

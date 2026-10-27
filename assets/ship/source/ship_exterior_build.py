@@ -2,7 +2,7 @@
 the nose with the cockpit's canopy, two nacelles on sponsons at the tail, six legs and the ramp (see
 docs/planned/ship-exterior.md).
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/ship/source/ship_exterior_build.py wip <tag> [views] [legs]
     tools/blender.sh assets/ship/source/ship_exterior_build.py final
 

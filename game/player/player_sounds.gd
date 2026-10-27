@@ -2,7 +2,7 @@ class_name PlayerSounds
 extends Node
 ## The `holder`'s own sounds, and the ears of the local player: an `AudioListener3D` at the player
 ## (not at the camera far above), turned like the camera, so left and right match the screen and
-## the falloff fits what's on screen (see GAME_DESIGN.md, Sound). Plays the hits it takes, the dash
+## the falloff fits what's on screen (see docs/design/sound.md). Plays the hits it takes, the dash
 ## and its steps (subtle, every `STEP_LENGTH` walked on the ground: on the ship's metal deck, on
 ## the ground outside, or as the hazard it stands in sounds: shards, mud); for the local player,
 ## the hits are critical cues and below a quarter of the health a slow pulse beats.

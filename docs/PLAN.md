@@ -2,14 +2,14 @@
 
 Goal: reach a playable, fun core loop as early as possible with greybox visuals, then layer hub, art, VR and co-op on top. Each milestone ends with something playable.
 
-How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`](GAME_DESIGN.md) and [`TECHNICAL.md`](TECHNICAL.md)), **Todo** the work still to do, in order. Where a design round already decided the details, the step links to its file in [`planned/`](planned/README.md); a step without one gets its own question round first. A finished pull request moves its line from Todo to Done, and the built part of its design moves from `planned/` into `GAME_DESIGN.md`.
+How this file works: **Done** lists what's built (described in [`design/`](design/README.md) and [`technical/`](technical/README.md)), **Todo** the work still to do, in order. Where a design round already decided the details, the step links to its file in [`planned/`](planned/README.md); a step without one gets its own question round first. A finished pull request moves its line from Todo to Done, and the built part of its design moves from `planned/` into `design/`.
 
 ## Done
 
 ### M0: Project setup ✓
 
 - Git repo + Godot `.gitignore`, `.gitattributes` (LFS), `.editorconfig`, LICENSE (CC BY-NC-SA 4.0), CONTRIBUTING + CLA, README
-- Godot project (version pinned in `.godot-version`), folder structure (one folder per feature in `game/`, `assets/`, `docs/`, `tests/`, see [Project layout](TECHNICAL.md#project-layout))
+- Godot project (version pinned in `.godot-version`), folder structure (one folder per feature in `game/`, `assets/`, `docs/`, `tests/`, see [Project layout](technical/project-layout.md))
 - gdtoolkit (`gdlint`, `gdformat`) and ruff config, enforced by CI (no local git hooks); every GDScript warning is an error
 - GUT tests, run headless; GitHub Actions `ci.yml` (lint, tests) and `build.yml` (Windows/Linux exports); Renovate for dependency updates
 - Input map: keyboard/mouse + gamepad actions; rendering settings with the performance targets in mind
@@ -84,7 +84,7 @@ How this file works: **Done** lists what's built (described in [`GAME_DESIGN.md`
 - Miners placed as holograms: placing projects the miner onto its node as a hologram turning real from the bottom up (picking up the reverse), the player moving and fighting freely meanwhile within the miner's hose range (out of it, it waits; placing or picking up another gives a waiting one up); every miner's ring on the ground with its health, fill, hose range and that progress
 - Silo displays: each silo's exact amount in big digits in the ore's color at the top of its body, readable from the normal camera over the silo in front ("?" for unknown ores); the ramp's countdown running outwards from the door, clear of them
 - Statistics **A**: every game event as a signal on one bus (`GameEvents`: combat with the weapon credited, damage taken with its cause, reloads and timing presses, mining, ore, unlocks, runs), the local player's counters over all sessions (`stats/totals.json`) and a log per session (`stats/sessions/*.jsonl`, each run with its brief, gear and counters), for playtesting and tuning
-- Voice-over **A** (M5's spike), ahead of its milestone: voice models compared by ear on a local listening page (Brannik and Nell, English and German), Qwen3-TTS picked (voice design for each character's anchor, cloning for every line, an anchor per language), the decision and the tools in `TECHNICAL.md` (see [`planned/voice.md`](planned/voice.md))
+- Voice-over **A** (M5's spike), ahead of its milestone: voice models compared by ear on a local listening page (Brannik and Nell, English and German), Qwen3-TTS picked (voice design for each character's anchor, cloning for every line, an anchor per language), the decision and the tools in `technical/voice.md` (see [`planned/voice.md`](planned/voice.md))
 - Voice-over **B** (first part): `tools/voice.sh` renders every line of the NPCs with anchors, Brannik and Nell voiced in English and German, spoken from their head as the bubble shows, the Voice bus with its volume, the voice language as its own setting (English, Deutsch, Off; following the texts until picked)
 - People's own models (M5's first), ahead of their milestone: a MakeHuman body (the face, the skeleton with Godot's humanoid bone names so the shared clips play on everyone, the player's pose code shared) wearing a generated outfit and hair (TRELLIS.2 on an A-pose concept, fitted over the body and taking its weights), the NPCs playing their model's `Idle` and `Walk` and, while no player is close, their work at their place (clips with props, their own models, in the hands), the name plate and bubbles at the model's head; Nell the first, wiping the counter, polishing glasses and shelving bottles; Kade, Selin and Rook, keeping their generated heads, the outfit's fitting shared by everyone (`dressing.py`) (see [`planned/people.md`](planned/people.md))
 - Talks continuing by themselves: a setting ("Dialogue: Continue by itself", off by default), a voiced line moving on a pause after its voice, one without a voice after its reading time, the list coming back after the last line, a bar filling on "Continue"; skipping still works
@@ -121,7 +121,7 @@ Alongside, any time:
 
 ### M5: Art pass (Blender MCP)
 
-- Models in the art direction ([`GAME_DESIGN.md`](GAME_DESIGN.md#art-direction)): player, miner (with a display for fill counter and time until full, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
+- Models in the art direction ([`design/art.md`](design/art.md#art-direction)): player, miner (with a display for fill counter and time until full, damage states), hose, ore nodes, aliens, ship exterior/interior, weapons
 - The ship's exterior ([`planned/ship-exterior.md`](planned/ship-exterior.md)):
   - [x] **A** blockout in the game: the hull's shape (two variants first), the nacelles, the nose, the legs folding in space and flight, the wider ramp, the cut groups aboard, the station's frame and clamps
   - [ ] **B** detail and textures: the greeble kit, panels, weathering, lights, markings (after the interior's B: they share the trim sheet)
@@ -156,7 +156,7 @@ Alongside, any time:
 - Player colors with numbers on the suit, silhouettes, rings, lockers and miners ([`planned/art.md`](planned/art.md))
 - Reviving each other ([`planned/coop-revive.md`](planned/coop-revive.md)): going down, reviving by standing close, shorter bleed-outs, respawning after 30 s
 - Shared ship hub
-- Co-op progression: host save plus each player's own gear, tier sync (see [Co-op progression](GAME_DESIGN.md#co-op-progression))
+- Co-op progression: host save plus each player's own gear, tier sync (see [Co-op progression](design/progression.md#co-op-progression))
 
 ### M8: Platform services & release
 
@@ -164,10 +164,10 @@ Alongside, any time:
 - Achievements (in-game list + Steam), counted from the statistics; Steam Stats from the same counters
 - Statistics **C**: the statistics station aboard ([`planned/stats.md`](planned/stats.md))
 - `release.yml` (GitHub Releases on tag) and `steam-deploy.yml`
-- Steam store page / Early Access preparation (see [`TECHNICAL.md`](TECHNICAL.md#steam-publishing-first-timer-checklist))
+- Steam store page / Early Access preparation (see [`technical/platform.md`](technical/platform.md#steam-publishing-first-timer-checklist))
 
 ### Afterwards
 
 Epic / GOG ports. Iterate based on playtesting: more planets, alien types, miner types/defenses, mission objectives, NPC/story content.
 
-Not placed in a milestone yet (see [`GAME_DESIGN.md`](GAME_DESIGN.md)): the full story campaign, the second station (the lost expedition's base) and the inhabited outposts, voice-over for all lines, more languages, AI-driven NPCs (experiment).
+Not placed in a milestone yet (see [`design/`](design/README.md)): the full story campaign, the second station (the lost expedition's base) and the inhabited outposts, voice-over for all lines, more languages, AI-driven NPCs (experiment).

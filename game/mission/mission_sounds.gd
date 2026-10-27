@@ -1,9 +1,10 @@
 class_name MissionSounds
 extends Node
-## The mission's sounds for the local player (`viewer`), made by the `Weather` (see GAME_DESIGN.md,
-## Sound): the storm's warning when the last part of the timer starts (a critical cue), the suit
-## counting down the last minute (`BEEPS`), the storm hitting when the time is up, and the storm
-## itself all around on the Ambience bus (a loop, as loud as `weather.intensity`, muffled aboard).
+## The mission's sounds for the local player (`viewer`), made by the `Weather` (see
+## docs/design/sound.md): the storm's warning when the last part of the timer starts (a critical
+## cue), the suit counting down the last minute (`BEEPS`), the storm hitting when the time is up,
+## and the storm itself all around on the Ambience bus (a loop, as loud as `weather.intensity`,
+## muffled aboard).
 
 ## The seconds left at which the suit beeps. TBD (playtest).
 const BEEPS: Array[float] = [

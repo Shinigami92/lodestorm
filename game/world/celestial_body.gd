@@ -42,7 +42,8 @@ const MK_ABOVE_TIER: int = 2
 
 
 ## The highest MK level of upgrades it brings: reaching it makes them buyable, and in co-op stronger
-## gear counts as this level here (the tier sync, later; see GAME_DESIGN.md, Co-op progression).
+## gear counts as this level here (the tier sync, later; see docs/design/progression.md, Co-op
+## progression).
 func max_mk() -> int:
 	return tier + MK_ABOVE_TIER
 

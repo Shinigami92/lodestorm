@@ -1,6 +1,6 @@
 class_name Npc
 extends Station
-## A crew member aboard (see GAME_DESIGN.md, Spaceship: NPCs), who `profile` says, standing at
+## A crew member aboard (see docs/design/crew.md), who `profile` says, standing at
 ## their spot: their `Body` (an `NpcBody`: the look, turning towards players, the name plate) and
 ## an amber marker above their head while they have something the players haven't heard yet.
 ##

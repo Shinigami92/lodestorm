@@ -1,7 +1,7 @@
 class_name StarSystem
 extends Resource
 ## The star system the campaign plays in: its planets, moons and stations, each with the regions
-## the ship can land in (see GAME_DESIGN.md, Missions). Picked at the bridge's navigator.
+## the ship can land in (see docs/design/missions.md). Picked at the bridge's navigator.
 
 ## Player-facing name of the star.
 @export var display_name: String = ""

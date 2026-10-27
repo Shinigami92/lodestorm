@@ -47,7 +47,7 @@ signal died
 
 const GROUP: StringName = &"players"
 ## The players' colors by number (1 orange, 2 sky blue, 3 yellow, 4 reddish purple), always shown
-## with the number, so color is never the only cue (see GAME_DESIGN.md, Art direction).
+## with the number, so color is never the only cue (see docs/design/art.md, Art direction).
 const COLORS: Array[Color] = [
 	Color(0.95, 0.55, 0.15), Color(0.35, 0.7, 0.95), Color(0.95, 0.85, 0.25), Color(0.8, 0.4, 0.65)
 ]

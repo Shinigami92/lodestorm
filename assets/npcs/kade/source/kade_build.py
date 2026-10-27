@@ -1,9 +1,9 @@
 """Kade, the depot master at Waypost Ostra: a broad, heavy-set man in his early fifties with a graying beard, a
 stained pale work jacket and overalls with orange high-visibility stripes, a padded right shoulder guard, a strap
 across the chest, a belt with pouches, a tool holder on the right thigh, knee pads, thick work gloves and heavy boots
-(reference: the batch-8 concept "kade_v3", see GAME_DESIGN.md, Art direction).
+(reference: the batch-8 concept "kade_v3", see docs/design/art.md, Art direction).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/kade/source/kade_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/kade/source/kade_build.py final    # renders, kade.blend and the game asset
 

@@ -1,6 +1,6 @@
 class_name VoiceLines
 extends RefCounted
-## The NPCs' recorded voices (see GAME_DESIGN.md, Localization and voice): one Ogg file per line
+## The NPCs' recorded voices (see docs/design/localization-and-voice.md): one Ogg file per line
 ## and voice language in `assets/voice/<npc id>/<language>/`, named by the first 16 hex digits of
 ## the SHA-256 of the English line (its translation key), as `tools/voice.sh` renders them. Which
 ## language they speak is a setting of its own (`GameSettings.voice_language`), apart from the

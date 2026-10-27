@@ -1,6 +1,6 @@
 """Game-ready brute: bake the procedural look of brute_procedural.blend into one texture set.
 
-Run from the repo root, after brute_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after brute_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/brute/source/brute_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/brute/source/brute_bake.py verify   # only re-import and render the checks
 

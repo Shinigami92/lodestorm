@@ -1,7 +1,7 @@
 class_name UpgradeStation
 extends Station
-## An upgrade station (see GAME_DESIGN.md, Upgrade stations): a station whose parts are upgrades
-## (each `StationPart.item` an `Upgrade`), e.g. the fitting frame (the suit) or the miners'
+## An upgrade station (see docs/design/progression.md, Upgrade stations): a station whose parts are
+## upgrades (each `StationPart.item` an `Upgrade`), e.g. the fitting frame (the suit) or the miners'
 ## maintenance pad (drill, ore tank, hose reel, plating). Its card (`UpgradeCard`) shows the
 ## selected upgrade and buys its next level into `get_levels` (the player using the station's, or
 ## the miner on the pad's), with ore from the player's own hold;

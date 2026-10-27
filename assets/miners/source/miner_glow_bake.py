@@ -1,6 +1,6 @@
 """Game-ready miner: bake the procedural look of miner_glow.blend into one shared texture set.
 
-Run from the repo root, after miner_glow_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after miner_glow_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/miners/source/miner_glow_bake.py          # bake, export, check renders
     tools/blender.sh assets/miners/source/miner_glow_bake.py verify   # only re-import and render the checks
 

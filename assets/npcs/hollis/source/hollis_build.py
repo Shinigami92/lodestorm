@@ -4,7 +4,7 @@ canvas work jacket open over a dark green shirt, a green collar light, old prosp
 leather knee pads, greasy bare hands and heavy boots (reference: the batch-10 concept "hollis_v2", see
 docs/planned/crew.md).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/hollis/source/hollis_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/hollis/source/hollis_build.py final    # renders, hollis.blend and the game asset
 

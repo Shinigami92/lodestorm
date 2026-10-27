@@ -1,6 +1,6 @@
 class_name CardPalette
 extends RefCounted
-## The colors of the holo cards' text, in one place (see GAME_DESIGN.md, UI). The cards' look is
+## The colors of the holo cards' text, in one place (see docs/design/ui.md). The cards' look is
 ## the terminal theme's card variations (`assets/ui/terminal_theme.tres`): `Card` (the panel),
 ## `CardTitle`, `CardText`, `CardNote` and `CardStatus`; the colors here are the same as theirs
 ## (`tests/ui/test_card_palette.gd` keeps them so), for text that changes its color in code.

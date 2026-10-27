@@ -1,0 +1,80 @@
+# Missions
+
+- A mission is defined by: **location**, **timer/duration**, **difficulty**, and the quests that can be done there.
+- Target duration: about 15–30 min per mission; exact timers **TBD (playtest)**.
+- Planets farther in are more dangerous and have rarer resources.
+- **Planets, moons and regions:** each planet and moon has fixed **regions** (like countries), each with its biome and its handcrafted set pieces (landmarks, quest sites, the lost expedition's sites). A visit generates a new section of the region every time (a new seed), with the region's set pieces placed in it. So story missions use the same generated worlds with handcrafted pieces placed in them.
+  - **Six planets** from the outside in, one per signature ore, with 3–4 regions each and at least one hard one; the first planet's three regions go from easy to hard for getting started. The fourth is a **gas giant** with no ground to land on: its two moons share its signature ore, so that step of the campaign is a pair of moons instead of a globe. About 25 regions in all (with about 120 runs in a 40 h campaign, about 5 visits each).
+  - **Moons** are small (1–2 regions, shorter timers) and have a biome their planet doesn't, so the ores of other biomes are found early; they have no signature ore of their own (except the gas giant's).
+  - **Tiers:** each body has a tier (1 for the outermost planet, one more per planet inwards; a moon has its planet's). It shows on the navigator's card; a region's danger (easy, normal, hard) works within it. The heat shield needs that MK level to reach the body, and the body's highest MK level is its tier + 2 (`CelestialBody.max_mk`, see Upgrade stations in [Progression](progression.md)).
+    - **Farther in is harder** (`game/mission/mission_settings.tres`, Tiers, and `voyage_settings.tres` for the nests; all **TBD (playtest)**): per tier above 1, aliens have +30 % health and do +20 % damage, and a location has +10 % nests. That keeps pace with one damage and one armor MK level per planet (+25 % each), so each new planet feels a bit harder until the players have upgraded. Each tier also brings two new strains (built up to tier 2, see [Combat](weapons.md)).
+    - **The star's influence** (the star is getting unstable, see [Story](story.md)): per tier above 1, the storm's warning starts 10 s earlier (60 s on Torvane, 110 s on Zairen) and its damage grows 25 % faster (2 → 4.5 HP/s per second); the starting damage and the timer stay. With more armor inwards, the time to get aboard stays about the same, but the warning gets longer and the last seconds harsher. No other hazards from the star; the biomes have their own (see What makes a biome in [`locations.md`](locations.md)).
+  - **Opening planets:** the next planet inwards opens with the ship's **heat shield** at the drive core in the engine room, one MK level per planet, paid mostly with the current planet's signature ore, so better ores open the way. MK1 is the bare core (Torvane and Lisk); MK2 opens Vehra, MK3 Cassor and Mirr, MK4 Gaulm's moons Orrel and Iska, MK5 Skelde, MK6 Zairen: a body is open when its tier is at most the shield's MK level (moons open with their planet), and every region of a reached body is open. The story wraps it later but never adds a second gate.
+    - **Costs** (all **TBD (playtest)**), ores only, never alloys: MK2 300 Meridine and 400 Vyrel, MK3 300 Emerin and 400 Halcyne, MK4 300 Indral and 400 Ressa, MK5 300 Selyx and 400 Duskine, MK6 300 Noctile and 500 Duskine (about 3–4 good runs of the signature ore, less than a full silo).
+    - **Paid from the hauls:** the host makes the next plate the ship's project; from then on every run that comes back pays into it first, with exactly the ores it still needs, before the rest goes into every player's hold (see [Co-op progression](progression.md#co-op-progression)). Example: the plate needs 300 Meridine; a run brings home 200, the plate takes all 200; the next run brings 150, the plate takes the last 100 and the hold gets 50. Ore the plate took still counts as found. The host can also pay what's missing from their own hold any time, as far as it has it. The plate is installed as soon as it's paid (at once, not timed, so opening a planet never waits), the project ends with it, and the next planet's regions offer missions right away. Only the host works on it (the ship and the open bodies are the host's save); a guest sees the card with a hint.
+    - **The navigator** shows bodies out of reach dimmed, with "?" for their signature ore; their card, and their regions', say what they need ("Needs heat shield MK2 (engine room)", with the plate's ores as badges).
+    - **Each plate also raises the highest MK level** of the upgrades by one: MK3 with the bare core (Torvane), MK4 with Vehra, up to MK8 with Zairen, so the upgrades grow with the campaign instead of all being bought on the first planet (see Upgrade stations in [Progression](progression.md)).
+  - **Flights between bodies** cost nothing (no fuel).
+- **Stations and outposts** are fully handcrafted maps with NPCs and quests, and no enemies (see [Spaceship](ship.md), Stations and outposts).
+
+## Mission selection
+
+- **Mission selection:** the navigator at the bridge's holo table picks the destination, the flight console in the cockpit sets course for it.
+  - **Navigator:** players use it from anywhere around the table (a full amber ring around it lights up). Its hologram zooms smoothly, without steps, from the star system (the star, named on its card, with its planets and moons as small holograms on their orbit lines and stations as station shapes) into a planet or moon (a globe with its regions as bordered areas on the surface, like countries, filled in their biome's color with a border in their danger color) and into a region's landing site (the location hologram, with every ore node as a beam in its ore's color, so players plan their route and pick by the ores they need). Zooming in flies towards the selected body or region: the system grows around the body until it becomes the globe, the globe grows around the region until the landing site takes over. `interact` zooms in a whole step, `pause`/B back out a step (and closes at the star system); the mouse wheel, the gamepad's triggers and +/- zoom gradually (the wheel towards what's under the cursor). Zooming in only looks: a region becomes the destination (a new section of it: a new seed, generated in the background) with "Set as destination" on its card (on the globe, the hologram then zooms into its landing site), or `interact` at its landing site. Walking away leaves the hologram as it is (the system, a planet, a landing site), and the next use carries on there. The card floats beside the hologram, never over a region, and shows what's selected: a body's kind, tier and signature ore; a region's biome, tier, danger, timer and ores.
+  - **Campaign map:** the system view fits every body on the table: the orbits around the star spread evenly between an innermost and an outermost one (in their real order, not their real distances), moons circle close to their planet. Every body has a name plate (below a planet, above a moon) with its signature ore's badge. The ship's marker (an amber arrow) floats above the body it's at (where it flew last; before its first flight the first planet); dotted routes lead from there to every other body it can go to, the one to the destination's body amber and brighter. On a globe every region has a plate over its area: its name, its danger as pips (1–3 lit) and its ores as badges in their color and glow pattern; plates on the globe's far side fade out. Bodies that can't be reached yet show see-through, and their signature ore shows as "?" on plates and cards, so it stays a discovery. Flight routes cost nothing (see Planets, moons and regions above); quest markers come with the quest framework. A station is picked like a region, without a globe: zooming into it shows its map on the holo table (the ship's spot in its hangar marked) and its card has "Set as destination" (also `interact` at its map); a station without a map can't be docked at ("No docking yet"). Locked bodies can't be visited: they show see-through, and zooming stops short of them.
+  - **Flight console:** a launch lever on the cockpit console. Its card shows the destination (location, body, danger, timer, ores; a station's name) and where things stand; pulling the lever (`interact`, or "Set course") flies there, and it stays pulled during the flight. Anyone aboard can pick and launch.
+  - Nothing can be picked during the flight. Once landed, another destination can be picked until the ramp goes down (setting course takes off and flies there); after the run (won or lost) every region offers a new section.
+  - **The star system** (`game/world/star_system.tres`, greybox; danger E/N/H = easy, normal, hard), planets from the outside in:
+
+    | Body | Tier | Signature ore | Regions (biome, danger) |
+    |---|---|---|---|
+    | Torvane | 1 | Meridine | Redscar Flats (dust, E), Hollow Mire (overgrowth, N), Cinder Steps (dust, H) |
+    | Lisk, moon of Torvane | 1 | – | Pale Basin (frost, E), Rimeback (frost, N) |
+    | Vehra | 2 | Emerin | Hoarfrost Ridge (frost, E), Glare Fields (salt, N), Ember Reach (dust, H) |
+    | Cassor | 3 | Indral | Sunken Verge (overgrowth, E), Brine Terraces (salt, N), Whiteshelf (salt, N), Mossgrave (overgrowth, H) |
+    | Mirr, moon of Cassor | 3 | – | Quiet Scar (dust, N) |
+    | Gaulm, gas giant | 4 | (Selyx, on its moons) | – |
+    | Orrel, moon of Gaulm | 4 | Selyx | Drift Basin (salt, N), Lantern Hollow (overgrowth, H) |
+    | Iska, moon of Gaulm | 4 | Selyx | Coldwake (frost, N), Splitrock Steps (dust, H) |
+    | Skelde | 5 | Noctile | Rustwind Plain (dust, E), Black Tide (ash, N), Brimstone Cut (ash, N), Slag Terraces (ash, H) |
+    | Zairen | 6 | Aethrine | Sunward Scar (ash, N), Glassmere (glass, N), Mirror Flats (glass, H), Fused Expanse (glass, H) |
+
+    The star is Kesh, the station Waypost Ostra (in orbit around Torvane). Torvane and Lisk are open at the start; every heat shield plate opens the next tier (see Opening planets above). The debug overlay installs the next plate ("Install shield") or all of them ("Open all"). Each region has one set piece (see Points of interest and set pieces). Bodies and regions are proper names and stay untranslated; biomes are translated.
+  - Mission values so far (all **TBD (playtest)**): a region sets its danger and its timer (1, 1.5 or 2 times the standard 15 min); the danger sets how many of the biome's nests a visit has (0.6, 1 and 1.4 times for easy, normal, hard). A region's ores are its biome's common and mid ores plus its planet's signature ore (a region can add ores, e.g. for a quest site, or leave some out), 3–6 per region. Quests per region come later.
+
+## Quests
+
+- NPCs hand out quests: the main (story) quest and several side quests can be active at once, e.g. destroy a nest, recover something, extract an amount of one ore, find an expedition log.
+- A quest is tied to a planet, location or kind of mission, so it can't be done in just any run.
+- **Quests can't be missed:** a run that fails one or skips it leaves it open, and it's available again in a later run.
+- Optional bonus goals pay off for staying longer (see below).
+- Rewards: ores, weapon blueprints, and reputation with the NPC.
+- **Planned in detail** (quests as data, eight kinds of goals, blueprint fragments in crates, requests, the main story's acts, the quest board on the bridge, co-op): see [`planned/quests.md`](../planned/quests.md).
+- **Teaching the mechanics:** crew NPCs explain mechanics when they become relevant, in their conversations and first quests, not in tutorial pop-ups (no 2D HUD). For example, whoever runs the armory explains that the suit makes ammo from carried ore, that the spare magazines come from the ship's stock and aren't rebuilt during a run (so ore is only spent on rounds that are fired), what the dark cells on the backpack mean, and the timing reload.
+
+## Reasons to move and to stay (risk vs. reward)
+
+Standing at one spot until the timer runs low must not pay off.
+
+- **Nodes run dry:** each holds a limited amount, a few miner fills, so the players have to move on (see [Miners](mining.md)).
+- **A mining site draws aliens:** each working miner raises its nearest nests' raider rate (see [Nests and the hive](aliens.md#nests-and-the-hive)).
+- **Richer and rarer ore** lies farther from the ship; planned: rich fields between the nests of every nest hollow (see [`planned/risk-reward.md`](../planned/risk-reward.md)).
+- **A late deposit** (planned): a meteor bringing the region's rarest ore late in the run, far out and guarded (see [`planned/risk-reward.md`](../planned/risk-reward.md)).
+- **Quest goals** elsewhere on the map, and optional bonus goals.
+- **No carry limit:** the risk is dying with everything on the back (see [Hose transfer](mining.md#hose-transfer)). Planned: a cargo hatch at the ramp to bank ore without ending the mission (see [`planned/risk-reward.md`](../planned/risk-reward.md)).
+- Not planned: the storm closing in from the edges before the timer runs out.
+- **Ideas for later** (from the first playtest of the passes, where finding the way back in time became part of the run):
+  - More things to place from the miners' room besides miners and the sentries: e.g. beacons that help find the way back to the ship.
+  - **Barriers** in a location (e.g. a rockfall or a wall of alien growth closing a pass) that only an unlocked tool or upgrade removes, so the far, richer parts of some regions (their signature ore) open up with progress. Never the only way to an ore a quest needs before that unlock.
+
+## Timer and return
+
+- Greybox: a mission has a 15 min timer (finding ore along the passes takes a while) (`game/mission/mission_settings.tres`), **TBD (playtest)**.
+- The mission is **over when every player is back aboard**, in time or after the timer ran out. Dead players don't count: once everyone alive is aboard and at least one player made it, the mission ends (see [Death & persistence](death-and-persistence.md)).
+- The time shows in the world: a countdown hangs above the door (running outwards from it, over the ramp, so it doesn't cover the silos' displays), in a status color that is green, turns amber after half the time, red in the warning time (the last minute on a tier 1 body, longer farther in, see Tiers above; **TBD (playtest)**) and stays red once the storm hits.
+- Outside, when the door is farther away (greybox: 12 m, **TBD (playtest)**), an arrow on the suit ring's edge points to it in the status color (blinking in the last minute), with the countdown beyond its tip, so the way back, the urgency and the exact time are visible while the ship is off-screen.
+
+## Timer expiry
+
+- When the timer runs out, the storm becomes lethal: everyone outside the ship takes damage that grows every second. Greybox: 2 HP/s, +2 HP/s per second on a tier 1 body (faster farther in, see Tiers above), so an unhurt player (100 HP) lasts about 9 s (`game/mission/mission_settings.tres`, **TBD (playtest)**). Aboard is safe. There's no grace period beyond the rising damage: the countdown and the warning say enough.
+- The storm shows in the world: in the warning time the light dims and a reddish-brown haze builds up in the distance; when the timer runs out it gets thick within a few seconds. Inside the ship the haze fades out (it's an inner room), only the dim light outside still shows the storm. It stays while the players are aboard and clears for the next run.

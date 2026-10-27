@@ -3,7 +3,7 @@ that carries a small, narrow head high above the pack. Its jaw gapes very wide, 
 jaw and down the front of the neck swells when it screams; ridged chitin plates run along the top of the neck, a short
 tail. Rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/shrieker/source/shrieker_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/shrieker/source/shrieker_build.py stats      # measures and pose bounds, no renders
     tools/blender.sh assets/aliens/shrieker/source/shrieker_build.py final      # renders + shrieker_procedural.blend

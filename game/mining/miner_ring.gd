@@ -1,14 +1,14 @@
 class_name MinerRing
 extends MeshInstance3D
-## The ring a miner projects on the ground around itself (a child of it; see GAME_DESIGN.md,
-## Miners), always shown: the health arc on the screen's left (green, amber below half, red below
-## a quarter, and empty with a blinking red outline while broken), the tank's fill arc on its right
-## in the ore's color (white when full), both filling from the bottom up, and a thin dashed circle
-## at its hose range (solid while the hose is connected). While it's placed or picked up, a thin
-## band inside the arcs goes around with the progress in the hologram's color; while that waits
-## for its player to come back into the range, the band and the circle blink. Like the suit ring,
-## its halves stay fixed to the screen and it's drawn over the ground and low plants, hidden by
-## cliffs and props.
+## The ring a miner projects on the ground around itself (a child of it; see
+## docs/design/mining.md), always shown: the health arc on the screen's left (green, amber below
+## half, red below a quarter, and empty with a blinking red outline while broken), the tank's fill
+## arc on its right in the ore's color (white when full), both filling from the bottom up, and a
+## thin dashed circle at its hose range (solid while the hose is connected). While it's placed or
+## picked up, a thin band inside the arcs goes around with the progress in the hologram's color;
+## while that waits for its player to come back into the range, the band and the circle blink. Like
+## the suit ring, its halves stay fixed to the screen and it's drawn over the ground and low plants,
+## hidden by cliffs and props.
 
 ## How far the arcs reach beyond the miner's body (m), and how wide they are. TBD (playtest).
 const ARC_GAP: float = 0.25

@@ -29,7 +29,7 @@ const TERMINALS: PackedStringArray = [
 ]
 ## The most ores a place lists on the navigator and flight cards.
 const MAX_ORES_SHOWN: int = 6
-## Body text is at least this part of the view's height (see GAME_DESIGN.md, UI).
+## Body text is at least this part of the view's height (see docs/design/ui.md).
 const MIN_TEXT_HEIGHT: float = 0.02
 const STATIONS: PackedStringArray = [
 	"Rooms/Lower/Weapons/UpgradeStation",

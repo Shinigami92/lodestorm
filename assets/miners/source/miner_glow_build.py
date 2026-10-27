@@ -1,6 +1,6 @@
 """Miner, "glow" variant: a glowing glass ore column on four splayed legs (concept: miner_glow_v2).
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/miners/source/miner_glow_build.py wip r1
     tools/blender.sh assets/miners/source/miner_glow_build.py final
 

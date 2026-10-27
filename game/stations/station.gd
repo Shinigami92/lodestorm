@@ -1,6 +1,6 @@
 class_name Station
 extends WorldMenu
-## An object that is the menu (see GAME_DESIGN.md, UI): a workbench, a fitting frame, a miner's
+## An object that is the menu (see docs/design/ui.md): a workbench, a fitting frame, a miner's
 ## maintenance pad. A player uses it with `interact` at its `Use` child (an `Interactable`), steps
 ## where they stand, and their camera frames it (see `WorldMenu`). Its parts (`StationPart`s) are
 ## selectable:

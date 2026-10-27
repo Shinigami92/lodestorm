@@ -1,6 +1,6 @@
 class_name MedBedStation
 extends Station
-## A med bed in the medical bay (see GAME_DESIGN.md, Death & persistence): health carries over
+## A med bed in the medical bay (see docs/design/death-and-persistence.md): health carries over
 ## between runs, and the player using it lies down on it (`Lie`) and heals to full, for free. The
 ## bed is its part; its card (`MedBedCard`) shows the health filling up and "Get up". Any player can
 ## use any bed, one player per bed.

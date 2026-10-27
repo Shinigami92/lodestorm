@@ -1,6 +1,6 @@
 """Game-ready tender: bake the procedural look of tender_procedural.blend into one texture set.
 
-Run from the repo root, after tender_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after tender_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/tender/source/tender_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/tender/source/tender_bake.py verify   # only re-import and render the checks
 

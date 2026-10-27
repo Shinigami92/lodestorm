@@ -1,6 +1,6 @@
 class_name BedStation
 extends Station
-## A player's bed in their cabin, where they quit the game ("Sleep", see GAME_DESIGN.md, UI): the
+## A player's bed in their cabin, where they quit the game ("Sleep", see docs/design/ui.md): the
 ## bed is its part, its card offers "Sleep". Sleeping saves the progress one last time (not during
 ## a run: what changes then is only saved once it's over, so the run underway is lost, and the card
 ## says so), fades the screen to black (the camera stays on the bed) and quits to the desktop, the

@@ -4,7 +4,7 @@
 set -e
 cd "$(dirname "$0")/.."
 if [ -z "$VOICE_PYTHON" ]; then
-	echo "Set VOICE_PYTHON to a Python with numpy and soundfile (see docs/TECHNICAL.md, Voice-over)" >&2
+	echo "Set VOICE_PYTHON to a Python with numpy and soundfile (see docs/technical/voice.md)" >&2
 	exit 1
 fi
 PYTHONUTF8=1 exec "$VOICE_PYTHON" tools/voice/render.py "$@"

@@ -1,7 +1,7 @@
 """Rocks and cliff dressing kit: jagged, cracked boulders, rubble, outcrops and cliff chunks for the scattered
 location decoration (concepts: overgrowth_v1..v4, dustflats_house).
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/rocks/source/rocks_build.py wip r1                  # kit iso + hero
     tools/blender.sh assets/rocks/source/rocks_build.py wip r1 Boulder_a,scatter
     tools/blender.sh assets/rocks/source/rocks_build.py final

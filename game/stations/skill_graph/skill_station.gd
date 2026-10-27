@@ -1,14 +1,14 @@
 class_name SkillStation
 extends Station
-## The skill graph in the skills room (see GAME_DESIGN.md, Upgrade stations): a hologram above an
-## emitter that always faces the camera, styled like the star map. Each cluster of the `tree` is a
-## constellation with its name, its skills are glowing points (`StationPart`s whose item is the
-## `Skill`), linked to the skill they require; a link lights up once its skill is learned. Learned
-## skills glow fully, ones the player can learn right now pulse, ones that open later stay dim.
-## Its card (`SkillCard`) learns the selected skill's next rank for the player using it, with ore
-## from their own hold; the rank then runs on the wall clock (see `Skills.start`), a ring filling
-## around its point, and can be stopped for the whole cost back (pressed twice). Nothing can be
-## learned or stopped while a mission is underway.
+## The skill graph in the skills room (see docs/design/progression.md, Upgrade stations): a hologram
+## above an emitter that always faces the camera, styled like the star map. Each cluster of the
+## `tree` is a constellation with its name, its skills are glowing points (`StationPart`s whose item
+## is the `Skill`), linked to the skill they require; a link lights up once its skill is learned.
+## Learned skills glow fully, ones the player can learn right now pulse, ones that open later stay
+## dim. Its card (`SkillCard`) learns the selected skill's next rank for the player using it, with
+## ore from their own hold; the rank then runs on the wall clock (see `Skills.start`), a ring
+## filling around its point, and can be stopped for the whole cost back (pressed twice). Nothing can
+## be learned or stopped while a mission is underway.
 ## The mouse pans (dragging) and zooms (wheel, around the cursor); `zoom_in`/`zoom_out` (triggers,
 ## +/-) zoom too. Directions select the nearest skill (the view follows it), `tab_prev`/`tab_next`
 ## jump between clusters. The camera frames `Graph/Focus` (moved by panning) at `view_height`

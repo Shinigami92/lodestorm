@@ -2,7 +2,7 @@ extends GutTest
 ## Every game sound is listed in the manifest of `assets/audio/source/build.py` with how it was
 ## made (built by it, or a replacement: e.g. the AI model, "recorded") and the recordings it uses;
 ## every recording has its source, author and an allowed license (the game is sold: no NC, ND or
-## SA). See TECHNICAL.md, Sound effects.
+## SA). See docs/technical/audio.md.
 
 const MANIFEST: String = "res://assets/audio/source/manifest.json"
 const RECORDINGS: String = "res://assets/audio/source/recordings/"

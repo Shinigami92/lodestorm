@@ -1,7 +1,7 @@
 """Alien nest: a low organic mound of chitin plates, sinew and resin with a glowing mouth on top, tendrils
 spreading over a slimy ground layer (concept: nest_v1..v4).
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/nest/source/nest_build.py wip r1 [iso,hero,close,...]
     tools/blender.sh assets/aliens/nest/source/nest_build.py final
 

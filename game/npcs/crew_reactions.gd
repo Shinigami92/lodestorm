@@ -1,6 +1,6 @@
 class_name CrewReactions
 extends Node
-## The crew reacting to what happens, over the radio (see GAME_DESIGN.md, Spaceship: NPCs), the
+## The crew reacting to what happens, over the radio (see docs/design/crew.md), the
 ## ship's: when an event (`EVENTS`) happens, one crew member with lines for it
 ## (`NpcProfile.reactions`) calls in (`transmit`), beside every player (`PlayerRadio`), or only
 ## the player it's about (a new weapon, waking after the first fall). With several crew members

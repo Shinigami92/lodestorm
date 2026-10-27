@@ -1,6 +1,6 @@
 class_name NpcBody
 extends Node3D
-## Someone standing in the world (see GAME_DESIGN.md, Spaceship: NPCs), who `profile` says: their
+## Someone standing in the world (see docs/design/crew.md), who `profile` says: their
 ## own model, or the suit model in their darker tint with the collar light in their own color (for
 ## those without one yet), playing its "Idle" and "Walk" (`NpcAnimator`), turning towards whom
 ## it `faces` (else the nearest player close by, else back to where it stands facing), and their

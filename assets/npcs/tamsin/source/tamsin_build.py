@@ -3,7 +3,7 @@ headset with a microphone boom, a worn dark navy flight jacket with a high colla
 suit, a blue collar light, fingerless flight gloves, padded knees and tall laced boots (reference: the
 batch-10 concept "tamsin_v1", see docs/planned/crew.md).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/tamsin/source/tamsin_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/tamsin/source/tamsin_build.py final    # renders, tamsin.blend and the game asset
 

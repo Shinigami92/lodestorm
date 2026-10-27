@@ -1,6 +1,6 @@
 # Biome geography (planned)
 
-Decided 2026-10-17. All values **TBD (playtest)**. Every biome's own geography is built in greybox (M4 step 6, see [Generated outside world](../GAME_DESIGN.md#6-missions)), and so are the aliens' biome leanings (see [Nests and the hive](../GAME_DESIGN.md#nests-and-the-hive)); what's left comes around it, mostly with the art pass (M5).
+Decided 2026-10-17. All values **TBD (playtest)**. Every biome's own geography is built in greybox (M4 step 6, see [Generated outside world](../design/missions.md)), and so are the aliens' biome leanings (see [Nests and the hive](../design/aliens.md#nests-and-the-hive)); what's left comes around it, mostly with the art pass (M5).
 
 ## Around the biomes
 

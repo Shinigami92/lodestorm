@@ -1,6 +1,6 @@
 """Game-ready rocks kit: bake the procedural look of rocks_procedural.blend into one shared texture set.
 
-Run from the repo root, after rocks_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after rocks_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/rocks/source/rocks_bake.py          # bake, export, check renders
     tools/blender.sh assets/rocks/source/rocks_bake.py verify   # only re-import and render the checks
 

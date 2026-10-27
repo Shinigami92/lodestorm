@@ -1,6 +1,6 @@
 """Game-ready darter: bake the procedural look of darter_procedural.blend into one texture set.
 
-Run from the repo root, after darter_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after darter_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/darter/source/darter_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/darter/source/darter_bake.py verify   # only re-import and render the checks
 

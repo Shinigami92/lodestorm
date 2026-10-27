@@ -3,7 +3,7 @@ short graying beard, welding goggles pushed up on his head, rust-brown bib overa
 work jacket with burn marks on the sleeves, an orange collar light, a heavy tool belt, leather work gloves
 and heavy boots (reference: the batch-10 concept "okoro_v2", see docs/planned/crew.md).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/okoro/source/okoro_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/okoro/source/okoro_build.py final    # renders, okoro.blend and the game asset
 

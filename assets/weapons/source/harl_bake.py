@@ -1,6 +1,6 @@
 """Game-ready harl: bake the procedural look of harl_procedural.blend into one texture set.
 
-Run from the repo root, after harl_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after harl_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/weapons/source/harl_bake.py          # bake, export, check renders
     tools/blender.sh assets/weapons/source/harl_bake.py verify   # only re-import and render the checks
 

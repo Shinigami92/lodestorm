@@ -1,6 +1,6 @@
 class_name MinerFleet
 extends Resource
-## A player's miners (see GAME_DESIGN.md, Miners): up to `SLOTS` crafted ones (`miners`, by their
+## A player's miners (see docs/design/mining.md): up to `SLOTS` crafted ones (`miners`, by their
 ## cradle's number), each built in the miners' room and kept, and the ship's standard-issue ones.
 ## Every player starts with M-01. A run takes up to `PER_RUN` miners: the crafted ones going along
 ## and standard-issue ones filling up the rest (which one is placed where: `Miner.take_from`). A

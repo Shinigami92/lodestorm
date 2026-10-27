@@ -7,7 +7,7 @@ and a cluster of short feeding tendrils around the mouth. Its chitin is darker t
 with small overlapping scales: plates over the back, the shoulders and the limbs, sinew showing between. The glow is
 sparse: the eyes, thin seams along the talons' inner edges and a few slits on the back. Rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/stalker/source/stalker_build.py wip v2r1   # quick renders of the poses
     tools/blender.sh assets/aliens/stalker/source/stalker_build.py stats      # measures and pose bounds, no renders
     tools/blender.sh assets/aliens/stalker/source/stalker_build.py final      # renders + stalker_procedural.blend
@@ -60,7 +60,7 @@ TAG = ARGV[1] if len(ARGV) > 1 else "v2r0"
 ASSET = "Stalker"
 FPS = 30
 GLAND_GLOW = 1.5  # sparse and faint: the eyes (8) stay the main glow
-SINEW_SHADE = 0.7  # darker than the other strains (docs/GAME_DESIGN.md, Alien look: stalkers have darker chitin)
+SINEW_SHADE = 0.7  # darker than the other strains (docs/design/aliens.md, Alien look: stalkers have darker chitin)
 I3 = Matrix.Identity(3)
 X = Vector((1, 0, 0))
 

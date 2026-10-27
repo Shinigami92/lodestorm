@@ -1,7 +1,7 @@
 """Swarmer: a lean, dog-sized alien runner on four clawed legs with a toothed jaw and two scythe-like bone blades
 rising behind its head and sweeping back over its body, generated (TRELLIS.2, source/trellis/), rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/swarmer/source/swarmer_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/swarmer/source/swarmer_build.py final      # renders + swarmer_procedural.blend
     tools/blender.sh assets/aliens/swarmer/source/swarmer_build.py joints     # x-ray renders of the joints

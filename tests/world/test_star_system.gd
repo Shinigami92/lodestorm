@@ -1,5 +1,5 @@
 extends GutTest
-## The campaign's star system (see GAME_DESIGN.md, Missions): planets from the outside in, one per
+## The campaign's star system (see docs/design/missions.md): planets from the outside in, one per
 ## signature ore, their moons, tiers growing towards the star, and biomes that spread the common
 ## and mid ores.
 

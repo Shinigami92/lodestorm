@@ -3,7 +3,7 @@ back under a short brimmed cap, a calm smile, in a double-breasted off-white coo
 sleeves, a pink collar light, a long dark apron with a towel through its string, a leather belt, dark
 trousers and laced boots (reference: the batch-10 concept "fenna_v3", see docs/planned/crew.md).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/fenna/source/fenna_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/fenna/source/fenna_build.py final    # renders, fenna.blend and the game asset
 

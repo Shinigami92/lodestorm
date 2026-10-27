@@ -4,7 +4,7 @@ them, a row of glowing spots along each trailing edge; a long, segmented whip ta
 broad head with two curved horns flanking a wide maw, small glowing eyes and a glowing throat sac under it, which
 swells before the spit. Small claws tucked under the body. Rigged and animated; it never walks.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/skimmer/source/skimmer_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/skimmer/source/skimmer_build.py stats      # measures and pose bounds, no renders
     tools/blender.sh assets/aliens/skimmer/source/skimmer_build.py final      # renders + skimmer_procedural.blend

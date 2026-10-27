@@ -1,6 +1,6 @@
 // A cool glow along a body's outline, independent of the scene lights, so players, aliens and
-// machines stay readable on dark ground from the isometric distance (see GAME_DESIGN.md, Art
-// direction). Used as a material overlay: it adds light on top of whatever material the mesh has.
+// machines stay readable on dark ground from the isometric distance (see docs/design/art.md,
+// Art direction). Used as a material overlay: it adds light on top of whatever material the mesh has.
 shader_type spatial;
 render_mode unshaded, blend_add, depth_draw_never, cull_back, shadows_disabled;
 

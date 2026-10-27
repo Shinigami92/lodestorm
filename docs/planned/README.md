@@ -1,10 +1,10 @@
 # Planned designs
 
-Designs that are decided but not built yet, one file per topic. [`GAME_DESIGN.md`](../GAME_DESIGN.md) describes the game as it is built (with its vision and rules); these files describe what changes next. [`PLAN.md`](../PLAN.md) lists the work in order, with a link to each file.
+Designs that are decided but not built yet, one file per topic. [`design/`](../design/README.md) describes the game as it is built (with its vision and rules); these files describe what changes next. [`PLAN.md`](../PLAN.md) lists the work in order, with a link to each file.
 
 - A file is the result of a design round: what was decided, with starting values marked **TBD (playtest)**. The pull requests that build it are listed in `PLAN.md`, not here.
-- When a part is built, its text moves into `GAME_DESIGN.md` (rewritten to describe what was built) and leaves this file; once nothing is left, the file is deleted.
-- A file here names things that don't exist yet; `GAME_DESIGN.md` describes what does and only points here for what's coming ("Planned: ... see `planned/...`").
+- When a part is built, its text moves into the matching file in [`design/`](../design/README.md) (rewritten to describe what was built) and leaves this file; once nothing is left, the file is deleted.
+- A file here names things that don't exist yet; `design/` describes what does and only points here for what's coming ("Planned: ... see `planned/...`").
 
 | File | What's left | Milestone |
 |---|---|---|

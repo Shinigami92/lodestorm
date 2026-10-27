@@ -1,13 +1,13 @@
 class_name HeatShieldStation
 extends Station
-## The drive core in the engine room with the ship's heat shield around it (see GAME_DESIGN.md,
-## Opening planets; greybox until the ship's art pass): a ring of plates stacked around the core,
-## one per planet inwards (MK2 at the bottom, the last one at the top; MK1 is the bare core).
-## Installed plates glow, the next one fills up as it's paid (from left to right over the ring's
-## side facing the camera, like a silo's gauge), later ones show as dim outlines, so the length
-## of the way stays visible. Each plate is a part (its `item` the `ShieldPlate`); the card
-## (`HeatShieldCard`) shows the selected one, and for the next one makes it the ship's project or
-## pays the rest from the hold. Only the host can (the ship and the open bodies are the host's
+## The drive core in the engine room with the ship's heat shield around it (see
+## docs/design/missions.md, Opening planets; greybox until the ship's art pass): a ring of plates
+## stacked around the core, one per planet inwards (MK2 at the bottom, the last one at the top; MK1
+## is the bare core). Installed plates glow, the next one fills up as it's paid (from left to right
+## over the ring's side facing the camera, like a silo's gauge), later ones show as dim outlines, so
+## the length of the way stays visible. Each plate is a part (its `item` the `ShieldPlate`); the
+## card (`HeatShieldCard`) shows the selected one, and for the next one makes it the ship's project
+## or pays the rest from the hold. Only the host can (the ship and the open bodies are the host's
 ## save), and nothing while a mission is underway.
 
 const CORE_RADIUS: float = 0.95

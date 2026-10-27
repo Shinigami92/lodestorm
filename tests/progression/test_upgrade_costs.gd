@@ -1,5 +1,6 @@
 extends GutTest
-## How far upgrades go and what their levels cost (see GAME_DESIGN.md, Upgrade stations).
+## How far upgrades go and what their levels cost (see docs/design/progression.md, Upgrade
+## stations).
 
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
 const SYSTEM: StarSystem = preload("res://game/world/star_system.tres")

@@ -13,8 +13,9 @@ extends Resource
 ## What they do, e.g. "Quartermaster" (the English text, translated).
 @export var role: String
 ## Their own model (e.g. assets/npcs/nell/nell.glb: a person made with MakeHuman, with "Idle" and
-## "Walk", see docs/TECHNICAL.md, People). None: the players' suit, in `suit_tint`. A path, loaded
-## when the body is made, so reading a profile (e.g. every name for `Keywords`) stays cheap.
+## "Walk", see docs/technical/characters.md, People). None: the players' suit, in `suit_tint`. A
+## path, loaded when the body is made, so reading a profile (e.g. every name for `Keywords`) stays
+## cheap.
 @export_file("*.glb", "*.tscn") var model: String = ""
 ## Clips of their model they play now and then while no player is close, one at a time with a pause
 ## of standing between them (e.g. the bartender wiping the counter, polishing a glass, shelving a
@@ -28,7 +29,7 @@ extends Resource
 @export var accent_color: Color = Color(0.3, 0.85, 1.0)
 ## Multiplies the suit's colors, so NPCs in it look darker than players (not on an own model).
 @export var suit_tint: Color = Color(0.7, 0.7, 0.75)
-## A crew member's cabin aboard (1–8, see GAME_DESIGN.md, Spaceship; not used yet). Station NPCs
+## A crew member's cabin aboard (1–8, see docs/design/ship.md; not used yet). Station NPCs
 ## have none.
 @export_range(1, 8) var cabin: int = 1
 @export var dialogue: Dialogue

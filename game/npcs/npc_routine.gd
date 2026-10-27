@@ -1,6 +1,6 @@
 class_name NpcRoutine
 extends RefCounted
-## Where a crew member (`npc`) is and goes aboard (see GAME_DESIGN.md, Spaceship: NPCs), each
+## Where a crew member (`npc`) is and goes aboard (see docs/design/crew.md), each
 ## physics frame (`update`). They walk instead of appearing somewhere (`NpcWalker`, over the
 ## ship's navigation, taking the lift between the decks), at `WALK_SPEED`, standing while a player
 ## is within `NpcBody.NOTICE_RANGE` m; while someone talks to them, they stay where they are.

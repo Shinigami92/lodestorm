@@ -1,6 +1,6 @@
 # Weapons (planned: the rest)
 
-Decided 2026-10-17. All values **TBD (playtest)**. The 18 weapons, their feeds, parts, the draw, blueprints, building them at the workbench and the racks are built (M4 step 10, see [Weapons](../GAME_DESIGN.md#weapons) and [Upgrade stations](../GAME_DESIGN.md#upgrade-stations)); what's left comes with the quests, the art pass, VR and co-op.
+Decided 2026-10-17. All values **TBD (playtest)**. The 18 weapons, their feeds, parts, the draw, blueprints, building them at the workbench and the racks are built (M4 step 10, see [Weapons](../design/weapons.md#weapons) and [Upgrade stations](../design/progression.md#upgrade-stations)); what's left comes with the quests, the art pass, VR and co-op.
 
 ## Getting them
 

@@ -3,7 +3,7 @@ and a short black bob with teal tips, in a fitted light-grey technician jumpsuit
 pushed-up sleeves, a teal collar light, fingerless gloves, a belt with small pouches, knee pads and black
 boots (reference: the batch-10 concept "wren_v1", see docs/planned/crew.md).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/wren/source/wren_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/wren/source/wren_build.py final    # renders, wren.blend and the game asset
 

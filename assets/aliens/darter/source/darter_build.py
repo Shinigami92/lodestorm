@@ -4,7 +4,7 @@ short legs tucked under it like a flying insect's; a long, segmented abdomen han
 glowing sting, with glowing slits across its back between the plates. A narrow armored head with big glowing compound
 eyes and short hooked mandibles. Rigged and animated; it never walks.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/darter/source/darter_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/darter/source/darter_build.py stats      # measures and pose bounds, no renders
     tools/blender.sh assets/aliens/darter/source/darter_build.py final      # renders + darter_procedural.blend

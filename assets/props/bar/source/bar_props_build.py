@@ -1,7 +1,7 @@
 """Small things at the bar, one model each: a glass, a bottle, a rag (held by Nell while she works, see
 assets/npcs/nell/source/nell_clips.py; for the bar's dressing later).
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/props/bar/source/bar_props_build.py
 
 Each one stands on the frame a hand holds it by (see tools/blender/people.py, things in the hands): its origin where

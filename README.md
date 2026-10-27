@@ -22,7 +22,7 @@ Lodestorm is designed, directed and reviewed by [Shinigami92](https://github.com
 | [TRELLIS.2](https://github.com/microsoft/TRELLIS.2) (MIT), with [BiRefNet](https://github.com/ZhengPeng7/BiRefNet) (MIT) | 3D models: the player's suit, the swarmer, the people's outfits, hair and heads | made from a concept image, then fitted and rigged by build scripts; the people's bodies are [MakeHuman](https://static.makehumancommunity.org/) (CC0) |
 | [Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) (Apache-2.0) | Voices of Brannik, Nell, Kade, Selin and the crew (English and German) | each voice designed from a written description of the character, every line cloned from that voice |
 
-What made each asset is recorded next to it (see [Asset pipeline](docs/TECHNICAL.md#4-asset-pipeline)).
+What made each asset is recorded next to it (see [Asset pipeline](docs/technical/assets.md)).
 
 ## Playing it
 
@@ -43,10 +43,10 @@ Open the project in the Godot editor (see [Setup](CONTRIBUTING.md#setup)) and pr
 
 ## Documentation
 
-- [Game design](docs/GAME_DESIGN.md): the game as it is built, its vision and rules
+- [Game design](docs/design/README.md): the game as it is built, its vision and rules, one file per topic
 - [Planned designs](docs/planned/README.md): decided, not built yet, one file per topic
 - [Development plan / milestones](docs/PLAN.md): what's done and what's next
-- [Technical guidelines](docs/TECHNICAL.md): licensing, code conventions and architecture, CI, the asset pipeline (models, sounds, voices), platform services
+- [Technical guidelines](docs/technical/README.md): licensing, code conventions and architecture, CI, the asset pipeline (models, sounds, voices), platform services, one file per topic
 
 ## Contributing
 

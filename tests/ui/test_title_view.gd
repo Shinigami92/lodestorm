@@ -3,7 +3,7 @@ extends GutTest
 ## the ship; the credits show after a while without input.
 
 const MAP: PackedScene = preload("res://game/maps/main.tscn")
-## Body text is at least this share of the view's height (GAME_DESIGN.md, UI).
+## Body text is at least this share of the view's height (docs/design/ui.md).
 const MIN_TEXT_HEIGHT: float = 0.02
 
 var _map: Node3D

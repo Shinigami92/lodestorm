@@ -1,6 +1,6 @@
 class_name ShipNavigation
 extends Node3D
-## Where the crew can walk aboard (see GAME_DESIGN.md, Spaceship: NPCs): a navigation mesh over the
+## Where the crew can walk aboard (see docs/design/crew.md): a navigation mesh over the
 ## ship's floors, baked from its colliders (walls, stations, furniture) once it's first asked for
 ## a way (`find_path`), on a worker thread; until it's done, no way is found. It lives on its own
 ## navigation map, so it never joins a location's (the aliens') or a station's. The ship never

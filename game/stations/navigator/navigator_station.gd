@@ -1,12 +1,12 @@
 class_name NavigatorStation
 extends Station
-## The navigator at the bridge's holo table (see GAME_DESIGN.md, Mission selection). Its hologram
-## zooms smoothly (`zoom`, eased towards `zoom_target`) from the star system (0: its planets, moons
-## and stations as small holograms around the star) into a planet or moon (1: a globe with its
-## regions as bordered areas on the surface) and into a region's landing site (2: the holo table's
-## location hologram). Zooming in flies towards the selected body or region: the system grows
-## around the body until it becomes the globe, the globe around the region until the landing site
-## takes over. `interact` zooms in a whole step (at a landing site: chooses it as the
+## The navigator at the bridge's holo table (see docs/design/missions.md, Mission selection). Its
+## hologram zooms smoothly (`zoom`, eased towards `zoom_target`) from the star system (0: its
+## planets, moons and stations as small holograms around the star) into a planet or moon (1: a globe
+## with its regions as bordered areas on the surface) and into a region's landing site (2: the holo
+## table's location hologram). Zooming in flies towards the selected body or region: the system
+## grows around the body until it becomes the globe, the globe around the region until the landing
+## site takes over. `interact` zooms in a whole step (at a landing site: chooses it as the
 ## destination), `pause`/`ui_cancel` back out a step (and close at the star system);
 ## `zoom_in`/`zoom_out` (mouse wheel, gamepad triggers, +/-) zoom gradually. A landing site is only
 ## shown (`Voyage.preview`); choosing it as the destination (`Voyage.choose`, a new section of

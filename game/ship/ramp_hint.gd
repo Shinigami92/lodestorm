@@ -1,6 +1,6 @@
 class_name RampHint
 extends Node3D
-## A hint above the ramp button (see GAME_DESIGN.md, Death & persistence): health carries over
+## A hint above the ramp button (see docs/design/death-and-persistence.md): health carries over
 ## between runs, so the first time the local player stands at the button hurt with the ramp up, a
 ## bubble says where to heal. It shows once per player (`PlayerHints`, saved with the player), as
 ## long as that player stays there.

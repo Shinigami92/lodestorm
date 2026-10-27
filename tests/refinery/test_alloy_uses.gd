@@ -1,5 +1,5 @@
 extends GutTest
-## What the alloys go into besides the miners (see GAME_DESIGN.md, Resources): the upgrade levels
+## What the alloys go into besides the miners (see docs/design/resources.md): the upgrade levels
 ## from MK4 on, the prototypes' build, the ingot rack's "Used for" line, and jobs keeping what was
 ## paid.
 

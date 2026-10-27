@@ -6,7 +6,7 @@ edge, behind it sinewy flesh in swollen segments with glowing gland slits across
 above). Thick, short, pillar-like legs on broad pads with heavy claws; small eyes deep under the shield's rim.
 Rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/brute/source/brute_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/brute/source/brute_build.py stats      # measures and pose bounds only
     tools/blender.sh assets/aliens/brute/source/brute_build.py final      # renders + brute_procedural.blend

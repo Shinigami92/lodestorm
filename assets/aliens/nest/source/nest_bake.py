@@ -1,6 +1,6 @@
 """Game-ready alien nest: bake the procedural look of nest_procedural.blend into one shared texture set.
 
-Run from the repo root, after nest_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after nest_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/nest/source/nest_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/nest/source/nest_bake.py verify   # only re-import and render the checks
     tools/blender.sh assets/aliens/nest/source/nest_bake.py verify all   # plus the back, far and close views

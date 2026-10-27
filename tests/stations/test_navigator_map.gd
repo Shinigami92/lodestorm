@@ -1,8 +1,8 @@
 extends GutTest
-## The navigator as a campaign map (see GAME_DESIGN.md, Mission selection): every body fits on the
-## table, name plates with signature ores ("?" while out of reach), the ship's marker and routes,
-## region plates with danger pips and ores on globes colored by biome, the tier on the card, and
-## setting a destination from the globe zooming into its landing site.
+## The navigator as a campaign map (see docs/design/missions.md, Mission selection): every body fits
+## on the table, name plates with signature ores ("?" while out of reach), the ship's marker and
+## routes, region plates with danger pips and ores on globes colored by biome, the tier on the card,
+## and setting a destination from the globe zooming into its landing site.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 

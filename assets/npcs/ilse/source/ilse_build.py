@@ -3,7 +3,7 @@ knot and thin glasses, in a knee-length pale medical coat with a high collar, a 
 white cross, a dark harness with medical pouches, a belt with pouches, black gloves, knee pads and tall
 strapped boots (reference: the batch-10 concept "ilse_v1", see docs/planned/crew.md).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/ilse/source/ilse_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/ilse/source/ilse_build.py final    # renders, ilse.blend and the game asset
 

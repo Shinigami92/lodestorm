@@ -1,9 +1,9 @@
 """Selin, the colony council's member at Waypost Ostra: a calm, slim woman in her fifties with short dark hair, a long
 pale coat worn open over a dark quilted station uniform, a colony patch, a belt with a buckle, fingerless gloves,
 trousers with knee pads and lace-up boots (reference: the batch-8 concepts "selin_v1" and "selin_v2", see
-GAME_DESIGN.md, Art direction).
+docs/design/art.md, Art direction).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/selin/source/selin_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/selin/source/selin_build.py final    # renders, selin.blend and the game asset
 

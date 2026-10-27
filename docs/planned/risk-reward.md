@@ -1,6 +1,6 @@
 # Reasons to move on (planned)
 
-Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The goal (see [Reasons to move and to stay](../GAME_DESIGN.md#reasons-to-move-and-to-stay-risk-vs-reward)): standing at one spot until the timer runs low must not pay off. Ore nodes run dry (built, see [Miners](../GAME_DESIGN.md#7-miners)); today nest hollows have no ore, and carried ore is only safe once its carrier is aboard, which ends the mission when everyone alive is. Decided elsewhere: miners draw raiders and the hive frenzies in the storm's warning ([`aliens.md`](aliens.md)), quest and bonus goals elsewhere on the map ([`quests.md`](quests.md)), destroyable nests (built, see [Combat & aliens](../GAME_DESIGN.md#10-combat--aliens)).
+Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The goal (see [Reasons to move and to stay](../design/missions.md#reasons-to-move-and-to-stay-risk-vs-reward)): standing at one spot until the timer runs low must not pay off. Ore nodes run dry (built, see [Miners](../design/mining.md)); today nest hollows have no ore, and carried ore is only safe once its carrier is aboard, which ends the mission when everyone alive is. Decided elsewhere: miners draw raiders and the hive frenzies in the storm's warning ([`aliens.md`](aliens.md)), quest and bonus goals elsewhere on the map ([`quests.md`](quests.md)), destroyable nests (built, see [Combat & aliens](../design/weapons.md)).
 
 ## Rich ore by the nests
 
@@ -16,4 +16,4 @@ A **cargo hatch** outside beside the ramp's foot: `interact` there unloads every
 
 ## Later
 
-Beacons to place from the miners' room (marking the way back) and barriers that open the far parts of regions with progress stay ideas in [`GAME_DESIGN.md`](../GAME_DESIGN.md#reasons-to-move-and-to-stay-risk-vs-reward).
+Beacons to place from the miners' room (marking the way back) and barriers that open the far parts of regions with progress stay ideas in [`design/missions.md`](../design/missions.md#reasons-to-move-and-to-stay-risk-vs-reward).

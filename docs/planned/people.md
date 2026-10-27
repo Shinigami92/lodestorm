@@ -1,6 +1,6 @@
 # People's own models (planned)
 
-Decided 2026-10-24 (a generated outfit over the body since 2026-10-25), built in parts with the art pass (M5, see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The way people are made, Nell (the first), Kade, Selin, Rook and the eight crew members (with their generated heads) are built (see [`TECHNICAL.md`](../TECHNICAL.md#4-asset-pipeline), People, and Waypost Ostra in [`GAME_DESIGN.md`](../GAME_DESIGN.md)); what's left:
+Decided 2026-10-24 (a generated outfit over the body since 2026-10-25), built in parts with the art pass (M5, see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The way people are made, Nell (the first), Kade, Selin, Rook and the eight crew members (with their generated heads) are built (see [`technical/characters.md`](../technical/characters.md), People, and Waypost Ostra in [`design/`](../design/README.md)); what's left:
 
 - **Everyone the same way as at Waypost Ostra:** an A-pose concept re-rendered from their rated concept, its TRELLIS.2 outfit and hair over a MakeHuman body with their sliders, each a short build script; the colonists next, a few bodies with mixed genders and ages (the batch-8 concepts were all men) in a few outfits, at about 15k triangles each.
 - **Hard parts that shouldn't bend:** a generated outfit bends with the body under it everywhere; where that shows (plates, helmets, a holster swinging with a thigh), they're cut out and put on one bone each.

@@ -3,7 +3,7 @@ extends Resource
 ## A sound effect, played through `Sfx`: its variants (`stream`, an `AudioStreamRandomizer` picking
 ## one with a small random pitch each time, so repeats never sound like a loop), the bus it plays
 ## on, how loud and how far it carries, and how many may play at once. The files are built by
-## `assets/audio/source/build.py` (see TECHNICAL.md, Sound effects); a better take replaces them
+## `assets/audio/source/build.py` (see docs/technical/audio.md); a better take replaces them
 ## under the same name. All values TBD (playtest).
 
 @export var stream: AudioStream

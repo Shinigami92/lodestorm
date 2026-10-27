@@ -1,6 +1,6 @@
 """Game-ready mite: bake the procedural look of mite_procedural.blend into one texture set.
 
-Run from the repo root, after mite_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after mite_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/mite/source/mite_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/mite/source/mite_bake.py verify   # only re-import and render the checks
 

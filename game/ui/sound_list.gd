@@ -1,7 +1,7 @@
 class_name SoundList
 extends GridContainer
 ## The sound settings, a page of their own next to the other settings (`SettingsList`, on the pause
-## panel and the settings terminal in cabin 1, see GAME_DESIGN.md, Sound): a volume per sound bus
+## panel and the settings terminal in cabin 1, see docs/design/sound.md): a volume per sound bus
 ## (`Sfx.BUSES`, a slider in 10 % steps), each saved at once (see `GameSettings`). Moving one plays
 ## a sample on its bus.
 

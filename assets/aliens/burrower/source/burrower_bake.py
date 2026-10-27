@@ -1,6 +1,6 @@
 """Game-ready burrower: bake the procedural look of burrower_procedural.blend into one texture set.
 
-Run from the repo root, after burrower_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after burrower_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/burrower/source/burrower_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/burrower/source/burrower_bake.py verify   # only re-import and render the checks
 

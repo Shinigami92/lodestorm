@@ -6,7 +6,7 @@ of the shoulder plates (its silhouette from above). In a gap of the dorsal armor
 swollen brood pods in sleeves of sinew, where swarmers ride and climb out; deep glowing seams show between some of the
 plates. A short, thick, armored tail with a few blunt bone spikes. Rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/ravager/source/ravager_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/ravager/source/ravager_build.py stats      # measures and pose bounds only
     tools/blender.sh assets/aliens/ravager/source/ravager_build.py pose Attack 0.71   # one frame from four sides

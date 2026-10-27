@@ -1,4 +1,4 @@
-"""A person made of two (see docs/TECHNICAL.md, People): a MakeHuman body (people.py) wearing a generated outfit
+"""A person made of two (see docs/technical/characters.md, People): a MakeHuman body (people.py) wearing a generated outfit
 (TRELLIS.2 on an A-pose concept: what they wear and their hair), fitted over it. A person's build script describes
 the body, the export looks and a Fit (the outfit's file and how it's fitted), then calls make():
 

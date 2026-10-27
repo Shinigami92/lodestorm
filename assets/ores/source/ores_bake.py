@@ -1,6 +1,6 @@
 """Game-ready ore clusters: bake the procedural rock of one ore's ores_procedural.blend into its texture atlas.
 
-Run from the repo root, after ores_build.py final <ore> (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after ores_build.py final <ore> (see docs/technical/assets.md):
     tools/blender.sh assets/ores/source/ores_bake.py kyrite          # bake, export, check renders
     tools/blender.sh assets/ores/source/ores_bake.py kyrite verify   # only re-import and render the checks
 

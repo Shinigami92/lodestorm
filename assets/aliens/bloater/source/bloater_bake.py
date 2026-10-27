@@ -1,6 +1,6 @@
 """Game-ready bloater: bake the procedural look of bloater_procedural.blend into one texture set.
 
-Run from the repo root, after bloater_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after bloater_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/bloater/source/bloater_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/bloater/source/bloater_bake.py verify   # only re-import and render the checks
 

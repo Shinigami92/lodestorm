@@ -1,6 +1,6 @@
 # Contributing to Lodestorm
 
-Thanks for your interest! This guide covers how to set up the project and how changes get in. The technical rules themselves live in [`docs/TECHNICAL.md`](docs/TECHNICAL.md); this file links there instead of repeating them.
+Thanks for your interest! This guide covers how to set up the project and how changes get in. The technical rules themselves live in [`docs/technical/`](docs/technical/README.md); this file links there instead of repeating them.
 
 ## Requirements
 
@@ -38,7 +38,7 @@ tools/test.sh   # GUT unit tests, headless (needs GODOT4_EDITOR)
 
 On a fresh checkout, `tools/import.sh` imports the project headless first (the tests need the import cache). After writing or patching `.tscn`/`.tres` files outside the editor, run `tools/uids.sh` (a test checks every reference has its UID).
 
-`tools/export.sh` builds the Windows and Linux release exports into `builds/` (needs the export templates, see [CI/CD](docs/TECHNICAL.md#3-cicd-github-actions)).
+`tools/export.sh` builds the Windows and Linux release exports into `builds/` (needs the export templates, see [CI/CD](docs/technical/ci.md)).
 
 Machine-specific paths live in environment variables, never in the repo:
 
@@ -48,26 +48,26 @@ Machine-specific paths live in environment variables, never in the repo:
 | `BLENDER` | `tools/blender.sh` (asset build scripts, headless) | path to the Blender executable |
 | `BLENDER_MCP_PATH` | Blender MCP server (`.mcp.json`) | path to the `mcp/` folder of a [blender_mcp](https://projects.blender.org/lab/blender_mcp) clone |
 
-The asset tools for concept images, image-to-3D models and voice lines have their own variables, listed with them in [Asset pipeline](docs/TECHNICAL.md#4-asset-pipeline); the MCP servers' setup is in [MCP servers](docs/TECHNICAL.md#mcp-servers-mcpjson).
+The asset tools for concept images, image-to-3D models and voice lines have their own variables, listed with them in [Asset pipeline](docs/technical/assets.md); the MCP servers' setup is in [MCP servers](docs/technical/development.md#mcp-servers-mcpjson).
 
 ## Workflow
 
-1. **Open an issue first** for anything bigger than a small fix, so we can agree on the approach before you spend time on it. Design changes should fit [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md), the designs already decided in [`docs/planned/`](docs/planned/README.md) and the current milestone in [`docs/PLAN.md`](docs/PLAN.md).
+1. **Open an issue first** for anything bigger than a small fix, so we can agree on the approach before you spend time on it. Design changes should fit [`docs/design/`](docs/design/README.md), the designs already decided in [`docs/planned/`](docs/planned/README.md) and the current milestone in [`docs/PLAN.md`](docs/PLAN.md).
 2. **Fork and branch** from `main`; keep one topic per branch. `main` is protected: every change goes through a pull request.
 3. **Keep pull requests small** and focused. Describe what changed and why, and how you tested it (desktop, gamepad, VR if relevant).
 4. **CI must pass** (formatting, linting, tests, import check); failing jobs block the merge. There are no git hooks, run `tools/lint.sh` and `tools/test.sh` yourself.
-5. If your change affects a documented decision, **update the docs** in the same pull request: a decided design goes into [`docs/planned/`](docs/planned/README.md); once it's built, its part moves into [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) (describing what was built) and its line in [`docs/PLAN.md`](docs/PLAN.md) moves to Done.
+5. If your change affects a documented decision, **update the docs** in the same pull request: a decided design goes into [`docs/planned/`](docs/planned/README.md); once it's built, its part moves into [`docs/design/`](docs/design/README.md) (describing what was built) and its line in [`docs/PLAN.md`](docs/PLAN.md) moves to Done.
 6. Pull requests are **squash-merged**, and the **pull request title becomes the commit message** on `main`, so the title must follow the [commit message](#commit-messages) format. Commits inside your branch can be anything.
 
 ## Code and assets
 
-- **GDScript:** statically typed everywhere, following the official style guide; code must pass `gdformat --check` and `gdlint`. Details: [Code quality](docs/TECHNICAL.md#2-code-quality).
+- **GDScript:** statically typed everywhere, following the official style guide; code must pass `gdformat --check` and `gdlint`. Details: [Code quality](docs/technical/development.md).
 - **Python** (Blender asset scripts): must pass `ruff format --check` and `ruff check` (config in `ruff.toml`).
-- **Cross-platform:** no machine-specific paths, POSIX shell scripts, LF line endings, lowercase file names. Details: [Cross-platform development](docs/TECHNICAL.md#cross-platform-development).
+- **Cross-platform:** no machine-specific paths, POSIX shell scripts, LF line endings, lowercase file names. Details: [Cross-platform development](docs/technical/development.md#cross-platform-development).
 - **Versions** are defined once and referenced (Godot: `.godot-version`); don't hardcode them elsewhere.
 - **Tunable gameplay values** go into `Resource` files (`.tres`), not into code.
-- **Player-facing text** is written in English and goes through translations (`tr()` in scripts); after adding or changing texts, run `tools/translations.sh` and add the German translation in `locale/de.po`. New languages and translation fixes are welcome as pull requests. Details: [Localization](docs/TECHNICAL.md#localization).
-- **Assets:** Blender source files (`.blend`) are committed next to the exported `.glb`; binary files are tracked with Git LFS automatically via [`.gitattributes`](.gitattributes). Details: [Asset pipeline](docs/TECHNICAL.md#4-asset-pipeline).
+- **Player-facing text** is written in English and goes through translations (`tr()` in scripts); after adding or changing texts, run `tools/translations.sh` and add the German translation in `locale/de.po`. New languages and translation fixes are welcome as pull requests. Details: [Localization](docs/technical/localization.md).
+- **Assets:** Blender source files (`.blend`) are committed next to the exported `.glb`; binary files are tracked with Git LFS automatically via [`.gitattributes`](.gitattributes). Details: [Asset pipeline](docs/technical/assets.md).
 - **Third-party material** (addons, models, textures, sounds, fonts) is only accepted with a license that allows redistribution in this repo and in the commercial release. Keep its license file next to it and mention the source in the pull request.
 
 ## Commit messages

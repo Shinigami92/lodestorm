@@ -1,5 +1,5 @@
 extends GutTest
-## The world's sounds (see GAME_DESIGN.md, Sound): the aliens', the nests', the miners', the
+## The world's sounds (see docs/design/sound.md): the aliens', the nests', the miners', the
 ## ship's ramp, the mission's and the vents'.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")

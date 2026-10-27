@@ -1,6 +1,6 @@
 """Game-ready ravager: bake the procedural look of ravager_procedural.blend into one texture set.
 
-Run from the repo root, after ravager_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after ravager_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/ravager/source/ravager_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/ravager/source/ravager_bake.py verify   # only re-import and render the checks
 

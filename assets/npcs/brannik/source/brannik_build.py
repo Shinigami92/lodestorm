@@ -4,7 +4,7 @@ work jumpsuit with rolled sleeves, a violet collar light, a belt with leather po
 knee pads, wristbands and heavy boots (reference: the batch-10 concept "brannik_v2", see
 docs/planned/crew.md).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/brannik/source/brannik_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/brannik/source/brannik_build.py final    # renders, brannik.blend and the game asset
 

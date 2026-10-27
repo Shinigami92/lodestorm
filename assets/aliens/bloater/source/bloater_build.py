@@ -1,8 +1,8 @@
 """Bloater: a tier 4 raider of the hive that bursts. A fat, swollen grub on six short, stubby legs: a soft, ringed
 sinew body low over the ground, its whole upper back one taut, veined bladder that glows through its veins and
-patches, a small blunt armored head low at its front (see docs/GAME_DESIGN.md, Alien look), rigged and animated.
+patches, a small blunt armored head low at its front (see docs/design/aliens.md, Alien look), rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/bloater/source/bloater_build.py wip v2r1   # quick renders of the poses
     tools/blender.sh assets/aliens/bloater/source/bloater_build.py final      # renders + bloater_procedural.blend
 

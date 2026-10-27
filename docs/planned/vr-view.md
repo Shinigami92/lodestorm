@@ -1,6 +1,6 @@
 # The VR view (planned)
 
-Decided 2026-10-17, built with the VR rig (M6, see [`PLAN.md`](../PLAN.md)); the sky and the far ring with the art pass (M5). All values **TBD (playtest)**. Earlier the plan was a "tabletop diorama" (the world as a model on a table in front of the player); instead, the player's head floats where the desktop camera is, but can turn and tilt, so it sees more than the desktop's frame, even the sky. Today the desktop camera never turns (yaw 45°, pitch about 35°, 40 m away with a 30° field of view, about 21 m of height on screen), and the ground and the ship are built for it (see [Perspective & art direction](../GAME_DESIGN.md#3-perspective--art-direction)).
+Decided 2026-10-17, built with the VR rig (M6, see [`PLAN.md`](../PLAN.md)); the sky and the far ring with the art pass (M5). All values **TBD (playtest)**. Earlier the plan was a "tabletop diorama" (the world as a model on a table in front of the player); instead, the player's head floats where the desktop camera is, but can turn and tilt, so it sees more than the desktop's frame, even the sky. Today the desktop camera never turns (yaw 45°, pitch about 35°, 40 m away with a 30° field of view, about 21 m of height on screen), and the ground and the ship are built for it (see [Perspective & art direction](../design/art.md)).
 
 ## The viewpoint
 

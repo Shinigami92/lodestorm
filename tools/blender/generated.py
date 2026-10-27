@@ -1,4 +1,4 @@
-"""Shared helpers for generated models (image to 3D, tools/trellis.py; see docs/TECHNICAL.md, Generated models): load
+"""Shared helpers for generated models (image to 3D, tools/trellis.py; see docs/technical/assets.md, Generated models): load
 the raw mesh, weight it to a skeleton by the nearest bone, cut the faces between parts that move apart, and read and
 repaint its texture.
 

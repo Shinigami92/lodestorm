@@ -4,7 +4,7 @@ the knees over a charcoal work shirt with rolled sleeves, a red collar light, a 
 his forearms, cargo trousers and strapped boots (reference: the batch-10 concept "dace_v2", see
 docs/planned/crew.md).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/dace/source/dace_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/dace/source/dace_build.py final    # renders, dace.blend and the game asset
 

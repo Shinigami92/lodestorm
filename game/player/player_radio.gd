@@ -1,6 +1,6 @@
 class_name PlayerRadio
 extends Node3D
-## The radio in a player's suit (see GAME_DESIGN.md, Story and setting: how it's told): a crew
+## The radio in a player's suit (see docs/design/story.md, How it's told): a crew
 ## member's call (see `CrewReactions.call_radio`) shows in a bubble beside the player's head
 ## (`Bubble`, a `RadioBubble`), to its left on screen, clear of what floats above the player, grown
 ## with the camera's view like the colonists' bubbles. It stays as long as a line moving on by

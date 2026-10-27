@@ -1,7 +1,7 @@
 """Biome scatter kit: plants and debris for the dust flats and the overgrowth (concepts: overgrowth_v1..v4,
 dustflats_house).
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/plants/source/plants_build.py wip r1            # line-ups + scatter previews
     tools/blender.sh assets/plants/source/plants_build.py wip r1 close      # plus per-variant close-ups
     tools/blender.sh assets/plants/source/plants_build.py final

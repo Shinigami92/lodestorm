@@ -1,6 +1,6 @@
 class_name TitleView
 extends WorldMenu
-## The title view the game opens on, instead of a main menu (see GAME_DESIGN.md, UI): the ship
+## The title view the game opens on, instead of a main menu (see docs/design/ui.md): the ship
 ## drifting in space with its outside showing (`Ship.show_outside`), the game's name as a hologram
 ## beside it and "Press any button" below. Any button (a key, a mouse or gamepad button) ends it:
 ## the camera glides into the ship to the player in cabin 1. Meanwhile the view drifts slowly

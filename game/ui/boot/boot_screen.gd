@@ -1,7 +1,7 @@
 class_name BootScreen
 extends Node3D
 ## The first scene (`run/main_scene`): the game's emblem and name in the dark while the main scene
-## loads on a worker thread (see GAME_DESIGN.md, UI). It picks up from the boot splash, which is an
+## loads on a worker thread (see docs/design/ui.md). It picks up from the boot splash, which is an
 ## image of it (`tools/boot_splash.gd`), and the ring around the emblem fills with the loading's
 ## progress. Once loaded it hands over to the main scene, which fades in from black; until the main
 ## scene's first frame is drawn, this one's last frame stays on the screen.

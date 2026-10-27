@@ -1,13 +1,13 @@
 class_name NpcAnimator
 extends AnimationTree
 ## Plays an NPC model's clips: "Idle" while standing, "Walk" while walking, sped up or slowed down
-## to the walking speed (every person's model has both, the suit's too, see docs/TECHNICAL.md,
-## People); both loop (set here, so the import settings stay default). While `sitting`, it blends
-## into "Sit" (the suit's: the colonists; a model without it stays standing). While it `may_work`
-## (and stands), it plays one of its `activities` now and then (once, over the standing: e.g.
-## wiping the counter; never the same twice in a row; only the `allowed` ones where it stands),
-## with a pause of `work_pause` seconds between them; when it may not any more (a player came
-## close), the one under way fades out.
+## to the walking speed (every person's model has both, the suit's too, see
+## docs/technical/characters.md, People); both loop (set here, so the import settings stay default).
+## While `sitting`, it blends into "Sit" (the suit's: the colonists; a model without it stays
+## standing). While it `may_work` (and stands), it plays one of its `activities` now and then (once,
+## over the standing: e.g. wiping the counter; never the same twice in a row; only the `allowed`
+## ones where it stands), with a pause of `work_pause` seconds between them; when it may not any
+## more (a player came close), the one under way fades out.
 
 ## Speed the walk clip is authored at (WALK_SPEED in tools/blender/humanoid.py), in m/s.
 @export var walk_speed: float = 1.3

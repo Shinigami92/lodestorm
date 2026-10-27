@@ -1,6 +1,6 @@
 class_name Colonist
 extends Node3D
-## One of a station's ambient colonists (see GAME_DESIGN.md, Stations and outposts): the
+## One of a station's ambient colonists (see docs/design/station.md): the
 ## `NpcBody` that `profile` says (a role on the plate, no name), standing at its spot, sitting there
 ## (`seated`: on the seat behind it, e.g. a bench or a booth) or walking its `route` round and
 ## round, with a short stop at every waypoint (sitting down for a while at its `seat_stop`). It

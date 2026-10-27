@@ -1,6 +1,6 @@
 class_name Skill
 extends Resource
-## Something a player learns at the skill graph (see GAME_DESIGN.md, Progression): dash, more
+## Something a player learns at the skill graph (see docs/design/progression.md): dash, more
 ## health, ... Bought rank by rank with ore from the player's hold; most skills have a single rank.
 ## A skill opens once the one it `requires` is learned. What it does is its `effect`, read by its
 ## user (e.g. `Player.max_health` adds the `HEALTH` value). The ranks a player learned are in their
@@ -42,7 +42,7 @@ enum Effect {
 
 ## How deep in its cluster's tree it sits: 1 for a root, one more per skill before it. Deeper skills
 ## cost rarer ores: commons at depth 1, a mid ore from depth 2, a signature ore from depth 4 (see
-## GAME_DESIGN.md, Progression).
+## docs/design/progression.md).
 func depth() -> int:
 	return requires.depth() + 1 if requires else 1
 

@@ -1,7 +1,7 @@
 class_name SettingsList
 extends GridContainer
 ## The player's settings, the same wherever they're changed (the pause panel and the settings
-## terminal in cabin 1, see GAME_DESIGN.md, UI): the language (picking one switches the game's
+## terminal in cabin 1, see docs/design/ui.md): the language (picking one switches the game's
 ## texts right away), the language the NPCs speak (or "Off"; until one is picked it follows the
 ## texts, see `VoiceLines`; picking one plays a sample), whether talks continue by themselves
 ## ("Dialogue", see `Npc`), the suit ring's size and "Always show",

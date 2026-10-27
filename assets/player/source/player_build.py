@@ -1,7 +1,7 @@
 """Player: a bulky, dark armored suit with a glowing collar band, generated (TRELLIS.2, source/trellis/), rigged
 and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/player/source/player_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/player/source/player_build.py final      # renders + player_procedural.blend
     tools/blender.sh assets/player/source/player_build.py clips [Slash ...]  # workbench sheets of the melee clips

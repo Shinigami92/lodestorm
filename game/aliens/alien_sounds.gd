@@ -1,6 +1,6 @@
 class_name AlienSounds
 extends Node
-## The `alien`'s sounds (see GAME_DESIGN.md, Sound): it chitters when it notices a target and now
+## The `alien`'s sounds (see docs/design/sound.md): it chitters when it notices a target and now
 ## and then while it chases (not under the ground or while hiding), its heavy attacks' wind-ups and
 ## acts sound (`AlienAttack.wind_up_sound`, `act_sound`), and its strikes, the hits it takes (flesh
 ## or armor) and its death. All of them in its strain's voice (`AlienStrain.voice_pitch`: bigger

@@ -1,6 +1,6 @@
 class_name TargetMarker
 extends MeshInstance3D
-## The target lock on the ground (a child of the player, see GAME_DESIGN.md, UI): four corner
+## The target lock on the ground (a child of the player, see docs/design/ui.md): four corner
 ## brackets around the alien or nest the player locked on (`PlayerAim.target`), in the player's
 ## color, sized to its body and kept square to the screen like the suit ring. Drawn over the
 ## ground and low plants, hidden by cliffs and props.

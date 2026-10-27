@@ -6,7 +6,7 @@ plates fans around and above the low-slung head (small glowing eyes deep under i
 cluster of glowing glands sits in a gap of the chest armor, above the hood, so it shows from the game's camera when
 the warden faces you. Rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/warden/source/warden_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/warden/source/warden_build.py stats      # measures and pose bounds only
     tools/blender.sh assets/aliens/warden/source/warden_build.py final      # renders + warden_procedural.blend

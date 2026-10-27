@@ -2,7 +2,7 @@
 chitin plates with glowing seams and blisters between them (the pack's glow on dark ground), a small armored head
 shield with two glowing eyes and short hooked mandibles, six short jointed legs splayed out sideways like a tick's.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/mite/source/mite_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/mite/source/mite_build.py final      # renders + mite_procedural.blend
 

@@ -1,6 +1,6 @@
 class_name OreArrival
 extends Node3D
-## Ore arriving (a child of the player, above its head; see GAME_DESIGN.md, UI): while a hose
+## Ore arriving (a child of the player, above its head; see docs/design/ui.md): while a hose
 ## delivers, a line with each arriving ore's badge and its amount ("+180") shows above the player
 ## from its first whole unit, counting up; once the ore stops coming (slower than `SETTLE_RATE` for
 ## `SETTLE_TIME`), it rises and fades over `RISE_TIME`. A slow trickle (a miner filling while the

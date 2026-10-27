@@ -1,7 +1,7 @@
 class_name SpaceStation
 extends Node3D
 ## A station the ship docks at (a `CelestialBody` of kind station with this scene as its `map`;
-## see GAME_DESIGN.md, Stations): a handcrafted interior on one deck, standing where the ship
+## see docs/design/station.md): a handcrafted interior on one deck, standing where the ship
 ## stands like a location (its axes are the ship's), with the ship's tail reaching through the
 ## pressure frame into its hangar, the ramp leading down onto the hangar's deck. Built from data by
 ## its builder (e.g. `ostra/ostra_build.py`): `Walls` (its `Cut` child: the roofs and the walls

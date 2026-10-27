@@ -1,5 +1,5 @@
 extends GutTest
-## Destroyable nests (see GAME_DESIGN.md, Combat & aliens): health and armor, the bursts and their
+## Destroyable nests (see docs/design/aliens.md): health and armor, the bursts and their
 ## warning, the stages, the collapse, the hive's answer and the target lock.
 
 const NEST_SCENE: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")

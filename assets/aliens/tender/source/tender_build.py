@@ -4,7 +4,7 @@ bunches, and three long tendrils rising from its shoulders and its back, curling
 with a glowing bulb (the game's healing links start at the tips). A short blunt head low at the front under a shield,
 small glowing eyes and small mandibles. Rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/tender/source/tender_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/tender/source/tender_build.py stats      # measures and pose bounds only
     tools/blender.sh assets/aliens/tender/source/tender_build.py final      # renders + tender_procedural.blend

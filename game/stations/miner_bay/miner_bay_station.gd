@@ -1,6 +1,6 @@
 class_name MinerBayStation
 extends UpgradeStation
-## The miners' room's station (see GAME_DESIGN.md, Miners): the bay with a cradle per crafted miner
+## The miners' room's station (see docs/design/mining.md): the bay with a cradle per crafted miner
 ## along the back wall (`MinerCradle`, three on each side of the door, M-01 on the left) and the
 ## maintenance pad in front of them. Picking a built miner in its cradle (a click, the directions,
 ## or `tab_prev`/`tab_next` through the cradles) puts it on the pad (its cradle shows empty

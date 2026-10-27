@@ -8,7 +8,7 @@ is one species, so they share the skeleton tools, the organic mesh builder, the 
     sk.auto(K.tube_path(sk, pts, radii, 12, 6, K.SINEW), ["Hips", "Spine"])
     K.bake_clips(arm, RIG, {"Idle": (60, idle), ...})
 
-Conventions (see docs/TECHNICAL.md, Asset pipeline): Blender Z-up meters, the creature faces -Y, its left is +X,
+Conventions (see docs/technical/assets.md): Blender Z-up meters, the creature faces -Y, its left is +X,
 feet on the ground at the origin. Bones: Root, Body (moves the whole trunk), Hips, Spine, Chest, Neck, Head, Jaw and
 legs named <Front|Mid|Hind><Left|Right><UpperLeg|LowerLeg|Foot>, which the game steps by IK (AlienLegs). Meshes:
 "Creature" (the skinned body, baked into one texture set), "Eyes" and optionally "Glands" (constant emissive in the

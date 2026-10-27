@@ -1,6 +1,6 @@
 # Reviving each other (planned)
 
-Decided 2026-10-17, built with co-op (M7, see [`PLAN.md`](../PLAN.md)); the downed state can be tested with local players before. All values **TBD (playtest)**. Today at 0 HP the body drops, everything carried is lost and the player respawns in the medical bay; in co-op the dead respawn only when the run ends (see [Death & persistence](../GAME_DESIGN.md#11-death--persistence)).
+Decided 2026-10-17, built with co-op (M7, see [`PLAN.md`](../PLAN.md)); the downed state can be tested with local players before. All values **TBD (playtest)**. Today at 0 HP the body drops, everything carried is lost and the player respawns in the medical bay; in co-op the dead respawn only when the run ends (see [Death & persistence](../design/death-and-persistence.md)).
 
 - **Down before dead:** in co-op, at 0 HP a player goes **down** instead of dying: they drop to the ground, can crawl slowly (about 1 m/s) but not attack, and keep what they carry. After a **bleed-out** time (greybox 20 s) without help they die as today. Solo there's nobody to help, so solo stays as it is (the rescue drone aside, see [`skills.md`](skills.md)).
 - **Reviving by staying close:** no button: a teammate standing within 2 m of the downed player revives them in 3 s, and they get up with a third of their health. Free, anyone can do it, and the one reviving can keep fighting meanwhile (being hit doesn't stop it); stepping away stops it, and the progress drains back slowly. A green ring fills around the downed player meanwhile.

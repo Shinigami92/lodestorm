@@ -1,7 +1,7 @@
 class_name WeaponWall
 extends WeaponRack
-## The weapon wall in the middle of the armory (see GAME_DESIGN.md, Armory): every weapon of the
-## game once, in rows by origin. Players pick from it into the cradles of their own locker
+## The weapon wall in the middle of the armory (see docs/design/ship.md, Armory): every weapon of
+## the game once, in rows by origin. Players pick from it into the cradles of their own locker
 ## (`LoadoutStation.wall`). It shows the weapons of the player using a locker at it, else of the
 ## first local player: their MK levels, the ones they don't own yet see-through, and under each
 ## weapon in their loadout its slot's number in their color. Players use it (`use_point`) from

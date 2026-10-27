@@ -5,7 +5,7 @@ extends GutTest
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
-## Body text is at least this share of the view's height (GAME_DESIGN.md, UI).
+## Body text is at least this share of the view's height (docs/design/ui.md).
 const MIN_TEXT_HEIGHT: float = 0.02
 
 var _map: Node3D

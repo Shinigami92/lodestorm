@@ -1,6 +1,6 @@
 class_name AimReticle
 extends Node3D
-## The in-game cursor (see GAME_DESIGN.md, UI): a reticle projected onto the ground or a rock's top
+## The in-game cursor (see docs/design/ui.md): a reticle projected onto the ground or a rock's top
 ## where the local player's mouse really points (`PlayerAim.cursor_point`), in the player's color,
 ## so it follows slopes; it leaves out what isn't ground (players, aliens, markings, effects: see
 ## `RenderLayers`).

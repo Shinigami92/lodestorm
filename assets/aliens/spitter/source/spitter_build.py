@@ -1,7 +1,7 @@
 """Spitter: a beetle-bodied alien on six legs with a swollen, glowing acid sac on its rear back, which it squeezes to
-lob acid from its puckered mouth (see docs/GAME_DESIGN.md, Alien look), rigged and animated.
+lob acid from its puckered mouth (see docs/design/aliens.md, Alien look), rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/spitter/source/spitter_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/spitter/source/spitter_build.py final      # renders + spitter_procedural.blend
 

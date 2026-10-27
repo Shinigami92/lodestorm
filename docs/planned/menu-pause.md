@@ -1,6 +1,6 @@
 # Title view and pause panel (planned)
 
-Decided 2026-10-17; the title view, the pause panel, the settings in one place, quitting and the credits are built (M4 step 5 A, see [UI](../GAME_DESIGN.md#ui-in-the-world-not-on-the-screen)). What's left comes with co-op (M7), VR (M6) and the platform services (M8). All values **TBD (playtest)**.
+Decided 2026-10-17; the title view, the pause panel, the settings in one place, quitting and the credits are built (M4 step 5 A, see [UI](../design/ui.md)). What's left comes with co-op (M7), VR (M6) and the platform services (M8). All values **TBD (playtest)**.
 
 - **Co-op (M7):** guests get "Leave session" (back to their own ship) on the pause panel, the host "End session"; joining a friend also works from the title view (accepting an invite through the platform's overlay).
 - **The Steam overlay (M8):** solo, opening the platform's overlay pauses the game like the window losing focus.

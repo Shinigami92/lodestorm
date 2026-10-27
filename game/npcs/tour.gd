@@ -1,6 +1,6 @@
 class_name Tour
 extends Resource
-## A walk through the ship a crew member gives (see GAME_DESIGN.md, Spaceship: NPCs; Brannik's,
+## A walk through the ship a crew member gives (see docs/design/crew.md; Brannik's,
 ## `NpcTour` runs it): on a new game they wait at `start` (a marker under the ship's `Tour`) and
 ## their first talk there is the `offer` (instead of their greeting); `invite` ("Show me the ship")
 ## opens with it and stays among their topics, so it can be asked for any time. Heard to the end,

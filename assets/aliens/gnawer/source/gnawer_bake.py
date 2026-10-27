@@ -1,6 +1,6 @@
 """Game-ready gnawer: bake the procedural look of gnawer_procedural.blend into one texture set.
 
-Run from the repo root, after gnawer_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after gnawer_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/gnawer/source/gnawer_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/gnawer/source/gnawer_bake.py verify   # only re-import and render the checks
 

@@ -9,7 +9,7 @@ extends Node
 ## once per cause and second. It also counts the seconds and meters the player spends aboard,
 ## outside, in menus and dead. Nothing waits for the disk: the log is written through a buffer
 ## flushed every few seconds, the totals every half minute, when a run ends and when the game
-## quits. Resetting the progress keeps the statistics. See docs/TECHNICAL.md (Statistics).
+## quits. Resetting the progress keeps the statistics. See docs/technical/saving.md (Statistics).
 
 ## The format of `totals.json`; raise it (and convert older files) when it changes.
 const VERSION: int = 1

@@ -1,9 +1,9 @@
 """Nell, the bartender at Waypost Ostra: a sturdy woman in her forties with a brown braid, a slate work jacket with
 rolled sleeves, tattooed forearms, fingerless gloves, a stained canvas apron with leather straps, a belt with a
 holster, cargo trousers with knee pads and lace-up boots (reference: the batch-8 concept "nell_v2", see
-GAME_DESIGN.md, Art direction).
+docs/design/art.md, Art direction).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/nell/source/nell_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/nell/source/nell_build.py final    # renders, nell.blend and the game asset
 

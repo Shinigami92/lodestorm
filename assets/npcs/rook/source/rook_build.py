@@ -2,9 +2,9 @@
 messy hair, a scar across his cheek and a cocky grin, in a scuffed pale armored mining suit over a dark quilted
 undersuit, a thick neck seal, a crew patch with a star on the chest plate, a leather belt with pouches, a tool holder
 on the right thigh, knee guards, padded gloves and heavy boots (reference: the batch-8 concepts "rook_v1" and
-"rook_v4", see GAME_DESIGN.md, Art direction; his helmet under the arm comes later as a held prop).
+"rook_v4", see docs/design/art.md, Art direction; his helmet under the arm comes later as a held prop).
 
-Run from the repo root (see docs/TECHNICAL.md, People):
+Run from the repo root (see docs/technical/characters.md, People):
     tools/blender.sh assets/npcs/rook/source/rook_build.py wip r1   # quick renders
     tools/blender.sh assets/npcs/rook/source/rook_build.py final    # renders, rook.blend and the game asset
 

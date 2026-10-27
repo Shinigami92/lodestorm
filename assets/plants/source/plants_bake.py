@@ -1,6 +1,6 @@
 """Game-ready biome scatter kit: bake the procedural look of plants_procedural.blend into one shared texture set.
 
-Run from the repo root, after plants_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after plants_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/plants/source/plants_bake.py          # bake, export, check renders
     tools/blender.sh assets/plants/source/plants_bake.py verify   # only re-import and render the checks
     tools/blender.sh assets/plants/source/plants_bake.py verify noclose   # without the per-variant close-ups

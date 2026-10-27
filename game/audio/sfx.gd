@@ -1,5 +1,5 @@
 extends Node
-## Plays the sound effects (`Sound`s), as the autoload `Sfx` (see GAME_DESIGN.md, Sound):
+## Plays the sound effects (`Sound`s), as the autoload `Sfx` (see docs/design/sound.md):
 ## - in the world at a place (`play_at`, 3D: heard from the local player's ears, see
 ##   `PlayerSounds`), or flat (`play_ui`: e.g. a volume slider's sample, also while paused);
 ## - loops (the drill, the storm) on a node until it stops them or leaves the tree (`play_loop_at`

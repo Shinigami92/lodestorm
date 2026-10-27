@@ -3,7 +3,7 @@ a broad spade of a head plate with a scooping lip, small glowing eyes deep under
 flat back of heavy overlapping plates, a short tapering rear with a blunt tail stump, and six short, thick digging
 legs splayed sideways, the front pair with big spade claws. Rigged and animated.
 
-Run from the repo root (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/burrower/source/burrower_build.py wip r1     # quick renders of the poses
     tools/blender.sh assets/aliens/burrower/source/burrower_build.py final      # renders + burrower_procedural.blend
 
@@ -412,7 +412,7 @@ def build_foot(sk: K.Skin, j: list, s: float, foot: str, low: str) -> None:
 
 
 def darken(mat: bpy.types.Material, factor: float) -> bpy.types.Material:
-    """Scales the material's constant colors (raiders have darker chitin, see docs/GAME_DESIGN.md, Alien look)."""
+    """Scales the material's constant colors (raiders have darker chitin, see docs/design/aliens.md, Alien look)."""
     for node in mat.node_tree.nodes:
         if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
             for sock in (node.inputs[6], node.inputs[7]):

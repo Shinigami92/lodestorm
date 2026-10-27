@@ -1,7 +1,7 @@
 # Ship interior (what's left)
 
 The ship's inside for the art pass (M5), decided 2026-10-25. Its **shell** is built (the layout fitted to the
-hull, the kit's walls, floors, frames, doors, lights and signs, see [Spaceship](../GAME_DESIGN.md#5-spaceship-hub)).
+hull, the kit's walls, floors, frames, doors, lights and signs, see [Spaceship](../design/ship.md)).
 What's left are each room's key object (its station) and its dressing, with rounds of their own; their goal:
 **a room reads by its purpose** (what stands in it), not by its sign. Values are **TBD (playtest)** unless said
 otherwise.

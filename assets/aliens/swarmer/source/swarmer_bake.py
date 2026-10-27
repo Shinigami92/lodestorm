@@ -1,6 +1,6 @@
 """Game-ready swarmer: bake the procedural look of swarmer_procedural.blend into one texture set.
 
-Run from the repo root, after swarmer_build.py final (see docs/TECHNICAL.md, Asset pipeline):
+Run from the repo root, after swarmer_build.py final (see docs/technical/assets.md):
     tools/blender.sh assets/aliens/swarmer/source/swarmer_bake.py          # bake, export, check renders
     tools/blender.sh assets/aliens/swarmer/source/swarmer_bake.py verify   # only re-import and render the checks
 

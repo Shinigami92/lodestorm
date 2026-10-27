@@ -1,6 +1,6 @@
 class_name LoadoutStation
 extends Station
-## A player's locker in the armory, where they pick their loadout (see GAME_DESIGN.md, Armory).
+## A player's locker in the armory, where they pick their loadout (see docs/design/ship.md, Armory).
 ## It has two cradles, slots 1 and 2, holding the weapons in the loadout; every weapon of the game
 ## hangs once on the armory's weapon wall (`wall`), the ones the player doesn't own yet
 ## see-through ("Locked"). The weapons on the wall and in the cradles are the parts, and the

@@ -23,10 +23,14 @@ extends AlienAttack
 ## The target may stand this much higher or lower (m).
 @export var max_height_difference: float = 1.5
 
-## The line of the charge under way, how long it is (m) and the players it hit, per alien.
-var _lines: Dictionary[Alien, ChargeLine] = {}
-var _lengths: Dictionary[Alien, float] = {}
-var _hit: Dictionary[Alien, Array] = {}
+
+## A charge under way (the alien's `attack_state`): its line, how long it is (m), whether it runs
+## yet and the players it hit.
+class Run:
+	var line: ChargeLine
+	var length: float
+	var running: bool = false
+	var hit: Array[Player] = []
 
 
 func moves() -> bool:
@@ -37,12 +41,14 @@ func prepare(alien: Alien) -> void:
 	var offset: Vector3 = alien.target.global_position - alien.global_position
 	offset.y = 0.0
 	alien.attack_facing = offset.normalized()
-	_lengths[alien] = minf(offset.length() + overshoot, max_length)
+	var run := Run.new()
+	run.length = minf(offset.length() + overshoot, max_length)
 	var line := ChargeLine.new()
-	line.length = _lengths[alien]
+	line.length = run.length
 	line.width = width
 	line.duration = wind_up
-	_lines[alien] = line
+	run.line = line
+	alien.attack_state = run
 	alien.get_parent().add_child(line)
 	line.global_transform = Transform3D(
 		Basis.looking_at(alien.attack_facing), alien.global_position
@@ -53,33 +59,33 @@ func begin(alien: Alien) -> void:
 	var direction: Vector3 = alien.attack_facing
 	if direction == Vector3.ZERO:
 		direction = -alien.global_basis.z
-	var length: float = _lengths.get(alien, max_length)
-	alien.lunge(direction, length, 0.0, true)
+	var run := alien.attack_state as Run
+	alien.lunge(direction, run.length, 0.0, true)
 	alien.status.blocked = false
-	_hit[alien] = []
+	run.running = true
 	for player: Player in alien.get_tree().get_nodes_in_group(Player.GROUP):
 		alien.add_collision_exception_with(player)
 
 
 func act(alien: Alien, elapsed: float) -> bool:
-	var hit: Array = _hit.get(alien, [])
+	var run := alien.attack_state as Run
 	for player: Player in alien.get_tree().get_nodes_in_group(Player.GROUP):
-		if player in hit or not Alien.is_prey(alien.get_tree(), player):
+		if player in run.hit or not Alien.is_prey(alien.get_tree(), player):
 			continue
 		var offset: Vector3 = player.global_position - alien.global_position
 		if _can_hit(offset) and Vector2(offset.x, offset.z).length() <= width:
 			Alien.hurt(player, damage * alien.damage_factor, alien.global_position, alien, heavy)
-			hit.append(player)
+			run.hit.append(player)
 	if alien.status.blocked:
 		alien.status.blocked = false
-		_free_line(alien)
+		_free_line(run)
 		alien.play_attack()
 		alien.stagger_for.call_deferred(daze)
 		return true
 	if not alien.lunge_step(charge_speed, elapsed * charge_speed):
 		return false
-	_free_line(alien)
-	if not hit.is_empty():
+	_free_line(run)
+	if not run.hit.is_empty():
 		alien.play_attack()
 	if alien.lunge_stalled:
 		alien.stagger_for.call_deferred(daze)
@@ -87,9 +93,9 @@ func act(alien: Alien, elapsed: float) -> bool:
 
 
 func finish(alien: Alien) -> void:
-	_free_line(alien)
-	_lengths.erase(alien)
-	if _hit.erase(alien):
+	var run := alien.attack_state as Run
+	_free_line(run)
+	if run.running:
 		for player: Player in alien.get_tree().get_nodes_in_group(Player.GROUP):
 			alien.remove_collision_exception_with(player)
 
@@ -100,11 +106,10 @@ func _can_hit(offset: Vector3) -> bool:
 
 
 ## Takes the line off the ground once the charge is over or broken off.
-func _free_line(alien: Alien) -> void:
-	if _lines.has(alien):
-		if is_instance_valid(_lines[alien]):
-			_lines[alien].queue_free()
-		_lines.erase(alien)
+func _free_line(run: Run) -> void:
+	if is_instance_valid(run.line):
+		run.line.queue_free()
+	run.line = null
 
 
 func _in_range(alien: Alien, target: Node3D, distance: float) -> bool:

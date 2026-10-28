@@ -141,6 +141,9 @@ var status := AlienStatus.new()
 ## Where an attack under way wants it to face (horizontal; zero: at its target), e.g. a charge's
 ## line.
 var attack_facing := Vector3.ZERO
+## What the attack under way keeps for itself (e.g. a charge's line); it goes with the attack, or
+## with the alien.
+var attack_state: RefCounted
 ## Current health, from 0 to `max_health()`.
 var health: float
 ## Dead aliens don't move or attack; they disappear after `DEATH_DURATION`.
@@ -750,6 +753,7 @@ func _end_attack() -> void:
 		_attack.finish(self)
 		if not dead:
 			_retreat_left = strain.retreat_time
+	attack_state = null
 	if cloaking:
 		cloaking.ambush = false
 	_attack = null

@@ -17,7 +17,7 @@ var target: OreNode
 
 func _init() -> void:
 	arrow = Vector2(0.84, 0.26)
-	priority = 2
+	priority = 3
 
 
 func _ready() -> void:

@@ -35,3 +35,7 @@ extends Resource
 @export var dash_cooldown: float = 2.0
 ## Regeneration (a skill) starts this long (s) after the last damage.
 @export var regeneration_delay: float = 5.0
+## The rescue drone (a skill) gets a downed player up after this long (s) with this share of their
+## health.
+@export var rescue_time: float = 3.0
+@export var rescue_health: float = 0.5

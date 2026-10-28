@@ -178,26 +178,30 @@ func test_pointers_anywhere_under_the_player_show_by_priority() -> void:
 	var holder := Node3D.new()
 	_player.add_child(holder)
 	var by_priority: Dictionary[int, RingPointer] = {}
-	for priority: int in [5, 3, 4, 1]:
+	# One more than fit, the highest priority first.
+	var highest: int = SuitRing.POINTERS + 1
+	for step: int in highest:
+		var priority: int = highest - step
 		var pointer := RingPointer.new()
 		pointer.priority = priority
-		pointer.color = Color(0.1 * priority, 0.0, 0.0)
+		pointer.color = Color(0.05 * priority, 0.0, 0.0)
 		holder.add_child(pointer)
 		by_priority[priority] = pointer
-	by_priority[5].point_along(Vector3.RIGHT)
+	by_priority[highest].point_along(Vector3.RIGHT)
 	await wait_process_frames(1)
 	assert_eq(by_priority[1].holder, _player)
 	assert_eq(_ring.pointers.size(), SuitRing.POINTERS, "as many as fit")
 	var colors: PackedColorArray = _ring.shown(&"pointer_colors")
 	assert_eq(colors[0], by_priority[1].color, "the lowest priority first")
-	assert_false(by_priority[5].color in colors, "the highest left out")
+	assert_false(by_priority[highest].color in colors, "the highest left out")
 	by_priority[1].visible = false
 	await wait_process_frames(1)
 	colors = _ring.shown(&"pointer_colors")
-	assert_eq(colors[2], by_priority[5].color, "takes the hidden one's place")
+	var last: int = SuitRing.POINTERS - 1
+	assert_eq(colors[last], by_priority[highest].color, "takes the hidden one's place")
 	# No camera: the screen's top is -Z, so +X is a quarter round clockwise.
-	assert_almost_eq(_ring.pointers[2].x, 0.25, 0.001)
-	assert_almost_eq(_ring.pointers[2].z, _ring.radius + by_priority[5].arrow.x, 0.001)
+	assert_almost_eq(_ring.pointers[last].x, 0.25, 0.001)
+	assert_almost_eq(_ring.pointers[last].z, _ring.radius + by_priority[highest].arrow.x, 0.001)
 
 
 func _shown_rgb(parameter: StringName) -> Color:

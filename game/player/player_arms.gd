@@ -7,9 +7,11 @@ extends Node
 ## the carried ore (`OreAmmo`; free aboard, `ammo_free`), the holder walking slower meanwhile
 ## (`move_share`). Holding `interact` next to a teammate, with nothing else to use there, hands
 ## them a magazine for their equipped weapon (`give_ammo`), paid from the holder's ore. The weapon
-## is put away where it can't be used (`allowed`) and while the holder lies down. New MK levels
-## and skills (bought aboard) apply to the weapon and fill the magazines. The holder ticks it every
-## physics step (`update`) and stops it when it falls (`stop`).
+## is put away where it can't be used (`allowed`) and while the holder lies down. With the
+## rebuilding spares skill, the suit refills an empty spare magazine of the equipped weapon from
+## carried ore every so often outside (`rebuild_time`). New MK levels and skills (bought aboard)
+## apply to the weapon and fill the magazines. The holder ticks it every physics step (`update`)
+## and stops it when it falls (`stop`).
 
 ## The player holding the weapons.
 var holder: Player
@@ -34,6 +36,8 @@ var ammo_free: bool = false
 ## The teammate `interact` hands ammo to while it's held, or null; and for how long it's held (s).
 var give_target: Player
 var give_time: float = 0.0
+## Seconds the suit has been rebuilding a spare magazine (the skill); it starts over with each one.
+var rebuild_time: float = 0.0
 ## Spare magazines per ranged weapon a run starts with, with the skills.
 var spare_magazines: int:
 	get:
@@ -68,6 +72,7 @@ func update(delta: float) -> void:
 		weapon.aim_point = aim.ground_point
 		weapon.trigger_held = allowed and input.held(&"attack") and not aim.is_mouse_over_ui()
 	_update_give_ammo(delta)
+	_update_rebuild(delta)
 	if input.just_pressed(&"switch_weapon"):
 		switch_weapon()
 	if input.just_pressed(&"reload"):
@@ -185,6 +190,24 @@ func _update_give_ammo(delta: float) -> void:
 		give_target = null
 		give_time = 0.0
 		holder.input.use_up(&"interact")
+
+
+## Rebuilding spares (a skill): outside, while the equipped weapon misses a spare magazine and
+## isn't refilling, the suit works on one and pays it from carried ore once its time is up (it
+## waits while there's no ore).
+func _update_rebuild(delta: float) -> void:
+	var every: float = holder.skills.value(Skill.Effect.REBUILDING_SPARES)
+	var ammo: WeaponAmmo = get_ammo()
+	var max_spares: int = spare_magazines * ammo.capacity() if ammo and ammo.uses_spares() else 0
+	if every <= 0.0 or ammo_free or not ammo or ammo.spare_rounds >= max_spares:
+		rebuild_time = 0.0
+		return
+	if ammo.refilling() or holder.cargo.is_empty():
+		return
+	rebuild_time += delta
+	if rebuild_time >= every:
+		rebuild_time = 0.0
+		ammo.rebuild_spare(max_spares)
 
 
 func _teammate_needing_ammo() -> Player:

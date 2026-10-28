@@ -96,6 +96,13 @@ func uses_spares() -> bool:
 	return true
 
 
+## Refills one spare magazine missing below `max_spares` rounds with ammo the `supplier` makes from
+## carried ore (the rebuilding spares skill), as much as the ore pays. Returns the rounds it added
+## (0 for feeds without spares).
+func rebuild_spare(_max_spares: int) -> int:
+	return 0
+
+
 ## Called after the weapon's MK levels changed: no more rounds than it holds now, and its gauge
 ## gets one segment per round where it shows them.
 func upgraded() -> void:

@@ -8,11 +8,13 @@ extends MeshInstance3D
 ## their timing window, a charge filling it and turning white when full, a red flash when a reload
 ## can't start, a white one when a timed press finishes it; a vent like a reload), the heat of a
 ## heat-fed weapon as a thin band outside the ammo arc (amber, red when nearly full, blinking
-## while it vents), the spare magazines as ticks inside the ammo arc, the dash as a thin inner
-## ring while it recharges, a green outer band while the player hands a teammate ammo, and the
-## pointers as arrows on its edge (each `RingPointer` under the player: the way back to the ship,
-## the nearest ore), and the run's six miners as ticks just outside its bottom (crafted ones
-## bright, standard-issue ones dimmer, placed ones as outlines). Both arcs fill from the bottom up.
+## while it vents), the spare magazines as ticks inside the ammo arc, a ready rescue drone as a
+## tick inside the health arc's bottom (blinking while it gets the player up), the dash as a thin
+## inner ring while it recharges, a green outer band while the player hands a teammate ammo, and
+## the pointers as arrows on its edge (each `RingPointer` under the player: the way back to the
+## ship, the nearest ore, miners needing the player), and the run's six miners as ticks just
+## outside its bottom (crafted ones bright, standard-issue ones dimmer, placed ones as outlines).
+## Both arcs fill from the bottom up.
 ## Quiet when nothing goes on: an arc dims to a faint outline `lit_time` after its last change,
 ## unless its value is low (health below half, a nearly empty magazine) or the player set "Always
 ## show"; the spare ticks show on a reload and when a spare is used. Aboard (weapon holstered) the
@@ -43,11 +45,15 @@ const DASH_COLOR := Color(1.0, 0.93, 0.8, FILL_ALPHA)
 const GIVE_COLOR := Color(0.35, 1.0, 0.45, FILL_ALPHA)
 const FUMBLE_COLOR := Color(1.0, 0.12, 0.08, FILL_ALPHA)
 const HEAT_COLOR := Color(1.0, 0.6, 0.15, FILL_ALPHA)
+const DRONE_COLOR := Color(RescueDrone.LIGHT_COLOR, FILL_ALPHA)
+## How much the drone's tick shows while the health arc is dimmed.
+const DRONE_DIM: float = 0.35
 ## Heat from which the heat band turns red.
 const HEAT_HIGH: float = 0.7
 const HIT_MARKS: int = 4
-## Pointers on the edge at most (the ship, the ore scanner, later the tracked quest).
-const POINTERS: int = 3
+## Pointers on the edge at most (the ship, the tracked quest, the ore scanner and the run's six
+## miners on the miner radar).
+const POINTERS: int = 9
 ## Where the pointers' arrows start beyond `radius` (m), and the farthest their tips reach beyond
 ## it (the ship's arrow; m). TBD (playtest).
 const POINTER_BASE: float = 0.32
@@ -74,6 +80,8 @@ var health_glow: float = 1.0
 var ammo_glow: float = 1.0
 ## How much the spare ticks and the dash ring show (0: hidden).
 var spares_alpha: float = 0.0
+## How much the rescue drone's tick shows (0: hidden: not ready).
+var drone_alpha: float = 0.0
 var dash_alpha: float = 0.0
 ## How much the miners' ticks show (0: hidden), and what each tick shows (see `CRAFTED_TICK`).
 var miners_alpha: float = 0.0
@@ -131,6 +139,7 @@ func _ready() -> void:
 	_material.set_shader_parameter(&"pointer_base", radius + POINTER_BASE)
 	_material.set_shader_parameter(&"dash_color", DASH_COLOR)
 	_material.set_shader_parameter(&"give_color", GIVE_COLOR)
+	_material.set_shader_parameter(&"drone_color", DRONE_COLOR)
 	material_override = _material
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	layers = RenderLayers.MARKINGS
@@ -221,6 +230,20 @@ func _update_health(delta: float, blink_on: bool) -> void:
 	_material.set_shader_parameter(&"health_fill", share)
 	_material.set_shader_parameter(&"health_color", color)
 	_material.set_shader_parameter(&"health_glow", health_glow)
+	_update_drone(blink_on)
+
+
+## The rescue drone's tick: lit with the health arc while it's ready, blinking while it gets the
+## player up; only on the local player's ring and outside.
+func _update_drone(blink_on: bool) -> void:
+	var drone: RescueDrone = _player.rescue_drone
+	drone_alpha = 0.0
+	if _player.local and (_player.arms.allowed or previewing()):
+		if drone.state == RescueDrone.State.RESCUING:
+			drone_alpha = 1.0 if blink_on else DRONE_DIM
+		elif drone.is_ready():
+			drone_alpha = lerpf(DRONE_DIM, 1.0, health_glow)
+	_material.set_shader_parameter(&"drone_alpha", drone_alpha)
 
 
 func _update_ammo(delta: float, blink_on: bool) -> void:

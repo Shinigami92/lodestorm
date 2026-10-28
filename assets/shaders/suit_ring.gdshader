@@ -1,6 +1,7 @@
 // The suit ring on the ground around the player (on a PlaneMesh, see SuitRing): the health arc on
 // the screen's left, the ammo arc on its right (both filling from the bottom up) with a heat-fed
-// weapon's heat as a thin band outside it, the spare magazine ticks inside the ammo arc, the dash's
+// weapon's heat as a thin band outside it, the spare magazine ticks inside the ammo arc, a ready
+// rescue drone's tick inside the health arc's bottom, the dash's
 // thin inner ring, the run's miners as ticks outside its bottom, the green outer band while
 // handing over ammo, short red marks on the outer edge where hits came from, and the pointers'
 // arrows beyond them. A dimmed arc shows as a faint outline. A teammate's ring shows only the
@@ -59,6 +60,11 @@ uniform int spare_slots = 0;
 uniform float spare_fill = 0.0;
 uniform vec4 spare_color : source_color = vec4(0.02, 0.7, 1.0, 0.9);
 
+// The rescue drone's tick (0: none), the same size as a spare magazine's.
+uniform float drone_alpha = 0.0;
+uniform vec4 drone_color : source_color = vec4(0.55, 1.0, 0.75, 0.9);
+uniform float drone_span = 0.034;
+
 uniform float heat_alpha = 0.0;
 uniform float heat_fill = 0.0;
 uniform vec4 heat_color : source_color = vec4(1.0, 0.6, 0.15, 0.9);
@@ -89,8 +95,8 @@ uniform vec2 hits[4];
 uniform float pointer_base = 1.68;
 // Per pointer: share of the circle it points to, alpha (0: none), its tip's radius and half its
 // width at the base (m).
-uniform vec4 pointers[3];
-uniform vec4 pointer_colors[3] : source_color;
+uniform vec4 pointers[9];
+uniform vec4 pointer_colors[9] : source_color;
 // Dark rim around the arrows, so they read on light ground (m).
 uniform float pointer_rim = 0.05;
 
@@ -191,6 +197,19 @@ void fragment() {
 		}
 	}
 
+	float in_drone = band(r, spare_band, fw, min_line, edge) * drone_alpha;
+	if (in_drone > 0.0) {
+		float from_bottom = (s - 0.5 - bottom_gap) / drone_span;
+		if (from_bottom >= 0.0 && from_bottom < 1.0) {
+			float to_middle = abs(from_bottom - 0.5) * drone_span * TAU * r;
+			float half_tick = drone_span * 0.36 * TAU * r;
+			float tick = 1.0 - smoothstep(half_tick - fw, half_tick, to_middle);
+			vec4 c = drone_color;
+			c.a *= in_drone * tick;
+			color = over(color, c);
+		}
+	}
+
 	float in_heat = band(r, heat_band, fw, min_line, edge) * heat_alpha;
 	if (in_heat > 0.0) {
 		in_heat *= span(s, top_gap, 0.5 - bottom_gap, r, fw);
@@ -261,7 +280,7 @@ void fragment() {
 	}
 
 	if (r > pointer_base - pointer_rim - fw) {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 9; i++) {
 			vec4 pointer = pointers[i];
 			if (pointer.y <= 0.0) {
 				continue;

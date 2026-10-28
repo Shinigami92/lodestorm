@@ -25,6 +25,15 @@ enum Effect {
 	ORE_SCANNER,
 	## Numbers on hit aliens.
 	DAMAGE_READOUT,
+	## Once per run, a drone gets the player up where they fell (see `RescueDrone`).
+	RESCUE_DRONE,
+	## On death, part of the carried ore is safe (`value`: its share of the units, the rarest first).
+	HARDENED_CANISTER,
+	## The suit refills an empty spare magazine from carried ore during a run (`value`: every so
+	## many s).
+	REBUILDING_SPARES,
+	## Arrows to the player's own miners that need them (see `MinerRadar`).
+	MINER_RADAR,
 }
 
 ## Player-facing name.

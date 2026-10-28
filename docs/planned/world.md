@@ -31,7 +31,7 @@ Decided 2026-10-27: the frame every writing round works in (see [`story.md`](sto
 ## People and daily life
 
 - **Technology:** no thinking machines (no AI companions, no androids): autopilots, miners and drones do what they're told, people do the rest. Med beds heal wounds; nothing grows people back.
-- **Falling out there:** when a suit's wearer goes down, the suit locks them into a stasis shell, and its beacon calls the ship's retrieval drone; the carried ore is dumped to make them light enough. Ilse patches them up in the medical bay. The planned rescue drone skill is a faster drone, the hardened canister one the dump can't open (see [`skills.md`](skills.md)).
+- **Falling out there:** when a suit's wearer goes down, the suit locks them into a stasis shell, and its beacon calls the ship's retrieval drone; the carried ore is dumped to make them light enough. Ilse patches them up in the medical bay. The rescue drone skill is a faster drone, the hardened canister one the dump can't open (see [`skills.md`](skills.md)).
 - **Money:** the charter pays in credit off-world, which buys nothing here. Inside the system it's ore, alloys and favors; Kade's depot keeps the colony's account. No coins, no prices.
 - **Origins:** mixed, one common working language, names from everywhere. Earth exists far away and is never named; no nations, no flags.
 - **Customs** (Nell and Fenna carry them, a handful used across the acts): a toast at the bar to the crews out in the storm, a lamp lit in Ostra's gallery while a crew is out, names scratched into the bar's counter for everyone who didn't come back (Calder's people among them). The lamp and the names show in the world, too.

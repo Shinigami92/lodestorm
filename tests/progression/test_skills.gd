@@ -61,7 +61,7 @@ func test_every_skill_sits_in_one_cluster_with_its_requirement() -> void:
 				assert_eq(TREE.cluster_of(skill.requires), cluster, "no gates between clusters")
 			for rank: SkillRank in skill.ranks:
 				assert_false(rank.cost.is_empty(), "%s costs ore" % skill.display_name)
-	assert_eq(seen.size(), 8)
+	assert_eq(seen.size(), 12)
 
 
 func test_deeper_skills_cost_rarer_ores() -> void:

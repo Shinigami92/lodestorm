@@ -145,6 +145,20 @@ func test_returning_stores_cargo_in_hold() -> void:
 	assert_gt(hold.get_tank(KYRITE).fill_level(), 0.0, "its tank shows it")
 
 
+func test_banking_during_a_run_stores_cargo_and_the_run_goes_on() -> void:
+	await _open()
+	await _move(_player, _outside())
+	_player.add_cargo(KYRITE, 60.0)
+	_mission.bank([_player])
+	assert_true(_player.cargo.is_empty())
+	assert_eq(_player.hold.amount(KYRITE), 60.0)
+	assert_eq(_mission.state, Mission.State.RUNNING, "still outside, still running")
+	assert_signal_emitted(GameEvents.bus, "ore_hauled")
+	_player.add_cargo(KYRITE, 40.0)
+	await _move(_player, _inside())
+	assert_eq(_player.hold.amount(KYRITE), 100.0, "the rest comes aboard at the end")
+
+
 func test_hold_keeps_cargo_over_runs() -> void:
 	for run: int in 2:
 		TEST_MAP.pick_mission(_map)

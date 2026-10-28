@@ -200,7 +200,7 @@ func _pool_areas(
 	var areas: Array[LocationLayout.Area] = []
 	for area: LocationLayout.Area in free:
 		if (
-			not area.holds_rich_ore()
+			not area.holds_rarest_ore()
 			and area.kind in info.area_kinds
 			and info.fits(area.kind, area.radius, GeneratedLocation.AREA_WOBBLE)
 			and _follows(placement.rule, area, layout)

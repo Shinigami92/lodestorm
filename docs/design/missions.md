@@ -58,7 +58,7 @@ Standing at one spot until the timer runs low must not pay off.
 
 - **Nodes run dry:** each holds a limited amount, a few miner fills, so the players have to move on (see [Miners](mining.md)).
 - **A mining site draws aliens:** each working miner raises its nearest nests' raider rate (see [Nests and the hive](aliens.md#nests-and-the-hive)).
-- **Richer and rarer ore** lies farther from the ship; planned: rich fields between the nests of every nest hollow (see [`planned/risk-reward.md`](../planned/risk-reward.md)).
+- **Richer and rarer ore** lies farther from the ship, and right next to the nests: a rich field between the two nests of every nest hollow, its nodes holding double, which also gives destroying nests a reason beyond safety (see [Locations](locations.md)).
 - **A late deposit** (planned): a meteor bringing the region's rarest ore late in the run, far out and guarded (see [`planned/risk-reward.md`](../planned/risk-reward.md)).
 - **Quest goals** elsewhere on the map, and optional bonus goals.
 - **No carry limit:** the risk is dying with everything on the back (see [Hose transfer](mining.md#hose-transfer)). Planned: a cargo hatch at the ramp to bank ore without ending the mission (see [`planned/risk-reward.md`](../planned/risk-reward.md)).

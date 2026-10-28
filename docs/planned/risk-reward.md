@@ -1,10 +1,6 @@
 # Reasons to move on (planned)
 
-Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The goal (see [Reasons to move and to stay](../design/missions.md#reasons-to-move-and-to-stay-risk-vs-reward)): standing at one spot until the timer runs low must not pay off. Ore nodes run dry (built, see [Miners](../design/mining.md)); today nest hollows have no ore, and carried ore is only safe once its carrier is aboard, which ends the mission when everyone alive is. Decided elsewhere: miners draw raiders and the hive frenzies in the storm's warning ([`aliens.md`](aliens.md)), quest and bonus goals elsewhere on the map ([`quests.md`](quests.md)), destroyable nests (built, see [Combat & aliens](../design/weapons.md)).
-
-## Rich ore by the nests
-
-Every nest hollow gets one rich field between its two nests: the region's rarest or second-rarest ore, its nodes holding double. That makes "richer ore right next to nests" real and gives destroying nests a reason beyond safety.
+Decided 2026-10-17, built in M4 step 14 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. The goal (see [Reasons to move and to stay](../design/missions.md#reasons-to-move-and-to-stay-risk-vs-reward)): standing at one spot until the timer runs low must not pay off. Ore nodes run dry (built, see [Miners](../design/mining.md)) and every nest hollow has a rich field between its nests (built, see [Locations](../design/locations.md)); carried ore is only safe once its carrier is aboard, which ends the mission when everyone alive is. Decided elsewhere: miners draw raiders and the hive frenzies in the storm's warning ([`aliens.md`](aliens.md)), quest and bonus goals elsewhere on the map ([`quests.md`](quests.md)), destroyable nests (built, see [Combat & aliens](../design/weapons.md)).
 
 ## A late deposit
 

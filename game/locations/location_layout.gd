@@ -1,6 +1,6 @@
 class_name LocationLayout
 extends RefCounted
-## The plan of a generated location as a graph: open areas (basins, crossroads, dead ends with rich
+## The plan of a generated location as a graph: open areas (basins, crossroads, dead ends with rare
 ## ore, nest hollows, plateaus, craters, and the biome's own kinds) joined by passes (winding ways
 ## or short bridges, by the biome), with the biome's barrier everywhere else. The first area is the
 ## landing yard in front of the ship's ramp. Every visit lays out a new graph from the seed;
@@ -189,7 +189,7 @@ class Area:
 		radius = p_radius
 
 	## Whether it holds the rarest ore: an ore pocket (a lava island is one too).
-	func holds_rich_ore() -> bool:
+	func holds_rarest_ore() -> bool:
 		return kind in [LocationLayout.Kind.ORE_POCKET, LocationLayout.Kind.LAVA_ISLAND]
 
 
@@ -567,7 +567,7 @@ func _measure() -> void:
 		areas[i].distance = distances[i]
 
 
-## What each area is, by where it lies in the graph: the farthest dead ends hold the rich ore, the
+## What each area is, by where it lies in the graph: the farthest dead ends hold the rarest ore, the
 ## next ones are nest hollows, areas where three or more passes meet are crossroads; the biome's
 ## own kinds come next, then plateaus and craters stand out in the far half. Their numbers grow
 ## with the layout (about one each per eight or ten areas).
@@ -624,7 +624,7 @@ func _assign_kinds(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 			areas[i].kind = Kind.CRATER
 			craters -= 1
 	for i: int in by_distance:
-		if areas[i].holds_rich_ore():
+		if areas[i].holds_rarest_ore():
 			_shrink_pocket(biome, i)
 
 

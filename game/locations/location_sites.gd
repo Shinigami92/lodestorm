@@ -2,11 +2,12 @@ class_name LocationSites
 extends RefCounted
 ## Where a generated location's ore nodes and alien nests go (see `GeneratedLocation`): the map
 ## parts' markers first, then ore fields (two close to the ramp with the commonest ore, the rarest
-## in every ore pocket, the rest spread over the other areas, rarer the farther they lie along the
-## passes), then nests (two in every nest hollow, then spread over the areas far enough from the
-## ship). Each pass draws from a random stream of its own (`GeneratedLocation.random_stream`), so a
-## pass added later doesn't change what the others pick. Plain data, planned with the location
-## (safe on a worker thread). All values greybox, TBD (playtest).
+## in every ore pocket, a rich field in the middle of every nest hollow, the rest spread over the
+## other areas, rarer the farther they lie along the passes), then nests (two in every nest hollow,
+## one on each side of its rich field, then spread over the areas far enough from the ship). Each
+## pass draws from a random stream of its own (`GeneratedLocation.random_stream`), so a pass added
+## later doesn't change what the others pick. Plain data, planned with the location (safe on a
+## worker thread). All values greybox, TBD (playtest).
 
 const ORE_RADIUS: float = 3.0
 const NEST_RADIUS: float = 6.0
@@ -16,6 +17,10 @@ const NEST_ROOM: float = 3.5
 ## Closest the nodes of one field are to each other, and how far from its center they spread, in m.
 const NODE_SPACING: float = 7.0
 const FIELD_SPREAD: float = 12.0
+## A rich field: how far from its nest hollow's middle it lies (relative to the hollow's radius)
+## and how far its nodes spread from its center, in m (close together, so the nests fit around it).
+const RICH_CENTER: float = 0.3
+const RICH_SPREAD: float = 8.0
 ## Closest an ore field or a nest is to the landing site, in m.
 const LANDING_GAP: float = 10.0
 ## How close a nest may be to the landing site in a straight line, relative to
@@ -30,11 +35,16 @@ class OreSite:
 	var ore: OreType
 	## The area it lies in.
 	var area: LocationLayout.Area
+	## Part of a nest hollow's rich field: holds more (`OreNode.rich`).
+	var rich: bool
 
-	func _init(at: Vector3, ore_type: OreType, in_area: LocationLayout.Area) -> void:
+	func _init(
+		at: Vector3, ore_type: OreType, in_area: LocationLayout.Area, is_rich: bool = false
+	) -> void:
 		position = at
 		ore = ore_type
 		area = in_area
+		rich = is_rich
 
 
 ## A nest's place.
@@ -101,9 +111,13 @@ func _pick_ores(found: Array[OreType]) -> void:
 		var part: LocationParts.Placed = _location.parts.part_in(area)
 		if part and part.info.count(PartMarker.Kind.ORE) > 0:
 			continue
-		if area.holds_rich_ore():
+		if area.holds_rarest_ore():
 			_add_ore_field(rng, found[found.size() - 1], area, false)
-		elif area.kind not in [LocationLayout.Kind.LANDING, LocationLayout.Kind.NEST_HOLLOW]:
+		elif area.kind == LocationLayout.Kind.NEST_HOLLOW:
+			# The rarest or the second rarest ore.
+			var rarest: int = found.size() - 1
+			_add_ore_field(rng, found[maxi(rarest - rng.randi_range(0, 1), 0)], area, false, true)
+		elif area.kind != LocationLayout.Kind.LANDING:
 			others.append(area)
 	var wanted: int = roundi(layout.areas.size() * _location.biome.ore_fields_per_area)
 	var farthest: float = maxf(layout.farthest(), 1.0)
@@ -136,10 +150,14 @@ func _ore_markers(found: Array[OreType]) -> int:
 	return fields
 
 
-## Adds an ore field of `ore_type` in `area` (`near`: close to the ramp); false when there's no
-## room.
+## Adds an ore field of `ore_type` in `area` (`near`: close to the ramp; `rich`: a nest hollow's
+## rich field, in its middle); false when there's no room.
 func _add_ore_field(
-	rng: RandomNumberGenerator, ore_type: OreType, area: LocationLayout.Area, near: bool
+	rng: RandomNumberGenerator,
+	ore_type: OreType,
+	area: LocationLayout.Area,
+	near: bool,
+	rich: bool = false
 ) -> bool:
 	var fields: Array[Vector3] = ore_positions()
 	var ramp_exit: Vector2 = _location.ramp_exit
@@ -153,7 +171,7 @@ func _add_ore_field(
 				return false
 			return _location.landing_distance(at) >= LANDING_GAP and _far_from(at, fields, spacing),
 		ramp_exit if near else area.center,
-		near_distance.y if near else area.radius * 0.8
+		near_distance.y if near else area.radius * (RICH_CENTER if rich else 0.8)
 	)
 	if center == Vector3.INF:
 		return false
@@ -171,18 +189,18 @@ func _add_ore_field(
 						and _far_from(at, placed, NODE_SPACING)
 					),
 				Vector2(center.x, center.z),
-				FIELD_SPREAD
+				RICH_SPREAD if rich else FIELD_SPREAD
 			)
 		if site == Vector3.INF:
 			continue
 		_location.add_site(site, ORE_RADIUS, ORE_ROOM)
-		ores.append(OreSite.new(_on_ground(site), ore_type, area))
+		ores.append(OreSite.new(_on_ground(site), ore_type, area, rich))
 	return true
 
 
 ## Nests in the areas far enough from the ship: the parts' nest markers first, two in every nest
-## hollow, then spread over the others, the areas every way out goes through last (so they rarely
-## block the way back).
+## hollow (the second across its rich field from the first), then spread over the others, the
+## areas every way out goes through last (so they rarely block the way back).
 func _pick_nests() -> void:
 	var rng: RandomNumberGenerator = _stream("nests")
 	var biome: LocationBiome = _location.biome
@@ -220,6 +238,7 @@ func _pick_nests() -> void:
 			break
 		var area: LocationLayout.Area = order[attempt % order.size()]
 		var placed: Array[Vector3] = nest_positions()
+		var side: PackedVector2Array = _field_side(area)
 		var site: Vector3 = _location.find_site(
 			rng,
 			NEST_RADIUS,
@@ -228,6 +247,7 @@ func _pick_nests() -> void:
 					_location.landing_distance(at) >= biome.nest_min_distance * NEST_STRAIGHT_SHARE
 					and _far_from(at, placed, _location.nest_spacing)
 					and _far_from(at, ore_sites, _location.nest_ore_spacing)
+					and (side.is_empty() or (at - side[0]).dot(side[1]) > 0.0)
 				),
 			area.center,
 			area.radius * 0.8
@@ -236,6 +256,28 @@ func _pick_nests() -> void:
 			continue
 		_location.add_site(site, NEST_RADIUS, NEST_ROOM)
 		nests.append(NestSite.new(_on_ground(site), area))
+
+
+## Which side of `area`'s rich field its second nest goes to, so the field lies between the two:
+## the field's center and the way from its first nest across it; empty when any spot will do (not
+## a nest hollow with a rich field and one nest).
+func _field_side(area: LocationLayout.Area) -> PackedVector2Array:
+	if area.kind != LocationLayout.Kind.NEST_HOLLOW:
+		return []
+	var field := Vector2.ZERO
+	var nodes: int = 0
+	for site: OreSite in ores:
+		if site.rich and site.area == area:
+			field += Vector2(site.position.x, site.position.z)
+			nodes += 1
+	var inside: Array[Vector2] = []
+	for nest: NestSite in nests:
+		if nest.area == area:
+			inside.append(Vector2(nest.position.x, nest.position.z))
+	if nodes == 0 or inside.size() != 1:
+		return []
+	field /= nodes
+	return [field, field - inside[0]]
 
 
 func _stream(stage: String) -> RandomNumberGenerator:

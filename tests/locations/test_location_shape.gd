@@ -13,7 +13,7 @@ const SWEEP_SEEDS: Array[int] = [1, 2, 3, 4, 5]
 const VIEW_AREAS: int = 6
 
 
-## The rarest ore waits in the ore pockets; nest hollows hold nests, not ore.
+## The rarest ore waits in the ore pockets; nest hollows hold only their rich field.
 func test_ore_pockets_and_nest_hollows() -> void:
 	var found: Array[OreType] = OreCatalog.sorted(DUST.ores)
 	var rarest: OreType = found[found.size() - 1]
@@ -21,14 +21,17 @@ func test_ore_pockets_and_nest_hollows() -> void:
 		var location: GeneratedLocation = SWEEP.plan(world_seed, DUST)
 		for area: LocationLayout.Area in location.layout.areas:
 			var inside: Array[OreType] = []
+			var rich: int = 0
 			for site: LocationSites.OreSite in location.sites.ores:
 				var at := Vector2(site.position.x, site.position.z)
 				if at.distance_to(area.center) < area.radius * 1.3:
 					inside.append(site.ore)
+					rich += 1 if site.rich else 0
 			if area.kind == LocationLayout.Kind.ORE_POCKET:
 				assert_has(inside, rarest, "seed %d" % world_seed)
 			elif area.kind == LocationLayout.Kind.NEST_HOLLOW:
-				assert_eq(inside.size(), 0, "seed %d: ore in the hollow" % world_seed)
+				assert_gt(rich, 0, "seed %d: a rich field in the hollow" % world_seed)
+				assert_eq(inside.size(), rich, "seed %d: other ore in the hollow" % world_seed)
 				assert_gt(_nests_in(location, area), 0, "seed %d: nests in the hollow" % world_seed)
 		location.free()
 

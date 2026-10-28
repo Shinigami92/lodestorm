@@ -744,6 +744,7 @@ func _add_ore_nodes() -> void:
 		var node := ORE_NODE.instantiate() as OreNode
 		node.name = "Ore%d" % (i + 1)
 		node.ore_type = sites.ores[i].ore
+		node.rich = sites.ores[i].rich
 		node.variant = i
 		node.position = sites.ores[i].position
 		node.rotation.y = turns.randf() * TAU

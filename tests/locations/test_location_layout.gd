@@ -98,7 +98,7 @@ func test_dead_ends_hold_ore_pockets_and_nest_hollows() -> void:
 			var pockets: int = 0
 			var hollows: int = 0
 			for area: LocationLayout.Area in layout.areas:
-				if area.holds_rich_ore():
+				if area.holds_rarest_ore():
 					pockets += 1
 					assert_eq(area.passes.size(), 1, label)
 					assert_gte(area.distance, _median_distance(layout), label)

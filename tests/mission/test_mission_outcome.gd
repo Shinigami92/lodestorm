@@ -4,6 +4,10 @@ const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
+const SUIT: Skill = preload("res://game/progression/skills/tree/reinforced_suit.tres")
+const REGENERATION: Skill = preload("res://game/progression/skills/tree/regeneration.tres")
+const DRONE: Skill = preload("res://game/progression/skills/tree/rescue_drone.tres")
+const CANISTER: Skill = preload("res://game/progression/skills/tree/hardened_canister.tres")
 
 var _map: Node3D
 var _player: Player
@@ -244,6 +248,40 @@ func test_crafted_miners_are_lost_when_everyone_dies() -> void:
 	await wait_physics_frames(2)
 	assert_eq(_mission.state, Mission.State.LOST)
 	assert_true(_player.fleet.is_empty(1))
+
+
+func test_hardened_canister_banks_its_share_when_the_run_is_lost() -> void:
+	_player.skills.raise(SUIT)
+	_player.skills.raise(CANISTER)
+	await _open()
+	await _move(_player, _outside())
+	_player.cargo.add(KYRITE, 100.0)
+	_player.cargo.add(MERIDINE, 20.0)
+	_player.take_damage(_player.max_health() * 2.0)
+	assert_eq(_player.hold.amount(MERIDINE), 0.0, "not before the run ends")
+	await wait_physics_frames(2)
+	assert_eq(_mission.state, Mission.State.LOST)
+	assert_almost_eq(_player.hold.amount(MERIDINE), 20.0, 0.001, "the rarest first")
+	assert_almost_eq(_player.hold.amount(KYRITE), 10.0, 0.001, "a quarter in all")
+
+
+func test_rescue_drone_keeps_the_run_going_once_per_run() -> void:
+	_player.skills.raise(SUIT)
+	_player.skills.raise(REGENERATION)
+	_player.skills.raise(DRONE)
+	_player.rescue_drone.used = true
+	await _open()
+	assert_true(_player.rescue_drone.is_ready(), "ready again with each run")
+	await _move(_player, _outside())
+	_player.take_damage(_player.max_health() * 2.0)
+	await wait_physics_frames(2)
+	assert_true(_player.down)
+	assert_eq(_mission.state, Mission.State.RUNNING, "down isn't lost")
+	await wait_physics_frames(ceili(_player.settings.rescue_time * Engine.physics_ticks_per_second))
+	assert_false(_player.fallen, "the drone got the player up")
+	_player.take_damage(_player.max_health() * 2.0)
+	await wait_physics_frames(2)
+	assert_eq(_mission.state, Mission.State.LOST, "only once per run")
 
 
 ## Presses the ramp button and waits until the ramp is down.

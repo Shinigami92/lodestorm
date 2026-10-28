@@ -6,7 +6,9 @@ extends Node3D
 ## big haul makes the silhouette bulkier. Ammo is paid with the commonest ore first, so it takes
 ## from the top of the stack and rare ore stays safe at the bottom. There's no carry limit, but at
 ## most `max_canisters` strap on (alternating sides, stacking up); beyond that they all show full.
-## Exact amounts show at the silos once it's in the hold.
+## Exact amounts show at the silos once it's in the hold. With the hardened canister skill, the
+## share of the stack that's safe on death (`safe_share`, from the bottom) sits behind a reinforced
+## band.
 
 ## Tubes on the backpack.
 const TUBES: int = 2
@@ -23,6 +25,8 @@ const CANISTER_OUTER: float = 0.45
 const CANISTER_BASE: float = -0.05
 ## Inner radius of the ore inside a vessel, relative to the glass.
 const FILL_INSET: float = 0.8
+## Outer radius of the reinforced band around a vessel, relative to the glass.
+const BAND_OUTSET: float = 1.15
 
 ## A cylinder of radius 1 and height 1, shared by all layers (scaled per layer).
 static var _shared_cylinder: CylinderMesh
@@ -34,17 +38,28 @@ static var _shared_cylinder: CylinderMesh
 ## Most canisters strapped on at once. TBD (playtest).
 @export var max_canisters: int = 6
 
+## The share of the stack (from the bottom) behind the reinforced band (the hardened canister).
+var safe_share: float = 0.0:
+	set(value):
+		safe_share = value
+		if is_node_ready():
+			_pour()
+
 ## Units carried per ore type.
 var _cargo: Dictionary[OreType, float] = {}
 var _tubes: Array[Node3D] = []
 var _canisters: Array[Node3D] = []
 var _glass_material := StandardMaterial3D.new()
+var _band_material := StandardMaterial3D.new()
 
 
 func _ready() -> void:
 	_glass_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_glass_material.albedo_color = Color(0.75, 0.85, 0.95, 0.22)
 	_glass_material.roughness = 0.1
+	_band_material.albedo_color = Color(0.32, 0.34, 0.37)
+	_band_material.metallic = 0.8
+	_band_material.roughness = 0.35
 	for i: int in TUBES:
 		var tube: Node3D = _vessel("Tube%d" % (i + 1), TUBE_RADIUS, TUBE_HEIGHT)
 		tube.position.x = (i - (TUBES - 1) * 0.5) * TUBE_SPACING
@@ -90,6 +105,12 @@ func canister_count() -> int:
 	return _canisters.size()
 
 
+## How far up (0–1) the reinforced band covers tube `index`.
+func tube_band(index: int) -> float:
+	var safe: float = total() * safe_share
+	return clampf((safe - index * units_per_tube) / units_per_tube, 0.0, 1.0)
+
+
 ## Pours the stack into the tubes, then into as many canisters as it needs.
 func _pour() -> void:
 	var overflow: float = maxf(total() - TUBES * units_per_tube, 0.0)
@@ -117,9 +138,11 @@ func _pour() -> void:
 	var start: float = 0.0
 	for tube: Node3D in _tubes:
 		_fill(tube, stack, start, units_per_tube, TUBE_HEIGHT)
+		_band(tube, start, units_per_tube, TUBE_HEIGHT)
 		start += units_per_tube
 	for canister: Node3D in _canisters:
 		_fill(canister, stack, start, units_per_canister, CANISTER_HEIGHT)
+		_band(canister, start, units_per_canister, CANISTER_HEIGHT)
 		start += units_per_canister
 	RenderLayers.put(self, RenderLayers.CHARACTERS)
 
@@ -160,6 +183,16 @@ func _fill(
 		(fill.get_child(i) as Node3D).visible = false
 
 
+## Covers the safe part of the stack between `start` and `start + capacity` units in `vessel` with
+## the reinforced band, from its bottom up.
+func _band(vessel: Node3D, start: float, capacity: float, height: float) -> void:
+	var band := vessel.get_node(^"Band") as MeshInstance3D
+	var covered: float = clampf((total() * safe_share - start) / capacity, 0.0, 1.0) * height
+	band.visible = covered > 0.001
+	band.scale.y = maxf(covered, 0.001)
+	band.position.y = covered * 0.5
+
+
 ## An empty glass vessel (its bottom at its origin) with a `Fill` node for the ore layers.
 func _vessel(vessel_name: String, radius: float, height: float) -> Node3D:
 	var vessel := Node3D.new()
@@ -182,6 +215,14 @@ func _vessel(vessel_name: String, radius: float, height: float) -> Node3D:
 	var fill := Node3D.new()
 	fill.name = "Fill"
 	vessel.add_child(fill)
+	var band := MeshInstance3D.new()
+	band.name = "Band"
+	band.mesh = _unit_cylinder()
+	band.material_override = _band_material
+	band.scale = Vector3(radius * BAND_OUTSET, 0.001, radius * BAND_OUTSET)
+	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	band.visible = false
+	vessel.add_child(band)
 	return vessel
 
 

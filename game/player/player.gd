@@ -22,8 +22,9 @@ extends CharacterBody3D
 ## session) and pays for its gear; its `refining` are its batches in the refinery's furnaces. Its
 ## `skills` (learned at the skill graph) add health, regeneration, the dash (`suit_dash`, its
 ## cooldown shown on the suit ring), more spare magazines, reloading at full speed,
-## careful reloads, the ore scanner's arrow (`OreScanner`) and the damage readout
-## (`DamageNumber`).
+## careful reloads, the ore scanner's arrow (`OreScanner`), the damage readout (`DamageNumber`),
+## the rescue drone (`rescue_drone`), the hardened canister (part of the cargo safe on death, see
+## `PlayerCargo.secure`), rebuilding spares (see `PlayerArms`) and the miner radar (`MinerRadar`).
 ## The suit model (Body/Model) is animated by `PlayerAnimator` (holding the weapon as its type
 ## says, swinging it with its melee attacks); the weapon, the cargo rack and the hose port follow
 ## its markers (WeaponGrip in the right hand, ShieldGrip on the left forearm for a shield, the
@@ -127,6 +128,8 @@ var fallen: bool:
 		return vitals.life != PlayerVitals.Life.ALIVE
 ## The dash (a skill).
 var suit_dash := SuitDash.new()
+## Gets the player up once per run where they fell (a skill), from the backpack.
+var rescue_drone := RescueDrone.new()
 ## Placing and picking up miners, which take time.
 var handling := MinerHandling.new()
 ## Its own sounds and, for the local player, the ears.
@@ -149,6 +152,8 @@ var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _armor_pips := MkPips.new()
 ## Points to the nearest free ore node.
 var _scanner := OreScanner.new()
+## Points to its own miners that need it.
+var _miner_radar := MinerRadar.new()
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _shield_mount: Marker3D = $ShieldMount
@@ -188,6 +193,11 @@ func _ready() -> void:
 	_scanner.position = Vector3.UP * 0.05
 	_scanner.min_distance = settings.miner_place_range
 	add_child(_scanner)
+	_miner_radar.name = "MinerRadar"
+	_miner_radar.holder = self
+	_miner_radar.position = Vector3.UP * 0.05
+	add_child(_miner_radar)
+	_cargo_rack.safe_share = skills.value(Skill.Effect.HARDENED_CANISTER)
 	input.holder = self
 	suit_dash.name = "SuitDash"
 	suit_dash.holder = self
@@ -221,6 +231,10 @@ func _ready() -> void:
 	vitals.died.connect(_on_died)
 	add_child(vitals)
 	vitals.revive()
+	rescue_drone.name = "RescueDrone"
+	rescue_drone.holder = self
+	add_child(rescue_drone)
+	_attach(rescue_drone, "CargoRack")
 	sounds.name = "Sounds"
 	sounds.holder = self
 	add_child(sounds)
@@ -474,9 +488,11 @@ func _on_got_up() -> void:
 	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
 
 
-## Drops everything and lies still until `respawn`.
+## Drops everything (but the share the hardened canister keeps safe) and lies still until
+## `respawn`.
 func _on_died() -> void:
 	_fall()
+	cargo.secure(skills.value(Skill.Effect.HARDENED_CANISTER))
 	var dropped: Dictionary[OreType, float] = cargo.take_all()
 	for ore_type: OreType in dropped:
 		GameEvents.bus.ore_lost.emit(self, ore_type, dropped[ore_type])
@@ -567,6 +583,7 @@ func _on_upgrades_changed() -> void:
 	vitals.update_maximum()
 
 
-## Skills are learned aboard: more health adds the difference.
+## Skills are learned aboard: more health adds the difference, the hardened canister's band grows.
 func _on_skills_changed() -> void:
 	vitals.update_maximum()
+	_cargo_rack.safe_share = skills.value(Skill.Effect.HARDENED_CANISTER)

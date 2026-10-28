@@ -2066,12 +2066,36 @@ msgstr ""
 msgid "A short burst in the direction you move"
 msgstr ""
 
+#: game/progression/skills/tree/hardened_canister.tres
+msgid "Hardened canister"
+msgstr ""
+
+#: game/progression/skills/tree/hardened_canister.tres
+msgid "On death you keep 25 % of the carried ore per rank, the rarest first"
+msgstr ""
+
+#: game/progression/skills/tree/miner_radar.tres
+msgid "Miner radar"
+msgstr ""
+
+#: game/progression/skills/tree/miner_radar.tres
+msgid "Points to your miners when they're full, dry or under attack"
+msgstr ""
+
 #: game/progression/skills/tree/ore_scanner.tres
 msgid "Ore scanner"
 msgstr ""
 
 #: game/progression/skills/tree/ore_scanner.tres
 msgid "Points to the nearest ore node within 40 m"
+msgstr ""
+
+#: game/progression/skills/tree/rebuilding_spares.tres
+msgid "Rebuilding spares"
+msgstr ""
+
+#: game/progression/skills/tree/rebuilding_spares.tres
+msgid "Refills an empty spare magazine from carried ore every 30 s (rank 2: 20 s)"
 msgstr ""
 
 #: game/progression/skills/tree/regeneration.tres
@@ -2096,6 +2120,14 @@ msgstr ""
 
 #: game/progression/skills/tree/reload_on_the_move.tres
 msgid "Reload at full walking speed"
+msgstr ""
+
+#: game/progression/skills/tree/rescue_drone.tres
+msgid "Rescue drone"
+msgstr ""
+
+#: game/progression/skills/tree/rescue_drone.tres
+msgid "Once per run, a drone gets you up where you fell, with half your health"
 msgstr ""
 
 #: game/progression/skills/tree/skill_tree.tres

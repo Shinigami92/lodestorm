@@ -8,7 +8,7 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 
 | File | What's left | Milestone |
 |---|---|---|
-| [`player-display.md`](player-display.md) | what's left of the suit ring: the quest's and the miner radar's pointers, the player color, VR | M4 (step 16), M6, M7 |
+| [`player-display.md`](player-display.md) | what's left of the suit ring: the quest's pointer, the player color, VR | M4 (step 16), M6, M7 |
 | [`menu-pause.md`](menu-pause.md) | what's left of the title view and the pause panel: co-op sessions, the Steam overlay, more settings, VR | M6, M7, M8 |
 | [`biomes.md`](biomes.md) | around the biomes' geography: weather, a generic part per biome, the biomes' assets | M5 |
 | [`aliens.md`](aliens.md) | the Ravager guarding rich sites, more guards and raiders, co-op scaling, the effects | M4 (steps 14, 16), M5, M7 |
@@ -19,7 +19,7 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 | [`crew.md`](crew.md) | the crew joining, more transmissions, co-op | M4 (step 16), M7 |
 | [`npc-places.md`](npc-places.md) | the bar's closing time, starting along their day, smarter NPCs | later |
 | [`people.md`](people.md) | the colonists' models, props, faces, fighting people, the player's suit | M5 |
-| [`skills.md`](skills.md) | the rescue drone, the hardened canister, rebuilding spares, the miner radar; where the skill graph is heading | M4 (step 15), M7 |
+| [`skills.md`](skills.md) | where the skill graph is heading | M7, later |
 | [`quests.md`](quests.md) | quests as data, goals, the quest board, requests, the story's acts, first content | M4 (step 16) |
 | [`story.md`](story.md) | the flare shield, the six acts, the expedition (Calder, Pell), the people's threads, after the ending | M4 (step 16 D and on) |
 | [`characters.md`](characters.md) | the named people's sheets for the writing rounds: background, wants, flaw, secret, arc, ties, voice; the crew's founding, the ship's past, who joins in act 1 | M4 (step 16 D and on) |

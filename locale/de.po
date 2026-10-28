@@ -2068,6 +2068,22 @@ msgstr "Schub"
 msgid "A short burst in the direction you move"
 msgstr "Ein kurzer Schub in Bewegungsrichtung"
 
+#: game/progression/skills/tree/hardened_canister.tres
+msgid "Hardened canister"
+msgstr "Gehärteter Kanister"
+
+#: game/progression/skills/tree/hardened_canister.tres
+msgid "On death you keep 25 % of the carried ore per rank, the rarest first"
+msgstr "Beim Tod behältst du pro Rang 25 % des Erzes, das seltenste zuerst"
+
+#: game/progression/skills/tree/miner_radar.tres
+msgid "Miner radar"
+msgstr "Schürferradar"
+
+#: game/progression/skills/tree/miner_radar.tres
+msgid "Points to your miners when they're full, dry or under attack"
+msgstr "Zeigt zu deinen Schürfern, wenn sie voll sind, nichts mehr finden oder angegriffen werden"
+
 #: game/progression/skills/tree/ore_scanner.tres
 msgid "Ore scanner"
 msgstr "Erzscanner"
@@ -2075,6 +2091,14 @@ msgstr "Erzscanner"
 #: game/progression/skills/tree/ore_scanner.tres
 msgid "Points to the nearest ore node within 40 m"
 msgstr "Zeigt zum nächsten Erzvorkommen im Umkreis von 40 m"
+
+#: game/progression/skills/tree/rebuilding_spares.tres
+msgid "Rebuilding spares"
+msgstr "Magazine nachbauen"
+
+#: game/progression/skills/tree/rebuilding_spares.tres
+msgid "Refills an empty spare magazine from carried ore every 30 s (rank 2: 20 s)"
+msgstr "Füllt alle 30 s ein Ersatzmagazin aus Erz nach (Rang 2: 20 s)"
 
 #: game/progression/skills/tree/regeneration.tres
 msgid "Regeneration"
@@ -2099,6 +2123,14 @@ msgstr "Nachladen im Lauf"
 #: game/progression/skills/tree/reload_on_the_move.tres
 msgid "Reload at full walking speed"
 msgstr "Nachladen bei voller Laufgeschwindigkeit"
+
+#: game/progression/skills/tree/rescue_drone.tres
+msgid "Rescue drone"
+msgstr "Rettungsdrohne"
+
+#: game/progression/skills/tree/rescue_drone.tres
+msgid "Once per run, a drone gets you up where you fell, with half your health"
+msgstr "Einmal pro Einsatz hilft dir eine Drohne dort auf, wo du gefallen bist, mit halber Gesundheit"
 
 #: game/progression/skills/tree/skill_tree.tres
 msgid "Mobility"

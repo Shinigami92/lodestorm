@@ -119,6 +119,8 @@ var hose_target: Player
 var health: float
 ## A broken miner doesn't mine and its hose doesn't connect until it's repaired completely.
 var broken: bool = false
+## Seconds since it was last hit (INF: never), e.g. for the miner radar.
+var since_hit: float = INF
 ## Horizontal radius of the body (its collision shape): attackers reach it at its surface.
 var body_radius: float
 ## How far it's real: 0 only the hologram, 1 the miner itself (see `MinerHologram`).
@@ -211,6 +213,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	since_hit += delta
 	var standing: bool = is_standing()
 	var mining: bool = standing and not broken and not is_full() and not is_dry()
 	_mining = mining
@@ -367,6 +370,7 @@ func take_damage(amount_lost: float) -> void:
 		return
 	health = maxf(health - amount_lost, 0.0)
 	_flash_left = FLASH_DURATION
+	since_hit = 0.0
 	if health == 0.0:
 		broken = true
 		broke.emit()

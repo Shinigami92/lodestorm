@@ -6,7 +6,9 @@ extends Node
 ## refills the players' ammo (their health carries over: the med beds heal), lowers the ramp and
 ## locks the mission. The mission starts when the first player steps out; the timer then counts
 ## down, and at zero the storm hits (`time_up`) and hurts everyone outside, more with every second.
-## Players who die drop what they carried. Bodies farther in (a higher `tier`) have more and
+## Players who die drop what they carried (but what the hardened canister kept safe, banked when the
+## run ends, won or lost); a ready rescue drone gets them up first (restocked with each run's
+## ramp). Bodies farther in (a higher `tier`) have more and
 ## stronger aliens, an earlier warning and a harsher storm.
 ## The mission is won (`returned`) once every living player is back aboard, in time or during the
 ## storm: their cargo is the haul (see `Ship.store_haul`), the dead respawn aboard and the ramp
@@ -170,6 +172,20 @@ func bank_ore(player: Player, haul: Dictionary[OreType, float]) -> void:
 	ship.store_haul(haul, _players())
 
 
+## Takes the ore the hardened canister kept safe when `players` died this run into the hold (see
+## `PlayerCargo.secure`).
+func _bank_secured(players: Array[Player]) -> void:
+	var haul: Dictionary[OreType, float] = {}
+	for player: Player in players:
+		var secured: Dictionary[OreType, float] = player.cargo.take_secured()
+		_count_hauled(player, secured)
+		for ore_type: OreType in secured:
+			var so_far: float = haul.get(ore_type, 0.0)
+			haul[ore_type] = so_far + secured[ore_type]
+	if not haul.is_empty():
+		ship.store_haul(haul, _players())
+
+
 func _count_hauled(player: Player, haul: Dictionary[OreType, float]) -> void:
 	for ore_type: OreType in haul:
 		GameEvents.bus.ore_hauled.emit(player, ore_type, haul[ore_type])
@@ -198,6 +214,7 @@ func _check_outcome() -> void:
 		_return(players)
 	else:
 		state = State.LOST
+		_bank_secured(players)
 		_leave_miners(players)
 		_respawn_left = settings.respawn_delay
 		_takeoff_left = ship.flight.settings.takeoff_delay
@@ -252,6 +269,7 @@ func _return(players: Array[Player]) -> void:
 	state = State.RETURNED
 	ship.ramp_open = false
 	bank(players)
+	_bank_secured(players)
 	_leave_miners(players)
 	_respawn_dead()
 	_takeoff_left = ship.flight.settings.takeoff_delay
@@ -311,6 +329,7 @@ func _on_ramp_button_used(_player: Player) -> void:
 			storm_time = 0.0
 			for player: Player in _players():
 				player.arms.refill()
+				player.rescue_drone.restock()
 			state = State.OPEN
 			ship.ramp_open = true
 			opened.emit()

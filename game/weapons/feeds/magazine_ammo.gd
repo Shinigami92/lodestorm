@@ -124,6 +124,18 @@ func timing_window() -> Vector2:
 	return Vector2(feed.sweet_spot_start, feed.sweet_spot_start + feed.sweet_spot_width)
 
 
+## Pays up to a magazine's rounds missing below `max_spares` from the supplier's ore, like a
+## reload.
+func rebuild_spare(max_spares: int) -> int:
+	var missing: int = mini(capacity(), max_spares - spare_rounds)
+	var added: int = _affordable(missing, supplier) if missing > 0 else 0
+	if added <= 0:
+		return 0
+	_pay(added, supplier)
+	spare_rounds += added
+	return added
+
+
 ## Like a reload: a magazine replaces the rounds left in it, single rounds top it up.
 func receive_ammo(giver: Player) -> bool:
 	if is_single():

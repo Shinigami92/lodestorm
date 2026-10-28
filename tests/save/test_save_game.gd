@@ -161,7 +161,7 @@ func test_mission_progress_is_saved_when_it_is_over() -> void:
 	await wait_physics_frames(ceili(_ship.ramp_duration * Engine.physics_ticks_per_second) + 2)
 	assert_true(_mission.is_underway())
 	await _move(_ship.to_global(Vector3(22.0, 0.0, 0.0)))
-	_player.add_cargo(KYRITE, 100.0)
+	_player.cargo.add(KYRITE, 100.0)
 	_player.hold.add(OLVANE, 5.0)
 	await wait_process_frames(1)
 	assert_eq(_saved_hold(KYRITE), 10.0, "nothing saved mid-mission")

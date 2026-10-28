@@ -81,7 +81,7 @@ func test_interact_picks_a_miner_up_with_its_ore() -> void:
 	_player.handling.update(miner.settings.pick_up_time)
 	assert_true(miner.is_queued_for_deletion())
 	assert_true(_nodes[0].is_free())
-	assert_almost_eq(_player.cargo[miner.ore_type], 40.0, 1.0)
+	assert_almost_eq(_player.cargo.amount(miner.ore_type), 40.0, 1.0)
 	var crafted: CraftedMiner = _player.fleet.get_miner(1)
 	assert_false(crafted.out)
 	assert_eq(_player.fleet.left_to_place(), MinerFleet.PER_RUN)

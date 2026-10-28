@@ -108,7 +108,7 @@ func test_timed_reloads_are_counted_by_result() -> void:
 func test_a_lost_run_is_logged_with_its_cause() -> void:
 	await _open()
 	await _move(_ship.to_global(Vector3(22.0, 0.0, 0.0)))
-	_player.add_cargo(KYRITE, 40.0)
+	_player.cargo.add(KYRITE, 40.0)
 	_mission.time_left = 0.0
 	_mission.storm_time = 1000.0
 	await wait_physics_frames(10)
@@ -129,7 +129,7 @@ func test_a_lost_run_is_logged_with_its_cause() -> void:
 func test_returned_haul_and_totals_survive_a_restart() -> void:
 	await _open()
 	await _move(_ship.to_global(Vector3(22.0, 0.0, 0.0)))
-	_player.add_cargo(KYRITE, 150.0)
+	_player.cargo.add(KYRITE, 150.0)
 	await _move(_ship.to_global(Vector3(10.0, 2.5, 0.0)))
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	assert_eq(_recorder.totals.value("ore_hauled", [GameEvents.id_of(KYRITE)]), 150.0)

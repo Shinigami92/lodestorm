@@ -49,7 +49,7 @@ func test_placing_takes_the_place_time() -> void:
 	assert_false(_player.handling.busy())
 	assert_has(_played, PLACE)
 	await wait_physics_frames(2)
-	var mined: float = miner.amount + _player.cargo.get(miner.ore_type, 0.0)
+	var mined: float = miner.amount + _player.cargo.amount(miner.ore_type)
 	assert_gt(mined, 0.0, "mining (the hose takes it to the player)")
 	assert_does_not_have(_loops(miner), SERVO)
 
@@ -149,7 +149,7 @@ func test_picking_up_takes_the_pick_up_time() -> void:
 	_player.handling.update(miner.settings.pick_up_time * 0.5)
 	assert_true(miner.is_queued_for_deletion())
 	assert_true(_node.is_free())
-	var carried: float = _player.cargo.get(miner.ore_type, 0.0)
+	var carried: float = _player.cargo.amount(miner.ore_type)
 	assert_almost_eq(carried, 30.0, 1.0)
 	assert_has(_played, LATCH)
 

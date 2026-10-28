@@ -48,7 +48,7 @@ func test_shots_hit_the_targets() -> void:
 ## Trying the weapons costs nothing: reloads in the range come from the ship's stock.
 func test_reloads_in_the_range_spend_no_ore() -> void:
 	var kyrite: OreType = load("res://game/ores/types/ore_kyrite.tres")
-	_player.add_cargo(kyrite, 10.0)
+	_player.cargo.add(kyrite, 10.0)
 	await _move(_player, _range.global_position)
 	assert_true(_player.ammo_free)
 	var harl := _player.get_ammo() as MagazineAmmo
@@ -60,7 +60,7 @@ func test_reloads_in_the_range_spend_no_ore() -> void:
 	harl.reload_elapsed = harl.reload_duration
 	await wait_physics_frames(1)
 	assert_eq(harl.rounds, harl.capacity())
-	assert_eq(_player.cargo[kyrite], 10.0)
+	assert_eq(_player.cargo.amount(kyrite), 10.0)
 
 
 ## In the range the camera frames the whole room instead of following the player.

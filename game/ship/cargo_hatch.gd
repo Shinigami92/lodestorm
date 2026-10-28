@@ -99,7 +99,7 @@ func _follow_ramp() -> void:
 
 
 func _start_flow(player: Player) -> void:
-	var carried: float = _carried(player)
+	var carried: float = player.cargo.total()
 	if _flows.has(player) or player.dead or carried <= 0.0:
 		return
 	var flow := Flow.new()
@@ -119,18 +119,16 @@ func _flow(player: Player, delta: float) -> void:
 		_end_flow(player)
 		return
 	var left: float = flow.rate * delta
-	for ore_type: OreType in player.cargo:
-		var carried: float = player.cargo[ore_type]
-		if carried <= 0.0:
+	for ore_type: OreType in player.cargo.ores:
+		var taken: float = player.cargo.take(ore_type, left)
+		if taken <= 0.0:
 			continue
-		var taken: float = minf(carried, left)
-		player.take_ore(ore_type, taken)
 		flow.moved[ore_type] = flow.moved.get(ore_type, 0.0) + taken
 		_glow(flow, ore_type)
 		left -= taken
 		if left <= 0.0:
 			break
-	if _carried(player) <= 0.0:
+	if player.cargo.is_empty():
 		_end_flow(player)
 
 
@@ -152,10 +150,3 @@ func _glow(flow: Flow, ore_type: OreType) -> void:
 	flow.ore_type = ore_type
 	flow.hose.material_override = ore_type.get_glow_material()
 	OreGlow.set_phase(flow.hose, OreGlow.phase_at(global_position))
-
-
-func _carried(player: Player) -> float:
-	var total: float = 0.0
-	for ore_type: OreType in player.cargo:
-		total += player.cargo[ore_type]
-	return total

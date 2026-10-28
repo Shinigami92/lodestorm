@@ -70,7 +70,7 @@ func _ready() -> void:
 	_sprite.render_priority = WorldPanel.ON_TOP_PRIORITY
 	_sprite.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_sprite)
-	_player.cargo_added.connect(_on_cargo_added)
+	_player.cargo.ore_added.connect(_on_cargo_added)
 	_player.died.connect(clear)
 	_show(false)
 

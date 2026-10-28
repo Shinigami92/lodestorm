@@ -346,9 +346,7 @@ func _process(_delta: float) -> void:
 	else:
 		lines.append("No mission in this scene")
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
-		var carried: float = 0.0
-		for amount: float in player.cargo.values():
-			carried += amount
+		var carried: float = player.cargo.total()
 		var status: String = "dead" if player.dead else "%.0f HP" % player.health
 		if PlayerVitals.god_mode:
 			status += " (god mode)"
@@ -531,7 +529,7 @@ func _learn_skills() -> void:
 func _give_ore() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		for ore_type: OreType in ALL_ORES.ores:
-			player.add_cargo(ore_type, CARGO_FILL)
+			player.cargo.add(ore_type, CARGO_FILL)
 
 
 ## Adds a teammate beside the local player: a player this machine doesn't play (it stands still),

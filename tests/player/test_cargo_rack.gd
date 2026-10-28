@@ -26,9 +26,9 @@ func test_empty_without_cargo() -> void:
 
 
 func test_rarest_at_the_bottom() -> void:
-	_player.add_cargo(KYRITE, 20.0)
-	_player.add_cargo(VYREL, 10.0)
-	_player.add_cargo(OLVANE, 30.0)
+	_player.cargo.add(KYRITE, 20.0)
+	_player.cargo.add(VYREL, 10.0)
+	_player.cargo.add(OLVANE, 30.0)
 	var layers: Array[Array] = _rack.layers()
 	assert_eq(layers.size(), 3)
 	var bottom: OreType = layers[0][0]
@@ -40,11 +40,11 @@ func test_rarest_at_the_bottom() -> void:
 
 
 func test_fills_the_tubes_then_canisters() -> void:
-	_player.add_cargo(KYRITE, 150.0)
+	_player.cargo.add(KYRITE, 150.0)
 	assert_almost_eq(_rack.tube_fill(0), 1.0, 0.001)
 	assert_almost_eq(_rack.tube_fill(1), 0.5, 0.001)
 	assert_eq(_rack.canister_count(), 0)
-	_player.add_cargo(KYRITE, 120.0)
+	_player.cargo.add(KYRITE, 120.0)
 	assert_eq(_rack.canister_count(), 2, "70 over the tubes: two canisters of 50")
 	var left: Node3D = _rack.get_node("Canister1")
 	var right: Node3D = _rack.get_node("Canister2")
@@ -53,13 +53,13 @@ func test_fills_the_tubes_then_canisters() -> void:
 
 
 func test_ammo_takes_from_the_top() -> void:
-	_player.add_cargo(VYREL, 100.0)
-	_player.add_cargo(KYRITE, 100.0)
+	_player.cargo.add(VYREL, 100.0)
+	_player.cargo.add(KYRITE, 100.0)
 	var tube_1: Node3D = _rack.get_node("Tube1")
 	var tube_2: Node3D = _rack.get_node("Tube2")
 	assert_eq(_layer_ore(tube_1, 0), VYREL, "rare ore fills the first tube")
 	assert_eq(_layer_ore(tube_2, 0), KYRITE)
-	_player.take_ore(KYRITE, 100.0)
+	_player.cargo.take(KYRITE, 100.0)
 	assert_eq(_visible_layers(tube_2), 0, "spending the common ore empties the top")
 	assert_eq(_layer_ore(tube_1, 0), VYREL)
 
@@ -81,7 +81,7 @@ func test_canisters_go_when_cargo_goes_down() -> void:
 
 func test_every_ore_at_once() -> void:
 	for ore_type: OreType in CATALOG.ores:
-		_player.add_cargo(ore_type, 30.0)
+		_player.cargo.add(ore_type, 30.0)
 	assert_eq(_rack.layers().size(), CATALOG.ores.size())
 	assert_eq(
 		_rack.canister_count(),

@@ -37,15 +37,15 @@ func test_stowed_and_shut_until_the_ramp_is_down_for_a_run() -> void:
 func test_banks_everything_carried_and_the_run_goes_on() -> void:
 	await _open()
 	await _move(_player, _beside_hatch())
-	_player.add_cargo(KYRITE, 60.0)
-	_player.add_cargo(MERIDINE, 20.0)
+	_player.cargo.add(KYRITE, 60.0)
+	_player.cargo.add(MERIDINE, 20.0)
 	assert_eq(_player.interact(), _hatch as Interactable, "the hatch is what the player uses")
 	assert_true(_hatch.is_flowing(_player))
 	await _wait(CargoHatch.FLOW_TIME * 0.5)
-	assert_gt(_carried(_player), 0.0, "it flows in over a while")
+	assert_gt(_player.cargo.total(), 0.0, "it flows in over a while")
 	await _wait(CargoHatch.FLOW_TIME * 0.5 + 0.2)
 	assert_false(_hatch.is_flowing(_player))
-	assert_almost_eq(_carried(_player), 0.0, 0.001)
+	assert_almost_eq(_player.cargo.total(), 0.0, 0.001)
 	assert_almost_eq(_player.hold.amount(KYRITE), 60.0, 0.001)
 	assert_almost_eq(_player.hold.amount(MERIDINE), 20.0, 0.001)
 	assert_signal_emit_count(GameEvents.bus, "ore_hauled", 2, "once per ore, not every tick")
@@ -55,14 +55,14 @@ func test_banks_everything_carried_and_the_run_goes_on() -> void:
 func test_walking_off_stops_the_flow_and_banks_what_went_in() -> void:
 	await _open()
 	await _move(_player, _beside_hatch())
-	_player.add_cargo(KYRITE, 100.0)
+	_player.cargo.add(KYRITE, 100.0)
 	_player.interact()
 	await _wait(CargoHatch.FLOW_TIME * 0.5)
 	await _move(_player, _ship.to_global(Vector3(24.0, 0.0, 7.0)))
 	assert_false(_hatch.is_flowing(_player))
 	var banked: float = _player.hold.amount(KYRITE)
 	assert_between(banked, 20.0, 80.0, "about half went in")
-	assert_almost_eq(_carried(_player) + banked, 100.0, 0.001, "the rest stays carried")
+	assert_almost_eq(_player.cargo.total() + banked, 100.0, 0.001, "the rest stays carried")
 
 
 func test_players_bank_at_the_same_time() -> void:
@@ -71,8 +71,8 @@ func test_players_bank_at_the_same_time() -> void:
 	await _open()
 	await _move(_player, _beside_hatch())
 	await _move(other, _beside_hatch() + Vector3(0.0, 0.0, 0.8))
-	_player.add_cargo(KYRITE, 30.0)
-	other.add_cargo(MERIDINE, 10.0)
+	_player.cargo.add(KYRITE, 30.0)
+	other.cargo.add(MERIDINE, 10.0)
 	_hatch.use(_player)
 	_hatch.use(other)
 	assert_true(_hatch.is_flowing(_player) and _hatch.is_flowing(other))
@@ -92,7 +92,7 @@ func test_nothing_carried_starts_no_flow() -> void:
 func test_dying_mid_flow_keeps_what_went_in() -> void:
 	await _open()
 	await _move(_player, _beside_hatch())
-	_player.add_cargo(KYRITE, 100.0)
+	_player.cargo.add(KYRITE, 100.0)
 	_player.interact()
 	await _wait(CargoHatch.FLOW_TIME * 0.5)
 	_player.take_damage(INF)
@@ -120,10 +120,3 @@ func _move(player: Player, target: Vector3) -> void:
 	player.global_position = target
 	player.reset_physics_interpolation()
 	await wait_physics_frames(5)
-
-
-func _carried(player: Player) -> float:
-	var total: float = 0.0
-	for ore_type: OreType in player.cargo:
-		total += player.cargo[ore_type]
-	return total

@@ -245,7 +245,7 @@ func _affordable(count: int, payer: Player) -> int:
 		return 0
 	if payer.ammo_free:
 		return count
-	return mini(count, OreAmmo.affordable(payer.cargo, feed.ore_per_round))
+	return mini(count, OreAmmo.affordable(payer.cargo.ores, feed.ore_per_round))
 
 
 func _pay(count: int, payer: Player) -> void:

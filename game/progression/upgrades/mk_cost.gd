@@ -37,4 +37,5 @@ static func _add(
 ) -> void:
 	var scaled: int = roundi(amount * scale / 10.0) * 10
 	if ore_type and scaled > 0:
-		result[ore_type] = scaled
+		var ore: ItemType = ore_type
+		result[ore] = scaled

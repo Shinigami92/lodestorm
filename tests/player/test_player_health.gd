@@ -42,7 +42,7 @@ func test_suit_light_shows_health() -> void:
 
 
 func test_dies_at_zero_health_and_drops_cargo() -> void:
-	_player.add_cargo(KYRITE, 120.0)
+	_player.cargo.add(KYRITE, 120.0)
 	_player.take_damage(_player.settings.max_health + 50.0)
 	assert_eq(_player.health, 0.0)
 	assert_true(_player.dead)

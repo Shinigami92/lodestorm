@@ -133,12 +133,12 @@ func test_shown_and_lit_while_the_pause_panel_is_open() -> void:
 func test_size_setting_scales_the_ring() -> void:
 	await wait_process_frames(1)
 	assert_almost_eq(_ring.global_basis.get_scale().x, 1.0, 0.001)
-	var reach: float = _ring.pointer_reach()
+	var reach: float = _ring.pointer_reach(SuitRing.MAX_ARROW)
 	GameSettings.ring_size = 2
 	await wait_process_frames(1)
 	var large: float = GameSettings.RING_SCALES[2]
 	assert_almost_eq(_ring.global_basis.get_scale().x, large, 0.001)
-	assert_almost_eq(_ring.pointer_reach(), reach * large, 0.001)
+	assert_almost_eq(_ring.pointer_reach(SuitRing.MAX_ARROW), reach * large, 0.001)
 
 
 func test_teammates_ring_shows_only_health_and_their_color() -> void:
@@ -172,6 +172,32 @@ func test_teammates_dont_take_the_input() -> void:
 	assert_almost_eq(Vector2(teammate.velocity.x, teammate.velocity.z).length(), 0.0, 0.001)
 	assert_gt(Vector2(_player.velocity.x, _player.velocity.z).length(), 0.0)
 	assert_false(teammate.pause_panel.can_open())
+
+
+func test_pointers_anywhere_under_the_player_show_by_priority() -> void:
+	var holder := Node3D.new()
+	_player.add_child(holder)
+	var by_priority: Dictionary[int, RingPointer] = {}
+	for priority: int in [5, 3, 4, 1]:
+		var pointer := RingPointer.new()
+		pointer.priority = priority
+		pointer.color = Color(0.1 * priority, 0.0, 0.0)
+		holder.add_child(pointer)
+		by_priority[priority] = pointer
+	by_priority[5].point_along(Vector3.RIGHT)
+	await wait_process_frames(1)
+	assert_eq(by_priority[1].holder, _player)
+	assert_eq(_ring.pointers.size(), SuitRing.POINTERS, "as many as fit")
+	var colors: PackedColorArray = _ring.shown(&"pointer_colors")
+	assert_eq(colors[0], by_priority[1].color, "the lowest priority first")
+	assert_false(by_priority[5].color in colors, "the highest left out")
+	by_priority[1].visible = false
+	await wait_process_frames(1)
+	colors = _ring.shown(&"pointer_colors")
+	assert_eq(colors[2], by_priority[5].color, "takes the hidden one's place")
+	# No camera: the screen's top is -Z, so +X is a quarter round clockwise.
+	assert_almost_eq(_ring.pointers[2].x, 0.25, 0.001)
+	assert_almost_eq(_ring.pointers[2].z, _ring.radius + by_priority[5].arrow.x, 0.001)
 
 
 func _shown_rgb(parameter: StringName) -> Color:

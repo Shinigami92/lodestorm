@@ -10,8 +10,8 @@ extends MeshInstance3D
 ## heat-fed weapon as a thin band outside the ammo arc (amber, red when nearly full, blinking
 ## while it vents), the spare magazines as ticks inside the ammo arc, the dash as a thin inner
 ## ring while it recharges, a green outer band while the player hands a teammate ammo, and the
-## pointers as arrows on its edge (the way back to the ship from `ShipPointer`, the nearest ore
-## from `OreScanner`), and the run's six miners as ticks just outside its bottom (crafted ones
+## pointers as arrows on its edge (each `RingPointer` under the player: the way back to the ship,
+## the nearest ore), and the run's six miners as ticks just outside its bottom (crafted ones
 ## bright, standard-issue ones dimmer, placed ones as outlines). Both arcs fill from the bottom up.
 ## Quiet when nothing goes on: an arc dims to a faint outline `lit_time` after its last change,
 ## unless its value is low (health below half, a nearly empty magazine) or the player set "Always
@@ -48,11 +48,10 @@ const HEAT_HIGH: float = 0.7
 const HIT_MARKS: int = 4
 ## Pointers on the edge at most (the ship, the ore scanner, later the tracked quest).
 const POINTERS: int = 3
-## Where the pointers' arrows start beyond `radius` (m), and per kind how far beyond it their tip
-## reaches and half their width at the base (m). TBD (playtest).
+## Where the pointers' arrows start beyond `radius` (m), and the farthest their tips reach beyond
+## it (the ship's arrow; m). TBD (playtest).
 const POINTER_BASE: float = 0.32
-const SHIP_ARROW := Vector2(1.04, 0.38)
-const SCANNER_ARROW := Vector2(0.84, 0.26)
+const MAX_ARROW: float = 1.04
 ## Distance from the ship arrow's tip to the countdown's center (m).
 const COUNTDOWN_GAP: float = 0.25
 ## How far its outermost marks reach beyond `radius` (the hit marks, the miners' ticks; m).
@@ -113,7 +112,7 @@ func _ready() -> void:
 	top_level = true
 	# Runs while the pause panel stops the world, so the panel previews the ring's settings.
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	var outer: float = radius + SHIP_ARROW.x + 0.04
+	var outer: float = radius + MAX_ARROW + 0.04
 	var plane := PlaneMesh.new()
 	plane.size = Vector2.ONE * outer * 2.0
 	mesh = plane
@@ -157,9 +156,10 @@ func shows_ammo() -> bool:
 	return ammo != null and _player.weapon.visible and _player.local
 
 
-## How far the ship arrow's tip reaches from the player (m, with the size setting).
-func pointer_reach() -> float:
-	return (radius + SHIP_ARROW.x) * GameSettings.ring_scale()
+## How far the tip of an arrow `length` long (see `RingPointer.arrow`) reaches from the player (m,
+## with the size setting).
+func pointer_reach(length: float) -> float:
+	return (radius + length) * GameSettings.ring_scale()
 
 
 ## Where it draws (global points): the edge of its marks all around and its pointers' tips, so
@@ -405,31 +405,28 @@ func _update_hits(delta: float) -> void:
 	_material.set_shader_parameter(&"hits", marks)
 
 
-## The arrows on the edge: the way back to the ship, then the ore scanner's.
+## The arrows on the edge: its player's visible pointers, `POINTERS` at most by priority.
 func _update_pointers() -> void:
+	var drawn: Array[RingPointer] = []
+	if _player.local:
+		for node: Node in get_tree().get_nodes_in_group(RingPointer.GROUP):
+			var pointer := node as RingPointer
+			if pointer.holder == _player and pointer.is_visible_in_tree():
+				drawn.append(pointer)
+	drawn.sort_custom(func(a: RingPointer, b: RingPointer) -> bool: return a.priority < b.priority)
 	pointers.clear()
 	var colors := PackedColorArray()
 	colors.resize(POINTERS)
 	var slots := PackedVector4Array()
 	slots.resize(POINTERS)
-	if _player.local:
-		var ship := _player.get_node_or_null(^"ShipPointer") as ShipPointer
-		if ship and ship.is_visible_in_tree():
-			colors[pointers.size()] = ship.color
-			pointers.append(_pointer(-ship.global_basis.z, SHIP_ARROW))
-		var scanner := _player.get_node_or_null(^"OreScanner") as OreScanner
-		if scanner and scanner.is_visible_in_tree():
-			colors[pointers.size()] = scanner.color
-			pointers.append(_pointer(-scanner.global_basis.z, SCANNER_ARROW))
-	for index: int in pointers.size():
+	for index: int in mini(drawn.size(), POINTERS):
+		var pointer: RingPointer = drawn[index]
+		var tip: float = radius + minf(pointer.arrow.x, MAX_ARROW)
+		pointers.append(Vector4(_share_towards(pointer.heading()), 1.0, tip, pointer.arrow.y))
 		slots[index] = pointers[index]
+		colors[index] = pointer.color
 	_material.set_shader_parameter(&"pointers", slots)
 	_material.set_shader_parameter(&"pointer_colors", colors)
-
-
-## A pointer towards `direction` with the shape `arrow` (see `SHIP_ARROW`).
-func _pointer(direction: Vector3, arrow: Vector2) -> Vector4:
-	return Vector4(_share_towards(direction), 1.0, radius + arrow.x, arrow.y)
 
 
 ## Follows the player's feet, tilted with the ground; its top stays at the top of the screen.

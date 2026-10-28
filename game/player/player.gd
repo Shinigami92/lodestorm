@@ -191,7 +191,7 @@ var _scanner := OreScanner.new()
 @onready var _suit_light: SuitLight = $SuitLight
 @onready var _model: Node3D = $Body/Model
 @onready var _animator: PlayerAnimator = $Animator
-@onready var _ship_pointer: Node3D = $ShipPointer
+@onready var _ship_pointer: ShipPointer = $ShipPointer
 @onready var _ring: SuitRing = $SuitRing
 @onready var _body: Node3D = $Body
 ## The body's transform standing (turned to face the player's -Z).

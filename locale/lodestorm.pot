@@ -829,6 +829,30 @@ msgstr ""
 msgid "Here comes the weather. Finish up, all of you, and get back aboard."
 msgstr ""
 
+#: game/npcs/crew/pilot.tres
+msgid "Something came down out there, and it's glowing. If that's ore, it's the good kind. Go and take a look if you think you can make it."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Did you hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "A meteor just came down out there. It brought something rich with it, by the look of that light. The way back from there is long, though."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Something came down out there, and it's glowing. If that's ore, it's the good kind. Go and take a look if you think you can make it, all of you."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "Did you all hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful."
+msgstr ""
+
+#: game/npcs/crew/pilot.tres
+msgid "A meteor just came down out there. It brought something rich with it, by the look of that light. The way back from there is long, though, so stay together."
+msgstr ""
+
 #: game/npcs/crew/quartermaster.tres
 msgid "Quartermaster"
 msgstr ""

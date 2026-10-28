@@ -27,9 +27,18 @@ const BIG_HAUL: StringName = &"big_haul"
 const FIRST_LANDING: StringName = &"first_landing"
 ## The storm's warning started (only to the players outside).
 const STORM_WARNING: StringName = &"storm_warning"
+## The late deposit's meteor came down (see `LateDeposit`).
+const DEPOSIT_LANDED: StringName = &"deposit_landed"
 ## Every event the crew calls in about.
 const EVENTS: Array[StringName] = [
-	FIRST_RUN_WON, FIRST_DEATH, PLANET_OPENED, WEAPON_BUILT, BIG_HAUL, FIRST_LANDING, STORM_WARNING
+	FIRST_RUN_WON,
+	FIRST_DEATH,
+	PLANET_OPENED,
+	WEAPON_BUILT,
+	BIG_HAUL,
+	FIRST_LANDING,
+	STORM_WARNING,
+	DEPOSIT_LANDED,
 ]
 ## How much bigger than the biggest so far a run's haul must be to count as big. TBD (playtest).
 const BIG_HAUL_MARGIN: float = 1.25
@@ -58,6 +67,7 @@ func _ready() -> void:
 	events.heat_shield_raised.connect(_on_heat_shield_raised)
 	events.weapon_unlocked.connect(_on_weapon_unlocked)
 	events.storm_warned.connect(transmit.bind(STORM_WARNING))
+	events.deposit_landed.connect(transmit.bind(DEPOSIT_LANDED).unbind(1))
 	ship.player_left.connect(_on_player_left)
 
 
@@ -130,6 +140,7 @@ func transmit_all() -> void:
 				transmit(PLANET_OPENED, body.id)
 		transmit(FIRST_LANDING, system.bodies[0].id)
 	transmit(STORM_WARNING)
+	transmit(DEPOSIT_LANDED)
 
 
 ## What's saved: the turns and the biggest haul.

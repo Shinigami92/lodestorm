@@ -10,7 +10,8 @@ extends Node3D
 ## ores lie farther along the passes, the rarest in dead ends. Every walkable spot leads back to the
 ## ship: there are no pits to fall into (a gap's edge is walled off, see `LocationGaps`). Some areas
 ## hold a point of interest or one of the region's set pieces (see `LocationParts`); their markers
-## place ore, nests and crates first.
+## place ore, nests and crates first. A far one is the late deposit's impact site (`LateDeposit`):
+## its crater is carved from the start, its meteorite and ore appear with the impact.
 ## Everything the generator places is greybox; the values are TBD (playtest).
 ## The layout, the parts, the ground's shape and the hazard draw one after another from the seed
 ## itself; the ore fields, the nests and everything after them each draw from a random stream of
@@ -23,6 +24,7 @@ extends Node3D
 
 const ORE_NODE: PackedScene = preload("res://game/mining/ore_node.tscn")
 const ALIEN_NEST: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")
+const LATE_DEPOSIT: PartPlacement = preload("res://game/locations/parts/late_deposit.tres")
 ## Grid squares per chunk side: the ground and the scatter are cut into chunks so the parts out of
 ## view are culled.
 const CHUNK_CELLS: int = 25
@@ -98,6 +100,8 @@ const CANYON_FADE: Vector2 = Vector2(4.0, 16.0)
 @export var preview_strain: bool = false
 ## The region's set pieces: always placed (the mission sets them).
 @export var set_pieces: Array[PartPlacement] = []
+## The late deposit's part and where it goes (see `LateDeposit`); null: none.
+@export var late_deposit: PartPlacement = LATE_DEPOSIT
 ## What the crates hold, in the order they're placed (later quest fragments, set by the mission);
 ## the others hold a supply cache.
 @export var crate_contents: Array[CrateContent] = []
@@ -170,7 +174,7 @@ func plan() -> void:
 	layout = LocationLayout.generate(
 		rng, area_count, biome, landing_yard, landing_site.grow(LANDING_MARGIN)
 	)
-	parts.choose(rng, layout, set_pieces, biome.part_pool, biome.parts_per_area)
+	parts.choose(rng, layout, set_pieces, biome.part_pool, biome.parts_per_area, late_deposit)
 	_generate_ground(rng)
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	parts.settle(rng, self)
@@ -199,8 +203,9 @@ func build() -> void:
 	_hazards.build(self)
 	_scatter.build(self)
 	parts.build(self, crate_contents)
-	_add_ore_nodes()
+	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()
+	_add_late_deposit(late_ores)
 	if navigation_mesh:
 		var navigation := LocationNavigation.new()
 		navigation.name = "Navigation"
@@ -735,11 +740,13 @@ func lets_grow(at: Vector2, radius: float, tall: bool, on_barrier: bool = false)
 	return true
 
 
-func _add_ore_nodes() -> void:
+## Adds the ore nodes; returns the late deposit's, not in the tree.
+func _add_ore_nodes() -> Array[OreNode]:
 	var ore_nodes := Node3D.new()
 	ore_nodes.name = "OreNodes"
 	add_child(ore_nodes)
 	var turns: RandomNumberGenerator = _stream("ore_turns")
+	var late: Array[OreNode] = []
 	for i: int in sites.ores.size():
 		var node := ORE_NODE.instantiate() as OreNode
 		node.name = "Ore%d" % (i + 1)
@@ -748,7 +755,11 @@ func _add_ore_nodes() -> void:
 		node.variant = i
 		node.position = sites.ores[i].position
 		node.rotation.y = turns.randf() * TAU
-		ore_nodes.add_child(node)
+		if sites.ores[i].late:
+			late.append(node)
+		else:
+			ore_nodes.add_child(node)
+	return late
 
 
 func _add_nests() -> void:
@@ -766,6 +777,24 @@ func _add_nests() -> void:
 		nests.add_child(nest)
 	if table:
 		_add_apex(table)
+
+
+## The late deposit at its part (its time drawn from a stream of its own), with its ore `nodes`;
+## none when its part found no room.
+func _add_late_deposit(nodes: Array[OreNode]) -> void:
+	var part: LocationParts.Placed = parts.late_part()
+	if not part:
+		for node: OreNode in nodes:
+			node.free()
+		return
+	var deposit := LateDeposit.new()
+	deposit.name = "LateDeposit"
+	deposit.part = part.node
+	deposit.ore_nodes = nodes
+	deposit.ore_holder = get_node(^"OreNodes") as Node3D
+	deposit.at = _stream("late_deposit").randf_range(LateDeposit.TIMES.x, LateDeposit.TIMES.y)
+	deposit.position = part.origin
+	add_child(deposit)
 
 
 ## The hive's apex on some locations (see `AlienHive.apex_chance_at`, picked by the seed): it roams

@@ -3,7 +3,8 @@ extends RefCounted
 ## Where a generated location's ore nodes and alien nests go (see `GeneratedLocation`): the map
 ## parts' markers first, then ore fields (two close to the ramp with the commonest ore, the rarest
 ## in every ore pocket, a rich field in the middle of every nest hollow, the rest spread over the
-## other areas, rarer the farther they lie along the passes), then nests (two in every nest hollow,
+## other areas, rarer the farther they lie along the passes; the late deposit's on its part's
+## markers, see `deposit_ore`), then nests (two in every nest hollow,
 ## one on each side of its rich field, then spread over the areas far enough from the ship). Each
 ## pass draws from a random stream of its own (`GeneratedLocation.random_stream`), so a pass added
 ## later doesn't change what the others pick. Plain data, planned with the location (safe on a
@@ -35,16 +36,23 @@ class OreSite:
 	var ore: OreType
 	## The area it lies in.
 	var area: LocationLayout.Area
-	## Part of a nest hollow's rich field: holds more (`OreNode.rich`).
+	## Part of a nest hollow's rich field or the late deposit: holds more (`OreNode.rich`).
 	var rich: bool
+	## The late deposit's: appears with the impact (`LateDeposit`).
+	var late: bool
 
 	func _init(
-		at: Vector3, ore_type: OreType, in_area: LocationLayout.Area, is_rich: bool = false
+		at: Vector3,
+		ore_type: OreType,
+		in_area: LocationLayout.Area,
+		is_rich: bool = false,
+		is_late: bool = false
 	) -> void:
 		position = at
 		ore = ore_type
 		area = in_area
 		rich = is_rich
+		late = is_late
 
 
 ## A nest's place.
@@ -131,7 +139,8 @@ func _pick_ores(found: Array[OreType]) -> void:
 			fields += 1
 
 
-## The map parts' ore markers, each with the ore of its band; how many parts have some.
+## The map parts' ore markers, each with the ore of its band (the late deposit's all with
+## `deposit_ore`, rich); how many parts have some (not counting the late deposit).
 func _ore_markers(found: Array[OreType]) -> int:
 	var fields: int = 0
 	for part: LocationParts.Placed in _location.parts.placed:
@@ -144,10 +153,23 @@ func _ore_markers(found: Array[OreType]) -> int:
 					ore_type = found[0]
 				PartMarker.Band.MID:
 					ore_type = found[floori(found.size() / 2.0)]
-			ores.append(OreSite.new(_on_ground(part.marker_position(i)), ore_type, part.area))
-		if part.info.count(PartMarker.Kind.ORE) > 0:
+			if part.late:
+				ore_type = deposit_ore(found)
+			var at: Vector3 = _on_ground(part.marker_position(i))
+			ores.append(OreSite.new(at, ore_type, part.area, part.late, part.late))
+		if part.info.count(PartMarker.Kind.ORE) > 0 and not part.late:
 			fields += 1
 	return fields
+
+
+## The late deposit's ore among `found` (commonest first): the rarest signature ore, else the
+## rarest mid ore, else the rarest.
+static func deposit_ore(found: Array[OreType]) -> OreType:
+	for band: OreType.Band in [OreType.Band.SIGNATURE, OreType.Band.MID]:
+		for i: int in range(found.size() - 1, -1, -1):
+			if found[i].band == band:
+				return found[i]
+	return found[found.size() - 1]
 
 
 ## Adds an ore field of `ore_type` in `area` (`near`: close to the ramp; `rich`: a nest hollow's

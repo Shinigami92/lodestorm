@@ -110,10 +110,14 @@ How this file works: **Done** lists what's built (described in [`design/`](desig
 
 Each step builds on the ones before it (steps 1–15 are done, crew joining waits for the quests; the station NPCs' deliveries and requests come with the quests, step 16).
 
+- [ ] **Balance** before step 16 ([`planned/balance.md`](planned/balance.md))
+  - [ ] **A** the rescue drone waiting for a gap (no alien within 10 m, at most 8 s; aliens walking back towards their nest meanwhile) and getting the player up with a flash that staggers aliens within 8 m
+  - [ ] **B** two open cradles at the start (the missing ones stripped spots in the bay, standard-issue miners only up to the open count, the debug overlay opening more), a missing furnace stripped of its burner, the first heat shield plate and MK2/MK3 at about half; Brannik's tour stop, Hollis' fleet topic and Okoro's furnace topic saying why (voiced EN/DE)
+  - [ ] **C** choosing which miner to place: the softest drill at full speed as the default, a preview hologram of the miner to place on the nearest free node (its number plate, a parts label, cyan or amber for how it fits, the fill time on its ring), `miner_prev`/`miner_next` stepping through the miners still to place
 - [ ] **Step 16: quests** ([`planned/quests.md`](planned/quests.md))
   - [ ] **A** quests as data (quest, steps, goals, rewards, story flags), offering with the diamond marker, accepting, hand-ins, the goals deliver (filled from the hauls), reach a site, mine and build, the quest board on the bridge (quests, logs, jobs), tracking, the story director (beats with conditions, one on every return, dockings counting as returns), the comms console's messages, the navigator's marker on stations where something waits
   - [ ] **B** quest sites in regions, the goals clear nests, recover fragments, recover an item and hunt, the navigator's diamonds, amber beams, radio lines, overheard talks
-  - [ ] **C** first content: the quartermaster's chain ending in Brask's blueprint, the engineer's first furnace (the other furnaces through later quests), the depot master's requests, reputation pips; then its own PR: **crew joining** (four aboard at the start, the join flags, Dace, Wren and Fenna at Ostra and walking aboard, Hollis' camp in Hollow Mire, stand-in topics, gated lines and transmission turns, Vehra waiting for the whole crew, [`planned/crew.md`](planned/crew.md))
+  - [ ] **C** first content: the quartermaster's chain ending in Brask's blueprint, the engineer's first furnace as a main step (the other furnaces and the cradles with the main story, one each per act in acts 1–4, [`planned/balance.md`](planned/balance.md)), the depot master's requests, reputation pips; then its own PR: **crew joining** (four aboard at the start, the join flags, Dace, Wren and Fenna at Ostra and walking aboard, Hollis' camp in Hollow Mire, stand-in topics, gated lines and transmission turns, Vehra waiting for the whole crew, [`planned/crew.md`](planned/crew.md))
   - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first), the expedition's logs, each act's time between missions (personal beats, talks, messages, Ostra's change and traffic, Ostra Control, colonists' remarks, steps back on earlier bodies; the frame in [`planned/world.md`](planned/world.md)); the crew gatherings, Brannik's range challenges and Fenna's dishes once the crew can sit
 
 Alongside, any time:
@@ -155,6 +159,7 @@ Alongside, any time:
 - Comms station on the bridge: invites through the platform (Steam overlay), and the comms log (radio lines to listen to again)
 - Sync players, miners, aliens, resources
 - Player colors with numbers on the suit, silhouettes, rings, lockers and miners ([`planned/art.md`](planned/art.md))
+- The team's miners ([`planned/balance.md`](planned/balance.md)): the host's open cradles plus one per extra player, a shared pool
 - Reviving each other ([`planned/coop-revive.md`](planned/coop-revive.md)): going down, reviving by standing close, shorter bleed-outs, respawning after 30 s
 - Shared ship hub
 - Co-op progression: host save plus each player's own gear, tier sync (see [Co-op progression](design/progression.md#co-op-progression))

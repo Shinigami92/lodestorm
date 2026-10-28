@@ -6,8 +6,8 @@ extends CharacterBody3D
 ## its `fleet` (up to six per run, its crafted ones first) on the nearest free ore node in range
 ## with `place_miner`, picks miners up again with `interact`, both taking a few seconds while it
 ## stays near the miner (`handling`), and carries the ore that
-## miners' hoses move to it, shown in canisters on its back and as a badge rising above it
-## (`OreArrival`). An arrow on the suit ring's edge points back to the ship (`ShipPointer`). Uses
+## miners' hoses move to it (`cargo`), shown in canisters on its back and as a badge rising above
+## it (`OreArrival`). An arrow on the suit ring's edge points back to the ship (`ShipPointer`). Uses
 ## the nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
 ## the suit ring around its feet (`SuitRing`, with the ammo, the spare magazines and the dash) and
@@ -36,10 +36,6 @@ extends CharacterBody3D
 ## and its camera follows) reads the input, teammates' rings show only their health. Its `sounds`
 ## play its hits, death and dash, and the local player's are where the game is heard from.
 
-## Emitted when the carried amount of an ore type changes.
-signal cargo_changed(ore_type: OreType, amount: float)
-## Emitted when ore arrives (`amount` more units of `ore_type`, e.g. from a hose).
-signal cargo_added(ore_type: OreType, amount: float)
 ## Emitted when health changes (damage, healing).
 signal health_changed(health: float)
 ## Emitted when health reaches zero.
@@ -114,8 +110,8 @@ var silhouette_shown: bool = true:
 		silhouette_shown = value
 		if is_node_ready():
 			_update_overlay()
-## Units carried per ore type; no carry limit.
-var cargo: Dictionary[OreType, float] = {}
+## The ore it carries during a run.
+var cargo := PlayerCargo.new()
 ## What it brought back over all runs and hasn't spent yet (saved with the player).
 var hold := PlayerHold.new()
 ## Its batches in the refinery's furnaces (saved with the player).
@@ -205,7 +201,7 @@ func _ready() -> void:
 	_attach(_shield_mount, "ShieldGrip")
 	_attach(_cargo_rack, "CargoRack")
 	_attach(_hose_port, "HosePort")
-	cargo_changed.connect(_cargo_rack.show_cargo)
+	cargo.ore_changed.connect(_cargo_rack.show_cargo)
 	upgrades = upgrades.duplicate() if upgrades else Upgrades.new()
 	upgrades.levels = upgrades.levels.duplicate()
 	upgrades.changed.connect(_on_upgrades_changed)
@@ -432,39 +428,6 @@ func get_armor_pips() -> MkPips:
 	return _armor_pips
 
 
-## Adds `amount` units of `ore_type` to the cargo.
-func add_cargo(ore_type: OreType, amount: float) -> void:
-	if amount <= 0.0:
-		return
-	var carried: float = cargo.get(ore_type, 0.0)
-	carried += amount
-	cargo[ore_type] = carried
-	cargo_changed.emit(ore_type, carried)
-	cargo_added.emit(ore_type, amount)
-	GameEvents.bus.ore_collected.emit(self, ore_type, amount)
-
-
-## Removes up to `amount` units of `ore_type` from the cargo (e.g. made into ammo).
-func take_ore(ore_type: OreType, amount: float) -> void:
-	var carried: float = cargo.get(ore_type, 0.0)
-	if amount <= 0.0 or carried <= 0.0:
-		return
-	carried = maxf(carried - amount, 0.0)
-	if carried < 0.0001:
-		carried = 0.0
-	cargo[ore_type] = carried
-	cargo_changed.emit(ore_type, carried)
-
-
-## Removes all cargo and returns it.
-func take_cargo() -> Dictionary[OreType, float]:
-	var taken: Dictionary[OreType, float] = cargo
-	cargo = {}
-	for ore_type: OreType in taken:
-		cargo_changed.emit(ore_type, 0.0)
-	return taken
-
-
 ## Loses `amount` health (from an attacker at `from`, if it has one: the suit ring marks where
 ## the hit came from); dies at zero. A blow of an `attacker` (`heavy`: a charge, a slam) may be
 ## stopped by the field of a shield the player holds (see `ShieldField.block`). `cause` dealt it
@@ -565,10 +528,14 @@ func _action_just_pressed(action: StringName) -> bool:
 	return _action_held(action) and Input.is_action_just_pressed(action)
 
 
-## Passes what it achieves (weapons, blueprints, upgrade levels, skill ranks, bars refined) on to
-## `GameEvents`.
+## Passes what it achieves (ore collected, weapons, blueprints, upgrade levels, skill ranks, bars
+## refined) on to `GameEvents`.
 func _report_progress() -> void:
 	var events: GameEvents = GameEvents.bus
+	cargo.ore_added.connect(
+		func(ore_type: OreType, amount: float) -> void:
+			events.ore_collected.emit(self, ore_type, amount)
+	)
 	arsenal.unlocked.connect(
 		func(weapon_type: WeaponType) -> void: events.weapon_unlocked.emit(self, weapon_type)
 	)
@@ -608,7 +575,7 @@ func _on_died() -> void:
 		interact_target.highlighted = false
 	miner_target = null
 	interact_target = null
-	var dropped: Dictionary[OreType, float] = take_cargo()
+	var dropped: Dictionary[OreType, float] = cargo.take_all()
 	for ore_type: OreType in dropped:
 		GameEvents.bus.ore_lost.emit(self, ore_type, dropped[ore_type])
 	# Falls and lies still; the collision shape stays, so the ship still knows where the body is.

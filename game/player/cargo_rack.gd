@@ -52,7 +52,7 @@ func _ready() -> void:
 	_pour()
 
 
-## Shows `amount` units of `ore_type` (connect to `Player.cargo_changed`).
+## Shows `amount` units of `ore_type` (connect to `PlayerCargo.ore_changed`).
 func show_cargo(ore_type: OreType, amount: float) -> void:
 	if amount > 0.0:
 		_cargo[ore_type] = amount

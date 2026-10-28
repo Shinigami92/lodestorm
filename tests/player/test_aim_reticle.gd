@@ -68,7 +68,7 @@ func test_dims_under_the_cursor_while_locked_or_follows_the_lock() -> void:
 ## are drawn pulled towards the camera (it would paint a shifted copy of itself on them).
 func test_leaves_the_player_out() -> void:
 	# Enough for canisters beside the backpack.
-	_player.add_cargo(KYRITE, 2000.0)
+	_player.cargo.add(KYRITE, 2000.0)
 	await wait_process_frames(1)
 	var decal := _reticle.get_node("Decal") as Decal
 	assert_not_null(_player.weapon, "with a weapon")

@@ -242,7 +242,7 @@ func _physics_process(delta: float) -> void:
 	if hose_target:
 		var taken: float = take(transfer_rate() * delta)
 		flowing = taken > 0.0
-		hose_target.add_cargo(ore_type, taken)
+		hose_target.cargo.add(ore_type, taken)
 	_drill = _loop(_drill, DRILL_SOUND, mining)
 	if _drill:
 		_drill.pitch_scale = (
@@ -391,7 +391,7 @@ func pick_up(by: Player) -> bool:
 	if not fleet or is_queued_for_deletion() or (crafted and not crafted.out):
 		return false
 	if amount > 0.0:
-		by.add_cargo(ore_type, take(amount))
+		by.cargo.add(ore_type, take(amount))
 	if crafted:
 		crafted.health = health
 	fleet.bring_back(crafted)

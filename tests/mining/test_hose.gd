@@ -98,7 +98,7 @@ func test_long_hose_rests_on_ground() -> void:
 
 
 func _carried(ore_type: OreType) -> float:
-	return _player.cargo.get(ore_type, 0.0)
+	return _player.cargo.amount(ore_type)
 
 
 func _move_player(target: Vector3) -> void:

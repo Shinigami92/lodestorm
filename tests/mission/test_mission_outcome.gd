@@ -68,7 +68,7 @@ func test_dying_in_storm_loses_mission_and_cargo() -> void:
 	var brief: MissionBrief = _voyage.brief
 	await _open()
 	await _move(_player, _outside())
-	_player.add_cargo(KYRITE, 100.0)
+	_player.cargo.add(KYRITE, 100.0)
 	_mission.time_left = 0.0
 	_mission.storm_time = 1000.0
 	await wait_physics_frames(10)
@@ -136,7 +136,7 @@ func test_tuning_duration_updates_timer() -> void:
 func test_returning_stores_cargo_in_hold() -> void:
 	await _open()
 	await _move(_player, _outside())
-	_player.add_cargo(KYRITE, 150.0)
+	_player.cargo.add(KYRITE, 150.0)
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	assert_true(_player.cargo.is_empty())
@@ -148,13 +148,13 @@ func test_returning_stores_cargo_in_hold() -> void:
 func test_banking_during_a_run_stores_cargo_and_the_run_goes_on() -> void:
 	await _open()
 	await _move(_player, _outside())
-	_player.add_cargo(KYRITE, 60.0)
+	_player.cargo.add(KYRITE, 60.0)
 	_mission.bank([_player])
 	assert_true(_player.cargo.is_empty())
 	assert_eq(_player.hold.amount(KYRITE), 60.0)
 	assert_eq(_mission.state, Mission.State.RUNNING, "still outside, still running")
 	assert_signal_emitted(GameEvents.bus, "ore_hauled")
-	_player.add_cargo(KYRITE, 40.0)
+	_player.cargo.add(KYRITE, 40.0)
 	await _move(_player, _inside())
 	assert_eq(_player.hold.amount(KYRITE), 100.0, "the rest comes aboard at the end")
 
@@ -164,7 +164,7 @@ func test_hold_keeps_cargo_over_runs() -> void:
 		TEST_MAP.pick_mission(_map)
 		await _open()
 		await _move(_player, _outside())
-		_player.add_cargo(KYRITE, 100.0)
+		_player.cargo.add(KYRITE, 100.0)
 		await _move(_player, _inside())
 	assert_eq(_player.hold.amount(KYRITE), 200.0)
 
@@ -174,8 +174,8 @@ func test_returning_pays_the_ships_project_first() -> void:
 	_ship.heat_shield.set_project()
 	await _open()
 	await _move(_player, _outside())
-	_player.add_cargo(MERIDINE, 120.0)
-	_player.add_cargo(KYRITE, 30.0)
+	_player.cargo.add(MERIDINE, 120.0)
+	_player.cargo.add(KYRITE, 30.0)
 	await _move(_player, _inside())
 	assert_eq(_mission.state, Mission.State.RETURNED)
 	assert_eq(_ship.heat_shield.paid[MERIDINE], 120.0)
@@ -203,9 +203,9 @@ func test_mission_won_when_the_living_are_aboard() -> void:
 	await _open()
 	await _move(_player, _outside())
 	await _move(other, _outside())
-	other.add_cargo(KYRITE, 50.0)
+	other.cargo.add(KYRITE, 50.0)
 	other.take_damage(other.settings.max_health)
-	_player.add_cargo(KYRITE, 80.0)
+	_player.cargo.add(KYRITE, 80.0)
 	await wait_physics_frames(2)
 	assert_eq(_mission.state, Mission.State.RUNNING, "one player is still alive outside")
 	await _move(_player, _inside())

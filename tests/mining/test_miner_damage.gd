@@ -46,7 +46,7 @@ func test_broken_miner_keeps_its_ore_from_the_hose() -> void:
 	await wait_physics_frames(10)
 	assert_null(_miner.hose_target)
 	assert_eq(_miner.amount, amount)
-	var carried: float = _player.cargo.get(_node.ore_type, 0.0)
+	var carried: float = _player.cargo.amount(_node.ore_type)
 	assert_eq(carried, 0.0)
 
 

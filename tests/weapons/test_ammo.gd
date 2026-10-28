@@ -88,7 +88,7 @@ func test_holding_interact_next_to_a_teammate_hands_them_a_magazine() -> void:
 	await wait_physics_frames(1)
 	var their_harl := teammate.get_ammo() as MagazineAmmo
 	their_harl.rounds = 3
-	_player.add_cargo(KYRITE, 20.0)
+	_player.cargo.add(KYRITE, 20.0)
 	Input.action_press(&"interact")
 	await wait_physics_frames(2)
 	assert_eq(_player.give_ammo_target, teammate)
@@ -96,7 +96,7 @@ func test_holding_interact_next_to_a_teammate_hands_them_a_magazine() -> void:
 	assert_eq(_number(&"give_alpha"), 1.0, "the ring fills while handing it over")
 	await wait_seconds(_player.settings.give_ammo_time + 0.1)
 	assert_eq(their_harl.rounds, their_harl.capacity())
-	assert_almost_eq(_player.cargo[KYRITE], 20.0 - 6.0, 0.001)
+	assert_almost_eq(_player.cargo.amount(KYRITE), 20.0 - 6.0, 0.001)
 	assert_null(_player.give_ammo_target, "once per hold")
 
 
@@ -112,13 +112,13 @@ func test_ore_value_and_spending() -> void:
 	var cargo: Dictionary[OreType, float] = {VYREL: 2.0, KYRITE: 1.0, OLVANE: 4.0}
 	assert_almost_eq(OreAmmo.value(cargo), 1.0 + 4.0 * 1.25 + 2.0 * 1.5, 0.001)
 	assert_eq(OreAmmo.affordable(cargo, 0.25), 36)
-	_player.add_cargo(VYREL, 2.0)
-	_player.add_cargo(OLVANE, 4.0)
-	_player.add_cargo(KYRITE, 1.0)
+	_player.cargo.add(VYREL, 2.0)
+	_player.cargo.add(OLVANE, 4.0)
+	_player.cargo.add(KYRITE, 1.0)
 	OreAmmo.spend(_player, 3.5)
-	assert_almost_eq(_player.cargo[KYRITE], 0.0, 0.001)
-	assert_almost_eq(_player.cargo[OLVANE], 2.0, 0.001)
-	assert_almost_eq(_player.cargo[VYREL], 2.0, 0.001, "rare ore is spent last")
+	assert_almost_eq(_player.cargo.amount(KYRITE), 0.0, 0.001)
+	assert_almost_eq(_player.cargo.amount(OLVANE), 2.0, 0.001)
+	assert_almost_eq(_player.cargo.amount(VYREL), 2.0, 0.001, "rare ore is spent last")
 
 
 func test_magazine_upgrade_holds_more_and_lights_its_pips() -> void:
@@ -157,7 +157,7 @@ func test_shell_strip_has_a_shell_per_round() -> void:
 
 func test_ring_shows_a_reload() -> void:
 	_harl().rounds = 0
-	_player.add_cargo(KYRITE, 100.0)
+	_player.cargo.add(KYRITE, 100.0)
 	_player.reload()
 	await wait_process_frames(2)
 	assert_true(_ring().visible)

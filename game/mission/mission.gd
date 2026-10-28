@@ -155,7 +155,7 @@ func bank(players: Array[Player]) -> void:
 	for player: Player in players:
 		if player.dead:
 			continue
-		var cargo: Dictionary[OreType, float] = player.take_cargo()
+		var cargo: Dictionary[OreType, float] = player.cargo.take_all()
 		_count_hauled(player, cargo)
 		for ore_type: OreType in cargo:
 			var so_far: float = haul.get(ore_type, 0.0)

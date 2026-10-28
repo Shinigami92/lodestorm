@@ -1,5 +1,5 @@
 """Recipes of the mission's sounds: the ship's ramp and doors, the countdown's beeps, the storm's warning,
-its building and its hit, and the biomes' hazards (the vents)."""
+its building and its hit, the late deposit's meteor, and the biomes' hazards (the vents)."""
 
 import math
 import random
@@ -10,6 +10,7 @@ from synth import (
     bell,
     burst,
     click,
+    count,
     crackle,
     env,
     glide,
@@ -116,6 +117,30 @@ def storm_hit(rng: random.Random, take: str, variant: int) -> Signal:
     blast = shape(bandpass(noise(rng, 3.0), glide(2500, 500, 1.0), 0.7), env(3.0, 0.05, 2.5, 0.3))
     roar = shape(lowpass(noise(rng, 3.5), 180), env(3.5, 0.3, 2.5, 0.5))
     return saturate(mix((crack, 0.5), (boom, 1.0), (blast, 0.6, 0.05), (roar, 1.0, 0.1)), 1.5)
+
+
+@sound("mission/meteor_fall")
+def meteor_fall(rng: random.Random, take: str, variant: int) -> Signal:
+    """The late deposit's meteor coming down (2.5 s, heard everywhere): a roar tearing through the air,
+    rising and getting closer, with a falling whistle and crackling fire."""
+    seconds = 2.5
+    rise = [(i / count(seconds)) ** 2 for i in range(count(seconds))]
+    roar = shape(lowpass(noise(rng, seconds), slide(150, 700, seconds)), rise)
+    tear = shape(bandpass(noise(rng, seconds), glide(3500, 900, seconds), 1.5), rise)
+    whistle = shape(tone(glide(1400, 500, seconds), seconds), [r * 0.5 for r in rise])
+    fire = shape(highpass(crackle(rng, seconds, 600), 1500), rise)
+    return mix((roar, 1.0), (tear, 0.4), (whistle, 0.12), (fire, 0.3))
+
+
+@sound("mission/meteor_impact")
+def meteor_impact(rng: random.Random, take: str, variant: int) -> Signal:
+    """The late deposit's meteor hitting the ground (heard everywhere): a crack, a deep boom and a
+    long rumble rolling away, with debris raining down."""
+    crack = burst(rng, 0.4, 0.001, 0.3, "highpass", 900)
+    boom = thump(90, 24, 0.08, 1.8, 2.2)
+    rumble = shape(lowpass(noise(rng, 4.0), 110), env(4.0, 0.05, 3.5, 0.4))
+    debris = shape(bandpass(crackle(rng, 3.0, 120), 1800, 0.8), bell(3.0, 0.25, 1.5))
+    return reverb(saturate(mix((crack, 0.6), (boom, 1.0), (rumble, 1.0, 0.05), (debris, 0.3, 0.3)), 1.6), 0.8, 2.5, 0.3)
 
 
 @sound("biomes/vent_rumble", variants=2)

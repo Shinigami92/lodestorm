@@ -161,7 +161,8 @@ func test_parts_and_crates_are_built() -> void:
 		var part := built[i] as MapPart
 		assert_not_null(part)
 		assert_almost_eq(part.position, location.parts.placed[i].origin, Vector3.ONE * 0.001)
-		assert_true(part.is_in_group(HoloTable.LANDMARK_GROUP))
+		# The late deposit's part only shows once it came down.
+		assert_eq(part.is_in_group(HoloTable.LANDMARK_GROUP), not location.parts.placed[i].late)
 	var crates: Array[Node] = location.find_children("*", "Crate", true, false)
 	assert_gt(crates.size(), 0)
 	assert_eq((crates[0] as Crate).content, fragment)
@@ -224,7 +225,8 @@ func test_hologram_shows_parts_not_crates() -> void:
 			assert_eq(color, HoloTable.LANDMARK_COLOR)
 			landmarks += 1
 	assert_gt(landmarks, 0)
-	assert_eq(table.get_landmark_markers().size(), location.parts.placed.size(), "a beam per part")
+	var shown: int = location.parts.placed.size() - (1 if location.parts.late_part() else 0)
+	assert_eq(table.get_landmark_markers().size(), shown, "a beam per part, the late one hidden")
 
 
 func _part_scenes() -> Array[PackedScene]:

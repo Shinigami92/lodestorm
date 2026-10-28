@@ -6,7 +6,9 @@ extends RefCounted
 ## open ground, as far off the lanes as they can). The walkable ring around a part's props keeps
 ## every pass through its area open. A region's set pieces are always placed, in the
 ## biggest area that fits; about one point of interest per four areas comes from the biome's pool,
-## never in the landing yard or an ore pocket. Plain data, planned on the worker thread with the
+## never in the landing yard or an ore pocket. The late deposit's impact site goes in like a set
+## piece (into the farthest plain area it fits, turned into a crater), but its part only appears
+## with the impact (`late`, see `LateDeposit`). Plain data, planned on the worker thread with the
 ## location. All values greybox, TBD (playtest).
 
 ## How far from an area's center a part may move to find room, relative to the area's radius.
@@ -30,6 +32,10 @@ class Placed:
 	var placement: PartPlacement
 	var info: MapPart.Info
 	var set_piece: bool = false
+	## The late deposit's: built hidden, it appears with the impact.
+	var late: bool = false
+	## Its scene's root, once built.
+	var node: MapPart
 	## The area it stands in (or, until it's settled, the ones it may go into, best first).
 	var area: LocationLayout.Area
 	var candidates: Array[LocationLayout.Area] = []
@@ -57,14 +63,16 @@ class Placed:
 var placed: Array[Placed] = []
 
 
-## Picks the parts and their areas: every one of `set_pieces`, then about `per_area` of the
-## layout's areas from `pool`.
+## Picks the parts and their areas: every one of `set_pieces`, then the `late` one (the late
+## deposit's impact site, none without it), then about `per_area` of the layout's areas from
+## `pool`.
 func choose(
 	rng: RandomNumberGenerator,
 	layout: LocationLayout,
 	set_pieces: Array[PartPlacement],
 	pool: Array[PartPlacement],
-	per_area: float
+	per_area: float,
+	late: PartPlacement = null
 ) -> void:
 	var free: Array[LocationLayout.Area] = layout.areas.slice(1)
 	for placement: PartPlacement in set_pieces:
@@ -77,6 +85,13 @@ func choose(
 		if kind not in info.area_kinds and info.shapes_basin:
 			areas[0].kind = info.area_kinds[0]
 		_add(placement, info, areas, true, free)
+	if late:
+		var late_info: MapPart.Info = MapPart.describe(late.scene)
+		var late_areas: Array[LocationLayout.Area] = _late_areas(late_info, free)
+		if not late_areas.is_empty():
+			late_areas[0].kind = late_info.area_kinds[0]
+			_add(late, late_info, late_areas, true, free)
+			placed[placed.size() - 1].late = true
 	# Each part as often as the others: the ones used least that still fit somewhere first, each at
 	# most `MAX_REPEATS` times; never one of the set pieces again.
 	var uses: Dictionary[PackedScene, int] = {}
@@ -134,20 +149,21 @@ func settle(rng: RandomNumberGenerator, location: GeneratedLocation) -> void:
 			used.append(area)
 			placed.append(part)
 			break
-		if not part.area and part.set_piece:
+		if not part.area and part.set_piece and not part.late:
 			push_warning("No room for the set piece %s" % part.placement.scene.resource_path)
 
 
 ## Adds the parts' scenes to `location` (under `Parts`), with a crate on every crate marker: they
-## hold `contents` in turn, then supply caches.
+## hold `contents` in turn, then supply caches. The late part waits hidden (see `LateDeposit`).
 func build(location: Node3D, contents: Array[CrateContent]) -> void:
 	var holder := Node3D.new()
 	holder.name = "Parts"
 	location.add_child(holder)
 	var left: Array[CrateContent] = contents.duplicate()
 	for part: Placed in placed:
-		var scene := part.placement.scene.instantiate() as Node3D
+		var scene := part.placement.scene.instantiate() as MapPart
 		scene.transform = part.transform()
+		part.node = scene
 		holder.add_child(scene)
 		for marker: PartMarker in scene.find_children("*", "PartMarker", true, false):
 			if marker.kind != PartMarker.Kind.CRATE:
@@ -157,6 +173,14 @@ func build(location: Node3D, contents: Array[CrateContent]) -> void:
 			if not left.is_empty():
 				crate.content = left.pop_front()
 			marker.add_child(crate)
+
+
+## The late deposit's part, or null.
+func late_part() -> Placed:
+	for part: Placed in placed:
+		if part.late:
+			return part
+	return null
 
 
 ## The part in `area`, or null.
@@ -246,6 +270,25 @@ func _set_piece_areas(
 	for area: LocationLayout.Area in ranked.slice(1):
 		if area not in areas:
 			areas.append(area)
+	return areas
+
+
+## The areas the late deposit's part may go into, best first: the plain ones its footprint fits
+## (basins, crossroads, craters), the farthest first. The first is turned into a crater.
+static func _late_areas(
+	info: MapPart.Info, free: Array[LocationLayout.Area]
+) -> Array[LocationLayout.Area]:
+	var plain: Array[LocationLayout.Kind] = [
+		LocationLayout.Kind.BASIN, LocationLayout.Kind.CROSSROADS, LocationLayout.Kind.CRATER
+	]
+	var areas: Array[LocationLayout.Area] = []
+	for area: LocationLayout.Area in free:
+		var fits: bool = area.radius * (1.0 - GeneratedLocation.AREA_WOBBLE) >= info.footprint
+		if area.kind in plain and fits:
+			areas.append(area)
+	areas.sort_custom(
+		func(a: LocationLayout.Area, b: LocationLayout.Area) -> bool: return a.distance > b.distance
+	)
 	return areas
 
 

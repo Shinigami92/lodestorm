@@ -161,6 +161,16 @@
       "variants": 2,
       "recordings": []
     },
+    "mission/meteor_fall": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
+    "mission/meteor_impact": {
+      "made_by": "build.py",
+      "variants": 1,
+      "recordings": []
+    },
     "mission/ramp": {
       "made_by": "build.py",
       "variants": 1,

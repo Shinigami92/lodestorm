@@ -38,7 +38,7 @@ func test_sites_know_their_area() -> void:
 
 
 ## Every nest hollow holds a rich field of the location's rarest or second rarest ore (the only
-## rich nodes), and a hollow's two nests lie on either side of it.
+## rich nodes besides the late deposit's), and a hollow's two nests lie on either side of it.
 func test_nest_hollows_hold_a_rich_field_between_their_nests() -> void:
 	var between: int = 0
 	for biome: LocationBiome in [FROST, SALT]:
@@ -48,7 +48,7 @@ func test_nest_hollows_hold_a_rich_field_between_their_nests() -> void:
 			var location: GeneratedLocation = SWEEP.plan(world_seed, biome, [], SWEEP.VIEW, 16)
 			var label: String = "%s seed %d" % [biome.display_name, world_seed]
 			for site: LocationSites.OreSite in location.sites.ores:
-				if site.rich:
+				if site.rich and not site.late:
 					assert_eq(site.area.kind, LocationLayout.Kind.NEST_HOLLOW, label)
 					assert_has(rare, site.ore, label)
 			for area: LocationLayout.Area in location.layout.areas:
@@ -72,7 +72,7 @@ func _rich_field(location: GeneratedLocation, area: LocationLayout.Area) -> Vect
 	var sum := Vector2.ZERO
 	var nodes: int = 0
 	for site: LocationSites.OreSite in location.sites.ores:
-		if site.rich and site.area == area:
+		if site.rich and not site.late and site.area == area:
 			sum += Vector2(site.position.x, site.position.z)
 			nodes += 1
 	return sum / nodes if nodes > 0 else Vector2.INF

@@ -831,6 +831,30 @@ msgstr "Der Sturm ist im Anmarsch. Die Rampe ist unten, also kommt alle zurück.
 msgid "Here comes the weather. Finish up, all of you, and get back aboard."
 msgstr "Das Wetter schlägt um. Macht fertig und kommt an Bord."
 
+#: game/npcs/crew/pilot.tres
+msgid "Something came down out there, and it's glowing. If that's ore, it's the good kind. Go and take a look if you think you can make it."
+msgstr "Da draußen ist etwas eingeschlagen, und es leuchtet. Wenn das Erz ist, dann ist es die gute Sorte. Sieh es dir an, wenn du glaubst, dass du es schaffst."
+
+#: game/npcs/crew/pilot.tres
+msgid "Did you hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful."
+msgstr "Hast du das gehört? Gerade ist ein Meteor eingeschlagen, und im Krater leuchtet Erz. Der Lärm hat bestimmt geweckt, was in der Nähe lebt, also sei vorsichtig."
+
+#: game/npcs/crew/pilot.tres
+msgid "A meteor just came down out there. It brought something rich with it, by the look of that light. The way back from there is long, though."
+msgstr "Da draußen ist gerade ein Meteor niedergegangen. Nach dem Licht zu urteilen, hat er etwas Wertvolles mitgebracht. Der Weg zurück von dort ist allerdings weit."
+
+#: game/npcs/crew/pilot.tres
+msgid "Something came down out there, and it's glowing. If that's ore, it's the good kind. Go and take a look if you think you can make it, all of you."
+msgstr "Da draußen ist etwas eingeschlagen, und es leuchtet. Wenn das Erz ist, dann ist es die gute Sorte. Seht es euch an, wenn ihr glaubt, dass ihr es schafft."
+
+#: game/npcs/crew/pilot.tres
+msgid "Did you all hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful."
+msgstr "Habt ihr das gehört? Gerade ist ein Meteor eingeschlagen, und im Krater leuchtet Erz. Der Lärm hat bestimmt geweckt, was in der Nähe lebt, also seid vorsichtig."
+
+#: game/npcs/crew/pilot.tres
+msgid "A meteor just came down out there. It brought something rich with it, by the look of that light. The way back from there is long, though, so stay together."
+msgstr "Da draußen ist gerade ein Meteor niedergegangen. Nach dem Licht zu urteilen, hat er etwas Wertvolles mitgebracht. Der Weg zurück von dort ist allerdings weit, also bleibt zusammen."
+
 #: game/npcs/crew/quartermaster.tres
 msgid "Quartermaster"
 msgstr "Quartiermeister"

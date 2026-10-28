@@ -92,6 +92,8 @@ signal mission_started(brief: MissionBrief)
 signal storm_warned
 ## The storm broke (the timer ran out).
 signal storm_started
+## The late deposit's meteor hit the ground at `position` (see `LateDeposit`).
+signal deposit_landed(position: Vector3)
 ## A run ended: everyone alive aboard (`returned`), or everyone dead.
 signal mission_ended(brief: MissionBrief, returned: bool)
 ## The player opened a 3D menu (a station, a terminal).

@@ -131,6 +131,18 @@ event = &"storm_warning"
 players = 2
 lines = Array[String](["Storm's coming in. Everyone back to the ship.", "Storm front on the scanner. Time to head back.", "The storm is on its way. The ramp is down, so come on back, all of you.", "Here comes the weather. Finish up, all of you, and get back aboard."])
 
+[sub_resource type="Resource" id="Reaction_deposit_landed_solo"]
+script = ExtResource("9_reaction")
+event = &"deposit_landed"
+players = 1
+lines = Array[String](["Something came down out there, and it's glowing. If that's ore, it's the good kind. Go and take a look if you think you can make it.", "Did you hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful.", "A meteor just came down out there. It brought something rich with it, by the look of that light. The way back from there is long, though."])
+
+[sub_resource type="Resource" id="Reaction_deposit_landed_coop"]
+script = ExtResource("9_reaction")
+event = &"deposit_landed"
+players = 2
+lines = Array[String](["Something came down out there, and it's glowing. If that's ore, it's the good kind. Go and take a look if you think you can make it, all of you.", "Did you all hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful.", "A meteor just came down out there. It brought something rich with it, by the look of that light. The way back from there is long, though, so stay together."])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"pilot"
@@ -141,4 +153,4 @@ activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"
 accent_color = Color(0.3, 0.72, 1, 1)
 cabin = 2
 dialogue = SubResource("Resource_dialogue")
-reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_cassor"), SubResource("Reaction_planet_opened_zairen"), SubResource("Reaction_first_landing_torvane"), SubResource("Reaction_first_landing_lisk"), SubResource("Reaction_first_landing_vehra"), SubResource("Reaction_first_landing_cassor"), SubResource("Reaction_first_landing_mirr"), SubResource("Reaction_first_landing_orrel"), SubResource("Reaction_first_landing_iska"), SubResource("Reaction_first_landing_skelde"), SubResource("Reaction_first_landing_zairen"), SubResource("Reaction_storm_warning_solo"), SubResource("Reaction_storm_warning_coop")])
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_cassor"), SubResource("Reaction_planet_opened_zairen"), SubResource("Reaction_first_landing_torvane"), SubResource("Reaction_first_landing_lisk"), SubResource("Reaction_first_landing_vehra"), SubResource("Reaction_first_landing_cassor"), SubResource("Reaction_first_landing_mirr"), SubResource("Reaction_first_landing_orrel"), SubResource("Reaction_first_landing_iska"), SubResource("Reaction_first_landing_skelde"), SubResource("Reaction_first_landing_zairen"), SubResource("Reaction_storm_warning_solo"), SubResource("Reaction_storm_warning_coop"), SubResource("Reaction_deposit_landed_solo"), SubResource("Reaction_deposit_landed_coop")])

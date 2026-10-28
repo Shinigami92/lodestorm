@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="PartPlacement" format=3 uid="uid://co2qies5l73v1"]
+
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="2_crater"]
+
+[resource]
+script = ExtResource("1_script")
+scene = ExtResource("2_crater")
+rule = 3

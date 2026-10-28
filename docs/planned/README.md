@@ -19,7 +19,7 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 | [`crew.md`](crew.md) | the crew joining, more transmissions, co-op | M4 (step 16), M7 |
 | [`npc-places.md`](npc-places.md) | the bar's closing time, starting along their day, smarter NPCs | later |
 | [`people.md`](people.md) | the colonists' models, props, faces, fighting people, the player's suit | M5 |
-| [`risk-reward.md`](risk-reward.md) | rich ore by the nests, the late meteor, banking ore at a cargo hatch | M4 (step 14) |
+| [`risk-reward.md`](risk-reward.md) | banking ore at a cargo hatch | M4 (step 14) |
 | [`skills.md`](skills.md) | the rescue drone, the hardened canister, rebuilding spares, the miner radar; where the skill graph is heading | M4 (step 15), M7 |
 | [`quests.md`](quests.md) | quests as data, goals, the quest board, requests, the story's acts, first content | M4 (step 16) |
 | [`story.md`](story.md) | the flare shield, the six acts, the expedition (Calder, Pell), the people's threads, after the ending | M4 (step 16 D and on) |

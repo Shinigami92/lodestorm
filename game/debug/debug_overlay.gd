@@ -478,6 +478,12 @@ func _give_blueprints() -> void:
 			player.arsenal.learn(weapon_type)
 
 
+## Brings the late deposit's meteor down now (see `LateDeposit.fall`).
+func _drop_meteor() -> void:
+	for deposit: LateDeposit in get_tree().get_nodes_in_group(LateDeposit.GROUP):
+		deposit.fall()
+
+
 ## Has the crew call in about every event once, one call after another (see
 ## `CrewReactions.transmit_all`).
 func _transmit_reactions() -> void:
@@ -660,6 +666,7 @@ func _build() -> void:
 	var mission: GridContainer = _group(state, "Mission")
 	_time_buttons.append(_button(mission, "Skip to warning", _skip_to_warning))
 	_time_buttons.append(_button(mission, "Storm now", _start_storm))
+	_button(mission, "Meteor now", _drop_meteor)
 	_skip_flight_button = _button(mission, "Skip flight", _skip_flight)
 	var players: GridContainer = _group(state, "Players")
 	_button(players, "Heal players", _heal_players)

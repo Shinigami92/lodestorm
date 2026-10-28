@@ -34,7 +34,7 @@ func _physics_process(_delta: float) -> void:
 
 func _find_target() -> OreNode:
 	var player := get_parent() as Player
-	if reach <= 0.0 or not player or player.dead or not player.local:
+	if reach <= 0.0 or not player or player.fallen or not player.local:
 		return null
 	var ship: Ship = Ship.nearest(get_tree(), global_position)
 	if ship and ship.is_aboard(player):

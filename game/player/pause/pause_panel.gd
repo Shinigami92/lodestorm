@@ -61,7 +61,7 @@ func _process(delta: float) -> void:
 	super(delta)
 	if not user:
 		return
-	if holder.dead:
+	if holder.fallen:
 		close()
 		return
 	# Someone joined: the game goes on.
@@ -92,14 +92,14 @@ func _notification(what: int) -> void:
 
 
 ## Whether its player can open it now: only the local one, not while using another menu, nor while
-## dead.
+## down or dead.
 func can_open() -> bool:
 	return (
 		holder != null
 		and holder.local
 		and holder.is_inside_tree()
 		and holder.menu == null
-		and not holder.dead
+		and not holder.fallen
 	)
 
 

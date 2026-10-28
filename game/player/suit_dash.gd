@@ -20,7 +20,7 @@ var _velocity: Vector3 = Vector3.ZERO
 ## Dashes along `direction` (horizontal; zero: where the holder aims) if the holder learned the
 ## dash, stands on the ground and the dash is ready. Returns whether it dashed.
 func dash(direction: Vector3 = Vector3.ZERO) -> bool:
-	if not holder or holder.dead or cooldown > 0.0 or not holder.is_on_floor():
+	if not holder or holder.fallen or cooldown > 0.0 or not holder.is_on_floor():
 		return false
 	if not holder.skills.has(Skill.Effect.DASH):
 		return false

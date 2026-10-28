@@ -128,6 +128,6 @@ static func _players(area: Area3D) -> Array[Player]:
 	var players: Array[Player] = []
 	for body: Node3D in area.get_overlapping_bodies():
 		var player := body as Player
-		if player and not player.dead:
+		if player and not player.fallen:
 			players.append(player)
 	return players

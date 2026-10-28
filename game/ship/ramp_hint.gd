@@ -42,7 +42,7 @@ func _process(_delta: float) -> void:
 func _applies_to(player: Player) -> bool:
 	return (
 		player.interact_target == ship.ramp_button
-		and not player.dead
+		and not player.fallen
 		and player.health < player.max_health()
 		and not ship.ramp_open
 	)

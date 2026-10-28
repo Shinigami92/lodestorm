@@ -100,7 +100,7 @@ func _follow_ramp() -> void:
 
 func _start_flow(player: Player) -> void:
 	var carried: float = player.cargo.total()
-	if _flows.has(player) or player.dead or carried <= 0.0:
+	if _flows.has(player) or player.fallen or carried <= 0.0:
 		return
 	var flow := Flow.new()
 	flow.rate = carried / FLOW_TIME
@@ -112,10 +112,10 @@ func _start_flow(player: Player) -> void:
 
 
 ## Moves this tick's share of `player`'s ore into the intake, one ore after another; ends the flow
-## when everything went in, the player walked off or died, or the ramp goes up.
+## when everything went in, the player walked off or fell, or the ramp goes up.
 func _flow(player: Player, delta: float) -> void:
 	var flow: Flow = _flows[player]
-	if not enabled or player.dead or distance_to(player.global_position) > HOSE_RANGE:
+	if not enabled or player.fallen or distance_to(player.global_position) > HOSE_RANGE:
 		_end_flow(player)
 		return
 	var left: float = flow.rate * delta

@@ -57,7 +57,7 @@ func _process(delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	var speed: float = Vector2(holder.velocity.x, holder.velocity.z).length()
-	if holder.dead or not holder.is_on_floor() or holder.suit_dash.is_dashing():
+	if holder.fallen or not holder.is_on_floor() or holder.suit_dash.is_dashing():
 		return
 	if speed < STANDING_SPEED:
 		_walked = STEP_LENGTH * 0.5

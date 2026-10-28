@@ -77,7 +77,7 @@ func _exit_tree() -> void:
 ## Whether it shows (and the hardware cursor hides): the local player aims with the mouse at the
 ## ground, outside menus and pauses, alive and not over a developer tool.
 func is_shown() -> bool:
-	if not holder or not holder.local or holder.dead or holder.menu or get_tree().paused:
+	if not holder or not holder.local or holder.fallen or holder.menu or get_tree().paused:
 		return false
 	var aim: PlayerAim = holder.aim
 	return aim.aims_with_mouse() and not aim.is_mouse_over_ui() and aim.cursor_point.is_finite()

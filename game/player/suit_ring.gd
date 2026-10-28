@@ -152,8 +152,8 @@ func shown(parameter: StringName) -> Variant:
 
 ## Whether the ammo arc shows (a fed weapon is drawn, on the local player's ring).
 func shows_ammo() -> bool:
-	var ammo: WeaponAmmo = _player.get_ammo()
-	return ammo != null and _player.weapon.visible and _player.local
+	var ammo: WeaponAmmo = _player.arms.get_ammo()
+	return ammo != null and _player.arms.weapon.visible and _player.local
 
 
 ## How far the tip of an arrow `length` long (see `RingPointer.arrow`) reaches from the player (m,
@@ -194,7 +194,7 @@ func _process(delta: float) -> void:
 	_update_give()
 	_update_hits(delta)
 	_update_pointers()
-	var outside: float = 1.0 if _player.weapon_allowed or previewing() else 0.0
+	var outside: float = 1.0 if _player.arms.allowed or previewing() else 0.0
 	_material.set_shader_parameter(&"outline_alpha", outside)
 	_material.set_shader_parameter(&"team_alpha", 0.0 if _player.local else outside)
 	_material.set_shader_parameter(&"team_color", Color(_player.color(), FILL_ALPHA))
@@ -224,7 +224,7 @@ func _update_health(delta: float, blink_on: bool) -> void:
 
 
 func _update_ammo(delta: float, blink_on: bool) -> void:
-	var ammo: WeaponAmmo = _player.get_ammo()
+	var ammo: WeaponAmmo = _player.arms.get_ammo()
 	var drawn: bool = shows_ammo()
 	_material.set_shader_parameter(&"ammo_alpha", 1.0 if drawn else 0.0)
 	if not drawn:
@@ -236,7 +236,7 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 		return
 	var capacity: int = ammo.capacity()
 	var refilling: bool = ammo.refilling()
-	var charge: float = _player.weapon.charge()
+	var charge: float = _player.arms.weapon.charge()
 	if ammo != _last_ammo or ammo.rounds != _last_rounds or refilling or charge > 0.0:
 		_ammo_lit = lit_time
 	var started: bool = refilling and not _was_reloading
@@ -253,7 +253,7 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 
 	var share: float = float(ammo.rounds) / capacity
 	var low: bool = share <= NEARLY_EMPTY
-	var gauge: AmmoGauge = _player.weapon.get_gauge()
+	var gauge: AmmoGauge = _player.arms.weapon.get_gauge()
 	var color: Color = gauge.color if gauge else Color.WHITE
 	color.a = FILL_ALPHA
 	var single: bool = ammo.is_single()
@@ -314,7 +314,7 @@ func _update_ammo(delta: float, blink_on: bool) -> void:
 	_material.set_shader_parameter(&"loading_color", loading_color)
 	_material.set_shader_parameter(&"spare_alpha", spares_alpha)
 	_material.set_shader_parameter(
-		&"spare_slots", _player.spare_magazines if ammo.uses_spares() else 0
+		&"spare_slots", _player.arms.spare_magazines if ammo.uses_spares() else 0
 	)
 	_material.set_shader_parameter(&"spare_fill", float(ammo.spare_rounds) / capacity)
 	_material.set_shader_parameter(&"spare_color", spare_color)
@@ -360,7 +360,7 @@ func _update_miners(delta: float) -> void:
 	_miners_lit = maxf(_miners_lit - delta, 0.0)
 	var showing: bool = (
 		_player.local
-		and (_player.weapon_allowed or previewing())
+		and (_player.arms.allowed or previewing())
 		and (_miners_lit > 0.0 or _player.handling.busy() or _next_to_miner() or _always())
 	)
 	miners_alpha = _fade(miners_alpha, showing, delta)
@@ -379,11 +379,11 @@ func _next_to_miner() -> bool:
 
 
 func _update_give() -> void:
-	var giving: bool = _player.give_ammo_target != null and _player.local
+	var giving: bool = _player.arms.give_target != null and _player.local
 	_material.set_shader_parameter(&"give_alpha", 1.0 if giving else 0.0)
 	if giving:
 		_material.set_shader_parameter(
-			&"give_fill", _player.give_ammo_time / _player.settings.give_ammo_time
+			&"give_fill", _player.arms.give_time / _player.settings.give_ammo_time
 		)
 
 

@@ -66,19 +66,21 @@ func test_every_part_shows_its_pips_on_the_weapon() -> void:
 
 
 func test_harl_fire_rate_part_raises_its_attack_rate() -> void:
-	assert_eq(_player.get_weapon_type(), HARL)
+	assert_eq(_player.arms.get_weapon_type(), HARL)
 	var part: WeaponPart = HARL.get_part(WeaponPart.Stat.RATE)
-	assert_eq(_player.weapon.attack_rate(), HARL.attack_rate)
+	assert_eq(_player.arms.weapon.attack_rate(), HARL.attack_rate)
 	_player.upgrades.raise(part)
-	assert_almost_eq(_player.weapon.attack_rate(), HARL.attack_rate * part.multiplier(2), 0.001)
+	assert_almost_eq(
+		_player.arms.weapon.attack_rate(), HARL.attack_rate * part.multiplier(2), 0.001
+	)
 
 
 func test_switching_draws_the_weapon_before_it_attacks() -> void:
 	_go_outside()
 	await wait_physics_frames(2)
-	assert_true(_player.weapon_allowed, "outside the ship")
-	assert_true(_player.switch_weapon())
-	var dray: Weapon = _player.weapon
+	assert_true(_player.arms.allowed, "outside the ship")
+	assert_true(_player.arms.switch_weapon())
+	var dray: Weapon = _player.arms.weapon
 	assert_eq(dray.type, DRAY)
 	assert_false(dray.is_drawn())
 	assert_lt(dray.rotation.x, -0.5, "swings up from the hip")
@@ -95,12 +97,12 @@ func test_switching_draws_the_weapon_before_it_attacks() -> void:
 func test_switching_cancels_a_reload() -> void:
 	_go_outside()
 	await wait_physics_frames(2)
-	var ammo := _player.get_ammo() as MagazineAmmo
+	var ammo := _player.arms.get_ammo() as MagazineAmmo
 	ammo.rounds = 1
-	assert_true(_player.reload())
-	_player.switch_weapon()
-	_player.switch_weapon()
-	ammo = _player.get_ammo() as MagazineAmmo
+	assert_true(_player.arms.reload())
+	_player.arms.switch_weapon()
+	_player.arms.switch_weapon()
+	ammo = _player.arms.get_ammo() as MagazineAmmo
 	assert_false(ammo.reloading)
 	assert_eq(ammo.rounds, 0, "the magazine thrown away stays empty")
 

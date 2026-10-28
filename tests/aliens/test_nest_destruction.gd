@@ -76,7 +76,7 @@ func test_shots_and_swings_hurt_it() -> void:
 	_player.loadout.assign(0, DRAY)
 	# Harl, which it replaced, goes at the end of the frame.
 	await wait_physics_frames(1)
-	var dray: Weapon = _player.weapon
+	var dray: Weapon = _player.arms.weapon
 	_stand_at(Vector3(0.0, 0.0, (DRAY.delivery as SwingDelivery).reach + 1.0))
 	dray.aim_direction = Vector3.FORWARD
 	dray.aim_target = null

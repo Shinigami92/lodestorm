@@ -80,7 +80,7 @@ func test_the_player_moves_and_fights_meanwhile() -> void:
 	await wait_physics_frames(3)
 	assert_true(_player.handling.busy(), "not cancelled")
 	assert_ne(Vector2(_player.velocity.x, _player.velocity.z), Vector2.ZERO, "walking")
-	assert_true(_player.weapon.trigger_held, "shooting")
+	assert_true(_player.arms.weapon.trigger_held, "shooting")
 	assert_false(miner.paused)
 
 

@@ -180,11 +180,11 @@ func test_crate_refills_spares_once() -> void:
 	player.position = Vector3(0.0, 0.0, -1.2)
 	arena.add_child(player)
 	await wait_physics_frames(2)
-	var harl := player.get_ammo() as MagazineAmmo
+	var harl := player.arms.get_ammo() as MagazineAmmo
 	harl.spare_rounds = 0
 	assert_eq(Interactable.nearest(get_tree(), player.global_position), crate)
 	crate.use(player)
-	assert_eq(harl.spare_rounds, player.spare_magazines * harl.capacity())
+	assert_eq(harl.spare_rounds, player.arms.spare_magazines * harl.capacity())
 	assert_true(crate.opened)
 	assert_false(crate.enabled)
 	var strip := crate.get_node("Strip") as MeshInstance3D

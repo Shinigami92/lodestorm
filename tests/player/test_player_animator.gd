@@ -140,7 +140,7 @@ func test_mantle_hangs_on_the_left_forearm_and_bashes() -> void:
 	Input.action_release(&"attack")
 	assert_true(_active(&"bash"))
 	await _drawn(RIVEN)
-	assert_eq(_player.weapon.get_parent().name, &"WeaponMount", "back in the right hand")
+	assert_eq(_player.arms.weapon.get_parent().name, &"WeaponMount", "back in the right hand")
 
 
 func _active(motion: StringName) -> bool:
@@ -156,4 +156,4 @@ func _amount(blend: StringName) -> float:
 func _drawn(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
 	await wait_seconds(weapon_type.draw_time + 0.05)
-	return _player.weapon
+	return _player.arms.weapon

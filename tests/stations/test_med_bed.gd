@@ -22,7 +22,7 @@ func test_lying_down_heals_to_full() -> void:
 	var bed: MedBedStation = await _use_bed(1)
 	assert_eq(bed.user, _player)
 	assert_eq(_player.lying_on, bed.get_node("Lie"), "lies on the bed")
-	assert_false(_player.weapon.visible, "its weapon put away")
+	assert_false(_player.arms.weapon.visible, "its weapon put away")
 	assert_true(bed.card.visible)
 	assert_true(bed.is_healing())
 	await wait_seconds(bed.heal_time * 0.6 * 0.5)
@@ -41,7 +41,7 @@ func test_getting_up_stands_the_player_up() -> void:
 	assert_null(bed.user)
 	assert_null(_player.menu)
 	assert_null(_player.lying_on)
-	assert_eq(_player.weapon.visible, _player.weapon_allowed)
+	assert_eq(_player.arms.weapon.visible, _player.arms.allowed)
 	assert_lt(_player.health, _player.max_health(), "got up early")
 
 

@@ -244,4 +244,4 @@ func test_save_without_a_known_weapon_keeps_the_defaults() -> void:
 	assert_eq(_player.arsenal.weapons, [HARL, DRAY] as Array[WeaponType])
 	assert_eq(_player.loadout.get_weapon(0), HARL)
 	assert_eq(_player.loadout.get_weapon(1), DRAY)
-	assert_eq(_player.get_weapon_type(), HARL)
+	assert_eq(_player.arms.get_weapon_type(), HARL)

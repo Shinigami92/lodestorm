@@ -15,10 +15,7 @@ extends CharacterBody3D
 ## `respawn`, or, while its vitals have a bleed-out, goes `down` first: it lies still keeping what
 ## it carries, ignored by aliens, until it gets up (`PlayerVitals.get_up`) or dies.
 ## Owns the weapons in its `arsenal` and carries the ones in its `loadout` (picked in the armory);
-## `switch_weapon` equips and draws the next one. Fed weapons keep their loaded rounds while
-## holstered for the run and `reload` them with ammo the suit makes from the carried ore (`OreAmmo`;
-## free aboard), walking slower meanwhile. Holding `interact` next to a teammate, with nothing else
-## to use there, hands them a magazine for their equipped weapon, paid from its ore. Its `upgrades`
+## its `arms` hold, switch and reload the equipped one and hand teammates ammo. Its `upgrades`
 ## (bought at the upgrade stations) raise its weapons' parts (damage, capacity, ...) and its armor
 ## (`armor_upgrade`: more health, shown by pips on the helmet); each crafted miner has its own.
 ## Its own `hold` keeps the ore brought back over all runs (every haul goes to every player in the
@@ -34,7 +31,8 @@ extends CharacterBody3D
 ## While the mouse is over a 2D control (developer tools), it neither aims nor attacks with it.
 ## `pause` with no menu open shows its pause panel (`pause_panel`).
 ## Each player has a `number` (1–4) and its color; only the `local` one (the one this machine plays
-## and its camera follows) reads the input, teammates' rings show only their health. Its `sounds`
+## and its camera follows) reads the input (`input`), teammates' rings show only their health. Its
+## `sounds`
 ## play its hits, death and dash, and the local player's are where the game is heard from.
 
 ## Emitted when health changes (damage, healing).
@@ -50,10 +48,6 @@ const COLORS: Array[Color] = [
 ]
 const PAUSE_PANEL_PATH: String = "res://game/player/pause/pause_panel.tscn"
 
-## Actions that make the player act; ones still held when a menu closes wait for their release.
-const ACTIONS: Array[StringName] = [
-	&"attack", &"place_miner", &"interact", &"switch_weapon", &"reload", &"dash"
-]
 ## Where the armor's MK pips sit, in the model's rest pose: on top of the helmet, left of its fin
 ## (the isometric camera always sees it), following this bone.
 const ARMOR_PIPS_POSITION := Vector3(0.075, 1.805, 0.0)
@@ -88,22 +82,14 @@ var aim := PlayerAim.new()
 var reticle := AimReticle.new()
 ## Health, regeneration and death.
 var vitals := PlayerVitals.new()
-## The equipped weapon, or null with an empty loadout.
-var weapon: Weapon
-## The loadout slot of the equipped weapon (or the one to fill first when it's empty).
-var weapon_slot: int = 0
+## The equipped weapon, its ammo and reloads, handing ammo.
+var arms := PlayerArms.new()
+## The actions it's told to do and where it walks.
+var input := PlayerInput.new()
 ## The ore node `place_miner` would use right now, or null.
 var miner_target: OreNode
 ## The interactable `interact` would use right now, or null.
 var interact_target: Interactable
-## Whether the weapon can be used here; it's holstered (hidden) otherwise, e.g. inside the ship.
-var weapon_allowed: bool = true:
-	set(value):
-		weapon_allowed = value
-		if weapon:
-			# Put away while lying down too.
-			weapon.visible = value and not lying_on
-			weapon.stop()
 ## Whether its silhouette shows behind walls (the rim light stays either way); off e.g. while the
 ## title view shows the closed ship.
 var silhouette_shown: bool = true:
@@ -121,11 +107,6 @@ var refining := Refining.new()
 var fleet := MinerFleet.new()
 ## The one-time hints it has seen (saved with the player).
 var hints := PlayerHints.new()
-## Whether reloads cost nothing (aboard: from the ship's stock).
-var ammo_free: bool = false
-## The teammate `interact` hands ammo to while it's held, or null; and for how long it's held (s).
-var give_ammo_target: Player
-var give_ammo_time: float = 0.0
 ## Current health, from 0 to `max_health()` (see `vitals`).
 var health: float:
 	get:
@@ -144,10 +125,6 @@ var down: bool:
 var fallen: bool:
 	get:
 		return vitals.life != PlayerVitals.Life.ALIVE
-## Spare magazines per ranged weapon a run starts with, with the skills.
-var spare_magazines: int:
-	get:
-		return settings.spare_magazines + roundi(skills.value(Skill.Effect.SPARE_MAGAZINES))
 ## The dash (a skill).
 var suit_dash := SuitDash.new()
 ## Placing and picking up miners, which take time.
@@ -165,20 +142,9 @@ var radio := PlayerRadio.new()
 var menu: WorldMenu:
 	set(value):
 		menu = value
-		# The press that closed the menu (e.g. a click) doesn't act again in the world.
-		_held_since_menu.clear()
-		for action: StringName in ACTIONS:
-			if Input.is_action_pressed(action):
-				_held_since_menu.append(action)
+		input.hold_back()
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-## Actions held since a menu opened or closed; they're ignored until released.
-var _held_since_menu: Array[StringName] = []
-var _weapon_type: WeaponType
-## Rounds loaded per fed weapon of the loadout that isn't equipped; missing ones are full.
-var _rounds: Dictionary[WeaponType, int] = {}
-## Spare rounds per fed weapon of the loadout that isn't equipped; missing ones have all spares.
-var _spares: Dictionary[WeaponType, int] = {}
 ## Shows the armor's MK level.
 var _armor_pips := MkPips.new()
 ## Points to the nearest free ore node.
@@ -222,6 +188,7 @@ func _ready() -> void:
 	_scanner.position = Vector3.UP * 0.05
 	_scanner.min_distance = settings.miner_place_range
 	add_child(_scanner)
+	input.holder = self
 	suit_dash.name = "SuitDash"
 	suit_dash.holder = self
 	add_child(suit_dash)
@@ -262,8 +229,13 @@ func _ready() -> void:
 	arsenal.blueprints = arsenal.blueprints.duplicate()
 	loadout = loadout.duplicate() if loadout else Loadout.new()
 	loadout.weapons = loadout.weapons.duplicate()
-	loadout.changed.connect(_on_loadout_changed)
-	_on_loadout_changed()
+	arms.name = "Arms"
+	arms.holder = self
+	arms.weapon_mount = _weapon_mount
+	arms.shield_mount = _shield_mount
+	arms.animator = _animator
+	arms.ring = _ring
+	add_child(arms)
 	_report_progress()
 
 
@@ -275,19 +247,11 @@ func _physics_process(delta: float) -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	var camera_basis: Basis = camera.global_basis if camera else Basis.IDENTITY
 
-	_held_since_menu.assign(_held_since_menu.filter(Input.is_action_pressed))
-	var acting: bool = menu == null and local
-	var move_input: Vector2 = Vector2.ZERO
-	if acting:
-		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
-	var move: Vector3 = IsoInput.camera_relative(move_input, camera_basis)
+	input.update()
+	var move: Vector3 = IsoInput.camera_relative(input.move(), camera_basis)
 	ground_contact.tick(delta)
-	var speed: float = settings.move_speed * ground_contact.speed()
-	if _is_reloading() and not skills.has(Skill.Effect.RELOAD_ON_THE_MOVE):
-		speed *= settings.reload_move_speed
-	if weapon:
-		speed *= weapon.move_share()
-	if acting and _action_just_pressed(&"dash"):
+	var speed: float = settings.move_speed * ground_contact.speed() * arms.move_share()
+	if input.just_pressed(&"dash"):
 		suit_dash.dash(move)
 	var horizontal: Vector3 = suit_dash.step(
 		Vector3(velocity.x, 0.0, velocity.z).move_toward(
@@ -313,35 +277,23 @@ func _physics_process(delta: float) -> void:
 	# A fresh basis instead of setting rotation.y keeps the scale from drifting over time.
 	basis = Basis(Vector3.UP, yaw)
 	_animator.local_velocity = Vector2(velocity.dot(basis.x), -velocity.dot(basis.z))
+	var weapon: Weapon = arms.weapon
 	# Put away lying down.
-	_animator.aiming = weapon != null and weapon_allowed and not lying_on
-
+	_animator.aiming = weapon != null and arms.allowed and not lying_on
 	if weapon:
 		_animator.hold = weapon.type.hold
 		_animator.shake = weapon.wind
 		_animator.drilling = is_instance_valid(weapon.latched)
-		weapon.aim_direction = aim.direction
-		weapon.aim_target = aim.target
-		weapon.aim_point = aim.ground_point
-		weapon.trigger_held = (
-			weapon_allowed and _action_held(&"attack") and not aim.is_mouse_over_ui()
-		)
 
 	handling.update(delta)
 	_update_miner_target()
-	if _action_just_pressed(&"place_miner"):
+	if input.just_pressed(&"place_miner"):
 		place_miner()
 
 	_update_interact_target()
-	if _action_just_pressed(&"interact"):
+	if input.just_pressed(&"interact"):
 		interact()
-	_update_give_ammo(delta)
-
-	if _action_just_pressed(&"switch_weapon"):
-		switch_weapon()
-
-	if _action_just_pressed(&"reload"):
-		reload()
+	arms.update(delta)
 
 	vitals.update(delta)
 
@@ -370,66 +322,6 @@ func interact() -> Interactable:
 	return interact_target
 
 
-## The `reload` action on the equipped weapon's ammo (see `WeaponAmmo.reload`). Returns whether
-## it started or timed a reload.
-func reload() -> bool:
-	var ammo: WeaponAmmo = get_ammo()
-	return ammo != null and weapon_allowed and not fallen and ammo.reload()
-
-
-## Fills every fed weapon's magazine and spare magazines for free (the ship's stock, for a new
-## run).
-func refill_ammo() -> void:
-	_rounds.clear()
-	_spares.clear()
-	var ammo: WeaponAmmo = get_ammo()
-	if ammo:
-		ammo.fill(spare_magazines)
-
-
-## Fills the spare magazines of every fed weapon in the loadout (a supply cache in a crate),
-## leaving the loaded rounds as they are.
-func refill_spares() -> void:
-	_spares.clear()
-	var ammo: WeaponAmmo = get_ammo()
-	if ammo:
-		ammo.spare_rounds = spare_magazines * ammo.capacity()
-
-
-## Hands `teammate` a magazine for their equipped fed weapon, paid from the carried ore (see
-## `WeaponAmmo.receive_ammo`). Returns whether it did.
-func give_ammo(teammate: Player) -> bool:
-	if teammate == self or teammate.fallen or fallen:
-		return false
-	var ammo: WeaponAmmo = teammate.get_ammo()
-	return ammo != null and ammo.receive_ammo(self)
-
-
-## Equips the weapon in the next filled loadout slot (wrapping around) and draws it. Returns
-## whether it switched.
-func switch_weapon() -> bool:
-	var slots: int = settings.loadout_slots
-	for step: int in range(1, slots):
-		var slot: int = (weapon_slot + step) % slots
-		if loadout.get_weapon(slot):
-			weapon_slot = slot
-			_equip(loadout.get_weapon(slot))
-			if weapon:
-				weapon.draw()
-			return true
-	return false
-
-
-## The equipped weapon's ammo, or null (no weapon, or a melee one).
-func get_ammo() -> WeaponAmmo:
-	return weapon.ammo if weapon else null
-
-
-## The weapon type of the equipped weapon, or null.
-func get_weapon_type() -> WeaponType:
-	return _weapon_type
-
-
 ## Health when unhurt, with the skills and the armor upgrade.
 func max_health() -> float:
 	return vitals.maximum()
@@ -451,6 +343,7 @@ func take_damage(
 	heavy: bool = false,
 	cause: Node = null
 ) -> void:
+	var weapon: Weapon = arms.weapon
 	if attacker and weapon and weapon.field:
 		amount = weapon.field.block(amount, attacker, heavy)
 	vitals.damage(amount, from, cause if cause else attacker)
@@ -466,7 +359,7 @@ func heal(amount: float = INF) -> void:
 ## ring) stays where it stands.
 func lie_on(spot: Node3D) -> void:
 	lying_on = spot
-	weapon_allowed = weapon_allowed
+	arms.update_holster()
 	_body.top_level = spot != null
 	if spot:
 		_body.global_transform = spot.global_transform * _body_rest
@@ -480,9 +373,9 @@ func respawn(at: Vector3) -> void:
 	vitals.revive()
 	GameEvents.bus.player_respawned.emit(self)
 	_animator.dead = false
-	weapon_allowed = weapon_allowed
+	arms.update_holster()
 	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
-	refill_ammo()
+	arms.refill()
 	global_position = at
 	velocity = Vector3.ZERO
 	reset_physics_interpolation()
@@ -526,20 +419,6 @@ func _update_overlay() -> void:
 	suit.material_overlay = body_overlay if silhouette_shown else body_overlay.next_pass
 
 
-func _is_reloading() -> bool:
-	var ammo: WeaponAmmo = get_ammo()
-	return ammo != null and ammo.reloading
-
-
-## Whether `action` is held for the player to act (not while using a menu, nor a press from it).
-func _action_held(action: StringName) -> bool:
-	return local and not menu and action not in _held_since_menu and Input.is_action_pressed(action)
-
-
-func _action_just_pressed(action: StringName) -> bool:
-	return _action_held(action) and Input.is_action_just_pressed(action)
-
-
 ## Passes what it achieves (ore collected, weapons, blueprints, upgrade levels, skill ranks, bars
 ## refined) on to `GameEvents`.
 func _report_progress() -> void:
@@ -573,13 +452,7 @@ func _fall() -> void:
 		menu.close()
 	velocity = Vector3.ZERO
 	suit_dash.cancel()
-	if weapon:
-		weapon.stop()
-		weapon.visible = false
-	if get_ammo():
-		get_ammo().cancel_reload()
-	give_ammo_target = null
-	give_ammo_time = 0.0
+	arms.stop()
 	handling.cancel()
 	if is_instance_valid(miner_target):
 		miner_target.highlighted = false
@@ -597,7 +470,7 @@ func _fall() -> void:
 ## Stands up again from being down, the weapon drawn.
 func _on_got_up() -> void:
 	_animator.dead = false
-	weapon_allowed = weapon_allowed
+	arms.update_holster()
 	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
 
 
@@ -675,43 +548,6 @@ func _update_miner_target() -> void:
 		miner_target.highlighted = true
 
 
-## Holding `interact` with nothing to use in range hands the nearest teammate in range (whose
-## equipped fed weapon isn't full) a magazine once it's held for `settings.give_ammo_time`.
-func _update_give_ammo(delta: float) -> void:
-	var target: Player = null
-	if not interact_target and _action_held(&"interact"):
-		target = _teammate_needing_ammo()
-	if target != give_ammo_target:
-		give_ammo_target = target
-		give_ammo_time = 0.0
-	if not give_ammo_target:
-		return
-	give_ammo_time += delta
-	if give_ammo_time >= settings.give_ammo_time:
-		give_ammo(give_ammo_target)
-		give_ammo_target = null
-		give_ammo_time = 0.0
-		# Once per hold.
-		_held_since_menu.append(&"interact")
-
-
-func _teammate_needing_ammo() -> Player:
-	var best: Player = null
-	var best_distance: float = settings.give_ammo_range
-	for node: Node in get_tree().get_nodes_in_group(GROUP):
-		var teammate := node as Player
-		if teammate == self or teammate.fallen:
-			continue
-		var ammo: WeaponAmmo = teammate.get_ammo()
-		if not ammo or ammo.is_full():
-			continue
-		var distance: float = global_position.distance_to(teammate.global_position)
-		if distance <= best_distance:
-			best = teammate
-			best_distance = distance
-	return best
-
-
 func _update_interact_target() -> void:
 	var target: Interactable = Interactable.nearest(get_tree(), global_position)
 	if target == interact_target:
@@ -723,84 +559,14 @@ func _update_interact_target() -> void:
 		interact_target.highlighted = true
 
 
-## Equips `weapon_type` (null: none) unless it's equipped already.
-func _equip(weapon_type: WeaponType) -> void:
-	if weapon_type == _weapon_type:
-		return
-	if get_ammo():
-		# A magazine reload cut short leaves it empty; loaded single rounds stay.
-		_rounds[_weapon_type] = get_ammo().rounds
-		_spares[_weapon_type] = get_ammo().spare_rounds
-	_weapon_type = weapon_type
-	if weapon:
-		weapon.get_parent().remove_child(weapon)
-		weapon.queue_free()
-		weapon = null
-	if not weapon_type:
-		return
-	weapon = weapon_type.create()
-	weapon.holder = self
-	weapon.motion_started.connect(_animator.play_motion)
-	weapon.apply_upgrades(upgrades)
-	var ammo: WeaponAmmo = weapon.ammo
-	if ammo:
-		ammo.supplier = self
-		var loaded: int = _rounds.get(weapon_type, ammo.capacity())
-		ammo.rounds = mini(loaded, ammo.capacity())
-		ammo.spare_rounds = _spares.get(weapon_type, spare_magazines * ammo.capacity())
-		_set_careful()
-		ammo.reload_denied.connect(_on_reload_denied)
-		ammo.reload_timed.connect(_on_reload_timed.bind(ammo))
-	weapon.visible = weapon_allowed and not fallen
-	OccludedSilhouette.mark_visible(weapon)
-	RenderLayers.put(weapon, RenderLayers.CHARACTERS)
-	var shield: bool = weapon_type.hold == WeaponType.Hold.SHIELD
-	(_shield_mount if shield else _weapon_mount).add_child(weapon)
-
-
-## A reload that can't start (no ore) flashes the ring's ammo arc red.
-func _on_reload_denied() -> void:
-	_ring.flash(SuitRing.FUMBLE_COLOR)
-
-
-## A hit that finished the reload flashes the ring (single rounds go on loading meanwhile).
-func _on_reload_timed(hit: bool, ammo: WeaponAmmo) -> void:
-	if hit and not ammo.reloading:
-		_ring.flash(AmmoGauge.TIMING)
-
-
-## Applies new MK levels to the equipped weapon (a stronger armor adds its extra health) and shows
-## the levels under way. Levels take effect aboard, so the magazines are filled to their new size.
+## Shows the armor's new MK level (a stronger armor adds its extra health) and the levels under way.
 func _on_upgrades_changed() -> void:
-	if weapon:
-		weapon.apply_upgrades(upgrades)
-	refill_ammo()
 	_armor_pips.show_level(
 		upgrades.mk(armor_upgrade), _armor_max_mk(), upgrades.is_running(armor_upgrade)
 	)
 	vitals.update_maximum()
 
 
-## Skills are learned aboard: more spare magazines fill up, more health adds the difference, the
-## equipped weapon reloads carefully.
+## Skills are learned aboard: more health adds the difference.
 func _on_skills_changed() -> void:
-	_set_careful()
-	refill_ammo()
 	vitals.update_maximum()
-
-
-## Whether the equipped weapon's magazine reloads keep the rounds left in it (the skill).
-func _set_careful() -> void:
-	var magazine := get_ammo() as MagazineAmmo
-	if magazine:
-		magazine.careful = skills.has(Skill.Effect.CAREFUL_RELOAD)
-
-
-## Keeps the equipped weapon in the loadout: the one in its slot, or else the first one there.
-func _on_loadout_changed() -> void:
-	if not loadout.get_weapon(weapon_slot):
-		for slot: int in settings.loadout_slots:
-			if loadout.get_weapon(slot):
-				weapon_slot = slot
-				break
-	_equip(loadout.get_weapon(weapon_slot))

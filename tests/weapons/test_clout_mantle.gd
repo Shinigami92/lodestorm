@@ -232,9 +232,9 @@ func _punch(weapon: Weapon, power: float) -> void:
 
 func _drawn(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
-	assert_eq(_player.get_weapon_type(), weapon_type)
+	assert_eq(_player.arms.get_weapon_type(), weapon_type)
 	await wait_seconds(weapon_type.draw_time + 0.05)
-	return _player.weapon
+	return _player.arms.weapon
 
 
 func _dealt(alien: Alien) -> float:

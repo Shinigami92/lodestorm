@@ -185,10 +185,10 @@ func test_reload_on_the_move_keeps_full_speed() -> void:
 		if learned:
 			_player.skills.raise(DASH)
 			_player.skills.raise(RELOAD_ON_THE_MOVE)
-		var harl := _player.get_ammo() as MagazineAmmo
+		var harl := _player.arms.get_ammo() as MagazineAmmo
 		harl.rounds = 1
 		Input.action_press(&"move_right")
-		assert_true(_player.reload())
+		assert_true(_player.arms.reload())
 		await _wait_physics(0.4)
 		speeds.append(Vector2(_player.velocity.x, _player.velocity.z).length())
 		Input.action_release(&"move_right")
@@ -199,16 +199,16 @@ func test_reload_on_the_move_keeps_full_speed() -> void:
 
 
 func test_spare_magazines_add_a_magazine_per_rank() -> void:
-	var before: int = _player.spare_magazines
+	var before: int = _player.arms.spare_magazines
 	_player.skills.raise(SPARES)
 	_player.skills.raise(SPARES)
-	assert_eq(_player.spare_magazines, before + 2)
-	var harl := _player.get_ammo() as MagazineAmmo
+	assert_eq(_player.arms.spare_magazines, before + 2)
+	var harl := _player.arms.get_ammo() as MagazineAmmo
 	assert_eq(harl.spare_rounds, (before + 2) * harl.capacity(), "filled right away")
 
 
 func test_careful_reload_keeps_the_rounds_left() -> void:
-	var harl := _player.get_ammo() as MagazineAmmo
+	var harl := _player.arms.get_ammo() as MagazineAmmo
 	_player.settings.spare_magazines = 1
 	_player.skills.raise(SPARES)
 	_player.skills.raise(CAREFUL)
@@ -216,7 +216,7 @@ func test_careful_reload_keeps_the_rounds_left() -> void:
 	var capacity: int = harl.capacity()
 	harl.rounds = 10
 	var spares: int = harl.spare_rounds
-	assert_true(_player.reload())
+	assert_true(_player.arms.reload())
 	assert_eq(harl.rounds, 10, "keeps them during the reload")
 	await _wait_physics(harl.feed.reload_time + 0.1)
 	assert_eq(harl.rounds, capacity)
@@ -224,11 +224,11 @@ func test_careful_reload_keeps_the_rounds_left() -> void:
 
 
 func test_reload_throws_the_rest_away_without_careful_reload() -> void:
-	var harl := _player.get_ammo() as MagazineAmmo
+	var harl := _player.arms.get_ammo() as MagazineAmmo
 	assert_false(harl.careful)
 	harl.rounds = 10
 	var spares: int = harl.spare_rounds
-	_player.reload()
+	_player.arms.reload()
 	assert_eq(harl.rounds, 0)
 	await _wait_physics(harl.feed.reload_time + 0.1)
 	assert_eq(harl.spare_rounds, spares - harl.capacity())
@@ -306,7 +306,7 @@ func test_hits_with_the_dray_show_their_damage() -> void:
 	assert_true(alien.has_meta(DamageNumber.META))
 	var number := alien.get_meta(DamageNumber.META) as DamageNumber
 	assert_not_null(number)
-	assert_eq(number.amount, (_player.get_weapon_type().effects[0] as DamageEffect).damage)
+	assert_eq(number.amount, (_player.arms.get_weapon_type().effects[0] as DamageEffect).damage)
 
 
 func _add_node(at: Vector3) -> OreNode:

@@ -54,7 +54,7 @@ func test_pinner_battery_drains_and_recharges_by_itself_for_no_ore() -> void:
 	var battery := pinner.ammo as BatteryAmmo
 	assert_eq(battery.rounds, BATTERY.cells, "starts full")
 	assert_false(battery.uses_spares())
-	assert_false(_player.reload(), "nothing to reload by hand")
+	assert_false(_player.arms.reload(), "nothing to reload by hand")
 	for shot: int in BATTERY.cells:
 		await _attack_once()
 		await wait_seconds(1.0 / PINNER.attack_rate)
@@ -197,15 +197,15 @@ func test_switching_away_loses_a_charge() -> void:
 	await wait_seconds(CHARGE.charge_time * 0.5)
 	assert_gt(quill.charge(), 0.0)
 	Input.action_release(&"attack")
-	_player.switch_weapon()
+	_player.arms.switch_weapon()
 	await wait_physics_frames(2)
 	assert_eq(_fired.size(), 0, "no shot")
 
 
 func _equip(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
-	assert_eq(_player.get_weapon_type(), weapon_type)
-	return _player.weapon
+	assert_eq(_player.arms.get_weapon_type(), weapon_type)
+	return _player.arms.weapon
 
 
 func _attack_once() -> void:

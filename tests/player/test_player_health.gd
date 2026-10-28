@@ -83,7 +83,7 @@ func test_respawn_restores_player() -> void:
 	assert_eq(_player.health, _player.settings.max_health)
 	assert_eq(_player.global_position, spot)
 	assert_eq(_light.color, SuitLight.COLOR_HEALTHY)
-	assert_true(_player.weapon.visible, "weapon is drawn again outside the ship")
+	assert_true(_player.arms.weapon.visible, "weapon is drawn again outside the ship")
 
 
 func test_goes_down_with_a_bleed_out_and_keeps_cargo() -> void:
@@ -107,7 +107,7 @@ func test_downed_player_gets_up() -> void:
 	assert_true(_player.vitals.get_up(0.5))
 	assert_false(_player.fallen)
 	assert_eq(_player.health, _player.max_health() * 0.5)
-	assert_true(_player.weapon.visible, "weapon is drawn again")
+	assert_true(_player.arms.weapon.visible, "weapon is drawn again")
 	assert_false(_player.vitals.get_up(0.5), "only a downed player gets up")
 
 

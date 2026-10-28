@@ -138,8 +138,8 @@ func _watch_projectiles() -> Array[Projectile]:
 
 func _equip(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
-	assert_eq(_player.get_weapon_type(), weapon_type)
-	return _player.weapon
+	assert_eq(_player.arms.get_weapon_type(), weapon_type)
+	return _player.arms.weapon
 
 
 func _attack_once() -> void:

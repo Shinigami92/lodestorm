@@ -77,7 +77,7 @@ func test_auger_thrust_pierces_a_line_up_to_its_reach() -> void:
 	var aside := _add_alien(Vector3(1.6, 0.0, -2.0))
 	var beyond := _add_alien(Vector3(0.0, 0.0, -THRUST.reach - 1.0))
 	await wait_physics_frames(1)
-	var auger: Weapon = _player.weapon
+	var auger: Weapon = _player.arms.weapon
 	var model := auger.get_node(^"Model") as Node3D
 	await _attack_once()
 	assert_gt(auger.wind, 0.9, "the bit spins up")
@@ -163,7 +163,7 @@ func test_jag_grinds_staggers_and_slows_what_is_in_front() -> void:
 	assert_true(slowed, "it slows what it touches")
 	assert_eq(_dealt(aside), 0.0, "outside its width")
 	assert_eq(_dealt(far), 0.0, "out of reach")
-	assert_lt(_player.weapon.move_share(), 0.6, "walks slower while sawing")
+	assert_lt(_player.arms.weapon.move_share(), 0.6, "walks slower while sawing")
 	Input.action_release(&"attack")
 	await wait_seconds(SLOW.seconds + 0.1)
 	assert_eq(front.status.speed(), 1.0, "the slow wears off")
@@ -178,9 +178,9 @@ func _slash(weapon: Weapon) -> void:
 
 func _drawn(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
-	assert_eq(_player.get_weapon_type(), weapon_type)
+	assert_eq(_player.arms.get_weapon_type(), weapon_type)
 	await wait_seconds(weapon_type.draw_time + 0.05)
-	return _player.weapon
+	return _player.arms.weapon
 
 
 func _attack_once() -> void:

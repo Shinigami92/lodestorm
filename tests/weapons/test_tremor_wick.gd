@@ -76,7 +76,7 @@ func test_tremor_blasts_where_it_lands_less_towards_the_edge_and_not_behind_rock
 	_add_box(spot + Vector3(-1.3, 1.5, 0.0), Vector3(0.3, 3.0, 3.0))
 	await wait_seconds(TREMOR.draw_time + 0.05)
 	await _attack_once()
-	assert_eq(_player.weapon.ammo.rounds, _player.weapon.ammo.capacity() - 1)
+	assert_eq(_player.arms.weapon.ammo.rounds, _player.arms.weapon.ammo.capacity() - 1)
 	await wait_seconds(LOB.stick_reach / LOB.speed + 0.3)
 	var full: float = TREMOR_DAMAGE.damage
 	assert_almost_eq(_dealt(middle), full, full * 0.1, "the full blast in the middle")
@@ -216,8 +216,8 @@ func test_landing_ring_shows_where_it_lands_while_drawn() -> void:
 
 func _equip(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
-	assert_eq(_player.get_weapon_type(), weapon_type)
-	return _player.weapon
+	assert_eq(_player.arms.get_weapon_type(), weapon_type)
+	return _player.arms.weapon
 
 
 func _attack_once() -> void:

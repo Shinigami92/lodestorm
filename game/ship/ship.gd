@@ -10,7 +10,8 @@ extends Node3D
 ## cargo bay (by the ramp) join them.
 ## Ship and planet are one world, without loading screens. The ramp is closed by default; the
 ## button on the inner wall next to the door lowers it (see `Mission` for the flow); a hurt player
-## standing at it is told once where to heal (`ramp_hint`). The ship tracks who is aboard and
+## standing at it is told once where to heal (`ramp_hint`); the cargo hatch outside beside it
+## (`CargoHatch`) comes down with it. The ship tracks who is aboard and
 ## holsters their weapons inside, except in the shooting range's weapon zone (a barrier in its
 ## doorway keeps the shots inside), and outside too while docked at a station.
 ## While the `viewer` is aboard (and `show_outside` is off), the camera sees inside: on the lower
@@ -202,6 +203,11 @@ func is_ramp_down() -> bool:
 ## Whether the ramp is all the way up, closing the door.
 func is_ramp_up() -> bool:
 	return _ramp_angle == RAMP_CLOSED_ANGLE
+
+
+## How far the ramp is down: 0 up (closing the door), 1 lying on the ground.
+func ramp_lowered() -> float:
+	return (RAMP_CLOSED_ANGLE - _ramp_angle) / (RAMP_CLOSED_ANGLE - RAMP_OPEN_ANGLE)
 
 
 ## Where players board: the door at the top of the ramp.

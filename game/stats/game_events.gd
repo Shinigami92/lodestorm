@@ -64,7 +64,7 @@ signal miner_repaired(miner: Miner)
 signal miner_ran_dry(miner: Miner)
 ## Ore arrived on the player's back (a hose, a miner picked up).
 signal ore_collected(player: Player, ore_type: OreType, amount: float)
-## Ore the player carried aboard at the end of a run.
+## Ore the player brought into the hold: carried aboard at the end of a run, or at the cargo hatch.
 signal ore_hauled(player: Player, ore_type: OreType, amount: float)
 ## Ore the player carried when they died.
 signal ore_lost(player: Player, ore_type: OreType, amount: float)

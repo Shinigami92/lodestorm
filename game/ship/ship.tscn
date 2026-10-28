@@ -41,6 +41,7 @@
 [ext_resource type="PackedScene" uid="uid://mvfidldmdr6j" path="res://game/ship/rooms/cargo_bay.tscn" id="89_cargo_bay"]
 [ext_resource type="PackedScene" uid="uid://dlgypxsvta8yt" path="res://assets/ship/ship_exterior.glb" id="91_exterior"]
 [ext_resource type="Script" uid="uid://d1hgqk4whsnbo" path="res://game/ship/ship_exterior.gd" id="92_exterior_script"]
+[ext_resource type="PackedScene" uid="uid://d5bsb6c78rhv" path="res://game/ship/cargo_hatch.tscn" id="93_cargo_hatch"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_n_5_3x0_2x4_8"]
 size = Vector3(5.3, 0.2, 4.8)
@@ -467,6 +468,10 @@ mesh = SubResource("BoxMesh_button_highlight")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.63, 0)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_button_face")
+
+[node name="CargoHatch" parent="." node_paths=PackedStringArray("ship") instance=ExtResource("93_cargo_hatch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.8, 0, 7)
+ship = NodePath("..")
 
 [node name="Interior" type="Area3D" parent="." unique_id=732979715]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 7.5, 0)

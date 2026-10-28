@@ -1,0 +1,94 @@
+[gd_scene format=3 uid="uid://d5bsb6c78rhv"]
+
+[ext_resource type="Script" uid="uid://tq2qxokk85vw" path="res://game/ship/cargo_hatch.gd" id="1_hatch"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.3, 0.31, 0.33, 1)
+metallic = 0.5
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mouth"]
+albedo_color = Color(0.03, 0.03, 0.035, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_rail"]
+material = SubResource("StandardMaterial3D_metal")
+top_radius = 0.07
+bottom_radius = 0.07
+height = 3.0
+radial_segments = 12
+rings = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_intake"]
+size = Vector3(1, 1, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_intake"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(1, 0.9, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mouth"]
+material = SubResource("StandardMaterial3D_mouth")
+size = Vector3(0.6, 0.04, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_strip"]
+size = Vector3(1.04, 0.06, 1.24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+size = Vector3(1.4, 0.02, 1.6)
+
+[node name="CargoHatch" type="Node3D"]
+script = ExtResource("1_hatch")
+interact_range = 1.2
+footprint = Vector2(1, 1.2)
+
+[node name="RailFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.42, 1.6, 0.45)
+mesh = SubResource("CylinderMesh_rail")
+
+[node name="RailBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.42, 1.6, -0.45)
+mesh = SubResource("CylinderMesh_rail")
+
+[node name="Slide" type="Node3D" parent="."]
+
+[node name="Body" type="StaticBody3D" parent="Slide"]
+
+[node name="Shape" type="CollisionShape3D" parent="Slide/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_intake")
+
+[node name="Intake" type="MeshInstance3D" parent="Slide"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("BoxMesh_intake")
+
+[node name="Mouth" type="MeshInstance3D" parent="Slide"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.91, 0)
+mesh = SubResource("BoxMesh_mouth")
+
+[node name="Strip" type="MeshInstance3D" parent="Slide"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_strip")
+
+[node name="Outlet" type="Marker3D" parent="Slide"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.92, 0)
+
+[node name="Lamp" type="OmniLight3D" parent="Slide"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.6, 0)
+light_energy = 1.5
+omni_range = 3.0
+
+[node name="Obstacle" type="NavigationObstacle3D" parent="."]
+radius = 1.0
+avoidance_enabled = true
+
+[node name="Highlight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+visible = false
+cast_shadow = 0
+mesh = SubResource("BoxMesh_highlight")

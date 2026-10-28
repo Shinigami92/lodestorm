@@ -82,6 +82,7 @@ func test_every_upgrade_card_fits_in_every_language() -> void:
 		for mk: int in range(2, upgrade.max_mk() + 1):
 			for item: ItemType in upgrade.cost_of(mk):
 				hold[item] = 99999.0
+	_stop_map()
 	for path: String in STATIONS:
 		if not _ship.get_node(path) is UpgradeStation:
 			continue
@@ -215,6 +216,7 @@ func test_every_skill_card_fits_in_every_language() -> void:
 		for rank: SkillRank in skill.ranks:
 			for item: ItemType in rank.cost:
 				hold[item] = 99999.0
+	_stop_map()
 	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		for skill: Skill in SKILL_TREE.get_skills():
@@ -238,6 +240,7 @@ func test_every_locker_card_fits_in_every_language() -> void:
 	add_child_autofree(viewport)
 	var card := LOADOUT_CARD_SCENE.instantiate() as LoadoutCard
 	viewport.add_child(card)
+	_stop_map()
 	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)
 		for weapon_type: WeaponType in ALL_WEAPONS.weapons:
@@ -475,6 +478,12 @@ func test_text_reads_from_the_camera() -> void:
 	for path: String in NPCS.values():
 		var npc := _ship.get_node(path) as Npc
 		assert_gte(_bubble_text_height(npc.bubble, npc), MIN_TEXT_HEIGHT, path + " bubble")
+
+
+## For a card laid out in a viewport of its own: the map stops processing, so each of the many
+## frames the card waits for doesn't also run the whole ship.
+func _stop_map() -> void:
+	_map.process_mode = Node.PROCESS_MODE_DISABLED
 
 
 func _assert_card_fits(station: Station, label: String) -> void:

@@ -49,7 +49,8 @@ func approach() -> float:
 	return reach
 
 
-## Called once when the wind-up starts (a telegraph on the ground, where to face).
+## Called once when the wind-up starts (a telegraph on the ground, where to face). An attack is
+## shared by every alien of its strain: what it keeps for one run goes in `alien.attack_state`.
 func prepare(_alien: Alien) -> void:
 	pass
 

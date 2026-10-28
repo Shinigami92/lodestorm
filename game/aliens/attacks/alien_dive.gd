@@ -17,9 +17,9 @@ func approach() -> float:
 func prepare(alien: Alien) -> void:
 	super.prepare(alien)
 	# The line lies on the ground, not at the height it hovers at.
-	var line: ChargeLine = _lines.get(alien)
+	var line: ChargeLine = (alien.attack_state as Run).line
 	var ground: float = AlienFlight.ground_below(alien, alien.global_position)
-	if line and ground > -INF:
+	if ground > -INF:
 		line.global_position.y = ground
 
 

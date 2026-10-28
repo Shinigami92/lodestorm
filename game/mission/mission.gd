@@ -148,6 +148,21 @@ func is_warning() -> bool:
 	return state == State.RUNNING and time_left <= warning_time()
 
 
+## Takes what the living among `players` carry into the hold as a haul (see `Ship.store_haul`),
+## run or not; the run goes on.
+func bank(players: Array[Player]) -> void:
+	var haul: Dictionary[OreType, float] = {}
+	for player: Player in players:
+		if player.dead:
+			continue
+		var cargo: Dictionary[OreType, float] = player.take_cargo()
+		for ore_type: OreType in cargo:
+			GameEvents.bus.ore_hauled.emit(player, ore_type, cargo[ore_type])
+			var so_far: float = haul.get(ore_type, 0.0)
+			haul[ore_type] = so_far + cargo[ore_type]
+	ship.store_haul(haul, _players())
+
+
 func _storm_damage(delta: float) -> void:
 	var damage: float = storm_damage_per_second() * delta
 	for player: Player in _players():
@@ -223,16 +238,7 @@ func _take_off_after_delay(delta: float) -> void:
 func _return(players: Array[Player]) -> void:
 	state = State.RETURNED
 	ship.ramp_open = false
-	var haul: Dictionary[OreType, float] = {}
-	for player: Player in players:
-		if player.dead:
-			continue
-		var cargo: Dictionary[OreType, float] = player.take_cargo()
-		for ore_type: OreType in cargo:
-			GameEvents.bus.ore_hauled.emit(player, ore_type, cargo[ore_type])
-			var so_far: float = haul.get(ore_type, 0.0)
-			haul[ore_type] = so_far + cargo[ore_type]
-	ship.store_haul(haul, _players())
+	bank(players)
 	_leave_miners(players)
 	_respawn_dead()
 	_takeoff_left = ship.flight.settings.takeoff_delay

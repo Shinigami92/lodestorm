@@ -1,6 +1,7 @@
 extends RefCounted
-## Planning generated locations for the tests that sweep many seeds and biomes. The sweeps are the
-## slowest tests, so they're spread over several scripts, which run in parallel (`tools/test.sh`).
+## Generated locations for the tests: planned for the sweeps over many seeds and biomes, or built
+## small (`generate`). The sweeps are the slowest tests, so they're spread over several scripts,
+## which run in parallel (`tools/test.sh`).
 
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 ## Every biome: what holds for one holds for all.
@@ -14,6 +15,8 @@ const BIOMES: Array[LocationBiome] = [
 ]
 ## Areas of a planned location.
 const AREAS: int = 9
+## Areas of a built location (`generate`): smaller than in the game, so the tests stay quick.
+const BUILT_AREAS: int = 6
 ## Where the camera looks in the game when the ship's nose points along -x (isometric).
 const VIEW := Vector3(-0.577, -0.577, -0.577)
 
@@ -34,6 +37,20 @@ static func plan(
 	location.view_direction = view
 	location.set_pieces = set_pieces
 	location.plan()
+	return location
+
+
+## Built in `test`'s tree (nodes and all, freed after the test), `BUILT_AREAS` big; dust unless
+## `biome` is given.
+static func generate(
+	test: GutTest, world_seed: int, biome: LocationBiome = BIOMES[0], nest_factor: float = 1.0
+) -> GeneratedLocation:
+	var location := LOCATION.instantiate() as GeneratedLocation
+	location.world_seed = world_seed
+	location.biome = biome
+	location.nest_factor = nest_factor
+	location.area_count = BUILT_AREAS
+	test.add_child_autofree(location)
 	return location
 
 

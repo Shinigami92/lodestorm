@@ -31,6 +31,8 @@ A science expedition led by **Calder**, sent ahead of the colony. They understoo
 
 No real-time deadline: the flare is a date in the story, and the last act begins when the players are ready.
 
+Acts 1–4 each bring a miner's cradle (in the middle of the act) and a furnace as main-quest rewards, paid in parts for the stripped ship (see [`balance.md`](balance.md)); each act's writing round says who hands them over.
+
 ## People
 
 - **Personal threads,** told through each crew member's side quests (see [`crew.md`](crew.md); each person's whole sheet: see [`characters.md`](characters.md)):

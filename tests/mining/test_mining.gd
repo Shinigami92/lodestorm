@@ -107,6 +107,15 @@ func test_node_holds_fills_by_its_band() -> void:
 	assert_false(_node.is_dry())
 
 
+func test_rich_node_holds_more() -> void:
+	var rich := GeneratedLocation.ORE_NODE.instantiate() as OreNode
+	rich.ore_type = _node.ore_type
+	rich.rich = true
+	_map.add_child(rich)
+	assert_eq(rich.full_amount, _node.full_amount * OreNode.RICH_FACTOR)
+	assert_eq(rich.amount, rich.full_amount)
+
+
 func test_miner_takes_its_ore_out_of_the_node() -> void:
 	var miner: Miner = _place_miner(10.0, 100.0)
 	await wait_physics_frames(Engine.physics_ticks_per_second)

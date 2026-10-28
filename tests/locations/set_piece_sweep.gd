@@ -46,7 +46,7 @@ static func check(test: GutTest, part: int) -> void:
 					set_pieces.append(placed.placement.scene)
 				test.assert_ne(placed.area.kind, LocationLayout.Kind.LANDING, label)
 				if not placed.set_piece:
-					test.assert_false(placed.area.holds_rich_ore(), label)
+					test.assert_false(placed.area.holds_rarest_ore(), label)
 				_assert_part_reachable(test, location, placed, label)
 			for placement: PartPlacement in region.set_pieces:
 				test.assert_has(set_pieces, placement.scene, label)

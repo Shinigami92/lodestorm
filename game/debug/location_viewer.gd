@@ -308,7 +308,7 @@ func _draw() -> void:
 		)
 	for ore: LocationSites.OreSite in _location.sites.ores:
 		var at := Vector2(ore.position.x, ore.position.z)
-		draw_circle(_to_screen(at), 4.0, ore.ore.color)
+		draw_circle(_to_screen(at), 6.0 if ore.rich else 4.0, ore.ore.color)
 	for nest: Vector3 in _location.sites.nest_positions():
 		draw_arc(_to_screen(Vector2(nest.x, nest.z)), 6.0, 0.0, TAU, 16, Color(1.0, 0.2, 0.2), 2.5)
 	_draw_parts(font)

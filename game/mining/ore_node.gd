@@ -3,9 +3,10 @@ extends Node3D
 ## A deposit of one ore type that a single miner can be placed on. Shows a ring while it's the
 ## spot a player would place their next miner on. Close to a player, its crystals also show behind
 ## cliffs, as a faint silhouette in the ore's color (farther out finding ore stays exploring).
-## It holds a limited amount (`amount`, from its ore's band, see `FILLS`) that its miner takes out
-## (`mine`): its crystals shrink into the rock one after another as it empties, the smallest first
-## (each holds its share by its volume), until only the rock is left once it's dry.
+## It holds a limited amount (`amount`, from its ore's band, see `FILLS`, more in a rich field) that
+## its miner takes out (`mine`): its crystals shrink into the rock one after another as it empties,
+## the smallest first (each holds its share by its volume), until only the rock is left once it's
+## dry.
 
 const GROUP: StringName = &"ore_nodes"
 ## How many fills of a standard-issue miner's tank (`MinerSettings.capacity`) a node of each band
@@ -15,6 +16,8 @@ const FILLS: Dictionary[OreType.Band, float] = {
 	OreType.Band.MID: 1.5,
 	OreType.Band.SIGNATURE: 1.0,
 }
+## How many times that a node in a nest hollow's rich field holds (`rich`). TBD (playtest).
+const RICH_FACTOR: float = 2.0
 const MINER_SETTINGS: MinerSettings = preload("res://game/mining/miner_settings.tres")
 ## How close a player must be for the crystals to show behind cliffs, in m. TBD (playtest).
 const SILHOUETTE_RANGE: float = 30.0
@@ -25,6 +28,8 @@ const SILHOUETTE_CHECK: float = 0.25
 ## Which of the ore type's model variants this node shows (wraps around), so neighboring nodes
 ## can look different.
 @export var variant: int = 0
+## In a nest hollow's rich field: holds `RICH_FACTOR` times its band's amount.
+@export var rich: bool = false
 
 ## Units it holds untouched; 0: from its ore's band (`FILLS`). Set before it enters the tree.
 var full_amount: float = 0.0
@@ -60,6 +65,8 @@ func _ready() -> void:
 		_use_model()
 	if full_amount <= 0.0:
 		full_amount = FILLS[ore_type.band] * MINER_SETTINGS.capacity
+		if rich:
+			full_amount *= RICH_FACTOR
 	if amount < 0.0:
 		amount = full_amount
 	_list_crystals()

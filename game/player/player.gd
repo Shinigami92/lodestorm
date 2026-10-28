@@ -12,7 +12,8 @@ extends CharacterBody3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
 ## the suit ring around its feet (`SuitRing`, with the ammo, the spare magazines and the dash) and
 ## the suit light; at zero health the player dies, drops everything carried and lies still until
-## `respawn`.
+## `respawn`, or, while its vitals have a bleed-out, goes `down` first: it lies still keeping what
+## it carries, ignored by aliens, until it gets up (`PlayerVitals.get_up`) or dies.
 ## Owns the weapons in its `arsenal` and carries the ones in its `loadout` (picked in the armory);
 ## `switch_weapon` equips and draws the next one. Fed weapons keep their loaded rounds while
 ## holstered for the run and `reload` them with ammo the suit makes from the carried ore (`OreAmmo`;
@@ -38,7 +39,7 @@ extends CharacterBody3D
 
 ## Emitted when health changes (damage, healing).
 signal health_changed(health: float)
-## Emitted when health reaches zero.
+## Emitted when it dies (see `PlayerVitals.died`).
 signal died
 
 const GROUP: StringName = &"players"
@@ -135,6 +136,14 @@ var lying_on: Node3D
 var dead: bool:
 	get:
 		return vitals.dead
+## Downed players lie still until they get up or die (see `PlayerVitals.down`).
+var down: bool:
+	get:
+		return vitals.down
+## Down or dead: can't move or act, and aliens leave it alone.
+var fallen: bool:
+	get:
+		return vitals.life != PlayerVitals.Life.ALIVE
 ## Spare magazines per ranged weapon a run starts with, with the skills.
 var spare_magazines: int:
 	get:
@@ -240,6 +249,8 @@ func _ready() -> void:
 	vitals.holder = self
 	vitals.light = _suit_light
 	vitals.changed.connect(health_changed.emit)
+	vitals.went_down.connect(_fall)
+	vitals.got_up.connect(_on_got_up)
 	vitals.died.connect(_on_died)
 	add_child(vitals)
 	vitals.revive()
@@ -257,8 +268,9 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if dead:
+	if fallen:
 		aim.target = null
+		vitals.update(delta)
 		return
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	var camera_basis: Basis = camera.global_basis if camera else Basis.IDENTITY
@@ -362,7 +374,7 @@ func interact() -> Interactable:
 ## it started or timed a reload.
 func reload() -> bool:
 	var ammo: WeaponAmmo = get_ammo()
-	return ammo != null and weapon_allowed and not dead and ammo.reload()
+	return ammo != null and weapon_allowed and not fallen and ammo.reload()
 
 
 ## Fills every fed weapon's magazine and spare magazines for free (the ship's stock, for a new
@@ -387,7 +399,7 @@ func refill_spares() -> void:
 ## Hands `teammate` a magazine for their equipped fed weapon, paid from the carried ore (see
 ## `WeaponAmmo.receive_ammo`). Returns whether it did.
 func give_ammo(teammate: Player) -> bool:
-	if teammate == self or teammate.dead or dead:
+	if teammate == self or teammate.fallen or fallen:
 		return false
 	var ammo: WeaponAmmo = teammate.get_ammo()
 	return ammo != null and ammo.receive_ammo(self)
@@ -494,12 +506,12 @@ static func first_local(tree: SceneTree) -> Player:
 	return null
 
 
-## The living player closest to `from` within `max_distance` (horizontally), or null.
+## The standing player closest to `from` within `max_distance` (horizontally), or null.
 static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Player:
 	var nearest_player: Player = null
 	var nearest_distance: float = max_distance
 	for player: Player in tree.get_nodes_in_group(GROUP):
-		if player.dead:
+		if player.fallen:
 			continue
 		var offset: Vector3 = player.global_position - from
 		var distance: float = Vector2(offset.x, offset.z).length()
@@ -555,8 +567,8 @@ func _report_progress() -> void:
 	)
 
 
-## Drops everything and lies still until `respawn`.
-func _on_died() -> void:
+## Stops whatever it does and lies still (down or dead).
+func _fall() -> void:
 	if menu:
 		menu.close()
 	velocity = Vector3.ZERO
@@ -575,14 +587,26 @@ func _on_died() -> void:
 		interact_target.highlighted = false
 	miner_target = null
 	interact_target = null
-	var dropped: Dictionary[OreType, float] = cargo.take_all()
-	for ore_type: OreType in dropped:
-		GameEvents.bus.ore_lost.emit(self, ore_type, dropped[ore_type])
 	# Falls and lies still; the collision shape stays, so the ship still knows where the body is.
 	_animator.local_velocity = Vector2.ZERO
 	_animator.dead = true
 	_ship_pointer.visible = false
 	_ship_pointer.process_mode = Node.PROCESS_MODE_DISABLED
+
+
+## Stands up again from being down, the weapon drawn.
+func _on_got_up() -> void:
+	_animator.dead = false
+	weapon_allowed = weapon_allowed
+	_ship_pointer.process_mode = Node.PROCESS_MODE_INHERIT
+
+
+## Drops everything and lies still until `respawn`.
+func _on_died() -> void:
+	_fall()
+	var dropped: Dictionary[OreType, float] = cargo.take_all()
+	for ore_type: OreType in dropped:
+		GameEvents.bus.ore_lost.emit(self, ore_type, dropped[ore_type])
 	died.emit()
 
 
@@ -676,7 +700,7 @@ func _teammate_needing_ammo() -> Player:
 	var best_distance: float = settings.give_ammo_range
 	for node: Node in get_tree().get_nodes_in_group(GROUP):
 		var teammate := node as Player
-		if teammate == self or teammate.dead:
+		if teammate == self or teammate.fallen:
 			continue
 		var ammo: WeaponAmmo = teammate.get_ammo()
 		if not ammo or ammo.is_full():
@@ -727,7 +751,7 @@ func _equip(weapon_type: WeaponType) -> void:
 		_set_careful()
 		ammo.reload_denied.connect(_on_reload_denied)
 		ammo.reload_timed.connect(_on_reload_timed.bind(ammo))
-	weapon.visible = weapon_allowed and not dead
+	weapon.visible = weapon_allowed and not fallen
 	OccludedSilhouette.mark_visible(weapon)
 	RenderLayers.put(weapon, RenderLayers.CHARACTERS)
 	var shield: bool = weapon_type.hold == WeaponType.Hold.SHIELD

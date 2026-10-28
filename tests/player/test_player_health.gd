@@ -84,3 +84,38 @@ func test_respawn_restores_player() -> void:
 	assert_eq(_player.global_position, spot)
 	assert_eq(_light.color, SuitLight.COLOR_HEALTHY)
 	assert_true(_player.weapon.visible, "weapon is drawn again outside the ship")
+
+
+func test_goes_down_with_a_bleed_out_and_keeps_cargo() -> void:
+	_player.vitals.bleed_out = 3.0
+	_player.cargo.add(KYRITE, 120.0)
+	_player.take_damage(_player.settings.max_health + 50.0)
+	assert_true(_player.down)
+	assert_true(_player.fallen)
+	assert_false(_player.dead)
+	assert_signal_not_emitted(_player, "died")
+	assert_eq(_player.cargo.total(), 120.0, "nothing carried is lost while down")
+	assert_null(Player.nearest(get_tree(), _player.global_position, 1.0), "aliens leave it alone")
+	_player.take_damage(10.0)
+	_player.heal()
+	assert_eq(_player.health, 0.0, "a downed player neither takes damage nor heals")
+
+
+func test_downed_player_gets_up() -> void:
+	_player.vitals.bleed_out = 3.0
+	_player.take_damage(_player.settings.max_health)
+	assert_true(_player.vitals.get_up(0.5))
+	assert_false(_player.fallen)
+	assert_eq(_player.health, _player.max_health() * 0.5)
+	assert_true(_player.weapon.visible, "weapon is drawn again")
+	assert_false(_player.vitals.get_up(0.5), "only a downed player gets up")
+
+
+func test_downed_player_bleeds_out() -> void:
+	_player.vitals.bleed_out = 0.1
+	_player.cargo.add(KYRITE, 120.0)
+	_player.take_damage(_player.settings.max_health)
+	await wait_physics_frames(15)
+	assert_true(_player.dead)
+	assert_signal_emit_count(_player, "died", 1)
+	assert_true(_player.cargo.is_empty(), "dying drops what it carried")

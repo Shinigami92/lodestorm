@@ -186,6 +186,7 @@ func _check_outcome() -> void:
 	var players: Array[Player] = _players()
 	if players.is_empty():
 		return
+	# A downed player keeps the run going until it gets up or dies.
 	var anyone_alive: bool = false
 	for player: Player in players:
 		if player.dead:

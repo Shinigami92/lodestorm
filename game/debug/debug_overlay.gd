@@ -347,7 +347,9 @@ func _process(_delta: float) -> void:
 		lines.append("No mission in this scene")
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		var carried: float = player.cargo.total()
-		var status: String = "dead" if player.dead else "%.0f HP" % player.health
+		var status: String = "%.0f HP" % player.health
+		if player.fallen:
+			status = "dead" if player.dead else "down %.0f s" % player.vitals.bleed_out_left
 		if PlayerVitals.god_mode:
 			status += " (god mode)"
 		lines.append("%s: %s, carrying %.0f" % [player.name, status, carried])

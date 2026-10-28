@@ -79,7 +79,7 @@ func _exit_tree() -> void:
 func is_up() -> bool:
 	if not weapon or not weapon.holder or not weapon.is_visible_in_tree() or not weapon.is_drawn():
 		return false
-	if weapon.holder is Player and (weapon.holder as Player).dead:
+	if weapon.holder is Player and (weapon.holder as Player).fallen:
 		return false
 	var ammo := weapon.ammo as FieldAmmo
 	if not ammo or ammo.is_broken():

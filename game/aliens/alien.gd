@@ -589,9 +589,9 @@ func take_damage(amount: float, by: Node = null, with: WeaponType = null) -> voi
 		GameEvents.bus.alien_killed.emit(player, with, self)
 
 
-## Whether `player` can be hunted: alive and not aboard a ship.
+## Whether `player` can be hunted: standing (not down or dead) and not aboard a ship.
 static func is_prey(tree: SceneTree, player: Player) -> bool:
-	if player.dead:
+	if player.fallen:
 		return false
 	for ship: Ship in tree.get_nodes_in_group(Ship.GROUP):
 		if ship.is_aboard(player):

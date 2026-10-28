@@ -79,7 +79,7 @@ func at_stop(delta: float) -> bool:
 ## Whether the leader is gone (left the game, fell) or has stayed away too long (counting `delta`
 ## s).
 func is_lost(delta: float) -> bool:
-	if not is_instance_valid(leader) or leader.dead:
+	if not is_instance_valid(leader) or leader.fallen:
 		return true
 	var away: bool = leader.global_position.distance_to(npc.global_position) > AWAY_RANGE
 	_away = _away + delta if away else 0.0

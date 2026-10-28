@@ -98,7 +98,7 @@ func _physics_process(delta: float) -> void:
 	elif is_instance_valid(_caught):
 		_hold_left -= delta
 		global_position = _caught.global_position + Vector3.UP * CHEST_HEIGHT
-		if _hold_left <= 0.0 or _caught.dead:
+		if _hold_left <= 0.0 or _caught.fallen:
 			_pull_back()
 	else:
 		_fly(delta)

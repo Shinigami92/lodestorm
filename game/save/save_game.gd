@@ -264,7 +264,7 @@ static func player_data(of_player: Player) -> Dictionary:
 	hints.sort()
 	return {
 		"version": VERSION,
-		"health": of_player.max_health() if of_player.dead else of_player.health,
+		"health": of_player.max_health() if of_player.fallen else of_player.health,
 		"hold": hold,
 		"found": found,
 		"refining": refining,

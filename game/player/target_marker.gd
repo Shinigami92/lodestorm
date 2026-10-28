@@ -29,7 +29,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	var target: Node3D = _player.aim.target
-	visible = PlayerAim.is_lockable(target) and not _player.dead and _player.local
+	visible = PlayerAim.is_lockable(target) and not _player.fallen and _player.local
 	if not visible:
 		return
 	var half_size: float = body_radius(target) + MARGIN

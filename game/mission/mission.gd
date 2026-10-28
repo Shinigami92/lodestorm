@@ -156,11 +156,23 @@ func bank(players: Array[Player]) -> void:
 		if player.dead:
 			continue
 		var cargo: Dictionary[OreType, float] = player.take_cargo()
+		_count_hauled(player, cargo)
 		for ore_type: OreType in cargo:
-			GameEvents.bus.ore_hauled.emit(player, ore_type, cargo[ore_type])
 			var so_far: float = haul.get(ore_type, 0.0)
 			haul[ore_type] = so_far + cargo[ore_type]
 	ship.store_haul(haul, _players())
+
+
+## Takes `haul`, taken out of `player`'s cargo (e.g. at the cargo hatch), into the hold the same way
+## (see `Ship.store_haul`); the run goes on.
+func bank_ore(player: Player, haul: Dictionary[OreType, float]) -> void:
+	_count_hauled(player, haul)
+	ship.store_haul(haul, _players())
+
+
+func _count_hauled(player: Player, haul: Dictionary[OreType, float]) -> void:
+	for ore_type: OreType in haul:
+		GameEvents.bus.ore_hauled.emit(player, ore_type, haul[ore_type])
 
 
 func _storm_damage(delta: float) -> void:

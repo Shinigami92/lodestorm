@@ -70,7 +70,7 @@ func test_new_player_owns_harl_and_dray() -> void:
 	assert_false(_player.arsenal.owns(BRASK))
 	assert_eq(_player.settings.loadout_slots, 2)
 	assert_eq(_player.loadout.weapons, [HARL, DRAY] as Array[WeaponType])
-	assert_eq(_player.get_weapon_type(), HARL)
+	assert_eq(_player.arms.get_weapon_type(), HARL)
 
 
 func test_unlock_adds_a_weapon_once() -> void:
@@ -104,44 +104,44 @@ func test_assigning_a_weapon_in_another_slot_swaps_them() -> void:
 
 
 func test_switch_action_cycles_the_loadout() -> void:
-	assert_not_null(_player.get_ammo())
+	assert_not_null(_player.arms.get_ammo())
 	Input.action_press(&"switch_weapon")
 	await wait_physics_frames(2)
 	Input.action_release(&"switch_weapon")
-	assert_eq(_player.weapon_slot, 1)
-	assert_eq(_player.get_weapon_type(), DRAY)
-	assert_true(_player.get_weapon_type().is_melee())
-	assert_eq(_player.weapon.get_parent().name, &"WeaponMount")
-	assert_true(_player.switch_weapon())
-	assert_eq(_player.get_weapon_type(), HARL)
+	assert_eq(_player.arms.slot, 1)
+	assert_eq(_player.arms.get_weapon_type(), DRAY)
+	assert_true(_player.arms.get_weapon_type().is_melee())
+	assert_eq(_player.arms.weapon.get_parent().name, &"WeaponMount")
+	assert_true(_player.arms.switch_weapon())
+	assert_eq(_player.arms.get_weapon_type(), HARL)
 	assert_eq(_player.get_node("WeaponMount").get_child_count(), 1, "the old weapon is gone")
 
 
 func test_no_switch_with_one_weapon() -> void:
 	_player.loadout.assign(1, null)
-	assert_false(_player.switch_weapon())
-	assert_eq(_player.get_weapon_type(), HARL)
+	assert_false(_player.arms.switch_weapon())
+	assert_eq(_player.arms.get_weapon_type(), HARL)
 
 
 func test_changing_the_loadout_changes_the_weapon() -> void:
 	_player.arsenal.unlock(BRASK)
 	_player.loadout.assign(0, BRASK)
-	assert_eq(_player.get_weapon_type(), BRASK)
+	assert_eq(_player.arms.get_weapon_type(), BRASK)
 	_player.loadout.assign(0, null)
-	assert_eq(_player.weapon_slot, 1, "the other slot's weapon")
-	assert_eq(_player.get_weapon_type(), DRAY)
+	assert_eq(_player.arms.slot, 1, "the other slot's weapon")
+	assert_eq(_player.arms.get_weapon_type(), DRAY)
 	_player.loadout.assign(1, null)
-	assert_null(_player.weapon)
-	assert_null(_player.get_weapon_type())
+	assert_null(_player.arms.weapon)
+	assert_null(_player.arms.get_weapon_type())
 
 
 func test_switched_weapon_stays_holstered_aboard() -> void:
 	_player.global_position = _ship.to_global(IN_ARMORY)
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(2)
-	assert_false(_player.weapon_allowed)
-	_player.switch_weapon()
-	assert_false(_player.weapon.visible)
+	assert_false(_player.arms.allowed)
+	_player.arms.switch_weapon()
+	assert_false(_player.arms.weapon.visible)
 
 
 func test_debug_overlay_unlocks_every_weapon() -> void:

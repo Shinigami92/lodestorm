@@ -39,12 +39,12 @@ func test_arcs_dim_after_a_while_unless_low() -> void:
 	assert_eq(_ring.health_glow, 0.0, "full health dims")
 	assert_eq(_ring.ammo_glow, 0.0, "a full magazine dims")
 	_player.take_damage(_player.max_health() * 0.6)
-	(_player.get_ammo() as MagazineAmmo).rounds = 2
+	(_player.arms.get_ammo() as MagazineAmmo).rounds = 2
 	await wait_seconds(0.2 + SuitRing.FADE_TIME + 0.2)
 	assert_eq(_ring.health_glow, 1.0, "below half stays lit")
 	assert_eq(_ring.ammo_glow, 1.0, "nearly empty stays lit")
 	_player.heal()
-	(_player.get_ammo() as MagazineAmmo).rounds = 10
+	(_player.arms.get_ammo() as MagazineAmmo).rounds = 10
 	await wait_process_frames(2)
 	assert_gt(_ring.health_glow, 0.0, "a change lights it up")
 	await wait_seconds(0.2 + SuitRing.FADE_TIME + 0.2)
@@ -70,7 +70,7 @@ func test_brask_shows_its_rounds_as_segments() -> void:
 	_player.arsenal.unlock(BRASK)
 	_player.loadout.assign(0, BRASK)
 	await wait_process_frames(1)
-	var brask := _player.get_ammo() as MagazineAmmo
+	var brask := _player.arms.get_ammo() as MagazineAmmo
 	assert_eq(_number(&"ammo_segments"), float(brask.capacity()))
 
 
@@ -100,7 +100,7 @@ func test_tilting_copes_with_a_normal_a_hair_away() -> void:
 
 
 func test_quiet_aboard_and_hidden_when_dead() -> void:
-	_player.weapon_allowed = false
+	_player.arms.allowed = false
 	await wait_process_frames(1)
 	assert_false(_ring.shows_ammo(), "no ammo arc with the weapon holstered")
 	assert_eq(_number(&"outline_alpha"), 0.0, "no outline aboard")
@@ -119,7 +119,7 @@ func test_always_show_keeps_the_arcs_lit() -> void:
 func test_shown_and_lit_while_the_pause_panel_is_open() -> void:
 	# GUT waits on while the game is paused.
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	_player.weapon_allowed = false
+	_player.arms.allowed = false
 	await wait_seconds(0.2 + SuitRing.FADE_TIME + 0.2)
 	assert_eq(_ring.health_glow, 0.0)
 	_player.pause_panel.open(_player)

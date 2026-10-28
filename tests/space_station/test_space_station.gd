@@ -86,7 +86,7 @@ func test_ramp_into_the_hangar() -> void:
 	await _move(foot + Vector3(4.0, 0.1, 0.0))
 	assert_true(station.is_inside(_player))
 	assert_false(_ship.is_aboard(_player))
-	assert_false(_player.weapon_allowed, "holstered at the station")
+	assert_false(_player.arms.allowed, "holstered at the station")
 	assert_eq(_mission.state, Mission.State.CLOSED, "stepping out starts nothing")
 	assert_true(station.is_cut_away(), "the camera sees in")
 	var roof: GeometryInstance3D = station.get_node("Walls/Cut/RoofHangar")

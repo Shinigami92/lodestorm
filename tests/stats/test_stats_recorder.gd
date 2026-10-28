@@ -93,13 +93,13 @@ func test_events_of_other_players_are_not_kept() -> void:
 
 
 func test_timed_reloads_are_counted_by_result() -> void:
-	var ammo := _player.get_ammo() as MagazineAmmo
+	var ammo := _player.arms.get_ammo() as MagazineAmmo
 	ammo.rounds = 0
 	assert_true(ammo.reload(), "a reload started")
 	var window: Vector2 = ammo.timing_window()
 	ammo.reload_elapsed = ammo.reload_duration * (window.x + window.y) * 0.5
 	assert_true(ammo.reload(), "the timing press")
-	var weapon: String = GameEvents.id_of(_player.weapon.type)
+	var weapon: String = GameEvents.id_of(_player.arms.weapon.type)
 	assert_eq(_recorder.totals.value("reloads", [weapon, "reload"]), 1.0)
 	assert_eq(_recorder.totals.value("reload_presses", [weapon, "hit"]), 1.0)
 	assert_eq(_recorder.totals.value("reload_presses", [weapon, "miss"]), 0.0)

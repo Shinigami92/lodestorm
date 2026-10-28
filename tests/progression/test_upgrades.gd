@@ -111,21 +111,21 @@ func test_hold_pays_only_what_it_has() -> void:
 
 
 func test_weapon_upgrade_raises_its_damage_and_lights_its_pips() -> void:
-	assert_eq(_player.get_weapon_type(), HARL)
-	assert_eq(_player.weapon.multiplier(WeaponPart.Stat.DAMAGE), 1.0)
-	var pips := _player.weapon.get_node("DamagePips") as MkPips
+	assert_eq(_player.arms.get_weapon_type(), HARL)
+	assert_eq(_player.arms.weapon.multiplier(WeaponPart.Stat.DAMAGE), 1.0)
+	var pips := _player.arms.weapon.get_node("DamagePips") as MkPips
 	assert_eq(pips.lit_count(), 1)
 	assert_eq(pips.max_mk, 8)
 	_player.upgrades.raise(HARL.get_part(WeaponPart.Stat.DAMAGE))
-	assert_eq(_player.weapon.multiplier(WeaponPart.Stat.DAMAGE), _damage(HARL, 2))
+	assert_eq(_player.arms.weapon.multiplier(WeaponPart.Stat.DAMAGE), _damage(HARL, 2))
 	assert_eq(pips.lit_count(), 2)
-	_player.switch_weapon()
-	assert_eq(_player.get_weapon_type(), DRAY)
+	_player.arms.switch_weapon()
+	assert_eq(_player.arms.get_weapon_type(), DRAY)
 	assert_eq(
-		_player.weapon.multiplier(WeaponPart.Stat.DAMAGE), 1.0, "each weapon has its own level"
+		_player.arms.weapon.multiplier(WeaponPart.Stat.DAMAGE), 1.0, "each weapon has its own level"
 	)
-	_player.switch_weapon()
-	assert_eq(_player.weapon.multiplier(WeaponPart.Stat.DAMAGE), _damage(HARL, 2))
+	_player.arms.switch_weapon()
+	assert_eq(_player.arms.weapon.multiplier(WeaponPart.Stat.DAMAGE), _damage(HARL, 2))
 
 
 func test_every_weapon_shows_pips() -> void:
@@ -147,7 +147,7 @@ func test_projectiles_carry_the_upgraded_damage() -> void:
 	_player.global_position = _ship.to_global(Vector3(22.0, 0.0, 0.0))
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(2)
-	assert_true(_player.weapon_allowed, "outside the ship")
+	assert_true(_player.arms.allowed, "outside the ship")
 	Input.action_press(&"attack")
 	await wait_physics_frames(2)
 	Input.action_release(&"attack")

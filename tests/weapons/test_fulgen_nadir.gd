@@ -45,7 +45,7 @@ func test_fulgen_arcs_to_the_nearest_alien_in_its_cone_and_jumps_on() -> void:
 	assert_almost_eq(_dealt(second), full * CHAIN.jump_share, 0.01, "jumped on")
 	assert_almost_eq(_dealt(third), full * CHAIN.jump_share * CHAIN.jump_share, 0.01)
 	assert_eq(_dealt(aside), 0.0, "too far from the others and outside the cone")
-	assert_eq(_player.weapon.ammo.rounds, _player.weapon.ammo.capacity() - 1)
+	assert_eq(_player.arms.weapon.ammo.rounds, _player.arms.weapon.ammo.capacity() - 1)
 
 
 func test_fulgen_jumps_at_most_its_jumps() -> void:
@@ -82,7 +82,9 @@ func test_fulgen_strikes_the_ground_without_an_alien() -> void:
 	var behind := _add_alien(Vector3(0.0, 0.0, 6.0))
 	await _attack_once()
 	assert_eq(_dealt(behind), 0.0)
-	assert_eq(_player.weapon.ammo.rounds, _player.weapon.ammo.capacity() - 1, "it always fires")
+	assert_eq(
+		_player.arms.weapon.ammo.rounds, _player.arms.weapon.ammo.capacity() - 1, "it always fires"
+	)
 
 
 func test_nadir_well_pulls_aliens_in_holds_them_and_bursts() -> void:
@@ -161,9 +163,9 @@ func test_nadir_keeps_one_well_and_recharges_one_at_a_time() -> void:
 
 func _drawn(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
-	assert_eq(_player.get_weapon_type(), weapon_type)
+	assert_eq(_player.arms.get_weapon_type(), weapon_type)
 	await wait_seconds(weapon_type.draw_time + 0.05)
-	return _player.weapon
+	return _player.arms.weapon
 
 
 func _attack_once() -> void:

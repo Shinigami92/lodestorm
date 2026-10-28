@@ -71,7 +71,7 @@ func test_leaves_the_player_out() -> void:
 	_player.cargo.add(KYRITE, 2000.0)
 	await wait_process_frames(1)
 	var decal := _reticle.get_node("Decal") as Decal
-	assert_not_null(_player.weapon, "with a weapon")
+	assert_not_null(_player.arms.weapon, "with a weapon")
 	for node: Node in _player.find_children("*", "VisualInstance3D", true, false):
 		if node != decal:
 			var visual := node as VisualInstance3D

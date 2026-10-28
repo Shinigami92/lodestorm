@@ -102,7 +102,7 @@ func test_scald_fills_its_cone_and_sets_aliens_burning() -> void:
 	var sheltered := _add_alien(Vector3(-1.2, 0.0, -4.0), 1000.0)
 	_add_box(Vector3(-0.7, 1.5, -3.0), Vector3(0.6, 3.0, 0.3))
 	await wait_physics_frames(1)
-	_player.weapon.aim_target = null
+	_player.arms.weapon.aim_target = null
 	await _hold(0.5)
 	assert_gt(_dealt(inside), SCALD_DAMAGE.damage, "in the cone")
 	assert_eq(_dealt(aside), 0.0, "outside its angle")
@@ -196,9 +196,9 @@ func test_zenith_hits_harder_the_longer_it_stays() -> void:
 
 func _drawn(weapon_type: WeaponType) -> Weapon:
 	_player.loadout.assign(0, weapon_type)
-	assert_eq(_player.get_weapon_type(), weapon_type)
+	assert_eq(_player.arms.get_weapon_type(), weapon_type)
 	await wait_seconds(weapon_type.draw_time + 0.05)
-	return _player.weapon
+	return _player.arms.weapon
 
 
 func _hold(seconds: float) -> void:

@@ -18,12 +18,12 @@ func before_each() -> void:
 
 
 func test_weapons_work_only_in_the_range() -> void:
-	assert_false(_player.weapon_allowed, "cargo bay")
+	assert_false(_player.arms.allowed, "cargo bay")
 	await _move(_player, _range.global_position)
-	assert_true(_player.weapon_allowed, "shooting range")
+	assert_true(_player.arms.allowed, "shooting range")
 	var corridor: Node3D = _ship.get_node("Rooms/Lower/LowerCorridor")
 	await _move(_player, corridor.global_position)
-	assert_false(_player.weapon_allowed, "corridor")
+	assert_false(_player.arms.allowed, "corridor")
 
 
 ## Shots can't leave the range through its door, but players walk through it.
@@ -50,8 +50,8 @@ func test_reloads_in_the_range_spend_no_ore() -> void:
 	var kyrite: OreType = load("res://game/ores/types/ore_kyrite.tres")
 	_player.cargo.add(kyrite, 10.0)
 	await _move(_player, _range.global_position)
-	assert_true(_player.ammo_free)
-	var harl := _player.get_ammo() as MagazineAmmo
+	assert_true(_player.arms.ammo_free)
+	var harl := _player.arms.get_ammo() as MagazineAmmo
 	harl.rounds = 1
 	Input.action_press(&"attack")
 	await wait_physics_frames(2)

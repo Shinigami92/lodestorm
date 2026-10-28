@@ -60,7 +60,7 @@ func test_progress_survives_a_restart() -> void:
 	assert_eq(_player.arsenal.weapons, [HARL, DRAY, BRASK] as Array[WeaponType])
 	assert_eq(_player.loadout.get_weapon(0), BRASK)
 	assert_null(_player.loadout.get_weapon(1))
-	assert_eq(_player.get_weapon_type(), BRASK)
+	assert_eq(_player.arms.get_weapon_type(), BRASK)
 	assert_eq(_player.upgrades.mk(ARMOR), 2)
 	var first: CraftedMiner = _player.fleet.get_miner(1)
 	assert_eq(first.upgrades.mk(DRILL), 3)

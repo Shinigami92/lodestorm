@@ -337,8 +337,8 @@ func _update_view() -> void:
 ## come from the ship's stock for free.
 func _update_weapon(player: Player) -> void:
 	var outside: bool = player not in _aboard and not flight.is_docked()
-	player.weapon_allowed = outside or player in _armed
-	player.ammo_free = player in _aboard
+	player.arms.allowed = outside or player in _armed
+	player.arms.ammo_free = player in _aboard
 
 
 func _update_weapons() -> void:

@@ -27,8 +27,8 @@ func test_no_attack_inside_ship() -> void:
 	_player.global_position = ship.to_global(Vector3(10.0, 2.5, 0.0))
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(2)
-	assert_false(_player.weapon_allowed)
-	assert_false(_player.weapon.visible, "weapon is holstered")
+	assert_false(_player.arms.allowed)
+	assert_false(_player.arms.weapon.visible, "weapon is holstered")
 	var fired: Array[Projectile] = _record_projectiles()
 	Input.action_press(&"attack")
 	await wait_physics_frames(10)
@@ -36,16 +36,16 @@ func test_no_attack_inside_ship() -> void:
 
 
 func test_player_equips_first_loadout_weapon() -> void:
-	assert_eq(_player.get_weapon_type(), _player.loadout.get_weapon(0))
-	assert_not_null(_player.get_ammo())
-	assert_eq(_player.weapon.get_parent().name, &"WeaponMount")
+	assert_eq(_player.arms.get_weapon_type(), _player.loadout.get_weapon(0))
+	assert_not_null(_player.arms.get_ammo())
+	assert_eq(_player.arms.weapon.get_parent().name, &"WeaponMount")
 
 
 func test_holding_attack_fires_at_attack_rate() -> void:
 	var fired: Array[Projectile] = _record_projectiles()
 	Input.action_press(&"attack")
 	await wait_physics_frames(Engine.physics_ticks_per_second)
-	var rate: float = _player.get_weapon_type().attack_rate
+	var rate: float = _player.arms.get_weapon_type().attack_rate
 	assert_between(float(fired.size()), rate, rate + 1.0)
 
 

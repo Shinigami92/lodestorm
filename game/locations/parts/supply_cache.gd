@@ -5,4 +5,4 @@ extends CrateContent
 
 
 func open(player: Player) -> void:
-	player.refill_spares()
+	player.arms.refill_spares()

@@ -52,7 +52,7 @@ func _shown() -> bool:
 	return (
 		player != null
 		and player.local
-		and player.weapon_allowed
+		and player.arms.allowed
 		and not player.fallen
 		and _weapon.is_drawn()
 		and _weapon.is_visible_in_tree()

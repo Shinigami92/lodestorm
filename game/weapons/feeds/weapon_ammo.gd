@@ -4,9 +4,9 @@ extends RefCounted
 ## reloads. The weapon asks it before each attack (`can_attack`, `use`) and ticks it
 ## (`process`); the holder reloads it (`reload`), fills it for a run (`fill`) and hands a teammate
 ## ammo (`receive_ammo`). Rounds beyond the spares are paid with ore by the `supplier` (see
-## `OreAmmo`); aboard (`Player.ammo_free`) they're free. The weapon's gauge and the suit ring show
-## it the same way for every feed: the rounds, a refill (`refilling`: a reload, a drained battery,
-## a vent) with its timing window, and the heat (`heat_share`).
+## `OreAmmo`); aboard (`PlayerArms.ammo_free`) they're free. The weapon's gauge and the suit ring
+## show it the same way for every feed: the rounds, a refill (`refilling`: a reload, a drained
+## battery, a vent) with its timing window, and the heat (`heat_share`).
 
 ## Emitted when a reload can't start although it isn't full (nothing pays more rounds).
 @warning_ignore("unused_signal")

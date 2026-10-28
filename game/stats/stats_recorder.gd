@@ -323,7 +323,7 @@ func _on_player_died(died: Player, cause: Node) -> void:
 	count("deaths", [label])
 	_write_line(
 		"player_died",
-		{"cause": label, "weapon": id_of(player.weapon.type if player.weapon else null)}
+		{"cause": label, "weapon": id_of(player.arms.weapon.type if player.arms.weapon else null)}
 	)
 
 

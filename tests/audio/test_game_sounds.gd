@@ -45,14 +45,14 @@ func test_the_local_player_is_where_the_game_is_heard_from() -> void:
 
 
 func test_shots_and_a_reload_sound() -> void:
-	var harl := _player.get_ammo() as MagazineAmmo
+	var harl := _player.arms.get_ammo() as MagazineAmmo
 	Input.action_press(&"attack")
 	await wait_physics_frames(1)
 	Input.action_release(&"attack")
 	assert_has(_played, _sound("weapons/harl_shot"))
 	harl.rounds = 1
 	_played.clear()
-	assert_true(_player.reload())
+	assert_true(_player.arms.reload())
 	assert_eq(_played, [_sound("weapons/reload_start")] as Array[Sound])
 	harl.reload_elapsed = harl.reload_duration
 	await wait_physics_frames(1)
@@ -60,22 +60,22 @@ func test_shots_and_a_reload_sound() -> void:
 
 
 func test_the_window_ticks_for_the_local_player_as_a_critical_cue() -> void:
-	var harl := _player.get_ammo() as MagazineAmmo
+	var harl := _player.arms.get_ammo() as MagazineAmmo
 	harl.rounds = 1
-	assert_true(_player.reload())
+	assert_true(_player.arms.reload())
 	harl.reload_elapsed = harl.reload_duration * (harl.feed.sweet_spot_start - 0.01)
 	await wait_physics_frames(2)
 	assert_has(_critical, _sound("weapons/window_tick"))
-	assert_true(_player.reload(), "the timing press")
+	assert_true(_player.arms.reload(), "the timing press")
 	assert_has(_played, _sound("weapons/timed_hit"))
 
 
 func test_a_reload_that_cant_start_clicks() -> void:
-	var harl := _player.get_ammo() as MagazineAmmo
+	var harl := _player.arms.get_ammo() as MagazineAmmo
 	harl.rounds = 0
 	harl.spare_rounds = 0
-	_player.ammo_free = false
-	assert_false(_player.reload())
+	_player.arms.ammo_free = false
+	assert_false(_player.arms.reload())
 	assert_eq(_played, [_sound("weapons/empty_click")] as Array[Sound])
 
 

@@ -222,7 +222,7 @@ func _finish_round() -> void:
 ## How many of `count` rounds a reload gets right now: all of them aboard, else from the spares
 ## while there are any, else what the holder's ore pays.
 func _available(count: int) -> int:
-	if supplier and supplier.ammo_free:
+	if supplier and supplier.arms.ammo_free:
 		return count
 	if spare_rounds > 0:
 		return mini(count, spare_rounds)
@@ -231,7 +231,7 @@ func _available(count: int) -> int:
 
 ## Takes `count` rounds for a reload, the way `_available` counted them.
 func _take(count: int) -> void:
-	if supplier and supplier.ammo_free:
+	if supplier and supplier.arms.ammo_free:
 		return
 	if spare_rounds > 0:
 		spare_rounds = maxi(spare_rounds - count, 0)
@@ -243,11 +243,11 @@ func _take(count: int) -> void:
 func _affordable(count: int, payer: Player) -> int:
 	if not payer:
 		return 0
-	if payer.ammo_free:
+	if payer.arms.ammo_free:
 		return count
 	return mini(count, OreAmmo.affordable(payer.cargo.ores, feed.ore_per_round))
 
 
 func _pay(count: int, payer: Player) -> void:
-	if payer and not payer.ammo_free:
+	if payer and not payer.arms.ammo_free:
 		OreAmmo.spend(payer, count * feed.ore_per_round)

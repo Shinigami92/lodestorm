@@ -1,21 +1,24 @@
 class_name ShipPointer
-extends Node3D
+extends RingPointer
 ## Points to the nearest ship's door once the local player is outside and farther away than
-## `min_distance`: its -Z turns towards the door, and the suit ring draws it as an arrow on its
-## edge in `color`, the ship's status color (blinking in the warning time). Beyond the arrow's tip,
-## the ship's countdown shows the exact time left, shrinking as the camera moves in (e.g. to frame
-## the pause panel), so it keeps its size on screen. Shows the way back and how urgent it is while
-## the ship is off-screen. Docked at a station there's no time to show: only the arrow.
+## `min_distance`: the suit ring draws it as the largest arrow on its edge in `color`, the ship's
+## status color (blinking in the warning time). Beyond the arrow's tip, the ship's countdown shows
+## the exact time left, shrinking as the camera moves in (e.g. to frame the pause panel), so it
+## keeps its size on screen. Shows the way back and how urgent it is while the ship is off-screen.
+## Docked at a station there's no time to show: only the arrow.
 
 ## Distance to the door (horizontally, in m) below which the arrow hides. TBD (playtest).
 @export var min_distance: float = 12.0
 
 ## The ship the arrow points to, or null.
 var target: Ship
-## The arrow's color (its alpha blinks with the ship's status light).
-var color := Color.WHITE
 
 @onready var _countdown: Label3D = $Countdown
+
+
+func _init() -> void:
+	arrow = Vector2(SuitRing.MAX_ARROW, 0.38)
+	priority = 0
 
 
 func _ready() -> void:
@@ -27,28 +30,28 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	target = Ship.nearest(get_tree(), global_position)
 	var to_ship := Vector3.ZERO
-	var player := get_parent() as Player
-	if target and player and player.local and not target.is_aboard(player):
+	if target and holder and holder.local and not target.is_aboard(holder):
 		to_ship = target.get_boarding_position() - global_position
 		to_ship.y = 0.0
 	visible = to_ship.length() > min_distance
 	if visible:
 		# Runs after the player turned this tick, so the arrow keeps pointing at the ship.
-		global_basis = Basis(Vector3.UP, atan2(-to_ship.x, -to_ship.z))
+		point_along(to_ship)
 
 
 func _process(_delta: float) -> void:
 	if not visible or not target:
 		return
+	# Its alpha blinks with the ship's status light.
 	color = Color(target.status_color, 0.3 + 0.6 * target.status_brightness)
 	_countdown.text = target.countdown_text
 	_countdown.visible = not target.flight.is_docked()
 	_countdown.scale = Vector3.ONE * _zoom()
 	# Blinks less than the arrow, so the time stays readable.
 	_countdown.modulate = Color(target.status_color, 0.6 + 0.4 * target.status_brightness)
-	var ring := get_parent().get_node_or_null(^"SuitRing") as SuitRing
+	var ring := holder.get_node_or_null(^"SuitRing") as SuitRing if holder else null
 	if ring:
-		var distance: float = ring.pointer_reach() + SuitRing.COUNTDOWN_GAP + _half_extent()
+		var distance: float = ring.pointer_reach(arrow.x) + SuitRing.COUNTDOWN_GAP + _half_extent()
 		_countdown.position = Vector3(0.0, _countdown.position.y, -distance)
 
 
@@ -86,7 +89,7 @@ func _half_extent() -> float:
 ## How close the camera following its player is (`IsoCameraRig.zoom`; 1 without one).
 func _zoom() -> float:
 	for rig: IsoCameraRig in get_tree().get_nodes_in_group(IsoCameraRig.GROUP):
-		if rig.target == get_parent():
+		if rig.target == holder:
 			return rig.zoom
 	return 1.0
 

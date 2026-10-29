@@ -32,10 +32,11 @@ var holder: Player
 var _pulse: float = 0.0
 ## Distance walked since the last step, in m.
 var _walked: float = STEP_LENGTH * 0.5
-var _listener := AudioListener3D.new()
+var _listener: AudioListener3D
 
 
 func _ready() -> void:
+	_listener = AudioListener3D.new()
 	_listener.name = "Ears"
 	add_child(_listener)
 	holder.vitals.hurt.connect(_on_hurt)

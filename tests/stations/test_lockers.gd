@@ -24,6 +24,11 @@ func before_each() -> void:
 	await wait_physics_frames(2)
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_locker_assigns_slots() -> void:
 	var locker: LoadoutStation = await _open_locker()
 	var card := locker.card_menu as LoadoutCard
@@ -139,7 +144,7 @@ func test_camera_follows_the_selected_weapon_to_the_wall() -> void:
 
 func test_wall_marks_the_loadout_with_slot_numbers() -> void:
 	var locker: LoadoutStation = await _open_locker()
-	var wall: WeaponWall = locker.wall
+	var wall := locker.wall as WeaponWall
 	await wait_process_frames(1)
 	assert_eq(wall.viewer, _player)
 	assert_true(wall.get_tag(HARL).visible)
@@ -191,7 +196,7 @@ func test_each_player_has_their_own_locker() -> void:
 
 
 func test_the_weapon_wall_opens_the_own_locker() -> void:
-	var wall: WeaponWall = (_ship.get_node("Rooms/Lower/Armory/Locker1") as LoadoutStation).wall
+	var wall := (_ship.get_node("Rooms/Lower/Armory/Locker1") as LoadoutStation).wall as WeaponWall
 	var part: StationPart = wall.get_parts()[1]
 	# In front of the second weapon of the top line, and behind the wall.
 	for side: float in [1.0, -1.0]:

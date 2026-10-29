@@ -23,8 +23,9 @@ const SLOT_COLOR := Color(0.12, 0.34, 0.4)
 const SELECTED_SLOT_COLOR := Color(0.3, 0.85, 1.0)
 const SELECTED_NUMBER_COLOR := Color(1.0, 0.75, 0.3)
 
-## The weapon wall the player picks from.
-@export var wall: WeaponWall
+## The weapon wall the player picks from (a `WeaponWall`; typed as its base class, since the wall
+## refers back to its lockers and Godot leaks such a pair of scripts at exit).
+@export var wall: WeaponRack
 ## How much the camera sees (m high) while a weapon on the wall is selected: the weapon and its
 ## card above the wall.
 @export var wall_view_height: float = 3.0

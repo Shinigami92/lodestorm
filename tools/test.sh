@@ -7,6 +7,7 @@
 # the k-th of n shares (CI runs the shares on separate runners). The scripts are balanced by their
 # durations in tests/timings.txt, longest first (tools/timings.sh rewrites it). TEST_REPORTS=<dir>
 # keeps each process's GUT JUnit report there (relative to the project).
+# TEST_VERBOSE=1 runs Godot with --verbose (e.g. to list what leaks at exit; its log gets long).
 # Extra arguments go to GUT in a single process instead, e.g. -gselect=test_foo.gd
 set -eu
 cd "$(dirname "$0")/.."
@@ -14,7 +15,7 @@ cd "$(dirname "$0")/.."
 export LC_ALL=C
 
 gut() {
-	"$GODOT4_EDITOR" --headless --fixed-fps 60 -s addons/gut/gut_cmdln.gd "$@"
+	"$GODOT4_EDITOR" --headless ${TEST_VERBOSE:+--verbose} --fixed-fps 60 -s addons/gut/gut_cmdln.gd "$@"
 }
 
 # Collapsible sections in the GitHub Actions log

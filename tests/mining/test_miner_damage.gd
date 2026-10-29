@@ -19,6 +19,11 @@ func before_each() -> void:
 	watch_signals(_miner)
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_starts_undamaged() -> void:
 	assert_eq(_miner.health, _miner.settings.max_health)
 	assert_false(_miner.broken)

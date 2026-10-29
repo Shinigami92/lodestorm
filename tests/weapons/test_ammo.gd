@@ -27,6 +27,8 @@ func before_each() -> void:
 func after_each() -> void:
 	for action: StringName in [&"attack", &"interact", &"move_left"]:
 		Input.action_release(action)
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
 
 
 func test_weapons_start_full_and_each_shot_uses_a_round() -> void:

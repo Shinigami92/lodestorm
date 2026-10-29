@@ -89,7 +89,7 @@ func test_marker_shows_under_locked_alien() -> void:
 	var marker := _player.get_node("TargetMarker") as TargetMarker
 	var alien: Alien = await _alien_at(_screen_right() * 6.0)
 	Input.action_press(&"aim_right")
-	await wait_frames(3)
+	await wait_physics_frames(3)
 	assert_true(marker.visible)
 	var material := marker.material_override as ShaderMaterial
 	var color: Color = material.get_shader_parameter(&"color")
@@ -103,7 +103,7 @@ func test_marker_shows_under_locked_alien() -> void:
 	)
 	Input.action_release(&"aim_right")
 	Input.action_press(&"move_left")
-	await wait_frames(3)
+	await wait_physics_frames(3)
 	assert_false(marker.visible)
 
 

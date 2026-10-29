@@ -27,9 +27,7 @@ func show_level(level: int, max_level: int, cap: int = 99, progress: float = -1.
 		pip.add_child(fill)
 		add_child(pip)
 	while get_child_count() > max_level:
-		var last: Node = get_child(-1)
-		remove_child(last)
-		last.queue_free()
+		get_child(-1).free()
 	for i: int in max_level:
 		var pip := get_child(i) as ColorRect
 		pip.color = LIT if i < level else (DARK if i < cap else OUT_OF_REACH)

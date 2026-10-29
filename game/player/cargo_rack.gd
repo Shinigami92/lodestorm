@@ -130,9 +130,7 @@ func _pour() -> void:
 			)
 		_canisters.append(canister)
 	while _canisters.size() > needed:
-		var last: Node3D = _canisters.pop_back()
-		remove_child(last)
-		last.queue_free()
+		(_canisters.pop_back() as Node3D).free()
 
 	var stack: Array[Array] = layers()
 	var start: float = 0.0

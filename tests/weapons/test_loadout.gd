@@ -27,6 +27,8 @@ func before_each() -> void:
 
 func after_each() -> void:
 	Input.action_release(&"switch_weapon")
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
 
 
 func test_catalog_lists_every_weapon_once() -> void:

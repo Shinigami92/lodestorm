@@ -172,6 +172,18 @@ var _miner_radar := MinerRadar.new()
 @onready var _body_rest: Transform3D = _body.transform
 
 
+## Freed before it was ready (only instantiated): the components `_ready` adds as children were
+## never added, so they go with it.
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_PREDELETE or is_node_ready():
+		return
+	var components: Array[Node] = [aim, reticle, vitals, arms, suit_dash, rescue_drone, handling]
+	components.append_array([picker, sounds, radio, _armor_pips, _scanner, _miner_radar])
+	for component: Node in components:
+		if not component.get_parent():
+			component.free()
+
+
 func _ready() -> void:
 	add_to_group(GROUP)
 	add_to_group(ShipDoor.OPENERS)

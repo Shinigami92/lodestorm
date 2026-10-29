@@ -31,7 +31,7 @@ static var _texture: ImageTexture
 
 var holder: Player
 
-var _decal := Decal.new()
+var _decal: Decal
 
 
 func _ready() -> void:
@@ -39,6 +39,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	if not _texture:
 		_texture = make_texture()
+	_decal = Decal.new()
 	_decal.name = "Decal"
 	_decal.size = Vector3(SIZE, DEPTH, SIZE)
 	_decal.texture_albedo = _texture

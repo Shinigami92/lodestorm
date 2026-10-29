@@ -14,6 +14,11 @@ func before_each() -> void:
 	_node = _map.get_node("Location/OreNodes/KyriteA") as OreNode
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_connects_in_range_and_transfers() -> void:
 	var miner: Miner = _place_miner(0.0, 10.0)
 	miner.amount = 10.0

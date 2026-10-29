@@ -25,6 +25,8 @@ func after_each() -> void:
 	PlayerVitals.god_mode = false
 	Alien.ai_on = true
 	_overlay.visible = false
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
 
 
 func test_exists_when_run_from_editor() -> void:

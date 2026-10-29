@@ -22,6 +22,11 @@ func before_each() -> void:
 	TEST_MAP.pick_mission(_map)
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_ramp_faces_screen_right() -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	var screen_right: Vector3 = IsoInput.camera_relative(Vector2.RIGHT, camera.global_basis)

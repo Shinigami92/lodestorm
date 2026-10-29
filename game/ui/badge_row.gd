@@ -17,8 +17,7 @@ func show_items(items: Array, amounts: Dictionary = {}) -> void:
 	_shown = items.duplicate()
 	_amounts = amounts.duplicate()
 	for node: Node in get_children():
-		remove_child(node)
-		node.queue_free()
+		node.free()
 	for item: ItemType in items:
 		if not item:
 			var unknown := Label.new()

@@ -13,8 +13,7 @@ func show_cost(cost: Dictionary[ItemType, int], hold: Dictionary[ItemType, float
 	if cost != _cost:
 		_cost = cost.duplicate()
 		for node: Node in get_children():
-			remove_child(node)
-			node.queue_free()
+			node.free()
 		_labels.clear()
 		for item_type: ItemType in cost:
 			var item := HBoxContainer.new()

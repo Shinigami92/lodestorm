@@ -103,8 +103,7 @@ func _show_levels(shown: WeaponType, upgrades: Upgrades, owned: bool) -> void:
 		return
 	_levels_shown = levels
 	for node: Node in _levels.get_children():
-		_levels.remove_child(node)
-		node.queue_free()
+		node.free()
 	for upgrade: WeaponPart in shown.parts:
 		var label: Label = _label(tr(upgrade.display_name))
 		label.add_theme_font_size_override(&"font_size", 20)

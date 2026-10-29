@@ -8,7 +8,14 @@ extends RefCounted
 
 ## Actions that make the player act.
 const ACTIONS: Array[StringName] = [
-	&"attack", &"place_miner", &"interact", &"switch_weapon", &"reload", &"dash"
+	&"attack",
+	&"place_miner",
+	&"miner_prev",
+	&"miner_next",
+	&"interact",
+	&"switch_weapon",
+	&"reload",
+	&"dash",
 ]
 
 ## The player acting on it.

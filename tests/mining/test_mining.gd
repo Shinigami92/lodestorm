@@ -55,14 +55,12 @@ func test_only_one_miner_per_node() -> void:
 	assert_eq(_node.get_node("MinerMount").get_child_count(), 1)
 
 
-func test_target_node_is_highlighted_until_occupied() -> void:
+func test_target_node_until_occupied() -> void:
 	_move_player_next_to(_node)
 	await wait_physics_frames(1)
 	assert_eq(_player.miner_target, _node)
-	assert_true(_node.highlighted)
 	_player.place_miner()
 	assert_null(_player.miner_target)
-	assert_false(_node.highlighted)
 
 
 func test_miner_fills_at_fill_rate() -> void:

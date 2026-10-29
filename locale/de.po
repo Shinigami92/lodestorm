@@ -84,6 +84,10 @@ msgstr "Wildwuchs"
 msgid "Salt pans"
 msgstr "Salzpfanne"
 
+#: game/mining/miner_preview.gd
+msgid "Drill MK%d · Tank MK%d"
+msgstr "Bohrer MK%d · Tank MK%d"
+
 #: game/mission/mission_brief.gd
 msgid "Easy"
 msgstr "Leicht"

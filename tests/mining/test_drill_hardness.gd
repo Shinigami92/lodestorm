@@ -1,6 +1,7 @@
 extends GutTest
-## Harder ores need better drills: a drill too soft mines them slower, placing takes the miner that
-## mines a node's ore fastest, and the drill's and the silo's cards say which level mines what.
+## Harder ores need better drills: a drill too soft mines them slower, placing takes the softest
+## drill that mines a node's ore at full speed, and the drill's and the silo's cards say which level
+## mines what.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const CARD_SCENE: PackedScene = preload("res://game/stations/upgrade/upgrade_card.tscn")
@@ -107,7 +108,7 @@ func test_standard_issue_drills_mine_mid_ores_at_full_speed() -> void:
 	)
 
 
-func test_placing_takes_the_miner_that_mines_the_ore_fastest() -> void:
+func test_placing_takes_the_softest_drill_at_full_speed() -> void:
 	_player.fleet.cradles.restore(MinerFleet.SLOTS)
 	_player.fleet.build_all()
 	_player.fleet.get_miner(3).upgrades.raise(DRILL)
@@ -118,7 +119,7 @@ func test_placing_takes_the_miner_that_mines_the_ore_fastest() -> void:
 	_nodes[2].ore_type = KYRITE
 	assert_eq(_place(0).crafted.number, 3, "the drill that mines it at full speed")
 	assert_eq(_place(1).crafted.number, 5, "the faster of the soft drills")
-	assert_eq(_place(2).crafted.number, 1, "the first by number on a tie")
+	assert_eq(_place(2).crafted.number, 1, "the softest, the first by number on a tie")
 
 
 func _place(index: int) -> Miner:

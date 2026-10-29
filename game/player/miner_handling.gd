@@ -42,12 +42,13 @@ func in_range() -> bool:
 	return Vector2(offset.x, offset.z).length() <= miner.hose_range()
 
 
-## Places the holder's next miner on `node`: it takes the node at once and stands after the place
-## time. Returns it, or null while another goes on or when the node is taken or dry.
-func place(node: OreNode) -> Miner:
+## Places `choice` of the holder's miners (null: the one placing takes by default) on `node`: it
+## takes the node at once and stands after the place time. Returns it, or null while another goes
+## on or when the node is taken or dry.
+func place(node: OreNode, choice: MinerChoice = null) -> Miner:
 	if not node.is_free() or node.is_dry() or not _free_hands():
 		return null
-	miner = node.place_miner(holder.miner_scene, holder.fleet, holder, true)
+	miner = node.place_miner(holder.miner_scene, holder.fleet, holder, true, choice)
 	_start(true)
 	return miner
 

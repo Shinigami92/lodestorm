@@ -21,6 +21,7 @@
   | `attack` | left mouse button | RT / R2 |
   | `interact` | E | A / Cross |
   | `place_miner` | F | X / Square |
+  | `miner_prev` / `miner_next` | Z / X | d-pad left / right |
   | `switch_weapon` | Q | Y / Triangle |
   | `reload` | R | RB / R1 |
   | `pause` | Escape | Menu / Options |

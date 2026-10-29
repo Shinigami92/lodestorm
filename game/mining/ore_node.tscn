@@ -14,16 +14,6 @@ height = 0.08
 [sub_resource type="PrismMesh" id="PrismMesh_crystal"]
 size = Vector3(0.35, 0.7, 0.35)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(1, 1, 1, 0.6)
-
-[sub_resource type="TorusMesh" id="TorusMesh_highlight"]
-material = SubResource("StandardMaterial3D_highlight")
-inner_radius = 1.5
-outer_radius = 1.65
-
 [node name="OreNode" type="Node3D"]
 script = ExtResource("1_script")
 
@@ -52,13 +42,6 @@ mesh = SubResource("PrismMesh_crystal")
 [node name="Crystal5" type="MeshInstance3D" parent="Crystals"]
 transform = Transform3D(0.5, 0, 0.866025, 0.324419, 0.927184, -0.187303, -0.802965, 0.374607, 0.463592, 0.909327, 0.3, -0.525)
 mesh = SubResource("PrismMesh_crystal")
-
-[node name="Highlight" type="MeshInstance3D" parent="."]
-layers = 4
-transform = Transform3D(1, 0, 0, 0, 0.3, 0, 0, 0, 1, 0, 0.05, 0)
-visible = false
-cast_shadow = 0
-mesh = SubResource("TorusMesh_highlight")
 
 [node name="MinerMount" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)

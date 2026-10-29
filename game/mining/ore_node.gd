@@ -1,7 +1,7 @@
 class_name OreNode
 extends Node3D
-## A deposit of one ore type that a single miner can be placed on. Shows a ring while it's the
-## spot a player would place their next miner on. Close to a player, its crystals also show behind
+## A deposit of one ore type that a single miner can be placed on (a player about to place one sees
+## a preview of it there, see `MinerPreview`). Close to a player, its crystals also show behind
 ## cliffs, as a faint silhouette in the ore's color (farther out finding ore stays exploring).
 ## It holds a limited amount (`amount`, from its ore's band, see `FILLS`, more in a rich field) that
 ## its miner takes out (`mine`): its crystals shrink into the rock one after another as it empties,
@@ -38,13 +38,6 @@ var amount: float = -1.0
 ## The miner placed on this node, or null.
 var miner: Miner
 
-## Shows the placement ring.
-var highlighted: bool = false:
-	set(value):
-		highlighted = value
-		if is_node_ready():
-			_highlight.visible = value
-
 var _silhouette: ShaderMaterial
 var _check_left: float = 0.0
 ## The crystals, smallest first, with their untouched bases and the share of `full_amount` mined
@@ -56,7 +49,6 @@ var _crystal_ends: Array[float] = []
 @onready var _mount: Marker3D = $MinerMount
 @onready var _deposit: MeshInstance3D = $Deposit
 @onready var _crystals: Node3D = $Crystals
-@onready var _highlight: MeshInstance3D = $Highlight
 
 
 func _ready() -> void:
@@ -75,7 +67,6 @@ func _ready() -> void:
 	for crystal: Node in _crystals.get_children():
 		(crystal as MeshInstance3D).material_override = ore_type.get_material()
 		OreGlow.set_phase(crystal as MeshInstance3D, phase)
-	_highlight.visible = highlighted
 	var color: Color = ore_type.color
 	color.a = OccludedSilhouette.ORE_ALPHA
 	_silhouette = OccludedSilhouette.overlay(color)
@@ -146,11 +137,15 @@ func mine(max_amount: float) -> float:
 
 
 ## Places a new miner from `miner_scene` on this node and returns it, or null if occupied or dry.
-## With `fleet` it's the next miner of that fleet (see `Miner.take_from`), placed by `by`; without,
-## a loose MK1 miner. `projected`: it starts as a hologram that `by` builds (see `MinerHandling`);
-## else it stands at once.
+## With `fleet` it's `choice` of that fleet, or the one placing takes by default (see
+## `Miner.take_from`), placed by `by`; without, a loose MK1 miner. `projected`: it starts as a
+## hologram that `by` builds (see `MinerHandling`); else it stands at once.
 func place_miner(
-	miner_scene: PackedScene, fleet: MinerFleet = null, by: Player = null, projected: bool = false
+	miner_scene: PackedScene,
+	fleet: MinerFleet = null,
+	by: Player = null,
+	projected: bool = false,
+	choice: MinerChoice = null,
 ) -> Miner:
 	if not is_free() or is_dry():
 		return null
@@ -158,12 +153,17 @@ func place_miner(
 	miner.ore_type = ore_type
 	miner.ore_node = self
 	if fleet:
-		miner.take_from(fleet, by)
+		miner.take_from(fleet, by, choice)
 	if projected and by:
 		miner.handled_by = by
 		miner.built = 0.0
 	_mount.add_child(miner)
 	return miner
+
+
+## Where a miner placed on it stands.
+func get_mount_position() -> Vector3:
+	return _mount.global_position
 
 
 ## The free ore node closest to `from` within `max_distance` (horizontally) that isn't dry, or

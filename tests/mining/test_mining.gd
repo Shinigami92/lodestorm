@@ -16,6 +16,8 @@ func before_each() -> void:
 
 func after_each() -> void:
 	Input.action_release(&"place_miner")
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
 
 
 func test_map_has_several_ore_types() -> void:

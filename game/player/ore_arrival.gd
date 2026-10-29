@@ -138,8 +138,7 @@ func _begin(batch: Dictionary[OreType, float]) -> void:
 	_age = 0.0
 	position = _start
 	for node: Node in _row.get_children():
-		_row.remove_child(node)
-		node.queue_free()
+		node.free()
 	_labels.clear()
 
 

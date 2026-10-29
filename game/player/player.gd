@@ -172,6 +172,17 @@ var _miner_radar := MinerRadar.new()
 @onready var _body_rest: Transform3D = _body.transform
 
 
+## Freed before it was ready (only instantiated): the components `_ready` adds as children were
+## never added, so they go with it.
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_PREDELETE or is_node_ready():
+		return
+	for property: Dictionary in (get_script() as Script).get_script_property_list():
+		var value: Variant = get(property["name"] as StringName)
+		if value is Node and not (value as Node).get_parent():
+			(value as Node).free()
+
+
 func _ready() -> void:
 	add_to_group(GROUP)
 	add_to_group(ShipDoor.OPENERS)

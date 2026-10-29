@@ -31,7 +31,7 @@ func test_ores_and_nests_are_reachable_and_on_the_ground() -> void:
 func test_has_ore_fields_and_nests() -> void:
 	var location: GeneratedLocation = SWEEP.generate(self, 5)
 	var fields: float = location.layout.areas.size() * location.biome.ore_fields_per_area
-	assert_gt(location.get_node("OreNodes").get_child_count(), fields / 2.0)
+	assert_gt(float(location.get_node("OreNodes").get_child_count()), fields / 2.0)
 	assert_gt(location.get_node("AlienNests").get_child_count(), 0)
 
 

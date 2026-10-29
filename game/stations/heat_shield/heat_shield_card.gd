@@ -133,8 +133,7 @@ func _show_cost(
 		_cost = cost.duplicate()
 		for node: Node in _cost_grid.get_children():
 			if not node.is_in_group(&"cost_header"):
-				_cost_grid.remove_child(node)
-				node.queue_free()
+				node.free()
 		_paid_labels.clear()
 		_hold_labels.clear()
 		for ore_type: OreType in cost:

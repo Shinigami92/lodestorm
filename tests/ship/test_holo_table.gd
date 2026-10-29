@@ -19,9 +19,14 @@ func before_each() -> void:
 	await wait_physics_frames(2)
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_shows_mission_location() -> void:
 	var meshes: int = _voyage.location.find_children("*", "MeshInstance3D", true, false).size()
-	assert_gt(_content.get_child_count(), meshes / 2.0)
+	assert_gt(_content.get_child_count() * 2, meshes)
 	var hologram: Node = _table.get_node("Hologram")
 	var parts: Array[Node] = hologram.find_children("*", "VisualInstance3D", true, false)
 	assert_gt(parts.size(), 0)

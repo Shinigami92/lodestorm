@@ -24,6 +24,11 @@ func before_each() -> void:
 	await wait_physics_frames(2)
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_locker_assigns_slots() -> void:
 	var locker: LoadoutStation = await _open_locker()
 	var card := locker.card_menu as LoadoutCard

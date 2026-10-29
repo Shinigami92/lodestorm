@@ -11,7 +11,9 @@ var _ship: Ship
 
 func before_each() -> void:
 	_map = TEST_MAP.instantiate() as Node3D
-	add_child_autofree(_map)
+	# Queue-freed: GUT then waits a moment, so what the game frees a frame late (a swapped location
+	# or view) isn't counted as an orphan.
+	add_child_autoqfree(_map)
 	_player = _map.get_node("Player") as Player
 	_mission = _map.get_node("Mission") as Mission
 	_voyage = _map.get_node("Voyage") as Voyage

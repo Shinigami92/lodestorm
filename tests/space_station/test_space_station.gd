@@ -20,6 +20,8 @@ func before_each() -> void:
 func after_each() -> void:
 	_clean()
 	SaveGame.directory = ""
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
 
 
 func test_ostra_can_be_docked_at_from_the_start() -> void:

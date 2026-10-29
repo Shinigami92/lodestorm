@@ -10,6 +10,11 @@ const OVERGROWTH: LocationBiome = preload("res://game/locations/biomes/overgrowt
 const FROST: LocationBiome = preload("res://game/locations/biomes/frost.tres")
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_same_seed_same_world() -> void:
 	var first: GeneratedLocation = SWEEP.generate(self, 7)
 	var second: GeneratedLocation = SWEEP.generate(self, 7)

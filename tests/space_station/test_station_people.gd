@@ -37,6 +37,11 @@ func before_each() -> void:
 	_station = _voyage.location as SpaceStation
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_named_npcs_stand_at_their_places() -> void:
 	for who: String in NAMED:
 		var npc := _station.get_node("People/" + who) as Npc

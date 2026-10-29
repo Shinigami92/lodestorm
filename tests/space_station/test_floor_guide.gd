@@ -16,6 +16,8 @@ func before_each() -> void:
 
 func after_each() -> void:
 	TranslationServer.set_locale("en")
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
 
 
 func test_station_has_guides() -> void:

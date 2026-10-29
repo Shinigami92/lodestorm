@@ -206,8 +206,7 @@ func build_routes() -> void:
 	if not _system:
 		return
 	if _routes:
-		_system.remove_child(_routes)
-		_routes.queue_free()
+		_routes.free()
 	_routes = Node3D.new()
 	_routes.name = "Routes"
 	_system.add_child(_routes)

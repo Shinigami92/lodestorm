@@ -16,6 +16,11 @@ func before_each() -> void:
 	watch_signals(_shield)
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_one_plate_per_planet_inwards() -> void:
 	var tiers: Array[int] = []
 	for body: CelestialBody in SYSTEM.bodies:

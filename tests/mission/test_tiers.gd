@@ -25,6 +25,11 @@ func before_each() -> void:
 	await wait_physics_frames(2)
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_tier_1_keeps_the_settings() -> void:
 	TEST_MAP.pick_mission(_map)
 	assert_eq(_mission.tier(), 1)

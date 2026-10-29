@@ -26,6 +26,11 @@ func before_each() -> void:
 	await wait_physics_frames(2)
 
 
+func after_each() -> void:
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
+
+
 func test_a_plate_per_level_with_the_next_one_selected() -> void:
 	await _use()
 	assert_eq(_core.get_parts().size(), _ship.heat_shield.max_mk() - 1)

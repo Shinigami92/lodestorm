@@ -35,6 +35,8 @@ func before_each() -> void:
 func after_each() -> void:
 	for action: StringName in [&"move_left", &"move_right", &"interact"]:
 		Input.action_release(action)
+	# What the game frees a frame late (a swapped model, weapon or view) isn't counted as an orphan.
+	await wait_process_frames(1)
 
 
 func test_storm_hurts_players_outside() -> void:

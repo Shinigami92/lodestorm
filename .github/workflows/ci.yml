@@ -79,8 +79,6 @@ jobs:
         env:
           TEST_SHARD: ${{ matrix.shard }}/8
           TEST_REPORTS: test-reports
-          # Temporary: lists what leaks at exit (some processes leak objects and resources)
-          TEST_VERBOSE: 1
 
       # The scripts' durations, for tools/timings.sh
       - name: Upload test reports

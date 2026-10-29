@@ -43,9 +43,9 @@ var _step: Dictionary[OreType, float] = {}
 var _slow: float = 0.0
 var _idle: float = 0.0
 var _age: float = 0.0
-var _viewport := SubViewport.new()
-var _row := HBoxContainer.new()
-var _sprite := Sprite3D.new()
+var _viewport: SubViewport
+var _row: HBoxContainer
+var _sprite: Sprite3D
 ## The amount label per ore shown.
 var _labels: Dictionary[OreType, Label] = {}
 var _start: Vector3
@@ -55,6 +55,9 @@ var _start: Vector3
 
 func _ready() -> void:
 	_start = position
+	_viewport = SubViewport.new()
+	_row = HBoxContainer.new()
+	_sprite = Sprite3D.new()
 	_viewport.transparent_bg = true
 	_viewport.disable_3d = true
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED

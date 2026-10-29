@@ -140,6 +140,8 @@ func _build_stripped() -> void:
 	ring.scale.y = 0.05
 	ring.position.y = 0.01
 	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# See-through on the floor: decals leave it out.
+	ring.layers = RenderLayers.MARKINGS
 	_stripped.add_child(ring)
 
 

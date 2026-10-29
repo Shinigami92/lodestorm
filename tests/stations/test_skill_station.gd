@@ -85,7 +85,7 @@ func test_nothing_can_be_learned_during_a_mission() -> void:
 	assert_true(_station.is_locked())
 	assert_false(_station.learn(DASH))
 	assert_eq(_player.hold.amount(KYRITE), 1000.0, "nothing paid")
-	assert_true((_station.card_menu as SkillCard).get_learn_button().disabled)
+	assert_true((_station.card_menu as SkillCard).get_action_button().disabled)
 
 
 func test_directions_and_tabs_move_through_the_graph() -> void:

@@ -26,7 +26,6 @@ var _count_buttons: Dictionary[int, Button] = {}
 @onready var _rate: Label = %Rate
 @onready var _status: Label = %Status
 @onready var _action: Button = %Action
-@onready var _close: Button = %Close
 
 
 func _ready() -> void:
@@ -50,7 +49,6 @@ func _ready() -> void:
 			_count_row.move_child(button, _count.get_index())
 		_count_buttons[amount] = button
 	_action.pressed.connect(press_primary)
-	_close.pressed.connect(_on_close_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -126,20 +124,11 @@ func _show_row(
 	selected: bool
 ) -> void:
 	labels[0].modulate = CardPalette.STATUS if selected else CardPalette.NOTE
-	_set_badge(badge, ore)
+	ItemBadge.show_in(badge, ore)
 	labels[1].text = "× %d" % amount if ore else "–"
 	labels[2].visible = ore != null
 	if ore:
 		labels[2].text = tr("In the hold: %d") % floori(hold.amount(ore))
-
-
-func _set_badge(badge: CenterContainer, item: ItemType) -> void:
-	var shown := badge.get_child(0) as ItemBadge if badge.get_child_count() > 0 else null
-	if not shown:
-		shown = ItemBadge.new(null)
-		badge.add_child(shown)
-	shown.item = item
-	shown.visible = item != null
 
 
 func _on_ore_pressed(going_in: bool, step_by: int) -> void:
@@ -154,8 +143,3 @@ func _on_count_pressed(step_by: int) -> void:
 	var exchange := station as ExchangeStation
 	if exchange:
 		exchange.step_count(step_by)
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()

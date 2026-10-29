@@ -156,7 +156,7 @@ func test_mouse_picks_parts_and_uses_the_card() -> void:
 	_click(camera.unproject_position(tank.global_position))
 	assert_eq(station.selected, tank)
 	await wait_seconds(0.5)
-	var button: Button = (station.card_menu as UpgradeCard).get_buy_button()
+	var button: Button = (station.card_menu as UpgradeCard).get_action_button()
 	_click(_on_card(station, button.get_global_rect().get_center()))
 	assert_true(_miner_levels().is_running(TANK), "the card's button")
 	_miner_levels().finish_all()
@@ -171,7 +171,7 @@ func test_mouse_stops_a_level_under_way() -> void:
 	station.select(station.get_part(DRILL))
 	await wait_seconds(0.5)
 	var card := station.card_menu as UpgradeCard
-	var button: Button = card.get_buy_button()
+	var button: Button = card.get_action_button()
 	await _slow_click(_on_card(station, button.get_global_rect().get_center()))
 	assert_true(_miner_levels().is_running(DRILL))
 	for press: int in 2:

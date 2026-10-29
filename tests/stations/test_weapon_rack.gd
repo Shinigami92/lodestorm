@@ -164,7 +164,7 @@ func test_workbench_keyboard_reaches_the_rack() -> void:
 	station.select(rack.get_part(DRAY))
 	var card := station.card_menu as UpgradeCard
 	assert_true(card.picking)
-	assert_eq(card.get_buy_button().text, "Lay on the bench")
+	assert_eq(card.get_action_button().text, "Lay on the bench")
 	assert_true(card.press_primary())
 	assert_eq(station.bench_weapon, DRAY)
 	assert_false(station.selected in rack.get_parts(), "its parts on the bench")

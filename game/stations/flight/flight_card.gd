@@ -4,23 +4,18 @@ extends StationCard
 ## (its location, body, danger and timer; a station's name and kind), where things stand, and "Set
 ## course".
 
-## The ores the badges show.
-var _shown_ores: Array[OreType] = []
-
 @onready var _title: Label = %Title
 @onready var _subtitle: Label = %Subtitle
 @onready var _info: GridContainer = %Info
 @onready var _danger: Label = %Danger
 @onready var _timer: Label = %Timer
-@onready var _ores: HFlowContainer = %Ores
+@onready var _ores: BadgeRow = %Ores
 @onready var _status: Label = %Status
 @onready var _launch: Button = %Launch
-@onready var _close: Button = %Close
 
 
 func _ready() -> void:
 	_launch.pressed.connect(press_primary)
-	_close.pressed.connect(_on_close_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -51,25 +46,13 @@ func show_part(part: StationPart) -> void:
 		_timer.text = (
 			tr("%d min") % roundi(voyage.mission.settings.duration * destination.length / 60.0)
 		)
-		_show_ores(destination.found_ores())
+		_ores.show_items(destination.found_ores())
 	else:
 		_title.text = tr("No destination")
 		_subtitle.text = ""
 		_info.visible = false
 	_status.text = _status_text(voyage)
 	_launch.disabled = not console.can_launch()
-
-
-## The destination's ores as badges with their names (from common to rare).
-func _show_ores(ores: Array[OreType]) -> void:
-	if ores == _shown_ores:
-		return
-	_shown_ores = ores.duplicate()
-	for node: Node in _ores.get_children():
-		_ores.remove_child(node)
-		node.queue_free()
-	for ore_type: OreType in ores:
-		_ores.add_child(ItemBadge.new(ore_type))
 
 
 func press_primary() -> bool:
@@ -84,7 +67,7 @@ func _status_text(voyage: Voyage) -> String:
 	elif voyage.flight.is_flying():
 		text = tr("In flight: gear up and head for the ramp.")
 	elif not voyage.can_select():
-		text = tr("Locked until everyone is back aboard.")
+		text = _locked_text()
 	elif not voyage.destination:
 		text = tr("Pick a destination at the navigator on the bridge.")
 	elif voyage.is_preparing(voyage.destination):
@@ -102,8 +85,3 @@ func _status_text(voyage: Voyage) -> String:
 	else:
 		text = tr("Landed: lower the ramp in the cargo bay.")
 	return text
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()

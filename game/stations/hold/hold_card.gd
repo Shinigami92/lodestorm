@@ -9,17 +9,12 @@ extends StationCard
 const MAX_REGIONS: int = 4
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 
-@onready var _badge: Control = %Badge
+@onready var _badge: CenterContainer = %Badge
 @onready var _title: Label = %Title
 @onready var _band: Label = %Band
 @onready var _amount: Label = %Amount
 @onready var _found_in: Label = %FoundIn
 @onready var _drill: Label = %Drill
-@onready var _close: Button = %Close
-
-
-func _ready() -> void:
-	_close.pressed.connect(_on_close_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -29,7 +24,7 @@ func show_part(part: StationPart) -> void:
 	if not visible:
 		return
 	var ore_type: OreType = tank.ore_type
-	_set_badge(ore_type if tank.found else null)
+	ItemBadge.show_in(_badge, ore_type if tank.found else null, false)
 	var drill_mk: int = DRILL.mk_for_hardness(ore_type.hardness)
 	_drill.visible = tank.found and drill_mk > 1
 	_drill.text = tr("Full speed with drill MK%d.") % drill_mk
@@ -66,17 +61,3 @@ func band_name(band: OreType.Band) -> String:
 		OreType.Band.SIGNATURE:
 			return tr("Signature ore")
 	return tr("Common ore")
-
-
-func _set_badge(ore_type: OreType) -> void:
-	for node: Node in _badge.get_children():
-		_badge.remove_child(node)
-		node.queue_free()
-	if ore_type:
-		_badge.add_child(ItemBadge.new(ore_type, false))
-	_badge.visible = ore_type != null
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()

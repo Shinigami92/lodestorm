@@ -1,5 +1,5 @@
 class_name SkillCard
-extends StationCard
+extends OfferCard
 ## The holo card of the `SkillStation`: the selected skill's name and what it does, its ranks as
 ## pips (like the MK pips), the next rank's cost per ore next to what the hold has of it (red where
 ## it's short), and "Learn". A rank under way fills its pip, says the time left and offers "Stop"
@@ -12,18 +12,7 @@ var skill: Skill
 @onready var _title: Label = %Title
 @onready var _description: Label = %Description
 @onready var _state: Label = %State
-@onready var _pips: HBoxContainer = %Pips
-@onready var _cost_row: HFlowContainer = %CostRow
-@onready var _cost: ItemCost = %Cost
-@onready var _time: Label = %Time
-@onready var _status: Label = %Status
-@onready var _learn: Button = %Learn
-@onready var _close: Button = %Close
-
-
-func _ready() -> void:
-	_learn.pressed.connect(press_primary)
-	_close.pressed.connect(_on_close_pressed)
+@onready var _pips: PipRow = %Pips
 
 
 func show_part(part: StationPart) -> void:
@@ -84,22 +73,19 @@ func show_skill(
 	else:
 		_state.text = tr("Not learned yet")
 	_pips.visible = shown.max_rank() > 1
-	UpgradeCard.show_pips(_pips, rank, shown.max_rank())
+	_pips.show_level(rank, shown.max_rank())
 	var cost: Dictionary[ItemType, int] = {}
 	if next:
 		cost = next.cost
-	_cost_row.visible = next != null
-	_cost.show_cost(cost, hold)
-	# Only what can be started says how long it takes (the card keeps its height).
-	_time.visible = next != null and open and not locked
-	if next:
-		_time.text = tr("Takes %s") % FurnaceCard.duration_text(next.seconds)
-	_status.visible = locked
-	_status.text = tr("Locked until everyone is back aboard.")
-	_learn.text = tr("Learn") if next else tr("Learned")
-	_learn.disabled = not can_learn
-	for dimmed: CanvasItem in [_title, _description, _pips, _cost_row]:
-		dimmed.modulate = Color.WHITE if open else CardPalette.DIMMED
+	show_offer(
+		cost,
+		hold,
+		next.seconds if next and open else -1.0,
+		tr("Learn") if next else tr("Learned"),
+		can_learn,
+		locked
+	)
+	dim([_title, _description, _pips, _cost_row], not open)
 
 
 ## Shows the rank `job` under way (after `show_skill`) at `now` (Unix seconds): its pip filling,
@@ -110,19 +96,10 @@ func show_job(
 ) -> void:
 	if skill and skill.max_rank() > 1:
 		_state.text = tr("Rank %d under way") % job.level
-		UpgradeCard.show_pips(_pips, job.level - 1, skill.max_rank(), 99, job.progress(now))
+		_pips.show_level(job.level - 1, skill.max_rank(), 99, job.progress(now))
 	else:
 		_state.text = tr("Learning")
-	_cost_row.visible = false
-	_time.visible = true
-	_time.text = tr("Time left: %s") % FurnaceCard.duration_text(job.time_left(now))
-	_status.visible = locked or armed
-	if locked:
-		_status.text = tr("Locked until everyone is back aboard.")
-	elif armed:
-		_status.text = tr("Stop? The whole cost goes back to the hold.")
-	_learn.text = tr("Stop for sure") if armed else tr("Stop")
-	_learn.disabled = not can_stop
+	show_running(job.time_left(now), can_stop, armed, locked)
 
 
 func press_primary() -> bool:
@@ -132,18 +109,3 @@ func press_primary() -> bool:
 	if skill_station.user and skill_station.user.skills.is_running(skill):
 		return skill_station.stop(skill)
 	return skill_station.learn(skill)
-
-
-## The line saying how long the next rank takes, or the time left of one under way (for tests).
-func get_time() -> Label:
-	return _time
-
-
-## The learn button (for tests and probes).
-func get_learn_button() -> Button:
-	return _learn
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()

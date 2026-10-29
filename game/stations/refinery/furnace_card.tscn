@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://c2en2gd4hfn24" path="res://game/stations/refinery/furnace_card.gd" id="1_script"]
 [ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
 [ext_resource type="Script" uid="uid://3cpi3icxde12" path="res://game/ui/item_cost.gd" id="3_cost"]
+[ext_resource type="Script" uid="uid://b425vy8ch1q3q" path="res://game/ui/badge_row.gd" id="badgerow_script"]
 
 [node name="FurnaceCard" type="PanelContainer"]
 anchors_preset = 14
@@ -77,6 +78,7 @@ focus_mode = 0
 text = ">"
 
 [node name="Found" type="HFlowContainer" parent="Layout/Picker"]
+script = ExtResource("badgerow_script")
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 12

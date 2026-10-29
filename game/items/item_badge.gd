@@ -54,6 +54,18 @@ func _notification(what: int) -> void:
 		_update()
 
 
+## Shows `shown` as the one badge in `slot` (a card's heading; null: hides the slot), made on the
+## first call and reused after.
+static func show_in(slot: Container, shown: ItemType, with_name: bool = true) -> void:
+	var badge := slot.get_child(0) as ItemBadge if slot.get_child_count() > 0 else null
+	if not badge:
+		badge = ItemBadge.new(null, with_name)
+		slot.add_child(badge)
+	badge.show_name = with_name
+	badge.item = shown
+	slot.visible = shown != null
+
+
 ## The icon's material (tint and glow pattern of the shown ore).
 func get_icon_material() -> ShaderMaterial:
 	return _material

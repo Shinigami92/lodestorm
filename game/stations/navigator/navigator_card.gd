@@ -16,32 +16,26 @@ const DANGER_COLORS: Array[Color] = [
 ## What's shown (a body or a region), or null.
 var item: Resource
 
-## The ores the badges show, and the ores of the plate a locked body needs.
-var _shown_ores: Array[OreType] = []
-var _needed_ores: Array[OreType] = []
-
 @onready var _title: Label = %Title
 @onready var _subtitle: Label = %Subtitle
 @onready var _info: GridContainer = %Info
 @onready var _danger: Label = %Danger
 @onready var _timer: Label = %Timer
-@onready var _ores: HFlowContainer = %Ores
+@onready var _ores: BadgeRow = %Ores
 ## Rows shown for a region only (the tier and ore rows show for bodies too).
 @onready var _region_rows: Array[Control] = [%DangerLabel, %Danger, %TimerLabel, %Timer]
 @onready var _ore_rows: Array[Control] = [%OresLabel, %Ores]
 @onready var _status: Label = %Status
-@onready var _needs: HFlowContainer = %Needs
+@onready var _needs: BadgeRow = %Needs
 @onready var _primary: Button = %Primary
 @onready var _choose: Button = %Choose
 @onready var _back: Button = %Back
-@onready var _close: Button = %Close
 
 
 func _ready() -> void:
 	_primary.pressed.connect(_on_zoom_pressed)
 	_choose.pressed.connect(_on_choose_pressed)
 	_back.pressed.connect(_on_back_pressed)
-	_close.pressed.connect(_on_close_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -85,7 +79,7 @@ func _show_body(navigator: NavigatorStation, shown_body: CelestialBody) -> Shiel
 		signature.append(ore_type if reachable else null)
 	_info.visible = not signature.is_empty()
 	_show_rows(_ore_rows, not signature.is_empty())
-	_show_ores(signature)
+	_ores.show_items(signature)
 	_primary.visible = true
 	_primary.text = tr("Zoom in")
 	_primary.disabled = not reachable
@@ -128,7 +122,7 @@ func _show_region(navigator: NavigatorStation, shown_region: Region) -> ShieldPl
 	if voyage:
 		var minutes: float = voyage.mission.settings.duration * shown_region.length / 60.0
 		_timer.text = tr("%d min") % roundi(minutes)
-	_show_ores(navigator.shown_ores(shown_region))
+	_ores.show_items(navigator.shown_ores(shown_region))
 	_primary.visible = not at_landing_site
 	_primary.text = tr("Zoom in")
 	_primary.disabled = not reachable
@@ -156,7 +150,7 @@ func _show_station(navigator: NavigatorStation, shown_station: CelestialBody) ->
 	elif voyage.flight.is_flying():
 		text = tr("In flight: gear up and head for the ramp.")
 	elif not voyage.can_select():
-		text = tr("Locked until everyone is back aboard.")
+		text = _locked_text()
 	elif offer == voyage.brief:
 		text = tr("Docked: lower the ramp in the cargo bay.")
 	elif chosen:
@@ -185,7 +179,7 @@ func _region_status(
 	elif voyage.flight.is_flying():
 		text = tr("In flight: gear up and head for the ramp.")
 	elif not voyage.can_select():
-		text = tr("Locked until everyone is back aboard.")
+		text = _locked_text()
 	elif offer == voyage.brief:
 		text = tr("Landed: lower the ramp in the cargo bay.")
 	elif offer != voyage.destination:
@@ -209,25 +203,6 @@ func _on_choose_pressed() -> void:
 		navigator.choose_destination()
 
 
-## The ores as badges with their names (from common to rare); null shows as "?" (an ore not known
-## yet).
-func _show_ores(ores: Array[OreType]) -> void:
-	if ores == _shown_ores:
-		return
-	_shown_ores = ores.duplicate()
-	for node: Node in _ores.get_children():
-		_ores.remove_child(node)
-		node.queue_free()
-	for ore_type: OreType in ores:
-		if ore_type:
-			_ores.add_child(ItemBadge.new(ore_type))
-		else:
-			var unknown := Label.new()
-			unknown.text = "?"
-			unknown.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-			_ores.add_child(unknown)
-
-
 ## What a body out of reach needs: the heat shield MK level of its tier.
 func _needs_text(of_body: CelestialBody) -> String:
 	return tr("Needs heat shield MK%d (engine room)") % of_body.tier
@@ -245,14 +220,7 @@ func _show_needed(plate: ShieldPlate) -> void:
 	if plate:
 		ores.assign(plate.cost.keys())
 	_needs.visible = not ores.is_empty()
-	if ores == _needed_ores:
-		return
-	_needed_ores = ores
-	for node: Node in _needs.get_children():
-		_needs.remove_child(node)
-		node.queue_free()
-	for ore_type: OreType in ores:
-		_needs.add_child(ItemBadge.new(ore_type))
+	_needs.show_items(ores)
 
 
 ## `text` followed by `of_body`'s tier ("Dust flats · Tier 2").
@@ -269,8 +237,3 @@ func _on_back_pressed() -> void:
 	var navigator := station as NavigatorStation
 	if navigator and not navigator.step_back():
 		navigator.close()
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()

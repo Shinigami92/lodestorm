@@ -24,13 +24,11 @@ var _hold_labels: Dictionary[OreType, Label] = {}
 @onready var _status: Label = %Status
 @onready var _pay: Button = %Pay
 @onready var _project: Button = %Project
-@onready var _close: Button = %Close
 
 
 func _ready() -> void:
 	_pay.pressed.connect(_on_pay_pressed)
 	_project.pressed.connect(_on_project_pressed)
-	_close.pressed.connect(_on_close_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -86,10 +84,10 @@ func show_plate(
 		if is_next:
 			paid = shield.paid
 		_show_cost(plate.cost, paid, hold)
-		_cost_grid.modulate = Color.WHITE if is_next else CardPalette.DIMMED
+		dim([_cost_grid], not is_next)
 	var status: String = ""
 	if is_next and locked:
-		status = tr("Locked until everyone is back aboard.")
+		status = _locked_text()
 	elif is_next and not host:
 		status = tr("Only the host can change the ship's project.")
 	elif is_next and shield.project:
@@ -185,8 +183,3 @@ func _on_project_pressed() -> void:
 	var shield_station := station as HeatShieldStation
 	if shield_station:
 		shield_station.set_project(mk)
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()

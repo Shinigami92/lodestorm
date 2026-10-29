@@ -3,6 +3,7 @@ extends GutTest
 ## skills take real time).
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+const FULL_HOLD := preload("res://tests/support/full_hold.gd")
 const SKILL_TREE: SkillTree = preload("res://game/progression/skills/tree/skill_tree.tres")
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
@@ -40,14 +41,15 @@ func test_a_job_runs_on_the_wall_clock() -> void:
 
 func test_a_level_takes_effect_once_done() -> void:
 	var upgrades := Upgrades.new()
+	var hold: PlayerHold = FULL_HOLD.fill()
 	watch_signals(upgrades)
-	assert_true(upgrades.start(ARMOR, 1000.0))
+	assert_true(upgrades.start(ARMOR, hold, 1000.0))
 	assert_signal_emitted(upgrades, "changed")
 	assert_eq(upgrades.mk(ARMOR), 1, "not yet")
-	assert_false(upgrades.start(ARMOR, 1000.0), "one level at a time")
+	assert_false(upgrades.start(ARMOR, hold, 1000.0), "one level at a time")
 	assert_eq(upgrades.get_job(ARMOR).level, 2)
 	assert_eq(upgrades.get_job(ARMOR).seconds, ARMOR.levels[0].seconds)
-	assert_true(upgrades.start(DRILL, 1000.0), "any number of upgrades at once")
+	assert_true(upgrades.start(DRILL, hold, 1000.0), "any number of upgrades at once")
 	var done: Array[Upgrade] = upgrades.update(1000.0 + ARMOR.levels[0].seconds - 1.0)
 	assert_true(done.is_empty())
 	done = upgrades.update(1000.0 + ARMOR.levels[0].seconds)
@@ -55,30 +57,42 @@ func test_a_level_takes_effect_once_done() -> void:
 	assert_signal_emitted_with_parameters(upgrades, "finished", [DRILL])
 	assert_eq(upgrades.mk(ARMOR), 2)
 	assert_false(upgrades.is_running(ARMOR))
-	assert_true(upgrades.start(ARMOR, 5000.0))
+	assert_true(upgrades.start(ARMOR, hold, 5000.0))
 	assert_eq(upgrades.get_job(ARMOR).seconds, ARMOR.levels[1].seconds, "MK3 takes longer")
 
 
-func test_stopping_gives_the_cost_back() -> void:
+func test_starting_pays_and_stopping_gives_the_cost_back() -> void:
+	var hold := PlayerHold.new()
 	var upgrades := Upgrades.new()
-	assert_true(upgrades.stop(ARMOR).is_empty(), "nothing under way")
-	upgrades.start(ARMOR, 0.0)
-	assert_eq(upgrades.stop(ARMOR), ARMOR.cost_of(2))
+	assert_false(upgrades.stop(ARMOR, hold), "nothing under way")
+	assert_false(upgrades.can_start(ARMOR, hold), "an empty hold")
+	assert_false(upgrades.start(ARMOR, hold, 0.0))
+	hold.refund(ARMOR.cost_of(2))
+	assert_true(upgrades.start(ARMOR, hold, 0.0))
+	for item: ItemType in ARMOR.cost_of(2):
+		assert_eq(hold.amount(item), 0.0, "paid: %s" % item.display_name)
+	assert_true(upgrades.stop(ARMOR, hold))
 	assert_false(upgrades.is_running(ARMOR))
+	assert_true(hold.can_pay(ARMOR.cost_of(2)), "the whole cost back")
 	var skills := Skills.new()
 	skills.ranks[SUIT] = 1
-	skills.start(SUIT, 0.0)
-	assert_eq(skills.stop(SUIT), SUIT.ranks[1].cost)
+	hold.refund(SUIT.ranks[1].cost)
+	var before: Dictionary[ItemType, float] = hold.items.duplicate()
+	assert_true(skills.start(SUIT, hold, 0.0))
+	assert_false(skills.can_start(SUIT, hold), "one rank at a time")
+	assert_true(skills.stop(SUIT, hold))
+	assert_eq(hold.items, before, "the whole cost back")
 	assert_eq(skills.rank(SUIT), 1)
 
 
 func test_a_skill_opens_once_the_rank_before_is_done() -> void:
 	var skills := Skills.new()
-	assert_false(skills.start(RELOAD_ON_THE_MOVE, 0.0))
-	assert_true(skills.start(DASH, 0.0))
+	var hold: PlayerHold = FULL_HOLD.fill()
+	assert_false(skills.start(RELOAD_ON_THE_MOVE, hold, 0.0))
+	assert_true(skills.start(DASH, hold, 0.0))
 	assert_false(skills.is_open(RELOAD_ON_THE_MOVE), "dash is still under way")
 	assert_eq(skills.finish_all(), [DASH] as Array[Skill])
-	assert_true(skills.start(RELOAD_ON_THE_MOVE, 0.0))
+	assert_true(skills.start(RELOAD_ON_THE_MOVE, hold, 0.0))
 
 
 func test_a_saved_job_must_be_the_next_level() -> void:
@@ -120,7 +134,7 @@ func test_card_shows_the_time_left() -> void:
 	await _load_map()
 	var station: UpgradeStation = await _open_station("Armor")
 	var card := station.card_menu as UpgradeCard
-	_player.upgrades.start(ARMOR, Time.get_unix_time_from_system() - 30.0)
+	_player.upgrades.start(ARMOR, FULL_HOLD.fill(), Time.get_unix_time_from_system() - 30.0)
 	_player.upgrades.get_job(ARMOR).seconds = 3700.0
 	await wait_process_frames(1)
 	var effect := card.find_child("Effect", true, false) as Label
@@ -135,7 +149,7 @@ func test_card_shows_the_time_left() -> void:
 
 func test_done_levels_wait_for_the_end_of_a_run() -> void:
 	await _load_map()
-	_player.upgrades.start(ARMOR, 0.0)
+	_player.upgrades.start(ARMOR, FULL_HOLD.fill(), 0.0)
 	TEST_MAP.pick_mission(_map)
 	_ship.ramp_button.use(_player)
 	await wait_process_frames(2)
@@ -149,8 +163,8 @@ func test_done_levels_wait_for_the_end_of_a_run() -> void:
 func test_clock_lets_done_jobs_take_effect_with_a_chime() -> void:
 	await _load_map()
 	var health: float = _player.max_health()
-	_player.upgrades.start(ARMOR, 0.0)
-	_player.skills.start(DASH, 0.0)
+	_player.upgrades.start(ARMOR, FULL_HOLD.fill(), 0.0)
+	_player.skills.start(DASH, FULL_HOLD.fill(), 0.0)
 	await wait_seconds(ProgressClock.TICK + 0.2)
 	assert_eq(_player.upgrades.mk(ARMOR), 2)
 	assert_eq(_player.skills.rank(DASH), 1)
@@ -169,7 +183,7 @@ func test_skill_graph_rings_a_skill_under_way() -> void:
 	var ring := graph.get_part(DASH).get_node(^"Ring") as MeshInstance3D
 	await wait_process_frames(1)
 	assert_false(ring.visible)
-	_player.skills.start(DASH, Time.get_unix_time_from_system())
+	_player.skills.start(DASH, FULL_HOLD.fill(), Time.get_unix_time_from_system())
 	await wait_process_frames(1)
 	assert_true(ring.visible)
 	_player.skills.finish_all()
@@ -179,8 +193,8 @@ func test_skill_graph_rings_a_skill_under_way() -> void:
 
 func test_debug_overlay_finishes_the_jobs() -> void:
 	await _load_map()
-	_player.upgrades.start(ARMOR, Time.get_unix_time_from_system())
-	_player.skills.start(DASH, Time.get_unix_time_from_system())
+	_player.upgrades.start(ARMOR, FULL_HOLD.fill(), Time.get_unix_time_from_system())
+	_player.skills.start(DASH, FULL_HOLD.fill(), Time.get_unix_time_from_system())
 	var overlay: CanvasLayer = get_tree().root.get_node("DebugOverlay") as CanvasLayer
 	overlay.call(&"_finish_jobs")
 	assert_eq(_player.upgrades.mk(ARMOR), 2)

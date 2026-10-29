@@ -8,6 +8,7 @@ const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
 const VYREL: OreType = preload("res://game/ores/types/ore_vyrel.tres")
 const COBREL: AlloyType = preload("res://game/refinery/alloys/alloy_cobrel.tres")
+const FULL_HOLD := preload("res://tests/support/full_hold.gd")
 
 
 ## The heat shield (level, project, what's paid) and where the ship is are the host's.
@@ -61,11 +62,11 @@ func test_crafted_miners_are_saved() -> void:
 	_player.fleet.build_all()
 	_player.fleet.get_miner(2).going_along = false
 	_player.fleet.get_miner(4).upgrades.raise(DRILL)
-	_player.fleet.get_miner(5).upgrades.start(DRILL, 1e12)
+	_player.fleet.get_miner(5).upgrades.start(DRILL, FULL_HOLD.fill(), 1e12)
 	_player.fleet.get_miner(3).out = true
 	_player.fleet.get_miner(6).out = true
 	_player.fleet.end_run("Torvane, Redscar Flats")
-	_player.fleet.start_build(3, 1e12, 180.0)
+	_player.fleet.start_build(3, MinerSettings.new(), FULL_HOLD.fill(), 1e12)
 	await wait_process_frames(1)
 	await _restart()
 	var fleet: MinerFleet = _player.fleet

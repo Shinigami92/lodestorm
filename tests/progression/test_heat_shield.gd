@@ -123,14 +123,14 @@ func test_paying_from_the_hold() -> void:
 	var ship := map.get_node("Ship") as Ship
 	var player := map.get_node("Player") as Player
 	await wait_physics_frames(2)
-	assert_false(ship.pay_shield(player.hold), "nothing in the hold")
+	assert_false(ship.heat_shield.pay(player.hold), "nothing in the hold")
 	player.hold.add(MERIDINE, 1000.0)
 	player.hold.add(VYREL, 100.0)
-	assert_true(ship.pay_shield(player.hold))
+	assert_true(ship.heat_shield.pay(player.hold))
 	assert_eq(player.hold.amount(MERIDINE), 850.0)
 	assert_eq(player.hold.amount(VYREL), 0.0, "as far as the hold has it")
 	assert_eq(ship.heat_shield.mk, 1)
 	player.hold.add(VYREL, 500.0)
-	assert_true(ship.pay_shield(player.hold))
+	assert_true(ship.heat_shield.pay(player.hold))
 	assert_eq(player.hold.amount(VYREL), 400.0)
 	assert_eq(ship.heat_shield.mk, 2, "installed")

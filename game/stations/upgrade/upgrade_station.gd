@@ -74,13 +74,7 @@ func can_buy(upgrade: Upgrade) -> bool:
 	var bought: Upgrades = get_levels()
 	if not bought:
 		return false
-	var mk: int = bought.mk(upgrade)
-	return (
-		bought.next_level(upgrade) != null
-		and not bought.is_running(upgrade)
-		and mk < upgrade_cap()
-		and user.hold.can_pay(bought.next_cost(upgrade))
-	)
+	return bought.mk(upgrade) < upgrade_cap() and bought.can_start(upgrade, user.hold)
 
 
 ## Buys the next level of `upgrade` for the player using it, paid from their hold, and starts it on
@@ -88,10 +82,8 @@ func can_buy(upgrade: Upgrade) -> bool:
 func buy(upgrade: Upgrade) -> bool:
 	if not can_buy(upgrade):
 		return false
-	var bought: Upgrades = get_levels()
-	if not user.hold.pay(bought.next_cost(upgrade)):
+	if not get_levels().start(upgrade, user.hold, Time.get_unix_time_from_system()):
 		return false
-	bought.start(upgrade, Time.get_unix_time_from_system())
 	_bought(upgrade)
 	refresh()
 	return true
@@ -111,7 +103,7 @@ func stop(upgrade: Upgrade) -> bool:
 	if not stop_press.press(upgrade):
 		refresh()
 		return false
-	user.hold.refund(get_levels().stop(upgrade))
+	get_levels().stop(upgrade, user.hold)
 	_bought(upgrade)
 	refresh()
 	return true

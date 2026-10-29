@@ -42,14 +42,19 @@ func test_prototypes_take_the_alloy_of_their_signature_ore() -> void:
 ## gives back.
 func test_a_job_gives_back_what_was_paid() -> void:
 	var upgrades := Upgrades.new()
+	var hold := PlayerHold.new()
 	upgrades.levels[ARMOR] = 3
-	assert_true(upgrades.start(ARMOR, 0.0))
+	hold.refund(ARMOR.cost_of(4))
+	assert_true(upgrades.start(ARMOR, hold, 0.0))
 	var paid: Dictionary[ItemType, int] = ARMOR.cost_of(4)
 	assert_eq(upgrades.get_job(ARMOR).paid, paid)
 	assert_true(paid.has(MERISK))
 	upgrades.get_job(ARMOR).paid.erase(MERISK)
 	paid.erase(MERISK)
-	assert_eq(upgrades.stop(ARMOR), paid, "what the job kept, not today's cost")
+	assert_true(upgrades.stop(ARMOR, hold))
+	assert_eq(hold.amount(MERISK), 0.0, "what the job kept, not today's cost")
+	for item: ItemType in paid:
+		assert_eq(hold.amount(item), float(paid[item]), item.display_name)
 
 
 func test_rack_card_says_what_an_alloy_is_used_for() -> void:

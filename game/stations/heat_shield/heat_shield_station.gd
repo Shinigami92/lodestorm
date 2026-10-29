@@ -124,7 +124,7 @@ func set_project(level: int) -> bool:
 ## Pays what plate MK `level` still needs from the host's hold, as far as it goes. Returns whether
 ## it paid anything.
 func pay(level: int) -> bool:
-	if not can_work_on(level) or not ship.pay_shield(user.hold):
+	if not can_work_on(level) or not get_heat_shield().pay(user.hold):
 		return false
 	refresh()
 	return true

@@ -87,12 +87,17 @@ func test_miners_left_on_the_planet_are_lost() -> void:
 	_fleet.take(second)
 	_fleet.bring_back(second)
 	first.upgrades.start(TANK, _hold, 0.0)
+	watch_signals(_fleet)
 	var lost: Array[int] = _fleet.end_run("Torvane, Redscar Flats")
 	assert_eq(lost, [1] as Array[int])
 	assert_true(_fleet.is_empty(1), "with its level under way")
 	assert_eq(_fleet.lost_at[1], "Torvane, Redscar Flats")
+	assert_signal_emit_count(_fleet, "lost", 1)
+	assert_signal_emitted_with_parameters(_fleet, "lost", [first, "Torvane, Redscar Flats"])
 	assert_not_null(_fleet.get_miner(2), "picked up in time")
 	assert_false(_fleet.get_miner(2).out)
+	first.upgrades.finish_all()
+	assert_signal_not_emitted(_fleet, "part_finished", "a lost miner is no longer the fleet's")
 
 
 func test_standard_issue_miners_are_never_lost() -> void:
@@ -124,8 +129,11 @@ func test_building_runs_on_the_wall_clock() -> void:
 	var building: CraftedMiner = _fleet.get_miner(3)
 	assert_false(building.is_built())
 	assert_false(building in _fleet.along(), "not before it's built")
+	watch_signals(_fleet)
 	assert_eq(_fleet.update(1100.0), [] as Array[Resource])
+	assert_signal_not_emitted(_fleet, "built")
 	assert_eq(_fleet.update(1180.0), [building] as Array[Resource])
+	assert_signal_emitted_with_parameters(_fleet, "built", [building])
 	assert_true(building.is_built())
 	assert_true(building in _fleet.along())
 
@@ -154,15 +162,20 @@ func test_a_build_is_paid_and_given_back_when_stopped() -> void:
 func test_part_levels_finish_with_the_fleet() -> void:
 	var first: CraftedMiner = _fleet.get_miner(1)
 	first.upgrades.start(PLATING, _hold, 0.0)
+	watch_signals(_fleet)
 	assert_eq(_fleet.update(1.0e9), [PLATING] as Array[Resource])
 	assert_eq(first.upgrades.mk(PLATING), 2)
+	assert_signal_emitted_with_parameters(_fleet, "part_finished", [first, PLATING])
 
 
 func test_finish_all_builds_and_levels() -> void:
 	_fleet.cradles.restore(MinerFleet.SLOTS)
 	_fleet.start_build(4, _settings(1_000_000_000), _hold, 0.0)
 	_fleet.get_miner(1).upgrades.start(TANK, _hold, 0.0)
+	watch_signals(_fleet)
 	assert_eq(_fleet.finish_all().size(), 2)
+	assert_signal_emitted_with_parameters(_fleet, "built", [_fleet.get_miner(4)])
+	assert_signal_emitted_with_parameters(_fleet, "part_finished", [_fleet.get_miner(1), TANK])
 	assert_true(_fleet.get_miner(4).is_built())
 	assert_eq(_fleet.get_miner(1).upgrades.mk(TANK), 2)
 

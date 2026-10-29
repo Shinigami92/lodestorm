@@ -449,8 +449,8 @@ func _update_overlay() -> void:
 	suit.material_overlay = body_overlay if silhouette_shown else body_overlay.next_pass
 
 
-## Passes what it achieves (ore collected, weapons, blueprints, upgrade levels, skill ranks, bars
-## refined) on to `GameEvents`.
+## Passes what it achieves (ore collected, weapons, blueprints, upgrade levels, skill ranks, its
+## crafted miners built, upgraded and lost, bars refined) on to `GameEvents`.
 func _report_progress() -> void:
 	var events: GameEvents = GameEvents.bus
 	cargo.ore_added.connect(
@@ -469,6 +469,14 @@ func _report_progress() -> void:
 	)
 	skills.finished.connect(
 		func(skill: Skill) -> void: events.skill_finished.emit(self, skill, skills.rank(skill))
+	)
+	fleet.built.connect(func(miner: CraftedMiner) -> void: events.miner_built.emit(self, miner))
+	fleet.part_finished.connect(
+		func(miner: CraftedMiner, upgrade: Upgrade) -> void:
+			events.miner_part_finished.emit(self, miner, upgrade, miner.upgrades.mk(upgrade))
+	)
+	fleet.lost.connect(
+		func(miner: CraftedMiner, where: String) -> void: events.miner_lost.emit(self, miner, where)
 	)
 	refining.bars_finished.connect(
 		func(_slot: int, alloy: AlloyType, count: int) -> void:

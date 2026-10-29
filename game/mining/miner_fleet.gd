@@ -146,25 +146,23 @@ func is_empty(number: int) -> bool:
 
 
 ## Starts building a miner in the empty open cradle `number` at `now` (Unix seconds), taking
-## `seconds`; the build keeps `paid` (what stopping it gives back). Returns whether it started.
-## Paying for it
-## is up to the caller (see `PlayerHold.pay`).
-func start_build(
-	number: int, now: float, seconds: float, paid: Dictionary[ItemType, int] = {}
-) -> bool:
-	if not is_empty(number) or not cradles.is_open(number):
+## `settings.build_seconds`, its `build_cost` paid from `hold` (the build keeps what was paid).
+## Returns whether it started.
+func start_build(number: int, settings: MinerSettings, hold: PlayerHold, now: float) -> bool:
+	if not is_empty(number) or not cradles.is_open(number) or not hold.pay(settings.build_cost):
 		return false
-	put(CraftedMiner.new(number, TimedJob.new(1, now, seconds, paid)))
+	put(CraftedMiner.new(number, TimedJob.new(1, now, settings.build_seconds, settings.build_cost)))
 	return true
 
 
-## Stops building the miner in cradle `number`. Returns whether one was under way (the caller
-## gives its cost back).
-func stop_build(number: int) -> bool:
+## Stops building the miner in cradle `number`, what was paid for it back into `hold`. Returns
+## whether one was under way.
+func stop_build(number: int, hold: PlayerHold) -> bool:
 	var miner: CraftedMiner = get_miner(number)
 	if not miner or miner.is_built():
 		return false
 	_remove(number)
+	hold.refund(miner.build.paid)
 	emit_changed()
 	return true
 

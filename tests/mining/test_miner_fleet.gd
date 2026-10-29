@@ -2,14 +2,18 @@ extends GutTest
 ## A player's crafted miners and the standard-issue ones filling up a run (`MinerFleet`), one per
 ## open cradle of the ship (`Cradles`).
 
+const FULL_HOLD := preload("res://tests/support/full_hold.gd")
 const TANK: Upgrade = preload("res://game/progression/upgrades/miner_tank.tres")
 const PLATING: Upgrade = preload("res://game/progression/upgrades/miner_plating.tres")
+const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 
 var _fleet: MinerFleet
+var _hold: PlayerHold
 
 
 func before_each() -> void:
 	_fleet = MinerFleet.new()
+	_hold = FULL_HOLD.fill()
 
 
 func test_every_player_starts_with_m01() -> void:
@@ -26,7 +30,7 @@ func test_every_player_starts_with_m01() -> void:
 
 
 func test_open_cradles_set_the_run() -> void:
-	assert_false(_fleet.start_build(3, 0.0, 10.0), "no cradle there")
+	assert_false(_fleet.start_build(3, _settings(10), _hold, 0.0), "no cradle there")
 	_fleet.build_all()
 	assert_true(_fleet.is_empty(3), "only the open ones")
 	assert_eq(_fleet.standard_count(), 0)
@@ -34,7 +38,7 @@ func test_open_cradles_set_the_run() -> void:
 	assert_true(_fleet.cradles.open_next())
 	assert_signal_emitted(_fleet, "changed")
 	assert_eq(_fleet.left_to_place(), 3, "one more standard-issue miner")
-	assert_true(_fleet.start_build(3, 0.0, 10.0))
+	assert_true(_fleet.start_build(3, _settings(10), _hold, 0.0))
 
 
 func test_a_run_takes_the_first_crafted_miners_up_to_the_open_cradles() -> void:
@@ -82,7 +86,7 @@ func test_miners_left_on_the_planet_are_lost() -> void:
 	_fleet.take(first)
 	_fleet.take(second)
 	_fleet.bring_back(second)
-	first.upgrades.start(TANK, 0.0)
+	first.upgrades.start(TANK, _hold, 0.0)
 	var lost: Array[int] = _fleet.end_run("Torvane, Redscar Flats")
 	assert_eq(lost, [1] as Array[int])
 	assert_true(_fleet.is_empty(1), "with its level under way")
@@ -114,9 +118,9 @@ func test_damage_comes_along_until_the_run_ends() -> void:
 
 func test_building_runs_on_the_wall_clock() -> void:
 	_fleet.cradles.restore(MinerFleet.SLOTS)
-	assert_true(_fleet.start_build(3, 1000.0, 180.0))
-	assert_false(_fleet.start_build(3, 1000.0, 180.0), "one per cradle")
-	assert_false(_fleet.start_build(1, 1000.0, 180.0), "M-01 is there")
+	assert_true(_fleet.start_build(3, _settings(180), _hold, 1000.0))
+	assert_false(_fleet.start_build(3, _settings(180), _hold, 1000.0), "one per cradle")
+	assert_false(_fleet.start_build(1, _settings(180), _hold, 1000.0), "M-01 is there")
 	var building: CraftedMiner = _fleet.get_miner(3)
 	assert_false(building.is_built())
 	assert_false(building in _fleet.along(), "not before it's built")
@@ -129,28 +133,35 @@ func test_building_runs_on_the_wall_clock() -> void:
 func test_building_again_clears_where_it_was_lost() -> void:
 	_fleet.take(_fleet.get_miner(1))
 	_fleet.end_run("there")
-	assert_true(_fleet.start_build(1, 0.0, 10.0))
+	assert_true(_fleet.start_build(1, _settings(10), _hold, 0.0))
 	assert_false(_fleet.lost_at.has(1))
 
 
-func test_a_build_can_be_stopped() -> void:
-	_fleet.start_build(2, 0.0, 180.0)
-	assert_false(_fleet.stop_build(1), "M-01 is built")
-	assert_true(_fleet.stop_build(2))
+func test_a_build_is_paid_and_given_back_when_stopped() -> void:
+	var hold := PlayerHold.new()
+	var settings: MinerSettings = _settings(180)
+	settings.build_cost = {KYRITE: 40}
+	assert_false(_fleet.start_build(2, settings, hold, 0.0), "an empty hold")
+	hold.add(KYRITE, 50.0)
+	assert_true(_fleet.start_build(2, settings, hold, 0.0))
+	assert_eq(hold.amount(KYRITE), 10.0, "paid")
+	assert_false(_fleet.stop_build(1, hold), "M-01 is built")
+	assert_true(_fleet.stop_build(2, hold))
 	assert_true(_fleet.is_empty(2))
+	assert_eq(hold.amount(KYRITE), 50.0, "the whole cost back")
 
 
 func test_part_levels_finish_with_the_fleet() -> void:
 	var first: CraftedMiner = _fleet.get_miner(1)
-	first.upgrades.start(PLATING, 0.0)
+	first.upgrades.start(PLATING, _hold, 0.0)
 	assert_eq(_fleet.update(1.0e9), [PLATING] as Array[Resource])
 	assert_eq(first.upgrades.mk(PLATING), 2)
 
 
 func test_finish_all_builds_and_levels() -> void:
 	_fleet.cradles.restore(MinerFleet.SLOTS)
-	_fleet.start_build(4, 0.0, 1.0e9)
-	_fleet.get_miner(1).upgrades.start(TANK, 0.0)
+	_fleet.start_build(4, _settings(1_000_000_000), _hold, 0.0)
+	_fleet.get_miner(1).upgrades.start(TANK, _hold, 0.0)
 	assert_eq(_fleet.finish_all().size(), 2)
 	assert_true(_fleet.get_miner(4).is_built())
 	assert_eq(_fleet.get_miner(1).upgrades.mk(TANK), 2)
@@ -160,3 +171,10 @@ func test_changes_are_announced() -> void:
 	watch_signals(_fleet)
 	_fleet.get_miner(1).upgrades.raise(TANK)
 	assert_signal_emitted(_fleet, "changed", "a miner's levels")
+
+
+## Settings whose build takes `seconds` and costs nothing.
+func _settings(seconds: int) -> MinerSettings:
+	var settings := MinerSettings.new()
+	settings.build_seconds = seconds
+	return settings

@@ -50,27 +50,36 @@ func is_running(upgrade: Upgrade) -> bool:
 	return jobs.has(upgrade)
 
 
-## Starts the next level of `upgrade` at `now` (Unix seconds) unless it's at its highest or one is
-## under way already. Returns whether it started. Paying for it (`next_cost`, which the job keeps)
-## is up to the caller (see `PlayerHold.pay`).
-func start(upgrade: Upgrade, now: float) -> bool:
-	var next: UpgradeLevel = next_level(upgrade)
-	if not next or is_running(upgrade):
+## Whether the next level of `upgrade` can start, paid from `hold`: it's not at its highest, none is
+## under way already and the hold has `next_cost`.
+func can_start(upgrade: Upgrade, hold: PlayerHold) -> bool:
+	return (
+		next_level(upgrade) != null and not is_running(upgrade) and hold.can_pay(next_cost(upgrade))
+	)
+
+
+## Starts the next level of `upgrade` at `now` (Unix seconds), `next_cost` paid from `hold` (the job
+## keeps what was paid). Returns whether it started.
+func start(upgrade: Upgrade, hold: PlayerHold, now: float) -> bool:
+	if not can_start(upgrade, hold):
 		return false
-	jobs[upgrade] = TimedJob.new(mk(upgrade) + 1, now, next.seconds, next_cost(upgrade))
+	var cost: Dictionary[ItemType, int] = next_cost(upgrade)
+	hold.pay(cost)
+	jobs[upgrade] = TimedJob.new(mk(upgrade) + 1, now, next_level(upgrade).seconds, cost)
 	emit_changed()
 	return true
 
 
-## Stops the level of `upgrade` under way. Returns what was paid for it (empty when none was), for
-## the caller to give back.
-func stop(upgrade: Upgrade) -> Dictionary[ItemType, int]:
+## Stops the level of `upgrade` under way, what was paid for it back into `hold`. Returns whether
+## one was under way.
+func stop(upgrade: Upgrade, hold: PlayerHold) -> bool:
 	var job: TimedJob = get_job(upgrade)
 	if not job:
-		return {}
+		return false
 	jobs.erase(upgrade)
+	hold.refund(job.paid)
 	emit_changed()
-	return job.paid.duplicate()
+	return true
 
 
 ## Lets every level done by `now` (Unix seconds) take effect. Returns those upgrades.

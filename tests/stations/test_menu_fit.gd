@@ -7,6 +7,7 @@ const LOADOUT_CARD_SCENE: PackedScene = preload("res://game/stations/loadout/loa
 const SKILL_CARD_SCENE: PackedScene = preload("res://game/stations/skill_graph/skill_card.tscn")
 const SKILL_TREE: SkillTree = preload("res://game/progression/skills/tree/skill_tree.tres")
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
+const FULL_HOLD := preload("res://tests/support/full_hold.gd")
 const UPGRADES: Array[Upgrade] = [
 	preload("res://game/progression/upgrades/armor.tres"),
 	preload("res://game/progression/upgrades/miner_drill.tres"),
@@ -134,7 +135,7 @@ func test_miner_bay_cards_fit_in_every_language() -> void:
 	for item: ItemType in bay.settings.build_cost:
 		hold[item] = 99999.0
 	var miner := CraftedMiner.new(6)
-	miner.upgrades.start(CraftedMiner.PARTS[0], 0.0)
+	miner.upgrades.start(CraftedMiner.PARTS[0], FULL_HOLD.fill(), 0.0)
 	var building := CraftedMiner.new(6, TimedJob.new(1, 0.0, 21600.0))
 	# The longest place a miner can be lost at.
 	var longest: String = ""

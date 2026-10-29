@@ -138,10 +138,9 @@ func can_build(number: int) -> bool:
 ## Builds a miner in cradle `number` for the player using it, paid from the hold, on the wall clock.
 ## Returns whether it started.
 func build(number: int) -> bool:
-	if not can_build(number) or not user.hold.pay(settings.build_cost):
-		return false
 	var now: float = Time.get_unix_time_from_system()
-	user.fleet.start_build(number, now, settings.build_seconds, settings.build_cost)
+	if not can_build(number) or not user.fleet.start_build(number, settings, user.hold, now):
+		return false
 	refresh()
 	return true
 
@@ -162,9 +161,7 @@ func stop_build(number: int) -> bool:
 	if not stop_press.press(user.fleet.get_miner(number)):
 		refresh()
 		return false
-	var paid: Dictionary[ItemType, int] = user.fleet.get_miner(number).build.paid
-	user.fleet.stop_build(number)
-	user.hold.refund(paid)
+	user.fleet.stop_build(number, user.hold)
 	refresh()
 	return true
 

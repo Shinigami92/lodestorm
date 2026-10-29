@@ -153,22 +153,17 @@ func get_part(skill: Skill) -> StationPart:
 
 ## Whether the player using it can learn the next rank of `skill` right now.
 func can_learn(skill: Skill) -> bool:
-	if is_locked() or not user or not skill:
-		return false
-	if not user.skills.is_open(skill) or user.skills.is_running(skill):
-		return false
-	var next: SkillRank = user.skills.next_rank(skill)
-	return next != null and user.hold.can_pay(next.cost)
+	return not is_locked() and user != null and user.skills.can_start(skill, user.hold)
 
 
 ## Learns the next rank of `skill` for the player using it, paid from the hold, and starts it on
 ## the wall clock. Returns whether it did.
 func learn(skill: Skill) -> bool:
-	if not can_learn(skill):
+	if (
+		not can_learn(skill)
+		or not user.skills.start(skill, user.hold, Time.get_unix_time_from_system())
+	):
 		return false
-	if not user.hold.pay(user.skills.next_rank(skill).cost):
-		return false
-	user.skills.start(skill, Time.get_unix_time_from_system())
 	refresh()
 	return true
 
@@ -186,7 +181,7 @@ func stop(skill: Skill) -> bool:
 	if not stop_press.press(skill):
 		refresh()
 		return false
-	user.hold.refund(user.skills.stop(skill))
+	user.skills.stop(skill, user.hold)
 	refresh()
 	return true
 

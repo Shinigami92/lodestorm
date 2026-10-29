@@ -2,9 +2,9 @@ class_name Arsenal
 extends Resource
 ## The weapons a player owns (`weapons`) and the blueprints they have (`blueprints`). A new player
 ## starts with a few weapons; the others come as blueprints (from quests and the story) and are
-## built at the workbench for ore (`WeaponStation.build`). The loadout is picked from the owned
-## ones. `game/weapons/all_weapons.tres` is the arsenal with every weapon in the game, in the order
-## the armory lists them.
+## built at the workbench for ore (`build`). The loadout is picked from the owned ones.
+## `game/weapons/all_weapons.tres` is the arsenal with every weapon in the game, in the order the
+## armory lists them.
 
 ## Emitted when a weapon is added (built, or a debug shortcut), or a blueprint found.
 signal unlocked(weapon_type: WeaponType)
@@ -33,6 +33,21 @@ func learn(weapon_type: WeaponType) -> bool:
 	emit_changed()
 	learned.emit(weapon_type)
 	return true
+
+
+## Whether `weapon_type` can be built, paid from `hold`: its blueprint is there and the hold has
+## its `build_cost`.
+func can_build(weapon_type: WeaponType, hold: PlayerHold) -> bool:
+	return has_blueprint(weapon_type) and hold.can_pay(weapon_type.build_cost)
+
+
+## Builds `weapon_type` from its blueprint, its `build_cost` paid from `hold`. Returns whether it
+## did.
+func build(weapon_type: WeaponType, hold: PlayerHold) -> bool:
+	if not can_build(weapon_type, hold):
+		return false
+	hold.pay(weapon_type.build_cost)
+	return unlock(weapon_type)
 
 
 ## Adds `weapon_type` unless it's owned already (built, or a debug shortcut); its blueprint is used

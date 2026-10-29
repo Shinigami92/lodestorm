@@ -1,6 +1,7 @@
 extends GutTest
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+const FULL_HOLD := preload("res://tests/support/full_hold.gd")
 const SETTINGS_MENU: PackedScene = preload("res://game/ui/settings_menu.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
@@ -51,7 +52,9 @@ func test_progress_survives_a_restart() -> void:
 	_player.fleet.get_miner(1).upgrades.raise(DRILL)
 	_player.fleet.get_miner(1).upgrades.raise(DRILL)
 	_player.fleet.get_miner(1).going_along = false
-	_player.fleet.start_build(2, Time.get_unix_time_from_system(), 600.0)
+	_player.fleet.start_build(
+		2, _build_settings(), FULL_HOLD.fill(), Time.get_unix_time_from_system()
+	)
 	await wait_process_frames(1)
 	assert_true(SaveGame.exists(), "saved right away")
 	await _restart()
@@ -84,10 +87,11 @@ func test_skills_survive_a_restart() -> void:
 
 func test_jobs_under_way_survive_a_restart() -> void:
 	var now: float = Time.get_unix_time_from_system()
-	_player.upgrades.start(ARMOR, now - 10.0)
-	_player.fleet.get_miner(1).upgrades.start(DRILL, now - 3600.0)
-	_player.fleet.start_build(2, now - 3600.0, 600.0)
-	_player.skills.start(DASH, now)
+	var hold: PlayerHold = FULL_HOLD.fill()
+	_player.upgrades.start(ARMOR, hold, now - 10.0)
+	_player.fleet.get_miner(1).upgrades.start(DRILL, hold, now - 3600.0)
+	_player.fleet.start_build(2, _build_settings(), hold, now - 3600.0)
+	_player.skills.start(DASH, hold, now)
 	_player.skills.jobs[DASH].seconds = 600.0
 	await wait_process_frames(1)
 	var saved: Dictionary = _saved("player.json")
@@ -110,7 +114,9 @@ func test_jobs_under_way_survive_a_restart() -> void:
 func test_jobs_keep_what_was_paid() -> void:
 	var paid: Dictionary[ItemType, int] = {KYRITE: 100, MERISK: 4}
 	_player.upgrades.restore(ARMOR, TimedJob.new(2, 1e12, 60.0, paid))
-	_player.fleet.start_build(2, 1e12, 60.0, {COBREL: 3})
+	var settings: MinerSettings = _build_settings()
+	settings.build_cost = {COBREL: 3}
+	_player.fleet.start_build(2, settings, FULL_HOLD.fill(), 1e12)
 	await wait_process_frames(1)
 	var saved: Dictionary = _saved(SaveGame.PLAYER_FILE)
 	var upgrades: Dictionary = saved["upgrades"]
@@ -118,8 +124,11 @@ func test_jobs_keep_what_was_paid() -> void:
 	var saved_paid: Dictionary = job["paid"]
 	assert_eq(saved_paid, {_uid(KYRITE): 100.0, _uid(MERISK): 4.0})
 	await _restart()
-	assert_eq(_player.upgrades.stop(ARMOR), paid)
 	assert_eq(_player.fleet.get_miner(2).build.paid, {COBREL: 3} as Dictionary[ItemType, int])
+	var hold := PlayerHold.new()
+	assert_true(_player.upgrades.stop(ARMOR, hold))
+	assert_true(_player.fleet.stop_build(2, hold))
+	assert_eq(hold.items, {KYRITE: 100.0, MERISK: 4.0, COBREL: 3.0} as Dictionary[ItemType, float])
 
 
 func test_story_survives_a_restart() -> void:
@@ -325,3 +334,10 @@ func _clean() -> void:
 	SaveGame.erase()
 	if FileAccess.file_exists(GameSettings.path()):
 		DirAccess.remove_absolute(GameSettings.path())
+
+
+## Settings whose build takes ten minutes and costs nothing.
+func _build_settings() -> MinerSettings:
+	var settings := MinerSettings.new()
+	settings.build_seconds = 600
+	return settings

@@ -44,27 +44,35 @@ func is_running(skill: Skill) -> bool:
 	return jobs.has(skill)
 
 
-## Starts the next rank of `skill` at `now` (Unix seconds) if it's open, not at its highest and
-## none is under way already. Returns whether it started. Paying for it (the rank's cost, which the
-## job keeps) is up to the caller (see `PlayerHold.pay`).
-func start(skill: Skill, now: float) -> bool:
+## Whether the next rank of `skill` can start, paid from `hold`: it's open, not at its highest, none
+## is under way already and the hold has its cost.
+func can_start(skill: Skill, hold: PlayerHold) -> bool:
 	var next: SkillRank = next_rank(skill)
-	if not is_open(skill) or not next or is_running(skill):
+	return is_open(skill) and next != null and not is_running(skill) and hold.can_pay(next.cost)
+
+
+## Starts the next rank of `skill` at `now` (Unix seconds), its cost paid from `hold` (the job
+## keeps what was paid). Returns whether it started.
+func start(skill: Skill, hold: PlayerHold, now: float) -> bool:
+	if not can_start(skill, hold):
 		return false
+	var next: SkillRank = next_rank(skill)
+	hold.pay(next.cost)
 	jobs[skill] = TimedJob.new(rank(skill) + 1, now, next.seconds, next.cost)
 	emit_changed()
 	return true
 
 
-## Stops the rank of `skill` under way. Returns what was paid for it (empty when none was), for
-## the caller to give back.
-func stop(skill: Skill) -> Dictionary[ItemType, int]:
+## Stops the rank of `skill` under way, what was paid for it back into `hold`. Returns whether one
+## was under way.
+func stop(skill: Skill, hold: PlayerHold) -> bool:
 	var job: TimedJob = get_job(skill)
 	if not job:
-		return {}
+		return false
 	jobs.erase(skill)
+	hold.refund(job.paid)
 	emit_changed()
-	return job.paid.duplicate()
+	return true
 
 
 ## Lets every rank done by `now` (Unix seconds) take effect. Returns those skills.

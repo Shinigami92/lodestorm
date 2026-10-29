@@ -247,18 +247,6 @@ func store_haul(
 	return taken
 
 
-## Pays what the heat shield's next plate still needs from `hold` (the host's), as far as it has
-## it. Returns whether it paid anything.
-func pay_shield(hold: PlayerHold) -> bool:
-	var available: Dictionary[OreType, float] = {}
-	for ore_type: OreType in heat_shield.missing():
-		available[ore_type] = maxf(hold.amount(ore_type), 0.0)
-	var taken: Dictionary[OreType, float] = heat_shield.take_from(available)
-	for ore_type: OreType in taken:
-		hold.take(ore_type, taken[ore_type])
-	return not taken.is_empty()
-
-
 ## Shows `location` and where the ship stands in it (its floor) on the holo table; null clears it.
 ## The location doesn't need to be in the tree: locations stand where the ship stands.
 func show_preview(location: Node3D) -> void:

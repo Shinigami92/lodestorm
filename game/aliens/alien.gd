@@ -191,6 +191,8 @@ var _flash_left: float = 0.0
 var _surfaced_for: float = 0.0
 ## Seconds it still backs off after an attack (`strain.retreat_time`).
 var _retreat_left: float = 0.0
+## Walking back to `home` after leaving a downed player alone (until it's there or finds prey).
+var _going_home: bool = false
 ## The route's point it walks to, or -1.
 var _route_index: int = -1
 ## Which way it circles its target (`strain.circles`): 1 or -1.
@@ -320,12 +322,14 @@ func _physics_process(delta: float) -> void:
 	elif target and _retreat_left > 0.0:
 		wanted = _pathing.direction_away_from(target)
 		facing = _offset_to(target)
-	elif not target and strain.roams and not route.is_empty():
+	elif not target and strain.roams and not route.is_empty() and not _going_home:
 		wanted = _roam()
-	elif not target and strain.leash > 0.0 and role != Role.HUNTER:
+	elif not target and (_going_home or (strain.leash > 0.0 and role != Role.HUNTER)):
 		# Back to where it hatched.
 		var back: Vector3 = home - global_position
-		if Vector2(back.x, back.z).length() > HOME_RADIUS:
+		var away: bool = Vector2(back.x, back.z).length() > HOME_RADIUS
+		_going_home = _going_home and away
+		if away:
 			wanted = _pathing.direction_to(home)
 	elif target:
 		var offset: Vector3 = _offset_to(target)
@@ -567,8 +571,10 @@ func take_hit(hit: Hit) -> float:
 	return dealt
 
 
-## Stops it for `seconds`, its attack broken off (a stagger; a charge into a wall).
-func stagger_for(seconds: float) -> void:
+## Stops it for `seconds`, its attack broken off (a stagger; a charge into a wall), pushed by
+## `push` (m/s, fading).
+func stagger_for(seconds: float, push := Vector3.ZERO) -> void:
+	_push += push
 	stagger = 0.0
 	_staggered = maxf(_staggered, seconds)
 	_pose.stagger(seconds)
@@ -621,9 +627,12 @@ func _update_target() -> void:
 		if in_way:
 			target = in_way
 		return
-	if is_instance_valid(target) and target is Player and is_prey(get_tree(), target as Player):
-		if role == Role.HUNTER or _keeps_chasing(target):
+	if is_instance_valid(target) and target is Player:
+		var chased := target as Player
+		if is_prey(get_tree(), chased) and (role == Role.HUNTER or _keeps_chasing(chased)):
 			return
+		# It leaves a downed player alone and walks back towards its nest (see `RescueDrone`).
+		_going_home = _going_home or chased.fallen
 	target = null
 	var nearest_distance: float = INF if role == Role.HUNTER else strain.detection_range
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -633,6 +642,7 @@ func _update_target() -> void:
 		if distance <= nearest_distance and (role == Role.HUNTER or _within_leash(player)):
 			target = player
 			nearest_distance = distance
+	_going_home = _going_home and target == null
 
 
 ## Whether it defends its nest (`status.defending`): the attacker is prey and within its leash,
@@ -711,7 +721,7 @@ func _start_attack(distance: float) -> bool:
 func _process_attack(delta: float) -> void:
 	_phase_time += delta
 	if _phase == AttackPhase.WIND_UP:
-		if not is_instance_valid(target):
+		if not is_instance_valid(target) or (target is Player and (target as Player).fallen):
 			_end_attack()
 			return
 		if _attack.clip_lead > 0.0:
@@ -729,7 +739,8 @@ func _process_attack(delta: float) -> void:
 		acting.emit(_attack)
 		_attack.begin(self)
 	if _phase == AttackPhase.ACT:
-		if not _attack.act(self, _phase_time):
+		# Acting can end it (a player it downs flashes a rescue drone that staggers it).
+		if not _attack.act(self, _phase_time) or not _attack:
 			return
 		_land()
 		_phase = AttackPhase.RECOVER

@@ -1,5 +1,5 @@
 extends GutTest
-## Armor, stagger, push and the hit feedback, and the swarmer's pounce.
+## Armor, stagger, push and the hit feedback, the swarmer's pounce, and leaving a downed player.
 
 const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
@@ -166,6 +166,19 @@ func test_hunters_never_give_up_because_of_distance() -> void:
 	await _place_alien(_alien.strain.chase_range + 10.0)
 	await wait_physics_frames(2)
 	assert_eq(_alien.target, _player)
+
+
+func test_walks_back_towards_its_nest_from_a_downed_player() -> void:
+	await _place_alien(3.0)
+	await wait_physics_frames(2)
+	assert_eq(_alien.target, _player)
+	_player.vitals.bleed_out = 10.0
+	_player.take_damage(_player.settings.max_health)
+	assert_true(_player.down)
+	var before: float = _distance()
+	await _wait_physics(1.0)
+	assert_null(_alien.target, "leaves a downed player alone")
+	assert_gt(_distance(), before + 1.0, "walks back towards where it hatched")
 
 
 func _hit(

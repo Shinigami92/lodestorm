@@ -41,7 +41,8 @@ extends Resource
 @export var rescue_wait: float = 8.0
 @export var rescue_gap: float = 10.0
 @export var rescue_health: float = 0.5
-## Its flash staggers the aliens within this range (m) for this long (s), pushing them away (m/s).
+## Its flash as it flies out staggers the aliens within this range (m) for this long (s), pushing
+## them away (m/s).
 @export var rescue_flash_range: float = 8.0
 @export var rescue_flash_stagger: float = 2.0
 @export var rescue_flash_push: float = 6.0

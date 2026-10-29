@@ -2,17 +2,17 @@ class_name RescueDrone
 extends Node3D
 ## The rescue drone (a skill): a small drone sitting on the `holder`'s backpack while it's ready
 ## (learned and not used this run). While it's ready, the holder goes down at zero health instead
-## of dying (`PlayerVitals.bleed_out`): the drone flies out, hovers over the body shining a light
+## of dying (`PlayerVitals.bleed_out`): the drone flies out with a flash that staggers and pushes
+## away the aliens within `PlayerSettings.rescue_flash_range`, hovers over the body shining a light
 ## on it, and gets it up with `PlayerSettings.rescue_health` of its health (nothing carried is
 ## lost). Aliens leave a downed player alone meanwhile and walk back towards their nest; the drone
 ## waits at least `PlayerSettings.rescue_time` and then for a gap (no alien within
-## `PlayerSettings.rescue_gap`), at most `PlayerSettings.rescue_wait`. Then it burns out with a
-## flash that staggers and pushes back the aliens within `PlayerSettings.rescue_flash_range`, and is
-## gone until the next run (`restock`, when the ramp opens for one). The suit ring shows it as a
-## tick on the health arc. A greybox model built in code. It follows the backpack (the model's
-## `CargoRack` marker) and sits on top of it.
+## `PlayerSettings.rescue_gap`), at most `PlayerSettings.rescue_wait`. Then it burns out and is gone
+## until the next run (`restock`, when the ramp opens for one). The suit ring shows it as a tick on
+## the health arc. A greybox model built in code. It follows the backpack (the model's `CargoRack`
+## marker) and sits on top of it.
 
-enum State { DOCKED, RESCUING, FLARING }
+enum State { DOCKED, RESCUING, BURNING_OUT }
 
 ## Where it sits on the backpack (on top of its frame), from the cargo rack's origin.
 const DOCK := Vector3(-0.17, CargoRack.TUBE_HEIGHT + 0.27, -0.08)
@@ -22,9 +22,11 @@ const HOVER_HEIGHT: float = 1.3
 const FLY_RATE: float = 6.0
 ## Its size in flight, so it reads from the game's camera (docked it fits the backpack).
 const FLIGHT_SCALE: float = 1.6
-## Seconds its flash takes to fade, and how bright its light flares (energy).
-const FLARE_TIME: float = 0.6
-const FLARE_ENERGY: float = 8.0
+## Seconds its flash takes to fade, and how bright its light flares meanwhile (energy).
+const FLASH_TIME: float = 0.6
+const FLASH_ENERGY: float = 8.0
+## Seconds it takes to burn out once the holder is up.
+const BURN_OUT_TIME: float = 0.6
 ## The bleed-out while it's ready: longer than the longest wait, so the drone always gets there
 ## first.
 const BLEED_OUT_MARGIN: float = 1.0
@@ -40,8 +42,8 @@ var holder: Player
 ## Whether it was used this run.
 var used: bool = false
 var state: State = State.DOCKED
-## Seconds until it gets the holder up at the latest (while rescuing), or until its flash is gone
-## (while flaring).
+## Seconds until it gets the holder up at the latest (while rescuing), or until it's gone (while
+## burning out).
 var time_left: float = 0.0
 
 ## The model: on the backpack while docked, flying on its own (top level) otherwise.
@@ -50,9 +52,11 @@ var _rotors: Array[Node3D] = []
 var _beam := MeshInstance3D.new()
 var _light := OmniLight3D.new()
 var _lamp_material := StandardMaterial3D.new()
-## The flash: a sphere growing to the flash's range while it fades.
+## The flash: a sphere growing to the flash's range while it fades, where the holder went down.
 var _flash := MeshInstance3D.new()
 var _flash_material := StandardMaterial3D.new()
+var _flash_left: float = 0.0
+var _flash_at := Vector3.ZERO
 var _time: float = 0.0
 
 
@@ -75,6 +79,7 @@ func restock() -> void:
 
 func _physics_process(delta: float) -> void:
 	_time += delta
+	var flash: float = _update_flash(delta)
 	match state:
 		State.DOCKED:
 			var drone_ready: bool = is_ready()
@@ -89,23 +94,19 @@ func _physics_process(delta: float) -> void:
 			_fly_to(over, delta)
 			time_left = maxf(time_left - delta, 0.0)
 			var pulse: float = 0.5 + 0.5 * sin(_time * TAU * 2.0)
-			_light.light_energy = 0.6 + 0.6 * pulse
+			_light.light_energy = 0.6 + 0.6 * pulse + FLASH_ENERGY * flash
+			_light.omni_range = lerpf(LIGHT_RANGE, holder.settings.rescue_flash_range, flash)
 			_lamp_material.emission_energy_multiplier = 2.0 + 2.0 * pulse
 			_beam.visible = true
 			var waited: float = holder.settings.rescue_wait - time_left
 			if time_left == 0.0 or (waited >= holder.settings.rescue_time and not _alien_near()):
 				_rescue()
-		State.FLARING:
+		State.BURNING_OUT:
 			time_left = maxf(time_left - delta, 0.0)
-			var share: float = time_left / FLARE_TIME
-			var spread: float = 1.0 - share * share
-			_flash.global_transform = Transform3D(
-				Basis.from_scale(Vector3.ONE * holder.settings.rescue_flash_range * spread),
-				holder.global_position
-			)
-			_flash_material.albedo_color.a = 0.25 * share * share * share
+			var share: float = time_left / BURN_OUT_TIME
 			_model.scale = Vector3.ONE * FLIGHT_SCALE * maxf(share, 0.01)
-			_light.light_energy = FLARE_ENERGY * share
+			_light.light_energy = 2.0 * share
+			_lamp_material.emission_energy_multiplier = 4.0 * share
 			if time_left == 0.0:
 				_dock()
 	var spinning: bool = state != State.DOCKED
@@ -114,7 +115,7 @@ func _physics_process(delta: float) -> void:
 			rotor.rotate_y(TAU * ROTOR_SPEED * delta)
 
 
-## The holder went down: with the drone ready, it flies out to get them up.
+## The holder went down: with the drone ready, it flies out with a flash to get them up.
 func _on_went_down() -> void:
 	if not is_ready() or state != State.DOCKED:
 		return
@@ -127,6 +128,38 @@ func _on_went_down() -> void:
 	_model.scale = Vector3.ONE * FLIGHT_SCALE
 	_model.visible = true
 	_light.visible = true
+	_drive_away()
+
+
+## The flash: the aliens close by are staggered and pushed away.
+func _drive_away() -> void:
+	var settings: PlayerSettings = holder.settings
+	_flash_at = holder.global_position
+	_flash_left = FLASH_TIME
+	_flash.visible = true
+	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
+		var away: Vector3 = alien.global_position - _flash_at
+		away.y = 0.0
+		if alien.dead or away.length() > settings.rescue_flash_range:
+			continue
+		var direction: Vector3 = away.normalized() if away.length() > 0.01 else Vector3.FORWARD
+		alien.stagger_for(settings.rescue_flash_stagger, direction * settings.rescue_flash_push)
+
+
+## The flash's sphere growing and fading. Returns how much of it is left (1 at its start, 0 once
+## it's gone).
+func _update_flash(delta: float) -> float:
+	if _flash_left == 0.0:
+		return 0.0
+	_flash_left = maxf(_flash_left - delta, 0.0)
+	var share: float = _flash_left / FLASH_TIME
+	var spread: float = maxf(1.0 - share * share, 0.01)
+	_flash.global_transform = Transform3D(
+		Basis.from_scale(Vector3.ONE * holder.settings.rescue_flash_range * spread), _flash_at
+	)
+	_flash_material.albedo_color.a = 0.25 * share * share * share
+	_flash.visible = _flash_left > 0.0
+	return share
 
 
 ## Whether a living alien is within `PlayerSettings.rescue_gap` of the holder.
@@ -137,23 +170,13 @@ func _alien_near() -> bool:
 	return false
 
 
-## Gets the holder up and burns out with a flash: the aliens close by are staggered and pushed
-## away.
+## Gets the holder up and burns out.
 func _rescue() -> void:
 	holder.vitals.get_up(holder.settings.rescue_health)
-	var settings: PlayerSettings = holder.settings
-	for alien: Alien in get_tree().get_nodes_in_group(Alien.GROUP):
-		var away: Vector3 = alien.global_position - holder.global_position
-		away.y = 0.0
-		if alien.dead or away.length() > settings.rescue_flash_range:
-			continue
-		var direction: Vector3 = away.normalized() if away.length() > 0.01 else Vector3.FORWARD
-		alien.stagger_for(settings.rescue_flash_stagger, direction * settings.rescue_flash_push)
-	state = State.FLARING
-	time_left = FLARE_TIME
+	state = State.BURNING_OUT
+	time_left = BURN_OUT_TIME
 	_beam.visible = false
-	_light.omni_range = settings.rescue_flash_range
-	_flash.visible = true
+	_light.omni_range = LIGHT_RANGE
 
 
 ## Back on the backpack (hidden while it isn't ready).
@@ -167,6 +190,7 @@ func _dock() -> void:
 	_light.visible = false
 	_light.omni_range = LIGHT_RANGE
 	_flash.visible = false
+	_flash_left = 0.0
 	_lamp_material.emission_energy_multiplier = 1.0
 
 

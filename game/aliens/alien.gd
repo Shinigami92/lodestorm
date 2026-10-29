@@ -739,7 +739,8 @@ func _process_attack(delta: float) -> void:
 		acting.emit(_attack)
 		_attack.begin(self)
 	if _phase == AttackPhase.ACT:
-		if not _attack.act(self, _phase_time):
+		# Acting can end it (a player it downs flashes a rescue drone that staggers it).
+		if not _attack.act(self, _phase_time) or not _attack:
 			return
 		_land()
 		_phase = AttackPhase.RECOVER

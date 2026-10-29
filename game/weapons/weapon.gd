@@ -203,7 +203,7 @@ func charge() -> float:
 func shot_direction() -> Vector3:
 	var muzzle: Marker3D = get_muzzle()
 	if muzzle and PlayerAim.is_lockable(aim_target):
-		return muzzle.global_position.direction_to(PlayerAim.aim_point(aim_target))
+		return muzzle.global_position.direction_to(WeaponTarget.aim_point(aim_target))
 	return aim_direction
 
 

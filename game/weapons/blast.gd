@@ -152,26 +152,16 @@ func _hit(target: Node3D, hit: Hit, distance: float) -> void:
 	var away: Vector3 = target.global_position - global_position
 	away.y = 0.0
 	var direction: Vector3 = away if away.length() > 0.01 else hit.direction
-	var point: Vector3 = (
-		(target as Alien).get_aim_point()
-		if target is Alien
-		else (target as Destructible).get_aim_point()
-	)
 	var struck := Hit.new(
 		hit.damage * share,
 		hit.stagger * share,
 		hit.push * share,
 		direction,
-		point,
+		WeaponTarget.aim_point(target),
 		hit.attacker,
 		hit.weapon_type
 	)
-	var dealt: float = 0.0
-	if target is Alien:
-		dealt = (target as Alien).take_hit(struck)
-	else:
-		dealt = (target as Destructible).take_hit(struck)
-	DamageNumber.show_hit(hit.attacker, target, dealt)
+	DamageNumber.show_hit(hit.attacker, target, WeaponTarget.take_hit(target, struck))
 
 
 func _update() -> void:

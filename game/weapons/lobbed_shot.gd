@@ -65,7 +65,7 @@ func _move_to(target: Vector3) -> bool:
 		if collider is Player or (through_aliens and collider is Alien):
 			skip.append((collider as CollisionObject3D).get_rid())
 			continue
-		if collider is Alien or collider is Destructible:
+		if WeaponTarget.is_target(collider):
 			_direct = collider as Node3D
 		# Back off the surface a little, so the blast isn't inside it.
 		var at: Vector3 = result["position"]

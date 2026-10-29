@@ -25,14 +25,10 @@ func attack(weapon: Weapon) -> void:
 	var target: Node3D = nearest(weapon, direction)
 	var hits: Array[Alien] = []
 	if target:
-		var edge: float = 0.3
-		var aim: Vector3 = target.global_position
 		if target is Alien:
-			aim = (target as Alien).get_aim_point()
 			hits.append(target as Alien)
-		elif target is Destructible:
-			aim = (target as Destructible).get_aim_point()
-			edge = (target as Destructible).radius()
+		var aim: Vector3 = WeaponTarget.aim_point(target)
+		var edge: float = WeaponTarget.edge(target, 0.3)
 		weapon.make_hit(direction, aim - direction * edge).land_on(target)
 		weapon.play(hit_sound)
 	weapon.swung.emit(hits)

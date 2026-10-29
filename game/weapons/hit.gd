@@ -56,13 +56,9 @@ func _init(
 ## Lands on `target` (an alien or a destructible): its damage past their armor, the damage readout
 ## and, if it burns, sets them burning. Returns the damage that got through (0 for anything else).
 func land_on(target: Node3D) -> float:
-	var dealt: float = 0.0
-	if target is Alien:
-		dealt = (target as Alien).take_hit(self)
-	elif target is Destructible:
-		dealt = (target as Destructible).take_hit(self)
-	else:
+	if not WeaponTarget.is_target(target):
 		return 0.0
+	var dealt: float = WeaponTarget.take_hit(target, self)
 	DamageNumber.show_hit(attacker, target, dealt)
 	if burn_time > 0.0 and burn_damage > 0.0:
 		Burning.ignite(target, burn_damage, burn_time, attacker, weapon_type)

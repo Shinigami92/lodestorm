@@ -42,8 +42,8 @@ var ore_out: OreType
 ## How much comes out, as the card shows it (see `get_count`).
 var count: int = 1
 
-var _in := StationPart.new()
-var _out := StationPart.new()
+var _in: StationPart
+var _out: StationPart
 var _glows: Dictionary[StationPart, StandardMaterial3D] = {}
 var _plates: Dictionary[StationPart, Label3D] = {}
 ## Seconds since the last trade, for the hoppers' flare.
@@ -195,6 +195,8 @@ func _update_look() -> void:
 
 ## The greybox hoppers on the counter, their plates and glow, the parts.
 func _build() -> void:
+	_in = StationPart.new()
+	_out = StationPart.new()
 	var metal := StandardMaterial3D.new()
 	metal.albedo_color = METAL_COLOR
 	metal.metallic = 0.45

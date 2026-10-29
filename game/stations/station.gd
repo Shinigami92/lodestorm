@@ -73,7 +73,7 @@ var locks_while_underway: bool = false
 var _held: Dictionary[Vector2, bool] = {}
 var _mission: Mission
 var _ship: Ship
-var _leader := MeshInstance3D.new()
+var _leader: MeshInstance3D
 var _leader_mesh := ImmediateMesh.new()
 
 @onready var card: WorldPanel = $Card
@@ -95,6 +95,7 @@ func _ready() -> void:
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	material.no_depth_test = true
 	material.render_priority = WorldPanel.ON_TOP_PRIORITY
+	_leader = MeshInstance3D.new()
 	_leader.mesh = _leader_mesh
 	_leader.material_override = material
 	_leader.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

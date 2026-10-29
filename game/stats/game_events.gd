@@ -77,6 +77,11 @@ signal blueprint_learned(player: Player, weapon_type: WeaponType)
 ## An upgrade reached its MK level `mk`, a skill its rank.
 signal upgrade_finished(player: Player, upgrade: Upgrade, mk: int)
 signal skill_finished(player: Player, skill: Skill, rank: int)
+## A crafted miner was built, a part of it (`upgrade`) reached its MK level `mk`, or it was left on
+## the planet (at `where`, e.g. "Torvane, Redscar Flats") when the run ended.
+signal miner_built(player: Player, miner: CraftedMiner)
+signal miner_part_finished(player: Player, miner: CraftedMiner, upgrade: Upgrade, mk: int)
+signal miner_lost(player: Player, miner: CraftedMiner, where: String)
 ## A furnace finished `count` bars of `alloy` for the player.
 signal bars_refined(player: Player, alloy: AlloyType, count: int)
 ## The ship's heat shield reached MK level `mk`.

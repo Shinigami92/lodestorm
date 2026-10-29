@@ -7,6 +7,9 @@ extends Resource
 ## a run `out` says it stands on the planet, and the health it had when it was picked up comes
 ## along to its next spot (`health`) until the run ends.
 
+## A level of one of its parts is done (`Upgrades.finished`).
+signal part_finished(miner: CraftedMiner, upgrade: Upgrade)
+
 ## Its parts, the upgrades on the maintenance pad.
 const PARTS: Array[Upgrade] = [
 	preload("res://game/progression/upgrades/miner_drill.tres"),
@@ -33,6 +36,7 @@ func _init(cradle: int = 1, building: TimedJob = null) -> void:
 	number = cradle
 	build = building
 	upgrades.changed.connect(emit_changed)
+	upgrades.finished.connect(_on_part_finished)
 
 
 ## Whether it's built (not under way).
@@ -84,3 +88,7 @@ func load_data(saved: Dictionary) -> bool:
 	going_along = along is bool and along
 	var complete: bool = upgrades.load_data(saved.get("upgrades"), PARTS)
 	return complete and (along is bool or SaveData.skipped("miner along", along))
+
+
+func _on_part_finished(upgrade: Upgrade) -> void:
+	part_finished.emit(self, upgrade)

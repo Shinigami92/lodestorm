@@ -206,6 +206,9 @@ func _connect_events() -> void:
 	)
 	events.upgrade_finished.connect(_on_upgrade_finished)
 	events.skill_finished.connect(_on_skill_finished)
+	events.miner_built.connect(_on_miner_built)
+	events.miner_part_finished.connect(_on_miner_part_finished)
+	events.miner_lost.connect(_on_miner_lost)
 	events.bars_refined.connect(_on_bars_refined)
 	events.heat_shield_raised.connect(_on_heat_shield_raised)
 	events.story_flag_set.connect(_on_story_flag_set)
@@ -374,6 +377,26 @@ func _on_skill_finished(by: Player, skill: Skill, rank: int) -> void:
 	if _is_mine(by):
 		count("skills_finished", [id_of(skill)])
 		_write_line("skill_finished", {"skill": id_of(skill), "rank": rank})
+
+
+func _on_miner_built(by: Player, miner: CraftedMiner) -> void:
+	if _is_mine(by):
+		count("miners_built")
+		_write_line("miner_built", {"miner": miner.number})
+
+
+func _on_miner_part_finished(by: Player, miner: CraftedMiner, upgrade: Upgrade, mk: int) -> void:
+	if _is_mine(by):
+		count("miner_parts_finished", [id_of(upgrade)])
+		_write_line(
+			"miner_part_finished", {"miner": miner.number, "upgrade": id_of(upgrade), "mk": mk}
+		)
+
+
+func _on_miner_lost(by: Player, miner: CraftedMiner, _where: String) -> void:
+	if _is_mine(by):
+		count("miners_lost")
+		_write_line("miner_lost", {"miner": miner.number})
 
 
 func _on_bars_refined(by: Player, alloy: AlloyType, bars: int) -> void:

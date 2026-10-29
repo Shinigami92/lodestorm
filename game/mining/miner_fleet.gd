@@ -10,8 +10,16 @@ extends Resource
 ## empties and `lost_at` says where until it's built again. Standard-issue miners are never lost.
 ## Building one runs on the wall clock like an upgrade level (`start_build`), and so do its parts'
 ## levels (`CraftedMiner.upgrades`); `update` lets those done take effect (the ship's
-## `ProgressClock` calls it while no mission is underway, the save on loading). Each player has
-## their own, in their own save.
+## `ProgressClock` calls it while no mission is underway, the save on loading). What happens to
+## its miners is announced (`built`, `part_finished`, `lost`; the player passes it on to
+## `GameEvents`). Each player has their own, in their own save.
+
+## A miner's build is done.
+signal built(miner: CraftedMiner)
+## A level of one of a miner's parts is done.
+signal part_finished(miner: CraftedMiner, upgrade: Upgrade)
+## A miner was left on the planet at `where` when the run ended.
+signal lost(miner: CraftedMiner, where: String)
 
 ## Cradles in the miners' room.
 const SLOTS: int = 6
@@ -47,9 +55,10 @@ func get_miner(number: int) -> CraftedMiner:
 func put(miner: CraftedMiner) -> void:
 	var old: CraftedMiner = get_miner(miner.number)
 	if old:
-		old.changed.disconnect(emit_changed)
+		_unwatch(old)
 	miners[miner.number] = miner
 	miner.changed.connect(emit_changed)
+	miner.part_finished.connect(_on_part_finished)
 	lost_at.erase(miner.number)
 	emit_changed()
 
@@ -125,19 +134,22 @@ func bring_back(miner: CraftedMiner) -> void:
 ## the level under way of its parts; standard-issue ones are back for the next run. Returns the
 ## lost miners' numbers.
 func end_run(where: String) -> Array[int]:
-	var lost: Array[int] = []
-	for number: int in miners.keys():
-		var miner: CraftedMiner = miners[number]
+	var left: Array[CraftedMiner] = []
+	for miner: CraftedMiner in miners.values():
 		miner.health = -1.0
 		if miner.out:
-			lost.append(number)
+			left.append(miner)
 			miner.out = false
-	for number: int in lost:
-		_remove(number)
-		lost_at[number] = where
+	var numbers: Array[int] = []
+	for miner: CraftedMiner in left:
+		_remove(miner.number)
+		lost_at[miner.number] = where
+		numbers.append(miner.number)
 	standard_out = 0
 	emit_changed()
-	return lost
+	for miner: CraftedMiner in left:
+		lost.emit(miner, where)
+	return numbers
 
 
 ## Whether cradle `number` is empty (no miner built or under way).
@@ -173,9 +185,8 @@ func update(now: float) -> Array[Resource]:
 	var done: Array[Resource] = []
 	for miner: CraftedMiner in miners.values():
 		if miner.build and miner.build.is_done(now):
-			miner.build = null
+			_finish_build(miner)
 			done.append(miner)
-			miner.emit_changed()
 		done.append_array(miner.upgrades.update(now))
 	return done
 
@@ -185,9 +196,8 @@ func finish_all() -> Array[Resource]:
 	var done: Array[Resource] = []
 	for miner: CraftedMiner in miners.values():
 		if miner.build:
-			miner.build = null
+			_finish_build(miner)
 			done.append(miner)
-			miner.emit_changed()
 		done.append_array(miner.upgrades.finish_all())
 	return done
 
@@ -231,11 +241,11 @@ func load_data(saved: Variant) -> bool:
 			put(miner)
 		else:
 			complete = SaveData.skipped("miner", entry)
-	var lost: Dictionary = saved_lost
-	for key: Variant in lost:
+	var places: Dictionary = saved_lost
+	for key: Variant in places:
 		var number: int = (key as String).to_int() if key is String else 0
-		if is_empty(number) and lost[key] is String:
-			lost_at[number] = lost[key]
+		if is_empty(number) and places[key] is String:
+			lost_at[number] = places[key]
 		else:
 			complete = SaveData.skipped("lost miner", key)
 	emit_changed()
@@ -245,5 +255,20 @@ func load_data(saved: Variant) -> bool:
 func _remove(number: int) -> void:
 	var miner: CraftedMiner = get_miner(number)
 	if miner:
-		miner.changed.disconnect(emit_changed)
+		_unwatch(miner)
 	miners.erase(number)
+
+
+func _unwatch(miner: CraftedMiner) -> void:
+	miner.changed.disconnect(emit_changed)
+	miner.part_finished.disconnect(_on_part_finished)
+
+
+func _finish_build(miner: CraftedMiner) -> void:
+	miner.build = null
+	miner.emit_changed()
+	built.emit(miner)
+
+
+func _on_part_finished(miner: CraftedMiner, upgrade: Upgrade) -> void:
+	part_finished.emit(miner, upgrade)

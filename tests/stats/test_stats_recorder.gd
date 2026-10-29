@@ -8,6 +8,8 @@ const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const SCALD: WeaponType = preload("res://game/weapons/types/scald/scald.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
+const FULL_HOLD := preload("res://tests/support/full_hold.gd")
+const TANK: Upgrade = preload("res://game/progression/upgrades/miner_tank.tres")
 const DIRECTORY: String = "user://test_stats/"
 
 var _map: Node3D
@@ -103,6 +105,23 @@ func test_timed_reloads_are_counted_by_result() -> void:
 	assert_eq(_recorder.totals.value("reloads", [weapon, "reload"]), 1.0)
 	assert_eq(_recorder.totals.value("reload_presses", [weapon, "hit"]), 1.0)
 	assert_eq(_recorder.totals.value("reload_presses", [weapon, "miss"]), 0.0)
+
+
+func test_crafted_miners_built_upgraded_and_lost_are_counted() -> void:
+	var fleet: MinerFleet = _player.fleet
+	assert_true(fleet.start_build(2, MinerSettings.new(), FULL_HOLD.fill(), 0.0))
+	var first: CraftedMiner = fleet.get_miner(1)
+	first.upgrades.start(TANK, FULL_HOLD.fill(), 0.0)
+	fleet.finish_all()
+	fleet.take(first)
+	fleet.end_run("there")
+	assert_eq(_recorder.totals.value("miners_built"), 1.0)
+	assert_eq(_recorder.totals.value("miner_parts_finished", [GameEvents.id_of(TANK)]), 1.0)
+	assert_eq(_recorder.totals.value("miners_lost"), 1.0)
+	var built: float = _logged("miner_built")["miner"]
+	var part: float = _logged("miner_part_finished")["mk"]
+	var lost: float = _logged("miner_lost")["miner"]
+	assert_eq([built, part, lost], [2.0, 2.0, 1.0], "the miner numbers and the MK level")
 
 
 func test_a_lost_run_is_logged_with_its_cause() -> void:

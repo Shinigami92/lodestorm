@@ -291,7 +291,7 @@ msgid "The four furnaces in the cargo bay turn ore into alloy bars. Better gear 
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
-msgid "Right now they're all cold. I'm still working on getting them going, and I'll tell you when the first one is ready."
+msgid "Right now they're all cold. Their burners were sold with everything else that came loose, before Brannik bought the ship. I'm working on getting the first one going again."
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
@@ -589,7 +589,11 @@ msgid "Your miners"
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
-msgid "Each of you takes six miners on a run. Your own go first, and standard-issue ones fill up the rest."
+msgid "Each of you takes as many miners on a run as we have cradles. Your own go first, and standard-issue ones fill up the rest."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Before Brannik bought this ship, it was stripped and sold off piece by piece, cradles and all. Every cradle we get back means one more miner out there."
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
@@ -1094,6 +1098,10 @@ msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
 msgid "Hollis and the miners. They dig the ore out there, while you keep the aliens off them."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "They sold the cradles with everything else that came loose. We got two back."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -2728,6 +2736,10 @@ msgid "Build"
 msgstr ""
 
 #: game/stations/miner_bay/miner_card.gd
+msgid "This cradle was sold off before the ship was bought. Only its rails are left."
+msgstr ""
+
+#: game/stations/miner_bay/miner_card.gd
 msgid "Being built."
 msgstr ""
 
@@ -2795,7 +2807,7 @@ msgid "Furnace"
 msgstr ""
 
 #: game/stations/refinery/furnace_card.gd
-msgid "This furnace is cold."
+msgid "This furnace is cold. Its burner was taken out and sold before the ship was bought."
 msgstr ""
 
 #: game/stations/refinery/furnace_card.gd

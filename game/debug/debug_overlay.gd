@@ -6,9 +6,9 @@ extends CanvasLayer
 ## resources live, so every scene using them sees the new values right away; they last until the
 ## game stops and aren't written to the files. Also shows the mission and flight state and has
 ## shortcuts for testing the flight, storm, death, fights, weapons, ammo, upgrades, the heat
-## shield and the furnaces, the crew's reactions and radio, and teammates standing still (to see
-## their rings before co-op, and hurt to heal them), and switches for god mode (players take no
-## damage) and the aliens' AI (off: they stand still).
+## shield, the furnaces and the cradles, the crew's reactions and radio, and teammates standing
+## still (to see their rings before co-op, and hurt to heal them), and switches for god mode
+## (players take no damage) and the aliens' AI (off: they stand still).
 ## Integer settings get whole-number sliders.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
@@ -589,6 +589,12 @@ func _unlock_furnace() -> void:
 		ship.furnaces.unlock()
 
 
+## Opens the next of every ship's cradles (until the quests do).
+func _open_cradle() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		ship.cradles.open_next()
+
+
 ## Finishes every bar of every player's batches in the furnaces now.
 func _finish_refining() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
@@ -603,7 +609,7 @@ func _finish_jobs() -> void:
 		player.fleet.finish_all()
 
 
-## Builds a miner in every empty cradle of every player, at MK1 and for free.
+## Builds a miner in every empty open cradle of every player, at MK1 and for free.
 func _build_miners() -> void:
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.fleet.build_all()
@@ -719,6 +725,7 @@ func _build() -> void:
 	_button(progress, "Unlock furnace", _unlock_furnace)
 	_button(progress, "Finish refining", _finish_refining)
 	_button(progress, "Finish jobs", _finish_jobs)
+	_button(progress, "Open cradle", _open_cradle)
 	_button(progress, "Build miners", _build_miners)
 	_button(progress, "Install shield", _install_shield)
 	_button(progress, "Open all", _open_all_bodies)

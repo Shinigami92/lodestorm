@@ -60,6 +60,12 @@
       "seed": 1,
       "text": "Das war eine ordentliche Ladung. So voll waren die Silos noch nie, und von solchen Ladungen lebt dieses Schiff."
     },
+    "62eee001e4d6b93d": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Im Moment sind sie alle kalt. Ihre Brenner wurden mit allem anderen verkauft, was sich abschrauben ließ, bevor Brannik das Schiff gekauft hat. Ich arbeite daran, den ersten wieder in Gang zu bringen."
+    },
     "7b3091d59ac78a86": {
       "anchor": "d41e7c855e6c7261",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -168,12 +174,6 @@
       "seed": 1,
       "text": "Upgrades, Fähigkeiten und alles, was gebaut wird, bezahlst du aus deinem Laderaum. Schau also bei den Silos vorbei, bevor du etwas ausgibst."
     },
-    "f9bd1f1832ced818": {
-      "anchor": "d41e7c855e6c7261",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Im Moment sind sie alle kalt. Ich arbeite noch daran, sie in Gang zu bringen, und sage dir Bescheid, sobald der erste bereit ist."
-    },
     "f9e7808b1cd91b51": {
       "anchor": "d41e7c855e6c7261",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -241,6 +241,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "That was quite a haul. The silos have never been this full, and this ship runs on hauls like that."
+    },
+    "62eee001e4d6b93d": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Right now they're all cold. Their burners were sold with everything else that came loose, before Brannik bought the ship. I'm working on getting the first one going again."
     },
     "7b3091d59ac78a86": {
       "anchor": "d2ad127d30de6e63",
@@ -349,12 +355,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Upgrades, skills and new builds are all paid from your hold. So have a look at the silos before you spend."
-    },
-    "f9bd1f1832ced818": {
-      "anchor": "d2ad127d30de6e63",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Right now they're all cold. I'm still working on getting them going, and I'll tell you when the first one is ready."
     },
     "f9e7808b1cd91b51": {
       "anchor": "d2ad127d30de6e63",

@@ -6,12 +6,6 @@
       "seed": 1,
       "text": "Dein eigener Miner, M-01, wartet in seiner Halterung. Da draußen graben die Miner, während du ihnen die Aliens vom Leib hältst."
     },
-    "28b22e992ed23572": {
-      "anchor": "b3d782e0b74c1da4",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Jeder von euch nimmt sechs Miner auf eine Mission mit. Deine eigenen kommen zuerst, und Standard-Miner füllen den Rest auf."
-    },
     "2c59fcb651553a5d": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -102,11 +96,23 @@
       "seed": 1,
       "text": "Das nenne ich eine Ladung. Die Miner graben am besten, wenn niemand die Aliens an sie heranlässt. Das ist der ganze Trick."
     },
+    "9707df3cc2ef2d54": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bevor Brannik dieses Schiff gekauft hat, wurde es ausgeschlachtet und Stück für Stück verkauft, die Halterungen auch. Jede Halterung, die wir zurückbekommen, heißt ein Miner mehr da draußen."
+    },
     "9810cfa01d93a350": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hm. Erzähl."
+    },
+    "c8870b7edd1a5639": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ihr nehmt alle so viele Miner auf eine Mission mit, wie wir Halterungen haben. Deine eigenen kommen zuerst, und Standard-Miner füllen den Rest auf."
     },
     "cb12ad8fec11dd38": {
       "anchor": "b3d782e0b74c1da4",
@@ -139,12 +145,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Your own miner, M-01, waits in its cradle. Out there, the miners dig while you keep the aliens off them."
-    },
-    "28b22e992ed23572": {
-      "anchor": "7e5f365715a8dd68",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Each of you takes six miners on a run. Your own go first, and standard-issue ones fill up the rest."
     },
     "2c59fcb651553a5d": {
       "anchor": "7e5f365715a8dd68",
@@ -236,11 +236,23 @@
       "seed": 1,
       "text": "That's a haul. The miners dig best when nobody lets the aliens near them. That's the whole trick."
     },
+    "9707df3cc2ef2d54": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Before Brannik bought this ship, it was stripped and sold off piece by piece, cradles and all. Every cradle we get back means one more miner out there."
+    },
     "9810cfa01d93a350": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hm. Go on."
+    },
+    "c8870b7edd1a5639": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Each of you takes as many miners on a run as we have cradles. Your own go first, and standard-issue ones fill up the rest."
     },
     "cb12ad8fec11dd38": {
       "anchor": "7e5f365715a8dd68",

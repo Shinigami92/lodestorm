@@ -1,7 +1,8 @@
 class_name SaveGame
 extends Node
 ## Keeps the progress between sessions in one save: the host's (the ship's heat shield, where it
-## is, the story's flags, the furnaces unlocked and the crew's reactions, later crew and quests)
+## is, the story's flags, the furnaces unlocked, the cradles open and the crew's reactions, later
+## crew and quests)
 ## in `ship.json` and the
 ## local player's (their health, their hold, their batches in the furnaces, owned weapons and
 ## blueprints, loadout, upgrade levels, skill ranks, crafted miners) in `player.json`,
@@ -113,6 +114,7 @@ func _ready() -> void:
 		ship.story.changed.connect(_on_progress_changed)
 		ship.heat_shield.changed.connect(_on_progress_changed)
 		ship.furnaces.changed.connect(_on_progress_changed)
+		ship.cradles.changed.connect(_on_progress_changed)
 		ship.reactions.changed.connect(_on_progress_changed)
 	if player:
 		player.hold.changed.connect(_on_progress_changed)
@@ -180,9 +182,9 @@ func reset_progress() -> bool:
 
 
 ## What's saved of `ship`: the story's flags, the heat shield (its MK level, whether the next
-## plate is the ship's project and what's paid into it), the furnaces unlocked, the crew's
-## reactions (`CrewReactions.get_data`) and the body the ship is at (its id, a station's while
-## docked there; none before the first flight).
+## plate is the ship's project and what's paid into it), the furnaces unlocked, the cradles open,
+## the crew's reactions (`CrewReactions.get_data`) and the body the ship is at (its id, a
+## station's while docked there; none before the first flight).
 static func ship_data(of_ship: Ship) -> Dictionary:
 	var flags: Array = []
 	for flag: StringName in of_ship.story.flags:
@@ -197,6 +199,7 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 		"story": flags,
 		"shield": {"mk": shield.mk, "project": shield.project, "paid": paid},
 		"furnaces": of_ship.furnaces.unlocked,
+		"cradles": of_ship.cradles.open,
 		"reactions": of_ship.reactions.get_data(),
 	}
 	if of_ship.voyage and of_ship.voyage.at_body:
@@ -397,6 +400,12 @@ func _apply_ship(data: Dictionary) -> void:
 			_outdated = true
 			push_warning("Save: skipped furnaces %s" % data["furnaces"])
 		ship.furnaces.restore(roundi(clampf(count, 0.0, Refining.SLOTS)))
+	if data.has("cradles"):
+		var open: float = _number(data["cradles"], -1.0)
+		if open < 1.0 or open > MinerFleet.SLOTS:
+			_outdated = true
+			push_warning("Save: skipped cradles %s" % data["cradles"])
+		ship.cradles.restore(roundi(clampf(open, Cradles.START, MinerFleet.SLOTS)))
 	if data.get("reactions") is Dictionary:
 		if not ship.reactions.restore(data["reactions"] as Dictionary):
 			_outdated = true

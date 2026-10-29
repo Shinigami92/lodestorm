@@ -14,7 +14,7 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 | [`aliens.md`](aliens.md) | the Ravager guarding rich sites, more guards and raiders, co-op scaling, the effects | M4 (steps 14, 16), M5, M7 |
 | [`sfx.md`](sfx.md) | recordings where synthesis isn't enough, the menus' and the death's sounds later, the sounds still to come | M5 |
 | [`weapons.md`](weapons.md) | blueprints from the quests and their order, a third slot, projectiles, co-op and VR | M4 (step 16), M5, M6, M7 |
-| [`balance.md`](balance.md) | two miners at the start and six through the main quest, the stripped cradles and furnaces, the early costs, choosing which miner to place with a preview hologram, the team's miners in co-op | M4 (before step 16, step 16), M7 |
+| [`balance.md`](balance.md) | the cradles and furnaces through the main quest, choosing which miner to place with a preview hologram, the team's miners in co-op | M4 (before step 16, step 16), M7 |
 | [`refinery.md`](refinery.md) | the station's alloy requests, furnaces through the quests, the engineer, later drill heads, the art pass | M4 (step 16), M5 |
 | [`station.md`](station.md) | Waypost Ostra: why players go there, requests instead of shops, more seats, co-op, its look | M4 (step 16), M5, M7 |
 | [`crew.md`](crew.md) | the crew joining, more transmissions, co-op | M4 (step 16), M7 |

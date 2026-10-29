@@ -118,7 +118,7 @@ func test_placing_elsewhere_gives_up_a_waiting_one() -> void:
 	assert_eq(other.miner, miner)
 	assert_true(waiting.is_queued_for_deletion(), "back to the fleet")
 	assert_true(_node.is_free())
-	assert_eq(_player.fleet.left_to_place(), MinerFleet.PER_RUN - 1, "nothing lost")
+	assert_eq(_player.fleet.left_to_place(), _player.fleet.per_run() - 1, "nothing lost")
 
 
 func test_damage_does_not_cancel() -> void:
@@ -205,8 +205,8 @@ func test_the_ring_ticks_show_the_runs_miners() -> void:
 	await wait_process_frames(2)
 	assert_eq(
 		ring.miner_ticks,
-		PackedFloat32Array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
-		"M-01 bright, five standard-issue dimmer"
+		PackedFloat32Array([2.0, 1.0, 0.0, 0.0, 0.0, 0.0]),
+		"M-01 bright, a standard-issue one dimmer, none for the missing cradles"
 	)
 	_player.place_miner()
 	await wait_process_frames(2)

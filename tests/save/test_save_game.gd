@@ -51,7 +51,7 @@ func test_progress_survives_a_restart() -> void:
 	_player.fleet.get_miner(1).upgrades.raise(DRILL)
 	_player.fleet.get_miner(1).upgrades.raise(DRILL)
 	_player.fleet.get_miner(1).going_along = false
-	_player.fleet.start_build(3, Time.get_unix_time_from_system(), 600.0)
+	_player.fleet.start_build(2, Time.get_unix_time_from_system(), 600.0)
 	await wait_process_frames(1)
 	assert_true(SaveGame.exists(), "saved right away")
 	await _restart()
@@ -65,8 +65,8 @@ func test_progress_survives_a_restart() -> void:
 	var first: CraftedMiner = _player.fleet.get_miner(1)
 	assert_eq(first.upgrades.mk(DRILL), 3)
 	assert_false(first.going_along)
-	assert_false(_player.fleet.get_miner(3).is_built(), "still being built")
-	assert_true(_player.fleet.is_empty(2))
+	assert_false(_player.fleet.get_miner(2).is_built(), "still being built")
+	assert_true(_player.fleet.is_empty(3))
 	assert_eq(_player.health, _player.max_health(), "full health with the saved armor")
 	assert_gt(_player.max_health(), _player.settings.max_health)
 

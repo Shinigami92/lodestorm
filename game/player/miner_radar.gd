@@ -26,7 +26,7 @@ var _pointers: Array[RingPointer] = []
 
 
 func _ready() -> void:
-	for index: int in MinerFleet.PER_RUN:
+	for index: int in MinerFleet.SLOTS:
 		var pointer := RingPointer.new()
 		pointer.name = "Pointer%d" % (index + 1)
 		pointer.arrow = ARROW

@@ -3,11 +3,11 @@ extends CharacterBody3D
 ## Twin-stick player: moves relative to the camera and faces where it aims (`aim`: the mouse
 ## cursor on the ground, the right stick or else the movement direction; aliens there get locked
 ## on), and attacks there with the equipped weapon while `attack` is held. Places the miners of
-## its `fleet` (up to six per run, its crafted ones first) on the nearest free ore node in range
-## with `place_miner`, picks miners up again with `interact`, both taking a few seconds while it
-## stays near the miner (`handling`), and carries the ore that
-## miners' hoses move to it (`cargo`), shown in canisters on its back and as a badge rising above
-## it (`OreArrival`). An arrow on the suit ring's edge points back to the ship (`ShipPointer`). Uses
+## its `fleet` (one per open cradle of the ship per run, its crafted ones first) on the nearest
+## free ore node in range with `place_miner`, picks miners up again with `interact`, both taking a
+## few seconds while it stays near the miner (`handling`), and carries the ore that miners' hoses
+## move to it (`cargo`), shown in canisters on its back and as a badge rising above it
+## (`OreArrival`). An arrow on the suit ring's edge points back to the ship (`ShipPointer`). Uses
 ## the nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
 ## the suit ring around its feet (`SuitRing`, with the ammo, the spare magazines and the dash) and
@@ -172,6 +172,10 @@ var _miner_radar := MinerRadar.new()
 func _ready() -> void:
 	add_to_group(GROUP)
 	add_to_group(ShipDoor.OPENERS)
+	# The ship's open cradles set how many miners it takes (a ship ready after it links them).
+	var ship: Ship = Ship.nearest(get_tree(), global_position)
+	if ship:
+		fleet.cradles = ship.cradles
 	_animator.setup(_model)
 	_suit_light.band = _model.find_child("SuitLight") as GeometryInstance3D
 	_update_overlay()

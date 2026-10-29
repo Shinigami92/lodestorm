@@ -144,6 +144,12 @@
       "seed": 1,
       "text": "Du bist heil zurück, und mit Erz auf dem Rücken. So soll eine erste Mission enden."
     },
+    "92944196fced059e": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Halterungen wurden mit allem anderen verkauft, was sich abschrauben ließ. Zwei haben wir zurückbekommen."
+    },
     "95aef4645e442e45": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -451,6 +457,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
+    },
+    "92944196fced059e": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "They sold the cradles with everything else that came loose. We got two back."
     },
     "95aef4645e442e45": {
       "anchor": "772c7907f9411bf4",

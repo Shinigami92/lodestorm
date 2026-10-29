@@ -293,8 +293,8 @@ msgid "The four furnaces in the cargo bay turn ore into alloy bars. Better gear 
 msgstr "Die vier Schmelzöfen im Frachtraum machen aus Erz Legierungsbarren. Bessere Ausrüstung braucht diese Barren früher oder später."
 
 #: game/npcs/crew/engineer.tres
-msgid "Right now they're all cold. I'm still working on getting them going, and I'll tell you when the first one is ready."
-msgstr "Im Moment sind sie alle kalt. Ich arbeite noch daran, sie in Gang zu bringen, und sage dir Bescheid, sobald der erste bereit ist."
+msgid "Right now they're all cold. Their burners were sold with everything else that came loose, before Brannik bought the ship. I'm working on getting the first one going again."
+msgstr "Im Moment sind sie alle kalt. Ihre Brenner wurden mit allem anderen verkauft, was sich abschrauben ließ, bevor Brannik das Schiff gekauft hat. Ich arbeite daran, den ersten wieder in Gang zu bringen."
 
 #: game/npcs/crew/engineer.tres
 msgid "Every alloy has its own recipe, and a recipe only shows once every ore it needs has been in your hold. The rack next to the furnaces holds your bars."
@@ -591,8 +591,12 @@ msgid "Your miners"
 msgstr "Deine Miner"
 
 #: game/npcs/crew/miner_mechanic.tres
-msgid "Each of you takes six miners on a run. Your own go first, and standard-issue ones fill up the rest."
-msgstr "Jeder von euch nimmt sechs Miner auf eine Mission mit. Deine eigenen kommen zuerst, und Standard-Miner füllen den Rest auf."
+msgid "Each of you takes as many miners on a run as we have cradles. Your own go first, and standard-issue ones fill up the rest."
+msgstr "Ihr nehmt alle so viele Miner auf eine Mission mit, wie wir Halterungen haben. Deine eigenen kommen zuerst, und Standard-Miner füllen den Rest auf."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Before Brannik bought this ship, it was stripped and sold off piece by piece, cradles and all. Every cradle we get back means one more miner out there."
+msgstr "Bevor Brannik dieses Schiff gekauft hat, wurde es ausgeschlachtet und Stück für Stück verkauft, die Halterungen auch. Jede Halterung, die wir zurückbekommen, heißt ein Miner mehr da draußen."
 
 #: game/npcs/crew/miner_mechanic.tres
 msgid "Standard-issue miners are slower, but they never get lost. Your own you can upgrade on the pad, one by one."
@@ -1097,6 +1101,10 @@ msgstr "Der Fähigkeitenbaum. Hier lernt dein Anzug Neues, zum Beispiel einen sc
 #: game/npcs/crew/quartermaster.tres
 msgid "Hollis and the miners. They dig the ore out there, while you keep the aliens off them."
 msgstr "Hollis und die Miner. Sie holen da draußen das Erz aus dem Boden, während du ihnen die Aliens vom Leib hältst."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "They sold the cradles with everything else that came loose. We got two back."
+msgstr "Die Halterungen wurden mit allem anderen verkauft, was sich abschrauben ließ. Zwei haben wir zurückbekommen."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "And this is my armory, where the tour ends. The cargo bay and the ramp are right through there. Ask me about your weapons and ammo whenever you like."
@@ -2730,6 +2738,10 @@ msgid "Build"
 msgstr "Bauen"
 
 #: game/stations/miner_bay/miner_card.gd
+msgid "This cradle was sold off before the ship was bought. Only its rails are left."
+msgstr "Diese Halterung wurde verkauft, bevor das Schiff gekauft wurde. Nur ihre Schienen sind noch da."
+
+#: game/stations/miner_bay/miner_card.gd
 msgid "Being built."
 msgstr "Wird gebaut."
 
@@ -2797,8 +2809,8 @@ msgid "Furnace"
 msgstr "Schmelzofen"
 
 #: game/stations/refinery/furnace_card.gd
-msgid "This furnace is cold."
-msgstr "Dieser Ofen ist kalt."
+msgid "This furnace is cold. Its burner was taken out and sold before the ship was bought."
+msgstr "Dieser Ofen ist kalt. Sein Brenner wurde ausgebaut und verkauft, bevor das Schiff gekauft wurde."
 
 #: game/stations/refinery/furnace_card.gd
 msgid "Bars done: %d / %d"

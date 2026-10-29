@@ -25,18 +25,18 @@
 [sub_resource type="Resource" id="Mk2"]
 script = ExtResource("2_cost")
 common = ExtResource("ore_kyrite")
-common_amount = 270
+common_amount = 135
 mid = ExtResource("ore_vyrel")
-mid_amount = 90
+mid_amount = 45
 
 [sub_resource type="Resource" id="Mk3"]
 script = ExtResource("2_cost")
 common = ExtResource("ore_olvane")
-common_amount = 360
+common_amount = 180
 mid = ExtResource("ore_vyrel")
-mid_amount = 180
+mid_amount = 90
 signature = ExtResource("ore_meridine")
-signature_amount = 60
+signature_amount = 30
 
 [sub_resource type="Resource" id="Mk4"]
 script = ExtResource("2_cost")

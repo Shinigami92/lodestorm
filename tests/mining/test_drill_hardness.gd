@@ -108,6 +108,7 @@ func test_standard_issue_drills_mine_mid_ores_at_full_speed() -> void:
 
 
 func test_placing_takes_the_miner_that_mines_the_ore_fastest() -> void:
+	_player.fleet.cradles.restore(MinerFleet.SLOTS)
 	_player.fleet.build_all()
 	_player.fleet.get_miner(3).upgrades.raise(DRILL)
 	_player.fleet.get_miner(3).upgrades.raise(DRILL)

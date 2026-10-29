@@ -1,6 +1,6 @@
 extends "res://tests/support/save_test.gd"
-## What the saves hold besides the gear: the heat shield and where the ship is, the miners, the
-## furnaces and their batches, each also from a damaged save (see `SaveGame`).
+## What the saves hold besides the gear: the heat shield and where the ship is, the miners and the
+## cradles open, the furnaces and their batches, each also from a damaged save (see `SaveGame`).
 
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
@@ -58,6 +58,7 @@ func test_damaged_heat_shield_and_position_are_skipped() -> void:
 
 
 func test_crafted_miners_are_saved() -> void:
+	_player.fleet.cradles.restore(MinerFleet.SLOTS)
 	_player.fleet.build_all()
 	_player.fleet.get_miner(2).going_along = false
 	_player.fleet.get_miner(4).upgrades.raise(DRILL)
@@ -76,6 +77,7 @@ func test_crafted_miners_are_saved() -> void:
 	assert_almost_eq(fleet.get_miner(3).build.started, 1e12, 0.001)
 	assert_true(fleet.is_empty(6))
 	assert_eq(fleet.lost_at[6], "Torvane, Redscar Flats")
+	assert_eq(fleet.per_run(), MinerFleet.SLOTS, "the ship's cradles open")
 
 
 func test_a_lost_m01_stays_lost() -> void:
@@ -110,6 +112,23 @@ func test_damaged_miners_are_skipped() -> void:
 	assert_eq(fleet.get_miner(1).upgrades.levels.size(), 1, "not a miner's part")
 	assert_true(fleet.get_miner(3).upgrades.jobs.is_empty(), "not the next level")
 	assert_eq(fleet.lost_at.keys(), [4] as Array[int])
+
+
+func test_open_cradles_are_saved() -> void:
+	assert_eq(_ship.cradles.open, Cradles.START)
+	_ship.cradles.open_next()
+	await wait_process_frames(1)
+	var open: float = _saved(SaveGame.SHIP_FILE)["cradles"]
+	assert_eq(open, 3.0)
+	await _restart()
+	assert_eq(_ship.cradles.open, 3)
+	assert_eq(_player.fleet.cradles, _ship.cradles, "the player counts the ship's")
+
+
+func test_damaged_cradles_are_skipped() -> void:
+	_write(SaveGame.SHIP_FILE, JSON.stringify({"version": SaveGame.VERSION, "cradles": "x"}))
+	await _restart()
+	assert_eq(_ship.cradles.open, Cradles.START)
 
 
 func test_furnaces_and_batches_are_saved() -> void:

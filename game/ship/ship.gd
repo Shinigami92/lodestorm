@@ -96,6 +96,9 @@ var story := Story.new()
 var heat_shield := HeatShield.new()
 ## How many of the refinery's furnaces it has, saved with the ship.
 var furnaces := Furnaces.new()
+## How many of the miners' room's cradles are open, saved with the ship; every player's fleet
+## counts them (see `MinerFleet.cradles`).
+var cradles := Cradles.new()
 ## The crew's reactions to what happens, and their radio calls, saved with the ship.
 var reactions := CrewReactions.new()
 ## Lets the levels and skill ranks under way take effect once done.
@@ -138,6 +141,9 @@ var _button_material := StandardMaterial3D.new()
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	# Players ready before the ship; those after it find it themselves (see `Player`).
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		player.fleet.cradles = cradles
 	_interior.body_entered.connect(_on_body_entered)
 	_interior.body_exited.connect(_on_body_exited)
 	_weapon_zone.body_entered.connect(_on_weapon_zone_entered)

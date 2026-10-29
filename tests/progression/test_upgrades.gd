@@ -337,6 +337,28 @@ func test_station_locks_while_a_mission_is_underway() -> void:
 	assert_true((station.card_menu as UpgradeCard).get_buy_button().disabled)
 
 
+func test_cradles_the_ship_lacks_are_stripped_spots() -> void:
+	var bay := await _open_station("Miners") as MinerBayStation
+	for item: ItemType in bay.settings.build_cost:
+		_player.hold.add(item, bay.settings.build_cost[item])
+	var stripped: MinerCradle = bay.get_cradle(Cradles.START + 1)
+	assert_eq(stripped.look, MinerCradle.Look.MISSING)
+	assert_true((stripped.get_node("Stripped") as Node3D).visible)
+	assert_false((stripped.get_node("Model") as Node3D).visible)
+	assert_eq(bay.get_cradle(2).look, MinerCradle.Look.EMPTY, "the second one is there")
+	assert_false(bay.can_build(Cradles.START + 1))
+	bay.select(stripped)
+	await wait_process_frames(1)
+	var card := bay.card_menu as MinerCard
+	assert_string_contains((card.get_node("%Description") as Label).text, "sold off")
+	assert_false(card.get_buy_button().visible)
+	assert_false(card.press_primary())
+	_ship.cradles.open_next()
+	await wait_process_frames(1)
+	assert_eq(stripped.look, MinerCradle.Look.EMPTY, "opened")
+	assert_true(bay.can_build(Cradles.START + 1))
+
+
 func test_debug_overlay_fills_the_hold() -> void:
 	var overlay: CanvasLayer = get_tree().root.get_node("DebugOverlay") as CanvasLayer
 	overlay.call(&"_fill_hold")

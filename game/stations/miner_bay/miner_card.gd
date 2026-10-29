@@ -4,7 +4,8 @@ extends UpgradeCard
 ## card; for the miner on the pad its number, what keeps it, its parts' MK pips (a level under way
 ## filling its pip), how many standard-issue miners fill up the next run and "Leave aboard" /
 ## "Take along"; for an empty cradle what building a miner costs and takes (and where its last
-## miner was lost) with "Build", for one being built the time left and "Stop" (pressed twice).
+## miner was lost) with "Build", for one being built the time left and "Stop" (pressed twice),
+## for one the ship doesn't have that it was sold off.
 
 ## The crafted miner shown on the pad, or null.
 var miner: CraftedMiner
@@ -45,6 +46,7 @@ func show_part(part: StationPart) -> void:
 		miner = null
 		cradle = 0
 		_parts.visible = false
+		_buy.visible = true
 		super(part)
 		return
 	var now: float = Time.get_unix_time_from_system()
@@ -54,7 +56,7 @@ func show_part(part: StationPart) -> void:
 		show_miner(
 			shown,
 			bay.upgrade_cap(),
-			fleet.standard_count() if fleet else MinerFleet.PER_RUN,
+			fleet.standard_count() if fleet else 0,
 			bay.is_locked(),
 			now,
 			shown != null and bay.can_toggle(shown.number)
@@ -70,6 +72,9 @@ func show_part(part: StationPart) -> void:
 			bay.stop_press.is_armed(building),
 			bay.is_locked()
 		)
+		return
+	if fleet and not building and not fleet.cradles.is_open(number):
+		show_missing(number)
 		return
 	var hold: Dictionary[ItemType, float] = {}
 	if bay.user:
@@ -147,6 +152,18 @@ func show_cradle(
 	_buy.disabled = not can_build
 
 
+## Shows the cradle `number` the ship doesn't have: sold off, nothing to build there.
+func show_missing(number: int) -> void:
+	_reset(true)
+	cradle = number
+	_title.text = CraftedMiner.plate_of(number)
+	_description.text = tr(
+		"This cradle was sold off before the ship was bought. Only its rails are left."
+	)
+	_effect.text = ""
+	_buy.visible = false
+
+
 ## Shows `building` under way at `now` (Unix seconds): the time left and "Stop" (`can_stop`:
 ## whether it can be stopped now; `armed`: whether "Stop" was pressed once; `locked`: whether a
 ## mission is underway).
@@ -177,6 +194,8 @@ func press_primary() -> bool:
 	var bay := station as MinerBayStation
 	if not bay or (not miner and cradle == 0):
 		return super()
+	if not _buy.visible:
+		return false
 	if miner:
 		return bay.toggle_along(miner.number)
 	var building: CraftedMiner = bay.get_fleet().get_miner(cradle) if bay.get_fleet() else null
@@ -193,6 +212,7 @@ func _reset(shown: bool) -> void:
 	miner = null
 	cradle = 0
 	visible = shown
+	_buy.visible = true
 	_pips.visible = false
 	_parts.visible = false
 	_cost_row.visible = false

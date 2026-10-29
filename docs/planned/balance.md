@@ -1,6 +1,6 @@
-# Pacing miners and furnaces, the rescue drone, co-op miners (planned)
+# Pacing miners and furnaces, co-op miners (planned)
 
-Decided 2026-10-28. The cradles, the early costs, the rescue drone and choosing which miner to place are built before the quests (see [`PLAN.md`](../PLAN.md)); the main quest's rewards with the quests (M4 step 16), the team's miners with co-op (M7). All values **TBD (playtest)**.
+Decided 2026-10-28. The cradles, the early costs and choosing which miner to place are built before the quests (see [`PLAN.md`](../PLAN.md)); the main quest's rewards with the quests (M4 step 16), the team's miners with co-op (M7). All values **TBD (playtest)**.
 
 ## Miners: two at the start, six through the main quest
 
@@ -37,14 +37,6 @@ The ship is the survey's old ship, stripped and sold off when the survey ended a
 ## The early costs
 
 With two or three miners, act 1's runs bring roughly a third to half of today's haul. The first heat shield plate and the MK2 and MK3 costs drop to about half as greybox, then get tuned in playtest; the later acts stay as they are (by act 4 the player has six miners again).
-
-## The rescue drone waits, then flashes
-
-Today the drone gets the player up after 3 s, right where the aliens that killed them still stand, so they die again at once (see [Progression](../design/progression.md)).
-
-- **It waits for a gap:** the drone keeps the player down until no alien is within 10 m, at most 8 s. The aliens leave a downed player alone already; while the player is down they turn away and walk back towards their nest, as when a player outruns them. The wait costs time on the storm clock: the drone's small price.
-- **It burns out with a flash:** when the player gets up, the drone flares bright and is gone; aliens within 8 m are staggered for 2 s and pushed back a little. The flash is also why they scatter (a warden by its nest never walks off by itself).
-- **The same in co-op** when the drone gets a downed player up (see [`coop-revive.md`](coop-revive.md)).
 
 ## Co-op: the team's miners
 

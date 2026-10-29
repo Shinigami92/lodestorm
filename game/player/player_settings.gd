@@ -35,7 +35,13 @@ extends Resource
 @export var dash_cooldown: float = 2.0
 ## Regeneration (a skill) starts this long (s) after the last damage.
 @export var regeneration_delay: float = 5.0
-## The rescue drone (a skill) gets a downed player up after this long (s) with this share of their
-## health.
+## The rescue drone (a skill) gets a downed player up with this share of their health: after at
+## least `rescue_time` (s), once no alien is within `rescue_gap` (m), at most `rescue_wait` (s).
 @export var rescue_time: float = 3.0
+@export var rescue_wait: float = 8.0
+@export var rescue_gap: float = 10.0
 @export var rescue_health: float = 0.5
+## Its flash staggers the aliens within this range (m) for this long (s), pushing them away (m/s).
+@export var rescue_flash_range: float = 8.0
+@export var rescue_flash_stagger: float = 2.0
+@export var rescue_flash_push: float = 6.0

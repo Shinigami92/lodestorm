@@ -16,6 +16,7 @@ const CAREFUL: Skill = preload("res://game/progression/skills/tree/careful_reloa
 const REBUILDING: Skill = preload("res://game/progression/skills/tree/rebuilding_spares.tres")
 const SCANNER: Skill = preload("res://game/progression/skills/tree/ore_scanner.tres")
 const RADAR: Skill = preload("res://game/progression/skills/tree/miner_radar.tres")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 
 var _arena: Node3D
 var _player: Player
@@ -49,7 +50,9 @@ func test_rescue_drone_sits_on_the_backpack_while_ready() -> void:
 	await wait_physics_frames(1)
 	assert_true(drone.is_ready())
 	assert_true(model.visible)
-	assert_gt(_player.vitals.bleed_out, _player.settings.rescue_time, "longer than the rescue")
+	assert_gt(
+		_player.vitals.bleed_out, _player.settings.rescue_wait, "longer than the longest wait"
+	)
 
 
 func test_rescue_drone_gets_the_player_up_once_per_run() -> void:
@@ -67,11 +70,43 @@ func test_rescue_drone_gets_the_player_up_once_per_run() -> void:
 	assert_almost_eq(_player.health, _player.max_health() * _player.settings.rescue_health, 0.01)
 	assert_eq(_player.cargo.amount(KYRITE), 100.0)
 	assert_false(_player.rescue_drone.is_ready(), "used for this run")
-	await _wait_physics(RescueDrone.LEAVE_TIME + 0.1)
+	await _wait_physics(RescueDrone.FLARE_TIME + 0.1)
 	_player.take_damage(_player.max_health() * 2.0)
 	assert_true(_player.dead, "once per run")
 	_player.rescue_drone.restock()
 	assert_true(_player.rescue_drone.is_ready(), "ready again for the next run")
+
+
+func test_rescue_drone_waits_until_no_alien_is_close() -> void:
+	_learn_drone()
+	var alien: Alien = _add_alien(Vector3(3.0, 0.0, 0.0))
+	await wait_physics_frames(1)
+	_player.take_damage(_player.max_health() * 2.0)
+	await _wait_physics(_player.settings.rescue_time + 0.3)
+	assert_true(_player.down, "an alien within the gap")
+	alien.global_position = Vector3(_player.settings.rescue_gap + 2.0, 0.0, 0.0)
+	alien.reset_physics_interpolation()
+	await _wait_physics(0.2)
+	assert_false(_player.fallen, "up once it's gone")
+	assert_false(alien.is_staggered(), "beyond the flash")
+
+
+func test_rescue_drone_gives_up_waiting_and_flashes() -> void:
+	_learn_drone()
+	var alien: Alien = _add_alien(Vector3(3.0, 0.0, 0.0))
+	await wait_physics_frames(1)
+	_player.take_damage(_player.max_health() * 2.0)
+	await _wait_physics(_player.settings.rescue_wait - 0.1)
+	assert_true(_player.down, "still waiting")
+	var before: float = alien.horizontal_distance(_player)
+	await _wait_physics(0.2)
+	assert_false(_player.fallen, "up at the longest wait")
+	assert_eq(_player.rescue_drone.state, RescueDrone.State.FLARING)
+	assert_true(alien.is_staggered(), "the flash staggers it")
+	await _wait_physics(0.3)
+	assert_gt(alien.horizontal_distance(_player), before + 0.3, "pushed away")
+	await _wait_physics(RescueDrone.FLARE_TIME)
+	assert_eq(_player.rescue_drone.state, RescueDrone.State.DOCKED)
 
 
 func test_rescue_drone_shows_as_a_tick_on_the_health_arc() -> void:
@@ -191,6 +226,13 @@ func _learn_rebuilding() -> void:
 	_player.skills.raise(SPARES)
 	_player.skills.raise(CAREFUL)
 	_player.skills.raise(REBUILDING)
+
+
+func _add_alien(at: Vector3) -> Alien:
+	var alien: Alien = SWARMER.spawn()
+	alien.position = at
+	_arena.add_child(alien)
+	return alien
 
 
 ## A miner standing on a new ore node at `at`, the player's own unless `own` is false.

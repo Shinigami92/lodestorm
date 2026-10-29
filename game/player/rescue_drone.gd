@@ -47,13 +47,13 @@ var state: State = State.DOCKED
 var time_left: float = 0.0
 
 ## The model: on the backpack while docked, flying on its own (top level) otherwise.
-var _model := Node3D.new()
+var _model: Node3D
 var _rotors: Array[Node3D] = []
-var _beam := MeshInstance3D.new()
-var _light := OmniLight3D.new()
+var _beam: MeshInstance3D
+var _light: OmniLight3D
 var _lamp_material := StandardMaterial3D.new()
 ## The flash: a sphere growing to the flash's range while it fades, where the holder went down.
-var _flash := MeshInstance3D.new()
+var _flash: MeshInstance3D
 var _flash_material := StandardMaterial3D.new()
 var _flash_left: float = 0.0
 var _flash_at := Vector3.ZERO
@@ -207,6 +207,7 @@ func _fly_to(target: Vector3, delta: float) -> void:
 
 ## A flat body with four rotors on crossed arms, a lamp below and the light it shines down.
 func _build() -> void:
+	_model = Node3D.new()
 	_model.name = "Model"
 	add_child(_model)
 	var metal := StandardMaterial3D.new()
@@ -258,10 +259,12 @@ func _build() -> void:
 	cone.cap_top = false
 	cone.cap_bottom = false
 	cone.material = beam_material
+	_beam = MeshInstance3D.new()
 	_beam.name = "Beam"
 	_beam.mesh = cone
 	_beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_model.add_child(_beam)
+	_light = OmniLight3D.new()
 	_light.name = "Light"
 	_light.light_color = LIGHT_COLOR
 	_light.omni_range = LIGHT_RANGE
@@ -278,6 +281,7 @@ func _build() -> void:
 	sphere.radius = 1.0
 	sphere.height = 2.0
 	sphere.material = _flash_material
+	_flash = MeshInstance3D.new()
 	_flash.name = "Flash"
 	_flash.mesh = sphere
 	_flash.top_level = true

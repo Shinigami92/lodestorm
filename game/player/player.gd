@@ -177,10 +177,11 @@ var _miner_radar := MinerRadar.new()
 func _notification(what: int) -> void:
 	if what != NOTIFICATION_PREDELETE or is_node_ready():
 		return
-	for property: Dictionary in (get_script() as Script).get_script_property_list():
-		var value: Variant = get(property["name"] as StringName)
-		if value is Node and not (value as Node).get_parent():
-			(value as Node).free()
+	var components: Array[Node] = [aim, reticle, vitals, arms, suit_dash, rescue_drone, handling]
+	components.append_array([picker, sounds, radio, _armor_pips, _scanner, _miner_radar])
+	for component: Node in components:
+		if not component.get_parent():
+			component.free()
 
 
 func _ready() -> void:

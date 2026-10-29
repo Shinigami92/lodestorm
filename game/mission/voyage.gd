@@ -251,6 +251,31 @@ func dock_at(station: CelestialBody) -> bool:
 	return true
 
 
+## What's saved: the id of the body the ship is at (a station's while docked there), or null
+## before the first flight.
+func save_data() -> Variant:
+	if not at_body:
+		return null
+	return String(at_body.id)
+
+
+## Puts the ship at the body a save names (`save_data`), if the heat shield reaches it; at a
+## station, docked there. Returns whether it did.
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	var system: StarSystem = settings.system if settings else null
+	var body: CelestialBody = null
+	if saved is String and system:
+		body = system.body_by_id(StringName(saved as String))
+	if body and body.is_dockable() and dock_at(body):
+		return true
+	if not body or not body.is_reachable(ship.heat_shield.mk):
+		return SaveData.skipped("position", saved)
+	at_body = body
+	return true
+
+
 ## Chooses `offer` and sets course for it (tests, debugging). Returns whether it did.
 func select(offer: MissionBrief) -> bool:
 	return choose(offer) and confirm()

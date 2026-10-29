@@ -205,7 +205,8 @@ func test_found_ores_are_saved() -> void:
 	_player.hold.add(MERIDINE, 10.0)
 	assert_true(_player.hold.pay({MERIDINE: 10}))
 	var data: Dictionary = SaveGame.player_data(_player)
-	assert_has(data["found"] as Array, ResourceUID.path_to_uid(MERIDINE.resource_path))
+	var hold: Dictionary = data["hold"]
+	assert_has(hold["found"] as Array, ResourceUID.path_to_uid(MERIDINE.resource_path))
 
 
 func test_card_shows_the_selected_ore() -> void:

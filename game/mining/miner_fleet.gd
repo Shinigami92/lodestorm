@@ -201,6 +201,49 @@ func build_all() -> void:
 			put(CraftedMiner.new(number))
 
 
+## What's saved: the crafted miners (`CraftedMiner.save_data`) and where the lost ones were left,
+## by their number (as a string, like every JSON key).
+func save_data() -> Dictionary:
+	var saved_miners: Array = []
+	for number: int in range(1, SLOTS + 1):
+		if miners.has(number):
+			saved_miners.append(miners[number].save_data())
+	var saved_lost: Dictionary = {}
+	for number: int in lost_at:
+		saved_lost[str(number)] = lost_at[number]
+	return {"miners": saved_miners, "lost": saved_lost}
+
+
+## Reads what a save has (`save_data`) in place of the miners there are; the builds and levels
+## done since take effect with `update`. Returns whether all of it read.
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	var data: Dictionary = saved if saved is Dictionary else {}
+	var saved_miners: Variant = data.get("miners", [])
+	var saved_lost: Variant = data.get("lost", {})
+	if not saved is Dictionary or not saved_miners is Array or not saved_lost is Dictionary:
+		return SaveData.skipped("miners", saved)
+	clear()
+	var complete: bool = true
+	for entry: Variant in saved_miners as Array:
+		var miner: CraftedMiner = CraftedMiner.from_data(entry)
+		if miner and is_empty(miner.number):
+			complete = miner.load_data(entry as Dictionary) and complete
+			put(miner)
+		else:
+			complete = SaveData.skipped("miner", entry)
+	var lost: Dictionary = saved_lost
+	for key: Variant in lost:
+		var number: int = (key as String).to_int() if key is String else 0
+		if is_empty(number) and lost[key] is String:
+			lost_at[number] = lost[key]
+		else:
+			complete = SaveData.skipped("lost miner", key)
+	emit_changed()
+	return complete
+
+
 func _remove(number: int) -> void:
 	var miner: CraftedMiner = get_miner(number)
 	if miner:

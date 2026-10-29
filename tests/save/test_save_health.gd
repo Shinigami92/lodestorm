@@ -50,25 +50,16 @@ func test_a_dead_player_is_saved_with_full_health() -> void:
 	assert_eq(saved, _player.max_health())
 
 
-## One-time hints are each player's: saved with the player; the one older ship saves kept among
-## the story flags moves into the player's save.
+## One-time hints are each player's: saved with the player, not the ship.
 func test_hints_are_saved_with_the_player() -> void:
 	_player.hints.mark_seen(RampHint.HINT)
 	await wait_process_frames(1)
 	var hints: Array = _saved(SaveGame.PLAYER_FILE)["hints"]
 	assert_eq(hints, [String(RampHint.HINT)])
-	var ship_data: Dictionary = {
-		"version": SaveGame.VERSION,
-		"story": ["quartermaster.greeting", "hint_medical_bay"],
-	}
-	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
-	_write(SaveGame.PLAYER_FILE, JSON.stringify({"version": SaveGame.VERSION}))
-	await _restart()
-	assert_eq(_ship.story.flags.keys(), [&"quartermaster.greeting"] as Array[StringName])
-	assert_true(_player.hints.is_seen(RampHint.HINT), "moved to the player")
-	await wait_process_frames(1)
 	var story: Array = _saved(SaveGame.SHIP_FILE)["story"]
-	assert_eq(story, ["quartermaster.greeting"], "written again without it")
+	assert_true(story.is_empty())
+	await _restart()
+	assert_true(_player.hints.is_seen(RampHint.HINT))
 
 
 func _start() -> void:
@@ -94,13 +85,6 @@ func _move(target: Vector3) -> void:
 func _saved(file_name: String) -> Dictionary:
 	var path: String = SaveGame.save_directory().path_join(file_name)
 	return JSON.parse_string(FileAccess.get_file_as_string(path))
-
-
-func _write(file_name: String, text: String) -> void:
-	DirAccess.make_dir_recursive_absolute(SaveGame.save_directory())
-	var file := FileAccess.open(SaveGame.save_directory().path_join(file_name), FileAccess.WRITE)
-	file.store_string(text)
-	file.close()
 
 
 func _clean() -> void:

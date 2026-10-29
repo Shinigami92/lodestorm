@@ -1,54 +1,23 @@
 class_name SaveGame
 extends Node
-## Keeps the progress between sessions in one save: the host's (the ship's heat shield, where it
-## is, the story's flags, the furnaces unlocked, the cradles open and the crew's reactions, later
-## crew and quests)
-## in `ship.json` and the
-## local player's (their health, their hold, their batches in the furnaces, owned weapons and
-## blueprints, loadout, upgrade levels, skill ranks, crafted miners) in `player.json`,
-## both in `save/` under `directory`. It loads
-## them when the map starts and saves whenever progress changes while no mission is underway;
-## what changes during a mission is saved once it's over (returned or lost), so quitting
-## mid-mission loses that run like dying. The settings (`GameSettings`) are kept apart and survive
-## `reset_progress`.
-## Resources (ore types, weapons, upgrades, skills) are saved by their UID, so they can be moved
-## and renamed; saves of version 1 named them by path, which `MOVED` follows. Unknown entries are
-## skipped, and a save without a known weapon keeps the default arsenal and loadout; a file that
-## can't be read is kept as `<name>.corrupt` and the game starts from the defaults. Up to version 2
-## the hold was the ship's: it moves from `ship.json` into `player.json`. Up to version 3 the miner
-## upgrades were the player's: their levels (and a level under way) move onto the crafted M-01. Up
-## to version 4 the jobs under way didn't keep what was paid: stopping one gives back the ores of
-## its cost (the alloys in the costs came later), a miner's build its whole cost.
+## Keeps the progress between sessions in one save: the host's (the ship's story flags, heat
+## shield, furnaces unlocked, cradles open and crew reactions, where it is) in `ship.json` and the
+## local player's (their health, hold, batches in the furnaces, weapons and blueprints, loadout,
+## upgrade levels, skill ranks, crafted miners and hints seen) in `player.json`, both in `save/`
+## under `directory`. It loads them when the map starts and saves whenever progress changes while
+## no mission is underway; what changes during a mission is saved once it's over (returned or
+## lost), so quitting mid-mission loses that run like dying. The settings (`GameSettings`) are kept
+## apart and survive `reset_progress`.
+## Every saved system writes and reads its own part (`save_data`, `load_data`, see `SaveData`);
+## this only puts the parts together under their keys. Entries that don't read are skipped, and a
+## file that can't be read or is of another version is kept as `<name>.corrupt` while the game
+## starts from the defaults (no older saves are converted before the release).
 
 const GROUP: StringName = &"save_games"
-## The save format; raise it (and convert older saves in `_read`) when the format changes.
-const VERSION: int = 5
-const MINER_SETTINGS: MinerSettings = preload("res://game/mining/miner_settings.tres")
+## The save format; raise it when the format changes (older saves start over).
+const VERSION: int = 6
 const SHIP_FILE: String = "ship.json"
 const PLAYER_FILE: String = "player.json"
-## Hints the ship's story kept for everyone before they were each player's (`PlayerHints`): the
-## flag, and the hint it is now.
-const MOVED_HINTS: Dictionary[String, StringName] = {"hint_medical_bay": RampHint.HINT}
-## Where resources named by path in version 1 saves went: a file, or a folder (ending in "/") and
-## everything in it.
-const MOVED: Dictionary[String, String] = {
-	"res://scenes/mining/ores/ore_cyan.tres": "res://game/ores/types/ore_kyrite.tres",
-	"res://scenes/mining/ores/ore_green.tres": "res://game/ores/types/ore_olvane.tres",
-	"res://scenes/mining/ores/ore_violet.tres": "res://game/ores/types/ore_vyrel.tres",
-	"res://scenes/mining/ores/": "res://game/ores/types/",
-	"res://scenes/weapons/types/blaster.tres": "res://game/weapons/types/harl/harl.tres",
-	"res://scenes/weapons/types/shotgun.tres": "res://game/weapons/types/brask/brask.tres",
-	"res://scenes/weapons/types/hammer.tres": "res://game/weapons/types/dray/dray.tres",
-	"res://scenes/weapons/types/": "res://game/weapons/types/",
-	"res://scenes/upgrades/blaster.tres": "res://game/weapons/types/harl/mk_damage.tres",
-	"res://scenes/upgrades/blaster_magazine.tres": "res://game/weapons/types/harl/mk_magazine.tres",
-	"res://scenes/upgrades/shotgun.tres": "res://game/weapons/types/brask/mk_damage.tres",
-	"res://scenes/upgrades/shotgun_magazine.tres":
-	"res://game/weapons/types/brask/mk_magazine.tres",
-	"res://scenes/upgrades/hammer.tres": "res://game/weapons/types/dray/mk_damage.tres",
-	"res://scenes/upgrades/": "res://game/progression/upgrades/",
-	"res://scenes/skills/": "res://game/progression/skills/tree/",
-}
 
 ## Where the saves and the settings go: the user data folder, or a `dev/` folder in it for runs
 ## from the editor, so debug shortcuts (unlock weapons, fill hold) never reach a real save. Empty:
@@ -68,14 +37,10 @@ static var directory: String = "user://dev/" if OS.has_feature("editor") else "u
 var _save_queued: bool = false
 ## Off after `reset_progress`, so nothing is written until the map reloads.
 var _active: bool = true
-## Whether the save just read was older or had to be repaired, so it's written again right away.
+## Whether the save just read had to be repaired, so it's written again right away.
 var _outdated: bool = false
 ## Whether the player's health was full when it last changed.
 var _was_healed: bool = true
-## The hold a `ship.json` before version 3 had (`hold`, `found`), for the player's save to take.
-var _ship_hold: Dictionary = {}
-## Hints a `ship.json` had among its story flags (`MOVED_HINTS`), for the player's save to take.
-var _ship_hints: Array[StringName] = []
 
 
 ## The folder of the save (empty when saving is off).
@@ -181,574 +146,75 @@ func reset_progress() -> bool:
 	return true
 
 
-## What's saved of `ship`: the story's flags, the heat shield (its MK level, whether the next
-## plate is the ship's project and what's paid into it), the furnaces unlocked, the cradles open,
-## the crew's reactions (`CrewReactions.get_data`) and the body the ship is at (its id, a
-## station's while docked there; none before the first flight).
+## What's saved of `of_ship` (see each part's `save_data`).
 static func ship_data(of_ship: Ship) -> Dictionary:
-	var flags: Array = []
-	for flag: StringName in of_ship.story.flags:
-		flags.append(String(flag))
-	flags.sort()
-	var shield: HeatShield = of_ship.heat_shield
-	var paid: Dictionary = {}
-	for ore_type: OreType in shield.paid:
-		paid[_reference(ore_type)] = shield.paid[ore_type]
-	var data: Dictionary = {
+	return {
 		"version": VERSION,
-		"story": flags,
-		"shield": {"mk": shield.mk, "project": shield.project, "paid": paid},
-		"furnaces": of_ship.furnaces.unlocked,
-		"cradles": of_ship.cradles.open,
-		"reactions": of_ship.reactions.get_data(),
+		"story": of_ship.story.save_data(),
+		"shield": of_ship.heat_shield.save_data(),
+		"furnaces": of_ship.furnaces.save_data(),
+		"cradles": of_ship.cradles.save_data(),
+		"reactions": of_ship.reactions.save_data(),
+		"at": of_ship.voyage.save_data() if of_ship.voyage else null,
 	}
-	if of_ship.voyage and of_ship.voyage.at_body:
-		data["at"] = String(of_ship.voyage.at_body.id)
-	return data
 
 
-## What's saved of `of_player`: its health (full when it's dead: it respawns with full health),
-## its hold (units per item, the items ever in it), its batches in
-## the furnaces (per batch its furnace slot, the alloy, the bars, how many are done and when it
-## started in Unix seconds), the weapons it owns and its blueprints, its loadout (null: empty
-## slot), the MK level of each upgrade it bought and the rank of each skill it learned, the levels
-## and ranks under way, its crafted miners (see `_fleet_data`) and the hints it has seen.
+## What's saved of `of_player` (see each part's `save_data`); its health is full when it's dead
+## (it respawns with full health).
 static func player_data(of_player: Player) -> Dictionary:
-	var hold: Dictionary = {}
-	for item: ItemType in of_player.hold.items:
-		hold[_reference(item)] = of_player.hold.items[item]
-	var found: Array = []
-	for item: ItemType in of_player.hold.found:
-		found.append(_reference(item))
-	found.sort()
-	var refining: Array = []
-	for slot: int in Refining.SLOTS:
-		var batch: AlloyBatch = of_player.refining.get_batch(slot)
-		if batch:
-			(
-				refining
-				. append(
-					{
-						"slot": slot,
-						"alloy": _reference(batch.alloy),
-						"bars": batch.bars,
-						"done": batch.done,
-						"started": batch.started,
-					}
-				)
-			)
-	var weapons: Array = []
-	for weapon_type: WeaponType in of_player.arsenal.weapons:
-		weapons.append(_reference(weapon_type))
-	var blueprints: Array = []
-	for weapon_type: WeaponType in of_player.arsenal.blueprints:
-		blueprints.append(_reference(weapon_type))
-	var loadout: Array = []
-	for weapon_type: WeaponType in of_player.loadout.weapons:
-		if weapon_type:
-			loadout.append(_reference(weapon_type))
-		else:
-			loadout.append(null)
-	var levels: Dictionary = {}
-	for upgrade: Upgrade in of_player.upgrades.levels:
-		levels[_reference(upgrade)] = of_player.upgrades.levels[upgrade]
-	var ranks: Dictionary = {}
-	for skill: Skill in of_player.skills.ranks:
-		ranks[_reference(skill)] = of_player.skills.ranks[skill]
-	var upgrade_jobs: Dictionary = {}
-	for upgrade: Upgrade in of_player.upgrades.jobs:
-		upgrade_jobs[_reference(upgrade)] = _job_data(of_player.upgrades.jobs[upgrade])
-	var skill_jobs: Dictionary = {}
-	for skill: Skill in of_player.skills.jobs:
-		skill_jobs[_reference(skill)] = _job_data(of_player.skills.jobs[skill])
-	var hints: Array = []
-	for hint: StringName in of_player.hints.seen:
-		hints.append(String(hint))
-	hints.sort()
 	return {
 		"version": VERSION,
 		"health": of_player.max_health() if of_player.fallen else of_player.health,
-		"hold": hold,
-		"found": found,
-		"refining": refining,
-		"arsenal": weapons,
-		"blueprints": blueprints,
-		"loadout": loadout,
-		"upgrades": levels,
-		"skills": ranks,
-		"upgrade_jobs": upgrade_jobs,
-		"skill_jobs": skill_jobs,
-		"miners": _fleet_data(of_player.fleet),
-		"lost_miners": _lost_data(of_player.fleet),
-		"hints": hints,
+		"hold": of_player.hold.save_data(),
+		"refining": of_player.refining.save_data(),
+		"arsenal": of_player.arsenal.save_data(),
+		"loadout": of_player.loadout.save_data(),
+		"upgrades": of_player.upgrades.save_data(),
+		"skills": of_player.skills.save_data(),
+		"fleet": of_player.fleet.save_data(),
+		"hints": of_player.hints.save_data(),
 	}
 
 
-## The crafted miners of `fleet` as saved: per miner its number, whether it goes along, its parts'
-## levels, the levels under way and, while it's built, its build.
-static func _fleet_data(fleet: MinerFleet) -> Array:
-	var miners: Array = []
-	for number: int in range(1, MinerFleet.SLOTS + 1):
-		var miner: CraftedMiner = fleet.get_miner(number)
-		if not miner:
-			continue
-		var levels: Dictionary = {}
-		for upgrade: Upgrade in miner.upgrades.levels:
-			levels[_reference(upgrade)] = miner.upgrades.levels[upgrade]
-		var jobs: Dictionary = {}
-		for upgrade: Upgrade in miner.upgrades.jobs:
-			jobs[_reference(upgrade)] = _job_data(miner.upgrades.jobs[upgrade])
-		var entry: Dictionary = {
-			"number": number, "along": miner.going_along, "upgrades": levels, "upgrade_jobs": jobs
-		}
-		if miner.build:
-			entry["build"] = _job_data(miner.build)
-		miners.append(entry)
-	return miners
-
-
-## Where `fleet`'s lost miners were left, by their number (as a string, like every JSON key).
-static func _lost_data(fleet: MinerFleet) -> Dictionary:
-	var lost: Dictionary = {}
-	for number: int in fleet.lost_at:
-		lost[str(number)] = fleet.lost_at[number]
-	return lost
-
-
-## A level or rank under way as saved: the level it reaches, its start, its time and what was paid.
-static func _job_data(job: TimedJob) -> Dictionary:
-	var paid: Dictionary = {}
-	for item: ItemType in job.paid:
-		paid[_reference(item)] = job.paid[item]
-	return {"level": job.level, "started": job.started, "seconds": job.seconds, "paid": paid}
-
-
-## A level or rank under way from `data` (see `_job_data`), or null when it doesn't read. A job
-## saved before it kept what was paid (up to version 4) gets `before` (the level it reaches ->
-## what it gives back).
-func _job(data: Variant, before: Callable) -> TimedJob:
-	if not data is Dictionary:
-		return null
-	var saved: Dictionary = data
-	var level: float = _number(saved.get("level"), 0.0)
-	var started: float = _number(saved.get("started"), NAN)
-	var seconds: float = _number(saved.get("seconds"), -1.0)
-	if level < 1.0 or is_nan(started) or seconds < 0.0:
-		return null
-	var job := TimedJob.new(roundi(level), started, seconds)
-	if not saved.get("paid") is Dictionary:
-		job.paid = before.call(job.level)
-		return job
-	var paid: Dictionary = saved["paid"]
-	for path: Variant in paid:
-		var item := _resource(path) as ItemType
-		var amount: float = _number(paid[path], -1.0)
-		if item and amount >= 0.0:
-			job.paid[item] = roundi(amount)
-		else:
-			_outdated = true
-			push_warning("Save: skipped paid entry %s" % path)
-	return job
-
-
-## What an upgrade's level `level` under way from a save before version 5 gives back: the ores of
-## its cost (the alloys in the costs came later).
-static func _ores_paid(level: int, upgrade: Upgrade) -> Dictionary[ItemType, int]:
-	var ores: Dictionary[ItemType, int] = {}
-	var cost: Dictionary[ItemType, int] = upgrade.cost_of(level) if upgrade else {}
-	for item: ItemType in cost:
-		if item is OreType:
-			ores[item] = cost[item]
-	return ores
-
-
-## What a skill's rank `level` under way from a save before version 5 gives back: its cost.
-static func _rank_paid(level: int, skill: Skill) -> Dictionary[ItemType, int]:
-	var rank: SkillRank = skill.rank_after(level - 1) if skill else null
-	return rank.cost.duplicate() if rank else {}
-
-
-## What a miner's build from a save before version 5 gives back: its whole cost.
-static func _build_paid(_level: int) -> Dictionary[ItemType, int]:
-	return MINER_SETTINGS.build_cost.duplicate()
-
-
 func _apply_ship(data: Dictionary) -> void:
-	_ship_hold = {}
-	_ship_hints = []
-	if data.has("hold") or data.has("found"):
-		# Before version 3 the hold was the ship's: the player's save takes it.
-		_outdated = true
-		_ship_hold = {"hold": data.get("hold", {}), "found": data.get("found", [])}
-	if data.get("story") is Array:
-		for flag: Variant in data["story"] as Array:
-			if flag is String and MOVED_HINTS.has(flag as String):
-				# A hint the host's story kept for everyone: the player's save takes it.
-				_outdated = true
-				_ship_hints.append(MOVED_HINTS[flag as String])
-			elif flag is String and not (flag as String).is_empty():
-				ship.story.flags[StringName(flag as String)] = true
-			else:
-				_outdated = true
-				push_warning("Save: skipped story flag %s" % flag)
-		ship.story.emit_changed()
-	if data.get("shield") is Dictionary:
-		_apply_shield(data["shield"] as Dictionary)
-	if data.has("furnaces"):
-		var count: float = _number(data["furnaces"], -1.0)
-		if count < 0.0 or count > Refining.SLOTS:
-			_outdated = true
-			push_warning("Save: skipped furnaces %s" % data["furnaces"])
-		ship.furnaces.restore(roundi(clampf(count, 0.0, Refining.SLOTS)))
-	if data.has("cradles"):
-		var open: float = _number(data["cradles"], -1.0)
-		if open < 1.0 or open > MinerFleet.SLOTS:
-			_outdated = true
-			push_warning("Save: skipped cradles %s" % data["cradles"])
-		ship.cradles.restore(roundi(clampf(open, Cradles.START, MinerFleet.SLOTS)))
-	if data.get("reactions") is Dictionary:
-		if not ship.reactions.restore(data["reactions"] as Dictionary):
-			_outdated = true
-			push_warning("Save: skipped broken crew reactions")
-	if data.has("at"):
-		_apply_position(data["at"])
-
-
-func _apply_shield(data: Dictionary) -> void:
-	var mk: float = _number(data.get("mk"), 0.0)
-	if mk < 1.0 or mk > ship.heat_shield.max_mk():
-		_outdated = true
-		push_warning("Save: skipped heat shield level %s" % data.get("mk"))
-		mk = clampf(mk, 1.0, ship.heat_shield.max_mk())
-	var paid: Dictionary[OreType, float] = {}
-	var saved_paid: Dictionary = {}
-	if data.get("paid") is Dictionary:
-		saved_paid = data["paid"]
-	for path: Variant in saved_paid:
-		var ore_type := _resource(path) as OreType
-		var amount: float = _number(saved_paid[path], -1.0)
-		if ore_type and amount >= 0.0:
-			paid[ore_type] = amount
-		else:
-			_outdated = true
-			push_warning("Save: skipped heat shield payment %s" % path)
-	var is_project: bool = false
-	if data.get("project") is bool:
-		is_project = data["project"]
-	ship.heat_shield.restore(roundi(mk), is_project, paid)
-
-
-## Puts the ship at the body a save names, if the heat shield reaches it; at a station, docked
-## there.
-func _apply_position(id: Variant) -> void:
-	var system: StarSystem = voyage.settings.system if voyage and voyage.settings else null
-	var body: CelestialBody = null
-	if id is String and system:
-		body = system.body_by_id(StringName(id as String))
-	if body and body.is_dockable() and voyage and voyage.dock_at(body):
-		return
-	if body and body.is_reachable(ship.heat_shield.mk) and voyage:
-		voyage.at_body = body
-	else:
-		_outdated = true
-		push_warning("Save: skipped the ship's position %s" % id)
+	_loaded(ship.story.load_data(data.get("story")))
+	_loaded(ship.heat_shield.load_data(data.get("shield")))
+	_loaded(ship.furnaces.load_data(data.get("furnaces")))
+	_loaded(ship.cradles.load_data(data.get("cradles")))
+	_loaded(ship.reactions.load_data(data.get("reactions")))
+	# After the heat shield: the ship stays only where it reaches.
+	if voyage:
+		_loaded(voyage.load_data(data.get("at")))
 
 
 func _apply_player(data: Dictionary) -> void:
-	if not data.has("hold") and not _ship_hold.is_empty():
-		data = data.duplicate()
-		data.merge(_ship_hold)
-	_apply_hold(data)
-	_apply_hints(data)
-	if data.get("refining") is Array:
-		_apply_refining(data["refining"] as Array)
-	if data.get("arsenal") is Array:
-		var weapons: Array[WeaponType] = []
-		for path: Variant in data["arsenal"] as Array:
-			var weapon_type := _resource(path) as WeaponType
-			if weapon_type and weapon_type not in weapons:
-				weapons.append(weapon_type)
-			else:
-				_outdated = true
-				push_warning("Save: skipped weapon %s" % path)
-		# Weapons are never taken away, so a save without any is damaged: keep the default ones.
-		if weapons.is_empty():
-			_outdated = true
-			push_warning("Save: no known weapon, keeping the default arsenal")
-		else:
-			player.arsenal.weapons = weapons
-			player.arsenal.emit_changed()
-	if data.get("blueprints") is Array:
-		var blueprints: Array[WeaponType] = []
-		for path: Variant in data["blueprints"] as Array:
-			var weapon_type := _resource(path) as WeaponType
-			if weapon_type and weapon_type not in blueprints:
-				if not player.arsenal.owns(weapon_type):
-					blueprints.append(weapon_type)
-			else:
-				_outdated = true
-				push_warning("Save: skipped blueprint %s" % path)
-		player.arsenal.blueprints = blueprints
-		player.arsenal.emit_changed()
-	if data.get("loadout") is Array:
-		# Only owned weapons; anything else leaves the slot empty.
-		var slots: Array[WeaponType] = []
-		for path: Variant in data["loadout"] as Array:
-			var weapon_type := _resource(path) as WeaponType
-			slots.append(weapon_type if weapon_type and player.arsenal.owns(weapon_type) else null)
-		# The locker never empties the loadout, so a save that does keeps the default one.
-		if slots.any(func(weapon_type: WeaponType) -> bool: return weapon_type != null):
-			for slot: int in slots.size():
-				player.loadout.assign(slot, slots[slot])
-		else:
-			_outdated = true
-			push_warning("Save: no owned weapon in the loadout, keeping the default one")
-			for slot: int in player.loadout.weapons.size():
-				if not player.arsenal.owns(player.loadout.get_weapon(slot)):
-					player.loadout.assign(slot, null)
-	if data.get("upgrades") is Dictionary:
-		var levels: Dictionary = data["upgrades"]
-		for path: Variant in levels:
-			var upgrade := _resource(path) as Upgrade
-			var mk: float = _number(levels[path], 0.0)
-			if upgrade and mk >= 1.0:
-				player.upgrades.levels[upgrade] = clampi(roundi(mk), 1, upgrade.max_mk())
-			else:
-				_outdated = true
-				push_warning("Save: skipped upgrade %s" % path)
-		player.upgrades.emit_changed()
-	if data.get("skills") is Dictionary:
-		var ranks: Dictionary = data["skills"]
-		for path: Variant in ranks:
-			var skill := _resource(path) as Skill
-			var rank: float = _number(ranks[path], 0.0)
-			if skill and rank >= 1.0:
-				player.skills.ranks[skill] = clampi(roundi(rank), 1, skill.max_rank())
-			else:
-				_outdated = true
-				push_warning("Save: skipped skill %s" % path)
-		player.skills.emit_changed()
-	# After the upgrades and skills (they set the maximum), before the jobs (one done since adds
-	# its difference, as it would have in the game). A save without it keeps full health.
+	_loaded(player.hold.load_data(data.get("hold")))
+	_loaded(player.refining.load_data(data.get("refining")))
+	_loaded(player.arsenal.load_data(data.get("arsenal")))
+	_loaded(player.loadout.load_data(data.get("loadout"), player.arsenal))
+	_loaded(player.upgrades.load_data(data.get("upgrades")))
+	_loaded(player.skills.load_data(data.get("skills")))
+	_loaded(player.fleet.load_data(data.get("fleet")))
+	_loaded(player.hints.load_data(data.get("hints")))
+	# After the upgrades and skills (they set the maximum), before the jobs done since take effect
+	# (one adds its difference, as it would have in the game). A save without it keeps full health.
 	if data.has("health"):
-		var health: float = _number(data["health"], player.max_health())
+		var health: float = SaveData.number(data["health"], player.max_health())
 		player.vitals.restore(health if health > 0.0 else player.max_health())
-	_apply_jobs(data)
-	if data.get("miners") is Array:
-		_apply_fleet(data)
-	elif not data.is_empty() and _number(data.get("version"), 0.0) < 4.0:
-		_move_miner_levels()
-
-
-## Reads a player's crafted miners and where the lost ones were left, and lets the builds and
-## levels done since take effect.
-func _apply_fleet(data: Dictionary) -> void:
-	var fleet: MinerFleet = player.fleet
-	fleet.clear()
-	for entry: Variant in data["miners"] as Array:
-		var miner: CraftedMiner = _crafted(entry)
-		if miner and fleet.is_empty(miner.number):
-			fleet.put(miner)
-		else:
-			_outdated = true
-			push_warning("Save: skipped miner %s" % entry)
-	if data.get("lost_miners") is Dictionary:
-		var lost: Dictionary = data["lost_miners"]
-		for key: Variant in lost:
-			var number: int = (key as String).to_int() if key is String else 0
-			if fleet.is_empty(number) and lost[key] is String:
-				fleet.lost_at[number] = lost[key]
-			else:
-				_outdated = true
-				push_warning("Save: skipped lost miner %s" % key)
-	fleet.update(Time.get_unix_time_from_system())
-
-
-## A crafted miner from `data` (see `_fleet_data`), or null when it doesn't read. Unknown parts and
-## levels under way that don't fit are skipped.
-func _crafted(data: Variant) -> CraftedMiner:
-	if not data is Dictionary:
-		return null
-	var saved: Dictionary = data
-	var number: int = roundi(_number(saved.get("number"), 0.0))
-	if number < 1 or number > MinerFleet.SLOTS:
-		return null
-	var build: TimedJob = null
-	if saved.has("build"):
-		build = _job(saved["build"], _build_paid)
-		if not build:
-			return null
-	var miner := CraftedMiner.new(number, build)
-	if saved.get("along") is bool:
-		miner.going_along = saved["along"]
-	var levels: Dictionary = {}
-	if saved.get("upgrades") is Dictionary:
-		levels = saved["upgrades"]
-	for path: Variant in levels:
-		var upgrade := _resource(path) as Upgrade
-		var mk: float = _number(levels[path], 0.0)
-		if upgrade in CraftedMiner.PARTS and mk >= 1.0:
-			miner.upgrades.levels[upgrade] = clampi(roundi(mk), 1, upgrade.max_mk())
-		else:
-			_outdated = true
-			push_warning("Save: skipped miner upgrade %s" % path)
-	var jobs: Dictionary = {}
-	if saved.get("upgrade_jobs") is Dictionary:
-		jobs = saved["upgrade_jobs"]
-	for path: Variant in jobs:
-		var upgrade := _resource(path) as Upgrade
-		var job: TimedJob = _job(jobs[path], _ores_paid.bind(upgrade))
-		if upgrade not in CraftedMiner.PARTS or not job or not miner.upgrades.restore(upgrade, job):
-			_outdated = true
-			push_warning("Save: skipped miner upgrade job %s" % path)
-	return miner
-
-
-## Before version 4 the miner upgrades were the player's: their levels and the ones under way move
-## onto the crafted M-01 every player starts with.
-func _move_miner_levels() -> void:
-	_outdated = true
-	var first: CraftedMiner = player.fleet.get_miner(1)
-	if not first:
-		return
-	for upgrade: Upgrade in CraftedMiner.PARTS:
-		if player.upgrades.levels.has(upgrade):
-			first.upgrades.levels[upgrade] = player.upgrades.levels[upgrade]
-			player.upgrades.levels.erase(upgrade)
-		var job: TimedJob = player.upgrades.get_job(upgrade)
-		if job:
-			player.upgrades.jobs.erase(upgrade)
-			first.upgrades.restore(upgrade, job)
-	player.upgrades.emit_changed()
-	first.upgrades.emit_changed()
-
-
-## Reads a player's levels and ranks under way and lets those done since take effect.
-func _apply_jobs(data: Dictionary) -> void:
-	if data.get("upgrade_jobs") is Dictionary:
-		var jobs: Dictionary = data["upgrade_jobs"]
-		for path: Variant in jobs:
-			var upgrade := _resource(path) as Upgrade
-			var job: TimedJob = _job(jobs[path], _ores_paid.bind(upgrade))
-			if not upgrade or not job or not player.upgrades.restore(upgrade, job):
-				_outdated = true
-				push_warning("Save: skipped upgrade job %s" % path)
-	if data.get("skill_jobs") is Dictionary:
-		var jobs: Dictionary = data["skill_jobs"]
-		for path: Variant in jobs:
-			var skill := _resource(path) as Skill
-			var job: TimedJob = _job(jobs[path], _rank_paid.bind(skill))
-			if not skill or not job or not player.skills.restore(skill, job):
-				_outdated = true
-				push_warning("Save: skipped skill job %s" % path)
 	var now: float = Time.get_unix_time_from_system()
+	player.refining.update(player.hold, now)
 	player.upgrades.update(now)
 	player.skills.update(now)
+	player.fleet.update(now)
 
 
-## Reads the hints a player has seen, and the ones the ship's story kept before (`MOVED_HINTS`).
-func _apply_hints(data: Dictionary) -> void:
-	if data.get("hints") is Array:
-		for hint: Variant in data["hints"] as Array:
-			if hint is String and not (hint as String).is_empty():
-				player.hints.seen[StringName(hint as String)] = true
-			else:
-				_outdated = true
-				push_warning("Save: skipped hint %s" % hint)
-	for hint: StringName in _ship_hints:
-		player.hints.seen[hint] = true
-	player.hints.emit_changed()
+## Notes a part that didn't read whole, so the repaired save is written again.
+func _loaded(complete: bool) -> void:
+	_outdated = _outdated or not complete
 
 
-## Reads a player's hold: units per item (`hold`) and the items ever in it (`found`).
-func _apply_hold(data: Dictionary) -> void:
-	var hold: Dictionary = {}
-	if data.get("hold") is Dictionary:
-		hold = data["hold"]
-	for path: Variant in hold:
-		var item := _resource(path) as ItemType
-		var amount: float = _number(hold[path], -1.0)
-		if item and amount >= 0.0:
-			player.hold.add(item, amount)
-		else:
-			_outdated = true
-			push_warning("Save: skipped hold entry %s" % path)
-	if data.get("found") is Array:
-		for path: Variant in data["found"] as Array:
-			var item := _resource(path) as ItemType
-			if item:
-				player.hold.mark_found(item)
-			else:
-				_outdated = true
-				push_warning("Save: skipped found item %s" % path)
-
-
-## Reads a player's batches in the furnaces and puts every bar finished since into the hold.
-func _apply_refining(batches: Array) -> void:
-	for entry: Variant in batches:
-		var batch: AlloyBatch = null
-		var slot: int = -1
-		if entry is Dictionary:
-			var saved: Dictionary = entry
-			var alloy := _resource(saved.get("alloy")) as AlloyType
-			var bars: int = roundi(_number(saved.get("bars"), 0.0))
-			var done: int = roundi(_number(saved.get("done"), -1.0))
-			var started: float = _number(saved.get("started"), NAN)
-			slot = roundi(_number(saved.get("slot"), -1.0))
-			var free: bool = (
-				slot >= 0 and slot < Refining.SLOTS and not player.refining.get_batch(slot)
-			)
-			if alloy and free and bars >= 1 and done >= 0 and done < bars and not is_nan(started):
-				batch = AlloyBatch.new(alloy, bars, started)
-				batch.done = done
-		if batch:
-			player.refining.restore(slot, batch)
-		else:
-			_outdated = true
-			push_warning("Save: skipped refining batch %s" % entry)
-	player.refining.update(player.hold, Time.get_unix_time_from_system())
-
-
-## How a save names `resource`: its UID (its path if it has none).
-static func _reference(resource: Resource) -> String:
-	return ResourceUID.path_to_uid(resource.resource_path)
-
-
-## The project resource a save names with `reference` (a UID, or a path in version 1 saves), or
-## null for anything else.
-static func _resource(reference: Variant) -> Resource:
-	if not reference is String:
-		return null
-	var path: String = reference
-	if path.begins_with("res://"):
-		path = _moved(path)
-	elif not path.begins_with("uid://"):
-		return null
-	if not ResourceLoader.exists(path):
-		return null
-	return load(path)
-
-
-## Where the resource a version 1 save named `path` is now.
-static func _moved(path: String) -> String:
-	if path in MOVED:
-		return MOVED[path]
-	for old: String in MOVED:
-		if old.ends_with("/") and path.begins_with(old):
-			return MOVED[old] + path.trim_prefix(old)
-	return path
-
-
-## `value` from a save as a number, or `fallback` when it isn't one.
-static func _number(value: Variant, fallback: float) -> float:
-	if value is float or value is int:
-		var number: float = value
-		return number
-	return fallback
-
-
-## The data in save file `file_name`, empty when there's none or it can't be read (then it's
-## kept as `<file_name>.corrupt`, and the next save starts over).
+## The data in save file `file_name`, empty when there's none or it can't be read or is of another
+## version (then it's kept as `<file_name>.corrupt`, and the next save starts over).
 func _read(file_name: String) -> Dictionary:
 	var path: String = save_directory().path_join(file_name)
 	if not FileAccess.file_exists(path):
@@ -757,12 +223,9 @@ func _read(file_name: String) -> Dictionary:
 	var data: Variant = null
 	if json.parse(FileAccess.get_file_as_string(path)) == OK:
 		data = json.data
-	if data is Dictionary:
-		var version: float = _number((data as Dictionary).get("version"), INF)
-		if version <= VERSION:
-			_outdated = _outdated or version < VERSION
-			return data
-	push_error("Save: can't read %s, starting from the defaults" % path)
+	if data is Dictionary and SaveData.number((data as Dictionary).get("version"), 0.0) == VERSION:
+		return data
+	push_error("Save: can't read %s (broken or another version), starting from the defaults" % path)
 	DirAccess.rename_absolute(path, path + ".corrupt")
 	return {}
 

@@ -20,7 +20,7 @@ The game lives in `game/`, one folder per feature: its scenes, scripts and resou
 | `player/` | player and its components (`PlayerAim`: aiming and lock-on, `PlayerVitals`: health, going down and death, `PlayerCargo`: the ore carried, `PlayerArms`: the equipped weapon, its ammo and reloads, handing ammo, `PlayerInput`: the actions it is told to do and where it walks, `PlayerSounds`: its sounds and the local player's ears, `RingPointer`: an arrow on the suit ring's edge (the ship's, the scanner's, the miner radar's), `RescueDrone` and `MinerRadar` (skills), dash, cargo rack, ...); `pause/` (the pause panel) | the suit ring, VR and remote aim sources |
 | `progression/` | `skills/` (the graph's skills in `tree/`), `upgrades/`, `heat_shield/` (`HeatShield`, its plates), `TimedJob` (a level or rank under way), `ProgressClock` (finishing them on the wall clock) | more skills |
 | `refinery/` | `AlloyType`, `AlloyCatalog`, `IngotIcon`; `Refining` (a player's batches, `AlloyBatch`), `Furnaces` (the ship's); `alloys/` one resource per alloy | |
-| `save/` | `SaveGame`, `GameSettings` | |
+| `save/` | `SaveGame`, `SaveData`, `GameSettings` | |
 | `stats/` | `GameEvents` (the event bus), `StatsRecorder` (the statistics), `StatCounters` | the live `/metrics` endpoint, the statistics station, achievements |
 | `ship/` | ship, flight, lift, doors, the cargo hatch, neon signs, the shell's look (`ShipShell`, room looks), floor guide (Waypost Ostra's), holo table; the generated `hull.tscn`, `rooms/` (a scene per room), shared `materials/` | the modeled hull and rooms |
 | `space_station/` | `SpaceStation` (a station the ship docks at); one folder per station with its generated map (`ostra/`) | the second station, outposts |

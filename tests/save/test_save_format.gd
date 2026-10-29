@@ -1,6 +1,6 @@
 extends "res://tests/support/save_test.gd"
-## How older, newer or damaged save files load, and that resources are saved by UID (see
-## `SaveGame`; what the saves hold: `test_save_contents.gd`).
+## How save files of another version or damaged ones load, and that resources are saved by UID
+## (see `SaveGame`; what the saves hold: `test_save_contents.gd`).
 
 const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const BRASK: WeaponType = preload("res://game/weapons/types/brask/brask.tres")
@@ -11,7 +11,6 @@ const SUIT: Skill = preload("res://game/progression/skills/tree/reinforced_suit.
 const DASH: Skill = preload("res://game/progression/skills/tree/dash.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const OLVANE: OreType = preload("res://game/ores/types/ore_olvane.tres")
-const MERIDINE: OreType = preload("res://game/ores/types/ore_meridine.tres")
 
 
 func test_unreadable_save_starts_fresh_and_is_kept() -> void:
@@ -23,47 +22,59 @@ func test_unreadable_save_starts_fresh_and_is_kept() -> void:
 	assert_true(FileAccess.file_exists(corrupt))
 
 
-func test_newer_save_is_not_read() -> void:
-	_write(SaveGame.SHIP_FILE, JSON.stringify({"version": SaveGame.VERSION + 1, "hold": {}}))
-	await _restart()
-	assert_push_error("can't read")
+## Older saves aren't converted before the release: they start over like newer ones.
+func test_save_of_another_version_is_not_read() -> void:
+	for version: int in [SaveGame.VERSION - 1, SaveGame.VERSION + 1]:
+		_write(SaveGame.SHIP_FILE, JSON.stringify({"version": version, "cradles": 4}))
+		await _restart()
+		assert_push_error("can't read")
+		assert_eq(_ship.cradles.open, Cradles.START, "version %d" % version)
 
 
 func test_unknown_entries_are_skipped() -> void:
 	var ship_data: Dictionary = {
 		"version": SaveGame.VERSION,
-		"story": ["quartermaster.ammo", 3, ""],
+		"story": ["quartermaster.ammo", 3, "", "Not A Flag"],
 	}
 	var player_data: Dictionary = {
 		"version": SaveGame.VERSION,
 		"hold":
 		{
-			KYRITE.resource_path: 30.0,
-			"res://nothing.tres": 5.0,
-			"user://ore.tres": 5.0,
-			BRASK.resource_path: 5.0,
-			OLVANE.resource_path: -4.0,
+			"items":
+			{
+				_uid(KYRITE): 30.0,
+				"uid://nothing": 5.0,
+				KYRITE.resource_path: 5.0,
+				_uid(BRASK): 5.0,
+				_uid(OLVANE): -4.0,
+			},
+			"found": [_uid(OLVANE), _uid(BRASK)],
 		},
-		"found": [OLVANE.resource_path, BRASK.resource_path],
-		"arsenal": [HARL.resource_path, "res://nothing.tres", 3, KYRITE.resource_path],
-		"loadout": [DRAY.resource_path, BRASK.resource_path],
-		"upgrades": {ARMOR.resource_path: 99, "res://nothing.tres": 2, DRILL.resource_path: "x"},
-		"skills": {SUIT.resource_path: 99, ARMOR.resource_path: 1, DASH.resource_path: 0},
-		"upgrade_jobs":
+		"arsenal": {"weapons": [_uid(HARL), "uid://nothing", 3, _uid(KYRITE)], "blueprints": []},
+		"loadout": [_uid(DRAY), _uid(BRASK)],
+		"upgrades":
 		{
-			ARMOR.resource_path: {"level": 9, "started": 0.0, "seconds": 60.0},
-			DRILL.resource_path: {"level": 2, "started": "x", "seconds": 60.0},
+			"levels": {_uid(ARMOR): 99, "uid://nothing": 2, _uid(DRILL): "x"},
+			"jobs":
+			{
+				_uid(ARMOR): {"level": 9, "started": 0.0, "seconds": 60.0},
+				_uid(DRILL): {"level": 2, "started": "x", "seconds": 60.0},
+			},
 		},
-		"skill_jobs":
+		"skills":
 		{
-			DASH.resource_path: {"level": 1, "started": 1e12, "seconds": 60.0},
-			SUIT.resource_path: {"level": 2, "started": 0.0, "seconds": 60.0},
+			"ranks": {_uid(SUIT): 99, _uid(ARMOR): 1, _uid(DASH): 0},
+			"jobs":
+			{
+				_uid(DASH): {"level": 1, "started": 1e12, "seconds": 60.0},
+				_uid(SUIT): {"level": 2, "started": 0.0, "seconds": 60.0},
+			},
 		},
 	}
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
 	await _restart()
-	assert_eq(_player.hold.items.keys(), [KYRITE] as Array[ItemType])
+	assert_eq(_player.hold.items.keys(), [KYRITE] as Array[ItemType], "by UID only")
 	assert_eq(_player.hold.found.keys(), [KYRITE, OLVANE] as Array[ItemType])
 	assert_eq(_ship.story.flags.keys(), [&"quartermaster.ammo"] as Array[StringName])
 	assert_eq(_player.arsenal.weapons, [HARL] as Array[WeaponType])
@@ -76,20 +87,26 @@ func test_unknown_entries_are_skipped() -> void:
 	assert_eq(_player.skills.ranks.size(), 1, "not a skill, rank 0")
 	assert_true(_player.upgrades.jobs.is_empty(), "beyond the highest, a start that isn't a time")
 	assert_eq(_player.skills.jobs.keys(), [DASH] as Array[Skill], "the rank after the current")
+	await wait_process_frames(1)
+	var story: Array = _saved(SaveGame.SHIP_FILE)["story"]
+	assert_eq(story, ["quartermaster.ammo"], "the repaired save written again")
 
 
 ## A section holding the wrong kind of value is skipped like an unknown entry.
 func test_sections_of_the_wrong_kind_are_skipped() -> void:
-	var ship_data: Dictionary = {"version": SaveGame.VERSION, "story": "x", "shield": [1]}
+	var ship_data: Dictionary = {
+		"version": SaveGame.VERSION, "story": "x", "shield": [1], "reactions": 3, "at": 7
+	}
 	var player_data: Dictionary = {
 		"version": SaveGame.VERSION,
-		"hold": [KYRITE.resource_path],
-		"arsenal": {HARL.resource_path: 1},
-		"upgrades": [ARMOR.resource_path],
+		"hold": [_uid(KYRITE)],
+		"refining": {},
+		"arsenal": [_uid(HARL)],
+		"loadout": {},
+		"upgrades": {"levels": [_uid(ARMOR)]},
 		"skills": "x",
-		"upgrade_jobs": [],
-		"skill_jobs": 3,
-		"miners": {},
+		"fleet": {"miners": {}},
+		"hints": 3,
 	}
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
@@ -99,6 +116,7 @@ func test_sections_of_the_wrong_kind_are_skipped() -> void:
 	assert_eq(_player.upgrades.mk(ARMOR), 1)
 	assert_true(_player.skills.ranks.is_empty())
 	assert_true(_ship.story.flags.is_empty())
+	assert_false(_player.fleet.is_empty(1), "M-01 stays")
 
 
 ## Resources are saved by UID, so moving or renaming their files keeps the save working.
@@ -110,125 +128,23 @@ func test_resources_are_saved_by_uid() -> void:
 	var ship_data: Dictionary = _saved(SaveGame.SHIP_FILE)
 	var player_data: Dictionary = _saved(SaveGame.PLAYER_FILE)
 	var hold: Dictionary = player_data["hold"]
-	var found: Array = player_data["found"]
-	var arsenal: Array = player_data["arsenal"]
+	var arsenal: Dictionary = player_data["arsenal"]
 	var loadout: Array = player_data["loadout"]
 	var upgrades: Dictionary = player_data["upgrades"]
 	var skills: Dictionary = player_data["skills"]
-	assert_eq(hold, {_uid(KYRITE): 10.0})
+	var items: Dictionary = hold["items"]
+	var found: Array = hold["found"]
+	var weapons: Array = arsenal["weapons"]
+	var levels: Dictionary = upgrades["levels"]
+	var ranks: Dictionary = skills["ranks"]
+	assert_eq(items, {_uid(KYRITE): 10.0})
 	assert_eq(found, [_uid(KYRITE)])
-	assert_eq(arsenal, [_uid(HARL), _uid(DRAY)])
+	assert_eq(weapons, [_uid(HARL), _uid(DRAY)])
 	assert_eq(loadout, [_uid(HARL), _uid(DRAY)])
-	assert_eq(upgrades, {_uid(ARMOR): 2.0})
-	assert_eq(skills, {_uid(DASH): 1.0})
+	assert_eq(levels, {_uid(ARMOR): 2.0})
+	assert_eq(ranks, {_uid(DASH): 1.0})
 	assert_true(_uid(KYRITE).begins_with("uid://"))
 	assert_false(ship_data.has("hold"), "the hold is the player's")
-
-
-## Version 1 saved paths, from before the resources moved into game/ (and three ores were renamed).
-func test_version_1_saves_still_load() -> void:
-	var ship_data: Dictionary = {
-		"version": 1,
-		"hold":
-		{
-			"res://scenes/mining/ores/ore_cyan.tres": 30.0,
-			"res://scenes/mining/ores/ore_pallin.tres": 12.0,
-		},
-		"found": ["res://scenes/mining/ores/ore_green.tres"],
-	}
-	var player_data: Dictionary = {
-		"version": 1,
-		"arsenal":
-		[
-			"res://scenes/weapons/types/blaster.tres",
-			"res://scenes/weapons/types/hammer.tres",
-			"res://scenes/weapons/types/shotgun.tres",
-		],
-		"loadout": ["res://scenes/weapons/types/shotgun.tres", null],
-		"upgrades": {"res://scenes/upgrades/armor.tres": 3},
-		"skills": {"res://scenes/skills/dash.tres": 1},
-	}
-	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
-	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
-	await _restart()
-	assert_eq(_player.hold.amount(KYRITE), 30.0, "renamed from cyan")
-	assert_eq(_player.hold.amount(load("res://game/ores/types/ore_pallin.tres") as OreType), 12.0)
-	assert_true(OLVANE in _player.hold.found, "renamed from green")
-	assert_eq(_player.arsenal.weapons, [HARL, DRAY, BRASK] as Array[WeaponType])
-	assert_eq(_player.loadout.get_weapon(0), BRASK)
-	assert_null(_player.loadout.get_weapon(1))
-	assert_eq(_player.upgrades.mk(ARMOR), 3)
-	assert_eq(_player.skills.rank(DASH), 1)
-	await wait_process_frames(1)
-	var saved: Dictionary = _saved(SaveGame.PLAYER_FILE)
-	var hold: Dictionary = saved["hold"]
-	var version: float = saved["version"]
-	assert_eq(version, float(SaveGame.VERSION), "written again in the current format")
-	assert_has(hold, _uid(KYRITE))
-
-
-## Up to version 2 the hold was the ship's: it moves into the player's save, nothing lost.
-func test_version_2_hold_moves_to_the_player() -> void:
-	var ship_data: Dictionary = {
-		"version": 2,
-		"hold": {_uid(KYRITE): 40.0, _uid(MERIDINE): 0.0},
-		"found": [_uid(KYRITE), _uid(MERIDINE), _uid(OLVANE)],
-		"story": ["quartermaster.ammo"],
-	}
-	var player_data: Dictionary = {"version": 2, "arsenal": [_uid(HARL)]}
-	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
-	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
-	await _restart()
-	assert_eq(_player.hold.amount(KYRITE), 40.0)
-	assert_true(_player.hold.has_found(MERIDINE), "found, though spent")
-	assert_true(_player.hold.has_found(OLVANE))
-	assert_true(_ship.story.is_set(&"quartermaster.ammo"))
-	await wait_process_frames(1)
-	var ship_saved: Dictionary = _saved(SaveGame.SHIP_FILE)
-	var player_saved: Dictionary = _saved(SaveGame.PLAYER_FILE)
-	var hold: Dictionary = player_saved["hold"]
-	var version: float = ship_saved["version"]
-	assert_eq(version, float(SaveGame.VERSION), "written again in the current format")
-	assert_false(ship_saved.has("hold"), "gone from the ship's save")
-	assert_false(ship_saved.has("found"))
-	var kyrite: float = hold[_uid(KYRITE)]
-	assert_eq(kyrite, 40.0)
-	await _restart()
-	assert_eq(_player.hold.amount(KYRITE), 40.0, "not doubled on the next load")
-
-
-## Up to version 3 the miner upgrades were the player's: they move onto M-01.
-func test_version_3_miner_levels_move_onto_m01() -> void:
-	var tank: Upgrade = load("res://game/progression/upgrades/miner_tank.tres")
-	var player_data: Dictionary = {
-		"version": 3,
-		"arsenal": [_uid(HARL)],
-		"upgrades": {_uid(ARMOR): 2, _uid(DRILL): 3},
-		"upgrade_jobs": {_uid(tank): {"level": 2, "started": 1e12, "seconds": 60.0}},
-	}
-	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
-	await _restart()
-	var first: CraftedMiner = _player.fleet.get_miner(1)
-	assert_eq(first.upgrades.mk(DRILL), 3)
-	assert_true(first.upgrades.is_running(tank), "with its level under way")
-	assert_eq(_player.upgrades.mk(DRILL), 1, "no longer the player's")
-	assert_false(_player.upgrades.is_running(tank))
-	assert_eq(_player.upgrades.mk(ARMOR), 2, "the armor stays")
-	await wait_process_frames(1)
-	var saved: Dictionary = _saved(SaveGame.PLAYER_FILE)
-	assert_false((saved["upgrades"] as Dictionary).has(_uid(DRILL)))
-	await _restart()
-	assert_eq(_player.fleet.get_miner(1).upgrades.mk(DRILL), 3, "kept on the next load")
-
-
-## Every place a version 1 path moved to is there.
-func test_moved_paths_exist() -> void:
-	for old: String in SaveGame.MOVED:
-		var moved: String = SaveGame.MOVED[old]
-		if moved.ends_with("/"):
-			assert_true(DirAccess.dir_exists_absolute(moved), moved)
-		else:
-			assert_true(ResourceLoader.exists(moved), moved)
 
 
 ## Weapons are never taken away and the loadout is never empty, so a save without a known weapon
@@ -236,7 +152,7 @@ func test_moved_paths_exist() -> void:
 func test_save_without_a_known_weapon_keeps_the_defaults() -> void:
 	var player_data: Dictionary = {
 		"version": SaveGame.VERSION,
-		"arsenal": ["res://nothing.tres"],
+		"arsenal": {"weapons": ["uid://nothing"]},
 		"loadout": [null, null],
 	}
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))

@@ -2,7 +2,6 @@ extends "res://tests/support/save_test.gd"
 ## What the saves hold besides the gear: the heat shield and where the ship is, the miners and the
 ## cradles open, the furnaces and their batches, each also from a damaged save (see `SaveGame`).
 
-const HARL: WeaponType = preload("res://game/weapons/types/harl/harl.tres")
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
@@ -41,7 +40,7 @@ func test_heat_shield_and_position_are_saved() -> void:
 func test_damaged_heat_shield_and_position_are_skipped() -> void:
 	var ship_data: Dictionary = {
 		"version": SaveGame.VERSION,
-		"shield": {"mk": 99, "project": "yes", "paid": {KYRITE.resource_path: 5.0, "x": 3}},
+		"shield": {"mk": 99, "project": "yes", "paid": {_uid(KYRITE): 5.0, "x": 3}},
 		"at": "zairen",
 	}
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
@@ -92,17 +91,22 @@ func test_a_lost_m01_stays_lost() -> void:
 func test_damaged_miners_are_skipped() -> void:
 	var player_data: Dictionary = {
 		"version": SaveGame.VERSION,
-		"arsenal": [_uid(HARL)],
-		"miners":
-		[
-			{"number": 1, "upgrades": {_uid(DRILL): 2, _uid(ARMOR): 3}},
-			{"number": 1},
-			{"number": 9},
-			"x",
-			{"number": 2, "build": {"level": 1, "started": "x", "seconds": 60.0}},
-			{"number": 3, "upgrade_jobs": {_uid(DRILL): {"level": 5, "started": 0, "seconds": 1}}},
-		],
-		"lost_miners": {"1": "here", "4": "there", "x": "nowhere", "5": 3},
+		"fleet":
+		{
+			"miners":
+			[
+				{"number": 1, "upgrades": {"levels": {_uid(DRILL): 2, _uid(ARMOR): 3}}},
+				{"number": 1},
+				{"number": 9},
+				"x",
+				{"number": 2, "build": {"level": 1, "started": "x", "seconds": 60.0}},
+				{
+					"number": 3,
+					"upgrades": {"jobs": {_uid(DRILL): {"level": 5, "started": 0, "seconds": 1}}},
+				},
+			],
+			"lost": {"1": "here", "4": "there", "x": "nowhere", "5": 3},
+		},
 	}
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
 	await _restart()

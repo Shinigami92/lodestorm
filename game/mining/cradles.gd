@@ -31,3 +31,19 @@ func is_open(number: int) -> bool:
 func restore(count: int) -> void:
 	open = clampi(count, 1, MinerFleet.SLOTS)
 	emit_changed()
+
+
+## What's saved: the number open.
+func save_data() -> int:
+	return open
+
+
+## Reads the number open a save has (`save_data`), clamped. Returns whether it read.
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	var count: float = SaveData.number(saved, -1.0)
+	restore(roundi(clampf(count, START, MinerFleet.SLOTS)))
+	if count < 1.0 or count > MinerFleet.SLOTS:
+		return SaveData.skipped("cradles", saved)
+	return true

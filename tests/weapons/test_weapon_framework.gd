@@ -140,7 +140,8 @@ func test_blueprints_only_for_weapons_not_owned() -> void:
 	assert_false(_player.arsenal.learn(BRASK), "known already")
 	assert_true(_player.arsenal.has_blueprint(BRASK))
 	var data: Dictionary = SaveGame.player_data(_player)
-	var blueprints: Array = data["blueprints"]
+	var arsenal: Dictionary = data["arsenal"]
+	var blueprints: Array = arsenal["blueprints"]
 	assert_eq(blueprints, [ResourceUID.path_to_uid(BRASK.resource_path)])
 
 

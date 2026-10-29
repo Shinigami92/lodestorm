@@ -41,3 +41,33 @@ func progress(now: float) -> float:
 ## Seconds until it's done, at `now`.
 func time_left(now: float) -> float:
 	return clampf(started + seconds - now, 0.0, seconds)
+
+
+## What's saved: the level it reaches, its start, its time and what was paid.
+func save_data() -> Dictionary:
+	return {
+		"level": level,
+		"started": started,
+		"seconds": seconds,
+		"paid": SaveData.numbers_by_uid(paid)
+	}
+
+
+## A job from what a save has (`save_data`), or null when it doesn't read. Paid entries that don't
+## read are skipped.
+static func from_data(saved: Variant) -> TimedJob:
+	if not saved is Dictionary:
+		return null
+	var data: Dictionary = saved
+	var to_level: float = SaveData.number(data.get("level"), 0.0)
+	var start_time: float = SaveData.number(data.get("started"), NAN)
+	var duration: float = SaveData.number(data.get("seconds"), -1.0)
+	var saved_paid: Variant = data.get("paid", {})
+	if to_level < 1.0 or is_nan(start_time) or duration < 0.0 or not saved_paid is Dictionary:
+		return null
+	var job := TimedJob.new(roundi(to_level), start_time, duration)
+	var read: Dictionary = SaveData.load_numbers(saved_paid as Dictionary, ItemType, 0.0, "paid")
+	for item: ItemType in read:
+		var amount: float = read[item]
+		job.paid[item] = roundi(amount)
+	return job

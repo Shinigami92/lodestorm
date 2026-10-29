@@ -70,6 +70,34 @@ func mark_found(item: ItemType) -> void:
 	emit_changed()
 
 
+## What's saved: units per item and the items ever in it (sorted).
+func save_data() -> Dictionary:
+	var saved_found: Array = SaveData.uids_of(found.keys())
+	saved_found.sort()
+	return {"items": SaveData.numbers_by_uid(items), "found": saved_found}
+
+
+## Reads what a save has (`save_data`) into it. Returns whether all of it read.
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	var data: Dictionary = saved if saved is Dictionary else {}
+	var saved_items: Variant = data.get("items", {})
+	var saved_found: Variant = data.get("found", [])
+	if not saved is Dictionary or not saved_items is Dictionary or not saved_found is Array:
+		return SaveData.skipped("hold", saved)
+	var entries: Dictionary = saved_items
+	var read: Dictionary = SaveData.load_numbers(entries, ItemType, 0.0, "hold entry")
+	for item: ItemType in read:
+		var units: float = read[item]
+		add(item, units)
+	var listed: Array = saved_found
+	var known: Array = SaveData.load_uids(listed, ItemType, "found item")
+	for item: ItemType in known:
+		mark_found(item)
+	return read.size() == entries.size() and known.size() == listed.size()
+
+
 func _set_amount(item: ItemType, units: float) -> void:
 	items[item] = units
 	if units > 0.0:

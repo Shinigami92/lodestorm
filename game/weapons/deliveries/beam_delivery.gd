@@ -47,7 +47,7 @@ func attack(weapon: Weapon) -> void:
 			if pierce:
 				exclude.append((collider as Alien).get_rid())
 				continue
-		elif collider is Destructible:
+		elif WeaponTarget.is_target(collider):
 			_hit(weapon, collider as Node3D, at, direction).land_on(collider as Node3D)
 		elif collider is Player or collider is Miner:
 			if not mends:

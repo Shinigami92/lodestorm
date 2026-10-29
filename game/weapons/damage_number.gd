@@ -73,7 +73,7 @@ static func show_hit(attacker: Node, target: Node3D, damage: float) -> DamageNum
 	var number := DamageNumber.new()
 	number.add(damage)
 	target.get_parent().add_child(number)
-	number._start = PlayerAim.aim_point(target) + Vector3.UP * 0.5
+	number._start = WeaponTarget.aim_point(target) + Vector3.UP * 0.5
 	number.global_position = number._start
 	target.set_meta(META, number)
 	return number

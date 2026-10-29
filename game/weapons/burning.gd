@@ -37,7 +37,7 @@ static func ignite(
 		burning = Burning.new()
 		burning.name = NODE_NAME
 		target.add_child(burning)
-		burning.global_position = _flame_point(target)
+		burning.global_position = WeaponTarget.aim_point(target)
 	burning.damage_per_second = maxf(burning.damage_per_second, damage)
 	burning.time_left = maxf(burning.time_left, seconds)
 	burning.by = by_whom
@@ -93,30 +93,13 @@ func _physics_process(delta: float) -> void:
 
 
 func _burn(target: Node3D, amount_dealt: float) -> void:
-	if target is Alien:
-		(target as Alien).take_damage(amount_dealt, by, weapon_type)
-	elif target is Destructible:
-		(target as Destructible).take_damage(amount_dealt, by, weapon_type)
+	WeaponTarget.take_damage(target, amount_dealt, by, weapon_type)
 	DamageNumber.show_hit(by, target, amount_dealt)
 
 
 ## Whether `target` can't burn (anymore): dead, destroyed or under the ground.
 static func _is_out(target: Node3D) -> bool:
-	if target is Alien:
-		var alien := target as Alien
-		return alien.dead or alien.underground
-	if target is Destructible:
-		return (target as Destructible).dead
-	return true
-
-
-## Where the flames sit on `target`: its middle.
-static func _flame_point(target: Node3D) -> Vector3:
-	if target is Alien:
-		return (target as Alien).get_aim_point()
-	if target is Destructible:
-		return (target as Destructible).get_aim_point()
-	return target.global_position
+	return not WeaponTarget.is_hittable(target)
 
 
 static func _flame() -> Mesh:

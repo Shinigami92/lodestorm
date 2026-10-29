@@ -51,12 +51,9 @@ func move_to(target: Vector3) -> bool:
 		var hitting := Hit.new(
 			damage, stagger, push, velocity, global_position, shooter, weapon_type
 		)
-		if collider is Alien:
-			var alien := collider as Alien
-			DamageNumber.show_hit(shooter, alien, alien.take_hit(hitting))
-		elif collider is Destructible:
-			var body := collider as Destructible
-			DamageNumber.show_hit(shooter, body, body.take_hit(hitting))
+		if WeaponTarget.is_target(collider):
+			var struck := collider as Node3D
+			DamageNumber.show_hit(shooter, struck, WeaponTarget.take_hit(struck, hitting))
 		hit.emit(collider, global_position)
 		if pierce and collider is Alien:
 			exclude.append((collider as Alien).get_rid())

@@ -122,30 +122,16 @@ func _drill(weapon: Weapon) -> void:
 
 ## Whether `target` is still there to drill: alive, hittable and within reach (a nest's edge).
 func _can_drill(weapon: Weapon, target: Node3D) -> bool:
-	if not target.is_inside_tree():
+	if not WeaponTarget.is_hittable(target):
 		return false
-	var edge: float = 0.0
-	if target is Alien:
-		if not (target as Alien).is_hittable():
-			return false
-		edge = BODY
-	elif target is Destructible:
-		if not (target as Destructible).is_hittable():
-			return false
-		edge = (target as Destructible).radius()
+	var edge: float = WeaponTarget.edge(target, BODY)
 	return _flat_distance(weapon.holder.global_position, target) <= reach + edge
 
 
 ## A hit on `target` along `direction`, landing at its body facing the holder.
 func _hit(weapon: Weapon, target: Node3D, direction: Vector3) -> Hit:
-	var edge: float = BODY
-	var aim: Vector3 = target.global_position
-	if target is Alien:
-		aim = (target as Alien).get_aim_point()
-	elif target is Destructible:
-		aim = (target as Destructible).get_aim_point()
-		edge = (target as Destructible).radius()
-	return weapon.make_hit(direction, aim - direction * edge)
+	var aim: Vector3 = WeaponTarget.aim_point(target)
+	return weapon.make_hit(direction, aim - direction * WeaponTarget.edge(target, BODY))
 
 
 ## The nearest nest whose edge is in the line from `from` along `direction` up to `length` m.

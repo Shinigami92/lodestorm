@@ -44,11 +44,12 @@ func attack(weapon: Weapon) -> void:
 		var at: Vector3 = from
 		var left: int = jumps_of(weapon)
 		while target:
-			var point: Vector3 = PlayerAim.aim_point(target)
+			var point: Vector3 = WeaponTarget.aim_point(target)
 			_land(weapon, target, at, point, share)
 			points.append(point)
 			struck.append(target)
-			if left <= 0 or target is Destructible:
+			# Only aliens pass it on (a nest takes the rest).
+			if left <= 0 or target is not Alien:
 				break
 			left -= 1
 			share *= jump_share
@@ -73,12 +74,11 @@ func _first_target(
 	var locked: Node3D = weapon.aim_target
 	if PlayerAim.is_lockable(locked):
 		var offset: Vector3 = locked.global_position - holder.global_position
-		var edge: float = (locked as Destructible).radius() if locked is Destructible else 0.0
-		if Vector2(offset.x, offset.z).length() - edge <= reach:
+		if Vector2(offset.x, offset.z).length() - WeaponTarget.edge(locked) <= reach:
+			# Its own body doesn't stand in the way (an alien never does).
 			var past: Array[RID] = exclude.duplicate()
-			if locked is Destructible:
-				past.append((locked as Destructible).get_rid())
-			if is_clear(space, from, PlayerAim.aim_point(locked), past):
+			past.append((locked as CollisionObject3D).get_rid())
+			if is_clear(space, from, WeaponTarget.aim_point(locked), past):
 				return locked
 	var direction: Vector3 = weapon.aim_direction
 	var half: float = deg_to_rad(angle) * 0.5
@@ -146,7 +146,7 @@ func _strike_ground(
 			passed.append((collider as CollisionObject3D).get_rid())
 			continue
 		var at: Vector3 = result["position"]
-		if collider is Alien or collider is Destructible:
+		if WeaponTarget.is_target(collider):
 			_land(weapon, collider as Node3D, from, at, 1.0)
 		DustPuff.spawn(weapon.holder.get_parent(), at, 0.4)
 		return at

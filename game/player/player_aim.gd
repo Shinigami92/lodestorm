@@ -138,21 +138,10 @@ func is_mouse_over_ui() -> bool:
 ## Whether `node` (an alien or a destructible) can be locked on: it exists, can be hit and isn't
 ## hidden (a stalker no player is close to).
 static func is_lockable(node: Node3D) -> bool:
-	if not is_instance_valid(node):
+	if not WeaponTarget.is_hittable(node):
 		return false
-	if node is Alien:
-		var alien := node as Alien
-		return alien.is_hittable() and not (alien.cloaking and alien.cloaking.is_hidden())
-	return node is Destructible and (node as Destructible).is_hittable()
-
-
-## Where shots at `node` (an alien or a destructible) aim.
-static func aim_point(node: Node3D) -> Vector3:
-	if node is Alien:
-		return (node as Alien).get_aim_point()
-	if node is Destructible:
-		return (node as Destructible).get_aim_point()
-	return node.global_position
+	var alien := node as Alien
+	return not (alien and alien.cloaking and alien.cloaking.is_hidden())
 
 
 ## Of `candidates`, the one closest to `screen_position` on screen, within the lock radius (the
@@ -166,7 +155,7 @@ func _near_screen_position(
 	var best: Node3D
 	var best_distance: float = INF
 	for candidate: Node3D in candidates:
-		var point: Vector3 = aim_point(candidate)
+		var point: Vector3 = WeaponTarget.aim_point(candidate)
 		if camera.is_position_behind(point):
 			continue
 		var radius: float = (
@@ -174,9 +163,10 @@ func _near_screen_position(
 		)
 		radius *= screen_height
 		var on_screen: Vector2 = camera.unproject_position(point)
-		if candidate is Destructible:
-			var edge: Vector3 = point + camera.global_basis.x * (candidate as Destructible).radius()
-			radius += camera.unproject_position(edge).distance_to(on_screen)
+		var edge: float = WeaponTarget.edge(candidate)
+		if edge > 0.0:
+			var side: Vector3 = point + camera.global_basis.x * edge
+			radius += camera.unproject_position(side).distance_to(on_screen)
 		var distance: float = on_screen.distance_to(screen_position)
 		if distance <= radius and distance < best_distance:
 			best = candidate

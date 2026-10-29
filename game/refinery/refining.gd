@@ -84,6 +84,37 @@ func restore(slot: int, batch: AlloyBatch) -> void:
 		emit_changed()
 
 
+## What's saved: per batch its furnace slot and the batch (`AlloyBatch.save_data`).
+func save_data() -> Array:
+	var saved: Array = []
+	for slot: int in SLOTS:
+		if batches[slot]:
+			var entry: Dictionary = batches[slot].save_data()
+			entry["slot"] = slot
+			saved.append(entry)
+	return saved
+
+
+## Reads the batches a save has (`save_data`), each into a free slot; the bars finished since are
+## left for `update`. Returns whether all of them read.
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	if not saved is Array:
+		return SaveData.skipped("refining", saved)
+	var complete: bool = true
+	for entry: Variant in saved as Array:
+		var batch: AlloyBatch = AlloyBatch.from_data(entry)
+		var slot: int = -1
+		if batch:
+			slot = roundi(SaveData.number((entry as Dictionary).get("slot"), -1.0))
+		if slot >= 0 and slot < SLOTS and not batches[slot]:
+			restore(slot, batch)
+		else:
+			complete = SaveData.skipped("refining batch", entry)
+	return complete
+
+
 func _deliver(slot: int, hold: PlayerHold, now: float) -> int:
 	var batch: AlloyBatch = get_batch(slot)
 	if not batch:

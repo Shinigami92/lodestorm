@@ -111,6 +111,45 @@ func raise(upgrade: Upgrade) -> bool:
 	return true
 
 
+## What's saved: the MK level per upgrade and the levels under way (`TimedJob.save_data`).
+func save_data() -> Dictionary:
+	var saved_jobs: Dictionary = {}
+	for upgrade: Upgrade in jobs:
+		saved_jobs[SaveData.uid_of(upgrade)] = jobs[upgrade].save_data()
+	return {"levels": SaveData.numbers_by_uid(levels), "jobs": saved_jobs}
+
+
+## Reads what a save has (`save_data`), only the upgrades in `only` unless it's empty; levels
+## out of range are clamped, levels under way that don't fit skipped. Those done since take effect
+## with `update`. Returns whether all of it read.
+func load_data(saved: Variant, only: Array[Upgrade] = []) -> bool:
+	if saved == null:
+		return true
+	var data: Dictionary = saved if saved is Dictionary else {}
+	var saved_levels: Variant = data.get("levels", {})
+	var saved_jobs: Variant = data.get("jobs", {})
+	if not saved is Dictionary or not saved_levels is Dictionary or not saved_jobs is Dictionary:
+		return SaveData.skipped("upgrades", saved)
+	var entries: Dictionary = saved_levels
+	var read: Dictionary = SaveData.load_numbers(entries, Upgrade, 1.0, "upgrade")
+	var complete: bool = read.size() == entries.size()
+	for upgrade: Upgrade in read:
+		var level: float = read[upgrade]
+		if only.is_empty() or upgrade in only:
+			levels[upgrade] = clampi(roundi(level), 1, upgrade.max_mk())
+		else:
+			complete = SaveData.skipped("upgrade", SaveData.uid_of(upgrade))
+	entries = saved_jobs
+	for key: Variant in entries:
+		var upgrade := SaveData.load_uid(key, Upgrade) as Upgrade
+		var job: TimedJob = TimedJob.from_data(entries[key])
+		var fits: bool = upgrade and job and (only.is_empty() or upgrade in only)
+		if not fits or not restore(upgrade, job):
+			complete = SaveData.skipped("upgrade job", key)
+	emit_changed()
+	return complete
+
+
 func _finish(done: Array[Upgrade]) -> Array[Upgrade]:
 	if done.is_empty():
 		return done

@@ -122,6 +122,40 @@ func has(effect: Skill.Effect) -> bool:
 	return false
 
 
+## What's saved: the rank per learned skill and the ranks under way (`TimedJob.save_data`).
+func save_data() -> Dictionary:
+	var saved_jobs: Dictionary = {}
+	for skill: Skill in jobs:
+		saved_jobs[SaveData.uid_of(skill)] = jobs[skill].save_data()
+	return {"ranks": SaveData.numbers_by_uid(ranks), "jobs": saved_jobs}
+
+
+## Reads what a save has (`save_data`); ranks out of range are clamped, ranks under way that don't
+## fit skipped. Those done since take effect with `update`. Returns whether all of it read.
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	var data: Dictionary = saved if saved is Dictionary else {}
+	var saved_ranks: Variant = data.get("ranks", {})
+	var saved_jobs: Variant = data.get("jobs", {})
+	if not saved is Dictionary or not saved_ranks is Dictionary or not saved_jobs is Dictionary:
+		return SaveData.skipped("skills", saved)
+	var entries: Dictionary = saved_ranks
+	var read: Dictionary = SaveData.load_numbers(entries, Skill, 1.0, "skill")
+	var complete: bool = read.size() == entries.size()
+	for skill: Skill in read:
+		var learned: float = read[skill]
+		ranks[skill] = clampi(roundi(learned), 1, skill.max_rank())
+	entries = saved_jobs
+	for key: Variant in entries:
+		var skill := SaveData.load_uid(key, Skill) as Skill
+		var job: TimedJob = TimedJob.from_data(entries[key])
+		if not skill or not job or not restore(skill, job):
+			complete = SaveData.skipped("skill job", key)
+	emit_changed()
+	return complete
+
+
 func _finish(done: Array[Skill]) -> Array[Skill]:
 	if done.is_empty():
 		return done

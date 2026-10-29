@@ -50,3 +50,28 @@ static func is_valid_flag(flag: StringName) -> bool:
 	if not _flag_regex:
 		_flag_regex = RegEx.create_from_string(FLAG_PATTERN)
 	return _flag_regex.search(String(flag)) != null
+
+
+## What's saved: the flags, sorted.
+func save_data() -> Array:
+	var saved: Array = []
+	for flag: StringName in flags:
+		saved.append(String(flag))
+	saved.sort()
+	return saved
+
+
+## Reads the flags a save has (`save_data`). Returns whether all of them read.
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	if not saved is Array:
+		return SaveData.skipped("story", saved)
+	var complete: bool = true
+	for flag: Variant in saved as Array:
+		if flag is String and is_valid_flag(StringName(flag as String)):
+			flags[StringName(flag as String)] = true
+		else:
+			complete = SaveData.skipped("story flag", flag)
+	emit_changed()
+	return complete

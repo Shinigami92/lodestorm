@@ -192,15 +192,15 @@ func test_saved_and_read_back() -> void:
 	GameEvents.bus.weapon_unlocked.emit(_player, null)
 	_reactions.next_line(_profile(QUARTERMASTER), CrewReactions.BIG_HAUL)
 	_reactions.biggest_haul = 42.5
-	var data: Dictionary = JSON.parse_string(JSON.stringify(_reactions.get_data()))
+	var data: Dictionary = JSON.parse_string(JSON.stringify(_reactions.save_data()))
 	var other := CrewReactions.new()
-	assert_true(other.restore(data))
-	assert_eq(other.get_data(), _reactions.get_data())
+	assert_true(other.load_data(data))
+	assert_eq(other.save_data(), _reactions.save_data())
 	other.free()
 	var broken := CrewReactions.new()
 	var saved_said: Dictionary = data["said"]
 	saved_said["pilot.storm_warning"] = "lots"
-	assert_false(broken.restore(data), "a broken count is skipped")
+	assert_false(broken.load_data(data), "a broken count is skipped")
 	assert_eq(broken.said.size(), _reactions.said.size())
 	broken.free()
 

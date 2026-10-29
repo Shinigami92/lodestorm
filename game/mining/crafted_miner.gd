@@ -53,3 +53,34 @@ func is_upgrading() -> bool:
 ## The number plate of cradle `cradle`, e.g. "M-01".
 static func plate_of(cradle: int) -> String:
 	return "M-%02d" % cradle
+
+
+## What's saved: its number, whether it goes along, its parts' levels (`Upgrades.save_data`) and,
+## while it's built, its build (`TimedJob.save_data`).
+func save_data() -> Dictionary:
+	var saved: Dictionary = {
+		"number": number, "along": going_along, "upgrades": upgrades.save_data()
+	}
+	if build:
+		saved["build"] = build.save_data()
+	return saved
+
+
+## A miner in the cradle and with the build a save has (`save_data`), or null when they don't
+## read; the rest is `load_data`'s.
+static func from_data(saved: Variant) -> CraftedMiner:
+	var data: Dictionary = saved if saved is Dictionary else {}
+	var cradle: float = SaveData.number(data.get("number"), 0.0)
+	var building: TimedJob = TimedJob.from_data(data["build"]) if data.has("build") else null
+	if cradle < 1.0 or cradle > MinerFleet.SLOTS or (data.has("build") and not building):
+		return null
+	return CraftedMiner.new(roundi(cradle), building)
+
+
+## Reads whether it goes along and its parts' levels from what a save has (`save_data`). Returns
+## whether all of it read.
+func load_data(saved: Dictionary) -> bool:
+	var along: Variant = saved.get("along", true)
+	going_along = along is bool and along
+	var complete: bool = upgrades.load_data(saved.get("upgrades"), PARTS)
+	return complete and (along is bool or SaveData.skipped("miner along", along))

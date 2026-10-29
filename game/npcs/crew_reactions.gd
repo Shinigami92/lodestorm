@@ -144,13 +144,18 @@ func transmit_all() -> void:
 
 
 ## What's saved: the turns and the biggest haul.
-func get_data() -> Dictionary:
+func save_data() -> Dictionary:
 	return {"said": _counts_data(said), "turns": _counts_data(turns), "biggest_haul": biggest_haul}
 
 
-## Takes over what a save had (`get_data`); returns whether all of it was read (a broken entry is
+## Takes over what a save had (`save_data`); returns whether all of it was read (a broken entry is
 ## skipped).
-func restore(data: Dictionary) -> bool:
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	if not saved is Dictionary:
+		return SaveData.skipped("crew reactions", saved)
+	var data: Dictionary = saved
 	var complete: bool = _read_counts(data.get("said"), said)
 	complete = _read_counts(data.get("turns"), turns) and complete
 	var haul: Variant = data.get("biggest_haul", 0.0)

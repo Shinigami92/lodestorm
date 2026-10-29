@@ -29,3 +29,36 @@ func assign(slot: int, weapon_type: WeaponType) -> void:
 		weapons[other] = previous
 	weapons[slot] = weapon_type
 	emit_changed()
+
+
+## What's saved: the weapon per slot (null: empty).
+func save_data() -> Array:
+	var saved: Array = []
+	for weapon_type: WeaponType in weapons:
+		if weapon_type:
+			saved.append(SaveData.uid_of(weapon_type))
+		else:
+			saved.append(null)
+	return saved
+
+
+## Reads the slots a save has (`save_data`), only with weapons `arsenal` owns (anything else leaves
+## the slot empty). The locker never empties the loadout, so a save that does is damaged: the
+## default slots stay, without weapons not owned. Returns whether all of it read.
+func load_data(saved: Variant, arsenal: Arsenal) -> bool:
+	if saved == null:
+		return true
+	if not saved is Array:
+		return SaveData.skipped("loadout", saved)
+	var slots: Array[WeaponType] = []
+	for entry: Variant in saved as Array:
+		var weapon_type := SaveData.load_uid(entry, WeaponType) as WeaponType
+		slots.append(weapon_type if weapon_type and arsenal.owns(weapon_type) else null)
+	if slots.any(func(weapon_type: WeaponType) -> bool: return weapon_type != null):
+		for slot: int in slots.size():
+			assign(slot, slots[slot])
+		return true
+	for slot: int in weapons.size():
+		if not arsenal.owns(get_weapon(slot)):
+			assign(slot, null)
+	return SaveData.skipped("loadout without an owned weapon", saved)

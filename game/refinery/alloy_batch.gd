@@ -44,3 +44,26 @@ func time_left(now: float) -> float:
 ## What its unfinished bars took from the hold, in units per ore.
 func unfinished_cost() -> Dictionary[ItemType, int]:
 	return alloy.cost(bars - done)
+
+
+## What's saved: the alloy, the bars, how many are done and when it started.
+func save_data() -> Dictionary:
+	return {"alloy": SaveData.uid_of(alloy), "bars": bars, "done": done, "started": started}
+
+
+## A batch from what a save has (`save_data`), or null when it doesn't read.
+static func from_data(saved: Variant) -> AlloyBatch:
+	if not saved is Dictionary:
+		return null
+	var data: Dictionary = saved
+	var of_alloy := SaveData.load_uid(data.get("alloy"), AlloyType) as AlloyType
+	var bar_count: int = roundi(SaveData.number(data.get("bars"), 0.0))
+	var bars_done: int = roundi(SaveData.number(data.get("done"), -1.0))
+	var start_time: float = SaveData.number(data.get("started"), NAN)
+	if not of_alloy or bar_count < 1 or bars_done < 0 or bars_done >= bar_count:
+		return null
+	if is_nan(start_time):
+		return null
+	var batch := AlloyBatch.new(of_alloy, bar_count, start_time)
+	batch.done = bars_done
+	return batch

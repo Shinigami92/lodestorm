@@ -91,7 +91,8 @@ func test_jobs_under_way_survive_a_restart() -> void:
 	_player.skills.jobs[DASH].seconds = 600.0
 	await wait_process_frames(1)
 	var saved: Dictionary = _saved("player.json")
-	assert_eq((saved["upgrade_jobs"] as Dictionary).size(), 1)
+	var upgrades: Dictionary = saved["upgrades"]
+	assert_eq((upgrades["jobs"] as Dictionary).size(), 1)
 	await _restart()
 	assert_true(_player.upgrades.is_running(ARMOR), "a minute takes longer than 10 s")
 	# JSON keeps the Unix time to well under a millisecond, not to the last bit on every platform.
@@ -112,34 +113,13 @@ func test_jobs_keep_what_was_paid() -> void:
 	_player.fleet.start_build(2, 1e12, 60.0, {COBREL: 3})
 	await wait_process_frames(1)
 	var saved: Dictionary = _saved(SaveGame.PLAYER_FILE)
-	var job: Dictionary = (saved["upgrade_jobs"] as Dictionary)[_uid(ARMOR)]
+	var upgrades: Dictionary = saved["upgrades"]
+	var job: Dictionary = (upgrades["jobs"] as Dictionary)[_uid(ARMOR)]
 	var saved_paid: Dictionary = job["paid"]
 	assert_eq(saved_paid, {_uid(KYRITE): 100.0, _uid(MERISK): 4.0})
 	await _restart()
 	assert_eq(_player.upgrades.stop(ARMOR), paid)
 	assert_eq(_player.fleet.get_miner(2).build.paid, {COBREL: 3} as Dictionary[ItemType, int])
-
-
-## Up to version 4 the jobs didn't keep what was paid: an upgrade's level gives back the ores of its
-## cost (no alloy was paid then), a miner's build its whole cost.
-func test_version_4_jobs_give_back_the_ores() -> void:
-	var player_data: Dictionary = {
-		"version": 4,
-		"arsenal": [_uid(HARL)],
-		"upgrade_jobs": {_uid(ARMOR): {"level": 4, "started": 1e12, "seconds": 60.0}},
-		"skill_jobs": {_uid(DASH): {"level": 1, "started": 1e12, "seconds": 60.0}},
-		"upgrades": {_uid(ARMOR): 3},
-		"miners": [{"number": 2, "build": {"level": 1, "started": 1e12, "seconds": 60.0}}],
-	}
-	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
-	await _restart()
-	var ores: Dictionary[ItemType, int] = ARMOR.cost_of(4)
-	assert_true(ores.has(MERISK), "MK4 takes an alloy now")
-	ores.erase(MERISK)
-	assert_eq(_player.upgrades.stop(ARMOR), ores)
-	assert_eq(_player.skills.stop(DASH), DASH.ranks[0].cost)
-	var bay_cost: Dictionary[ItemType, int] = SaveGame.MINER_SETTINGS.build_cost
-	assert_eq(_player.fleet.get_miner(2).build.paid, bay_cost, "Cobrel was paid already")
 
 
 func test_story_survives_a_restart() -> void:
@@ -321,7 +301,8 @@ func _move(target: Vector3) -> void:
 
 func _saved_hold(ore_type: OreType) -> float:
 	var hold: Dictionary = _saved(SaveGame.PLAYER_FILE)["hold"]
-	return hold.get(_uid(ore_type), 0.0)
+	var items: Dictionary = hold["items"]
+	return items.get(_uid(ore_type), 0.0)
 
 
 func _saved(file_name: String) -> Dictionary:

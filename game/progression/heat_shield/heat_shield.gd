@@ -126,6 +126,42 @@ func restore(level: int, is_project: bool, paid_so_far: Dictionary[OreType, floa
 		level_changed.emit(mk)
 
 
+## What's saved: the MK level, whether the next plate is the project and what's paid into it.
+func save_data() -> Dictionary:
+	return {"mk": mk, "project": project, "paid": SaveData.numbers_by_uid(paid)}
+
+
+## Reads what a save has (`save_data`) through `restore`, a level out of range clamped. Returns
+## whether all of it read.
+func load_data(saved: Variant) -> bool:
+	if saved == null:
+		return true
+	if not saved is Dictionary:
+		return SaveData.skipped("heat shield", saved)
+	var data: Dictionary = saved
+	var complete: bool = true
+	var level: float = SaveData.number(data.get("mk"), 0.0)
+	if level < 1.0 or level > max_mk():
+		complete = SaveData.skipped("heat shield level", data.get("mk"))
+	var paid_so_far: Dictionary[OreType, float] = {}
+	var saved_paid: Variant = data.get("paid", {})
+	if saved_paid is Dictionary:
+		var entries: Dictionary = saved_paid
+		var read: Dictionary = SaveData.load_numbers(entries, OreType, 0.0, "heat shield payment")
+		complete = complete and read.size() == entries.size()
+		for ore_type: OreType in read:
+			var amount: float = read[ore_type]
+			paid_so_far[ore_type] = amount
+	else:
+		complete = SaveData.skipped("heat shield payment", saved_paid)
+	var is_project: Variant = data.get("project", false)
+	if not is_project is bool:
+		complete = SaveData.skipped("heat shield project", is_project)
+	var next_is_project: bool = is_project is bool and is_project
+	restore(roundi(clampf(level, 1.0, max_mk())), next_is_project, paid_so_far)
+	return complete
+
+
 func _install() -> void:
 	mk += 1
 	paid.clear()

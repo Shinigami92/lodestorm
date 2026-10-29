@@ -7,8 +7,6 @@ const LOCATION: PackedScene = preload("res://game/locations/test_location.tscn")
 const GENERATED: PackedScene = preload("res://game/locations/generated_location.tscn")
 ## Seconds every flight phase takes in these tests.
 const PHASE_TIME: float = 0.2
-## Areas of a standard generated location in these tests (the game's are bigger).
-const SMALL_LOCATION_AREAS: int = 5
 
 var _map: Node3D
 var _player: Player
@@ -188,7 +186,7 @@ func test_descent_waits_for_the_location() -> void:
 
 func test_generated_location_is_prepared_in_the_background() -> void:
 	_map = MAP.instantiate() as Node3D
-	_use_small_locations(_map.get_node("Voyage") as Voyage)
+	_use_generated_locations(_map.get_node("Voyage") as Voyage)
 	await _start()
 	var offer: MissionBrief = _voyage.offers[0]
 	assert_true(_voyage.preview(offer))
@@ -210,12 +208,12 @@ func test_generated_location_is_prepared_in_the_background() -> void:
 	assert_eq(location.biome, offer.biome)
 	assert_eq(location.world_seed, offer.world_seed)
 	assert_eq(location.nest_factor, _voyage.settings.nest_factors[offer.difficulty])
-	assert_eq(location.area_count, maxi(roundi(SMALL_LOCATION_AREAS * offer.length), 4))
+	assert_eq(location.area_count, maxi(roundi(_voyage.settings.location_areas * offer.length), 4))
 
 
 func test_freed_while_preparing() -> void:
 	_map = MAP.instantiate() as Node3D
-	_use_small_locations(_map.get_node("Voyage") as Voyage)
+	_use_generated_locations(_map.get_node("Voyage") as Voyage)
 	await _start()
 	_voyage.preview(_voyage.offers[0])
 	_voyage.preview(_voyage.offers[1])
@@ -271,12 +269,10 @@ func test_streaks_in_space() -> void:
 	assert_true((_flight.get_node("Streaks") as GPUParticles3D).emitting)
 
 
-## Generated locations smaller than the game's, so the tests stay quick.
-func _use_small_locations(voyage: Voyage) -> void:
+## Generated locations of the game's size: smaller ones leave a region's set piece (an outpost)
+## no area it fits on.
+func _use_generated_locations(voyage: Voyage) -> void:
 	voyage.location_scene = GENERATED
-	var settings := voyage.settings.duplicate() as VoyageSettings
-	settings.location_areas = SMALL_LOCATION_AREAS
-	voyage.settings = settings
 
 
 func _wait_for_phase(phase: ShipFlight.Phase) -> void:

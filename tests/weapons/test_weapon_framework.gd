@@ -115,15 +115,15 @@ func test_building_a_weapon_takes_its_blueprint_and_its_ore() -> void:
 	assert_eq(station.selected, build)
 	var card := station.card_menu as UpgradeCard
 	assert_eq(card.weapon_type, BRASK)
-	assert_true(card.get_buy_button().disabled, "no blueprint")
+	assert_true(card.get_action_button().disabled, "no blueprint")
 	assert_false(station.build(BRASK))
 	_player.arsenal.learn(BRASK)
 	station.refresh()
-	assert_true(card.get_buy_button().disabled, "nothing in the hold")
+	assert_true(card.get_action_button().disabled, "nothing in the hold")
 	for ore_type: OreType in BRASK.build_cost:
 		_player.hold.add(ore_type, BRASK.build_cost[ore_type] + 5.0)
 	station.refresh()
-	assert_false(card.get_buy_button().disabled)
+	assert_false(card.get_action_button().disabled)
 	assert_true(card.press_primary())
 	assert_true(_player.arsenal.owns(BRASK))
 	assert_false(_player.arsenal.has_blueprint(BRASK), "the blueprint is used up")

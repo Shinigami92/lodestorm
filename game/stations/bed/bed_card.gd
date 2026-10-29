@@ -5,12 +5,10 @@ extends StationCard
 
 @onready var _note: Label = %Note
 @onready var _sleep: Button = %Sleep
-@onready var _close: Button = %Close
 
 
 func _ready() -> void:
 	_sleep.pressed.connect(press_primary)
-	_close.pressed.connect(_on_close_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -34,8 +32,3 @@ func show_state(loses_run: bool) -> void:
 func press_primary() -> bool:
 	var bed := station as BedStation
 	return bed != null and bed.sleep()
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()

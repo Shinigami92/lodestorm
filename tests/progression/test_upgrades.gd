@@ -251,7 +251,7 @@ func test_station_buys_with_ore_from_the_hold() -> void:
 	var station: UpgradeStation = await _open_station("Armor")
 	var card := station.card_menu as UpgradeCard
 	assert_eq(card.upgrade, ARMOR)
-	var button: Button = card.get_buy_button()
+	var button: Button = card.get_action_button()
 	assert_true(button.disabled, "the hold is empty")
 	_player.hold.add(KYRITE, 1000.0)
 	_player.hold.add(VYREL, 1000.0)
@@ -303,7 +303,7 @@ func test_station_sells_higher_levels_once_the_ship_reaches_further() -> void:
 	assert_eq(_player.upgrades.mk(ARMOR), 8)
 	var card := station.card_menu as UpgradeCard
 	await wait_process_frames(1)
-	assert_eq(card.get_buy_button().text, "Max")
+	assert_eq(card.get_action_button().text, "Max")
 	assert_false(card.get_status().visible)
 
 
@@ -335,7 +335,7 @@ func test_station_locks_while_a_mission_is_underway() -> void:
 	var bay := station as MinerBayStation
 	assert_false(bay.can_build(2), "building neither")
 	assert_false(bay.toggle_along(1), "nor leaving one aboard")
-	assert_true((station.card_menu as UpgradeCard).get_buy_button().disabled)
+	assert_true((station.card_menu as UpgradeCard).get_action_button().disabled)
 
 
 func test_cradles_the_ship_lacks_are_stripped_spots() -> void:
@@ -352,7 +352,7 @@ func test_cradles_the_ship_lacks_are_stripped_spots() -> void:
 	await wait_process_frames(1)
 	var card := bay.card_menu as MinerCard
 	assert_string_contains((card.get_node("%Description") as Label).text, "sold off")
-	assert_false(card.get_buy_button().visible)
+	assert_false(card.get_action_button().visible)
 	assert_false(card.press_primary())
 	_ship.cradles.open_next()
 	await wait_process_frames(1)

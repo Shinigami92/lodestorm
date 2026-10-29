@@ -8,24 +8,13 @@ extends StationCard
 const ALL_WEAPONS: Arsenal = preload("res://game/weapons/all_weapons.tres")
 const MINER_SETTINGS: MinerSettings = preload("res://game/mining/miner_settings.tres")
 
-## The alloy, whether it was known and how many of its ores were found when `_recipe` was last
-## filled.
-var _recipe_of: AlloyType
-var _recipe_known: bool = false
-var _recipe_found: int = -1
-
 @onready var _badge: CenterContainer = %Badge
 @onready var _title: Label = %Title
 @onready var _tier: Label = %Tier
 @onready var _amount: Label = %Amount
 @onready var _recipe_label: Label = %RecipeLabel
-@onready var _recipe: HFlowContainer = %Recipe
+@onready var _recipe: BadgeRow = %Recipe
 @onready var _used_for: Label = %UsedFor
-@onready var _close: Button = %Close
-
-
-func _ready() -> void:
-	_close.pressed.connect(_on_close_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -37,7 +26,7 @@ func show_part(part: StationPart) -> void:
 	var alloy: AlloyType = shelf.alloy
 	var player: Player = rack.get_shown_player()
 	var hold: PlayerHold = player.hold if player else PlayerHold.new()
-	_set_badge(alloy if shelf.known else null)
+	ItemBadge.show_in(_badge, alloy if shelf.known else null, false)
 	_tier.text = tr("Tier %d alloy") % alloy.tier
 	if not shelf.known:
 		_title.text = tr("Unknown alloy")
@@ -75,39 +64,13 @@ func uses_of(alloy: AlloyType) -> PackedStringArray:
 
 ## Lists the recipe's ores with their units per bar, or (unknown) the ones found so far and "?".
 func _show_recipe(alloy: AlloyType, known: bool, hold: PlayerHold) -> void:
-	var found: Array[OreType] = alloy.found_ores(hold)
-	if alloy == _recipe_of and known == _recipe_known and found.size() == _recipe_found:
+	if known:
+		_recipe.show_items(alloy.recipe.keys(), alloy.recipe)
 		return
-	_recipe_of = alloy
-	_recipe_known = known
-	_recipe_found = found.size()
-	for node: Node in _recipe.get_children():
-		_recipe.remove_child(node)
-		node.queue_free()
+	var found: Array[OreType] = alloy.found_ores(hold)
+	var shown: Array = []
 	for ore_type: OreType in alloy.recipe:
-		if not known and ore_type not in found:
-			continue
-		var entry := HBoxContainer.new()
-		entry.add_theme_constant_override(&"separation", 8)
-		entry.add_child(ItemBadge.new(ore_type))
-		if known:
-			entry.add_child(_label(str(alloy.recipe[ore_type])))
-		_recipe.add_child(entry)
-	if not known:
-		var unknown := _label("?")
-		unknown.modulate = CardPalette.NOTE
-		_recipe.add_child(unknown)
-
-
-func _set_badge(item: ItemType) -> void:
-	var shown := _badge.get_child(0) as ItemBadge if _badge.get_child_count() > 0 else null
-	if not shown:
-		shown = ItemBadge.new(null, false)
-		_badge.add_child(shown)
-	shown.item = item
-	_badge.visible = item != null
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()
+		if ore_type in found:
+			shown.append(ore_type)
+	shown.append(null)
+	_recipe.show_items(shown)

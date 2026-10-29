@@ -7,8 +7,6 @@ extends StationCard
 ## mouse press on the other button). Below, what the slots are for, or while a mission is underway
 ## why nothing changes.
 
-const PIP_LIT := Color(0.3, 0.85, 1.0)
-const PIP_DARK := Color(0.12, 0.18, 0.22)
 const PIP_SIZE := Vector2(22.0, 12.0)
 const SELECTED_SLOT_COLOR := Color(1.0, 0.75, 0.3)
 ## Button states framed amber on the selected slot.
@@ -31,11 +29,6 @@ var _levels_shown: Array = []
 @onready var _levels: GridContainer = %Levels
 @onready var _status: Label = %Status
 @onready var _slots: HBoxContainer = %Slots
-@onready var _close: Button = %Close
-
-
-func _ready() -> void:
-	_close.pressed.connect(_on_close_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -78,7 +71,7 @@ func show_weapon(
 	_show_levels(shown, upgrades if upgrades else Upgrades.new(), owned)
 	# Why nothing changes, else what the slots are for.
 	_status.text = (
-		tr("Locked until everyone is back aboard.")
+		_locked_text()
 		if locked
 		else tr("Slots 1 and 2 go along on the next mission; one weapon always does.")
 	)
@@ -86,8 +79,7 @@ func show_weapon(
 		&"font_color", CardPalette.STATUS if locked else CardPalette.HINT
 	)
 	_show_slots(slots, slot, selected_slot, owned and not locked)
-	for dimmed: CanvasItem in [_title, _description, _levels]:
-		dimmed.modulate = Color.WHITE if owned else CardPalette.DIMMED
+	dim([_title, _description, _levels], not owned)
 
 
 func press_primary() -> bool:
@@ -117,15 +109,10 @@ func _show_levels(shown: WeaponType, upgrades: Upgrades, owned: bool) -> void:
 		var label: Label = _label(tr(upgrade.display_name))
 		label.add_theme_font_size_override(&"font_size", 20)
 		_levels.add_child(label)
-		var pips := HBoxContainer.new()
+		var pips := PipRow.new()
+		pips.pip_size = PIP_SIZE
 		pips.add_theme_constant_override(&"separation", 6)
-		var mk: int = upgrades.mk(upgrade) if owned else 0
-		for i: int in upgrade.max_mk():
-			var pip := ColorRect.new()
-			pip.custom_minimum_size = PIP_SIZE
-			pip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			pip.color = PIP_LIT if i < mk else PIP_DARK
-			pips.add_child(pip)
+		pips.show_level(upgrades.mk(upgrade) if owned else 0, upgrade.max_mk())
 		_levels.add_child(pips)
 
 
@@ -166,8 +153,3 @@ func _on_slot_pressed(slot: int) -> void:
 	var locker := station as LoadoutStation
 	if locker and weapon_type:
 		locker.toggle(weapon_type, slot)
-
-
-func _on_close_pressed() -> void:
-	if station:
-		station.close()

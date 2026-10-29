@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://b7if1vllna5b1" path="res://game/stations/upgrade/upgrade_card.gd" id="1_script"]
 [ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
 [ext_resource type="Script" uid="uid://3cpi3icxde12" path="res://game/ui/item_cost.gd" id="3_cost"]
+[ext_resource type="Script" uid="uid://b425vy8ch1q3q" path="res://game/ui/badge_row.gd" id="badgerow_script"]
+[ext_resource type="Script" uid="uid://m2f2bidj4r5w" path="res://game/ui/pip_row.gd" id="piprow_script"]
 
 [node name="UpgradeCard" type="PanelContainer"]
 anchors_preset = 14
@@ -44,6 +46,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Pips" type="HBoxContainer" parent="Layout/Level"]
+script = ExtResource("piprow_script")
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
@@ -62,6 +65,7 @@ modulate = Color(1, 1, 1, 0.75)
 layout_mode = 2
 
 [node name="ReachOres" type="HFlowContainer" parent="Layout/Reach"]
+script = ExtResource("badgerow_script")
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -83,6 +87,7 @@ modulate = Color(1, 1, 1, 0.75)
 layout_mode = 2
 
 [node name="ReachNextOres" type="HFlowContainer" parent="Layout/ReachNext"]
+script = ExtResource("badgerow_script")
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -135,7 +140,7 @@ layout_mode = 2
 focus_mode = 0
 text = "Close"
 
-[node name="Buy" type="Button" parent="Layout/Buttons"]
+[node name="Action" type="Button" parent="Layout/Buttons"]
 unique_name_in_owner = true
 auto_translate_mode = 2
 layout_mode = 2

@@ -20,7 +20,7 @@ func before_each() -> void:
 	await wait_physics_frames(2)
 
 
-func test_the_crafted_miner_goes_first_with_its_plate() -> void:
+func test_a_crafted_miner_wears_its_plate() -> void:
 	var miner: Miner = _place(0)
 	assert_eq(miner.crafted, _player.fleet.get_miner(1))
 	assert_false(miner.standard)
@@ -33,8 +33,7 @@ func test_the_crafted_miner_goes_first_with_its_plate() -> void:
 
 
 func test_standard_issue_miners_fill_up_slower_and_unnumbered() -> void:
-	_place(0)
-	var miner: Miner = _place(1)
+	var miner: Miner = _place(1, 0)
 	assert_null(miner.crafted)
 	assert_true(miner.standard)
 	assert_almost_eq(
@@ -116,5 +115,7 @@ func test_loose_miners_have_no_plate_or_pickup() -> void:
 	assert_false(miner.pick_up(_player))
 
 
-func _place(index: int) -> Miner:
-	return _nodes[index].place_miner(_player.miner_scene, _player.fleet, _player)
+## Places the crafted miner in cradle `number` (0: a standard-issue one) on node `index`.
+func _place(index: int, number: int = 1) -> Miner:
+	var choice := MinerChoice.new(_player.fleet.get_miner(number) if number > 0 else null)
+	return _nodes[index].place_miner(_player.miner_scene, _player.fleet, _player, false, choice)

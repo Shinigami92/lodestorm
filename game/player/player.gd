@@ -4,8 +4,9 @@ extends CharacterBody3D
 ## cursor on the ground, the right stick or else the movement direction; aliens there get locked
 ## on), and attacks there with the equipped weapon while `attack` is held. Places the miners of
 ## its `fleet` (one per open cradle of the ship per run, its crafted ones first) on the nearest
-## free ore node in range with `place_miner`, picks miners up again with `interact`, both taking a
-## few seconds while it stays near the miner (`handling`), and carries the ore that miners' hoses
+## free ore node in range with `place_miner` (the one it chose with `miner_prev`/`miner_next`, shown
+## there as a preview, see `picker`), picks miners up again with `interact`, both taking a few
+## seconds while it stays near the miner (`handling`), and carries the ore that miners' hoses
 ## move to it (`cargo`), shown in canisters on its back and as a badge rising above it
 ## (`OreArrival`). An arrow on the suit ring's edge points back to the ship (`ShipPointer`). Uses
 ## the nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
@@ -132,6 +133,8 @@ var suit_dash := SuitDash.new()
 var rescue_drone := RescueDrone.new()
 ## Placing and picking up miners, which take time.
 var handling := MinerHandling.new()
+## Which miner it places next, and the preview of it.
+var picker := MinerPicker.new()
 ## Its own sounds and, for the local player, the ears.
 var sounds := PlayerSounds.new()
 ## The ground hazards it stands in (slick ice).
@@ -209,6 +212,9 @@ func _ready() -> void:
 	handling.name = "MinerHandling"
 	handling.holder = self
 	add_child(handling)
+	picker.name = "MinerPicker"
+	picker.holder = self
+	add_child(picker)
 	# Loaded here, not preloaded: its scripts refer back to the player's.
 	pause_panel = (load(PAUSE_PANEL_PATH) as PackedScene).instantiate() as PausePanel
 	pause_panel.name = "PausePanel"
@@ -307,6 +313,10 @@ func _physics_process(delta: float) -> void:
 	_update_miner_target()
 	if input.just_pressed(&"place_miner"):
 		place_miner()
+	elif input.just_pressed(&"miner_prev"):
+		picker.step(-1)
+	elif input.just_pressed(&"miner_next"):
+		picker.step(1)
 
 	_update_interact_target()
 	if input.just_pressed(&"interact"):
@@ -320,14 +330,16 @@ func _process(_delta: float) -> void:
 	_scanner.reach = skills.value(Skill.Effect.ORE_SCANNER)
 
 
-## Starts placing the next miner of its `fleet` on `miner_target` (see `handling`) and returns
-## it, or null without a target, while another goes on nearby (see `MinerHandling`), or once the
-## run's miners are all placed.
+## Starts placing the miner of its `fleet` it chose (see `picker`) on `miner_target` (see
+## `handling`) and returns it, or null without a target, while another goes on nearby (see
+## `MinerHandling`), or once the run's miners are all placed.
 func place_miner() -> Miner:
 	_update_miner_target()
 	if not miner_target or fleet.left_to_place() <= 0:
 		return null
-	var miner: Miner = handling.place(miner_target)
+	var miner: Miner = handling.place(miner_target, picker.choice_for(miner_target))
+	if miner:
+		picker.placed()
 	_update_miner_target()
 	return miner
 
@@ -472,8 +484,6 @@ func _fall() -> void:
 	suit_dash.cancel()
 	arms.stop()
 	handling.cancel()
-	if is_instance_valid(miner_target):
-		miner_target.highlighted = false
 	if is_instance_valid(interact_target):
 		interact_target.highlighted = false
 	miner_target = null
@@ -556,16 +566,7 @@ func _follow(marker: Node3D, node: Node3D) -> void:
 
 
 func _update_miner_target() -> void:
-	var target: OreNode = OreNode.nearest_free(
-		get_tree(), global_position, settings.miner_place_range
-	)
-	if target == miner_target:
-		return
-	if is_instance_valid(miner_target):
-		miner_target.highlighted = false
-	miner_target = target
-	if miner_target:
-		miner_target.highlighted = true
+	miner_target = OreNode.nearest_free(get_tree(), global_position, settings.miner_place_range)
 
 
 func _update_interact_target() -> void:

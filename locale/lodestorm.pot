@@ -82,6 +82,10 @@ msgstr ""
 msgid "Salt pans"
 msgstr ""
 
+#: game/mining/miner_preview.gd
+msgid "Drill MK%d · Tank MK%d"
+msgstr ""
+
 #: game/mission/mission_brief.gd
 msgid "Easy"
 msgstr ""

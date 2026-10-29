@@ -9,6 +9,8 @@ const KEYBOARD_MOUSE_AND_GAMEPAD: Array[StringName] = [
 	&"attack",
 	&"interact",
 	&"place_miner",
+	&"miner_prev",
+	&"miner_next",
 	&"switch_weapon",
 	&"reload",
 	&"pause",

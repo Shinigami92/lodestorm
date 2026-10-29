@@ -18,9 +18,9 @@ extends StaticBody3D
 ## `settings.standard_fill_share` and has a plain grey plate. Its drill's MK level sets how hard an
 ## ore it mines at full speed (`Upgrade.hardness_at`, standard-issue ones MK1); a harder one it
 ## mines at `settings.soft_drill_share` of the speed, its drill turning slower and its loop
-## strained. Placing takes the miner that mines the node's ore fastest. Any player can pick one up
-## with `interact` within `settings.repair_range` (`pick_up`): what's in its tank goes onto their
-## back and the miner back to its owner's fleet, to place again.
+## strained. Placing takes the miner the player chose (`MinerChoice`, `MinerPicker`). Any player
+## can pick one up with `interact` within `settings.repair_range` (`pick_up`): what's in its tank
+## goes onto their back and the miner back to its owner's fleet, to place again.
 ## Placing and picking up take time (see `MinerHandling`): meanwhile it stands on its node as a
 ## hologram that turns real from the bottom up as its `handled_by` player places it, and back into
 ## a hologram from the top down as they pick it up (`built`, `MinerHologram`); its fill, number
@@ -167,7 +167,7 @@ func _ready() -> void:
 	var body := ($CollisionShape3D as CollisionShape3D).shape as CylinderShape3D
 	body_radius = body.radius
 	_height = body.height
-	_face_camera()
+	face_camera(_model)
 	# The fill and the plate don't show as a hologram.
 	var parts: Array[MeshInstance3D] = []
 	for mesh: MeshInstance3D in _meshes(_model):
@@ -311,13 +311,15 @@ func stand() -> void:
 	Sfx.play_at(PLACE_SOUND, global_position)
 
 
-## Takes a miner out of `from_fleet` (after `ore_type` is set, before it enters the tree): the one
-## still to place that mines this ore fastest (a crafted one with its levels, the first by number on
-## a tie, or a standard-issue one). `by` is the player placing it, whose fleet it is.
-func take_from(from_fleet: MinerFleet, by: Player) -> void:
+## Takes a miner out of `from_fleet` (after `ore_type` is set, before it enters the tree): `choice`
+## (one still to place), or without it the one placing takes by default (`MinerChoice.default_for`).
+## `by` is the player placing it, whose fleet it is.
+func take_from(from_fleet: MinerFleet, by: Player, choice: MinerChoice = null) -> void:
 	fleet = from_fleet
 	owned_by = by
-	crafted = _fastest(fleet)
+	if not choice:
+		choice = MinerChoice.default_for(fleet, ore_type)
+	crafted = choice.crafted if choice else null
 	fleet.take(crafted)
 	standard = crafted == null
 	upgrades = crafted.upgrades if crafted else null
@@ -460,31 +462,12 @@ func _multiplier(upgrade: Upgrade) -> float:
 
 ## The fill rate with the drill of `levels` (null: MK1); `standard_issue`: at the ship's share.
 func _fill_rate_with(levels: Upgrades, standard_issue: bool) -> float:
-	var share: float = settings.standard_fill_share if standard_issue else 1.0
-	var drill: float = levels.multiplier(drill_upgrade) if levels else 1.0
-	return (
-		settings.fill_rate * share * drill * settings.ore_share(ore_type, _drill_hardness(levels))
-	)
+	return MinerChoice.rate(settings, drill_upgrade, ore_type, levels, standard_issue)
 
 
 ## The hardest ore the drill of `levels` (null: MK1) mines at full speed.
 func _drill_hardness(levels: Upgrades) -> int:
 	return drill_upgrade.hardness_at(levels.mk(drill_upgrade) if levels else 1)
-
-
-## Of the miners still to place in `from_fleet`, the crafted one that mines this ore fastest (the
-## first by number on a tie), or null when a standard-issue one is faster or no crafted one is left.
-func _fastest(from_fleet: MinerFleet) -> CraftedMiner:
-	var best: CraftedMiner = null
-	var best_rate: float = -1.0
-	for miner: CraftedMiner in from_fleet.waiting():
-		var rate: float = _fill_rate_with(miner.upgrades, false)
-		if rate > best_rate:
-			best = miner
-			best_rate = rate
-	if from_fleet.standard_left() > 0 and _fill_rate_with(null, true) > best_rate:
-		return null
-	return best
 
 
 ## Shows the number plate: a crafted miner's number above a strip in its owner's color, a
@@ -535,8 +518,10 @@ func _show_built() -> void:
 		_update_gauge()
 
 
-func _face_camera() -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+## Turns `model` (a miner's) to face the camera's view (plus `FACING_OFFSET`), so its fill column
+## stays in view.
+static func face_camera(model: Node3D) -> void:
+	var camera: Camera3D = model.get_viewport().get_camera_3d()
 	if not camera:
 		return
 	# Against the view direction rather than toward the camera's position: the same for every miner
@@ -545,7 +530,7 @@ func _face_camera() -> void:
 	if Vector2(to_camera.x, to_camera.z).is_zero_approx():
 		return
 	var yaw: float = atan2(to_camera.x, to_camera.z) + deg_to_rad(FACING_OFFSET)
-	_model.global_basis = Basis(Vector3.UP, yaw)
+	model.global_basis = Basis(Vector3.UP, yaw)
 
 
 ## `node` itself if it's a mesh, and all meshes below it.

@@ -243,7 +243,8 @@ func test_crafted_miners_are_lost_when_everyone_dies() -> void:
 	await _open()
 	await _move(_player, _outside())
 	var node := get_tree().get_nodes_in_group(OreNode.GROUP)[0] as OreNode
-	node.place_miner(_player.miner_scene, _player.fleet, _player)
+	var m01 := MinerChoice.new(_player.fleet.get_miner(1))
+	node.place_miner(_player.miner_scene, _player.fleet, _player, false, m01)
 	_player.take_damage(_player.settings.max_health)
 	await wait_physics_frames(2)
 	assert_eq(_mission.state, Mission.State.LOST)

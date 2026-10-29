@@ -207,9 +207,10 @@ func test_miner_upgrades_apply_to_the_miners_a_player_places() -> void:
 
 func test_placed_crafted_miner_gets_its_own_levels() -> void:
 	var node := get_tree().get_nodes_in_group(OreNode.GROUP)[0] as OreNode
-	var miner: Miner = node.place_miner(MINER_SCENE, _player.fleet, _player)
 	var crafted: CraftedMiner = _player.fleet.get_miner(1)
-	assert_eq(miner.crafted, crafted, "M-01 goes first")
+	var choice := MinerChoice.new(crafted)
+	var miner: Miner = node.place_miner(MINER_SCENE, _player.fleet, _player, false, choice)
+	assert_eq(miner.crafted, crafted)
 	assert_eq(miner.upgrades, crafted.upgrades)
 	crafted.upgrades.raise(TANK)
 	assert_eq(miner.capacity(), miner.settings.capacity * TANK.levels[0].multiplier)

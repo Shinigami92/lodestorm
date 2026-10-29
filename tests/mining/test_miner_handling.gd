@@ -210,7 +210,11 @@ func test_the_ring_ticks_show_the_runs_miners() -> void:
 	)
 	_player.place_miner()
 	await wait_process_frames(2)
-	assert_eq(ring.miner_ticks[0], -SuitRing.CRAFTED_TICK, "placed: an outline")
+	assert_eq(
+		ring.miner_ticks[1],
+		-SuitRing.STANDARD_TICK,
+		"placed (standard-issue on common ore): outline"
+	)
 	assert_gt(ring.miners_alpha, 0.0)
 	var shown: PackedFloat32Array = ring.shown(&"miner_ticks")
 	assert_eq(shown, ring.miner_ticks)

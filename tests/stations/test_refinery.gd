@@ -88,6 +88,10 @@ func test_a_locked_furnace_is_cold() -> void:
 	assert_false(card.get_action_button().is_visible_in_tree())
 	assert_false(card.press_primary())
 	_furnace.close()
+	assert_true((_furnace.get_node("Shell/Cold") as Node3D).visible, "open, its burner pulled out")
+	_ship.furnaces.unlock()
+	await wait_process_frames(1)
+	assert_false((_furnace.get_node("Shell/Cold") as Node3D).visible)
 
 
 func test_unknown_recipes_give_nothing_away() -> void:

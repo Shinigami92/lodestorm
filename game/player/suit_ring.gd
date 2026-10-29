@@ -375,7 +375,7 @@ func _update_miners(delta: float) -> void:
 		ticks.append(-CRAFTED_TICK if miner.out else CRAFTED_TICK)
 	for index: int in fleet.standard_count():
 		ticks.append(-STANDARD_TICK if index < fleet.standard_out else STANDARD_TICK)
-	ticks.resize(MinerFleet.PER_RUN)
+	ticks.resize(MinerFleet.SLOTS)
 	if ticks != miner_ticks:
 		if not miner_ticks.is_empty():
 			_miners_lit = lit_time

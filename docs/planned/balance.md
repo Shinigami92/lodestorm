@@ -1,15 +1,13 @@
 # Pacing miners and furnaces, co-op miners (planned)
 
-Decided 2026-10-28. The cradles, the early costs and choosing which miner to place are built before the quests (see [`PLAN.md`](../PLAN.md)); the main quest's rewards with the quests (M4 step 16), the team's miners with co-op (M7). All values **TBD (playtest)**.
+Decided 2026-10-28. Choosing which miner to place is built before the quests (see [`PLAN.md`](../PLAN.md)); the main quest's rewards with the quests (M4 step 16), the team's miners with co-op (M7). All values **TBD (playtest)**. Built: the drone waiting for a gap, the two open cradles at the start with the stripped spots and the cold furnaces, the early costs at about half and the lines saying why (see [Miners](../design/mining.md), [Upgrade stations](../design/progression.md#upgrade-stations), [Opening planets](../design/missions.md)).
 
 ## Miners: two at the start, six through the main quest
 
-Today every player takes six miners into every run from the first one on (see [Miners](../design/mining.md)).
+Every player takes one miner per open cradle into a run, two at the start (built, see [Miners](../design/mining.md)).
 
-- **Two at the start:** M-01 and one standard-issue miner. One alone makes a run mostly waiting; two already means choosing which ore.
 - **One more per act in acts 1–4,** a main-quest reward in the middle of the act, not at its end (so it doesn't fall on the same moment as the heat shield plate): 3 in act 1, 4 in act 2, 5 in act 3, 6 in act 4. Who hands it over is written in each act's writing round (see [`story.md`](story.md)).
-- **Open cradles set the count:** a crafted miner can only be built in an open cradle, standard-issue miners fill up only to the number of open cradles, and placing stops at that number (as it stops at six today). Until the quests, the debug overlay opens cradles (like the furnaces).
-- **The ship's count:** the cradles are the ship's, so the host's save. In co-op everyone uses the host's count (like the furnaces and tier sync); a guest with more crafted miners takes the first ones by number, the rest stay home in the guest's save, never lost.
+- **The ship's count in co-op:** everyone uses the host's count (like the furnaces and tier sync); a guest with more crafted miners takes the first ones by number, the rest stay home in the guest's save, never lost (the fleet already takes only the first ones by number).
 
 ## Choosing which miner to place
 
@@ -22,21 +20,15 @@ With two to six miners and crafted ones that differ in drill, tank and plating, 
 
 ## Why cradles and furnaces are missing
 
-The ship is the survey's old ship, stripped and sold off when the survey ended and bought cheap by Brannik (see [`characters.md`](characters.md)). Cradles and furnaces went with everything else that came loose.
+The ship is the survey's old ship, stripped and sold off when the survey ended and bought cheap by Brannik (see [`characters.md`](characters.md)). Cradles and furnaces went with everything else that came loose. The stripped spots, the cold furnaces and the lines saying so are built (see [Miners](../design/mining.md) and the refinery in [Resources](../design/resources.md)).
 
-- **A missing cradle** is an empty spot in the bay's row: bare floor rails, cut cables capped and taped, a faded outline on the wall where it hung, its number plate still there. Its card says so in a plain line.
-- **A missing furnace** stands cold and open with its burner pulled out (today a cold, dark shell; the first one is rebuilt in Okoro's quest).
 - **The main quest pays in parts** (the colony pays in ore, alloys and favors, see [`world.md`](world.md)); each part is installed when it's handed over, and the cradle or furnace lights up.
-- **Said in a line:** Brannik's tour stop in the miners' bay ("They sold the cradles with everything else that came loose. We got two back."), Hollis' fleet topic and Okoro's furnace topic (and the stand-in topics until Hollis joins); new and changed lines voiced in English and German (Fenna English).
+- **Said in a line:** the stand-in topics until Hollis joins (crew joining, see [`crew.md`](crew.md)) say it too.
 
 ## Furnaces through the main quest
 
 - **All four through the main quest, one per act in acts 1–4:** the first early in act 1 (Okoro's furnace quest becomes a main step, since crafted miners need Cobrel), then one each in acts 2, 3 and 4. Each of acts 1–4 brings a cradle and a furnace.
 - **No more furnaces as skills:** only the main quest adds furnaces; "furnaces running faster" stays a mining skill (see [`skills.md`](skills.md)).
-
-## The early costs
-
-With two or three miners, act 1's runs bring roughly a third to half of today's haul. The first heat shield plate and the MK2 and MK3 costs drop to about half as greybox, then get tuned in playtest; the later acts stay as they are (by act 4 the player has six miners again).
 
 ## Co-op: the team's miners
 

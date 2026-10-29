@@ -164,7 +164,7 @@ lines = Array[String](["The skill graph. Your suit learns new things in here, li
 [sub_resource type="Resource" id="Tour_stop_Miners"]
 script = ExtResource("11_tour_stop")
 id = &"Miners"
-lines = Array[String](["Hollis and the miners. They dig the ore out there, while you keep the aliens off them."])
+lines = Array[String](["Hollis and the miners. They dig the ore out there, while you keep the aliens off them.", "They sold the cradles with everything else that came loose. We got two back."])
 
 [sub_resource type="Resource" id="Tour_stop_Armory"]
 script = ExtResource("11_tour_stop")

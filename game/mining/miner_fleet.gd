@@ -2,8 +2,10 @@ class_name MinerFleet
 extends Resource
 ## A player's miners (see docs/design/mining.md): up to `SLOTS` crafted ones (`miners`, by their
 ## cradle's number), each built in the miners' room and kept, and the ship's standard-issue ones.
-## Every player starts with M-01. A run takes up to `PER_RUN` miners: the crafted ones going along
-## and standard-issue ones filling up the rest (which one is placed where: `Miner.take_from`). A
+## Every player starts with M-01. How many cradles are open is the ship's (`cradles`): a crafted
+## miner is built only in an open one, and a run takes as many miners as there are open cradles,
+## the crafted ones going along first (by number, the others stay aboard) and standard-issue ones
+## filling up the rest (which one is placed where: `Miner.take_from`). A
 ## crafted miner still standing on the planet when the run ends is lost (`end_run`): its cradle
 ## empties and `lost_at` says where until it's built again. Standard-issue miners are never lost.
 ## Building one runs on the wall clock like an upgrade level (`start_build`), and so do its parts'
@@ -13,8 +15,6 @@ extends Resource
 
 ## Cradles in the miners' room.
 const SLOTS: int = 6
-## Miners a player takes into a run.
-const PER_RUN: int = 6
 
 ## The crafted miners by their cradle's number (built or under way); empty cradles are missing.
 var miners: Dictionary[int, CraftedMiner] = {}
@@ -23,9 +23,18 @@ var miners: Dictionary[int, CraftedMiner] = {}
 var lost_at: Dictionary[int, String] = {}
 ## Standard-issue miners standing on the planet right now.
 var standard_out: int = 0
+## The ship's open cradles (the player's ship links its own, see `Player`).
+var cradles: Cradles:
+	set(value):
+		if cradles:
+			cradles.changed.disconnect(emit_changed)
+		cradles = value
+		cradles.changed.connect(emit_changed)
+		emit_changed()
 
 
 func _init() -> void:
+	cradles = Cradles.new()
 	put(CraftedMiner.new(1))
 
 
@@ -54,19 +63,24 @@ func clear() -> void:
 	emit_changed()
 
 
-## The built crafted miners going along on the next run, by number.
+## How many miners a run takes: one per open cradle.
+func per_run() -> int:
+	return cradles.open
+
+
+## The built crafted miners going along on the next run, by number, at most `per_run`.
 func along() -> Array[CraftedMiner]:
 	var result: Array[CraftedMiner] = []
 	for number: int in range(1, SLOTS + 1):
 		var miner: CraftedMiner = get_miner(number)
-		if miner and miner.is_built() and miner.going_along:
+		if miner and miner.is_built() and miner.going_along and result.size() < per_run():
 			result.append(miner)
 	return result
 
 
 ## How many standard-issue miners fill up a run.
 func standard_count() -> int:
-	return maxi(PER_RUN - along().size(), 0)
+	return maxi(per_run() - along().size(), 0)
 
 
 ## How many miners are left to place in this run.
@@ -131,13 +145,14 @@ func is_empty(number: int) -> bool:
 	return number >= 1 and number <= SLOTS and not miners.has(number)
 
 
-## Starts building a miner in the empty cradle `number` at `now` (Unix seconds), taking `seconds`;
-## the build keeps `paid` (what stopping it gives back). Returns whether it started. Paying for it
+## Starts building a miner in the empty open cradle `number` at `now` (Unix seconds), taking
+## `seconds`; the build keeps `paid` (what stopping it gives back). Returns whether it started.
+## Paying for it
 ## is up to the caller (see `PlayerHold.pay`).
 func start_build(
 	number: int, now: float, seconds: float, paid: Dictionary[ItemType, int] = {}
 ) -> bool:
-	if not is_empty(number):
+	if not is_empty(number) or not cradles.is_open(number):
 		return false
 	put(CraftedMiner.new(number, TimedJob.new(1, now, seconds, paid)))
 	return true
@@ -179,9 +194,9 @@ func finish_all() -> Array[Resource]:
 	return done
 
 
-## Builds a miner in every empty cradle at once, at MK1 (the debug overlay).
+## Builds a miner in every empty open cradle at once, at MK1 (the debug overlay).
 func build_all() -> void:
-	for number: int in range(1, SLOTS + 1):
+	for number: int in range(1, cradles.open + 1):
 		if is_empty(number):
 			put(CraftedMiner.new(number))
 

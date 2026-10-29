@@ -51,7 +51,7 @@ func test_making_it_the_project_and_paying_the_rest() -> void:
 	assert_false(card.get_pay_button().disabled)
 	assert_true(card.press_primary(), "pays the rest")
 	assert_eq(_ship.heat_shield.mk, 2, "installed")
-	assert_eq(_player.hold.amount(MERIDINE), 700.0)
+	assert_eq(_player.hold.amount(MERIDINE), 850.0)
 	await wait_process_frames(1)
 	_core.select(_core.get_plate_part(3))
 	assert_eq(card.mk, 3)

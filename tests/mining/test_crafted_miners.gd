@@ -59,7 +59,8 @@ func test_a_crafted_miner_uses_its_own_levels() -> void:
 	)
 
 
-func test_no_more_than_six_miners_per_run() -> void:
+func test_no_more_miners_than_open_cradles_per_run() -> void:
+	assert_eq(_player.fleet.per_run(), Cradles.START)
 	_player.fleet.standard_out = _player.fleet.standard_count()
 	_player.fleet.get_miner(1).out = true
 	_player.global_position = _nodes[0].global_position + Vector3(1.0, 0.0, 0.0)
@@ -84,7 +85,7 @@ func test_interact_picks_a_miner_up_with_its_ore() -> void:
 	assert_almost_eq(_player.cargo.amount(miner.ore_type), 40.0, 1.0)
 	var crafted: CraftedMiner = _player.fleet.get_miner(1)
 	assert_false(crafted.out)
-	assert_eq(_player.fleet.left_to_place(), MinerFleet.PER_RUN)
+	assert_eq(_player.fleet.left_to_place(), _player.fleet.per_run())
 	await wait_physics_frames(1)
 	var again: Miner = _place(1)
 	assert_eq(again.crafted, crafted, "placed again")
@@ -98,7 +99,7 @@ func test_a_teammates_pickup_goes_back_to_the_owner() -> void:
 	await wait_physics_frames(1)
 	assert_true(miner.pick_up(other))
 	assert_false(_player.fleet.get_miner(1).out)
-	assert_eq(other.fleet.left_to_place(), MinerFleet.PER_RUN, "not the teammate's")
+	assert_eq(other.fleet.left_to_place(), other.fleet.per_run(), "not the teammate's")
 
 
 func test_a_miner_left_behind_cannot_be_picked_up() -> void:

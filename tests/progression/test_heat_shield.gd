@@ -53,12 +53,12 @@ func test_reaches_bodies_up_to_its_level() -> void:
 func test_paying_bit_by_bit_installs_the_plate() -> void:
 	var cost: Dictionary[OreType, int] = _shield.next_plate().cost
 	assert_eq(_shield.missing().size(), cost.size())
-	var taken: Dictionary[OreType, float] = _shield.take_from({MERIDINE: 200.0, KYRITE: 50.0})
-	assert_eq(taken, {MERIDINE: 200.0} as Dictionary[OreType, float], "only what it needs")
+	var taken: Dictionary[OreType, float] = _shield.take_from({MERIDINE: 100.0, KYRITE: 50.0})
+	assert_eq(taken, {MERIDINE: 100.0} as Dictionary[OreType, float], "only what it needs")
 	assert_eq(_shield.mk, 1)
-	assert_almost_eq(_shield.missing()[MERIDINE], cost[MERIDINE] - 200.0, 0.001)
+	assert_almost_eq(_shield.missing()[MERIDINE], cost[MERIDINE] - 100.0, 0.001)
 	taken = _shield.take_from({MERIDINE: 500.0, VYREL: 1000.0})
-	assert_almost_eq(taken[MERIDINE], cost[MERIDINE] - 200.0, 0.001, "the rest, not more")
+	assert_almost_eq(taken[MERIDINE], cost[MERIDINE] - 100.0, 0.001, "the rest, not more")
 	assert_almost_eq(taken[VYREL], float(cost[VYREL]), 0.001)
 	assert_eq(_shield.mk, 2, "installed once paid")
 	assert_true(_shield.paid.is_empty(), "the next plate starts at nothing")
@@ -82,7 +82,7 @@ func test_restore_keeps_only_what_fits() -> void:
 	assert_false(_shield.project, "nothing left to install")
 	var shield := HeatShield.new()
 	shield.restore(1, true, {MERIDINE: 9999.0, KYRITE: 20.0})
-	assert_eq(shield.paid, {MERIDINE: 300.0} as Dictionary[OreType, float], "only its cost")
+	assert_eq(shield.paid, {MERIDINE: 150.0} as Dictionary[OreType, float], "only its cost")
 	assert_true(shield.project)
 
 
@@ -96,13 +96,13 @@ func test_haul_pays_the_project_first() -> void:
 	ship.store_haul({MERIDINE: 100.0}, [player])
 	assert_eq(player.hold.amount(MERIDINE), 100.0)
 	assert_true(ship.heat_shield.set_project())
-	# The example from the design: the plate takes all 200, the next run the last 100.
-	ship.store_haul({MERIDINE: 200.0, KYRITE: 40.0}, [player])
+	# The example from the design: the plate takes all 100, the next run the last 50.
+	ship.store_haul({MERIDINE: 100.0, KYRITE: 40.0}, [player])
 	assert_eq(player.hold.amount(MERIDINE), 100.0, "the plate took all of it")
 	assert_eq(player.hold.amount(KYRITE), 40.0, "what it doesn't need is stored")
-	ship.store_haul({MERIDINE: 150.0}, [player])
-	assert_eq(player.hold.amount(MERIDINE), 150.0, "the last 100 went to the plate")
-	assert_eq(ship.heat_shield.paid[MERIDINE], 300.0)
+	ship.store_haul({MERIDINE: 75.0}, [player])
+	assert_eq(player.hold.amount(MERIDINE), 125.0, "the last 50 went to the plate")
+	assert_eq(ship.heat_shield.paid[MERIDINE], 150.0)
 	assert_eq(ship.heat_shield.mk, 1, "still needs Vyrel")
 
 
@@ -127,10 +127,10 @@ func test_paying_from_the_hold() -> void:
 	player.hold.add(MERIDINE, 1000.0)
 	player.hold.add(VYREL, 100.0)
 	assert_true(ship.pay_shield(player.hold))
-	assert_eq(player.hold.amount(MERIDINE), 700.0)
+	assert_eq(player.hold.amount(MERIDINE), 850.0)
 	assert_eq(player.hold.amount(VYREL), 0.0, "as far as the hold has it")
 	assert_eq(ship.heat_shield.mk, 1)
 	player.hold.add(VYREL, 500.0)
 	assert_true(ship.pay_shield(player.hold))
-	assert_eq(player.hold.amount(VYREL), 200.0)
+	assert_eq(player.hold.amount(VYREL), 400.0)
 	assert_eq(ship.heat_shield.mk, 2, "installed")

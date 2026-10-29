@@ -6,8 +6,9 @@ extends UpgradeStation
 ## or `tab_prev`/`tab_next` through the cradles) puts it on the pad (its cradle shows empty
 ## meanwhile), where its parts are the upgrades (drill, ore tank, hose reel, plating; bought into
 ## the miner's own levels, `get_levels`) and the pad's `Miner` part is the miner itself (its card:
-## its number, its parts' MK pips, whether it goes along on the next run, `toggle_along`). An empty
-## cradle builds a miner (`build`, for `settings.build_cost`, on the wall clock), one under way can
+## its number, its parts' MK pips, whether it goes along on the next run, `toggle_along`). A cradle
+## the ship doesn't have (`Cradles`) is a stripped spot, its card says why. An empty open cradle
+## builds a miner (`build`, for `settings.build_cost`, on the wall clock), one under way can
 ## be stopped for the whole cost back (pressed twice). It shows the miners of the player using it,
 ## else of the first local player. Like the other stations, nothing can be bought, built, stopped
 ## or toggled while a mission is underway.
@@ -129,6 +130,7 @@ func can_build(number: int) -> bool:
 		not is_locked()
 		and user != null
 		and user.fleet.is_empty(number)
+		and user.fleet.cradles.is_open(number)
 		and user.hold.can_pay(settings.build_cost)
 	)
 
@@ -240,7 +242,9 @@ func _show_fleet() -> void:
 	var now: float = Time.get_unix_time_from_system()
 	for cradle: MinerCradle in _cradles:
 		var crafted: CraftedMiner = fleet.get_miner(cradle.number) if fleet else null
-		if crafted and cradle.number == pad_number:
+		if fleet and not crafted and not fleet.cradles.is_open(cradle.number):
+			cradle.show_look(MinerCradle.Look.MISSING)
+		elif crafted and cradle.number == pad_number:
 			cradle.show_look(MinerCradle.Look.ON_PAD)
 		elif crafted and crafted.is_built():
 			cradle.show_look(MinerCradle.Look.BUILT)

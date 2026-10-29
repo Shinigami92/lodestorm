@@ -110,7 +110,9 @@ func _show_cold() -> void:
 	_picker.visible = false
 	_time.visible = false
 	_status.visible = true
-	_status.text = tr("This furnace is cold.")
+	_status.text = tr(
+		"This furnace is cold. Its burner was taken out and sold before the ship was bought."
+	)
 	_action.visible = false
 
 

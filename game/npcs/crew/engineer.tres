@@ -38,7 +38,7 @@ requires = Array[StringName]([&"engineer.greeting"])
 script = ExtResource("3_topic")
 id = &"engineer.refinery"
 title = "The refinery"
-lines = Array[String](["The four furnaces in the cargo bay turn ore into alloy bars. Better gear needs those bars sooner or later.", "Right now they're all cold. I'm still working on getting them going, and I'll tell you when the first one is ready.", "Every alloy has its own recipe, and a recipe only shows once every ore it needs has been in your hold. The rack next to the furnaces holds your bars."])
+lines = Array[String](["The four furnaces in the cargo bay turn ore into alloy bars. Better gear needs those bars sooner or later.", "Right now they're all cold. Their burners were sold with everything else that came loose, before Brannik bought the ship. I'm working on getting the first one going again.", "Every alloy has its own recipe, and a recipe only shows once every ore it needs has been in your hold. The rack next to the furnaces holds your bars."])
 requires = Array[StringName]([&"engineer.greeting"])
 
 [sub_resource type="Resource" id="Resource_about"]

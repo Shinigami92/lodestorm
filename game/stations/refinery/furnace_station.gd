@@ -3,17 +3,19 @@ extends Station
 ## One of the refinery's furnaces in the cargo bay (greybox until the cargo bay's art pass): a squat
 ## steel block on a plinth with a flue going up to the pipes from the silos, its door facing the
 ## camera. The ship has up to four (`Furnaces`, unlocked one by one); this one is `slot`. A locked
-## one is a cold, dark shell; an unlocked one has a lit lamp over its door. It shows the batch
-## (`AlloyBatch`) of the player using it, else the viewer's (see `Ship.get_viewing_player`): while
-## one runs, its door glows in the alloy's color, filling from the bottom with the batch's progress,
-## a light flickers in front of it and it roars; the plate below the door names the alloy and the
-## bars done. `interact` at it opens it as a station with the door as its one part (the directions
-## move on to the cargo bay's other stations, its `room`); the card (`FurnaceCard`) picks the recipe
-## (`tab_prev`/`tab_next`, by tier) and the number of bars (its buttons `BAR_BUTTONS`, or
-## `zoom_out`/`zoom_in` by one; from 1 up to what the hold pays for), shows the cost against the
-## hold and the time it takes, and starts it (paid at once); a running batch's card shows its
-## progress and the time left and stops it (pressed twice: the bars done stay, the ore of the others
-## goes back to the hold). Nothing starts or stops while a mission is underway.
+## one stands cold and open, its burner pulled out (sold before the ship was bought): its door swung
+## open, an empty port with capped lines below it; an unlocked one has a lit lamp over its door.
+## It shows the batch (`AlloyBatch`) of the player using it, else the viewer's (see
+## `Ship.get_viewing_player`): while one runs, its door glows in the alloy's color, filling from
+## the bottom with the batch's progress, a light flickers in front of it and it roars; the plate
+## below the door names the alloy and the bars done. `interact` at it opens it as a station with
+## the door as its one part (the directions move on to the cargo bay's other stations, its `room`);
+## the card (`FurnaceCard`) picks the recipe (`tab_prev`/`tab_next`, by tier) and the number of
+## bars (its buttons `BAR_BUTTONS`, or `zoom_out`/`zoom_in` by one; from 1 up to what the hold pays
+## for), shows the cost against the hold and the time it takes, and starts it (paid at once); a
+## running batch's card shows its progress and the time left and stops it (pressed twice: the bars
+## done stay, the ore of the others goes back to the hold). Nothing starts or stops while a
+## mission is underway.
 
 ## What the card's buttons add to the number of bars (the number shows between the minus and the
 ## plus ones).
@@ -33,6 +35,11 @@ const METAL_COLOR := Color(0.3, 0.29, 0.28)
 const COLD_COLOR := Color(0.13, 0.13, 0.14)
 const TRIM_COLOR := Color(0.16, 0.16, 0.17)
 const LAMP_COLOR := Color(1.0, 0.6, 0.2)
+## How far a cold furnace's door hangs open, in degrees.
+const DOOR_OPEN_ANGLE: float = 115.0
+## The burner's port below the door: its radius and the height of its middle, in m.
+const PORT_RADIUS: float = 0.17
+const PORT_HEIGHT: float = 0.36
 ## Light in front of a running furnace's door: its energy and how much it flickers.
 const LIGHT_ENERGY: float = 1.6
 const FLICKER: float = 0.35
@@ -54,6 +61,9 @@ var _door := StationPart.new()
 var _fill := MeshInstance3D.new()
 var _fill_pivot := Node3D.new()
 var _lamp := MeshInstance3D.new()
+## The swung-open door and the empty burner port, shown while it's locked.
+var _cold := Node3D.new()
+var _glass := MeshInstance3D.new()
 var _light := OmniLight3D.new()
 var _plate := Label3D.new()
 var _body_material := StandardMaterial3D.new()
@@ -204,6 +214,8 @@ func _opened() -> void:
 ## The glow, the light, the lamp, the plate and the roar for the shown batch.
 func _update_look() -> void:
 	var unlocked: bool = is_unlocked()
+	_cold.visible = not unlocked
+	_glass.visible = unlocked
 	_body_material.albedo_color = METAL_COLOR if unlocked else COLD_COLOR
 	_lamp_material.emission_enabled = unlocked
 	_lamp_material.albedo_color = LAMP_COLOR if unlocked else TRIM_COLOR
@@ -286,12 +298,14 @@ func _build() -> void:
 		Vector3(0.0, door_middle, front + 0.03),
 		trim
 	)
-	_box(
-		shell,
-		Vector3(DOOR_SIZE.x, DOOR_SIZE.y, 0.01),
-		Vector3(0.0, door_middle, front + 0.065),
-		glass
-	)
+	_glass.name = "Glass"
+	var glass_mesh := BoxMesh.new()
+	glass_mesh.size = Vector3(DOOR_SIZE.x, DOOR_SIZE.y, 0.01)
+	glass_mesh.material = glass
+	_glass.mesh = glass_mesh
+	_glass.position = Vector3(0.0, door_middle, front + 0.065)
+	shell.add_child(_glass)
+	_build_cold(shell, trim, front, door_middle)
 	_fill_pivot.name = "Fill"
 	_fill.name = "Level"
 	_fill_pivot.position = Vector3(0.0, DOOR_BOTTOM, front + 0.075)
@@ -347,6 +361,56 @@ func _build() -> void:
 	_door.pick_radius = 0.9
 	_door.card_offset = Vector2(1.75, 0.45)
 	add_child(_door)
+
+
+## A locked furnace's open door and empty burner port: the door's panel hinged at the window's
+## left edge and swung open, the window a dark hole, and below it the port the burner came out of,
+## its two lines cut and capped.
+func _build_cold(shell: Node3D, trim: Material, front: float, door_middle: float) -> void:
+	_cold.name = "Cold"
+	shell.add_child(_cold)
+	var hole := StandardMaterial3D.new()
+	hole.albedo_color = Color(0.01, 0.01, 0.01)
+	hole.roughness = 1.0
+	_box(
+		_cold,
+		Vector3(DOOR_SIZE.x, DOOR_SIZE.y, 0.01),
+		Vector3(0.0, door_middle, front + 0.062),
+		hole
+	)
+	var hinge := Node3D.new()
+	hinge.name = "Hinge"
+	hinge.position = Vector3(-DOOR_SIZE.x * 0.5 - 0.07, door_middle, front + 0.09)
+	hinge.rotation.y = deg_to_rad(-DOOR_OPEN_ANGLE)
+	_cold.add_child(hinge)
+	var panel := Vector3(DOOR_SIZE.x + 0.12, DOOR_SIZE.y + 0.12, 0.06)
+	_box(hinge, panel, Vector3(panel.x * 0.5, 0.0, 0.0), trim)
+	var port := MeshInstance3D.new()
+	port.name = "Port"
+	var port_mesh := CylinderMesh.new()
+	port_mesh.top_radius = PORT_RADIUS
+	port_mesh.bottom_radius = PORT_RADIUS
+	port_mesh.height = 0.02
+	port_mesh.radial_segments = 16
+	port_mesh.rings = 1
+	port_mesh.material = hole
+	port.mesh = port_mesh
+	port.rotation.x = PI * 0.5
+	port.position = Vector3(0.0, PORT_HEIGHT, front + 0.005)
+	_cold.add_child(port)
+	for side: float in [-1.0, 1.0]:
+		var line := MeshInstance3D.new()
+		var line_mesh := CylinderMesh.new()
+		line_mesh.top_radius = 0.025
+		line_mesh.bottom_radius = 0.025
+		line_mesh.height = 0.12
+		line_mesh.radial_segments = 8
+		line_mesh.rings = 1
+		line_mesh.material = trim
+		line.mesh = line_mesh
+		line.rotation.x = PI * 0.5
+		line.position = Vector3(side * (PORT_RADIUS + 0.09), PORT_HEIGHT, front + 0.06)
+		_cold.add_child(line)
 
 
 func _box(parent: Node3D, box_size: Vector3, at: Vector3, material: Material) -> void:

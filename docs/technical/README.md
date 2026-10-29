@@ -9,7 +9,7 @@ How Lodestorm is built: the code's rules and architecture, the tooling, CI, the 
 | [`project-layout.md`](project-layout.md) | the folders, the ship's and the station's builders |
 | [`engine.md`](engine.md) | versions, rendering, performance, input, navigation, debug tools, user data |
 | [`localization.md`](localization.md) | translations and how texts are extracted |
-| [`saving.md`](saving.md) | the save files, migrations, the statistics |
+| [`saving.md`](saving.md) | the save files, their format, the statistics |
 | [`menus.md`](menus.md) | world panels, stations and their parts, every station, the boot screen and title view |
 | [`npcs.md`](npcs.md) | NPC profiles, talks, walking and routines, the crew's transmissions |
 | [`ci.md`](ci.md) | the workflows, exports, Renovate |
@@ -19,3 +19,4 @@ How Lodestorm is built: the code's rules and architecture, the tooling, CI, the 
 | [`audio.md`](audio.md) | synthesis, takes, the manifest and licenses, playback |
 | [`voice.md`](voice.md) | the voice model, anchors, rendering every line, what's missing |
 | [`platform.md`](platform.md) | the platform abstraction, achievements, Steam |
+| [`pitfalls.md`](pitfalls.md) | traps that cost time once: imports, GDScript, scenes, shaders, navigation, tests, screenshot probes, Blender |

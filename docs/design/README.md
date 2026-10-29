@@ -28,6 +28,8 @@
 
 Proof of concept first: make the systems work and be enjoyable using greybox (primitive) visuals, then iterate toward the full game. Art via Blender MCP comes after the loop is fun.
 
+Design for the real size from the start: a first iteration may hold little content, but its data, layout (scrolling, paging, grouping) and tests are built for the target (10–15 ores, 50–100 skills, about eight crew, many weapons, regions and topics), so the second iteration extends it instead of redoing it. A count like three needs a reason, or becomes data.
+
 See the milestone plan in [`PLAN.md`](../PLAN.md) and the decided designs not built yet in [`planned/`](../planned/README.md).
 
 ## Open questions

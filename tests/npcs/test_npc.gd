@@ -50,16 +50,16 @@ func test_first_talk_plays_the_greeting() -> void:
 	await _talk()
 	var greeting: Topic = _npc.profile.dialogue.greeting
 	assert_eq(_npc.user, _player)
-	assert_eq(_npc.topic, greeting)
+	assert_eq(_npc.talk.topic, greeting)
 	assert_true(_npc.bubble.visible)
 	var speech := _npc.bubble.content as SpeechBubble
 	assert_eq(speech.get_line(), greeting.lines[0])
 	for i: int in greeting.lines.size():
-		_npc.press()
-	assert_null(_npc.topic, "back to the list")
+		_npc.talk.press()
+	assert_null(_npc.talk.topic, "back to the list")
 	assert_true(_ship.story.is_set(greeting.id), "heard")
-	assert_eq(speech.get_line(), _npc.prompt)
-	assert_has(_npc.profile.dialogue.prompts, _npc.prompt, "one of his prompts")
+	assert_eq(speech.get_line(), _npc.talk.prompt)
+	assert_has(_npc.profile.dialogue.prompts, _npc.talk.prompt, "one of his prompts")
 	assert_eq(
 		_titles(),
 		["Ammo", "Spare magazines", "Reloading", "Shooting range", "Show me the ship"],
@@ -75,12 +75,12 @@ func test_a_prompt_is_picked_for_each_talk_never_the_same_twice() -> void:
 	var last: String = ""
 	for i: int in 40:
 		_npc.open(_player)
-		assert_has(prompts, _npc.prompt)
-		assert_ne(_npc.prompt, last, "never the one of the talk before")
-		assert_eq((_npc.bubble.content as SpeechBubble).get_line(), _npc.prompt)
-		last = _npc.prompt
-		if _npc.prompt not in seen:
-			seen.append(_npc.prompt)
+		assert_has(prompts, _npc.talk.prompt)
+		assert_ne(_npc.talk.prompt, last, "never the one of the talk before")
+		assert_eq((_npc.bubble.content as SpeechBubble).get_line(), _npc.talk.prompt)
+		last = _npc.talk.prompt
+		if _npc.talk.prompt not in seen:
+			seen.append(_npc.talk.prompt)
 		_npc.close()
 	assert_eq(seen.size(), prompts.size(), "all of them come up")
 
@@ -107,7 +107,7 @@ func test_a_guest_hears_the_guest_lines() -> void:
 func test_greeting_plays_only_once() -> void:
 	_ship.story.set_flag(_npc.profile.dialogue.greeting.id)
 	await _talk()
-	assert_null(_npc.topic, "straight to the list")
+	assert_null(_npc.talk.topic, "straight to the list")
 
 
 func test_topics_open_up_and_lose_their_dot() -> void:
@@ -116,10 +116,10 @@ func test_topics_open_up_and_lose_their_dot() -> void:
 	var card := _npc.card_menu as TalkCard
 	assert_string_starts_with(card.get_button("Reloading").text, TalkCard.NEW_DOT)
 	card.get_button("Reloading").pressed.emit()
-	assert_eq(_npc.topic.id, &"quartermaster.reload")
+	assert_eq(_npc.talk.topic.id, &"quartermaster.reload")
 	assert_not_null(card.get_button("Continue"))
-	while _npc.topic:
-		_npc.press()
+	while _npc.talk.topic:
+		_npc.talk.press()
 	assert_eq(
 		_titles(),
 		[
@@ -155,17 +155,17 @@ func test_brask_topic_once_it_is_unlocked() -> void:
 func test_gamepad_picks_steps_back_and_closes() -> void:
 	_ship.story.set_flag(_npc.profile.dialogue.greeting.id)
 	await _talk()
-	assert_eq(_npc.choice, 0)
+	assert_eq(_npc.talk.choice, 0)
 	_npc.step(Vector2.DOWN)
-	assert_eq(_npc.choice, 1)
+	assert_eq(_npc.talk.choice, 1)
 	_npc.step(Vector2.UP)
 	_npc.step(Vector2.UP)
-	assert_eq(_npc.choice, _npc.get_choices().size(), "wraps to Goodbye")
+	assert_eq(_npc.talk.choice, _npc.get_choices().size(), "wraps to Goodbye")
 	_npc.step(Vector2.DOWN)
-	_npc.press()
-	assert_eq(_npc.topic.id, &"quartermaster.ammo")
+	_npc.talk.press()
+	assert_eq(_npc.talk.topic.id, &"quartermaster.ammo")
 	_press(&"pause")
-	assert_null(_npc.topic, "a step back to the list")
+	assert_null(_npc.talk.topic, "a step back to the list")
 	assert_eq(_npc.user, _player, "still talking")
 	assert_false(_ship.story.is_set(&"quartermaster.ammo"), "not heard to the end")
 	_press(&"pause")

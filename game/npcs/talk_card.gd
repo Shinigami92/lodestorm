@@ -56,17 +56,17 @@ func show_part(part: StationPart) -> void:
 	_name.text = npc.profile.display_name
 	_role.text = tr(npc.profile.role)
 	_role.add_theme_color_override(&"font_color", CardPalette.HINT)
-	var told: Topic = npc.topic
+	var told: Topic = npc.talk.topic
 	_topic_title.visible = told != null
 	_progress.visible = told != null
 	if told:
 		_topic_title.text = tr(told.title)
-		var lines: int = npc.get_topic_lines().size()
-		_progress.text = "%d / %d" % [npc.line + 1, lines]
-		var last: bool = npc.line + 1 >= lines
+		var lines: int = npc.talk.get_topic_lines().size()
+		_progress.text = "%d / %d" % [npc.talk.line + 1, lines]
+		var last: bool = npc.talk.line + 1 >= lines
 		_show_buttons([tr("Done") if last else tr("Continue"), tr("Back")], [false, false], 0)
-		_pause_button.visible = npc.get_auto_progress() >= 0.0
-		_pause_button.icon = PLAY_ICON if npc.auto_paused else PAUSE_ICON
+		_pause_button.visible = npc.talk.get_auto_progress() >= 0.0
+		_pause_button.icon = PLAY_ICON if npc.talk.auto_paused else PAUSE_ICON
 		return
 	var texts: Array[String] = []
 	var new: Array[bool] = []
@@ -75,7 +75,7 @@ func show_part(part: StationPart) -> void:
 		new.append(npc.is_new(choice))
 	texts.append(tr("Goodbye"))
 	new.append(false)
-	_show_buttons(texts, new, npc.choice)
+	_show_buttons(texts, new, npc.talk.choice)
 	_pause_button.visible = false
 
 
@@ -109,7 +109,7 @@ func press_primary() -> bool:
 	var npc := station as Npc
 	if not npc:
 		return false
-	npc.press()
+	npc.talk.press()
 	return true
 
 
@@ -231,19 +231,19 @@ func _selected_style(button: Button, state: StringName) -> StyleBox:
 func _on_pause_pressed() -> void:
 	var npc := station as Npc
 	if npc:
-		npc.toggle_auto_pause()
+		npc.talk.toggle_auto_pause()
 
 
 func _on_button_pressed(index: int) -> void:
 	var npc := station as Npc
 	if not npc:
 		return
-	if npc.topic:
+	if npc.talk.topic:
 		# "Continue"/"Done", or "Back".
 		if index == 0:
-			npc.advance()
+			npc.talk.advance()
 		else:
-			npc.leave_topic()
+			npc.talk.leave_topic()
 		return
-	npc.set_choice(index)
-	npc.press()
+	npc.talk.set_choice(index)
+	npc.talk.press()

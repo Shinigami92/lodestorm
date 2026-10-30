@@ -112,7 +112,7 @@ func test_calls_wait_their_turn() -> void:
 	assert_eq(_caller(), "Brannik · Radio")
 	assert_eq(_player.radio.waiting_count(), 1, "a newer call about the same replaces the older")
 	var first: String = _player.radio.get_line()
-	await wait_seconds(Npc.reading_time(first) + PlayerRadio.GAP + 0.3)
+	await wait_seconds(VoiceLines.reading_time(first) + PlayerRadio.GAP + 0.3)
 	assert_ne(_player.radio.get_line(), "")
 	assert_ne(_player.radio.get_line(), first)
 

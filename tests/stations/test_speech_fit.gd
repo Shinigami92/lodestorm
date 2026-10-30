@@ -89,18 +89,18 @@ func _assert_lines_fit(npc: Npc) -> void:
 			for flag: StringName in topic.requires:
 				_ship.story.flags[flag] = true
 		npc.open(_player)
-		npc.leave_topic()
+		npc.talk.leave_topic()
 		await wait_process_frames(1)
 		_assert_card_fits(npc, "%s %s topics" % [locale, profile.display_name])
 		_assert_bubble_fits(npc, "%s %s prompt" % [locale, profile.display_name])
 		for topic: Topic in topics:
-			npc.talk_about(topic)
+			npc.talk.talk_about(topic)
 			for line: int in topic.lines.size():
 				await wait_process_frames(1)
 				var label: String = "%s %s line %d" % [locale, topic.id, line + 1]
 				_assert_card_fits(npc, label)
 				_assert_bubble_fits(npc, label)
-				npc.advance()
+				npc.talk.advance()
 			# What they say outside their own room.
 			for line: int in topic.away_lines.size():
 				(npc.bubble.content as SpeechBubble).show_line(tr(topic.away_lines[line]))

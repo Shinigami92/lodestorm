@@ -5,7 +5,8 @@ extends RefCounted
 ## the SHA-256 of the English line (its translation key), as `tools/voice.sh` renders them. Which
 ## language they speak is a setting of its own (`GameSettings.voice_language`), apart from the
 ## texts' language; a line without a recording in it falls back to English, one without any stays
-## silent.
+## silent. A line said by itself (moving on in a talk, said aside, a radio call) stays for its
+## `stay_time`.
 
 const ROOT: String = "res://assets/voice"
 ## The voice languages with rendered lines, English first. A language is listed (and shows in the
@@ -16,6 +17,11 @@ const OFF: String = "off"
 ## What the settings play as a sample of the voices: the quartermaster's prompt (English).
 const SAMPLE_NPC: StringName = &"quartermaster"
 const SAMPLE_LINE: String = "How can I help you?"
+## How long a line stays: the pause after its voice ends, and without a voice `READ_BASE` s plus
+## `READ_PER_LETTER` s per letter of the shown text (a calm reading speed), in s. TBD (playtest).
+const AUTO_PAUSE: float = 1.0
+const READ_BASE: float = 2.0
+const READ_PER_LETTER: float = 0.06
 
 
 ## Where the recording of `line` (the English text) by `npc` (its `NpcProfile.id`) in `language`
@@ -47,6 +53,17 @@ static func stream(npc: StringName, line: String) -> AudioStream:
 		if ResourceLoader.exists(file):
 			return load(file) as AudioStream
 	return null
+
+
+## How long `text` (a shown line) stays without a voice, in s.
+static func reading_time(text: String) -> float:
+	return READ_BASE + READ_PER_LETTER * text.length()
+
+
+## How long a line stays when it's said by itself: its `recording` and `AUTO_PAUSE`, else the
+## `reading_time` of `text` (the shown line), in s.
+static func stay_time(recording: AudioStream, text: String) -> float:
+	return recording.get_length() + AUTO_PAUSE if recording else reading_time(text)
 
 
 ## Plays `SAMPLE_LINE` by `SAMPLE_NPC` in the voice language on `player` (flat, see

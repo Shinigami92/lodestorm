@@ -22,9 +22,9 @@ func test_a_new_game_starts_with_him_waiting_at_the_cabins() -> void:
 	assert_true(_brannik.has_news(_player), "the amber marker: something new")
 	_brannik.open(_player)
 	var tour: Tour = _brannik.profile.tour
-	assert_eq(_brannik.topic, tour.offer, "the offer instead of his armory greeting")
-	while _brannik.topic:
-		_brannik.press()
+	assert_eq(_brannik.talk.topic, tour.offer, "the offer instead of his armory greeting")
+	while _brannik.talk.topic:
+		_brannik.talk.press()
 	assert_eq(
 		_brannik.get_choices(), [tour.invite] as Array[Topic], "Show me the ship, then Goodbye"
 	)
@@ -82,16 +82,16 @@ func test_talking_during_the_tour_offers_going_on_or_ending_it() -> void:
 	_brannik.open(_player)
 	assert_eq(_brannik.get_choices(), [tour.resume, tour.abort] as Array[Topic])
 	assert_false(_brannik.body.is_walking(), "stands while they talk")
-	_brannik.talk_about(tour.resume)
-	while _brannik.topic:
-		_brannik.press()
+	_brannik.talk.talk_about(tour.resume)
+	while _brannik.talk.topic:
+		_brannik.talk.press()
 	await wait_physics_frames(2)
 	assert_null(_brannik.user, "Go on: the talk closes")
 	assert_not_null(_brannik.routine.tour, "and the tour goes on")
 	_brannik.open(_player)
-	_brannik.talk_about(tour.abort)
-	while _brannik.topic:
-		_brannik.press()
+	_brannik.talk.talk_about(tour.abort)
+	while _brannik.talk.topic:
+		_brannik.talk.press()
 	await wait_physics_frames(2)
 	assert_null(_brannik.user)
 	assert_null(_brannik.routine.tour, "End the tour")
@@ -159,11 +159,11 @@ func _load(flags: Array[StringName] = []) -> void:
 ## Hears the offer and "Show me the ship" to the end: the tour starts.
 func _start_tour() -> void:
 	_brannik.open(_player)
-	while _brannik.topic:
-		_brannik.press()
-	_brannik.talk_about(_brannik.profile.tour.invite)
-	while _brannik.topic:
-		_brannik.press()
+	while _brannik.talk.topic:
+		_brannik.talk.press()
+	_brannik.talk.talk_about(_brannik.profile.tour.invite)
+	while _brannik.talk.topic:
+		_brannik.talk.press()
 	await wait_process_frames(2)
 
 

@@ -4,8 +4,9 @@ extends Resource
 ## accepted (in that order), how far the active step's goals are, and the reputation with each
 ## NPC. Which step is active follows from the story's flags: the first one not handed in yet
 ## (`Quest.step_flag`). Hauls brought aboard pay into active deliveries after the heat shield's
-## plate (`take_from`), what a run brought aboard counts for mining (`count_hauled`), and what's
-## built counts once a player has it (`check_built`). A step is handed in at its NPC (`hand_in`):
+## plate (`take_from`), what a run brought aboard counts for mining (`count_hauled`), what's
+## built counts once a player has it (`check_built`), and what's done out in a region once someone
+## is back aboard (`add_progress`, from a `QuestVisit`). A step is handed in at its NPC (`hand_in`):
 ## what's still missing of its deliveries comes from the hold of whoever hands it in, its rewards
 ## go to everyone there. One quest is tracked (`tracked`, the session's: its markers come later):
 ## accepting one tracks it while none is, and once the tracked one is done the main quest is.
@@ -209,6 +210,18 @@ func count_hauled(ore: OreType, amount: float) -> void:
 	_update_goals(
 		func(goal: QuestGoal, so_far: float) -> float: return goal.count_run(_run, so_far)
 	)
+
+
+## Adds `amount` to goal `index` of `quest`'s `step` (up to its target), while that step is
+## active: what a visit to a region counted once someone is back aboard (see `QuestVisit`).
+func add_progress(quest: Quest, step: QuestStep, index: int, amount: float) -> void:
+	if current_step(quest) != step or quest not in _active() or index >= step.goals.size():
+		return
+	var so_far: float = goal_progress(quest, index)
+	var now: float = minf(so_far + amount, step.goals[index].target())
+	if now > so_far:
+		_set_progress(quest, index, now)
+		emit_changed()
 
 
 ## Counts what `players` (the session) have built towards the active build goals.

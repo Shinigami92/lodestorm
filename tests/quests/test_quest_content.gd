@@ -1,8 +1,9 @@
 extends GutTest
 ## The game's quests (`game/quests/quests.tres`): ids that save, NPCs that exist, topics named
-## after who says them, and steps that can be done.
+## after who says them, and steps that can be done (in regions that exist).
 
 const NPC_FOLDERS: Array[String] = ["res://game/npcs/crew/", "res://game/npcs/ostra/"]
+const SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
 
 
 func test_every_quest_keeps_to_the_scheme() -> void:
@@ -28,10 +29,23 @@ func test_every_quest_keeps_to_the_scheme() -> void:
 			steps.append(step.id)
 			assert_false(step.text.is_empty(), "%s: what it asks" % where)
 			assert_false(step.goals.is_empty(), "%s: goals" % where)
+			for goal: QuestGoal in step.goals:
+				_assert_doable(goal, where)
 			assert_has(npcs, quest.hand_in_npc(step), "%s: who it's handed in at" % where)
 			assert_not_null(step.hand_in, "%s: a hand-in" % where)
 			if step.hand_in:
 				_assert_said_by(step.hand_in, quest.hand_in_npc(step), where)
+
+
+## `goal` is done in a region that exists, a site's goal has its site and says what it is.
+func _assert_doable(goal: QuestGoal, where: String) -> void:
+	var out_there := goal as RegionGoal
+	if out_there:
+		assert_not_null(SYSTEM.region_by_id(out_there.region), "%s: its region" % where)
+	var reach := goal as ReachGoal
+	if reach:
+		assert_not_null(reach.site_part, "%s: its site" % where)
+		assert_false(reach.place.is_empty(), "%s: what its site is" % where)
 
 
 ## `topic` has a title, lines and an id of `npc`'s.

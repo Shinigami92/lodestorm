@@ -290,11 +290,14 @@ static func nearest(tree: SceneTree, from: Vector3) -> Ship:
 	return nearest_ship
 
 
-## Lets the quests count the runs, what they bring aboard and what's built.
+## Lets the quests count the runs, what they bring aboard, what's done out in a region (once
+## someone is back aboard; a lost run counts nothing) and what's built.
 func _count_quests() -> void:
 	quests.story = story
 	var events: GameEvents = GameEvents.bus
 	events.mission_started.connect(quests.start_run.unbind(1))
+	player_boarded.connect(_count_visit.unbind(1))
+	events.mission_ended.connect(_end_visit)
 	events.ore_hauled.connect(_on_ore_hauled)
 	events.weapon_unlocked.connect(_on_built.unbind(2))
 	events.upgrade_finished.connect(_on_built.unbind(3))
@@ -314,6 +317,28 @@ func _direct_story() -> void:
 	events.player_died.connect(director.count_fall.unbind(2))
 	events.mission_ended.connect(_on_mission_ended.unbind(2))
 	flight.docked.connect(_on_docked)
+
+
+## Counts what was done out in the location's region for the quests (someone is back aboard).
+func _count_visit() -> void:
+	var visit: QuestVisit = _quest_visit()
+	if visit:
+		visit.commit()
+
+
+## The run ended: a returned one counts what's done out there, a lost one nothing.
+func _end_visit(_brief: MissionBrief, returned: bool) -> void:
+	var visit: QuestVisit = _quest_visit()
+	if visit and returned:
+		visit.commit()
+	elif visit:
+		visit.drop()
+
+
+## What the active quest steps put into the location the ship stands at, or null.
+func _quest_visit() -> QuestVisit:
+	var generated := voyage.location as GeneratedLocation if voyage else null
+	return generated.quest_visit if generated else null
 
 
 func _on_ore_hauled(_player: Player, ore_type: OreType, amount: float) -> void:

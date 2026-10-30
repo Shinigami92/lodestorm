@@ -29,15 +29,22 @@ extends Node3D
 ## Its sounds: a deep, wet throb with each pulse of its glow (louder as the hive escalates), a wet
 ## pop for each alien hatching (not the guards it starts with), hits in its flesh, a groaning
 ## swell for a burst's warning and the collapse.
+## A quest puts nests of its own into a region (`kind`, see docs/planned/quests.md, Quest nests and
+## hunts): a different model and a glow of their own, so they're told apart by their shape.
 
 ## Emitted when an alien hatches.
 signal hatched(alien: Alien)
 ## Emitted when it's destroyed (the quests' "clear nests" goal counts these).
 signal destroyed
 
+## An ordinary nest, or one a quest put there (the "clear nests" goal counts only these).
+enum Kind { ORDINARY, QUEST }
+
 const GROUP: StringName = &"alien_nests"
 
 const COLOR_GLOW := Alien.COLOR_GLOW
+## A quest nest's glow: its own, neither the hive's nor the quests' amber.
+const QUEST_GLOW := Color(1.0, 0.16, 0.12)
 ## Glow pulses per second at escalation 0 and 1.
 const PULSE_RATE_CALM: float = 0.4
 const PULSE_RATE_FRENZY: float = 2.0
@@ -60,11 +67,10 @@ const STAGE_GLOW: Array[float] = [1.0, 0.55, 0.3]
 const FLICKER_DIP: float = 0.25
 const FLICKER_TIME: float = 0.07
 const FLICKER_INTERVAL: float = 1.2
-## A burst's warning: the mouth swells this much bigger around `MOUTH_CENTER` (the bowl's middle,
-## in the model) and glows white, this much brighter.
+## A burst's warning: the mouth swells this much bigger around `mouth_center` and glows white,
+## this much brighter.
 const WARNING_SWELL: float = 0.3
 const WARNING_GLOW: float = 6.0
-const MOUTH_CENTER := Vector3(0.0, 0.96, 0.0)
 ## The husk: how far the mound sinks (its height's share) and draws in, its tint, and the dried
 ## slime's.
 const HUSK_HEIGHT: float = 0.45
@@ -91,6 +97,9 @@ static var _hatch_frame: int = -1
 @export var settings: AlienNestSettings
 ## The strains and packs it hatches from (see `table`).
 @export var hive: AlienHive
+@export var kind: Kind = Kind.ORDINARY
+## The middle of the mouth's bowl, in the model: the mouth swells around it, sounds play there.
+@export var mouth_center: Vector3 = Vector3(0.0, 0.96, 0.0)
 
 ## What it hatches: set by the location before the nest enters the tree (its body's tier, biome
 ## and danger); otherwise the hive's for the mission's tier.
@@ -152,9 +161,9 @@ func _ready() -> void:
 	_rng.randomize()
 	if not table:
 		table = hive.table(_mission.tier() if _find_mission() else 1)
-	_glow.albedo_color = COLOR_GLOW
+	_glow.albedo_color = glow_color()
 	_glow.emission_enabled = true
-	_glow.emission = COLOR_GLOW
+	_glow.emission = glow_color()
 	for part: String in ["Mouth", "Glands"]:
 		var glowing := _model.find_child(part, true, false) as GeometryInstance3D
 		if glowing:
@@ -233,14 +242,14 @@ func _process(delta: float) -> void:
 	if _warning_left > 0.0:
 		warning = 1.0 - _warning_left / settings.burst_warning
 	energy += WARNING_GLOW * warning
-	var color: Color = COLOR_GLOW.lerp(Color.WHITE, warning).lerp(HUSK_GLOW, _dark)
+	var color: Color = glow_color().lerp(Color.WHITE, warning).lerp(HUSK_GLOW, _dark)
 	_glow.albedo_color = color
 	_glow.emission = color
 	_glow.emission_energy_multiplier = energy * (1.0 - _dark)
 	if _mouth:
 		var swell: float = 1.0 + WARNING_SWELL * warning
 		_mouth.scale = Vector3.ONE * swell
-		_mouth.position = MOUTH_CENTER * (1.0 - swell)
+		_mouth.position = mouth_center * (1.0 - swell)
 
 
 ## Lets a pack of hunters (see `HatchTable.pick_pack`) hatch around the nest, one after another
@@ -371,6 +380,11 @@ func max_health() -> float:
 	var health: float = settings.health * table.health_factor
 	var players: int = get_tree().get_nodes_in_group(Player.GROUP).size()
 	return health * (1.0 + settings.health_per_player * maxi(players - 1, 0))
+
+
+## The glow of its mouth, glands and cracks: a quest nest's own, else the hive's.
+func glow_color() -> Color:
+	return QUEST_GLOW if kind == Kind.QUEST else COLOR_GLOW
 
 
 ## Whether weapons destroyed it: a husk that hatches nothing more.
@@ -580,7 +594,7 @@ func _on_destroyed() -> void:
 
 ## Where its sounds come from: its mouth.
 func _mouth_position() -> Vector3:
-	return global_transform * MOUTH_CENTER
+	return global_transform * mouth_center
 
 
 ## The mound sinks in and draws together, the glow goes dark, the body darkens and the slime dries

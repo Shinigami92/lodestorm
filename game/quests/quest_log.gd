@@ -7,10 +7,11 @@ extends Resource
 ## brought aboard counts for mining (`count_hauled`), what's built counts once a player has it
 ## (`check_built`), and what's done out in a region once someone is back aboard (`add_progress`,
 ## from a `QuestVisit`). A step is handed in at its NPC (`hand_in`): what's still missing of its
-## deliveries comes from the hold of whoever hands it in, its rewards go to everyone there. One
-## quest is tracked (`tracked`, the session's: its markers come later): accepting one tracks it
-## while none is, and once the tracked one is done the main quest is. The radio calls heard of the
-## active steps are kept too (`calls`, see `QuestRadio`).
+## deliveries comes from the hold of whoever hands it in, its rewards go to everyone there (a
+## furnace or a cradle to the ship). A request is offered again once it's done, each NPC's in
+## turn (`offered_by`). One quest is tracked (`tracked`, the session's: its markers come later):
+## accepting one tracks it while none is, and once the tracked one is done the main quest is. The
+## radio calls heard of the active steps are kept too (`calls`, see `QuestRadio`).
 
 ## Emitted when goal `index` of `quest`'s active step gets done (not when a step starts with it
 ## done already).
@@ -22,11 +23,17 @@ const CATALOG: QuestCatalog = preload("res://game/quests/quests.tres")
 var catalog: QuestCatalog = CATALOG
 ## The story the steps' flags go into (the ship's).
 var story := Story.new()
+## The ship's furnaces and cradles (steps unlock and open them as rewards).
+var furnaces := Furnaces.new()
+var cradles := Cradles.new()
 ## The quests accepted, by id, in the order they were (deliveries fill in this order); done ones
 ## stay.
 var accepted: Array[StringName] = []
 ## Per accepted quest not done yet (its id): its active step's progress, one number per goal.
 var progress: Dictionary[StringName, PackedFloat64Array] = {}
+## Per NPC (their `NpcProfile.id`): their request handed in last (its id; the next ones are
+## offered in turn after it).
+var last_requests: Dictionary[StringName, StringName] = {}
 ## The quest the session follows (its id), an accepted one not done yet; empty: none.
 var tracked: StringName = &""
 ## The radio calls heard of the active steps.
@@ -74,14 +81,22 @@ func current_step(quest: Quest) -> QuestStep:
 
 
 ## The quests `npc` (an `NpcProfile.id`) offers now: open (`Quest.is_open`, the ship reaching
-## `reaches`) and not accepted yet.
-func offered_by(npc: StringName, reaches: Array[StringName]) -> Array[Quest]:
+## `reaches`) and not accepted yet. Of their requests only as many as make `open_requests`
+## together with those accepted: the next ones in the catalog's order after the one handed in
+## last, then from the first again.
+func offered_by(
+	npc: StringName, reaches: Array[StringName], open_requests: int = 1
+) -> Array[Quest]:
 	var offered: Array[Quest] = []
+	var requests: Array[Quest] = []
 	for quest: Quest in catalog.quests:
-		if quest.giver != npc or is_accepted(quest):
+		if quest.giver != npc or not quest.is_open(story, reaches):
 			continue
-		if quest.is_open(story, reaches):
+		if quest.kind == Quest.Kind.REQUEST:
+			requests.append(quest)
+		elif not is_accepted(quest):
 			offered.append(quest)
+	offered.append_array(_next_requests(npc, requests, open_requests))
 	return offered
 
 
@@ -156,8 +171,9 @@ func accept(quest: Quest, players: Array[Player]) -> bool:
 
 
 ## Hands in `quest`'s active step: what's missing comes from `payer`'s hold, the step's flag is set,
-## its ores, alloys and blueprint go to every one of `players` (the session); then the next step
-## starts, or the quest is done (its flag). Returns whether it did.
+## its ores, alloys and blueprint go to every one of `players` (the session), its furnaces and
+## cradles to the ship; then the next step starts, or the quest is done (its flag; a request is
+## offered again later). Returns whether it did.
 func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 	var step: QuestStep = current_step(quest)
 	if not step or not can_hand_in(quest, payer.hold):
@@ -170,6 +186,10 @@ func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 			player.hold.add(item, step.items[item])
 		if step.blueprint:
 			player.arsenal.learn(step.blueprint)
+	for i: int in step.furnaces:
+		furnaces.unlock()
+	for i: int in step.cradles:
+		cradles.open_next()
 	progress.erase(quest.id)
 	calls.forget(quest)
 	story.set_flag(quest.step_flag(step))
@@ -179,6 +199,8 @@ func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 		story.set_flag(quest.flag())
 		if tracked == quest.id:
 			tracked = _main_quest()
+		if quest.kind == Quest.Kind.REQUEST:
+			_offer_again(quest)
 	emit_changed()
 	return true
 
@@ -234,15 +256,19 @@ func check_built(players: Array[Player]) -> void:
 	)
 
 
-## What's saved: the quests accepted, the active steps' progress, the quest tracked and the calls
-## heard.
+## What's saved: the quests accepted, the active steps' progress, the requests handed in last,
+## the quest tracked and the calls heard.
 func save_data() -> Dictionary:
 	var saved_progress: Dictionary = {}
 	for id: StringName in progress:
 		saved_progress[String(id)] = Array(progress[id])
+	var saved_requests: Dictionary = {}
+	for npc: StringName in last_requests:
+		saved_requests[String(npc)] = String(last_requests[npc])
 	return {
 		"accepted": accepted.map(func(id: StringName) -> String: return String(id)),
 		"progress": saved_progress,
+		"requests": saved_requests,
 		"tracked": String(tracked),
 		"heard": calls.save_data(),
 	}
@@ -270,6 +296,13 @@ func load_data(saved: Variant) -> bool:
 			progress[StringName(id as String)] = _numbers(goals as Array)
 		else:
 			complete = SaveData.skipped("quest progress", id)
+	var saved_requests: Variant = data.get("requests", {})
+	for npc: Variant in saved_requests if saved_requests is Dictionary else {}:
+		var last: Variant = (saved_requests as Dictionary)[npc]
+		if npc is String and last is String and catalog.find(StringName(last as String)):
+			last_requests[StringName(npc as String)] = StringName(last as String)
+		else:
+			complete = SaveData.skipped("last request", last)
 	var saved_tracked: Variant = data.get("tracked", "")
 	var tracking: String = saved_tracked if saved_tracked is String else "?"
 	if not tracking.is_empty() and not track(catalog.find(StringName(tracking))):
@@ -294,6 +327,32 @@ func _active() -> Array[Quest]:
 			progress[id] = goals
 		active.append(quest)
 	return active
+
+
+## Of `npc`'s open `requests` (in the catalog's order), the ones to offer: as many as make
+## `open_requests` with those accepted, in turn after the one handed in last.
+func _next_requests(npc: StringName, requests: Array[Quest], open_requests: int) -> Array[Quest]:
+	var next: Array[Quest] = []
+	var free: int = open_requests - requests.filter(is_accepted).size()
+	var last: StringName = last_requests.get(npc, &"")
+	var start: int = requests.find(catalog.find(last)) + 1
+	for i: int in requests.size():
+		var quest: Quest = requests[(start + i) % requests.size()]
+		if next.size() < free and not is_accepted(quest):
+			next.append(quest)
+	return next
+
+
+## Puts `request` (done) back to be offered again in its giver's turn: not accepted, its flags and
+## its offer's cleared.
+func _offer_again(request: Quest) -> void:
+	last_requests[request.giver] = request.id
+	accepted.erase(request.id)
+	for step: QuestStep in request.steps:
+		story.clear_flag(request.step_flag(step))
+	story.clear_flag(request.flag())
+	if request.offer:
+		story.clear_flag(request.offer.id)
 
 
 ## The first main quest accepted with a step to do (its id), else empty.

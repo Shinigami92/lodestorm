@@ -51,6 +51,9 @@ static var _paths: Dictionary[StringName, String] = {}
 ## What someone living on a station says when they call the ship because something waits for the
 ## players there (see `MessageLog`), one of them at random (the English texts, translated).
 @export var calls: Array[String] = []
+## How many of their requests (quests of kind `Quest.Kind.REQUEST`) are open at a time, offered
+## or accepted (see `QuestLog.offered_by`); the depot master has two.
+@export_range(0, 4) var open_requests: int = 1
 
 
 ## The lines they have for `event` about `subject`, worded for several players `together` or one

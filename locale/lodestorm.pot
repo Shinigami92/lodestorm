@@ -2302,6 +2302,14 @@ msgstr ""
 msgid "Blueprint: %s"
 msgstr ""
 
+#: game/quests/quest_panel.gd
+msgid "Furnaces lit: %d"
+msgstr ""
+
+#: game/quests/quest_panel.gd
+msgid "Miner cradles opened: %d"
+msgstr ""
+
 #: game/quests/reach_goal.gd
 msgid "Find %s"
 msgstr ""

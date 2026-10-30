@@ -34,8 +34,8 @@ func is_set_all(required: Array[StringName]) -> bool:
 	return required.all(is_set)
 
 
-## Sets `flag` (once; it stays set). A name outside the scheme (`is_valid_flag`) is refused with
-## an error: it's a mistake in the content.
+## Sets `flag` (once; it stays set, except a request's: see `clear_flag`). A name outside the
+## scheme (`is_valid_flag`) is refused with an error: it's a mistake in the content.
 func set_flag(flag: StringName) -> void:
 	if flags.has(flag):
 		return
@@ -45,6 +45,13 @@ func set_flag(flag: StringName) -> void:
 	flags[flag] = true
 	emit_changed()
 	GameEvents.bus.story_flag_set.emit(flag)
+
+
+## Clears `flag`: only a request's flags, once it's handed in, so it's offered again (see
+## `QuestLog`); every other flag stays set.
+func clear_flag(flag: StringName) -> void:
+	if flags.erase(flag):
+		emit_changed()
 
 
 ## Whether `flag` follows the naming scheme (see the class description).

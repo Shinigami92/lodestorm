@@ -142,7 +142,7 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 		return choices
 	var reaches: Array[StringName] = get_reached_bodies()
 	var quests: QuestLog = get_quests()
-	for quest: Quest in quests.offered_by(profile.id, reaches):
+	for quest: Quest in quests.offered_by(profile.id, reaches, profile.open_requests):
 		choices.append(quest.offer)
 	for quest: Quest in quests.steps_at(profile.id):
 		choices.append(quests.current_step(quest).hand_in)
@@ -196,7 +196,7 @@ func has_quest_news(listener: Player = null) -> bool:
 	if not profile or (routine and routine.tour):
 		return false
 	var quests: QuestLog = get_quests()
-	if not quests.offered_by(profile.id, get_reached_bodies()).is_empty():
+	if not quests.offered_by(profile.id, get_reached_bodies(), profile.open_requests).is_empty():
 		return true
 	var payer: Player = listener if listener else user
 	return (

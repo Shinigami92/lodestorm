@@ -22,6 +22,13 @@ const SAMPLE_LINE: String = "How can I help you?"
 const AUTO_PAUSE: float = 1.0
 const READ_BASE: float = 2.0
 const READ_PER_LETTER: float = 0.06
+## Resource types (script class names) whose files hold lines NPCs say, each with a
+## `spoken_lines() -> Dictionary[StringName, PackedStringArray]` (who says them, their
+## `NpcProfile.id`, to the English lines): a line can live in another file than its speaker's
+## profile, e.g. a quest's hand-in said by the NPC it names.
+const SPEAKING: Array[String] = ["NpcProfile"]
+## Where `speaking_resources` looks.
+const SOURCE_DIR: String = "res://game"
 
 
 ## Where the recording of `line` (the English text) by `npc` (its `NpcProfile.id`) in `language`
@@ -84,3 +91,39 @@ static func sample_player(holder: Node) -> AudioStreamPlayer:
 	player.process_mode = Node.PROCESS_MODE_ALWAYS
 	holder.add_child(player)
 	return player
+
+
+## Every resource under `dir` (and its folders) of a type in `SPEAKING`, in file order. Reads the
+## text resources' headers (`.tres`), so it's for the tools and the tests, not an exported game.
+static func speaking_resources(dir: String = SOURCE_DIR) -> Array[Resource]:
+	var found: Array[Resource] = []
+	for file: String in DirAccess.get_files_at(dir):
+		if file.get_extension() != "tres":
+			continue
+		var file_path: String = dir.path_join(file)
+		var header: String = FileAccess.open(file_path, FileAccess.READ).get_line()
+		for type: String in SPEAKING:
+			if 'script_class="%s"' % type in header:
+				found.append(load(file_path))
+				break
+	for folder: String in DirAccess.get_directories_at(dir):
+		found.append_array(speaking_resources(dir.path_join(folder)))
+	return found
+
+
+## Every line said in `resources` (see `SPEAKING`), by who says it (their `NpcProfile.id`), each
+## once, in the order of `resources`: what's voiced (`tools/voice.sh` renders it).
+static func lines_by_speaker(
+	resources: Array[Resource]
+) -> Dictionary[StringName, PackedStringArray]:
+	var by_speaker: Dictionary[StringName, PackedStringArray] = {}
+	for resource: Resource in resources:
+		var said: Dictionary = resource.call(&"spoken_lines")
+		for speaker: StringName in said:
+			var lines: PackedStringArray = by_speaker.get(speaker, PackedStringArray())
+			var spoken: PackedStringArray = said[speaker]
+			for line: String in spoken:
+				if line not in lines:
+					lines.append(line)
+			by_speaker[speaker] = lines
+	return by_speaker

@@ -103,7 +103,7 @@ def check(npc: str, prune: bool) -> tuple[int, int, int, int]:
 
 def unvoiced(names: list[str], listed: bool) -> None:
     """Prints the NPCs without anchors and how many lines they have."""
-    rest = [npc for npc in lines.profiles() if npc not in lines.voiced() and (not names or npc in names)]
+    rest = [npc for npc in lines.speakers() if npc not in lines.voiced() and (not names or npc in names)]
     if not rest:
         return
     print("not voiced yet (no anchors in assets/voice/source/<npc id>/):")

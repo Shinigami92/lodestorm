@@ -27,6 +27,8 @@ var _map: Node3D
 var _player: Player
 var _ship: Ship
 var _npc: Npc
+## What every NPC says, by `NpcProfile.id`, found once.
+var _spoken: Dictionary[StringName, PackedStringArray] = {}
 
 
 func before_each() -> void:
@@ -67,7 +69,7 @@ func test_every_line_has_its_recording_in_every_voice_language() -> void:
 
 func test_no_recording_is_left_over() -> void:
 	for profile: NpcProfile in VOICED + VOICED_IN_ENGLISH:
-		var keys: Array[String] = []
+		var keys: PackedStringArray = []
 		for line: String in _lines(profile):
 			keys.append(VoiceLines.path(profile.id, "en", line).get_file().get_basename())
 		for language: String in VoiceLines.LANGUAGES:
@@ -180,24 +182,12 @@ func test_voices_have_their_own_volume() -> void:
 	GameSettings.volumes.clear()
 
 
-## The English lines of `profile`: the prompts, the greeting's and every topic's (also a guest's and
-## the ones for elsewhere), its reactions' and its tour's.
-func _lines(profile: NpcProfile) -> Array[String]:
-	var lines: Array[String] = []
-	lines.append_array(profile.dialogue.get_prompts())
-	for topic: Topic in [profile.dialogue.greeting] + profile.dialogue.topics:
-		lines.append_array(topic.lines)
-		lines.append_array(topic.guest_lines)
-		lines.append_array(topic.away_lines)
-	for reaction: CrewReaction in profile.reactions:
-		lines.append_array(reaction.lines)
-	var tour: Tour = profile.tour
-	if tour:
-		for topic: Topic in [tour.offer, tour.invite, tour.resume, tour.abort]:
-			lines.append_array(topic.lines)
-		for stop: TourStop in tour.stops:
-			lines.append_array(stop.lines)
-	return lines
+## The English lines `profile` says, wherever they are (`VoiceLines.lines_by_speaker`).
+func _lines(profile: NpcProfile) -> PackedStringArray:
+	if _spoken.is_empty():
+		_spoken = VoiceLines.lines_by_speaker(VoiceLines.speaking_resources())
+	assert_has(_spoken, profile.id, "%s says something" % profile.id)
+	return _spoken.get(profile.id, PackedStringArray())
 
 
 ## The file of the recording the NPC plays.

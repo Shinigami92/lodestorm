@@ -1,18 +1,24 @@
-"""What the voiced NPCs say and where their recordings go: shared by render.py and status.py (standard library only).
+"""What the voiced NPCs say and where their recordings go: shared by render.py, status.py, rate.py and reroll.py
+(standard library only).
 
 An NPC is voiced once assets/voice/source/<npc id>/ holds its anchors (anchor.py): one per voice language, listed
-in voice.json. Its lines are its dialogue's (the profile .tres in game/npcs/ with that id): the prompts and every
-line of the greeting, the topics (and their guest lines) and the reactions (its radio calls), in English (the translation keys) and translated from locale/<language>.po. A line's recording is
-assets/voice/<npc id>/<language>/<hash>.ogg, the hash being the first 16 hex digits of the SHA-256 of the English
-line, so the game finds a line's file from its text (`VoiceLines`). manifest.json next to the anchors records what
-made each file (the text spoken, the anchor's hash, the model, the seed).
+in voice.json. Its lines are what the game says it speaks (`VoiceLines.lines_by_speaker`, written by
+tools/voice_lines.gd, run headless with GODOT4_EDITOR): its profile's (the prompts, the greeting, the topics, the
+tour, the reactions, the remarks) and lines of other files it says (a quest's hand-in), in English (the translation
+keys) and translated from locale/<language>.po. A line's recording is assets/voice/<npc id>/<language>/<hash>.ogg,
+the hash being the first 16 hex digits of the SHA-256 of the English line, so the game finds a line's file from its
+text (`VoiceLines`). manifest.json next to the anchors records what made each file (the text spoken, the anchor's
+hash, the model, the seed).
 """
 
 import dataclasses
+import functools
 import hashlib
 import json
+import os
 import pathlib
 import re
+import subprocess
 
 import comfy
 
@@ -63,45 +69,33 @@ def file_hash(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
 
 
-def default_prompt() -> str:
-    script = (ROOT / "game" / "npcs" / "dialogue.gd").read_text(encoding="utf-8")
-    return json.loads(re.search(r"const DEFAULT_PROMPT: String = (\".*\")", script).group(1))
-
-
-def profiles() -> dict[str, pathlib.Path]:
-    """Every NPC profile in game/npcs/: its id -> its .tres."""
-    found = {}
-    for path in sorted((ROOT / "game" / "npcs").rglob("*.tres")):
-        text = path.read_text(encoding="utf-8")
-        if 'script_class="NpcProfile"' not in text.splitlines()[0]:
-            continue
-        resource = text[text.rfind("[resource]") :]
-        npc_id = re.search(r'^id = &"(.*)"$', resource, re.MULTILINE)
-        if npc_id:
-            found[npc_id.group(1)] = path
-    return found
+@functools.cache
+def speakers() -> dict[str, dict]:
+    """Every NPC who says lines, as the game finds them: id -> {"name", "role", "lines"} (the English lines in the
+    game's order). Runs tools/voice_lines.gd headless once per tool run."""
+    godot = os.environ.get("GODOT4_EDITOR")
+    if not godot:
+        raise SystemExit("Set GODOT4_EDITOR to the Godot executable: the voice tools ask the game for its lines")
+    out = ROOT / "tmp" / "voice_lines.json"
+    out.unlink(missing_ok=True)
+    run = subprocess.run(
+        [godot, "--headless", "--path", str(ROOT), "-s", "tools/voice_lines.gd", "--", f"--out={out}"],
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if run.returncode != 0 or not out.exists():
+        raise SystemExit(f"tools/voice_lines.gd failed ({run.returncode}):\n{run.stdout}{run.stderr}")
+    return json.loads(out.read_text(encoding="utf-8"))
 
 
 def npc_lines(npc: str) -> list[str]:
-    """The NPC's lines in English: the prompts (with a dialogue; the default one without any), then the greeting's,
-    every topic's (and its guest lines) and reaction's, in file order, and an ambient colonist's remarks."""
-    for path in sorted((ROOT / "game" / "npcs").rglob("*.tres")):
-        text = path.read_text(encoding="utf-8")
-        resource = text[text.rfind("[resource]") :]
-        if re.search(rf'^id = &"{re.escape(npc)}"$', resource, re.MULTILINE):
-            break
-    else:
-        raise SystemExit(f"No NPC profile with id {npc} in game/npcs/")
-    prompts = re.search(r"^prompts = Array\[String\]\((\[.*\])\)$", text, re.MULTILINE)
-    lines = []
-    if re.search(r"^dialogue = ", resource, re.MULTILINE):
-        lines += json.loads(prompts.group(1)) if prompts else [default_prompt()]
-    for block in re.split(r"\n(?=\[)", text):
-        for found in re.finditer(
-            r"^(?:lines|guest_lines|away_lines|remarks) = Array\[String\]\((\[.*\])\)$", block, re.MULTILINE
-        ):
-            lines += json.loads(found.group(1))
-    return list(dict.fromkeys(lines))
+    """The NPC's lines in English, in the game's order."""
+    if npc not in speakers():
+        raise SystemExit(f"No lines of {npc}: no NPC profile with that id in game/npcs/, or it says nothing")
+    return speakers()[npc]["lines"]
 
 
 def translations(language: str) -> dict[str, str]:

@@ -9,7 +9,6 @@ name doesn't steer the ear. Everything is saved in the voice database (db.py); t
 import hashlib
 import json
 import pathlib
-import re
 import sys
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -77,15 +76,13 @@ def rounds() -> dict:
 def settled() -> dict:
     """The NPCs with anchors: {npc: {"name", "role", "languages": {language: voice.json's entry | {"lines": [{"file",
     "text"}]}}}}, the lines in the game's order; files are relative to assets/voice/."""
-    profiles = lines.profiles()
+    speakers = lines.speakers()
     out = {}
     for npc in lines.voiced():
         info = json.loads((lines.SOURCE / npc / "voice.json").read_text(encoding="utf-8"))
         manifest = lines.load_manifest(npc)
-        text = profiles[npc].read_text(encoding="utf-8")
-        resource = text[text.rfind("[resource]") :]
-        fields = dict(re.findall(r'^(display_name|role) = "(.*)"$', resource, re.MULTILINE))
-        order = [lines.line_hash(line) for line in lines.npc_lines(npc)]
+        speaker = speakers.get(npc, {})
+        order = [lines.line_hash(line) for line in speaker.get("lines", [])]
         languages = {}
         for language, entry in info.items():
             if not isinstance(entry, dict) or "anchor" not in entry:
@@ -96,7 +93,7 @@ def settled() -> dict:
                 "anchor": f"source/{npc}/{entry['anchor']}",
                 "lines": [{"file": f"{npc}/{language}/{h}.ogg", "text": rendered[h]["text"]} for h in found],
             }
-        out[npc] = {"name": fields.get("display_name", npc), "role": fields.get("role", ""), "languages": languages}
+        out[npc] = {"name": speaker.get("name") or npc, "role": speaker.get("role", ""), "languages": languages}
     return out
 
 

@@ -22,6 +22,8 @@ extends Station
 ## above their head without a talk, and in their voice. So are an overheard talk's lines
 ## (`OverheardTalks`), and while it plays (`overheard`) nobody can talk to them.
 
+## Every crew member (the ship cuts them away by the deck they stand on, see `Ship`).
+const CREW_GROUP: StringName = &"crew"
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
 ## player, at this height, so the card on their right stays in view.
 const FOCUS_RIGHT: float = 0.35
@@ -71,6 +73,7 @@ var _new_marker_time: float = 0.0
 
 func _ready() -> void:
 	super()
+	add_to_group(CREW_GROUP)
 	body.profile = profile
 	_own_quests.story = _own_story
 	routine = NpcRoutine.new(self)

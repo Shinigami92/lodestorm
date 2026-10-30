@@ -19,7 +19,8 @@ extends RefCounted
 ## close the talk.
 ## A quest they offer is told like a topic, then its card shows what it asks and pays (`quest`,
 ## `offering`): `interact` accepts it, `pause` leaves it for later (it stays offered). A step handed
-## in at them shows its card at once (what's done, what the hold pays of the rest, the rewards):
+## in at them shows its card (what's done, what the hold pays of the rest, the rewards), after
+## they say its radio calls heard so far again (`QuestCalls.lines`, told like a topic):
 ## `interact` hands it in, then they say its lines.
 
 ## Whose talk it is.
@@ -43,6 +44,8 @@ var offering: bool = false
 ## has waited.
 var _line_time: float = 0.0
 var _line_waited: float = 0.0
+## The quest whose radio calls `topic` says again (its card follows), or null.
+var _recap: Quest
 
 
 func _init(who: Npc) -> void:
@@ -54,6 +57,7 @@ func _init(who: Npc) -> void:
 func open() -> void:
 	topic = null
 	quest = null
+	_recap = null
 	choice = 0
 	_set_paused(false)
 	var dialogue: Dialogue = npc.profile.dialogue if npc.profile else null
@@ -168,7 +172,7 @@ func press() -> void:
 	var quests: QuestLog = npc.get_quests()
 	var chosen: Quest = quests.quest_for(choices[choice])
 	if chosen and quests.is_accepted(chosen):
-		_show_quest(chosen, false)
+		_recap_calls(chosen)
 	else:
 		talk_about(choices[choice])
 
@@ -196,6 +200,7 @@ func leave_topic() -> bool:
 	if not topic:
 		return false
 	topic = null
+	_recap = null
 	_set_paused(false)
 	_show()
 	npc.voice.stop()
@@ -205,6 +210,12 @@ func leave_topic() -> bool:
 ## The topic told is heard to the end; a quest's offer then shows its card, a tour's topics close
 ## the talk and start the tour, go on with it or end it.
 func _finish_topic() -> void:
+	if _recap:
+		var recapped: Quest = _recap
+		_recap = null
+		topic = null
+		_show_quest(recapped)
+		return
 	var heard: Topic = topic
 	npc.get_story().set_flag(heard.id)
 	topic = null
@@ -222,6 +233,21 @@ func _finish_topic() -> void:
 	elif heard == tour.abort:
 		npc.routine.end_tour()
 	npc.close.call_deferred()
+
+
+## Says the radio calls heard of `accepted`'s active step again (worded for the players in the
+## session), then shows its card; at once without any.
+func _recap_calls(accepted: Quest) -> void:
+	var quests: QuestLog = npc.get_quests()
+	var together: bool = npc.get_tree().get_nodes_in_group(Player.GROUP).size() > 1
+	var heard: Array[String] = quests.calls.lines(accepted, quests.current_step(accepted), together)
+	if heard.is_empty():
+		_show_quest(accepted)
+		return
+	var recap := Topic.new()
+	recap.lines = heard
+	_recap = accepted
+	talk_about(recap)
 
 
 ## Shows the card of `shown` (null: back to the list), `offered` or with its step to hand in.

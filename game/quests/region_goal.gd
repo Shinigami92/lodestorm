@@ -8,6 +8,9 @@ extends QuestGoal
 
 ## The region it's done in: its `Region.id`.
 @export var region: StringName
+## What the step's NPC says over the radio the first time the players land in `region` while it's
+## open (see `QuestRadio`), or null.
+@export var landing_line: RadioLine
 
 
 ## The map part it puts into the region's visits as its quest site (a set piece while its step is

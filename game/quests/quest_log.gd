@@ -10,6 +10,11 @@ extends Resource
 ## what's still missing of its deliveries comes from the hold of whoever hands it in, its rewards
 ## go to everyone there. One quest is tracked (`tracked`, the session's: its markers come later):
 ## accepting one tracks it while none is, and once the tracked one is done the main quest is.
+## The radio calls heard of the active steps are kept too (`calls`, see `QuestRadio`).
+
+## Emitted when goal `index` of `quest`'s active step gets done (not when a step starts with it
+## done already).
+signal goal_done(quest: Quest, index: int)
 
 ## The most reputation with one NPC (five pips on their name plate).
 const REPUTATION_MAX: int = 5
@@ -28,9 +33,13 @@ var progress: Dictionary[StringName, PackedFloat64Array] = {}
 var reputation: Dictionary[StringName, int] = {}
 ## The quest the session follows (its id), an accepted one not done yet; empty: none.
 var tracked: StringName = &""
+## The radio calls heard of the active steps.
+var calls := QuestCalls.new()
 
 ## What this run brought aboard so far (units per ore), for mining goals.
 var _run: Dictionary[OreType, float] = {}
+## Whether a step is starting (its goals done already aren't news).
+var _starting: bool = false
 
 
 ## Whether `quest` is accepted (done or not).
@@ -170,6 +179,7 @@ func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 		var trust: int = reputation.get(quest.giver, 0)
 		reputation[quest.giver] = mini(trust + step.reputation, REPUTATION_MAX)
 	progress.erase(quest.id)
+	calls.forget(quest)
 	story.set_flag(quest.step_flag(step))
 	if current_step(quest):
 		_start_step(quest, players)
@@ -232,8 +242,8 @@ func check_built(players: Array[Player]) -> void:
 	)
 
 
-## What's saved: the quests accepted, the active steps' progress, the reputation and the quest
-## tracked.
+## What's saved: the quests accepted, the active steps' progress, the reputation, the quest
+## tracked and the calls heard.
 func save_data() -> Dictionary:
 	var saved_progress: Dictionary = {}
 	for id: StringName in progress:
@@ -246,6 +256,7 @@ func save_data() -> Dictionary:
 		"progress": saved_progress,
 		"reputation": saved_reputation,
 		"tracked": String(tracked),
+		"heard": calls.save_data(),
 	}
 
 
@@ -282,6 +293,7 @@ func load_data(saved: Variant) -> bool:
 	var tracking: String = saved_tracked if saved_tracked is String else "?"
 	if not tracking.is_empty() and not track(catalog.find(StringName(tracking))):
 		complete = SaveData.skipped("tracked quest", saved_tracked)
+	complete = calls.load_data(data.get("heard"), accepted) and complete
 	emit_changed()
 	return complete
 
@@ -316,7 +328,10 @@ func _start_step(quest: Quest, players: Array[Player]) -> void:
 	var goals := PackedFloat64Array()
 	goals.resize(current_step(quest).goals.size())
 	progress[quest.id] = goals
+	calls.forget(quest)
+	_starting = true
 	check_built(players)
+	_starting = false
 
 
 ## Sets every active goal's progress to what `counted` (goal, progress so far) says.
@@ -334,11 +349,15 @@ func _update_goals(counted: Callable) -> void:
 		emit_changed()
 
 
-## Sets goal `index` of `quest`'s active step to `value`.
+## Sets goal `index` of `quest`'s active step to `value` (`goal_done` once it reaches its target).
 func _set_progress(quest: Quest, index: int, value: float) -> void:
 	var goals: PackedFloat64Array = progress[quest.id]
+	var target: float = current_step(quest).goals[index].target()
+	var was_done: bool = goals[index] >= target
 	goals[index] = value
 	progress[quest.id] = goals
+	if not was_done and value >= target and not _starting:
+		goal_done.emit(quest, index)
 
 
 ## The numbers of a saved list (others as 0).

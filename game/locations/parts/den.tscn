@@ -160,8 +160,8 @@ size = Vector3(2.36, 0.14, 0.12)
 [node name="Den" type="Node3D"]
 script = ExtResource("1_part")
 display_name = "Den"
-footprint = 13.0
-prop_radius = 10.0
+footprint = 15.5
+prop_radius = 12.5
 min_area_radius = 18.0
 area_kinds = Array[int]([1, 2, 6])
 

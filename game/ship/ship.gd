@@ -103,6 +103,8 @@ var cradles := Cradles.new()
 var reactions := CrewReactions.new()
 ## The quests accepted and how far they are, saved with the ship (their steps' flags in `story`).
 var quests := QuestLog.new()
+## The quests' calls over the radio.
+var quest_radio := QuestRadio.new()
 ## What's new in the story on each return (after a run, or docking), saved with the ship.
 var director := StoryDirector.new()
 ## The messages left for the ship (and calls from people waiting at a station), saved with the
@@ -177,6 +179,9 @@ func _ready() -> void:
 	add_child(navigation)
 	_count_quests()
 	_direct_story()
+	quest_radio.name = "QuestRadio"
+	quest_radio.ship = self
+	add_child(quest_radio)
 
 
 func _physics_process(delta: float) -> void:
@@ -322,7 +327,7 @@ func _direct_story() -> void:
 ## Counts what was done out in the location's region for the quests (`player` is back aboard,
 ## with the quest items it carries).
 func _count_visit(player: Player) -> void:
-	var visit: QuestVisit = _quest_visit()
+	var visit: QuestVisit = get_quest_visit()
 	if visit:
 		visit.count_carried(player.quest_pack.take_all())
 		visit.commit()
@@ -330,7 +335,7 @@ func _count_visit(player: Player) -> void:
 
 ## The run ended: a returned one counts what's done out there, a lost one nothing.
 func _end_visit(_brief: MissionBrief, returned: bool) -> void:
-	var visit: QuestVisit = _quest_visit()
+	var visit: QuestVisit = get_quest_visit()
 	if visit and returned:
 		visit.commit()
 	elif visit:
@@ -338,7 +343,7 @@ func _end_visit(_brief: MissionBrief, returned: bool) -> void:
 
 
 ## What the active quest steps put into the location the ship stands at, or null.
-func _quest_visit() -> QuestVisit:
+func get_quest_visit() -> QuestVisit:
 	var generated := voyage.location as GeneratedLocation if voyage else null
 	return generated.quest_visit if generated else null
 

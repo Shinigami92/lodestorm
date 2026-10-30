@@ -9,6 +9,9 @@ extends RefCounted
 ## destroyed counts once the hunt's kills are all done (in this visit or before), so it stays
 ## waiting until they are.
 
+## Emitted when something is counted towards `entry`'s goal this visit (see `is_done`).
+signal counted(entry: Entry)
+
 
 ## One goal of an active step done in the region.
 class Entry:
@@ -122,6 +125,7 @@ func is_tracked(entry: Entry) -> bool:
 ## Counts `amount` done towards `entry`'s goal this visit (up to what was left of it).
 func count(entry: Entry, amount: float = 1.0) -> void:
 	entry.pending = minf(entry.pending + amount, entry.room)
+	counted.emit(entry)
 
 
 ## Counts what a player brought aboard (`QuestPack.take_all`): a fragment or an item each.
@@ -134,11 +138,23 @@ func count_carried(carried: Array[Entry]) -> void:
 ## Counts a kill for `entry`'s hunt (with a brood nest, up to the kills left: the nest is the last).
 func count_kill(entry: Entry) -> void:
 	entry.pending = minf(entry.pending + 1.0, entry.room - (1.0 if entry.brood else 0.0))
+	counted.emit(entry)
 
 
 ## `entry`'s brood nest was destroyed: it counts once the kills are all done.
 func count_brood(entry: Entry) -> void:
 	entry.brood_down = true
+	counted.emit(entry)
+
+
+## Whether `entry`'s goal is done out here, with `carried` of its fragments or items picked up and
+## still carried: what's counted (its brood nest once the kills are all done) and carried makes up
+## what was left of it. It still counts only once someone is back aboard.
+func is_done(entry: Entry, carried: int = 0) -> bool:
+	var done: float = entry.pending + carried
+	if entry.brood_down and done >= entry.room - 1.0:
+		done += 1.0
+	return done >= entry.room
 
 
 ## How many kills `entry`'s brood nest may still hatch: what's left of its hunt but the nest.

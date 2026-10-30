@@ -4,6 +4,9 @@ extends Resource
 ## mining, something built aboard), so a new kind is code once and data after. Its progress is the
 ## ship's (`QuestLog`), a number up to `target`; the goal only says how it grows.
 
+## What the step's NPC says over the radio once it's done (see `QuestRadio`), or null.
+@export var done_line: RadioLine
+
 ## What it says on the cards and the quest board (translated), e.g. "Deliver Kyrite".
 @abstract func describe() -> String
 

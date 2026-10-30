@@ -75,16 +75,10 @@ func _ready() -> void:
 ## lines for it says their next line to `to` alone, or else to every living player (only the ones
 ## outside for the storm warning). Nothing without lines or listeners.
 func transmit(event: StringName, subject: StringName = &"", to: Player = null) -> void:
-	var listeners: Array[Player] = []
-	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
-		if player.dead or (to and player != to) or not player.radio.is_inside_tree():
-			continue
-		if event == STORM_WARNING and ship.is_aboard(player):
-			continue
-		listeners.append(player)
+	var listeners: Array[Player] = _listeners(event, to)
 	if listeners.is_empty():
 		return
-	var together: bool = not to and get_tree().get_nodes_in_group(Player.GROUP).size() > 1
+	var together: bool = not to and is_together()
 	var speakers: Array[Npc] = []
 	for npc: Npc in crew():
 		if not npc.profile.reaction_lines(event, subject, together).is_empty():
@@ -98,6 +92,18 @@ func transmit(event: StringName, subject: StringName = &"", to: Player = null) -
 	for player: Player in listeners:
 		player.radio.hear(speaker, english, event)
 	changed.emit()
+
+
+## Calls in as `caller` (anyone, e.g. the NPC a quest step is handed in at) with `english` (a
+## line's English text) about `about`, to every living player.
+func call_radio(caller: NpcProfile, english: String, about: StringName) -> void:
+	for player: Player in _listeners(about, null):
+		player.radio.hear(caller, english, about)
+
+
+## Whether several players are in the session (lines to everyone worded for them together).
+func is_together() -> bool:
+	return get_tree().get_nodes_in_group(Player.GROUP).size() > 1
 
 
 ## The next line in turn of `profile` for `event` about `subject` (English, worded for several
@@ -188,6 +194,19 @@ static func _read_counts(saved: Variant, counts: Dictionary[StringName, int]) ->
 		else:
 			complete = false
 	return complete
+
+
+## Who hears a call about `event`: `to` alone, or else every living player (only the ones outside
+## for the storm warning).
+func _listeners(event: StringName, to: Player) -> Array[Player]:
+	var listeners: Array[Player] = []
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		if player.dead or (to and player != to) or not player.radio.is_inside_tree():
+			continue
+		if event == STORM_WARNING and ship.is_aboard(player):
+			continue
+		listeners.append(player)
+	return listeners
 
 
 ## Sets the story flag of a one-time event; returns whether it wasn't set yet.

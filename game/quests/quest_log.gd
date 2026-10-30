@@ -7,7 +7,8 @@ extends Resource
 ## plate (`take_from`), what a run brought aboard counts for mining (`count_hauled`), and what's
 ## built counts once a player has it (`check_built`). A step is handed in at its NPC (`hand_in`):
 ## what's still missing of its deliveries comes from the hold of whoever hands it in, its rewards
-## go to everyone there.
+## go to everyone there. One quest is tracked (`tracked`, the session's: its markers come later):
+## accepting one tracks it while none is, and once the tracked one is done the main quest is.
 
 ## The most reputation with one NPC (five pips on their name plate).
 const REPUTATION_MAX: int = 5
@@ -24,6 +25,8 @@ var accepted: Array[StringName] = []
 var progress: Dictionary[StringName, PackedFloat64Array] = {}
 ## Reputation per NPC (their `NpcProfile.id`), 0–`REPUTATION_MAX`.
 var reputation: Dictionary[StringName, int] = {}
+## The quest the session follows (its id), an accepted one not done yet; empty: none.
+var tracked: StringName = &""
 
 ## What this run brought aboard so far (units per ore), for mining goals.
 var _run: Dictionary[OreType, float] = {}
@@ -32,6 +35,21 @@ var _run: Dictionary[OreType, float] = {}
 ## Whether `quest` is accepted (done or not).
 func is_accepted(quest: Quest) -> bool:
 	return quest.id in accepted
+
+
+## The quest tracked (`tracked`), or null.
+func get_tracked() -> Quest:
+	return catalog.find(tracked) if not tracked.is_empty() else null
+
+
+## Tracks `quest` (accepted, not done). Returns whether it does.
+func track(quest: Quest) -> bool:
+	if not quest or not current_step(quest):
+		return false
+	if tracked != quest.id:
+		tracked = quest.id
+		emit_changed()
+	return true
 
 
 ## Whether `quest`'s last step is handed in.
@@ -126,6 +144,8 @@ func accept(quest: Quest, players: Array[Player]) -> bool:
 		return false
 	accepted.append(quest.id)
 	_start_step(quest, players)
+	if tracked.is_empty():
+		tracked = quest.id
 	emit_changed()
 	return true
 
@@ -154,6 +174,8 @@ func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 		_start_step(quest, players)
 	else:
 		story.set_flag(quest.flag())
+		if tracked == quest.id:
+			tracked = _main_quest()
 	emit_changed()
 	return true
 
@@ -197,7 +219,8 @@ func check_built(players: Array[Player]) -> void:
 	)
 
 
-## What's saved: the quests accepted, the active steps' progress and the reputation.
+## What's saved: the quests accepted, the active steps' progress, the reputation and the quest
+## tracked.
 func save_data() -> Dictionary:
 	var saved_progress: Dictionary = {}
 	for id: StringName in progress:
@@ -209,6 +232,7 @@ func save_data() -> Dictionary:
 		"accepted": accepted.map(func(id: StringName) -> String: return String(id)),
 		"progress": saved_progress,
 		"reputation": saved_reputation,
+		"tracked": String(tracked),
 	}
 
 
@@ -241,6 +265,10 @@ func load_data(saved: Variant) -> bool:
 			reputation[StringName(npc as String)] = mini(int(trust), REPUTATION_MAX)
 		else:
 			complete = SaveData.skipped("reputation", npc)
+	var saved_tracked: Variant = data.get("tracked", "")
+	var tracking: String = saved_tracked if saved_tracked is String else "?"
+	if not tracking.is_empty() and not track(catalog.find(StringName(tracking))):
+		complete = SaveData.skipped("tracked quest", saved_tracked)
 	emit_changed()
 	return complete
 
@@ -260,6 +288,14 @@ func _active() -> Array[Quest]:
 			progress[id] = goals
 		active.append(quest)
 	return active
+
+
+## The first main quest accepted with a step to do (its id), else empty.
+func _main_quest() -> StringName:
+	for quest: Quest in _active():
+		if quest.kind == Quest.Kind.MAIN:
+			return quest.id
+	return &""
 
 
 ## Starts `quest`'s active step: nothing done yet, besides what `players` built before.

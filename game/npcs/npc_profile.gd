@@ -4,6 +4,13 @@ extends Resource
 ## they talk about. An ambient colonist's (see `Colonist`) has a role but no name, and says short
 ## `remarks` instead.
 
+## Where the profiles are (also in subfolders).
+const PEOPLE: String = "res://game/npcs"
+
+## Every profile's path, by its `id` (read once, from `PEOPLE`; paths, since resources held in a
+## static variable leak at exit).
+static var _paths: Dictionary[StringName, String] = {}
+
 ## Who they are in the story's flags (the start of their topics' ids, see `Story`) and later in
 ## quests and reputation, e.g. `quartermaster`: saved, so it never changes; not a name (names may
 ## still change).
@@ -12,6 +19,8 @@ extends Resource
 @export var display_name: String
 ## What they do, e.g. "Quartermaster" (the English text, translated).
 @export var role: String
+## Where they're found: a station's `CelestialBody.id` (e.g. `ostra`); empty: aboard the ship.
+@export var station: StringName = &""
 ## Their own model (e.g. assets/npcs/nell/nell.glb: a person made with MakeHuman, with "Idle" and
 ## "Walk", see docs/technical/characters.md, People). None: the players' suit, in `suit_tint`. A
 ## path, loaded when the body is made, so reading a profile (e.g. every name for `Keywords`) stays
@@ -100,3 +109,29 @@ func spoken_lines() -> Dictionary[StringName, PackedStringArray]:
 			once.append(line)
 	var by_speaker: Dictionary[StringName, PackedStringArray] = {id: once}
 	return by_speaker
+
+
+## Every profile in `PEOPLE` and its subfolders, named or not (ambient colonists have no name).
+static func all() -> Array[NpcProfile]:
+	return _profiles_in(PEOPLE)
+
+
+## The profile whose `id` is `npc` (e.g. a quest's giver), or null.
+static func find(npc: StringName) -> NpcProfile:
+	if _paths.is_empty():
+		for profile: NpcProfile in all():
+			_paths[profile.id] = profile.resource_path
+	return load(_paths[npc]) as NpcProfile if _paths.has(npc) else null
+
+
+static func _profiles_in(directory: String) -> Array[NpcProfile]:
+	var found: Array[NpcProfile] = []
+	for entry: String in ResourceLoader.list_directory(directory):
+		var path: String = directory.path_join(entry)
+		if entry.ends_with("/"):
+			found.append_array(_profiles_in(path.trim_suffix("/")))
+		elif entry.ends_with(".tres"):
+			var profile := load(path) as NpcProfile
+			if profile:
+				found.append(profile)
+	return found

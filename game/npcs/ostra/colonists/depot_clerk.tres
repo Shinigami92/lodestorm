@@ -6,6 +6,7 @@
 script = ExtResource("1_profile")
 id = &"depot_clerk"
 role = "Depot clerk"
+station = &"ostra"
 accent_color = Color(0.45, 0.55, 0.6, 1)
 suit_tint = Color(0.64, 0.6, 0.58, 1)
 remarks = Array[String](["Shelf four, second row: thirty-one air filters. Kade will want that number.", "If a crate isn't on my list, it doesn't exist. That's the rule in this depot.", "I count everything twice. Then Kade counts it a third time.", "The water filter cartridges are running low again. Don't tell anyone, or people start to worry.", "The labels on these shelves have been rewritten so often you can barely read them."])

@@ -6,6 +6,7 @@
 script = ExtResource("1_profile")
 id = &"metalworker"
 role = "Metalworker"
+station = &"ostra"
 accent_color = Color(0.45, 0.55, 0.6, 1)
 suit_tint = Color(0.64, 0.6, 0.58, 1)
 remarks = Array[String](["The ore you crews bring up ends up in my workshop. Most of it comes out again as pipes and patches.", "My ears are still ringing from the workshop. In here it's almost quiet.", "Every hull plate on this station has been patched at least once. A few of those patches are mine.", "Give me enough metal, and I'll build anything this station needs. I never get enough metal.", "We come here after every shift. Same booth, same drinks, same arguments."])

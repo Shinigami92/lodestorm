@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://b46iclw1rxck3"]
+
+[ext_resource type="Script" uid="uid://cu3korxnew6cu" path="res://game/stations/quest_board/board_screen.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+
+[node name="BoardScreen" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+theme_type_variation = &"Card"
+script = ExtResource("1_script")

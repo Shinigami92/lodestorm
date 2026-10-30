@@ -6,6 +6,7 @@
 script = ExtResource("1_profile")
 id = &"maintenance_tech"
 role = "Maintenance technician"
+station = &"ostra"
 accent_color = Color(0.45, 0.55, 0.6, 1)
 suit_tint = Color(0.64, 0.6, 0.58, 1)
 remarks = Array[String](["This light has been flickering for a week. Today it's my turn to fix it.", "Don't touch that panel. It's the only thing keeping the air in this hall warm.", "Half the station runs on spare parts from the first haulers.", "If you hear a hiss, walk away calmly and tell someone. Usually it's nothing.", "The air recyclers need new filters again. They always need new filters."])

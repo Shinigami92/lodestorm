@@ -13,6 +13,7 @@ const CARDS: Array[String] = [
 	"res://game/stations/loadout/loadout_card.tscn",
 	"res://game/stations/med_bed/med_bed_card.tscn",
 	"res://game/stations/navigator/navigator_card.tscn",
+	"res://game/stations/quest_board/quest_board_card.tscn",
 	"res://game/stations/refinery/furnace_card.tscn",
 	"res://game/stations/refinery/rack_card.tscn",
 	"res://game/stations/skill_graph/skill_card.tscn",

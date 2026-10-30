@@ -6,6 +6,7 @@
 script = ExtResource("1_profile")
 id = &"hauler_pilot"
 role = "Hauler pilot"
+station = &"ostra"
 accent_color = Color(0.45, 0.55, 0.6, 1)
 suit_tint = Color(0.64, 0.6, 0.58, 1)
 remarks = Array[String](["I flew one of the haulers that brought the colony here. Now I just watch the planet below.", "From up here, Torvane looks calm. I know better.", "They took my hauler apart for spare parts. I still come here to look out at space.", "Landing on a planet with a full cargo hold is an art. You crews make it look easy.", "Some nights I count the lights of the ships out there. There are never as many as I'd like."])

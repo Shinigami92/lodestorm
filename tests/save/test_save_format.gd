@@ -112,6 +112,7 @@ func test_sections_of_the_wrong_kind_are_skipped() -> void:
 		"skills": "x",
 		"fleet": {"miners": {}},
 		"hints": 3,
+		"finished": {"item": 1},
 	}
 	_write(SaveGame.SHIP_FILE, JSON.stringify(ship_data))
 	_write(SaveGame.PLAYER_FILE, JSON.stringify(player_data))
@@ -122,6 +123,7 @@ func test_sections_of_the_wrong_kind_are_skipped() -> void:
 	assert_true(_player.skills.ranks.is_empty())
 	assert_true(_ship.story.flags.is_empty())
 	assert_true(_ship.quests.accepted.is_empty())
+	assert_true(_player.finished_jobs.entries.is_empty())
 	assert_false(_player.fleet.is_empty(1), "M-01 stays")
 
 

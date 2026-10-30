@@ -151,3 +151,40 @@ func test_unknown_quests_are_skipped() -> void:
 	)
 	assert_eq(read.accepted, [&"ammo_run"] as Array[StringName])
 	assert_false(read.progress.has(&"gone"))
+
+
+func test_tracking_follows_the_first_accepted_then_the_main_quest() -> void:
+	var main: Quest = make_quest(&"main_job", &"councillor")
+	main.kind = Quest.Kind.MAIN
+	_log.catalog.quests.append(main)
+	assert_null(_log.get_tracked())
+	assert_false(_log.track(_quest), "not accepted")
+	_log.accept(_quest, [])
+	assert_eq(_log.get_tracked(), _quest, "the first one accepted")
+	_log.accept(main, [])
+	assert_eq(_log.get_tracked(), _quest, "kept")
+	assert_true(_log.track(main))
+	assert_eq(_log.get_tracked(), main)
+	assert_true(_log.track(_quest))
+	var payer: Player = autofree(Player.new())
+	_log.take_from({KYRITE: 300.0})
+	assert_true(_log.hand_in(_quest, payer, []))
+	assert_eq(_log.get_tracked(), _quest, "still a step to do")
+	_log.start_run()
+	_log.count_hauled(VYREL, 100.0)
+	assert_true(_log.hand_in(_quest, payer, []))
+	assert_eq(_log.get_tracked(), main, "done: the main quest")
+	assert_false(_log.track(_quest), "done")
+
+
+func test_tracked_saved_and_read_back() -> void:
+	_log.accept(_quest, [])
+	var saved: Dictionary = JSON.parse_string(JSON.stringify(_log.save_data()))
+	var read := QuestLog.new()
+	read.catalog = _log.catalog
+	assert_true(read.load_data(saved))
+	assert_eq(read.get_tracked(), _quest)
+	var stale := QuestLog.new()
+	stale.catalog = _log.catalog
+	assert_false(stale.load_data({"accepted": [], "tracked": "ammo_run"}), "not accepted")
+	assert_null(stale.get_tracked())

@@ -43,6 +43,7 @@ script = ExtResource("1_profile")
 id = &"councillor"
 display_name = "Selin"
 role = "Council member"
+station = &"ostra"
 model = "uid://chyfw6w2med20"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist"])
 accent_color = Color(0.55, 0.95, 0.8, 1)

@@ -11,8 +11,6 @@ extends RefCounted
 const COLOR := Color(1.0, 0.85, 0.5)
 const STAR_SYSTEM: String = "res://game/world/star_system.tres"
 const ARSENAL: String = "res://game/weapons/all_weapons.tres"
-## Where the people are (`NpcProfile`s, also in subfolders; those without a name are skipped).
-const PEOPLE: String = "res://game/npcs"
 
 ## Matches any name in `_locale`, built the first time it's needed in that language.
 static var _pattern: RegEx
@@ -48,7 +46,7 @@ static func names() -> PackedStringArray:
 		found.append(ore.display_name)
 	for alloy: AlloyType in AlloyCatalog.all().alloys:
 		found.append(alloy.display_name)
-	for profile: NpcProfile in _people(PEOPLE):
+	for profile: NpcProfile in NpcProfile.all():
 		found.append(profile.display_name)
 	var unique: PackedStringArray = []
 	for name: String in found:
@@ -69,20 +67,6 @@ static func _current_pattern() -> RegEx:
 	_pattern = RegEx.create_from_string("\\b(?:%s)s?\\b" % "|".join(shown))
 	_locale = locale
 	return _pattern
-
-
-## Every named profile in `directory` and its subfolders.
-static func _people(directory: String) -> Array[NpcProfile]:
-	var people: Array[NpcProfile] = []
-	for entry: String in ResourceLoader.list_directory(directory):
-		var path: String = directory.path_join(entry)
-		if entry.ends_with("/"):
-			people.append_array(_people(path.trim_suffix("/")))
-		elif entry.ends_with(".tres"):
-			var profile := load(path) as NpcProfile
-			if profile and not profile.display_name.is_empty():
-				people.append(profile)
-	return people
 
 
 static func _regex_escaped(text: String) -> String:

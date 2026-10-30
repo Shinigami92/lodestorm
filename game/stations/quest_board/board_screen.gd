@@ -7,7 +7,7 @@ extends PanelContainer
 ## they are (`line_rect`, `line_at`) to place its parts and to point with the mouse.
 
 ## Lines the list shows at once.
-const LINES: int = 11
+const LINES: int = 10
 ## Height of a line, in px.
 const LINE_HEIGHT: float = 52.0
 ## Width of a quest's step bar, in px.

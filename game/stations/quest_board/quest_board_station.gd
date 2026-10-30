@@ -14,7 +14,7 @@ enum Tab { QUESTS, JOBS }
 ## Seconds between updates of the list (time left, progress) while nothing changes it.
 const REFRESH: float = 1.0
 ## Gap between the board's right edge and the card, in m.
-const CARD_GAP: float = 0.15
+const CARD_GAP: float = 0.3
 
 ## The tab shown.
 var tab: Tab = Tab.QUESTS

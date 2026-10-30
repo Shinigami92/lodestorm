@@ -12,6 +12,7 @@ How Lodestorm is built: the code's rules and architecture, the tooling, CI, the 
 | [`saving.md`](saving.md) | the save files, their format, the statistics |
 | [`menus.md`](menus.md) | world panels, stations and their parts, every station, the boot screen and title view |
 | [`npcs.md`](npcs.md) | NPC profiles, talks, walking and routines, the crew's transmissions |
+| [`quests.md`](quests.md) | quests, steps, goals and rewards as data, the ship's quest log, offers and hand-ins at NPCs |
 | [`ci.md`](ci.md) | the workflows, exports, Renovate |
 | [`assets.md`](assets.md) | Blender, model kits, terrain, concepts, generated models, asset scripts |
 | [`characters.md`](characters.md) | the player's and the NPCs' models, skeletons, clips, MakeHuman bodies with generated outfits |

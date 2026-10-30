@@ -17,6 +17,10 @@ extends RefCounted
 ## plays normally again.
 ## Their tour's topics (see `Tour`) start it, go on with it or end it when heard to the end, and
 ## close the talk.
+## A quest they offer is told like a topic, then its card shows what it asks and pays (`quest`,
+## `offering`): `interact` accepts it, `pause` leaves it for later (it stays offered). A step handed
+## in at them shows its card at once (what's done, what the hold pays of the rest, the rewards):
+## `interact` hands it in, then they say its lines.
 
 ## Whose talk it is.
 var npc: Npc
@@ -30,6 +34,10 @@ var choice: int = 0
 var prompt: String = ""
 ## Whether moving on by itself and the voice are paused (until resumed or the next line).
 var auto_paused: bool = false
+## The quest whose card shows (instead of the list), or null.
+var quest: Quest
+## Whether the card offers `quest` (else it hands in its step).
+var offering: bool = false
 
 ## How long the line shown waits before it moves on by itself (0: it doesn't), and for how long it
 ## has waited.
@@ -45,6 +53,7 @@ func _init(who: Npc) -> void:
 ## card).
 func open() -> void:
 	topic = null
+	quest = null
 	choice = 0
 	_set_paused(false)
 	var dialogue: Dialogue = npc.profile.dialogue if npc.profile else null
@@ -66,6 +75,7 @@ func greet() -> void:
 ## Ends the talk as it closes: no topic, and they stop speaking.
 func close() -> void:
 	topic = null
+	quest = null
 	_set_paused(false)
 	npc.voice.stop()
 
@@ -82,8 +92,12 @@ func update(delta: float) -> void:
 		card_shown.show_progress(get_auto_progress())
 
 
-## What their bubble says now (translated): the topic's line, or the prompt while listing.
+## What their bubble says now (translated): the topic's line, the offer's last line while its card
+## shows, or the prompt.
 func get_line() -> String:
+	if quest and offering:
+		var offer: Array[String] = quest.offer.lines_for(npc.is_guest(), _is_away())
+		return npc.tr(offer[-1]) if not offer.is_empty() else ""
 	if topic:
 		var told: Array[String] = get_topic_lines()
 		return npc.tr(told[line]) if line < told.size() else ""
@@ -95,7 +109,7 @@ func get_line() -> String:
 func get_topic_lines() -> Array[String]:
 	if not topic:
 		return [] as Array[String]
-	return topic.lines_for(npc.is_guest(), npc.routine != null and npc.routine.is_away())
+	return topic.lines_for(npc.is_guest(), _is_away())
 
 
 ## How far the line shown is towards moving on by itself (0..1, also while paused), or -1 when it
@@ -137,17 +151,26 @@ func advance() -> void:
 	_show()
 
 
-## Does what `interact` does: the next line of the topic, or the highlighted list entry (a topic,
-## or "Goodbye", which closes).
+## Does what `interact` does: accepts the quest on the card or hands in its step, the next line of
+## the topic, or the highlighted list entry (a topic, a quest step's card, or "Goodbye", which
+## closes).
 func press() -> void:
+	if quest:
+		_confirm_quest()
+		return
 	if topic:
 		advance()
 		return
 	var choices: Array[Topic] = npc.get_choices()
-	if choice < choices.size():
-		talk_about(choices[choice])
-	else:
+	if choice >= choices.size():
 		npc.close()
+		return
+	var quests: QuestLog = npc.get_quests()
+	var chosen: Quest = quests.quest_for(choices[choice])
+	if chosen and quests.is_accepted(chosen):
+		_show_quest(chosen, false)
+	else:
+		talk_about(choices[choice])
 
 
 ## Highlights list entry `index` (an open topic, or after them "Goodbye").
@@ -158,14 +181,18 @@ func set_choice(index: int) -> void:
 
 ## Up and down move the highlight through the list (left and right do nothing here).
 func step(direction: Vector2) -> void:
-	if topic or is_zero_approx(direction.y):
+	if topic or quest or is_zero_approx(direction.y):
 		return
 	var count: int = npc.get_choices().size() + 1
 	set_choice(posmod(choice + int(signf(direction.y)), count))
 
 
-## Leaves the topic being told for the list (`pause`, "Back"). Returns whether one was told.
+## Leaves the topic being told or the quest's card for the list (`pause`, "Back", "Not now").
+## Returns whether one showed.
 func leave_topic() -> bool:
+	if quest:
+		_show_quest(null)
+		return true
 	if not topic:
 		return false
 	topic = null
@@ -175,13 +202,18 @@ func leave_topic() -> bool:
 	return true
 
 
-## The topic told is heard to the end; a tour's topics then close the talk and start the tour,
-## go on with it or end it.
+## The topic told is heard to the end; a quest's offer then shows its card, a tour's topics close
+## the talk and start the tour, go on with it or end it.
 func _finish_topic() -> void:
 	var heard: Topic = topic
 	npc.get_story().set_flag(heard.id)
 	topic = null
 	choice = mini(choice, npc.get_choices().size())
+	var quests: QuestLog = npc.get_quests()
+	var offered: Quest = quests.quest_for(heard)
+	if offered and not quests.is_accepted(offered):
+		_show_quest(offered, true)
+		return
 	var tour: Tour = npc.profile.tour if npc.profile else null
 	if not tour or heard not in [tour.invite, tour.resume, tour.abort]:
 		return
@@ -190,6 +222,35 @@ func _finish_topic() -> void:
 	elif heard == tour.abort:
 		npc.routine.end_tour()
 	npc.close.call_deferred()
+
+
+## Shows the card of `shown` (null: back to the list), `offered` or with its step to hand in.
+func _show_quest(shown: Quest, offered: bool = false) -> void:
+	quest = shown
+	offering = offered
+	choice = mini(choice, npc.get_choices().size())
+	_show()
+
+
+## Accepts the quest on the card, or hands in its step (then they say its lines); nothing while
+## the step can't be handed in.
+func _confirm_quest() -> void:
+	var quests: QuestLog = npc.get_quests()
+	var players: Array[Player] = []
+	players.assign(npc.get_tree().get_nodes_in_group(Player.GROUP))
+	if offering:
+		quests.accept(quest, players)
+		_show_quest(null)
+		return
+	var handed: QuestStep = quests.current_step(quest)
+	if quests.hand_in(quest, npc.user, players):
+		quest = null
+		talk_about(handed.hand_in)
+
+
+## Whether they stand outside their own room (for the lines that fit elsewhere).
+func _is_away() -> bool:
+	return npc.routine != null and npc.routine.is_away()
 
 
 ## Shows the current state on the card and in the bubble.

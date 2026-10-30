@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cx1tsaibepnuj" path="res://game/npcs/talk_card.gd" id="1_script"]
 [ext_resource type="Theme" uid="uid://jh0kgjpj5o31" path="res://assets/ui/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://5knmleatn1ur" path="res://game/quests/quest_panel.gd" id="3_quest"]
 
 [node name="TalkCard" type="PanelContainer"]
 anchors_preset = 14
@@ -43,6 +44,12 @@ auto_translate_mode = 2
 layout_mode = 2
 theme_type_variation = &"CardText"
 theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+
+[node name="Quest" type="VBoxContainer" parent="Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+script = ExtResource("3_quest")
 
 [node name="Scroll" type="ScrollContainer" parent="Layout"]
 unique_name_in_owner = true

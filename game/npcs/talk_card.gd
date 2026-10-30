@@ -3,7 +3,9 @@ extends StationCard
 ## The holo card beside an NPC while a player talks to them (`Npc`): their name and role, then
 ## either the open topics and "Goodbye" (an amber dot on topics nobody has heard yet), or while a
 ## topic is told its title, how far it is ("2 / 3") and "Continue" ("Done" on the last line) and
-## "Back". The button `interact` presses has an amber frame (not the focus, see `LoadoutCard`).
+## "Back"; or a quest's card (a `QuestPanel`, see `NpcTalk.quest`) with "Accept" and "Not now" for
+## an offer, or "Hand in" (only while it can be) and "Back" for a step. The button `interact`
+## presses has an amber frame (not the focus, see `LoadoutCard`).
 ## Past `MAX_ROWS` entries the list scrolls, keeping the framed one in view (an NPC with many
 ## topics, like the bartender's rumors about every planet). With auto-continue on, an amber bar
 ## along the bottom of "Continue" fills until the line moves on by itself (`show_progress`), and a
@@ -46,6 +48,7 @@ var _pause_button: Button
 @onready var _progress: Label = %Progress
 @onready var _scroll: ScrollContainer = %Scroll
 @onready var _list: VBoxContainer = %List
+@onready var _quest: QuestPanel = %Quest
 
 
 func show_part(part: StationPart) -> void:
@@ -56,6 +59,10 @@ func show_part(part: StationPart) -> void:
 	_name.text = npc.profile.display_name
 	_role.text = tr(npc.profile.role)
 	_role.add_theme_color_override(&"font_color", CardPalette.HINT)
+	_quest.visible = npc.talk.quest != null
+	if _quest.visible:
+		_show_quest(npc)
+		return
 	var told: Topic = npc.talk.topic
 	_topic_title.visible = told != null
 	_progress.visible = told != null
@@ -77,6 +84,29 @@ func show_part(part: StationPart) -> void:
 	new.append(false)
 	_show_buttons(texts, new, npc.talk.choice)
 	_pause_button.visible = false
+
+
+## The quest card's panel (for tests and probes).
+func get_quest_panel() -> QuestPanel:
+	return _quest
+
+
+## Shows the card of the quest `npc` talks about: its title, the panel, and accepting it or handing
+## in its step.
+func _show_quest(npc: Npc) -> void:
+	var shown: Quest = npc.talk.quest
+	var quests: QuestLog = npc.get_quests()
+	var hold: PlayerHold = npc.user.hold if npc.user else null
+	_topic_title.visible = true
+	_topic_title.text = tr(shown.title)
+	_progress.visible = false
+	_pause_button.visible = false
+	_quest.show_quest(shown, quests, hold, npc.talk.offering)
+	if npc.talk.offering:
+		_show_buttons([tr("Accept"), tr("Not now")], [false, false], 0)
+		return
+	_show_buttons([tr("Hand in"), tr("Back")], [false, false], 0)
+	_buttons[0].disabled = not hold or not quests.can_hand_in(shown, hold)
 
 
 ## Shows how far the line is towards moving on by itself (0..1) as the bar on "Continue"; hides it
@@ -143,6 +173,7 @@ func _show_buttons(texts: Array[String], new: Array[bool], selected: int) -> voi
 	for i: int in _buttons.size():
 		var button: Button = _buttons[i]
 		button.visible = i < texts.size()
+		button.disabled = false
 		if not button.visible:
 			continue
 		button.text = (NEW_DOT if new[i] else "") + texts[i]
@@ -237,6 +268,13 @@ func _on_pause_pressed() -> void:
 func _on_button_pressed(index: int) -> void:
 	var npc := station as Npc
 	if not npc:
+		return
+	if npc.talk.quest:
+		# "Accept"/"Hand in", or "Not now"/"Back".
+		if index == 0:
+			npc.talk.press()
+		else:
+			npc.talk.leave_topic()
 		return
 	if npc.talk.topic:
 		# "Continue"/"Done", or "Back".

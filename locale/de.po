@@ -1927,6 +1927,7 @@ msgid "Radio"
 msgstr "Funk"
 
 #: game/npcs/talk_card.gd
+#: game/quests/quest_panel.gd
 msgid "Done"
 msgstr "Fertig"
 
@@ -1944,6 +1945,18 @@ msgstr "Zurück"
 #: game/npcs/talk_card.gd
 msgid "Goodbye"
 msgstr "Bis dann"
+
+#: game/npcs/talk_card.gd
+msgid "Accept"
+msgstr "Annehmen"
+
+#: game/npcs/talk_card.gd
+msgid "Not now"
+msgstr "Jetzt nicht"
+
+#: game/npcs/talk_card.gd
+msgid "Hand in"
+msgstr "Abgeben"
 
 #: game/ores/types/ore_aethrine.tres
 msgid "Aethrine"
@@ -2195,6 +2208,43 @@ msgstr "Erztank"
 #: game/progression/upgrades/miner_tank.tres
 msgid "Miners hold more ore"
 msgstr "Miner fassen mehr Erz"
+
+#: game/quests/build_goal.gd
+msgid "Build %s"
+msgstr "%s bauen"
+
+#: game/quests/build_goal.gd
+msgid "Raise %s to MK%d"
+msgstr "%s auf MK%d bringen"
+
+#: game/quests/build_goal.gd
+#: game/stations/miner_bay/miner_card.gd
+msgid "Build a miner"
+msgstr "Miner bauen"
+
+#: game/quests/deliver_goal.gd
+msgid "Deliver %s"
+msgstr "%s liefern"
+
+#: game/quests/mine_goal.gd
+msgid "Mine %s in one run"
+msgstr "%s in einer Mission abbauen"
+
+#: game/quests/quest_panel.gd
+msgid "From your hold"
+msgstr "Aus deinem Laderaum"
+
+#: game/quests/quest_panel.gd
+msgid "Rewards"
+msgstr "Belohnung"
+
+#: game/quests/quest_panel.gd
+msgid "Blueprint: %s"
+msgstr "Bauplan: %s"
+
+#: game/quests/quest_panel.gd
+msgid "Reputation +%d"
+msgstr "Ansehen +%d"
 
 #: game/refinery/alloys/alloy_auralt.tres
 msgid "Auralt"
@@ -2712,10 +2762,6 @@ msgstr "Verloren auf %s."
 #: game/stations/miner_bay/miner_card.gd
 msgid "An empty cradle."
 msgstr "Eine leere Halterung."
-
-#: game/stations/miner_bay/miner_card.gd
-msgid "Build a miner"
-msgstr "Miner bauen"
 
 #: game/stations/miner_bay/miner_card.gd
 #: game/stations/miner_bay/miner_cradle.gd

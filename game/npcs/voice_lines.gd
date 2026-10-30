@@ -26,7 +26,7 @@ const READ_PER_LETTER: float = 0.06
 ## `spoken_lines() -> Dictionary[StringName, PackedStringArray]` (who says them, their
 ## `NpcProfile.id`, to the English lines): a line can live in another file than its speaker's
 ## profile, e.g. a quest's hand-in said by the NPC it names.
-const SPEAKING: Array[String] = ["NpcProfile"]
+const SPEAKING: Array[String] = ["NpcProfile", "Quest"]
 ## Where `speaking_resources` looks.
 const SOURCE_DIR: String = "res://game"
 

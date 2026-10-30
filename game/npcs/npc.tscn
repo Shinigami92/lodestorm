@@ -27,6 +27,13 @@ albedo_color = Color(1, 0.75, 0.3, 1)
 material = SubResource("StandardMaterial3D_new")
 size = Vector3(0.2, 0.2, 0.2)
 
+[sub_resource type="SphereMesh" id="SphereMesh_news"]
+material = SubResource("StandardMaterial3D_new")
+radius = 0.1
+height = 0.2
+radial_segments = 16
+rings = 8
+
 [node name="Npc" type="Node3D" node_paths=PackedStringArray("view_focus")]
 script = ExtResource("1_script")
 view_height = 3.2
@@ -61,6 +68,11 @@ layers = 8
 transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_new")
+
+[node name="Round" type="MeshInstance3D" parent="NewMarker"]
+layers = 8
+cast_shadow = 0
+mesh = SubResource("SphereMesh_news")
 
 [node name="Light" type="SpotLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3.2, 0.6)

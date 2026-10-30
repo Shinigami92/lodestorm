@@ -95,7 +95,12 @@ func test_unknown_entries_are_skipped() -> void:
 ## A section holding the wrong kind of value is skipped like an unknown entry.
 func test_sections_of_the_wrong_kind_are_skipped() -> void:
 	var ship_data: Dictionary = {
-		"version": SaveGame.VERSION, "story": "x", "shield": [1], "reactions": 3, "at": 7
+		"version": SaveGame.VERSION,
+		"story": "x",
+		"shield": [1],
+		"reactions": 3,
+		"quests": [],
+		"at": 7,
 	}
 	var player_data: Dictionary = {
 		"version": SaveGame.VERSION,
@@ -116,6 +121,7 @@ func test_sections_of_the_wrong_kind_are_skipped() -> void:
 	assert_eq(_player.upgrades.mk(ARMOR), 1)
 	assert_true(_player.skills.ranks.is_empty())
 	assert_true(_ship.story.flags.is_empty())
+	assert_true(_ship.quests.accepted.is_empty())
 	assert_false(_player.fleet.is_empty(1), "M-01 stays")
 
 

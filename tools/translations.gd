@@ -24,6 +24,9 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"LocationBiome": [&"display_name"],
 	"OreType": [&"display_name"],
 	"NpcProfile": [&"role", &"remarks"],
+	# Its steps and topics are built into it.
+	"Quest": [&"title"],
+	"QuestStep": [&"text"],
 	"Region": [&"display_name"],
 	"Skill": [&"display_name", &"description"],
 	"SkillCluster": [&"display_name"],

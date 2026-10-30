@@ -28,10 +28,10 @@ extends Node3D
 ## warning time (the ship pointer outside blinks then), red in the storm, blue once everyone is back
 ## and grey when the mission is lost.
 ## Returned cargo goes into every player's own hold (`PlayerHold`, shown by the silos in the cargo
-## bay), after the heat shield's plate took what it still needs while it's the ship's project
-## (`store_haul`); the refinery at the bay's far end turns it into alloys (`Refinery`). Dead
-## players respawn at
-## `Respawn` in the medical bay. The crew find their way aboard over its `navigation`.
+## bay), after the heat shield's plate took what it still needs while it's the ship's project and
+## the quests' deliveries theirs (`store_haul`); the refinery at the bay's far end turns it into
+## alloys (`Refinery`). Dead players respawn at `Respawn` in the medical bay. The crew find their
+## way aboard over its `navigation`.
 
 ## Emitted when a player steps out of the ship.
 signal player_left(player: Player)
@@ -101,6 +101,8 @@ var furnaces := Furnaces.new()
 var cradles := Cradles.new()
 ## The crew's reactions to what happens, and their radio calls, saved with the ship.
 var reactions := CrewReactions.new()
+## The quests accepted and how far they are, saved with the ship (their steps' flags in `story`).
+var quests := QuestLog.new()
 ## Lets the levels and skill ranks under way take effect once done.
 var progress_clock: ProgressClock
 ## Where the crew can walk aboard.
@@ -168,6 +170,7 @@ func _ready() -> void:
 	navigation = DeckNavigation.new()
 	navigation.name = "Navigation"
 	add_child(navigation)
+	_count_quests()
 
 
 func _physics_process(delta: float) -> void:
@@ -227,14 +230,22 @@ func get_respawn_position() -> Vector3:
 
 
 ## Stores a run's `haul` (units per ore type, everything brought aboard): while the heat shield's
-## next plate is the ship's project, it takes what it still needs first; what's left goes whole into
-## the hold of every player in `players` (the session), nothing split. Returns what the plate took.
+## next plate is the ship's project, it takes what it still needs first, then the quests'
+## deliveries (`QuestLog.take_from`); what's left goes whole into the hold of every player in
+## `players` (the session), nothing split. Returns what the plate and the quests took.
 func store_haul(
 	haul: Dictionary[OreType, float], players: Array[Player]
 ) -> Dictionary[OreType, float]:
 	var taken: Dictionary[OreType, float] = {}
 	if heat_shield.project:
 		taken = heat_shield.take_from(haul)
+	var rest: Dictionary[OreType, float] = {}
+	for ore_type: OreType in haul:
+		var plated: float = taken.get(ore_type, 0.0)
+		rest[ore_type] = haul[ore_type] - plated
+	var delivered: Dictionary[OreType, float] = quests.take_from(rest)
+	for ore_type: OreType in delivered:
+		taken[ore_type] = taken.get(ore_type, 0.0) + delivered[ore_type]
 	for player: Player in players:
 		for ore_type: OreType in haul:
 			var took: float = taken.get(ore_type, 0.0)
@@ -271,6 +282,28 @@ static func nearest(tree: SceneTree, from: Vector3) -> Ship:
 			nearest_ship = ship
 			nearest_distance = distance
 	return nearest_ship
+
+
+## Lets the quests count the runs, what they bring aboard and what's built.
+func _count_quests() -> void:
+	quests.story = story
+	var events: GameEvents = GameEvents.bus
+	events.mission_started.connect(quests.start_run.unbind(1))
+	events.ore_hauled.connect(_on_ore_hauled)
+	events.weapon_unlocked.connect(_on_built.unbind(2))
+	events.upgrade_finished.connect(_on_built.unbind(3))
+	events.miner_built.connect(_on_built.unbind(2))
+
+
+func _on_ore_hauled(_player: Player, ore_type: OreType, amount: float) -> void:
+	quests.count_hauled(ore_type, amount)
+
+
+## Something was built: the session's players count for the quests' build goals.
+func _on_built() -> void:
+	var players: Array[Player] = []
+	players.assign(get_tree().get_nodes_in_group(Player.GROUP))
+	quests.check_built(players)
 
 
 func _update_display() -> void:

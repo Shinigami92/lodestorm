@@ -1,6 +1,6 @@
 # Quests (planned)
 
-Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Today there are story flags and NPC topics (see [NPCs](../design/ship.md)) and crates with supply caches, but no quests; what quests are for: see [Quests](../design/missions.md#quests).
+Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1): quests as data, offering with the diamond marker, accepting, hand-ins, and the goals deliver, mine and build (see [Quests](../design/missions.md#quests)); the rest below is still to come. Crates hold supply caches, no fragments yet.
 
 ## How quests work
 

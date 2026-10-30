@@ -76,6 +76,15 @@ func test_a_station_is_used_from_any_side() -> void:
 		assert_ne(Interactable.nearest(get_tree(), away), use, path + " out of reach")
 
 
+## Standing on the upper deck right above a lower-deck station doesn't reach it through the floor.
+func test_a_station_on_the_other_deck_is_out_of_reach() -> void:
+	var use: Interactable = (_ship.get_node("Rooms/Lower/Miners/MinerBay") as Station).use_point
+	var below: Vector3 = use.global_position
+	assert_eq(Interactable.nearest(get_tree(), below), use)
+	var above: Vector3 = below + _ship.global_basis.y * 4.5
+	assert_ne(Interactable.nearest(get_tree(), above), use, "through the upper deck's floor")
+
+
 func test_player_stands_still_while_using_a_station() -> void:
 	await _use("Miners")
 	var before: Vector3 = _player.global_position

@@ -517,6 +517,40 @@ func _station_call() -> void:
 		ship.messages.emit_changed()
 
 
+## Has the two crew members nearest to the first talk spot aboard every ship meet there for a test
+## talk (placeholder lines, no flag), which starts once a player comes close (see `OverheardTalks`).
+func _test_talk() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		var spot: TalkSpot = null
+		for found: TalkSpot in get_tree().get_nodes_in_group(TalkSpot.GROUP):
+			if ship.is_ancestor_of(found):
+				spot = found
+				break
+		var crew: Array[Npc] = []
+		for menu: Node in get_tree().get_nodes_in_group(WorldMenu.GROUP):
+			var npc := menu as Npc
+			if npc and npc.profile and ship.is_ancestor_of(npc):
+				crew.append(npc)
+		if not spot or crew.size() < 2:
+			continue
+		crew.sort_custom(
+			func(a: Npc, b: Npc) -> bool:
+				return (
+					a.global_position.distance_to(spot.global_position)
+					< b.global_position.distance_to(spot.global_position)
+				)
+		)
+		var talk := OverheardTalk.new()
+		talk.id = &"debug"
+		talk.spot = spot.name
+		for index: int in 4:
+			var line := TalkLine.new()
+			line.npc = crew[index % 2].profile.id
+			line.text = "Test talk, line %d of 4." % (index + 1)
+			talk.lines.append(line)
+		ship.talks.hold(talk)
+
+
 ## Has the crew call the storm warning over the radio, to every player outside.
 func _radio_storm() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
@@ -745,6 +779,7 @@ func _build() -> void:
 	_button(crew, "Radio: storm", _radio_storm)
 	_button(crew, "Story: next beat", _next_beat)
 	_button(crew, "Messages: a station call", _station_call)
+	_button(crew, "Talks: a test talk", _test_talk)
 	var progress: GridContainer = _group(state, "Progress")
 	_button(progress, "Give blueprints", _give_blueprints)
 	_button(progress, "Unlock weapons", _unlock_weapons)

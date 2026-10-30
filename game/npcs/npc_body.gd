@@ -37,6 +37,8 @@ const PLATE_ABOVE_HEAD: float = 0.2
 
 ## Whom it turns towards; null: the nearest player close by.
 var faces: Node3D
+## Whether it keeps facing where it stands, turning to no player close by (in an overheard talk).
+var holds_facing: bool = false
 ## Whether it sits on the seat behind where it stands (its model's "Sit" clip, see `NpcAnimator`;
 ## the suit has it): it sits down and gets up over `NpcAnimator.sit_blend_time`, facing ahead.
 var sitting: bool = false:
@@ -139,10 +141,10 @@ func _sit_drop() -> float:
 
 
 ## Turns towards `faces`, else the nearest player close by (not while walking: it looks where it
-## goes), else back to where it stands facing (its parent's forward).
+## goes; not while it `holds_facing`), else back to where it stands facing (its parent's forward).
 func _turn(delta: float) -> void:
 	var target: Node3D = faces
-	if not target and not sitting and not is_walking():
+	if not target and not sitting and not is_walking() and not holds_facing:
 		target = Player.nearest(get_tree(), global_position, NOTICE_RANGE)
 	# Works on its activities only while nobody is close (it turns to them instead).
 	_animator.may_work = target == null

@@ -110,6 +110,8 @@ var director := StoryDirector.new()
 ## The messages left for the ship (and calls from people waiting at a station), saved with the
 ## ship.
 var messages := MessageLog.new()
+## The crew's talks among themselves that players overhear (their flags in `story`).
+var talks := OverheardTalks.new()
 ## Lets the levels and skill ranks under way take effect once done.
 var progress_clock: ProgressClock
 ## Where the crew can walk aboard.
@@ -182,6 +184,9 @@ func _ready() -> void:
 	quest_radio.name = "QuestRadio"
 	quest_radio.ship = self
 	add_child(quest_radio)
+	talks.name = "Talks"
+	talks.ship = self
+	add_child(talks)
 
 
 func _physics_process(delta: float) -> void:

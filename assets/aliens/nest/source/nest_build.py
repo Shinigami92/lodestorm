@@ -1090,4 +1090,5 @@ def main() -> None:
                 render_view(OUT / "wip" / f"{TAG}_{view}.png", view, 24, 512)
 
 
-main()
+if __name__ == "__main__":  # the quest nest's build imports the shared parts (quest_nest_build.py)
+    main()

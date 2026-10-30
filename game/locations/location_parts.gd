@@ -183,6 +183,14 @@ func late_part() -> Placed:
 	return null
 
 
+## The part placed for `placement`, or null (none, or it found no room).
+func placed_for(placement: PartPlacement) -> Placed:
+	for part: Placed in placed:
+		if placement and part.placement == placement:
+			return part
+	return null
+
+
 ## The part in `area`, or null.
 func part_in(area: LocationLayout.Area) -> Placed:
 	for part: Placed in placed:

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://dj438x075ecsl"]
+
+[ext_resource type="Script" uid="uid://du8153qdwkql5" path="res://game/aliens/nest/alien_nest.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://d0q87hyldp5t8" path="res://game/aliens/nest/alien_nest_settings.tres" id="2_settings"]
+[ext_resource type="Resource" uid="uid://b1n2rik6l2xeh" path="res://game/aliens/hive/hive.tres" id="3_hive"]
+[ext_resource type="PackedScene" uid="uid://bavxu5yhuaqvr" path="res://assets/aliens/quest_nest/quest_nest.glb" id="4_model"]
+[ext_resource type="Script" uid="uid://cgn6i1bumpenm" path="res://game/weapons/destructible.gd" id="5_body"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_spire"]
+height = 3.4
+radius = 1.4
+
+[node name="QuestNest" type="Node3D"]
+script = ExtResource("1_script")
+settings = ExtResource("2_settings")
+hive = ExtResource("3_hive")
+kind = 1
+mouth_center = Vector3(0.167, 2.849, -0.167)
+
+[node name="Body" type="StaticBody3D" parent="."]
+script = ExtResource("5_body")
+aim_height = 1.4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+shape = SubResource("CylinderShape3D_spire")
+
+[node name="Model" parent="." instance=ExtResource("4_model")]

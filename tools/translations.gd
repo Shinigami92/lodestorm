@@ -28,6 +28,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	# Its steps and topics are built into it.
 	"Quest": [&"title"],
 	"QuestStep": [&"text"],
+	"ReachGoal": [&"place"],
 	"Region": [&"display_name"],
 	"Skill": [&"display_name", &"description"],
 	"SkillCluster": [&"display_name"],

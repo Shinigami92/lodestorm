@@ -18,6 +18,9 @@ extends Node
 ## The game starts in space, or landed at `location` if the map has one (tests); a save made while
 ## docked docks the ship again (`dock_at`).
 ## Once a run is over, the mission rolls new offers (`roll_offers`).
+## A region's location gets what the ship's active quest steps need there (a `QuestVisit`); when
+## that changes (a quest accepted, a step handed in), the locations prepared and not landed at yet
+## are prepared again.
 
 ## Emitted when the missions on offer, the previewed one or the picked one change.
 signal offers_changed
@@ -75,6 +78,7 @@ func _ready() -> void:
 	ship.voyage = self
 	roll_offers()
 	ship.heat_shield.level_changed.connect(_on_shield_level_changed.unbind(1))
+	ship.quests.changed.connect(_on_quests_changed)
 	flight.left_location.connect(_on_left_location)
 	flight.reached_location.connect(_on_reached_location)
 	_location_transform = ship.transform
@@ -326,6 +330,7 @@ func _instantiate(offer: MissionBrief) -> Node3D:
 		generated.area_count = maxi(roundi(settings.location_areas * offer.length), 4)
 		if offer.region:
 			generated.set_pieces = offer.region.set_pieces
+			generated.quest_visit = QuestVisit.new(ship.quests, offer.region.id)
 		var rig := get_tree().get_first_node_in_group(IsoCameraRig.GROUP) as IsoCameraRig
 		if rig:
 			# Where the camera looks, seen from the location (it stands where the ship lands).
@@ -365,15 +370,19 @@ func _finish_preparing(offer: MissionBrief) -> void:
 ## Drops the prepared locations except the one the ship flies to.
 func _discard_prepared() -> void:
 	for offer: MissionBrief in _prepared.keys():
-		var prepared: Node3D = _prepared[offer]
-		if prepared == _destination_location:
-			continue
-		if _tasks.has(offer):
-			_discarded[_tasks[offer]] = prepared
-			_tasks.erase(offer)
-		else:
-			prepared.free()
-		_prepared.erase(offer)
+		if _prepared[offer] != _destination_location:
+			_discard(offer)
+
+
+## Drops `offer`'s prepared location (freed once its planning is done).
+func _discard(offer: MissionBrief) -> void:
+	var prepared: Node3D = _prepared[offer]
+	if _tasks.has(offer):
+		_discarded[_tasks[offer]] = prepared
+		_tasks.erase(offer)
+	else:
+		prepared.free()
+	_prepared.erase(offer)
 
 
 ## Frees every location outside the tree once its planning is done.
@@ -437,6 +446,26 @@ func _on_left_location() -> void:
 		brief = null
 		offers_changed.emit()
 	_show_hologram()
+
+
+## The quests changed: a prepared location whose quest visit isn't what the quests need there now
+## is prepared again (also the one the flight goes to, until it's reached).
+func _on_quests_changed() -> void:
+	for offer: MissionBrief in _prepared.keys():
+		var generated := _prepared[offer] as GeneratedLocation
+		if not generated or not generated.quest_visit or not offer.region:
+			continue
+		var now := QuestVisit.new(ship.quests, offer.region.id)
+		if now.key() == generated.quest_visit.key():
+			continue
+		var destined: bool = generated == _destination_location
+		_discard(offer)
+		_prepare(offer)
+		if destined:
+			_destination_location = _prepared[offer]
+			flight.destination_ready = false
+		if offer == previewed:
+			_show_hologram()
 
 
 ## Another plate on the heat shield: the bodies it reaches now offer missions too.

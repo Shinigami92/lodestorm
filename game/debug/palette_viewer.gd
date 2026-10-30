@@ -123,6 +123,7 @@ static func groups() -> Array[Group]:
 			Group
 			. new("The hive", true)
 			. add("Eyes, nest glow, ichor", AlienNest.COLOR_GLOW)
+			. add("Quest nest glow", AlienNest.QUEST_GLOW)
 			. add("Sparks off armor", HitSpray.COLOR_SPARK)
 			. add("Armor chips", HitSpray.COLOR_CHIP)
 		)

@@ -12,6 +12,8 @@ extends Node3D
 ## hold a point of interest or one of the region's set pieces (see `LocationParts`); their markers
 ## place ore, nests and crates first. A far one is the late deposit's impact site (`LateDeposit`):
 ## its crater is carved from the start, its meteorite and ore appear with the impact.
+## What the active quest steps need here (`quest_visit`) comes in too: their quest sites as set
+## pieces (a `QuestSite` at each one's quest anchor) and their quest nests after the ordinary ones.
 ## Everything the generator places is greybox; the values are TBD (playtest).
 ## The layout, the parts, the ground's shape and the hazard draw one after another from the seed
 ## itself; the ore fields, the nests and everything after them each draw from a random stream of
@@ -24,6 +26,7 @@ extends Node3D
 
 const ORE_NODE: PackedScene = preload("res://game/mining/ore_node.tscn")
 const ALIEN_NEST: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")
+const QUEST_NEST: PackedScene = preload("res://game/aliens/nest/quest_nest.tscn")
 const LATE_DEPOSIT: PartPlacement = preload("res://game/locations/parts/late_deposit.tres")
 ## Grid squares per chunk side: the ground and the scatter are cut into chunks so the parts out of
 ## view are culled.
@@ -118,6 +121,8 @@ var size: float = 0.0
 var parts := LocationParts.new()
 ## Where its ore nodes and nests go.
 var sites := LocationSites.new(self)
+## What the active quest steps put into this visit (see `QuestVisit`), or null; set before `plan`.
+var quest_visit: QuestVisit
 ## The ground along its passes: their lanes, the ramps between terraces and the trails' paths.
 var passes: LocationPasses
 
@@ -174,7 +179,10 @@ func plan() -> void:
 	layout = LocationLayout.generate(
 		rng, area_count, biome, landing_yard, landing_site.grow(LANDING_MARGIN)
 	)
-	parts.choose(rng, layout, set_pieces, biome.part_pool, biome.parts_per_area, late_deposit)
+	var pieces: Array[PartPlacement] = set_pieces.duplicate()
+	if quest_visit:
+		pieces.append_array(quest_visit.sites())
+	parts.choose(rng, layout, pieces, biome.part_pool, biome.parts_per_area, late_deposit)
 	_generate_ground(rng)
 	_reachable = terrain.reachable_from(ramp_exit, MAX_WALK_SLOPE, _blocked)
 	parts.settle(rng, self)
@@ -205,6 +213,7 @@ func build() -> void:
 	parts.build(self, crate_contents)
 	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()
+	_add_quest_sites()
 	_add_late_deposit(late_ores)
 	if navigation_mesh:
 		var navigation := LocationNavigation.new()
@@ -768,15 +777,35 @@ func _add_nests() -> void:
 	add_child(nests)
 	var table: HatchTable = null
 	for i: int in sites.nests.size():
-		var nest := ALIEN_NEST.instantiate() as AlienNest
+		var quest: QuestVisit.Entry = sites.nests[i].quest
+		var nest := (QUEST_NEST if quest else ALIEN_NEST).instantiate() as AlienNest
 		if not table:
 			table = nest.hive.table(alien_tier, biome, preview_strain, world_seed)
 		nest.table = table
 		nest.name = "Nest%d" % (i + 1)
 		nest.position = sites.nests[i].position
+		if quest:
+			nest.destroyed.connect(quest_visit.count.bind(quest, 1.0))
 		nests.add_child(nest)
 	if table:
 		_add_apex(table)
+
+
+## A `QuestSite` at the quest anchor of every quest site's part (its middle without one): reaching
+## it counts for its goal.
+func _add_quest_sites() -> void:
+	if not quest_visit:
+		return
+	for entry: QuestVisit.Entry in quest_visit.entries:
+		var part: LocationParts.Placed = parts.placed_for(entry.site)
+		if not part:
+			continue
+		var anchors: Array[Vector3] = part.markers(PartMarker.Kind.QUEST_ANCHOR)
+		var site := QuestSite.new()
+		site.name = "QuestSite"
+		site.position = anchors[0] if not anchors.is_empty() else part.origin
+		site.reached.connect(quest_visit.count.bind(entry, 1.0).unbind(1))
+		add_child(site, true)
 
 
 ## The late deposit at its part (its time drawn from a stream of its own), with its ore `nodes`;

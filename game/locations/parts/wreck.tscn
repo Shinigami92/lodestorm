@@ -136,3 +136,8 @@ shape = SubResource("BoxShape3D_1hsl5")
 transform = Transform3D(0.9396926, 0, -0.34202012, 0, 1, 0, 0.34202012, 0, 0.9396926, 5.4, 0, -3.2)
 script = ExtResource("2_fjgm6")
 kind = 2
+
+[node name="QuestAnchor" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -5.5)
+script = ExtResource("2_fjgm6")
+kind = 3

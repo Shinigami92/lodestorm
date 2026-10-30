@@ -2272,6 +2272,10 @@ msgstr "%s auf MK%d bringen"
 msgid "Build a miner"
 msgstr "Miner bauen"
 
+#: game/quests/clear_nests_goal.gd
+msgid "Clear the nests"
+msgstr "Nester zerstören"
+
 #: game/quests/deliver_goal.gd
 msgid "Deliver %s"
 msgstr "%s liefern"
@@ -2295,6 +2299,10 @@ msgstr "Bauplan: %s"
 #: game/quests/quest_panel.gd
 msgid "Reputation +%d"
 msgstr "Ansehen +%d"
+
+#: game/quests/reach_goal.gd
+msgid "Find %s"
+msgstr "%s finden"
 
 #: game/refinery/alloys/alloy_auralt.tres
 msgid "Auralt"

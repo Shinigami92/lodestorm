@@ -78,8 +78,8 @@ func test_away_from_their_room_they_say_it_without_the_room() -> void:
 	assert_true(npc.routine.is_away())
 	npc.open(_player)
 	await wait_process_frames(1)
-	assert_eq(npc.topic, greeting)
-	assert_eq(npc.get_topic_lines(), greeting.away_lines)
+	assert_eq(npc.talk.topic, greeting)
+	assert_eq(npc.talk.get_topic_lines(), greeting.away_lines)
 	assert_eq((npc.bubble.content as SpeechBubble).get_line(), greeting.away_lines[0])
 	npc.close()
 

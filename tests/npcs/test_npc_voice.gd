@@ -86,10 +86,10 @@ func test_lines_are_spoken_as_they_show() -> void:
 	var greeting: Topic = _npc.profile.dialogue.greeting
 	assert_eq(_npc.voice.bus, &"Voice")
 	assert_eq(_recording(), VoiceLines.path(&"quartermaster", "en", greeting.lines[0]))
-	_npc.press()
+	_npc.talk.press()
 	assert_eq(_recording(), VoiceLines.path(&"quartermaster", "en", greeting.lines[1]))
 	for i: int in greeting.lines.size() - 1:
-		_npc.press()
+		_npc.talk.press()
 	assert_false(_npc.voice.playing, "back at the list: nothing to say")
 	_npc.close()
 	assert_false(_npc.voice.playing)
@@ -98,8 +98,8 @@ func test_lines_are_spoken_as_they_show() -> void:
 func test_the_prompt_is_spoken_when_the_talk_starts_without_the_greeting() -> void:
 	_ship.story.set_flag(_npc.profile.dialogue.greeting.id)
 	await _talk()
-	assert_eq(_recording(), VoiceLines.path(&"quartermaster", "en", _npc.prompt))
-	assert_has(_npc.profile.dialogue.prompts, _npc.prompt)
+	assert_eq(_recording(), VoiceLines.path(&"quartermaster", "en", _npc.talk.prompt))
+	assert_has(_npc.profile.dialogue.prompts, _npc.talk.prompt)
 
 
 func test_the_voice_follows_the_texts_until_one_is_picked() -> void:
@@ -112,7 +112,7 @@ func test_the_voice_follows_the_texts_until_one_is_picked() -> void:
 	assert_eq(_recording(), VoiceLines.path(&"quartermaster", "en", greeting.lines[0]))
 	GameSettings.voice_language = "de"
 	TranslationServer.set_locale("en")
-	_npc.press()
+	_npc.talk.press()
 	assert_eq(
 		_recording(),
 		VoiceLines.path(&"quartermaster", "de", greeting.lines[1]),

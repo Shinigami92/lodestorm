@@ -146,7 +146,7 @@ func test_a_long_topic_list_scrolls() -> void:
 	await wait_process_frames(2)
 	assert_true(card.is_row_in_view(0))
 	assert_false(card.is_row_in_view(count - 1))
-	nell.set_choice(count - 1)
+	nell.talk.set_choice(count - 1)
 	await wait_process_frames(2)
 	assert_true(card.is_row_in_view(count - 1), "Goodbye scrolled into view")
 	assert_false(card.is_row_in_view(0))

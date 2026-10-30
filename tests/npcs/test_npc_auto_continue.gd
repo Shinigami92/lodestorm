@@ -36,10 +36,10 @@ func after_each() -> void:
 
 func test_off_by_default_a_line_waits_for_the_player() -> void:
 	_npc.open(_player)
-	assert_not_null(_npc.topic, "the greeting")
+	assert_not_null(_npc.talk.topic, "the greeting")
 	_wait(600.0)
-	assert_eq(_npc.line, 0, "still the first line")
-	assert_eq(_npc.get_auto_progress(), -1.0)
+	assert_eq(_npc.talk.line, 0, "still the first line")
+	assert_eq(_npc.talk.get_auto_progress(), -1.0)
 	assert_false(_bar_shown())
 	_npc.close()
 
@@ -49,14 +49,14 @@ func test_a_voiced_line_moves_on_a_pause_after_its_voice() -> void:
 	_npc.open(_player)
 	var recording := _npc.voice.stream
 	assert_not_null(recording, "the quartermaster's greeting is voiced")
-	var wait: float = recording.get_length() + Npc.AUTO_PAUSE
+	var wait: float = recording.get_length() + VoiceLines.AUTO_PAUSE
 	_wait(wait - 0.1)
-	assert_eq(_npc.line, 0, "the voice and the pause first")
-	assert_almost_eq(_npc.get_auto_progress(), (wait - 0.1) / wait, 0.01)
+	assert_eq(_npc.talk.line, 0, "the voice and the pause first")
+	assert_almost_eq(_npc.talk.get_auto_progress(), (wait - 0.1) / wait, 0.01)
 	assert_true(_bar_shown(), "the bar on Continue fills")
 	_wait(0.2)
-	assert_eq(_npc.line, 1, "the next line")
-	assert_almost_eq(_npc.get_auto_progress(), 0.0, 0.05, "its own wait starts")
+	assert_eq(_npc.talk.line, 1, "the next line")
+	assert_almost_eq(_npc.talk.get_auto_progress(), 0.0, 0.05, "its own wait starts")
 	_npc.close()
 
 
@@ -64,12 +64,16 @@ func test_without_a_voice_a_line_stays_its_reading_time() -> void:
 	GameSettings.dialogue_auto_continue = true
 	GameSettings.voice_language = VoiceLines.OFF
 	_npc.open(_player)
-	var wait: float = Npc.reading_time(_npc.get_line())
-	assert_almost_eq(wait, Npc.READ_BASE + Npc.READ_PER_LETTER * _npc.get_line().length(), 0.001)
+	var wait: float = VoiceLines.reading_time(_npc.talk.get_line())
+	assert_almost_eq(
+		wait,
+		VoiceLines.READ_BASE + VoiceLines.READ_PER_LETTER * _npc.talk.get_line().length(),
+		0.001
+	)
 	_wait(wait - 0.1)
-	assert_eq(_npc.line, 0)
+	assert_eq(_npc.talk.line, 0)
 	_wait(0.2)
-	assert_eq(_npc.line, 1)
+	assert_eq(_npc.talk.line, 1)
 	_npc.close()
 
 
@@ -77,14 +81,14 @@ func test_after_the_last_line_the_list_comes_back() -> void:
 	GameSettings.dialogue_auto_continue = true
 	GameSettings.voice_language = VoiceLines.OFF
 	_npc.open(_player)
-	var greeting: Topic = _npc.topic
+	var greeting: Topic = _npc.talk.topic
 	for i: int in greeting.lines.size():
-		_wait(Npc.reading_time(_npc.get_line()) + 0.1)
-	assert_null(_npc.topic, "the list")
+		_wait(VoiceLines.reading_time(_npc.talk.get_line()) + 0.1)
+	assert_null(_npc.talk.topic, "the list")
 	assert_true(_npc.get_story().is_set(greeting.id), "heard to the end")
 	assert_false(_bar_shown(), "no bar on the list")
 	_wait(600.0)
-	assert_null(_npc.topic, "the list stays")
+	assert_null(_npc.talk.topic, "the list stays")
 	_npc.close()
 
 
@@ -93,11 +97,11 @@ func test_pressing_still_moves_on_at_once() -> void:
 	GameSettings.voice_language = VoiceLines.OFF
 	_npc.open(_player)
 	_wait(1.0)
-	_npc.press()
-	assert_eq(_npc.line, 1, "skipped")
-	assert_almost_eq(_npc.get_auto_progress(), 0.0, 0.01, "the new line waits its own time")
-	_wait(Npc.reading_time(_npc.get_line()) - 0.1)
-	assert_eq(_npc.line, 1)
+	_npc.talk.press()
+	assert_eq(_npc.talk.line, 1, "skipped")
+	assert_almost_eq(_npc.talk.get_auto_progress(), 0.0, 0.01, "the new line waits its own time")
+	_wait(VoiceLines.reading_time(_npc.talk.get_line()) - 0.1)
+	assert_eq(_npc.talk.line, 1)
 	_npc.close()
 
 
@@ -115,31 +119,31 @@ func test_pausing_holds_the_line_and_the_voice_until_resumed() -> void:
 	assert_not_null(_npc.voice.stream, "the greeting is voiced")
 	_wait(1.0)
 	pause.pressed.emit()
-	assert_true(_npc.auto_paused)
+	assert_true(_npc.talk.auto_paused)
 	assert_true(_npc.voice.stream_paused, "the voice stops in the middle of the line")
 	assert_eq(pause.icon, TalkCard.PLAY_ICON, "shows play while paused")
-	var held: float = _npc.get_auto_progress()
+	var held: float = _npc.talk.get_auto_progress()
 	_wait(600.0)
-	assert_eq(_npc.line, 0, "the line stays")
-	assert_almost_eq(_npc.get_auto_progress(), held, 0.001, "the bar stops")
+	assert_eq(_npc.talk.line, 0, "the line stays")
+	assert_almost_eq(_npc.talk.get_auto_progress(), held, 0.001, "the bar stops")
 	_press(&"place_miner")
-	assert_false(_npc.auto_paused, "the key resumes it")
+	assert_false(_npc.talk.auto_paused, "the key resumes it")
 	assert_false(_npc.voice.stream_paused, "the voice goes on where it stopped")
 	assert_eq(pause.icon, TalkCard.PAUSE_ICON)
 	_press(&"place_miner")
-	assert_true(_npc.auto_paused, "the key pauses it too")
-	_npc.press()
-	assert_eq(_npc.line, 1, "Continue still moves on")
-	assert_false(_npc.auto_paused, "and the next line plays normally")
+	assert_true(_npc.talk.auto_paused, "the key pauses it too")
+	_npc.talk.press()
+	assert_eq(_npc.talk.line, 1, "Continue still moves on")
+	assert_false(_npc.talk.auto_paused, "and the next line plays normally")
 	assert_false(_npc.voice.stream_paused)
 	assert_eq(pause.icon, TalkCard.PAUSE_ICON)
-	_wait(_npc.voice.stream.get_length() + Npc.AUTO_PAUSE + 0.1)
-	assert_eq(_npc.line, 2, "goes on by itself again")
+	_wait(_npc.voice.stream.get_length() + VoiceLines.AUTO_PAUSE + 0.1)
+	assert_eq(_npc.talk.line, 2, "goes on by itself again")
 	pause.pressed.emit()
 	_npc.close()
 	assert_false(_npc.voice.stream_paused)
 	_npc.open(_player)
-	assert_false(_npc.auto_paused, "a new talk starts unpaused")
+	assert_false(_npc.talk.auto_paused, "a new talk starts unpaused")
 	_npc.close()
 
 
@@ -149,13 +153,13 @@ func test_no_pause_button_without_auto_continue_or_on_the_list() -> void:
 	var card := _npc.card_menu as TalkCard
 	assert_false(card.get_pause_button().visible, "auto-continue off")
 	_press(&"place_miner")
-	assert_false(_npc.auto_paused, "nothing to pause")
+	assert_false(_npc.talk.auto_paused, "nothing to pause")
 	_npc.close()
 	GameSettings.dialogue_auto_continue = true
 	_npc.get_story().set_flag(_npc.profile.dialogue.greeting.id)
 	_npc.open(_player)
 	await wait_process_frames(2)
-	assert_null(_npc.topic, "the list")
+	assert_null(_npc.talk.topic, "the list")
 	assert_false(card.get_pause_button().visible, "nothing moves on by itself on the list")
 	_npc.close()
 
@@ -178,7 +182,7 @@ func _wait(seconds: float) -> void:
 	var step: float = 1.0 / 60.0
 	var left: float = seconds
 	while left > 0.0:
-		_npc._auto_continue(minf(step, left))
+		_npc.talk.update(minf(step, left))
 		left -= step
 
 

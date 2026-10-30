@@ -4,10 +4,9 @@ extends Node3D
 ## member's call (see `CrewReactions.call_radio`) shows in a bubble beside the player's head
 ## (`Bubble`, a `RadioBubble`), to its left on screen, clear of what floats above the player, grown
 ## with the camera's view like the colonists' bubbles. It stays as long as a line moving on by
-## itself (its voice and `Npc.AUTO_PAUSE`, else `Npc.reading_time`) and never blocks. Calls coming
-## in meanwhile wait their turn (`GAP` s apart); a newer call about the same thing replaces one
-## still waiting. The local player also hears it, on the Radio bus (its filter makes it sound like
-## a radio).
+## itself (`VoiceLines.stay_time`) and never blocks. Calls coming in meanwhile wait their turn
+## (`GAP` s apart); a newer call about the same thing replaces one still waiting. The local player
+## also hears it, on the Radio bus (its filter makes it sound like a radio).
 
 const PANEL_SCENE: PackedScene = preload("res://game/ui/world_panel.tscn")
 const BUBBLE_SCENE: PackedScene = preload("res://game/npcs/radio_bubble.tscn")
@@ -105,7 +104,7 @@ func _play(caller: NpcProfile, english: String) -> void:
 	if recording:
 		voice.stream = recording
 		voice.play()
-	_left = recording.get_length() + Npc.AUTO_PAUSE if recording else Npc.reading_time(text)
+	_left = VoiceLines.stay_time(recording, text)
 	_place()
 
 

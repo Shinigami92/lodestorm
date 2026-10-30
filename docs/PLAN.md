@@ -139,12 +139,12 @@ Each step builds on the ones before it (steps 1–15 and the balance are done, c
   - [x] **B5** overheard talks
   - [x] **C1** what the first content needs: furnaces and cradles as a step's rewards, requests coming back in turn
   - [x] **C2** first content: the quartermaster's chain ending in Brask's blueprint, the depot master's requests, the first overheard talk
-  - [ ] **Fixes** before C3 and D (found in play, each its own PR):
+  - [x] **Fixes** before C3 and D (found in play, each its own PR):
     - [x] things on the lower deck (e.g. the medical bay's beds) can be used through the upper deck's floor while standing above them
     - [x] NPCs on the upper deck show while the player is on the lower deck
     - [x] Rook is silent: he has no voice yet (his anchors, then his lines rendered)
     - [x] the cabins' doors can be heard but not seen (every door in a wall cut for the camera)
-    - [ ] `alien.gd` is at the 1000-line cap: split it before it grows
+    - [x] `alien.gd` is at the 1000-line cap: split it before it grows (its target picking into `AlienTargeting`, its flash, rim light and glow into `AlienLook`)
   - [ ] **C3** **crew joining** (four aboard at the start, the join flags, Dace, Wren and Fenna at Ostra and walking aboard, Hollis' camp in Hollow Mire, stand-in topics, gated lines and transmission turns, Vehra waiting for the whole crew, [`planned/crew.md`](planned/crew.md))
   - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first; the furnaces with acts 2–5, the first one Okoro's quest in act 2, and the cradles with acts 1–4, [`planned/balance.md`](planned/balance.md)), the expedition's logs (with the quest board's Logs tab), each act's time between missions (personal beats, talks, messages, Ostra's change and traffic, Ostra Control, colonists' remarks, steps back on earlier bodies; the frame in [`planned/world.md`](planned/world.md)); the crew gatherings, Brannik's range challenges and Fenna's dishes once the crew can sit
 

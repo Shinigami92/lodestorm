@@ -8,6 +8,9 @@ extends Node3D
 signal used(player: Player)
 
 const GROUP: StringName = &"interactables"
+## How far above or below a player's feet it may be (in m): the ship's decks are 4.5 apart, so what
+## stands on the other deck is out of reach.
+const REACH_HEIGHT: float = 2.0
 
 ## How close (horizontally, in m) a player must be to use it: to its `footprint`'s edge, or to it.
 @export var interact_range: float = 1.5
@@ -50,11 +53,13 @@ func distance_to(from: Vector3) -> float:
 	return outside.length()
 
 
-## The enabled interactable closest to `from` that is within its range, or null.
+## The enabled interactable closest to `from` that is within its range and `REACH_HEIGHT`, or null.
 static func nearest(tree: SceneTree, from: Vector3) -> Interactable:
 	var nearest_target: Interactable = null
 	var nearest_distance: float = INF
 	for target: Interactable in tree.get_nodes_in_group(GROUP):
+		if absf(target.global_position.y - from.y) > REACH_HEIGHT:
+			continue
 		var distance: float = target.distance_to(from)
 		if target.enabled and distance <= target.interact_range and distance < nearest_distance:
 			nearest_target = target

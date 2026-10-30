@@ -140,7 +140,7 @@ Each step builds on the ones before it (steps 1–15 and the balance are done, c
   - [x] **C1** what the first content needs: furnaces and cradles as a step's rewards, requests coming back in turn
   - [x] **C2** first content: the quartermaster's chain ending in Brask's blueprint, the depot master's requests, the first overheard talk
   - [ ] **Fixes** before C3 and D (found in play, each its own PR):
-    - [ ] things on the lower deck (e.g. the medical bay's beds) can be used through the upper deck's floor while standing above them
+    - [x] things on the lower deck (e.g. the medical bay's beds) can be used through the upper deck's floor while standing above them
     - [ ] NPCs on the upper deck show while the player is on the lower deck
     - [ ] Kade is silent at the depot (his voice lines exist)
     - [ ] the cabins' doors can be heard but not seen

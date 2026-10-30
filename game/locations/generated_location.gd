@@ -799,7 +799,9 @@ func _crate_contents() -> Array[CrateContent]:
 	for part: LocationParts.Placed in parts.placed:
 		for i: int in part.markers(PartMarker.Kind.CRATE).size():
 			contents.append(null)
-	var wanted: Array[QuestVisit.Entry] = quest_visit.fragment_entries() if quest_visit else []
+	var wanted: Array[QuestVisit.Entry] = []
+	if quest_visit:
+		wanted = quest_visit.fragment_entries()
 	var crates: Array[int] = []
 	crates.assign(range(contents.size()))
 	var rng: RandomNumberGenerator = _stream("fragments")

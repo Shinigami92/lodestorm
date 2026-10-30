@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://rmwla7ygc8p4"]
+
+[ext_resource type="PackedScene" uid="uid://dfi67vd4g484e" path="res://assets/quests/sealed_case/sealed_case.glb" id="1_model"]
+
+[node name="SealedCase" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

@@ -1,9 +1,12 @@
 class_name BlueprintFragment
 extends CrateContent
-## A fragment of a blueprint a quest step asks for (see docs/design/missions.md, Quests): only in
-## the crates of the step's region while it's active, one per crate. Carried like ore (lost when its
-## carrier dies) and counted once it's aboard; the quest framework (M4, step 16) puts it into
-## `GeneratedLocation.crate_contents` and takes it from the player. Until then nothing does.
+## A fragment of a blueprint a quest step asks for (see `RecoverFragmentsGoal`): only in the crates
+## of the step's region while it's active, one per crate. The opener carries it on the back
+## (`QuestPack`) until they're aboard, where it counts (lost when they die).
 
-## The blueprint it belongs to (later the quest's item).
-@export var blueprint: StringName
+## The goal it counts for.
+var entry: QuestVisit.Entry
+
+
+func open(player: Player) -> void:
+	player.quest_pack.add(entry)

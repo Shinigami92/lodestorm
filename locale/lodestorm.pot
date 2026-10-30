@@ -2310,6 +2310,14 @@ msgstr ""
 msgid "Find %s"
 msgstr ""
 
+#: game/quests/recover_fragments_goal.gd
+msgid "Recover the blueprint fragments"
+msgstr ""
+
+#: game/quests/recover_item_goal.gd
+msgid "Recover %s"
+msgstr ""
+
 #: game/refinery/alloys/alloy_auralt.tres
 msgid "Auralt"
 msgstr ""

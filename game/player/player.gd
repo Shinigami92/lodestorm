@@ -8,8 +8,9 @@ extends CharacterBody3D
 ## there as a preview, see `picker`), picks miners up again with `interact`, both taking a few
 ## seconds while it stays near the miner (`handling`), and carries the ore that miners' hoses
 ## move to it (`cargo`), shown in canisters on its back and as a badge rising above it
-## (`OreArrival`). An arrow on the suit ring's edge points back to the ship (`ShipPointer`). Uses
-## the nearest interactable in range (buttons, terminals, ...) with `interact`. While it uses a 3D
+## (`OreArrival`), and the quest items it found (`quest_pack`, also on its back). An arrow on the
+## suit ring's edge points back to the ship (`ShipPointer`). Uses the nearest interactable in range
+## (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
 ## the suit ring around its feet (`SuitRing`, with the ammo, the spare magazines and the dash) and
 ## the suit light; at zero health the player dies, drops everything carried and lies still until
@@ -101,6 +102,8 @@ var silhouette_shown: bool = true:
 			_update_overlay()
 ## The ore it carries during a run.
 var cargo := PlayerCargo.new()
+## The quest items it carries during a run (lost on death like the ore).
+var quest_pack := QuestPack.new()
 ## What it brought back over all runs and hasn't spent yet (saved with the player).
 var hold := PlayerHold.new()
 ## Its batches in the refinery's furnaces (saved with the player).
@@ -201,6 +204,9 @@ func _ready() -> void:
 	_attach(_weapon_mount, "WeaponGrip")
 	_attach(_shield_mount, "ShieldGrip")
 	_attach(_cargo_rack, "CargoRack")
+	quest_pack.name = "QuestPack"
+	add_child(quest_pack)
+	_attach(quest_pack, "CargoRack")
 	_attach(_hose_port, "HosePort")
 	cargo.ore_changed.connect(_cargo_rack.show_cargo)
 	upgrades = upgrades.duplicate() if upgrades else Upgrades.new()
@@ -533,6 +539,7 @@ func _on_died() -> void:
 	var dropped: Dictionary[OreType, float] = cargo.take_all()
 	for ore_type: OreType in dropped:
 		GameEvents.bus.ore_lost.emit(self, ore_type, dropped[ore_type])
+	quest_pack.drop()
 	died.emit()
 
 

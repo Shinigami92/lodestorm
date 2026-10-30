@@ -33,6 +33,15 @@ func body_by_id(id: StringName) -> CelestialBody:
 	return null
 
 
+## The region with `id` (on any body), or null.
+func region_by_id(id: StringName) -> Region:
+	for body: CelestialBody in bodies:
+		for region: Region in body.regions:
+			if region.id == id:
+				return region
+	return null
+
+
 ## The ores a visit to `region` finds (see `Region.ores_on`), commonest first.
 func ores_of(region: Region) -> Array[OreType]:
 	return region.ores_on(body_of(region))

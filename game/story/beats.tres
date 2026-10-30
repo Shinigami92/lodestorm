@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="BeatCatalog" format=3 uid="uid://c7ug3f6xnhvdf"]
+
+[ext_resource type="Script" uid="uid://dy6frxky8ctoa" path="res://game/story/beat_catalog.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")

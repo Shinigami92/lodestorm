@@ -10,7 +10,7 @@ otherwise.
 
 - **The specimen lab's purpose:** a tank per alien strain, dark and empty until the first kill of that strain,
   and the place of the statistics station ([`stats.md`](stats.md)).
-- **Room beside the holo table** on the bridge for the quest board and the comms station.
+- **Room beside the holo table** on the bridge for the quest board (with the messages) and the comms station (invites, the comms log, M7).
 - **Reserved, built when something needs them:** a catwalk around the cargo bay at upper-deck height with a
   hatch into each sponson (a maintenance bay looking into the nacelle), and a crawlway along the spine over the
   upper deck (it would need its own cut-away level), e.g. for a quest or a story moment.

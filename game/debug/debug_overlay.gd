@@ -491,6 +491,14 @@ func _transmit_reactions() -> void:
 		ship.reactions.transmit_all()
 
 
+## Has every ship's story director put out its next beat now, as on any return where the ship is
+## (see `StoryDirector.direct`).
+func _next_beat() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		var body: CelestialBody = ship.voyage.at_body if ship.voyage else null
+		ship.director.direct(Beat.Returns.ANY, body.id if body else &"")
+
+
 ## Has the crew call the storm warning over the radio, to every player outside.
 func _radio_storm() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
@@ -717,6 +725,7 @@ func _build() -> void:
 	var crew: GridContainer = _group(state, "Crew")
 	_button(crew, "Radio: all events", _transmit_reactions)
 	_button(crew, "Radio: storm", _radio_storm)
+	_button(crew, "Story: next beat", _next_beat)
 	var progress: GridContainer = _group(state, "Progress")
 	_button(progress, "Give blueprints", _give_blueprints)
 	_button(progress, "Unlock weapons", _unlock_weapons)

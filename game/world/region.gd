@@ -5,6 +5,9 @@ extends Resource
 ## with its handcrafted set pieces (landmarks, later quest sites) placed in that section. It's open
 ## once the ship's heat shield reaches its body (see `StarSystem.open_regions`).
 
+## Who it is in the story's data and the save (a beat's region, a region visited), e.g. `redscar`:
+## saved, so it never changes; not its name (names may still change).
+@export var id: StringName = &""
 ## Player-facing name.
 @export var display_name: String = ""
 @export var biome: LocationBiome

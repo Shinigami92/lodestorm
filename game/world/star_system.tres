@@ -31,6 +31,7 @@ rule = 2
 
 [sub_resource type="Resource" id="Region_redscar"]
 script = ExtResource("3_region")
+id = &"redscar"
 display_name = "Redscar Flats"
 biome = ExtResource("biome_dust")
 danger = 0
@@ -44,6 +45,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_mire"]
 script = ExtResource("3_region")
+id = &"mire"
 display_name = "Hollow Mire"
 biome = ExtResource("biome_overgrowth")
 length = 1.5
@@ -57,6 +59,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_cinder"]
 script = ExtResource("3_region")
+id = &"cinder"
 display_name = "Cinder Steps"
 biome = ExtResource("biome_dust")
 danger = 2
@@ -79,6 +82,7 @@ scene = ExtResource("part_wreck")
 
 [sub_resource type="Resource" id="Region_basin"]
 script = ExtResource("3_region")
+id = &"basin"
 display_name = "Pale Basin"
 biome = ExtResource("biome_frost")
 danger = 0
@@ -92,6 +96,7 @@ rule = 4
 
 [sub_resource type="Resource" id="Region_rimeback"]
 script = ExtResource("3_region")
+id = &"rimeback"
 display_name = "Rimeback"
 biome = ExtResource("biome_frost")
 globe_position = Vector2(-35, 70)
@@ -129,6 +134,7 @@ rule = 2
 
 [sub_resource type="Resource" id="Region_hoarfrost"]
 script = ExtResource("3_region")
+id = &"hoarfrost"
 display_name = "Hoarfrost Ridge"
 biome = ExtResource("biome_frost")
 danger = 0
@@ -142,6 +148,7 @@ rule = 4
 
 [sub_resource type="Resource" id="Region_glare"]
 script = ExtResource("3_region")
+id = &"glare"
 display_name = "Glare Fields"
 biome = ExtResource("biome_salt")
 length = 1.5
@@ -155,6 +162,7 @@ rule = 2
 
 [sub_resource type="Resource" id="Region_ember"]
 script = ExtResource("3_region")
+id = &"ember"
 display_name = "Ember Reach"
 biome = ExtResource("biome_dust")
 danger = 2
@@ -181,6 +189,7 @@ rule = 1
 
 [sub_resource type="Resource" id="Region_verge"]
 script = ExtResource("3_region")
+id = &"verge"
 display_name = "Sunken Verge"
 biome = ExtResource("biome_overgrowth")
 danger = 0
@@ -194,6 +203,7 @@ rule = 2
 
 [sub_resource type="Resource" id="Region_brine"]
 script = ExtResource("3_region")
+id = &"brine"
 display_name = "Brine Terraces"
 biome = ExtResource("biome_salt")
 length = 1.5
@@ -207,6 +217,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_whiteshelf"]
 script = ExtResource("3_region")
+id = &"whiteshelf"
 display_name = "Whiteshelf"
 biome = ExtResource("biome_salt")
 length = 1.5
@@ -220,6 +231,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_mossgrave"]
 script = ExtResource("3_region")
+id = &"mossgrave"
 display_name = "Mossgrave"
 biome = ExtResource("biome_overgrowth")
 danger = 2
@@ -246,6 +258,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_quiet"]
 script = ExtResource("3_region")
+id = &"quiet"
 display_name = "Quiet Scar"
 biome = ExtResource("biome_dust")
 globe_position = Vector2(5, 5)
@@ -281,6 +294,7 @@ scene = ExtResource("part_wreck")
 
 [sub_resource type="Resource" id="Region_drift"]
 script = ExtResource("3_region")
+id = &"drift"
 display_name = "Drift Basin"
 biome = ExtResource("biome_salt")
 globe_position = Vector2(20, -20)
@@ -293,6 +307,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_lantern"]
 script = ExtResource("3_region")
+id = &"lantern"
 display_name = "Lantern Hollow"
 biome = ExtResource("biome_overgrowth")
 danger = 2
@@ -320,6 +335,7 @@ rule = 2
 
 [sub_resource type="Resource" id="Region_coldwake"]
 script = ExtResource("3_region")
+id = &"coldwake"
 display_name = "Coldwake"
 biome = ExtResource("biome_frost")
 globe_position = Vector2(-10, -25)
@@ -332,6 +348,7 @@ rule = 4
 
 [sub_resource type="Resource" id="Region_splitrock"]
 script = ExtResource("3_region")
+id = &"splitrock"
 display_name = "Splitrock Steps"
 biome = ExtResource("biome_dust")
 danger = 2
@@ -359,6 +376,7 @@ rule = 2
 
 [sub_resource type="Resource" id="Region_rustwind"]
 script = ExtResource("3_region")
+id = &"rustwind"
 display_name = "Rustwind Plain"
 biome = ExtResource("biome_dust")
 danger = 0
@@ -372,6 +390,7 @@ rule = 2
 
 [sub_resource type="Resource" id="Region_blacktide"]
 script = ExtResource("3_region")
+id = &"blacktide"
 display_name = "Black Tide"
 biome = ExtResource("biome_ash")
 length = 1.5
@@ -385,6 +404,7 @@ rule = 4
 
 [sub_resource type="Resource" id="Region_brimstone"]
 script = ExtResource("3_region")
+id = &"brimstone"
 display_name = "Brimstone Cut"
 biome = ExtResource("biome_ash")
 length = 1.5
@@ -398,6 +418,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_slag"]
 script = ExtResource("3_region")
+id = &"slag"
 display_name = "Slag Terraces"
 biome = ExtResource("biome_ash")
 danger = 2
@@ -424,6 +445,7 @@ rule = 2
 
 [sub_resource type="Resource" id="Region_sunward"]
 script = ExtResource("3_region")
+id = &"sunward"
 display_name = "Sunward Scar"
 biome = ExtResource("biome_ash")
 length = 1.5
@@ -437,6 +459,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_glassmere"]
 script = ExtResource("3_region")
+id = &"glassmere"
 display_name = "Glassmere"
 biome = ExtResource("biome_glass")
 length = 1.5
@@ -450,6 +473,7 @@ rule = 3
 
 [sub_resource type="Resource" id="Region_mirror"]
 script = ExtResource("3_region")
+id = &"mirror"
 display_name = "Mirror Flats"
 biome = ExtResource("biome_glass")
 danger = 2
@@ -464,6 +488,7 @@ rule = 4
 
 [sub_resource type="Resource" id="Region_fused"]
 script = ExtResource("3_region")
+id = &"fused"
 display_name = "Fused Expanse"
 biome = ExtResource("biome_glass")
 danger = 2

@@ -65,6 +65,21 @@ func missing() -> Dictionary[OreType, float]:
 	return still
 
 
+## How much of the next plate is paid, 0–1 over all its ores together (1 once every plate is
+## installed).
+func paid_share() -> float:
+	var plate: ShieldPlate = next_plate()
+	if not plate:
+		return 1.0
+	var cost: float = 0.0
+	var so_far: float = 0.0
+	for ore_type: OreType in plate.cost:
+		cost += plate.cost[ore_type]
+		var paid_so_far: float = paid.get(ore_type, 0.0)
+		so_far += minf(paid_so_far, plate.cost[ore_type])
+	return so_far / cost if cost > 0.0 else 1.0
+
+
 ## Makes the next plate the ship's project. Returns whether it did (not when it already is, or
 ## every plate is installed).
 func set_project() -> bool:

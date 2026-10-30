@@ -100,6 +100,7 @@ func test_sections_of_the_wrong_kind_are_skipped() -> void:
 		"shield": [1],
 		"reactions": 3,
 		"quests": [],
+		"director": "x",
 		"at": 7,
 	}
 	var player_data: Dictionary = {
@@ -123,6 +124,7 @@ func test_sections_of_the_wrong_kind_are_skipped() -> void:
 	assert_true(_player.skills.ranks.is_empty())
 	assert_true(_ship.story.flags.is_empty())
 	assert_true(_ship.quests.accepted.is_empty())
+	assert_eq(_ship.director.runs, 0)
 	assert_true(_player.finished_jobs.entries.is_empty())
 	assert_false(_player.fleet.is_empty(1), "M-01 stays")
 

@@ -142,7 +142,7 @@ Each step builds on the ones before it (steps 1–15 and the balance are done, c
   - [ ] **Fixes** before C3 and D (found in play, each its own PR):
     - [x] things on the lower deck (e.g. the medical bay's beds) can be used through the upper deck's floor while standing above them
     - [x] NPCs on the upper deck show while the player is on the lower deck
-    - [ ] Kade is silent at the depot (his voice lines exist)
+    - [x] Rook is silent: he has no voice yet (his anchors, then his lines rendered)
     - [ ] the cabins' doors can be heard but not seen
     - [ ] `alien.gd` is at the 1000-line cap: split it before it grows
   - [ ] **C3** **crew joining** (four aboard at the start, the join flags, Dace, Wren and Fenna at Ostra and walking aboard, Hollis' camp in Hollow Mire, stand-in topics, gated lines and transmission turns, Vehra waiting for the whole crew, [`planned/crew.md`](planned/crew.md))
@@ -172,7 +172,7 @@ Alongside, any time:
 - The sky per body and the far ring of land beyond the map ([`planned/vr-view.md`](planned/vr-view.md)); each body's light, the darkness floor and the storm's light steps ([`planned/art.md`](planned/art.md))
 - Basic VFX for mining, shooting, reloading, storm (the sound effects come earlier, M4 step 9)
 - People's own models ([`planned/people.md`](planned/people.md); the pipeline, everyone at Waypost Ostra and the crew are done): Kade's work at the counter with his slate, Selin's at the council's table with her tablet, the crew's work at their posts with props (their shared clips and work spots are done), then the colonists; lip sync and blinking; the player's suit with rigid hard parts, a visor reflecting the scene and later a MakeHuman body under the armor
-- Voice-over, after the models ([`planned/voice.md`](planned/voice.md); **A**, the spike, and **B** for Brannik, Nell, Kade, Selin and the crew are done, with the radio filter): Rook and the colonists with the tool, Fenna's German voice
+- Voice-over, after the models ([`planned/voice.md`](planned/voice.md); **A**, the spike, and **B** for Brannik, Nell, Kade, Selin, Rook and the crew are done, with the radio filter): the colonists with the tool, Fenna's German voice
 
 ### M6: VR
 

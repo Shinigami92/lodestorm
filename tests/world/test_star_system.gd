@@ -51,6 +51,22 @@ func test_regions_per_body() -> void:
 				assert_eq(count, 0, body.display_name)
 
 
+## Every body and region has an id of its own (the story's data and the save name them by it).
+func test_ids_are_unique() -> void:
+	var ids: Array[StringName] = []
+	for body: CelestialBody in SYSTEM.bodies:
+		assert_false(body.id.is_empty(), body.display_name)
+		assert_does_not_have(ids, body.id, body.display_name)
+		ids.append(body.id)
+		for region: Region in body.regions:
+			assert_true(
+				Story.is_valid_flag(StringName("region.%s" % region.id)), region.display_name
+			)
+			assert_does_not_have(ids, region.id, region.display_name)
+			ids.append(region.id)
+			assert_eq(SYSTEM.region_by_id(region.id), region, region.display_name)
+
+
 ## A moon has a biome its planet doesn't, so its planet's neighbors' ores are reachable early.
 func test_moons_bring_another_biome() -> void:
 	for body: CelestialBody in SYSTEM.bodies:

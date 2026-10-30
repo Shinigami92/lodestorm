@@ -103,6 +103,8 @@ var cradles := Cradles.new()
 var reactions := CrewReactions.new()
 ## The quests accepted and how far they are, saved with the ship (their steps' flags in `story`).
 var quests := QuestLog.new()
+## What's new in the story on each return (after a run, or docking), saved with the ship.
+var director := StoryDirector.new()
 ## Lets the levels and skill ranks under way take effect once done.
 var progress_clock: ProgressClock
 ## Where the crew can walk aboard.
@@ -171,6 +173,7 @@ func _ready() -> void:
 	navigation.name = "Navigation"
 	add_child(navigation)
 	_count_quests()
+	_direct_story()
 
 
 func _physics_process(delta: float) -> void:
@@ -295,8 +298,38 @@ func _count_quests() -> void:
 	events.miner_built.connect(_on_built.unbind(2))
 
 
+## Lets the story director count what its beats wait for and direct each return.
+func _direct_story() -> void:
+	director.story = story
+	director.quests = quests
+	director.heat_shield = heat_shield
+	var events: GameEvents = GameEvents.bus
+	events.mission_started.connect(_on_mission_started)
+	events.player_died.connect(director.count_fall.unbind(2))
+	events.mission_ended.connect(_on_mission_ended.unbind(2))
+	flight.docked.connect(_on_docked)
+
+
 func _on_ore_hauled(_player: Player, ore_type: OreType, amount: float) -> void:
 	quests.count_hauled(ore_type, amount)
+	director.find_ore(ore_type)
+
+
+func _on_mission_started(brief: MissionBrief) -> void:
+	director.start_run(brief.region if brief else null)
+
+
+func _on_mission_ended() -> void:
+	director.end_run(_body_id())
+
+
+func _on_docked() -> void:
+	director.dock(_body_id())
+
+
+## The id of the body the ship is at, or empty.
+func _body_id() -> StringName:
+	return voyage.at_body.id if voyage and voyage.at_body else &""
 
 
 ## Something was built: the session's players count for the quests' build goals.

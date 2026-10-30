@@ -2,10 +2,11 @@ class_name MinerSettings
 extends Resource
 ## Miner tuning values (raised per crafted miner by its parts' levels) and what building one costs.
 ## All values TBD (playtest); target:
-## an empty miner takes about 2–5 min to fill (`capacity / fill_rate`).
+## a standard-issue miner empties a common node (`OreNode.FILLS`) in about 2 min, so the players
+## move their miners on several times per run.
 
 ## Units mined per second.
-@export var fill_rate: float = 1.0
+@export var fill_rate: float = 2.0
 ## Units a miner holds; it stops mining when full.
 @export var capacity: float = 180.0
 ## How close (horizontally, in m) a player must be for the hose to connect.

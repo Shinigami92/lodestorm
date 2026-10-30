@@ -297,7 +297,7 @@ func _count_quests() -> void:
 	var events: GameEvents = GameEvents.bus
 	events.mission_started.connect(quests.start_run.unbind(1))
 	player_boarded.connect(_count_visit.unbind(1))
-	events.mission_ended.connect(_end_visit.unbind(1))
+	events.mission_ended.connect(_end_visit)
 	events.ore_hauled.connect(_on_ore_hauled)
 	events.weapon_unlocked.connect(_on_built.unbind(2))
 	events.upgrade_finished.connect(_on_built.unbind(3))
@@ -327,7 +327,7 @@ func _count_visit() -> void:
 
 
 ## The run ended: a returned one counts what's done out there, a lost one nothing.
-func _end_visit(returned: bool) -> void:
+func _end_visit(_brief: MissionBrief, returned: bool) -> void:
 	var visit: QuestVisit = _quest_visit()
 	if visit and returned:
 		visit.commit()

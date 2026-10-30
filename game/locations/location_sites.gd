@@ -278,7 +278,9 @@ func _pick_nests() -> void:
 ## another, the areas every way out goes through last.
 func _pick_quest_nests() -> void:
 	var visit: QuestVisit = _location.quest_visit
-	var wanted: Array[QuestVisit.Entry] = visit.nest_entries() if visit else []
+	if not visit:
+		return
+	var wanted: Array[QuestVisit.Entry] = visit.nest_entries()
 	if wanted.is_empty():
 		return
 	var rng: RandomNumberGenerator = _stream("quest_nests")

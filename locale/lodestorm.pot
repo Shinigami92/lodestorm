@@ -315,6 +315,22 @@ msgid "The shield around the drive core is the best answer I have so far. Every 
 msgstr ""
 
 #: game/npcs/crew/engineer.tres
+msgid "The miners"
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Until someone takes over the miners, I keep them running. Out there, stand close to an ore node and place one. It digs while you keep the aliens off it."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Stay within reach of its hose, and it fills your back with ore. Pick it up before you leave, and you also get what's still in its tank."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
+msgid "Each of you takes as many miners as we have cradles. Your own you can upgrade on the pad in the miners' room."
+msgstr ""
+
+#: game/npcs/crew/engineer.tres
 msgid "The new plate holds. Vehra is in reach now, the next planet inwards. The aliens there are tougher than on Torvane."
 msgstr ""
 
@@ -533,6 +549,18 @@ msgstr ""
 
 #: game/npcs/crew/medic.tres
 msgid "Then I count the injuries that come back from these runs. The numbers don't match the reports, so I'm keeping my own."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Your suit"
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "Until someone takes over the suits, the fitting frame on the lower deck works on its own. It reinforces your suit's armor, so you can take more hits out there."
+msgstr ""
+
+#: game/npcs/crew/medic.tres
+msgid "The skill graph beside it teaches your suit new things, like a quick dash or more spare magazines. Both cost ore from your hold and take a while to finish."
 msgstr ""
 
 #: game/npcs/crew/medic.tres
@@ -997,6 +1025,18 @@ msgid "Weapons only work inside the range, and a force field in the doorway stop
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
+msgid "The weapons room"
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Until we find a gunsmith, the bench in the weapons room works on its own. Lay one of your weapons on it, and it shows what the next level of each part does and what it costs."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Upgrades take a while, but they keep going while you're out there. A weapon you don't own yet, the bench builds right away once you have its blueprint. That only costs the ore."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
 msgid "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
 msgstr ""
 
@@ -1065,6 +1105,10 @@ msgid "This is the mess hall. Fenna cooks for all of us, and she hears everythin
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
+msgid "This is the mess hall. We still need someone for the galley. Until then, we all cook for ourselves."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
 msgid "The bridge. Tamsin flies the ship, and here at the holo table you pick with her where we go next. Every trip starts at that table."
 msgstr ""
 
@@ -1093,7 +1137,23 @@ msgid "Dace's weapons room. He builds new weapons from their blueprints, and at 
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
+msgid "The weapons room. Its bench builds new weapons from their blueprints and makes yours better."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "We still need someone for this room. Until then, the bench works on its own."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
 msgid "Wren looks after your suit in here. Better armor means you can take more hits out there."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Your suit's armor is reinforced in here. Better armor means you can take more hits out there."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "We still need someone for this room. Until then, the fitting frame works on its own."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -1106,6 +1166,14 @@ msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
 msgid "They sold the cradles with everything else that came loose. We got two back."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "The miners. They dig the ore out there, while you keep the aliens off them."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "We still need someone for this room. Until then, Okoro keeps the miners going."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -2551,6 +2619,10 @@ msgid "Blueprint: %s"
 msgstr ""
 
 #: game/quests/quest_panel.gd
+msgid "Joins the crew: %s"
+msgstr ""
+
+#: game/quests/quest_panel.gd
 msgid "Furnaces lit: %d"
 msgstr ""
 
@@ -2956,6 +3028,10 @@ msgstr ""
 
 #: game/stations/heat_shield/heat_shield_card.gd
 msgid "Needs MK%d first."
+msgstr ""
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "The whole crew has to be aboard first."
 msgstr ""
 
 #: game/stations/heat_shield/heat_shield_card.gd

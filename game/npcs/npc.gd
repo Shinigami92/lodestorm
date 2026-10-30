@@ -21,6 +21,8 @@ extends Station
 ## offers only going on and ending it. A tour's stops are said aside (`say_aside`): in the bubble
 ## above their head without a talk, and in their voice. So are an overheard talk's lines
 ## (`OverheardTalks`), and while it plays (`overheard`) nobody can talk to them.
+## A crew member who joins later (`NpcProfile.join_flag`) isn't there until they're aboard
+## (`is_present`): hidden, still and nobody can talk to them.
 
 ## Every crew member (the ship cuts them away by the deck they stand on, see `Ship`).
 const CREW_GROUP: StringName = &"crew"
@@ -54,8 +56,7 @@ var routine: NpcRoutine
 var overheard: bool = false:
 	set(value):
 		overheard = value
-		if use_point:
-			use_point.enabled = not value
+		_update_use()
 
 ## Used without a ship (e.g. tests of a lone NPC).
 var _own_story := Story.new()
@@ -86,6 +87,8 @@ func _ready() -> void:
 	voice.max_distance = VOICE_MAX_DISTANCE
 	voice.position = Vector3.UP * body.head_height
 	add_child(voice)
+	# The ship joins its group after its rooms are ready: its story is found a frame later.
+	_watch_story.call_deferred()
 
 
 func _physics_process(delta: float) -> void:
@@ -117,6 +120,12 @@ func _process(delta: float) -> void:
 ## The story the topics heard go into: the ship's.
 func get_story() -> Story:
 	return ship.story if ship else _own_story
+
+
+## Whether they're here: a crew member once they're aboard (`NpcProfile.is_aboard`), anyone
+## else always.
+func is_present() -> bool:
+	return not profile or not profile.station.is_empty() or profile.is_aboard(get_story())
 
 
 ## Their name and role, as the name plate shows them.
@@ -288,9 +297,31 @@ func _opened() -> void:
 
 func _closed() -> void:
 	super()
+	_update_use()
 	talk.close()
 	bubble.visible = false
 	bubble.set_on_top(false)
+
+
+## Follows the story for whether they're here (`is_present`).
+func _watch_story() -> void:
+	get_story().changed.connect(_update_presence)
+	_update_presence()
+
+
+## Shows them and lets them move while they're here (`is_present`), else hides and stills them.
+func _update_presence() -> void:
+	var present: bool = is_present()
+	visible = present
+	process_mode = PROCESS_MODE_INHERIT if present else PROCESS_MODE_DISABLED
+	_update_use()
+
+
+## Lets players talk to them while they're here, nobody talks to them yet and no overheard talk of
+## theirs plays.
+func _update_use() -> void:
+	if use_point:
+		use_point.enabled = is_present() and not user and not overheard
 
 
 ## Who the "something new" marker is for: the player talking to them, else the nearest one.

@@ -54,6 +54,7 @@ lines = Array[String](["A new weapon, fresh off my bench. Take it to the shootin
 [resource]
 script = ExtResource("1_profile")
 id = &"gunsmith"
+join_flag = &"crew.gunsmith.joined"
 display_name = "Dace"
 role = "Gunsmith"
 model = "uid://bj5ctmig16w2c"

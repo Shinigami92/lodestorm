@@ -565,16 +565,24 @@ func _unlock_weapons() -> void:
 			player.arsenal.unlock(weapon_type)
 
 
+## Brings the whole crew aboard every ship, without their quests.
+func _join_crew() -> void:
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		NpcProfile.join_whole_crew(ship.story)
+
+
 ## Installs the next plate of every ship's heat shield without paying: the next planet inwards
-## opens.
+## opens, and the whole crew comes aboard (MK2 waits for them).
 func _install_shield() -> void:
+	_join_crew()
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
 		ship.heat_shield.install_next()
 
 
 ## Installs every plate of every ship's heat shield, to try later planets' biomes before they're
-## reached.
+## reached; the whole crew comes aboard.
 func _open_all_bodies() -> void:
+	_join_crew()
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
 		while ship.heat_shield.install_next():
 			pass
@@ -791,6 +799,7 @@ func _build() -> void:
 	_button(progress, "Finish jobs", _finish_jobs)
 	_button(progress, "Open cradle", _open_cradle)
 	_button(progress, "Build miners", _build_miners)
+	_button(progress, "Join the crew", _join_crew)
 	_button(progress, "Install shield", _install_shield)
 	_button(progress, "Open all", _open_all_bodies)
 	_button(progress, "Reset save", _reset_save)

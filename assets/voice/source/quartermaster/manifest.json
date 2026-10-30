@@ -66,6 +66,12 @@
       "seed": 1,
       "text": "Die Brücke. Tamsin fliegt das Schiff, und hier am Holotisch suchst du mit ihr aus, wohin es als Nächstes geht. Jede Reise beginnt an diesem Tisch."
     },
+    "3010f3f06b1e2649": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier wird die Panzerung deines Anzugs verstärkt. Bessere Panzerung heißt, dass du da draußen mehr Treffer einstecken kannst."
+    },
     "31c71c57cefcd838": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -95,6 +101,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Gut, dann weiter."
+    },
+    "3cedd3913415a6e2": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist die Messe. Für die Kombüse fehlt uns noch jemand. Bis dahin kocht jeder für sich selbst."
     },
     "3de36a73823bf377": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -162,6 +174,12 @@
       "seed": 1,
       "text": "Da bist du ja. Vor der ersten Mission führe ich dich einmal durchs Schiff, damit du weißt, wer was macht und wo du alle findest."
     },
+    "63bdbaa342d0ef47": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Waffenraum. Seine Werkbank baut neue Waffen nach ihren Bauplänen und macht deine besser."
+    },
     "65c2f16bf923dcb5": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -179,6 +197,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Schießstand. Probier hier jede neue Waffe zuerst aus. Kein Schuss verlässt den Raum, und Nachladen kostet dich nichts."
+    },
+    "776f88ee2e32b202": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Upgrades dauern eine Weile, laufen aber weiter, während du da draußen bist. Eine Waffe, die du noch nicht hast, baut die Werkbank sofort, sobald du ihren Bauplan hast. Das kostet nur das Erz."
     },
     "7a327e3653a38812": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -216,6 +240,12 @@
       "seed": 1,
       "text": "Hier Brannik. Ich höre, die Schrotflinte ist gebaut. Kommt alle vorbei und zeigt sie mir."
     },
+    "8ba38ea7d21cf343": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bis wir einen Waffenschmied finden, arbeitet die Werkbank im Waffenraum von allein. Leg eine deiner Waffen darauf, dann zeigt sie dir, was die nächste Stufe jedes Teils bringt und was sie kostet."
+    },
     "92944196fced059e": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -251,6 +281,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hier kümmert sich Wren um deinen Anzug. Bessere Panzerung heißt, dass du da draußen mehr Treffer einstecken kannst."
+    },
+    "a72a32707ca9590c": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Für diesen Raum fehlt uns noch jemand. Bis dahin arbeitet die Werkbank von allein."
     },
     "abd92813c294757c": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -299,6 +335,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Timing-Trick klappt bei jeder einzelnen Patrone. Klappt er bei mehreren Patronen hintereinander, lädt jede etwas schneller. Verfehlst du eine oder lässt eine aus, fängt dieser Vorteil von vorn an."
+    },
+    "c06a260c5e85f496": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Für diesen Raum fehlt uns noch jemand. Bis dahin arbeitet der Anpassungsrahmen von allein."
     },
     "c1c7f5b4a6904c22": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -414,6 +456,18 @@
       "seed": 1,
       "text": "Mit diesem Lift geht es aufs Unterdeck. Hier oben sind die Kabinen und die Brücke, und alles für deine Ausrüstung ist unten."
     },
+    "f0b82a979537af59": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Miner. Sie holen da draußen das Erz aus dem Boden, während du ihnen die Aliens vom Leib hältst."
+    },
+    "f3650aaf116c0551": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Für diesen Raum fehlt uns noch jemand. Bis dahin hält Okoro die Miner am Laufen."
+    },
     "f41a96465b5015be": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -524,6 +578,12 @@
       "seed": 1,
       "text": "The bridge. Tamsin flies the ship, and here at the holo table you pick with her where we go next. Every trip starts at that table."
     },
+    "3010f3f06b1e2649": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Your suit's armor is reinforced in here. Better armor means you can take more hits out there."
+    },
     "31c71c57cefcd838": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -553,6 +613,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Right, let's keep going."
+    },
+    "3cedd3913415a6e2": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "This is the mess hall. We still need someone for the galley. Until then, we all cook for ourselves."
     },
     "3de36a73823bf377": {
       "anchor": "772c7907f9411bf4",
@@ -620,6 +686,12 @@
       "seed": 1,
       "text": "There you are. Before the first mission, let me walk you through the ship once, so you know who does what and where to find them."
     },
+    "63bdbaa342d0ef47": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The weapons room. Its bench builds new weapons from their blueprints and makes yours better."
+    },
     "65c2f16bf923dcb5": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -637,6 +709,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The shooting range. Try every new weapon in here first. No shot leaves the room, and reloading costs you nothing."
+    },
+    "776f88ee2e32b202": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Upgrades take a while, but they keep going while you're out there. A weapon you don't own yet, the bench builds right away once you have its blueprint. That only costs the ore."
     },
     "7a327e3653a38812": {
       "anchor": "772c7907f9411bf4",
@@ -674,6 +752,12 @@
       "seed": 1,
       "text": "Brannik here. I hear the shotgun is built. Come and show it to me, all of you."
     },
+    "8ba38ea7d21cf343": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Until we find a gunsmith, the bench in the weapons room works on its own. Lay one of your weapons on it, and it shows what the next level of each part does and what it costs."
+    },
     "92944196fced059e": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -709,6 +793,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Wren looks after your suit in here. Better armor means you can take more hits out there."
+    },
+    "a72a32707ca9590c": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We still need someone for this room. Until then, the bench works on its own."
     },
     "abd92813c294757c": {
       "anchor": "772c7907f9411bf4",
@@ -757,6 +847,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The timing trick works on every single shell. Time several shells in a row, and each one loads a bit quicker. Miss one or skip one, and that bonus starts over."
+    },
+    "c06a260c5e85f496": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We still need someone for this room. Until then, the fitting frame works on its own."
     },
     "c1c7f5b4a6904c22": {
       "anchor": "772c7907f9411bf4",
@@ -871,6 +967,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "This lift takes us down to the lower deck. Up here are the cabins and the bridge, and everything for your gear is down there."
+    },
+    "f0b82a979537af59": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The miners. They dig the ore out there, while you keep the aliens off them."
+    },
+    "f3650aaf116c0551": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "We still need someone for this room. Until then, Okoro keeps the miners going."
     },
     "f41a96465b5015be": {
       "anchor": "772c7907f9411bf4",

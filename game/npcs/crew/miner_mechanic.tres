@@ -61,6 +61,7 @@ lines = Array[String](["The miners worked hard out there, I can tell. Hauls like
 [resource]
 script = ExtResource("1_profile")
 id = &"miner_mechanic"
+join_flag = &"crew.miner_mechanic.joined"
 display_name = "Hollis"
 role = "Miner mechanic"
 model = "uid://8e2njl0pikb5"

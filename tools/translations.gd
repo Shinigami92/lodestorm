@@ -40,7 +40,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"StarSystem": [&"display_name"],
 	"TalkLine": [&"text"],
 	"Topic": [&"title", &"lines", &"guest_lines", &"away_lines"],
-	"TourStop": [&"lines"],
+	"TourStop": [&"lines", &"empty_lines"],
 	"Upgrade": [&"display_name", &"description"],
 	"WeaponPart": [&"display_name", &"description"],
 	# The name stays the same in every language.

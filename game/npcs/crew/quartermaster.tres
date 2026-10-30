@@ -58,11 +58,19 @@ title = "Shooting range"
 lines = Array[String](["Right next to my armory is the shooting range. Whenever you get a new weapon, try it out there before you take it on a mission.", "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end.", "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."])
 requires = Array[StringName]([&"quartermaster.greeting"])
 
+[sub_resource type="Resource" id="Resource_weapons_room"]
+script = ExtResource("3_topic")
+id = &"quartermaster.weapons_room"
+title = "The weapons room"
+lines = Array[String](["Until we find a gunsmith, the bench in the weapons room works on its own. Lay one of your weapons on it, and it shows what the next level of each part does and what it costs.", "Upgrades take a while, but they keep going while you're out there. A weapon you don't own yet, the bench builds right away once you have its blueprint. That only costs the ore."])
+requires = Array[StringName]([&"quartermaster.greeting"])
+until = &"crew.gunsmith.joined"
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["How can I help you?", "Something on your mind?", "Go ahead, I'm listening.", "Questions about your gear?"])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResource("Resource_spares"), SubResource("Resource_reload"), SubResource("Resource_timing"), SubResource("Resource_brask"), SubResource("Resource_range")])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResource("Resource_spares"), SubResource("Resource_reload"), SubResource("Resource_timing"), SubResource("Resource_brask"), SubResource("Resource_range"), SubResource("Resource_weapons_room")])
 
 [sub_resource type="Resource" id="Reaction_first_run_won_solo"]
 script = ExtResource("9_reaction")
@@ -84,6 +92,12 @@ lines = Array[String](["I hear you've got a new weapon. If you want to take it a
 [sub_resource type="Resource" id="Reaction_big_haul"]
 script = ExtResource("9_reaction")
 event = &"big_haul"
+lines = Array[String](["Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach.", "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast."])
+
+[sub_resource type="Resource" id="Reaction_big_haul_crew"]
+script = ExtResource("9_reaction")
+event = &"big_haul"
+requires = Array[StringName]([&"crew.gunsmith.joined", &"crew.suit_tech.joined"])
 lines = Array[String](["Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach.", "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast.", "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."])
 
 [sub_resource type="Resource" id="Tour_offer"]
@@ -115,6 +129,8 @@ lines = Array[String](["All right. You know where to find me: in the armory, on 
 script = ExtResource("11_tour_stop")
 id = &"MessHall"
 lines = Array[String](["This is the mess hall. Fenna cooks for all of us, and she hears everything that goes on aboard, so it's worth stopping by."])
+crew_member = &"cook"
+empty_lines = Array[String](["This is the mess hall. We still need someone for the galley. Until then, we all cook for ourselves."])
 
 [sub_resource type="Resource" id="Tour_stop_Bridge"]
 script = ExtResource("11_tour_stop")
@@ -150,11 +166,15 @@ lines = Array[String](["The shooting range. Try every new weapon in here first. 
 script = ExtResource("11_tour_stop")
 id = &"Weapons"
 lines = Array[String](["Dace's weapons room. He builds new weapons from their blueprints, and at his bench he makes yours better."])
+crew_member = &"gunsmith"
+empty_lines = Array[String](["The weapons room. Its bench builds new weapons from their blueprints and makes yours better.", "We still need someone for this room. Until then, the bench works on its own."])
 
 [sub_resource type="Resource" id="Tour_stop_Armor"]
 script = ExtResource("11_tour_stop")
 id = &"Armor"
 lines = Array[String](["Wren looks after your suit in here. Better armor means you can take more hits out there."])
+crew_member = &"suit_tech"
+empty_lines = Array[String](["Your suit's armor is reinforced in here. Better armor means you can take more hits out there.", "We still need someone for this room. Until then, the fitting frame works on its own."])
 
 [sub_resource type="Resource" id="Tour_stop_Skills"]
 script = ExtResource("11_tour_stop")
@@ -165,6 +185,8 @@ lines = Array[String](["The skill graph. Your suit learns new things in here, li
 script = ExtResource("11_tour_stop")
 id = &"Miners"
 lines = Array[String](["Hollis and the miners. They dig the ore out there, while you keep the aliens off them.", "They sold the cradles with everything else that came loose. We got two back."])
+crew_member = &"miner_mechanic"
+empty_lines = Array[String](["The miners. They dig the ore out there, while you keep the aliens off them.", "They sold the cradles with everything else that came loose. We got two back.", "We still need someone for this room. Until then, Okoro keeps the miners going."])
 
 [sub_resource type="Resource" id="Tour_stop_Armory"]
 script = ExtResource("11_tour_stop")
@@ -189,5 +211,5 @@ model = "uid://r7da5xautqps"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.65, 0.45, 1, 1)
 dialogue = SubResource("Resource_dialogue")
-reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_run_won_solo"), SubResource("Reaction_first_run_won_coop"), SubResource("Reaction_weapon_built"), SubResource("Reaction_big_haul")])
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_run_won_solo"), SubResource("Reaction_first_run_won_coop"), SubResource("Reaction_weapon_built"), SubResource("Reaction_big_haul"), SubResource("Reaction_big_haul_crew")])
 tour = SubResource("Tour")

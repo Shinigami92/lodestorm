@@ -15,5 +15,9 @@ enum Players { ANY, SOLO, COOP }
 ## Whether these lines are for a player alone, for several together, or for either (a
 ## `SOLO`/`COOP` reaction goes before an `ANY` one when it fits).
 @export var players: Players = Players.ANY
+## Story flags these lines need (e.g. the join flags of the crew members they name); a reaction
+## with them goes before one without when they're set, so it repeats that one's lines and adds the
+## ones naming them.
+@export var requires: Array[StringName] = []
 ## What they say, one line each time, in turn (the English texts, translated).
 @export var lines: Array[String] = []

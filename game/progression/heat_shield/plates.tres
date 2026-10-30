@@ -15,6 +15,7 @@
 
 [sub_resource type="Resource" id="Plate_mk2"]
 script = ExtResource("2_plate")
+needs_whole_crew = true
 cost = Dictionary[ExtResource("3_ore_type"), int]({
 ExtResource("ore_meridine"): 150,
 ExtResource("ore_vyrel"): 200

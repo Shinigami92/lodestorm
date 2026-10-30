@@ -81,7 +81,7 @@ func transmit(event: StringName, subject: StringName = &"", to: Player = null) -
 	var together: bool = not to and is_together()
 	var speakers: Array[Npc] = []
 	for npc: Npc in crew():
-		if not npc.profile.reaction_lines(event, subject, together).is_empty():
+		if not npc.profile.reaction_lines(event, subject, together, _story()).is_empty():
 			speakers.append(npc)
 	if speakers.is_empty():
 		return
@@ -111,7 +111,7 @@ func is_together() -> bool:
 func next_line(
 	profile: NpcProfile, event: StringName, subject: StringName = &"", together: bool = false
 ) -> String:
-	var lines: Array[String] = profile.reaction_lines(event, subject, together)
+	var lines: Array[String] = profile.reaction_lines(event, subject, together, _story())
 	if lines.is_empty():
 		return ""
 	var key := StringName("%s.%s" % [profile.id, event])
@@ -120,12 +120,12 @@ func next_line(
 	return lines[turn % lines.size()]
 
 
-## The crew aboard: the ship's NPCs.
+## The crew aboard: the ship's NPCs who have joined (`Npc.is_present`).
 func crew() -> Array[Npc]:
 	var found: Array[Npc] = []
 	for node: Node in ship.find_children("*", "", true, false):
 		var npc := node as Npc
-		if npc and npc.profile:
+		if npc and npc.profile and npc.is_present():
 			found.append(npc)
 	return found
 
@@ -194,6 +194,11 @@ static func _read_counts(saved: Variant, counts: Dictionary[StringName, int]) ->
 		else:
 			complete = false
 	return complete
+
+
+## The ship's story (what the crew's lines may need), or null without a ship.
+func _story() -> Story:
+	return ship.story if ship else null
 
 
 ## Who hears a call about `event`: `to` alone, or else every living player (only the ones outside

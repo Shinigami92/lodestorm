@@ -48,11 +48,19 @@ title = "About Okoro"
 lines = Array[String](["I came out here to study the star. Kesh is restless, more than anyone expected when the colony was planned.", "The shield around the drive core is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."])
 requires = Array[StringName]([&"engineer.greeting"])
 
+[sub_resource type="Resource" id="Resource_miners"]
+script = ExtResource("3_topic")
+id = &"engineer.miners"
+title = "The miners"
+lines = Array[String](["Until someone takes over the miners, I keep them running. Out there, stand close to an ore node and place one. It digs while you keep the aliens off it.", "Stay within reach of its hose, and it fills your back with ore. Pick it up before you leave, and you also get what's still in its tank.", "Each of you takes as many miners as we have cradles. Your own you can upgrade on the pad in the miners' room."])
+requires = Array[StringName]([&"engineer.greeting"])
+until = &"crew.miner_mechanic.joined"
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["Yes? What can I tell you?", "Ask me anything. I'm only half busy.", "What would you like to know?", "Go on, I'm listening."])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_shield"), SubResource("Resource_further_in"), SubResource("Resource_hold"), SubResource("Resource_refinery"), SubResource("Resource_about")])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_shield"), SubResource("Resource_further_in"), SubResource("Resource_hold"), SubResource("Resource_refinery"), SubResource("Resource_about"), SubResource("Resource_miners")])
 
 [sub_resource type="Resource" id="Reaction_planet_opened_vehra"]
 script = ExtResource("9_reaction")

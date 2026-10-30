@@ -56,7 +56,7 @@ func hush() -> void:
 ## At the stop for `delta` s: waits for the leader, then says the stop's lines and moves on to the
 ## next stop. Returns whether the tour is over (the last stop's lines said).
 func at_stop(delta: float) -> bool:
-	var lines: Array[String] = tour.stops[stop].lines
+	var lines: Array[String] = tour.stops[stop].lines_for(npc.get_story())
 	if _line < 0:
 		if leader.global_position.distance_to(npc.global_position) > REACH:
 			return false

@@ -6,6 +6,12 @@
       "seed": 1,
       "text": "Was kann ich für dich tun?"
     },
+    "274f71a631763542": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bis jemand die Anzüge übernimmt, arbeitet der Anpassungsrahmen auf dem unteren Deck von allein. Er verstärkt die Panzerung deines Anzugs, damit du da draußen mehr Treffer einstecken kannst."
+    },
     "27572df4d75dfd9f": {
       "anchor": "37663f4133ad7864",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -23,6 +29,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Bleib liegen, bis du ganz geheilt bist, dann steh auf, und du bist bereit."
+    },
+    "5e66433a92150f2c": {
+      "anchor": "37663f4133ad7864",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Fähigkeitenbaum daneben bringt deinem Anzug Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine. Beides kostet Erz aus deinem Laderaum und dauert eine Weile."
     },
     "61cd3d679ef8ebb5": {
       "anchor": "37663f4133ad7864",
@@ -128,6 +140,12 @@
       "seed": 1,
       "text": "What can I do for you?"
     },
+    "274f71a631763542": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Until someone takes over the suits, the fitting frame on the lower deck works on its own. It reinforces your suit's armor, so you can take more hits out there."
+    },
     "27572df4d75dfd9f": {
       "anchor": "bb5c2753a28d1330",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -145,6 +163,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Stay on it until you're fully healed, then get up, and you're ready to go."
+    },
+    "5e66433a92150f2c": {
+      "anchor": "bb5c2753a28d1330",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The skill graph beside it teaches your suit new things, like a quick dash or more spare magazines. Both cost ore from your hold and take a while to finish."
     },
     "61cd3d679ef8ebb5": {
       "anchor": "bb5c2753a28d1330",

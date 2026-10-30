@@ -41,6 +41,7 @@ topics = Array[ExtResource("3_topic")]([SubResource("Resource_armor"), SubResour
 [resource]
 script = ExtResource("1_profile")
 id = &"suit_tech"
+join_flag = &"crew.suit_tech.joined"
 display_name = "Wren"
 role = "Suit tech"
 model = "uid://gv0ici1ifm8d"

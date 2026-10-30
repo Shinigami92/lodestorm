@@ -114,6 +114,9 @@ func _show_rewards(paying: Array) -> void:
 			extras.append(tr("Blueprint: %s") % step.blueprint.display_name)
 		furnaces += step.furnaces
 		cradles += step.cradles
+		var joining: NpcProfile = NpcProfile.find(step.joins) if not step.joins.is_empty() else null
+		if joining:
+			extras.append(tr("Joins the crew: %s") % joining.display_name)
 	if furnaces > 0:
 		extras.append(tr("Furnaces lit: %d") % furnaces)
 	if cradles > 0:

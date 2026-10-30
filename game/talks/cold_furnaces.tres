@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="OverheardTalk" format=3 uid="uid://dnb6b311u8pqo"]
+
+[ext_resource type="Script" uid="uid://dxlcja3gj618d" path="res://game/talks/overheard_talk.gd" id="2_talk"]
+[ext_resource type="Script" uid="uid://dlcl8g4dyna4k" path="res://game/talks/talk_line.gd" id="3_line"]
+
+[sub_resource type="Resource" id="TalkLine_1"]
+script = ExtResource("3_line")
+npc = &"engineer"
+text = "Four furnaces, Brannik, and not one of them warm. This ship could be refining its own bars."
+
+[sub_resource type="Resource" id="TalkLine_2"]
+script = ExtResource("3_line")
+npc = &"quartermaster"
+text = "It could. But every burner on Ostra runs the colony's own smelters, and they can't spare a single one."
+
+[sub_resource type="Resource" id="TalkLine_3"]
+script = ExtResource("3_line")
+npc = &"engineer"
+text = "I know. I laid half of their power lines myself, back when I ran the station's power."
+
+[sub_resource type="Resource" id="TalkLine_4"]
+script = ExtResource("3_line")
+npc = &"quartermaster"
+text = "Then we bring them enough ore that one day they can. We've done harder things for less."
+
+[sub_resource type="Resource" id="TalkLine_5"]
+script = ExtResource("3_line")
+npc = &"engineer"
+text = "You keep saying \"we\". You're the one who wants to go further in."
+
+[sub_resource type="Resource" id="TalkLine_6"]
+script = ExtResource("3_line")
+npc = &"quartermaster"
+text = "Watch your furnaces, Okoro."
+
+[resource]
+script = ExtResource("2_talk")
+id = &"cold_furnaces"
+spot = &"Furnaces"
+lines = Array[ExtResource("3_line")]([SubResource("TalkLine_1"), SubResource("TalkLine_2"), SubResource("TalkLine_3"), SubResource("TalkLine_4"), SubResource("TalkLine_5"), SubResource("TalkLine_6")])
+requires = Array[StringName]([&"quest.colony_arms.kyrite"])

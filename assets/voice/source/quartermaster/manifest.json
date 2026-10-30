@@ -12,6 +12,12 @@
       "seed": 1,
       "text": "Dann folg mir. Wir fangen in der Messe an und hören in meiner Waffenkammer auf, und ich warte an jeder Station auf dich."
     },
+    "0796abd63a163ae1": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist die Schrotflinte, die die Wachen der Kolonie getragen haben. Sie reicht nicht weit, aber nichts kommt zweimal an dich heran."
+    },
     "09d770f36e0d96c1": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -30,11 +36,29 @@
       "seed": 1,
       "text": "Aber Vorsicht bei Harl: Das Nachladen wirft die Munition weg, die noch im Magazin ist. Lade ein halbvolles Magazin also nicht einfach aus Gewohnheit nach."
     },
+    "1e6d6e467f662696": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Könnte es. Aber jeder Brenner auf Ostra läuft in den Schmelzen der Kolonie, und auf keinen davon können sie verzichten."
+    },
+    "1ec9a12e368e3c17": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das sind alle drei Teile. Bring sie nach Hause, und lass sie dir von nichts abnehmen."
+    },
     "23fa40b32563a3cc": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
+    },
+    "2b4f119589ea4262": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Probier sie zuerst am Schießstand aus. Und frag mich jederzeit danach: Ich kenne den einen oder anderen Trick beim Laden der Patronen."
     },
     "2ceb2cfe51442f5e": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -72,6 +96,12 @@
       "seed": 1,
       "text": "Gut, dann weiter."
     },
+    "3de36a73823bf377": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Beide Nester sind zerstört. Gute Arbeit. Jetzt kommt alle heil zurück an Bord."
+    },
     "3ff7cdc9f47a3b3a": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -83,6 +113,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Nachladen kostet dort nichts, du kannst das Timing also so oft üben, wie du willst. Die Ziele stehen am hinteren Ende."
+    },
+    "4633910f42c40bfb": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Drei Teile. Das ist wieder ein ganzer Bauplan."
+    },
+    "47937fccafa13168": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kade wird sich freuen. Diese Markierungen haben die Kolonie mehr gekostet, als man denkt."
     },
     "48b7cd1f63862934": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -102,11 +144,29 @@
       "seed": 1,
       "text": "Das nenne ich eine Ladung. Mit so viel Erz an Bord sind ein paar von diesen Upgrades endlich drin."
     },
+    "511f5f0da83bc099": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Kisten des Landers liegen da unten verstreut. Mach jede auf, die du findest. Drei Teile, mehr brauchen wir nicht."
+    },
+    "5a29edae5fd993a5": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Kisten des Landers liegen da unten verstreut. Teilt euch ruhig auf und macht jede auf, die ihr findet. Drei Teile, mehr brauchen wir nicht."
+    },
     "6175fbfc34123137": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Da bist du ja. Vor der ersten Mission führe ich dich einmal durchs Schiff, damit du weißt, wer was macht und wo du alle findest."
+    },
+    "65c2f16bf923dcb5": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich habe meine Gründe, warum du für das bereit sein sollst, was weiter innen wartet. Bau sie, und zeig mir, dass sie funktioniert."
     },
     "75c21ccc8f3d3385": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -144,6 +204,18 @@
       "seed": 1,
       "text": "Du bist heil zurück, und mit Erz auf dem Rücken. So soll eine erste Mission enden."
     },
+    "86132f58e549a3fc": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das sind alle drei Teile. Bringt sie alle zusammen nach Hause, und lasst sie euch von nichts abnehmen."
+    },
+    "86308447c2ba4507": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Brannik. Ich höre, die Schrotflinte ist gebaut. Kommt alle vorbei und zeigt sie mir."
+    },
     "92944196fced059e": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -155,6 +227,24 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Jede Fernkampfwaffe, die du mitnimmst, startet jede Mission mit zwei Ersatzmagazinen aus dem Vorrat des Schiffs. Beim Nachladen werden zuerst diese verbraucht, und sie kosten dich kein Erz."
+    },
+    "996d43e171044a4d": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Brannik. Die Vermessungsmarkierungen sind irgendwo da unten, mit den zwei Nestern daneben. Räum sie weg, und pass auf dich auf."
+    },
+    "9effe3a1e5c8b28a": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Brannik. Ich höre, die Schrotflinte ist gebaut. Komm vorbei und zeig sie mir."
+    },
+    "a48502944243be5e": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Pass auf deine Öfen auf, Okoro."
     },
     "a681176f9a47b4ee": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -186,6 +276,12 @@
       "seed": 1,
       "text": "Nebenan ist das Cockpit. Sobald ein Ziel feststeht, wird hier an der Flugkonsole der Kurs gesetzt, und das kann jeder."
     },
+    "b3b5ccb3df3c4671": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich hab einen Auftrag für dich, und er fängt klein an. Den Werkstätten auf Ostra geht das Kyrite aus, und ohne Kyrite stehen die Reparaturen still."
+    },
     "b41b090f5202edbd": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -209,6 +305,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Schieß los, ich höre zu."
+    },
+    "c5261d35a9a3ccad": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Also gehen unsere ersten 300 Kyrite an Kade ins Depot. Die Kolonie sorgt für uns, also sorgen wir für die Kolonie."
     },
     "ca08b26b8055dbba": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -246,6 +348,12 @@
       "seed": 1,
       "text": "Lädst du gar kein zweites Mal nach, dauert es einfach so lange wie immer. Probier es also zuerst am Schießstand aus, dort kostet es dich nichts."
     },
+    "e40c2f21d0bc4ff5": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Dann bringen wir ihnen so viel Erz, dass sie es eines Tages können. Wir haben schon Schwereres für weniger getan."
+    },
     "e6c28b794d2ee1b0": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -257,6 +365,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Triffst du den Moment, ist das Nachladen sofort fertig. Zu früh oder zu spät, und es dauert stattdessen länger."
+    },
+    "e9bf4cda75bc57ef": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Beide Nester sind zerstört. Gute Arbeit. Jetzt komm heil zurück an Bord."
     },
     "ea448e8871d3ab12": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -270,6 +384,12 @@
       "seed": 1,
       "text": "Such dir an deinem Spind die Waffen aus, mit denen du auf eine Mission gehen möchtest. Allerdings kannst du nur bis zu zwei Waffen gleichzeitig tragen."
     },
+    "eb3979b748abbbbe": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Jetzt etwas von mir. Am Tag der Landung ist in Redscar Flats ein Lander abgestürzt, mit den Waffenbauplänen der Kolonie an Bord. Seine Kisten liegen über die ganze Ebene verstreut."
+    },
     "eb8ed89d5f451abf": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -281,6 +401,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Gute Ladung. Aber wer leichtsinnig wird, hat nicht lange Glück. Die nächste Mission kann genauso schnell schiefgehen."
+    },
+    "ed3490e681db0004": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mach das gut, dann hab ich danach mehr für dich."
     },
     "efd9e7017c930276": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -306,11 +432,29 @@
       "seed": 3,
       "text": "Wie kann ich dir helfen?"
     },
+    "fcf01f53f94b24ce": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Da ist sie ja. Behandle sie gut, dann tut sie das auch für dich."
+    },
     "fd7039eadb8de59b": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Das ist die Messe. Fenna kocht für uns alle, und sie bekommt alles mit, was an Bord passiert. Es lohnt sich also, hier vorbeizuschauen."
+    },
+    "fd81df944e9d160f": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Brannik. Die Vermessungsmarkierungen sind irgendwo da unten, mit den zwei Nestern daneben. Räumt sie weg, und passt aufeinander auf."
+    },
+    "ff8a6e6d6a96f2f5": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Einer dieser Baupläne steckt in drei Teilen irgendwo in diesen Kisten. Bring sie mir. Und Tamsin redet nicht über diesen Tag, also frag sie nicht danach."
     }
   },
   "en": {
@@ -325,6 +469,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Follow me, then. We start in the mess hall and end in my armory, and I'll wait for you at every stop."
+    },
+    "0796abd63a163ae1": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "It's the shotgun the colony's guards carried. It doesn't reach far, but nothing gets close to you twice."
     },
     "09d770f36e0d96c1": {
       "anchor": "772c7907f9411bf4",
@@ -344,11 +494,29 @@
       "seed": 1,
       "text": "But careful with Harl: reloading throws away the rounds still left in the magazine. So don't reload a half-full magazine just out of habit."
     },
+    "1e6d6e467f662696": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "It could. But every burner on Ostra runs the colony's own smelters, and they can't spare a single one."
+    },
+    "1ec9a12e368e3c17": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's all three pieces. Bring them home, and don't let anything take them off you."
+    },
     "23fa40b32563a3cc": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
+    },
+    "2b4f119589ea4262": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Try it on the range first. And ask me about it any time: I know a trick or two about loading shells."
     },
     "2ceb2cfe51442f5e": {
       "anchor": "772c7907f9411bf4",
@@ -386,6 +554,12 @@
       "seed": 1,
       "text": "Right, let's keep going."
     },
+    "3de36a73823bf377": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Both nests are down. Good work. Now get back aboard in one piece, all of you."
+    },
     "3ff7cdc9f47a3b3a": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -397,6 +571,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Reloads there are free, so you can practice the timing as often as you like. The targets stand at the far end."
+    },
+    "4633910f42c40bfb": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Three pieces. That's a whole blueprint again."
+    },
+    "47937fccafa13168": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kade will be pleased. Those markers cost the colony more than you'd think."
     },
     "48b7cd1f63862934": {
       "anchor": "772c7907f9411bf4",
@@ -416,11 +602,29 @@
       "seed": 1,
       "text": "Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach."
     },
+    "511f5f0da83bc099": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The lander's crates are spread out down there. Open every one you find. Three pieces, that's all we need."
+    },
+    "5a29edae5fd993a5": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The lander's crates are spread out down there. Split up if you like, and open every one you find. Three pieces, that's all we need."
+    },
     "6175fbfc34123137": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "There you are. Before the first mission, let me walk you through the ship once, so you know who does what and where to find them."
+    },
+    "65c2f16bf923dcb5": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I have my reasons for wanting you ready for what's further in. Build it, and show me it works."
     },
     "75c21ccc8f3d3385": {
       "anchor": "772c7907f9411bf4",
@@ -458,6 +662,18 @@
       "seed": 1,
       "text": "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
     },
+    "86132f58e549a3fc": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's all three pieces. Bring them home, all of you, and don't let anything take them off you."
+    },
+    "86308447c2ba4507": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brannik here. I hear the shotgun is built. Come and show it to me, all of you."
+    },
     "92944196fced059e": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -469,6 +685,24 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Every ranged weapon you take along starts each mission with two spare magazines from the ship's stock. When you reload, those are used first, and they cost you no ore."
+    },
+    "996d43e171044a4d": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brannik here. The survey markers are somewhere down there, with the two nests beside them. Clear them out, and watch your back."
+    },
+    "9effe3a1e5c8b28a": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brannik here. I hear the shotgun is built. Come and show it to me."
+    },
+    "a48502944243be5e": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Watch your furnaces, Okoro."
     },
     "a681176f9a47b4ee": {
       "anchor": "772c7907f9411bf4",
@@ -500,6 +734,12 @@
       "seed": 1,
       "text": "Next door is the cockpit. Once a destination is set, the course is set at the flight console in here, and anyone can do that."
     },
+    "b3b5ccb3df3c4671": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I've got a job for you, and it starts small. Ostra's workshops are running out of Kyrite, and without it, the repairs stop."
+    },
     "b41b090f5202edbd": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -523,6 +763,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Go ahead, I'm listening."
+    },
+    "c5261d35a9a3ccad": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So our first 300 Kyrite go to Kade at the depot. The colony looks after us, so we look after the colony."
     },
     "ca08b26b8055dbba": {
       "anchor": "772c7907f9411bf4",
@@ -560,6 +806,12 @@
       "seed": 1,
       "text": "If you don't reload a second time at all, it just takes the normal time. So try it at the shooting range first, where it costs you nothing."
     },
+    "e40c2f21d0bc4ff5": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Then we bring them enough ore that one day they can. We've done harder things for less."
+    },
     "e6c28b794d2ee1b0": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -571,6 +823,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hit that moment, and the reload is finished at once. Too early or too late, and it takes longer instead."
+    },
+    "e9bf4cda75bc57ef": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Both nests are down. Good work. Now get back aboard in one piece."
     },
     "ea448e8871d3ab12": {
       "anchor": "772c7907f9411bf4",
@@ -584,6 +842,12 @@
       "seed": 1,
       "text": "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though."
     },
+    "eb3979b748abbbbe": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Now, something of mine. On landfall day, a lander went down in Redscar Flats, with the colony's weapon blueprints aboard. Its crates ended up all over the flats."
+    },
     "eb8ed89d5f451abf": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -595,6 +859,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast."
+    },
+    "ed3490e681db0004": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Do that well, and I'll have more for you after."
     },
     "efd9e7017c930276": {
       "anchor": "772c7907f9411bf4",
@@ -620,11 +890,29 @@
       "seed": 1,
       "text": "How can I help you?"
     },
+    "fcf01f53f94b24ce": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "There it is. Treat it well, and it'll do the same for you."
+    },
     "fd7039eadb8de59b": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "This is the mess hall. Fenna cooks for all of us, and she hears everything that goes on aboard, so it's worth stopping by."
+    },
+    "fd81df944e9d160f": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brannik here. The survey markers are somewhere down there, with the two nests beside them. Clear them out, and watch each other's backs."
+    },
+    "ff8a6e6d6a96f2f5": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "One of those blueprints is in three pieces somewhere in those crates. Bring them to me. And Tamsin doesn't talk about that day, so don't ask her."
     }
   }
 }

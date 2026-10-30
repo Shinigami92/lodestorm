@@ -1,6 +1,15 @@
 [gd_resource type="Resource" script_class="BeatCatalog" format=3 uid="uid://c7ug3f6xnhvdf"]
 
 [ext_resource type="Script" uid="uid://dy6frxky8ctoa" path="res://game/story/beat_catalog.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://cxkuxq5kasacx" path="res://game/story/beat.gd" id="2_beat"]
+
+[sub_resource type="Resource" id="Beat_first_job"]
+script = ExtResource("2_beat")
+id = &"first_job"
+npc = &"quartermaster"
+returns = 1
+done_when = &"quartermaster.job_colony_arms"
 
 [resource]
 script = ExtResource("1_script")
+beats = Array[ExtResource("2_beat")]([SubResource("Beat_first_job")])

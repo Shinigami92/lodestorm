@@ -1,6 +1,16 @@
 [gd_resource type="Resource" script_class="QuestCatalog" format=3 uid="uid://dxjfy1vra5tju"]
 
 [ext_resource type="Script" uid="uid://dpec6xdtyobe5" path="res://game/quests/quest_catalog.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bdto4xx2jvios" path="res://game/quests/quest.gd" id="2_quest"]
+[ext_resource type="Resource" uid="uid://dp3070v2cd3bg" path="res://game/quests/quartermaster/colony_arms.tres" id="q0"]
+[ext_resource type="Resource" uid="uid://ca66nmu44n3if" path="res://game/quests/depot_master/request_filter_frames.tres" id="q1"]
+[ext_resource type="Resource" uid="uid://ciy632osy73ac" path="res://game/quests/depot_master/request_hull_patches.tres" id="q2"]
+[ext_resource type="Resource" uid="uid://cy1u8y85nsq06" path="res://game/quests/depot_master/request_cold_stores.tres" id="q3"]
+[ext_resource type="Resource" uid="uid://ceft2yml6bgnm" path="res://game/quests/depot_master/request_pump_seals.tres" id="q4"]
+[ext_resource type="Resource" uid="uid://vjmlu4pw1dwv" path="res://game/quests/depot_master/request_scanner_lenses.tres" id="q5"]
+[ext_resource type="Resource" uid="uid://bil8n0na5lyin" path="res://game/quests/depot_master/request_power_cells.tres" id="q6"]
+[ext_resource type="Resource" uid="uid://ki0elrvyn7he" path="res://game/quests/depot_master/request_air_scrubbers.tres" id="q7"]
 
 [resource]
 script = ExtResource("1_script")
+quests = Array[ExtResource("2_quest")]([ExtResource("q0"), ExtResource("q1"), ExtResource("q2"), ExtResource("q3"), ExtResource("q4"), ExtResource("q5"), ExtResource("q6"), ExtResource("q7")])

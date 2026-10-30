@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="Quest" format=3 uid="uid://bil8n0na5lyin"]
+
+[ext_resource type="Resource" uid="uid://dfy3xlckv7gf7" path="res://game/ores/types/ore_duskine.tres" id="ore_duskine"]
+[ext_resource type="Script" uid="uid://csxt02vdhmgmi" path="res://game/quests/deliver_goal.gd" id="s_deliver"]
+[ext_resource type="Script" uid="uid://bbh57jogeoedv" path="res://game/quests/quest_goal.gd" id="s_goal"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="s_topic"]
+[ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
+[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="s_item_type"]
+[ext_resource type="Script" uid="uid://7vg4utlxx3ie" path="res://game/quests/quest_step.gd" id="s_step"]
+[ext_resource type="Script" uid="uid://bdto4xx2jvios" path="res://game/quests/quest.gd" id="s_quest"]
+
+[sub_resource type="Resource" id="DeliverGoal_1"]
+script = ExtResource("s_deliver")
+item = ExtResource("ore_duskine")
+amount = 60
+
+[sub_resource type="Resource" id="Topic_2"]
+script = ExtResource("s_topic")
+id = &"depot_master.request_power_cells_done"
+title = "Power cells"
+lines = Array[String](["60 Duskine. Twelve new cells, and the night shift gets its lights back."])
+
+[sub_resource type="Resource" id="QuestStep_3"]
+script = ExtResource("s_step")
+id = &"deliver"
+text = "Bring Kade 60 Duskine for the power cells."
+goals = Array[ExtResource("s_goal")]([SubResource("DeliverGoal_1")])
+hand_in = SubResource("Topic_2")
+items = Dictionary[ExtResource("s_item_type"), int]({ExtResource("ore_vyrel"): 30})
+
+[sub_resource type="Resource" id="Topic_4"]
+script = ExtResource("s_topic")
+id = &"depot_master.request_power_cells"
+title = "Power cells"
+lines = Array[String](["The station's power cells are made with Duskine, and the night shift has been running on reserve for a week. I need 60 Duskine."])
+
+[resource]
+script = ExtResource("s_quest")
+id = &"request_power_cells"
+title = "Power cells"
+kind = 2
+giver = &"depot_master"
+requires = Array[StringName]([&"depot_master.greeting"])
+offer = SubResource("Topic_4")
+steps = Array[ExtResource("s_step")]([SubResource("QuestStep_3")])

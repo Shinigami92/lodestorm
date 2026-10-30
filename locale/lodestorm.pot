@@ -2278,6 +2278,118 @@ msgstr ""
 msgid "Deliver %s"
 msgstr ""
 
+#: game/quests/depot_master/request_air_scrubbers.tres
+msgid "Air scrubbers"
+msgstr ""
+
+#: game/quests/depot_master/request_air_scrubbers.tres
+msgid "Every air scrubber on this station has a Halcyne core, and nine of them are wearing out. 60 Halcyne would replace them all."
+msgstr ""
+
+#: game/quests/depot_master/request_air_scrubbers.tres
+msgid "Bring Kade 60 Halcyne for the air scrubbers."
+msgstr ""
+
+#: game/quests/depot_master/request_air_scrubbers.tres
+msgid "60 Halcyne. Nine new cores. Everyone aboard breathes a little easier, even if they never find out why."
+msgstr ""
+
+#: game/quests/depot_master/request_cold_stores.tres
+msgid "Cold stores"
+msgstr ""
+
+#: game/quests/depot_master/request_cold_stores.tres
+msgid "The cold stores need Pallin for their cooling lines. If they fail, we lose a month of food, so I'd like 100 Pallin before they do."
+msgstr ""
+
+#: game/quests/depot_master/request_cold_stores.tres
+msgid "Bring Kade 100 Pallin for the cold stores."
+msgstr ""
+
+#: game/quests/depot_master/request_cold_stores.tres
+msgid "100 Pallin. That's one month of food I don't have to worry about."
+msgstr ""
+
+#: game/quests/depot_master/request_filter_frames.tres
+msgid "Filter frames"
+msgstr ""
+
+#: game/quests/depot_master/request_filter_frames.tres
+msgid "The water recyclers' filter frames are made of Kyrite, and three of them cracked this week. I need 150 Kyrite to replace them."
+msgstr ""
+
+#: game/quests/depot_master/request_filter_frames.tres
+msgid "Bring Kade 150 Kyrite for the filter frames."
+msgstr ""
+
+#: game/quests/depot_master/request_filter_frames.tres
+msgid "150 Kyrite, logged. That's three new frames and two spare ones."
+msgstr ""
+
+#: game/quests/depot_master/request_hull_patches.tres
+msgid "Hull patches"
+msgstr ""
+
+#: game/quests/depot_master/request_hull_patches.tres
+msgid "Debris hit the docking ring yesterday, in four places. The patches are made of Olvane, so I need 120 of it."
+msgstr ""
+
+#: game/quests/depot_master/request_hull_patches.tres
+msgid "Bring Kade 120 Olvane for the hull patches."
+msgstr ""
+
+#: game/quests/depot_master/request_hull_patches.tres
+msgid "120 Olvane. Four patches, and the ring holds pressure again. Thank you."
+msgstr ""
+
+#: game/quests/depot_master/request_power_cells.tres
+msgid "Power cells"
+msgstr ""
+
+#: game/quests/depot_master/request_power_cells.tres
+msgid "The station's power cells are made with Duskine, and the night shift has been running on reserve for a week. I need 60 Duskine."
+msgstr ""
+
+#: game/quests/depot_master/request_power_cells.tres
+msgid "Bring Kade 60 Duskine for the power cells."
+msgstr ""
+
+#: game/quests/depot_master/request_power_cells.tres
+msgid "60 Duskine. Twelve new cells, and the night shift gets its lights back."
+msgstr ""
+
+#: game/quests/depot_master/request_pump_seals.tres
+msgid "Pump seals"
+msgstr ""
+
+#: game/quests/depot_master/request_pump_seals.tres
+msgid "The hydroponics' pumps need Tessar seals, and we have six left for forty pumps. 100 Tessar would cover the rest of the year."
+msgstr ""
+
+#: game/quests/depot_master/request_pump_seals.tres
+msgid "Bring Kade 100 Tessar for the pump seals."
+msgstr ""
+
+#: game/quests/depot_master/request_pump_seals.tres
+msgid "100 Tessar. Forty pumps, all sealed. The greenhouse crew owes you a salad."
+msgstr ""
+
+#: game/quests/depot_master/request_scanner_lenses.tres
+msgid "Scanner lenses"
+msgstr ""
+
+#: game/quests/depot_master/request_scanner_lenses.tres
+msgid "The clinic's scanners need Vyrel for their lenses. Two of their three scanners are down, so 80 Vyrel would help a lot of people."
+msgstr ""
+
+#: game/quests/depot_master/request_scanner_lenses.tres
+msgid "Bring Kade 80 Vyrel for the scanner lenses."
+msgstr ""
+
+#: game/quests/depot_master/request_scanner_lenses.tres
+msgid "80 Vyrel. All three scanners will be running again by tomorrow."
+msgstr ""
+
 #: game/quests/hunt_goal.gd
 msgid "Hunt: %s and their brood nest"
 msgstr ""
@@ -2288,6 +2400,142 @@ msgstr ""
 
 #: game/quests/mine_goal.gd
 msgid "Mine %s in one run"
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "A good welcome"
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "About that job..."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "I've got a job for you, and it starts small. Ostra's workshops are running out of Kyrite, and without it, the repairs stop."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "So our first 300 Kyrite go to Kade at the depot. The colony looks after us, so we look after the colony."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Do that well, and I'll have more for you after."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Bring Kade 300 Kyrite at the depot on Waypost Ostra."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik's Kyrite"
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Three hundred Kyrite from Brannik's crew. He told me you'd come, and it's already in my books."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "That keeps the workshops going for about two weeks. I don't say that lightly."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "And since you're here: our surveyors left markers in Hollow Mire last month, and two nests have grown right next to them. Brannik said you'd see to it."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Destroy the two nests by the survey markers in Hollow Mire."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik here. The survey markers are somewhere down there, with the two nests beside them. Clear them out, and watch your back."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik here. The survey markers are somewhere down there, with the two nests beside them. Clear them out, and watch each other's backs."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The survey nests"
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Kade will be pleased. Those markers cost the colony more than you'd think."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Now, something of mine. On landfall day, a lander went down in Redscar Flats, with the colony's weapon blueprints aboard. Its crates ended up all over the flats."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "One of those blueprints is in three pieces somewhere in those crates. Bring them to me. And Tamsin doesn't talk about that day, so don't ask her."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Both nests are down. Good work. Now get back aboard in one piece."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Both nests are down. Good work. Now get back aboard in one piece, all of you."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Recover the three blueprint fragments from the crates in Redscar Flats."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The lander's crates are spread out down there. Open every one you find. Three pieces, that's all we need."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The lander's crates are spread out down there. Split up if you like, and open every one you find. Three pieces, that's all we need."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The blueprint"
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Three pieces. That's a whole blueprint again."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "It's the shotgun the colony's guards carried. It doesn't reach far, but nothing gets close to you twice."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "I have my reasons for wanting you ready for what's further in. Build it, and show me it works."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "That's all three pieces. Bring them home, and don't let anything take them off you."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "That's all three pieces. Bring them home, all of you, and don't let anything take them off you."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Build the shotgun from its blueprint."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The shotgun"
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "There it is. Treat it well, and it'll do the same for you."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Try it on the range first. And ask me about it any time: I know a trick or two about loading shells."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik here. I hear the shotgun is built. Come and show it to me."
+msgstr ""
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik here. I hear the shotgun is built. Come and show it to me, all of you."
 msgstr ""
 
 #: game/quests/quest_panel.gd
@@ -3214,6 +3462,30 @@ msgstr ""
 
 #: game/stations/weapon_rack.gd
 msgid "Colony arms"
+msgstr ""
+
+#: game/talks/cold_furnaces.tres
+msgid "Four furnaces, Brannik, and not one of them warm. This ship could be refining its own bars."
+msgstr ""
+
+#: game/talks/cold_furnaces.tres
+msgid "It could. But every burner on Ostra runs the colony's own smelters, and they can't spare a single one."
+msgstr ""
+
+#: game/talks/cold_furnaces.tres
+msgid "I know. I laid half of their power lines myself, back when I ran the station's power."
+msgstr ""
+
+#: game/talks/cold_furnaces.tres
+msgid "Then we bring them enough ore that one day they can. We've done harder things for less."
+msgstr ""
+
+#: game/talks/cold_furnaces.tres
+msgid "You keep saying \"we\". You're the one who wants to go further in."
+msgstr ""
+
+#: game/talks/cold_furnaces.tres
+msgid "Watch your furnaces, Okoro."
 msgstr ""
 
 #: game/ui/credits.tscn

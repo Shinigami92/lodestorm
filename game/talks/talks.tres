@@ -1,6 +1,9 @@
 [gd_resource type="Resource" script_class="TalkCatalog" format=3 uid="uid://oli2iv1283rb"]
 
 [ext_resource type="Script" uid="uid://dumu2vjeo8mx1" path="res://game/talks/talk_catalog.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dxlcja3gj618d" path="res://game/talks/overheard_talk.gd" id="2_talk"]
+[ext_resource type="Resource" uid="uid://dnb6b311u8pqo" path="res://game/talks/cold_furnaces.tres" id="3_cold_furnaces"]
 
 [resource]
 script = ExtResource("1_script")
+talks = Array[ExtResource("2_talk")]([ExtResource("3_cold_furnaces")])

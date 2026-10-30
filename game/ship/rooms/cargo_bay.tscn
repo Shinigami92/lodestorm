@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://mvfidldmdr6j"]
 
 [ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
+[ext_resource type="Script" uid="uid://drxy3f7k8buie" path="res://game/talks/talk_spot.gd" id="96_talk_spot"]
 
 [node name="CargoBay" type="Node3D"]
 
@@ -26,3 +27,6 @@ color = Color(1, 0.72, 0.3, 1)
 font_size = 36
 arrow = 3
 
+[node name="Furnaces" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15, 0, 11.6)
+script = ExtResource("96_talk_spot")

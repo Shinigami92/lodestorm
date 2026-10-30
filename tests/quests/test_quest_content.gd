@@ -38,6 +38,21 @@ func test_every_quest_keeps_to_the_scheme() -> void:
 				_assert_said_by(step.hand_in, quest.hand_in_npc(step), where)
 
 
+## The first content: Brannik's chain once its beat is out, Kade's requests (two at a time) once
+## his greeting is heard.
+func test_the_first_jobs_are_offered_in_turn() -> void:
+	var quests := QuestLog.new()
+	var kade: NpcProfile = NpcProfile.find(&"depot_master")
+	assert_true(quests.offered_by(&"quartermaster", []).is_empty(), "his beat isn't out yet")
+	assert_true(quests.offered_by(&"depot_master", [], kade.open_requests).is_empty(), "not met")
+	quests.story.set_flag(&"beat.first_job")
+	assert_eq(quests.offered_by(&"quartermaster", []).size(), 1)
+	quests.story.set_flag(&"depot_master.greeting")
+	var requests: Array[Quest] = quests.offered_by(&"depot_master", [], kade.open_requests)
+	assert_eq(requests.size(), 2)
+	assert_true(requests.all(func(quest: Quest) -> bool: return quest.kind == Quest.Kind.REQUEST))
+
+
 ## `goal` is done in a region that exists, a site's goal has its site and says what it is, a hunt
 ## has its site and hunts a strain from a brood nest, or the apex in its lair where it lives; a
 ## fragments goal's site brings a crate, an item goal has its site, its look and says what it is.

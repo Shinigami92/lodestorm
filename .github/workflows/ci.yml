@@ -18,6 +18,7 @@ permissions:
 jobs:
   lint-gdscript:
     name: Lint GDScript
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,6 +39,7 @@ jobs:
 
   lint-python:
     name: Lint Python
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,6 +61,7 @@ jobs:
   # The tests in shares on parallel runners (balanced by tests/timings.txt), four processes each
   test-shard:
     name: Test ${{ matrix.shard }}/8
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -92,6 +95,7 @@ jobs:
   # The required status check: passes only when every share passed
   test:
     name: Test
+    timeout-minutes: 15
     needs: test-shard
     if: always()
     runs-on: ubuntu-latest

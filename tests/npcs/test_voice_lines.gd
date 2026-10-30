@@ -86,8 +86,15 @@ func test_every_profile_in_the_game_is_found() -> void:
 	var resources: Array[Resource] = VoiceLines.speaking_resources()
 	var ids: Array[StringName] = []
 	for resource: Resource in resources:
-		assert_is(resource, NpcProfile, resource.resource_path)
-		ids.append((resource as NpcProfile).id)
+		var speaking: bool = (
+			resource is NpcProfile
+			or resource is Quest
+			or resource is Message
+			or resource is OverheardTalk
+		)
+		assert_true(speaking, resource.resource_path)
+		if resource is NpcProfile:
+			ids.append((resource as NpcProfile).id)
 	for id: StringName in [&"quartermaster", &"cook", &"bartender", &"councillor", &"gardener"]:
 		assert_has(ids, id)
 	var spoken: Dictionary[StringName, PackedStringArray] = VoiceLines.lines_by_speaker(resources)

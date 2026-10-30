@@ -17,7 +17,8 @@ extends Station
 ## destination" (also `interact` there) chooses the visit. A station without a map, the star and
 ## locked planets and regions can't be zoomed into: zooming stops short of them. A station where
 ## someone waits for the players (`StationWait`) has an amber diamond, filled for the tracked
-## quest, and its card says who.
+## quest, and its card says who; so does a region where a quest step is active (on its plate, and
+## its planet or moon in the system view), and its card says which.
 ## Its `hologram` (`NavigatorHologram`, the `View` child) builds and places the views; the star's
 ## name is on the card. The card floats beside the hologram, so it never covers
 ## a region.
@@ -35,8 +36,8 @@ const UNREACHABLE_LIMIT: float = 0.45
 ## The landing site's size on the table (of the holo table's own), so the card beside it leaves
 ## it free.
 const LANDING_SCALE: float = 0.8
-## Seconds between looks at who waits at the stations.
-const WAITS_REFRESH: float = 0.5
+## Seconds between looks at who waits at the stations and where quest steps are.
+const DIAMONDS_REFRESH: float = 0.5
 
 ## Where the card floats, from the hologram's center: right and up on screen, in m.
 @export var card_spot: Vector2 = Vector2(2.6, 0.3)
@@ -59,7 +60,7 @@ var level: Level:
 var _site: StationPart
 var _parts: Array[StationPart] = []
 var _parts_level: Level = Level.SYSTEM
-var _since_waits: float = WAITS_REFRESH
+var _since_diamonds: float = DIAMONDS_REFRESH
 
 ## The system view and the globe (above the table).
 @onready var hologram: NavigatorHologram = $View
@@ -93,9 +94,9 @@ func _process(delta: float) -> void:
 		zoom = zoom_target
 	_keep_landing_site_shown()
 	_show_zoom()
-	_since_waits += delta
-	if _since_waits >= WAITS_REFRESH:
-		_show_waits()
+	_since_diamonds += delta
+	if _since_diamonds >= DIAMONDS_REFRESH:
+		_show_diamonds()
 	if user:
 		refresh()
 
@@ -423,16 +424,24 @@ func _rebuild(new_level: Level) -> void:
 
 ## Places the views for `zoom` (see `NavigatorHologram.show_zoom`), and the landing site on the
 ## holo table once the zoom reaches it.
-## Puts the diamonds on the stations where someone waits (filled for the tracked quest).
-func _show_waits() -> void:
-	_since_waits = 0.0
-	var waiting: Dictionary[StringName, bool] = {}
-	if ship:
+## Puts the diamonds on the stations where someone waits, and on the regions with an active quest
+## step and their bodies (filled for the tracked quest).
+func _show_diamonds() -> void:
+	_since_diamonds = 0.0
+	var bodies: Dictionary[StringName, bool] = {}
+	var regions: Dictionary[StringName, bool] = {}
+	var system: StarSystem = get_system()
+	if ship and system:
 		var tracked: Quest = ship.quests.get_tracked()
 		for wait: StationWait in ship.messages.waits():
 			var is_tracked: bool = tracked != null and wait.quest == tracked
-			waiting[wait.station] = waiting.get(wait.station, false) or is_tracked
-	hologram.show_waits(waiting)
+			bodies[wait.station] = bodies.get(wait.station, false) or is_tracked
+		regions = QuestVisit.regions(ship.quests)
+		for id: StringName in regions:
+			var on_body: CelestialBody = system.body_of(system.region_by_id(id))
+			if on_body:
+				bodies[on_body.id] = bodies.get(on_body.id, false) or regions[id]
+	hologram.show_diamonds(bodies, regions)
 
 
 func _show_zoom() -> void:

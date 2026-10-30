@@ -1,8 +1,11 @@
 class_name QuestPanel
 extends VBoxContainer
-## A quest on a holo card (the talk card's offer and hand-in): what its step asks, its goals (with
-## how far they are, once accepted), what the hold pays of the rest at a hand-in (red where it's
+## A quest on a holo card (the talk card's offer and hand-in, the quest board): what its step asks,
+## its goals (with how far they are, once accepted, and under one done out in a region where it is:
+## the region and its planet or moon), what the hold pays of the rest at a hand-in (red where it's
 ## short), and what it pays: ores and alloys as badges, a blueprint and reputation as lines below.
+
+const STAR_SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
 
 var _text: Label
 var _goals: VBoxContainer
@@ -82,6 +85,19 @@ func _show_goals(step: QuestStep, quest: Quest, quests: QuestLog, offering: bool
 		if not offering and done >= goal.target():
 			row.text += "  " + tr("Done")
 			row.add_theme_color_override(&"font_color", CardPalette.GOOD)
+		var where: String = _where(goal as RegionGoal)
+		if not where.is_empty():
+			row.text += "\n     " + where
+
+
+## Where `goal` is done ("Hollow Mire · Vehra"); empty: not out in a region.
+func _where(goal: RegionGoal) -> String:
+	var region: Region = STAR_SYSTEM.region_by_id(goal.region) if goal else null
+	if not region:
+		return ""
+	var on_body: CelestialBody = STAR_SYSTEM.body_of(region)
+	var named: String = tr(region.display_name)
+	return "%s · %s" % [named, tr(on_body.display_name)] if on_body else named
 
 
 ## What `paying` (its steps) pays together.

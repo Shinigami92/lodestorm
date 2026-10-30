@@ -211,7 +211,7 @@ func _make_meteor() -> Node3D:
 	fade.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	fade.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	fade.albedo_color = Color(METEOR_COLOR, 0.8)
-	fade.albedo_texture = _fade_texture()
+	fade.albedo_texture = fade_texture()
 	trail.material_override = fade
 	trail.transform = Transform3D(
 		Basis(Vector3.RIGHT, PI * 0.5), Vector3.BACK * (TRAIL_LENGTH * 0.5 + METEOR_RADIUS * 0.5)
@@ -245,7 +245,7 @@ func _make_beam(color: Color) -> MeshInstance3D:
 	_beam_material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	_beam_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	_beam_material.albedo_color = Color(color, 0.0)
-	_beam_material.albedo_texture = _fade_texture()
+	_beam_material.albedo_texture = fade_texture()
 	beam.material_override = _beam_material
 	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	beam.position = Vector3.UP * BEAM_HEIGHT * 0.5
@@ -256,7 +256,7 @@ func _make_beam(color: Color) -> MeshInstance3D:
 
 ## Clear at a cylinder's top, full at its bottom (its v runs from the top down): the beam fading
 ## out upwards, the trail behind the meteor.
-static func _fade_texture() -> GradientTexture2D:
+static func fade_texture() -> GradientTexture2D:
 	var fade := Gradient.new()
 	fade.set_color(0, Color(1.0, 1.0, 1.0, 0.0))
 	fade.set_color(1, Color.WHITE)

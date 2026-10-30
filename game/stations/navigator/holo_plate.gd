@@ -1,28 +1,42 @@
 class_name HoloPlate
 extends Node3D
 ## A name plate in the navigator's hologram: a name, and below it a row of danger pips and ore
-## badges (each ore's icon in its color, glowing in its pattern; "?" for an ore not known yet). It
-## always faces the camera and draws over the hologram, centered above its origin.
+## badges (each ore's icon in its color, glowing in its pattern; "?" for an ore not known yet), and
+## above the name a quest's amber diamond while it has one (`diamond`). It always faces the camera
+## and draws over the hologram, centered above its origin.
+
+## The diamond above the name: none, outlined (a quest step) or filled (the tracked quest's).
+enum Diamond { NONE, OUTLINED, FILLED }
 
 const PIP_COLOR_OFF := Color(1.0, 1.0, 1.0, 0.25)
 ## Size of the name's pixels and of a badge or pip, in m (at scale 1).
 const PIXEL_SIZE: float = 0.0016
 const BADGE_SIZE: float = 0.07
 const PIP_SIZE: float = 0.03
+const DIAMOND_SIZE: float = 0.06
 const GAP: float = 0.012
 ## Draws over the hologram's see-through meshes (and the globe).
 const PRIORITY: int = 20
 
-## The pips' circle, made once.
+## The pips' circle and the diamonds (filled, outlined), made once.
 static var _pip_texture: ImageTexture
+static var _diamond_textures: Array[ImageTexture] = []
 
 ## How see-through it is (1: fully visible), e.g. for what can't be reached yet.
 var opacity: float = 1.0:
 	set(value):
 		opacity = value
 		_apply_opacity()
+## The quest's diamond above the name.
+var diamond: Diamond = Diamond.NONE:
+	set(value):
+		diamond = value
+		_diamond.visible = value != Diamond.NONE
+		if _diamond.visible:
+			_diamond.texture = diamond_texture(value == Diamond.FILLED)
 
 var _name := Label3D.new()
+var _diamond := Sprite3D.new()
 var _badges: Array[Sprite3D] = []
 var _badge_ores: Array[OreType] = []
 var _unknown: Array[Label3D] = []
@@ -50,6 +64,12 @@ func _init(
 	_name.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	_setup(_name)
 	add_child(_name)
+	_diamond.texture = diamond_texture(true)
+	_diamond.pixel_size = DIAMOND_SIZE / _diamond.texture.get_width()
+	_diamond.position.y = font_size * PIXEL_SIZE * 1.1 + DIAMOND_SIZE * 0.5
+	_diamond.visible = false
+	_setup(_diamond)
+	add_child(_diamond)
 	var row: Array[Node3D] = []
 	if danger >= 0:
 		for i: int in 3:
@@ -111,6 +131,27 @@ func get_lit_pips() -> int:
 	return _pip_colors.filter(func(c: Color) -> bool: return c != PIP_COLOR_OFF).size()
 
 
+## A white diamond with a soft edge, `filled` or only its outline.
+static func diamond_texture(filled: bool) -> ImageTexture:
+	if _diamond_textures.is_empty():
+		var size: int = 32
+		var half: float = size * 0.5
+		for solid: bool in [true, false]:
+			var image := Image.create_empty(size, size, false, Image.FORMAT_RGBA8)
+			for y: int in size:
+				for x: int in size:
+					var from_center: Vector2 = (
+						(Vector2(x + 0.5, y + 0.5) - Vector2(half, half)).abs()
+					)
+					var inside: float = half - 1.0 - (from_center.x + from_center.y)
+					var alpha: float = clampf(inside, 0.0, 1.0)
+					if not solid:
+						alpha = minf(alpha, clampf(4.0 - inside, 0.0, 1.0))
+					image.set_pixel(x, y, Color(1.0, 1.0, 1.0, alpha))
+			_diamond_textures.append(ImageTexture.create_from_image(image))
+	return _diamond_textures[0 if filled else 1]
+
+
 ## A white disc with a soft edge, for the pips.
 static func pip_texture() -> ImageTexture:
 	if _pip_texture:
@@ -168,6 +209,7 @@ func _lay_out(row: Array[Node3D]) -> void:
 func _apply_opacity() -> void:
 	_name.modulate = Color(1.0, 1.0, 1.0, opacity)
 	_name.outline_modulate.a = 0.8 * opacity
+	_diamond.modulate = Color(QuestMark.COLOR, opacity)
 	for i: int in _pips.size():
 		var color: Color = _pip_colors[i]
 		_pips[i].modulate = Color(color, color.a * opacity)

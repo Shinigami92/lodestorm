@@ -2875,6 +2875,10 @@ msgid "Destination set: set course at the cockpit."
 msgstr ""
 
 #: game/stations/navigator/navigator_card.gd
+msgid "Quest: %s"
+msgstr ""
+
+#: game/stations/navigator/navigator_card.gd
 msgid "Waiting for you: %s"
 msgstr ""
 

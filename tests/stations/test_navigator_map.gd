@@ -2,9 +2,11 @@ extends GutTest
 ## The navigator as a campaign map (see docs/design/missions.md, Mission selection): every body fits
 ## on the table, name plates with signature ores ("?" while out of reach), the ship's marker and
 ## routes, region plates with danger pips and ores on globes colored by biome, the tier on the card,
-## and setting a destination from the globe zooming into its landing site.
+## and setting a destination from the globe zooming into its landing site; a quest step's region
+## with its amber diamond.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+const QUEST_ITEMS := preload("res://tests/quests/test_quest_items.gd")
 
 var _map: Node3D
 var _player: Player
@@ -153,6 +155,42 @@ func test_setting_the_destination_zooms_into_the_landing_site() -> void:
 	await wait_seconds(1.0)
 	assert_eq(_navigator.zoom, 2.0, "smoothly")
 	assert_eq(_navigator.selected.item, region)
+
+
+## A region with an active quest step has an amber diamond on its plate and on its body in the
+## system view (filled for the tracked quest), and its card names the quest.
+func test_quest_regions_have_diamonds() -> void:
+	var quests: QuestLog = _navigator.ship.quests
+	var quest: Quest = QUEST_ITEMS.make_quest()
+	quest.title = "The lost survey"
+	quests.catalog = QuestCatalog.new()
+	quests.catalog.quests = [quest]
+	quests.accept(quest, [])
+	await wait_seconds(NavigatorStation.DIAMONDS_REFRESH + 0.1)
+	var region: Region = _system.region_by_id(QUEST_ITEMS.REGION)
+	var body: CelestialBody = _system.body_of(region)
+	var diamond: Node3D = _navigator.hologram.get_diamond(body.id)
+	assert_true(diamond.visible, "on its body")
+	assert_true((diamond.get_node(^"Filled") as Node3D).visible, "the tracked quest's")
+	for other: CelestialBody in _system.bodies:
+		if other != body and other.kind != CelestialBody.Kind.STATION:
+			assert_false(_navigator.hologram.get_diamond(other.id).visible, other.display_name)
+	_navigator.show_body(body)
+	await wait_seconds(NavigatorStation.DIAMONDS_REFRESH + 0.1)
+	for other: Region in body.regions:
+		var plate: HoloPlate = _plate(_navigator.get_plates(), tr(other.display_name))
+		var expected: HoloPlate.Diamond = (
+			HoloPlate.Diamond.FILLED if other == region else HoloPlate.Diamond.NONE
+		)
+		assert_eq(plate.diamond, expected, other.display_name)
+	_navigator.select(_navigator.get_part(region))
+	await wait_process_frames(1)
+	var status: String = (_navigator.card_menu.get_node("%Status") as Label).text
+	assert_string_contains(status, tr("Quest: %s") % tr(quest.title))
+	quests.tracked = &""
+	await wait_seconds(NavigatorStation.DIAMONDS_REFRESH + 0.1)
+	var outlined: HoloPlate = _plate(_navigator.get_plates(), tr(region.display_name))
+	assert_eq(outlined.diamond, HoloPlate.Diamond.OUTLINED, "not tracked")
 
 
 func _body(body_name: String) -> CelestialBody:

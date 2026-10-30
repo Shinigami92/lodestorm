@@ -68,3 +68,35 @@ func reaction_lines(
 			best = score
 			fitting = reaction
 	return fitting.lines if fitting else ([] as Array[String])
+
+
+## Every line said in this profile, by who says it (see `VoiceLines.SPEAKING`): theirs, under
+## their `id`: the prompts (with a dialogue, `DEFAULT_PROMPT` without any of their own), the
+## greeting's and every topic's (also a guest's and the ones for elsewhere), their tour's, their
+## reactions' and their remarks, the English texts, each once.
+func spoken_lines() -> Dictionary[StringName, PackedStringArray]:
+	var said: Array[String] = []
+	var topics: Array[Topic] = []
+	if dialogue:
+		said.append_array(dialogue.get_prompts())
+		topics.append(dialogue.greeting)
+		topics.append_array(dialogue.topics)
+	if tour:
+		topics.append_array([tour.offer, tour.invite, tour.resume, tour.abort])
+	for topic: Topic in topics:
+		if topic:
+			said.append_array(topic.lines)
+			said.append_array(topic.guest_lines)
+			said.append_array(topic.away_lines)
+	if tour:
+		for stop: TourStop in tour.stops:
+			said.append_array(stop.lines)
+	for reaction: CrewReaction in reactions:
+		said.append_array(reaction.lines)
+	said.append_array(remarks)
+	var once: PackedStringArray = []
+	for line: String in said:
+		if line not in once:
+			once.append(line)
+	var by_speaker: Dictionary[StringName, PackedStringArray] = {id: once}
+	return by_speaker

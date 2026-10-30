@@ -24,6 +24,7 @@ writing are the shared greybox helpers' (tools/greybox.py).
 """
 
 import pathlib
+import posixpath
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "tools"))
@@ -190,8 +191,10 @@ TO_BACK = "1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5"
 
 
 def doors():
-    """(name, group, center of the opening's bottom, basis, width, height) of every room's door: one per
-    lintel over a doorway, in the lintel's group (a door in a wall cut away for the camera goes with it)."""
+    """(name, group, center of the opening's bottom, basis, width, height, stub group) of every room's door:
+    one per lintel over a doorway, in the lintel's group; the stub group of a wall cut away for the camera
+    (its door is cut with it), else None."""
+    stubs = {w[0]: w[4] for w in box_kit.walls if w[4]}
     found = []
     for name, size, center, group, _stub, kind, _yaw in box_kit.walls:
         if "Lintel" not in name or kind == "shape" or any(name.startswith(n) for n in NOT_DOORS):
@@ -202,7 +205,10 @@ def doors():
             continue
         bottom = center[1] - size[1] / 2 - box_kit.door
         basis = "1, 0, 0, 0, 1, 0, 0, 0, 1" if along_x else "0, 0, 1, 0, 1, 0, -1, 0, 0"
-        found.append((name + "Door", group, (center[0], bottom, center[2]), basis, width, box_kit.door))
+        wall_name = name.split("Lintel")[0]
+        cut = group in ("lower_cut", "upper_cut")
+        stub = next((g for n, g in stubs.items() if n.startswith(wall_name)), None) if cut else None
+        found.append((name + "Door", group, (center[0], bottom, center[2]), basis, width, box_kit.door, stub))
     return found
 
 
@@ -360,14 +366,27 @@ def main():
         ("PackedScene", "res://game/ship/ship_door.tscn", "door"),
         ("Script", "res://game/world/room_plan.gd", "room_plan"),
     ]
-    for name, group, bottom, basis, width, height in doors():
+    for name, group, bottom, basis, width, height, stub in doors():
+        # A door in a cut wall is cut like it: up to the stub in sight, above it with the wall.
         nodes += [
-            f'[node name="{name}" parent="{GROUP_PARENT[group]}" instance=ExtResource("door")]',
+            f'[node name="{name}" parent="{GROUP_PARENT[stub or group]}" instance=ExtResource("door")]',
             f"transform = {xform(bottom, basis)}",
             f"width = {g(width)}",
-            f"height = {g(height)}",
+            f"height = {g(STUB if stub else height)}",
             "",
         ]
+        if stub:
+            lead = posixpath.relpath(f"{GROUP_PARENT[stub]}/{name}", f"{GROUP_PARENT[group]}/{name}Cut")
+            paths = 'node_paths=PackedStringArray("lead")'
+            nodes += [
+                f'[node name="{name}Cut" parent="{GROUP_PARENT[group]}" {paths} instance=ExtResource("door")]',
+                f"transform = {xform(bottom, basis)}",
+                f"width = {g(width)}",
+                f"height = {g(height)}",
+                f'lead = NodePath("{lead}")',
+                f"bottom = {g(STUB)}",
+                "",
+            ]
     nodes += room_lights()
     nodes += room_plan()
 

@@ -11,6 +11,6 @@ The ship's costs would otherwise fall on the host alone, who'd fall behind their
 - **Paying the rest from the hold:** the host at the engine room (built), and whoever hands in a quest step, can pay what's still missing from their own hold at any time; that's always their own choice, never someone else's ore. Solo works the same way: a project fills from what you bring home, or from your silos if you choose.
 - **Alloys** never come from a haul: a step that asks for an alloy is paid from the rack of the player handing it in.
 - **Shown in the world:** the plate on the drive core fills up like a silo as it's paid (built); when a run comes back, the cargo hatch and the silos show what the ship and the quests took ("Heat shield: 200 Meridine").
-- **Rewards in ore or alloys** go to every player in the session, like a haul; the other rewards (reputation, a crew member joining, a furnace) belong to the host's ship and story, blueprints to everyone (as decided).
+- **Rewards in ore or alloys** go to every player in the session, like a haul; the other rewards (a crew member joining, a furnace) belong to the host's ship and story, blueprints to everyone (as decided).
 
 A guest pays into the host's ship but not into their own: when they host later, their own ship still needs its plates. That's fair: the host paid nothing for the guest's ship either.

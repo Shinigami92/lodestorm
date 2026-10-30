@@ -33,7 +33,6 @@ static func make_quest(id: StringName, giver: StringName) -> Quest:
 	first.goals = [deliver]
 	first.hand_in = _topic(StringName("%s.job_%s_kyrite" % [giver, id]), "The Kyrite")
 	first.items = {MERISK: 2}
-	first.reputation = 1
 	var mine := MineGoal.new()
 	mine.ore = VYREL
 	mine.amount = 100
@@ -70,12 +69,9 @@ func test_offered_by_its_giver_until_accepted() -> void:
 func test_offered_once_its_conditions_hold() -> void:
 	_quest.requires = [&"quartermaster.ammo"]
 	_quest.requires_body = &"vehra"
-	_quest.requires_reputation = 2
 	assert_true(_log.offered_by(&"quartermaster", [&"vehra"]).is_empty(), "no flag")
 	_log.story.set_flag(&"quartermaster.ammo")
 	assert_true(_log.offered_by(&"quartermaster", []).is_empty(), "the ship doesn't reach Vehra")
-	assert_true(_log.offered_by(&"quartermaster", [&"vehra"]).is_empty(), "too little trust")
-	_log.reputation[&"quartermaster"] = 2
 	assert_eq(_log.offered_by(&"quartermaster", [&"vehra"]), [_quest])
 
 
@@ -132,14 +128,12 @@ func test_a_step_needs_its_goals_or_the_hold_for_deliveries() -> void:
 func test_saved_and_read_back() -> void:
 	_log.accept(_quest, [])
 	_log.take_from({KYRITE: 120.0})
-	_log.reputation[&"quartermaster"] = 3
 	var saved: Dictionary = JSON.parse_string(JSON.stringify(_log.save_data()))
 	var read := QuestLog.new()
 	read.catalog = _log.catalog
 	assert_true(read.load_data(saved))
 	assert_true(read.is_accepted(_quest))
 	assert_eq(read.goal_progress(_quest, 0), 120.0)
-	assert_eq(read.reputation[&"quartermaster"], 3)
 	assert_true(read.load_data(null), "nothing saved changes nothing")
 
 

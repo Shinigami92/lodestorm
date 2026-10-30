@@ -34,7 +34,7 @@ extends Resource
 
 ## Whether it shows to `listener` (null: nobody in particular) now: `story` has the flags it
 ## `requires`, `listener` owns its `requires_weapon`, and its `requires_body` is among the bodies
-## the ship `reaches` (their ids). Topics with more conditions (a quest's, reputation) override it.
+## the ship `reaches` (their ids). Topics with more conditions (a quest's) override it.
 func is_open(listener: Player, story: Story, reaches: Array[StringName] = []) -> bool:
 	if not story.is_set_all(requires):
 		return false

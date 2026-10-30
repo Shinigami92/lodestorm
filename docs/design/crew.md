@@ -1,6 +1,6 @@
 # Crew and NPCs
 
-- **NPCs:** the crew (vendors at the stations, quest givers and story characters), each with a crew cabin. NPCs give quest chains and have a reputation; finishing their quests unlocks new items and upgrades from them.
+- **NPCs:** the crew (vendors at the stations, quest givers and story characters), each with a crew cabin. NPCs give quest chains; finishing their quests unlocks new items and upgrades from them, and their next quests.
   - **The crew:** eight, each at the post where they explain what happens there, each with a crew cabin (1–8). No captain: the players are the crew's prospectors and run the ship. Names are invented and untranslated, each with its own first letter; the German role word follows the character ("Pilotin", "Ingenieur"). Until the quests exist, everyone is aboard from the start (crew joining through the story is planned, see [`planned/crew.md`](../planned/crew.md)).
 
     | Name | Role | Where they stand (greybox) | Explains |

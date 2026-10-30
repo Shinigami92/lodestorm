@@ -19,7 +19,7 @@ const MOST_WAITING: int = 2
 var catalog: BeatCatalog = CATALOG
 ## The story its flags go into (the ship's).
 var story := Story.new()
-## The ship's quests (for quest steps and reputation).
+## The ship's quests (for quest steps).
 var quests := QuestLog.new()
 ## The ship's heat shield (for the act and the plate paid).
 var heat_shield := HeatShield.new()

@@ -225,6 +225,7 @@ func _physics_process(delta: float) -> void:
 		_update_gauge()
 		if is_full():
 			filled.emit()
+			GameEvents.bus.miner_filled.emit(self)
 			Sfx.play_at(FULL_SOUND, global_position)
 		elif is_dry():
 			ran_dry.emit()
@@ -370,6 +371,7 @@ func take(max_amount: float) -> float:
 func take_damage(amount_lost: float) -> void:
 	if broken or amount_lost <= 0.0:
 		return
+	GameEvents.bus.miner_damaged.emit(self, minf(amount_lost, health))
 	health = maxf(health - amount_lost, 0.0)
 	_flash_left = FLASH_DURATION
 	since_hit = 0.0

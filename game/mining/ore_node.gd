@@ -12,9 +12,9 @@ const GROUP: StringName = &"ore_nodes"
 ## How many fills of a standard-issue miner's tank (`MinerSettings.capacity`) a node of each band
 ## holds: rarer ore, smaller deposits. TBD (playtest).
 const FILLS: Dictionary[OreType.Band, float] = {
-	OreType.Band.COMMON: 2.0,
-	OreType.Band.MID: 1.5,
-	OreType.Band.SIGNATURE: 1.0,
+	OreType.Band.COMMON: 1.0,
+	OreType.Band.MID: 0.75,
+	OreType.Band.SIGNATURE: 0.5,
 }
 ## How many times that a node in a nest hollow's rich field holds (`rich`). TBD (playtest).
 const RICH_FACTOR: float = 2.0

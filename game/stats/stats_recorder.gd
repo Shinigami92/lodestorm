@@ -10,6 +10,9 @@ extends Node
 ## outside, in menus and dead. Nothing waits for the disk: the log is written through a buffer
 ## flushed every few seconds, the totals every half minute, when a run ends and when the game
 ## quits. Resetting the progress keeps the statistics. See docs/technical/saving.md (Statistics).
+## For playtests the log also has the code's commit, the location's ore nodes and nests as a run
+## starts and what's left of them as it ends (`RunSnapshot`), where the player is every few seconds
+## during a run, the weapon drawn, how long each menu stayed open and every developer tool used.
 
 ## The format of `totals.json`; raise it (and convert older files) when it changes.
 const VERSION: int = 1
@@ -25,6 +28,10 @@ const SAVE_INTERVAL: float = 30.0
 const HURT_MERGE: float = 1.0
 ## A move longer than this within one physics frame is a teleport (a respawn), not walked (m).
 const TELEPORT_DISTANCE: float = 3.0
+## Seconds between the lines saying where the player is during a run (`track`).
+const TRACK_INTERVAL: float = 5.0
+## Slower than this outside counts as standing still (m/s).
+const STILL_SPEED: float = 0.5
 
 ## The player whose statistics these are (the local one; the first local player without one).
 @export var player: Player
@@ -49,6 +56,14 @@ var _dirty: bool = false
 ## Damage taken not logged yet, per cause: {amount, hits, t}.
 var _hurts: Dictionary[String, Dictionary] = {}
 var _last_position := Vector3.INF
+var _since_track: float = 0.0
+## The menu open (its id, "" for none) and since when; the weapon drawn during the run.
+var _menu: String = ""
+var _menu_since: float = 0.0
+var _weapon: WeaponType
+## Whether a developer tool was used this session, and during the run underway.
+var _debug_session: bool = false
+var _debug_run: bool = false
 ## Ids of resources and scenes, looked up once (`GameEvents.id_of`).
 var _ids: Dictionary[Object, String] = {}
 
@@ -73,6 +88,8 @@ func _ready() -> void:
 			"os": OS.get_name(),
 			"editor": OS.has_feature("editor"),
 			"language": TranslationServer.get_locale(),
+			"commit": BuildInfo.commit(),
+			"branch": BuildInfo.branch(),
 		}
 	)
 	_connect_events()
@@ -93,6 +110,7 @@ func _physics_process(delta: float) -> void:
 		_run_time += delta
 	_count_time(delta)
 	_log_hurts(false)
+	_track(delta)
 	_since_flush += delta
 	if _since_flush >= FLUSH_INTERVAL:
 		_since_flush = 0.0
@@ -197,6 +215,8 @@ func _connect_events() -> void:
 	events.miner_broke.connect(_on_miner_changed.bind("miners_broken", "miner_broke"))
 	events.miner_repaired.connect(_on_miner_changed.bind("miners_repaired", "miner_repaired"))
 	events.miner_ran_dry.connect(_on_miner_changed.bind("miners_ran_dry", "miner_ran_dry"))
+	events.miner_filled.connect(_on_miner_changed.bind("miners_filled", "miner_filled"))
+	events.miner_damaged.connect(_on_miner_damaged)
 	events.ore_collected.connect(_on_ore.bind("ore_collected", ""))
 	events.ore_hauled.connect(_on_ore.bind("ore_hauled", "ore_hauled"))
 	events.ore_lost.connect(_on_ore.bind("ore_lost", "ore_lost"))
@@ -216,6 +236,7 @@ func _connect_events() -> void:
 	events.storm_started.connect(_on_storm_started)
 	events.mission_ended.connect(_on_mission_ended)
 	events.menu_opened.connect(_on_menu_opened)
+	events.debug_used.connect(_on_debug_used)
 
 
 ## Whether `of` is the player whose statistics these are.
@@ -344,13 +365,31 @@ func _on_player_respawned(respawned: Player) -> void:
 func _on_miner_handled(by: Player, miner: Miner, counter: String, event: String) -> void:
 	if _is_mine(by):
 		count(counter)
-		_write_line(event, {"ore": id_of(miner.ore_type), "crafted": miner.crafted != null})
+		_write_line(event, _miner_fields(miner))
 
 
 func _on_miner_changed(miner: Miner, counter: String, event: String) -> void:
 	if player and miner.fleet == player.fleet:
 		count(counter)
-		_write_line(event, {"ore": id_of(miner.ore_type), "crafted": miner.crafted != null})
+		_write_line(event, _miner_fields(miner))
+
+
+func _on_miner_damaged(miner: Miner, amount: float) -> void:
+	if player and miner.fleet == player.fleet:
+		count("miner_damage_taken", [], amount)
+
+
+## A miner in the log: its ore, which one (a crafted one's number, 0 for standard-issue), where it
+## stands, what its tank holds and what its ore node has left.
+func _miner_fields(miner: Miner) -> Dictionary:
+	return {
+		"ore": id_of(miner.ore_type),
+		"crafted": miner.crafted != null,
+		"miner": miner.crafted.number if miner.crafted else 0,
+		"at": RunSnapshot.xz(miner.global_position),
+		"tank": roundi(miner.amount),
+		"node_left": roundi(maxf(miner.ore_node.amount, 0.0)) if miner.ore_node else 0,
+	}
 
 
 func _on_ore(by: Player, ore_type: OreType, amount: float, counter: String, event: String) -> void:
@@ -419,6 +458,9 @@ func _on_mission_started(brief: MissionBrief) -> void:
 	runs += 1
 	run = StatCounters.new()
 	_run_time = 0.0
+	_since_track = TRACK_INTERVAL
+	_weapon = null
+	_debug_run = false
 	count("missions_started", [str(mission.tier()) if mission else "1"])
 	var fields: Dictionary = {"tier": mission.tier() if mission else 1}
 	if brief:
@@ -442,6 +484,9 @@ func _on_mission_started(brief: MissionBrief) -> void:
 		fields["duration"] = snappedf(mission.duration(), 0.1)
 	if player:
 		fields["gear"] = _gear()
+	# Not while the map is being freed (a player leaving the ship as it goes).
+	if is_inside_tree():
+		fields["map"] = RunSnapshot.map(get_tree(), ship)
 	_write_line("mission_started", fields)
 
 
@@ -459,6 +504,10 @@ func _on_mission_ended(_brief: MissionBrief, returned: bool) -> void:
 		{
 			"result": result,
 			"seconds": snappedf(maxf(_run_time, 0.0), 0.1),
+			"time_left": snappedf(mission.time_left, 0.1) if mission else 0.0,
+			"storm_seconds": snappedf(mission.storm_time, 0.1) if mission else 0.0,
+			"debug": _debug_run,
+			"left": RunSnapshot.leftovers(get_tree()) if is_inside_tree() else {},
 			"counters": run.to_data(),
 		}
 	)
@@ -471,6 +520,15 @@ func _on_menu_opened(by: Player, menu: WorldMenu) -> void:
 	if _is_mine(by):
 		count("menus_opened", [id_of(menu)])
 		_write_line("menu_opened", {"menu": id_of(menu)})
+
+
+func _on_debug_used(action: String) -> void:
+	_debug_session = true
+	if _run_time >= 0.0:
+		_debug_run = true
+	# Tuning is counted by its setting, without the value.
+	count("debug_actions", [action.get_slice(" = ", 0)])
+	_write_line("debug_used", {"action": action})
 
 
 ## What the player takes along: the loadout, upgrade levels, skill ranks and maximum health.
@@ -496,13 +554,7 @@ func _gear() -> Dictionary:
 func _count_time(delta: float) -> void:
 	if not is_instance_valid(player) or not player.is_inside_tree():
 		return
-	var where: String = "outside"
-	if player.dead:
-		where = "dead"
-	elif player.menu:
-		where = "menu"
-	elif ship and ship.is_aboard(player):
-		where = "aboard"
+	var where: String = _where_now()
 	count("seconds", [where], delta)
 	var position: Vector3 = player.global_position
 	if _last_position != Vector3.INF and where in ["outside", "aboard"]:
@@ -511,7 +563,67 @@ func _count_time(delta: float) -> void:
 		)
 		if moved < TELEPORT_DISTANCE:
 			count("meters", [where], moved)
+		if where == "outside" and moved < STILL_SPEED * delta:
+			count("seconds_still", [], delta)
 	_last_position = position
+	if where == "outside" and player.arms.weapon:
+		count("seconds_drawn", [id_of(player.arms.weapon.type)], delta)
+	_note_menu()
+	_note_weapon()
+
+
+## Where the player is: dead, in a menu, aboard or outside.
+func _where_now() -> String:
+	if player.dead:
+		return "dead"
+	if player.menu:
+		return "menu"
+	if ship and ship.is_aboard(player):
+		return "aboard"
+	return "outside"
+
+
+## Logs a menu closing (or giving way to another) with how long it was open.
+func _note_menu() -> void:
+	var menu: String = id_of(player.menu) if player.menu else ""
+	if menu == _menu:
+		return
+	if _menu:
+		var seconds: float = _time - _menu_since
+		count("menu_seconds", [_menu], seconds)
+		_write_line("menu_closed", {"menu": _menu, "seconds": snappedf(seconds, 0.1)})
+	_menu = menu
+	_menu_since = _time
+
+
+## Logs the weapon drawn when it changes during a run.
+func _note_weapon() -> void:
+	var weapon_type: WeaponType = player.arms.weapon.type if player.arms.weapon else null
+	if _run_time < 0.0 or weapon_type == _weapon:
+		return
+	_weapon = weapon_type
+	_write_line("weapon_drawn", {"weapon": id_of(weapon_type)})
+
+
+## Logs where the player is every `TRACK_INTERVAL` during a run: position, health, ore carried and
+## where they are (outside, aboard, menu, dead).
+func _track(delta: float) -> void:
+	if _run_time < 0.0 or not is_instance_valid(player) or not player.is_inside_tree():
+		return
+	_since_track += delta
+	if _since_track < TRACK_INTERVAL:
+		return
+	_since_track = 0.0
+	var where: String = _where_now()
+	_write_line(
+		"track",
+		{
+			"at": RunSnapshot.xz(player.global_position),
+			"hp": roundi(player.health),
+			"carried": roundi(player.cargo.total()),
+			"where": where,
+		}
+	)
 
 
 ## Logs the damage taken per cause that's older than `HURT_MERGE` (`all`: all of it).
@@ -592,7 +704,7 @@ func _open_log() -> void:
 func _end_session() -> void:
 	if _log:
 		_log_hurts(true)
-		_write_line("session_ended", {"seconds": snappedf(_time, 0.1)})
+		_write_line("session_ended", {"seconds": snappedf(_time, 0.1), "debug": _debug_session})
 		_log.close()
 		_log = null
 	if _dirty:

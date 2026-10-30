@@ -62,6 +62,9 @@ signal miner_picked_up(player: Player, miner: Miner)
 signal miner_broke(miner: Miner)
 signal miner_repaired(miner: Miner)
 signal miner_ran_dry(miner: Miner)
+## A miner's tank filled up (it stops until it's emptied), or it lost `amount` health.
+signal miner_filled(miner: Miner)
+signal miner_damaged(miner: Miner, amount: float)
 ## Ore arrived on the player's back (a hose, a miner picked up).
 signal ore_collected(player: Player, ore_type: OreType, amount: float)
 ## Ore the player brought into the hold: carried aboard at the end of a run, or at the cargo hatch.
@@ -103,6 +106,12 @@ signal deposit_landed(position: Vector3)
 signal mission_ended(brief: MissionBrief, returned: bool)
 ## The player opened a 3D menu (a station, a terminal).
 signal menu_opened(player: Player, menu: WorldMenu)
+
+# Development.
+
+## A developer tool was used (the debug overlay's shortcuts, switches and tuning sliders), named by
+## `action` (e.g. "Fill hold", "God mode: on", "tuning miner_settings:fill_rate = 4.0").
+signal debug_used(action: String)
 
 @warning_ignore_restore("unused_signal")
 

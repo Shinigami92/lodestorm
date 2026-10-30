@@ -25,11 +25,30 @@ static func affordable(cargo: Dictionary[OreType, float], ore_per_round: float) 
 
 ## Takes ore worth `amount` (see `value`) from what `player` carries, the commonest first.
 static func spend(player: Player, amount: float) -> void:
-	var ore_types: Array[OreType] = player.cargo.ores.keys()
-	ore_types.sort_custom(func(a: OreType, b: OreType) -> bool: return a.tier < b.tier)
-	for ore_type: OreType in ore_types:
+	for ore_type: OreType in _commonest_first(player.cargo.ores):
 		if amount <= 0.0:
 			break
 		var used: float = player.cargo.take(ore_type, amount / ore_type.ammo_yield)
 		amount -= used * ore_type.ammo_yield
 		GameEvents.bus.ammo_paid.emit(player, ore_type, used)
+
+
+## The units of each ore in `cargo` that `spend` would take first for ammo worth `worth`: the
+## commonest first, all of what's carried if it's worth less.
+static func reserve(cargo: Dictionary[OreType, float], worth: float) -> Dictionary[OreType, float]:
+	var kept: Dictionary[OreType, float] = {}
+	for ore_type: OreType in _commonest_first(cargo):
+		if worth <= 0.0:
+			break
+		var units: float = minf(cargo[ore_type], worth / ore_type.ammo_yield)
+		if units <= 0.0:
+			continue
+		kept[ore_type] = units
+		worth -= units * ore_type.ammo_yield
+	return kept
+
+
+static func _commonest_first(cargo: Dictionary[OreType, float]) -> Array[OreType]:
+	var ore_types: Array[OreType] = cargo.keys()
+	ore_types.sort_custom(func(a: OreType, b: OreType) -> bool: return a.tier < b.tier)
+	return ore_types

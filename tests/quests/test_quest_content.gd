@@ -39,7 +39,8 @@ func test_every_quest_keeps_to_the_scheme() -> void:
 
 
 ## `goal` is done in a region that exists, a site's goal has its site and says what it is, a hunt
-## has its site and hunts a strain from a brood nest, or the apex in its lair where it lives.
+## has its site and hunts a strain from a brood nest, or the apex in its lair where it lives; a
+## fragments goal's site brings a crate, an item goal has its site, its look and says what it is.
 func _assert_doable(goal: QuestGoal, where: String) -> void:
 	var out_there := goal as RegionGoal
 	if out_there:
@@ -51,6 +52,25 @@ func _assert_doable(goal: QuestGoal, where: String) -> void:
 	var hunt := goal as HuntGoal
 	if hunt:
 		_assert_huntable(hunt, where)
+	var fragments := goal as RecoverFragmentsGoal
+	if fragments and fragments.site_part:
+		assert_gt(_crates_in(fragments.site_part.scene), 0, "%s: its site has a crate" % where)
+	var item := goal as RecoverItemGoal
+	if item:
+		assert_not_null(item.site_part, "%s: its site" % where)
+		assert_not_null(item.item_scene, "%s: its look" % where)
+		assert_false(item.item.is_empty(), "%s: what it is" % where)
+
+
+## How many crate markers `part` has.
+func _crates_in(part: PackedScene) -> int:
+	var scene: Node = part.instantiate()
+	var crates: int = 0
+	for marker: PartMarker in scene.find_children("*", "PartMarker", true, false):
+		if marker.kind == PartMarker.Kind.CRATE:
+			crates += 1
+	scene.free()
+	return crates
 
 
 func _assert_huntable(hunt: HuntGoal, where: String) -> void:

@@ -2,10 +2,12 @@ class_name QuestVisit
 extends RefCounted
 ## What the active quest steps put into one visit to a region (see docs/planned/quests.md, Quest
 ## sites), made when its location is prepared: a quest site per goal that has one, the quest nests
-## still to destroy, a hunt's brood nest or lair at its site. What's done there is counted here
-## (`count`, a hunt's `count_kill` and `count_brood`) and goes into the ship's quests once someone
-## is back aboard (`commit`); a lost run drops it (`drop`). A brood nest destroyed counts once the
-## hunt's kills are all done (in this visit or before), so it stays waiting until they are.
+## still to destroy, a hunt's brood nest or lair at its site, the fragments still to find in the
+## crates, an item at its site. What's done there is counted here (`count`, a hunt's `count_kill`
+## and `count_brood`, carried items brought aboard with `count_carried`) and goes into the ship's
+## quests once someone is back aboard (`commit`); a lost run drops it (`drop`). A brood nest
+## destroyed counts once the hunt's kills are all done (in this visit or before), so it stays
+## waiting until they are.
 
 
 ## One goal of an active step done in the region.
@@ -23,6 +25,9 @@ class Entry:
 	## a lair there).
 	var hunted: AlienStrain
 	var brood: PackedScene
+	## How many fragments it puts into the crates, and the look of the item at its site (or null).
+	var fragments: int
+	var item: PackedScene
 	## Whether its brood nest was destroyed this visit and isn't counted yet.
 	var brood_down: bool = false
 	## What's done this visit and not counted yet, and what's left of the goal when the visit was
@@ -60,6 +65,8 @@ func _init(quest_log: QuestLog = null, region: StringName = &"") -> void:
 			entry.nests = goal.nests(so_far)
 			entry.hunted = goal.hunted()
 			entry.brood = goal.brood_nest()
+			entry.fragments = goal.fragments(so_far)
+			entry.item = goal.item_look()
 			entry.room = goal.target() - so_far
 			entries.append(entry)
 
@@ -82,9 +89,25 @@ func nest_entries() -> Array[Entry]:
 	return nests
 
 
+## For every fragment to put into a crate, the entry it belongs to.
+func fragment_entries() -> Array[Entry]:
+	var fragments: Array[Entry] = []
+	for entry: Entry in entries:
+		for i: int in entry.fragments:
+			fragments.append(entry)
+	return fragments
+
+
 ## Counts `amount` done towards `entry`'s goal this visit (up to what was left of it).
 func count(entry: Entry, amount: float = 1.0) -> void:
 	entry.pending = minf(entry.pending + amount, entry.room)
+
+
+## Counts what a player brought aboard (`QuestPack.take_all`): a fragment or an item each.
+func count_carried(carried: Array[Entry]) -> void:
+	for entry: Entry in carried:
+		if entry in entries:
+			count(entry)
 
 
 ## Counts a kill for `entry`'s hunt (with a brood nest, up to the kills left: the nest is the last).
@@ -137,11 +160,25 @@ func key() -> String:
 	for entry: Entry in entries:
 		var site: String = entry.site.scene.resource_path if entry.site else ""
 		var brood: String = entry.brood.resource_path if entry.brood else ""
+		var item: String = entry.item.resource_path if entry.item else ""
 		var room: float = entry.room if entry.hunted else 0.0
-		parts.append(
-			(
-				"%s/%s/%d/%s/%d/%s/%s"
-				% [entry.quest.id, entry.step.id, entry.goal, site, entry.nests, brood, room]
+		(
+			parts
+			. append(
+				(
+					"%s/%s/%d/%s/%d/%s/%s/%d/%s"
+					% [
+						entry.quest.id,
+						entry.step.id,
+						entry.goal,
+						site,
+						entry.nests,
+						brood,
+						room,
+						entry.fragments,
+						item,
+					]
+				)
 			)
 		)
 	return ";".join(parts)

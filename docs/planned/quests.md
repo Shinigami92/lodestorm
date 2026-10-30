@@ -1,6 +1,6 @@
 # Quests (planned)
 
-Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1–A3): quests as data, offering with the diamond marker, accepting, hand-ins, the goals deliver, mine and build, the quest board's quests, jobs and messages, tracking, the story director and the calls from stations with their diamond on the navigator, the goals reach a site, clear nests and hunt with the quest sites, quest nests, brood nests and lairs they put into a region's visits (see [Quests](../design/missions.md#quests) and Between missions in [Story](../design/story.md)); the rest below is still to come. Crates hold supply caches, no fragments yet.
+Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1–A3): quests as data, offering with the diamond marker, accepting, hand-ins, the goals deliver, mine and build, the quest board's quests, jobs and messages, tracking, the story director and the calls from stations with their diamond on the navigator, the goals reach a site, clear nests, hunt, recover fragments and recover an item with the quest sites, quest nests, brood nests, lairs, fragments in crates and items they put into a region's visits (see [Quests](../design/missions.md#quests) and Between missions in [Story](../design/story.md)); the rest below is still to come.
 
 ## How quests work
 
@@ -17,6 +17,8 @@ Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All value
 Decided 2026-10-30, built (B1a, B1b: see Quests in [Missions](../design/missions.md#quests) and the nests in [Aliens](../design/aliens.md)). The quest nest, the brood nests' three looks (egg clutch, cocoon cluster, burrow mouth) and the lairs' two (den, hive hollow) are greybox, finished in the art pass; more looks are data (a scene each), so hunts can vary.
 
 ## Blueprint fragments and quest items
+
+Built (B2, see Quests in [Missions](../design/missions.md#quests)); the fragment and the sealed case are the first looks, more items are data (a scene each). Still to come: the fragments put together at the hand-in (with the first content, C) and the carried items on the quest board.
 
 A quest step can ask for the fragments of a blueprint in a region (e.g. "recover the three fragments in Redscar Flats"). Only while that step is active do the region's crates hold them, one per crate, so it takes one run or several; there are no fragments outside quests (otherwise a crate holds the supply cache, as today). A fragment is carried like ore (lost when its carrier dies, and found again in a later crate) and counts once it's aboard. Handing the step in at the quest giver puts the fragments together and opens the next step, e.g. the blueprint's unlock. Quest items belong to their quest (shown on the back while carried and on the quest board), so there is no inventory and no trading; bringing something to a station is a hand-in at an NPC there.
 

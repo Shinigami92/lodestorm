@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://3xuon7ps230k"]
+
+[ext_resource type="PackedScene" uid="uid://cp54m6h3nbbao" path="res://assets/quests/blueprint_fragment/blueprint_fragment.glb" id="1_model"]
+
+[node name="BlueprintFragment" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

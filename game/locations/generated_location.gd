@@ -107,9 +107,6 @@ const CANYON_FADE: Vector2 = Vector2(4.0, 16.0)
 @export var set_pieces: Array[PartPlacement] = []
 ## The late deposit's part and where it goes (see `LateDeposit`); null: none.
 @export var late_deposit: PartPlacement = LATE_DEPOSIT
-## What the crates hold, in the order they're placed (later quest fragments, set by the mission);
-## the others hold a supply cache.
-@export var crate_contents: Array[CrateContent] = []
 ## Baked for the aliens once the world is generated (none without it).
 @export var navigation_mesh: NavigationMesh
 
@@ -214,7 +211,7 @@ func build() -> void:
 		_gaps.build(self)
 	_hazards.build(self)
 	_scatter.build(self)
-	parts.build(self, crate_contents)
+	parts.build(self, _crate_contents())
 	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()
 	_add_quest_sites()
@@ -794,8 +791,33 @@ func _add_nests() -> void:
 		_add_apex(table)
 
 
+## What the crates hold, in the order they're placed (null: a supply cache): the quest visit's
+## fragments, one per crate, spread over them from a stream of their own (as many as there are
+## crates; the rest wait for a later visit).
+func _crate_contents() -> Array[CrateContent]:
+	var contents: Array[CrateContent] = []
+	for part: LocationParts.Placed in parts.placed:
+		for i: int in part.markers(PartMarker.Kind.CRATE).size():
+			contents.append(null)
+	var wanted: Array[QuestVisit.Entry] = quest_visit.fragment_entries() if quest_visit else []
+	var crates: Array[int] = []
+	crates.assign(range(contents.size()))
+	var rng: RandomNumberGenerator = _stream("fragments")
+	for i: int in range(crates.size() - 1, 0, -1):
+		var j: int = rng.randi_range(0, i)
+		var swap: int = crates[i]
+		crates[i] = crates[j]
+		crates[j] = swap
+	for i: int in mini(wanted.size(), crates.size()):
+		var fragment := BlueprintFragment.new()
+		fragment.entry = wanted[i]
+		contents[crates[i]] = fragment
+	return contents
+
+
 ## What every quest site's part holds at its quest anchor (its middle without one): a hunt's brood
-## nest or its strain asleep in a lair, else a `QuestSite` that counts for its goal when reached.
+## nest or its strain asleep in a lair, an item to recover (`QuestItem`), else (if it isn't only
+## there for its crate) a `QuestSite` that counts for its goal when reached.
 func _add_quest_sites() -> void:
 	if not quest_visit:
 		return
@@ -809,7 +831,13 @@ func _add_quest_sites() -> void:
 			_add_brood_nest(entry, at)
 		elif entry.hunted:
 			_add_lair(entry, at)
-		else:
+		elif entry.item:
+			var item := QuestItem.new()
+			item.name = "QuestItem"
+			item.entry = entry
+			item.position = at
+			add_child(item, true)
+		elif entry.fragments == 0:
 			var site := QuestSite.new()
 			site.name = "QuestSite"
 			site.position = at

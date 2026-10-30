@@ -296,7 +296,7 @@ func _count_quests() -> void:
 	quests.story = story
 	var events: GameEvents = GameEvents.bus
 	events.mission_started.connect(quests.start_run.unbind(1))
-	player_boarded.connect(_count_visit.unbind(1))
+	player_boarded.connect(_count_visit)
 	events.mission_ended.connect(_end_visit)
 	events.ore_hauled.connect(_on_ore_hauled)
 	events.weapon_unlocked.connect(_on_built.unbind(2))
@@ -319,10 +319,12 @@ func _direct_story() -> void:
 	flight.docked.connect(_on_docked)
 
 
-## Counts what was done out in the location's region for the quests (someone is back aboard).
-func _count_visit() -> void:
+## Counts what was done out in the location's region for the quests (`player` is back aboard,
+## with the quest items it carries).
+func _count_visit(player: Player) -> void:
 	var visit: QuestVisit = _quest_visit()
 	if visit:
+		visit.count_carried(player.quest_pack.take_all())
 		visit.commit()
 
 

@@ -143,17 +143,15 @@ func test_ore_markers_get_their_band() -> void:
 		location.free()
 
 
-## Built, the parts stand where planned with a crate on every crate marker: the given contents
-## first, then supply caches.
+## Built, the parts stand where planned with a crate on every crate marker, holding a supply cache
+## (no quest put fragments in).
 func test_parts_and_crates_are_built() -> void:
 	var outpost: Region = _region("Redscar Flats")
-	var fragment := BlueprintFragment.new()
 	var location := LOCATION.instantiate() as GeneratedLocation
 	location.world_seed = 3
 	location.area_count = SWEEP.AREAS
 	location.biome = outpost.biome
 	location.set_pieces = outpost.set_pieces
-	location.crate_contents = [fragment]
 	add_child_autofree(location)
 	var built: Array[Node] = location.get_node("Parts").get_children()
 	assert_eq(built.size(), location.parts.placed.size())
@@ -165,8 +163,7 @@ func test_parts_and_crates_are_built() -> void:
 		assert_eq(part.is_in_group(HoloTable.LANDMARK_GROUP), not location.parts.placed[i].late)
 	var crates: Array[Node] = location.find_children("*", "Crate", true, false)
 	assert_gt(crates.size(), 0)
-	assert_eq((crates[0] as Crate).content, fragment)
-	for crate: Crate in crates.slice(1):
+	for crate: Crate in crates:
 		assert_true(crate.content is SupplyCache)
 
 

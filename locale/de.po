@@ -2312,6 +2312,14 @@ msgstr "Ansehen +%d"
 msgid "Find %s"
 msgstr "%s finden"
 
+#: game/quests/recover_fragments_goal.gd
+msgid "Recover the blueprint fragments"
+msgstr "Die Bauplanfragmente bergen"
+
+#: game/quests/recover_item_goal.gd
+msgid "Recover %s"
+msgstr "%s bergen"
+
 #: game/refinery/alloys/alloy_auralt.tres
 msgid "Auralt"
 msgstr "Auralt"

@@ -154,7 +154,8 @@ func settle(rng: RandomNumberGenerator, location: GeneratedLocation) -> void:
 
 
 ## Adds the parts' scenes to `location` (under `Parts`), with a crate on every crate marker: they
-## hold `contents` in turn, then supply caches. The late part waits hidden (see `LateDeposit`).
+## hold `contents` in turn (null: a supply cache), then supply caches. The late part waits hidden
+## (see `LateDeposit`).
 func build(location: Node3D, contents: Array[CrateContent]) -> void:
 	var holder := Node3D.new()
 	holder.name = "Parts"

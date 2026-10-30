@@ -1,0 +1,20 @@
+{
+  "en": {
+    "anchor": "anchor_en.flac",
+    "text": "Well, look who's here. Another crew that thinks it can make a living down on those planets. I'm Rook, captain of the best prospecting crew in the system.",
+    "description": "A man in his mid-forties, the captain of a rival prospecting crew on an orbital colony station, sizing up a newer crew in the station's bar. Strong, bright baritone with a mocking edge, a confident, loud voice that carries across the room without shouting, quick to laugh at others. Brash and boastful, teasing rather than hostile, a veteran who has been doing this for twenty years and wants everyone to know it. Plain and conversational rather than narrating. Native English speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 1,
+    "picked_from": "rook1/rook/qwen3_s1.flac",
+    "picked": "2026-10-30"
+  },
+  "de": {
+    "anchor": "anchor_de.flac",
+    "text": "Sieh mal an, wer da ist. Noch eine Crew, die glaubt, da unten auf den Planeten ihr Auskommen zu finden. Ich bin Rook, Kapitän der besten Prospektoren-Crew im System.",
+    "description": "A man in his mid-forties, the captain of a rival prospecting crew on an orbital colony station, sizing up a newer crew in the station's bar. Strong, bright baritone with a mocking edge, a confident, loud voice that carries across the room without shouting, quick to laugh at others. Brash and boastful, teasing rather than hostile, a veteran who has been doing this for twenty years and wants everyone to know it. Plain and conversational rather than narrating. Native German speaker with a neutral accent.",
+    "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 8,
+    "picked_from": "rook1/rook/qwen3_s8_de.flac",
+    "picked": "2026-10-30"
+  }
+}

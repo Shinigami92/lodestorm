@@ -232,6 +232,43 @@ CHARACTERS: dict[str, dict] = {
             ),
         ],
     },
+    "rook": {
+        "name": "Rook",
+        "role": "Prospector captain",
+        "description": (
+            "A man in his mid-forties, the captain of a rival prospecting crew on an orbital colony station, sizing "
+            "up a newer crew in the station's bar. Strong, bright baritone with a mocking edge, a confident, loud "
+            "voice that carries across the room without shouting, quick to laugh at others. Brash and boastful, "
+            "teasing rather than hostile, a veteran who has been doing this for twenty years and wants everyone to "
+            "know it. Plain and conversational rather than narrating. Native English speaker with a neutral accent."
+        ),
+        "lines": [
+            (
+                (
+                    "Well, look who's here. Another crew that thinks it can make a living down on those planets. "
+                    "I'm Rook, captain of the best prospecting crew in the system."
+                ),
+                (
+                    "Sieh mal an, wer da ist. Noch eine Crew, die glaubt, da unten auf den Planeten ihr Auskommen "
+                    "zu finden. Ich bin Rook, Kapitän der besten Prospektoren-Crew im System."
+                ),
+            ),
+            (
+                "Ask away. I don't charge for advice. Yet.",
+                "Frag ruhig. Für Ratschläge nehme ich nichts. Noch nicht.",
+            ),
+            (
+                (
+                    "And watch your miners. Some of the hive's creatures go straight for them. "
+                    "My crew has lost more miners than I like to admit, but never a person."
+                ),
+                (
+                    "Und pass auf deine Miner auf. Manche Kreaturen des Schwarms gehen direkt auf sie los. "
+                    "Meine Crew hat mehr Miner verloren, als ich zugeben mag, aber noch nie einen Menschen."
+                ),
+            ),
+        ],
+    },
     "okoro": {
         "name": "Okoro",
         "role": "Engineer",

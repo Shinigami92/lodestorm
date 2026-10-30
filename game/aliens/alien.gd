@@ -17,16 +17,16 @@ extends CharacterBody3D
 ## punch (Clout's) throws it (`thrown`). A shrieker's scream speeds up the aliens near it and
 ## calls for help (`called_for_help`, answered by the nearest nest); in the hive's frenzy all of
 ## them are faster (see `status`). While a scream boosts it or a tender's link holds it, it's a
-## little bigger and outlined in the hive's yellow-green.
+## little bigger and outlined in the hive's yellow-green (see `AlienLook`).
 ## Its role (set from its strain by the nest) says what it goes for: guards stay by their nest
 ## (within `strain.leash` of where they hatched, walking back when a player gets away) and go for
-## a player who hits it from any distance (`AlienStatus.defending`), hunters go
-## for the nearest player outside however far away and never give up because of distance, and
-## raiders go for the nearest miner that still works, however far away, biting only a player who
-## stands in their way; without a working miner they walk back and guard. It grows out of the
-## ground when it appears. Hits (`take_hit`) lose
-## its armor's share, flash it white, spray ichor (sparks off armor), push it back and fill its
-## stagger meter; past the strain's threshold it rears up, staggered, and its attack is broken off.
+## a player who hits it from any distance (`AlienStatus.defending`), hunters go for the nearest
+## player outside however far away and never give up because of distance, and raiders go for the
+## nearest miner that still works, however far away, biting only a player who stands in their way;
+## without a working miner they walk back and guard (see `AlienTargeting`). It grows out of the
+## ground when it appears. Hits (`take_hit`) lose its armor's share, flash it white, spray ichor
+## (sparks off armor), push it back and fill its stagger meter; past the strain's threshold it
+## rears up, staggered, and its attack is broken off.
 ## At zero health it stops, collapses, sinks into the ground and disappears. Its legs step on
 ## their own (`AlienLegs`), the body plays the model's clips (`AlienAnimator`) and is posed on top
 ## of them (`AlienPose`). Its eyes and glands (the model's `Eyes` and `Glands`) flare during a
@@ -62,10 +62,6 @@ const MIN_DAMAGE_SHARE: float = 0.25
 const STAGGER_DRAIN_TIME: float = 1.0
 ## How fast a push fades (per second).
 const PUSH_DECAY: float = 8.0
-## How much brighter the eyes glow when fully crouched for an attack, and while it's faster than
-## its strain (a scream's boost, the hive's frenzy).
-const EYE_FLARE: float = 4.0
-const EYE_FLARE_FAST: float = 0.8
 ## A leap ends early when it moves slower than this share of its speed (it ran into something).
 const LUNGE_STALL: float = 0.3
 ## Burrowers dig in only for targets farther away than this (m); closer, they fight up top.
@@ -79,18 +75,6 @@ const HOME_RADIUS: float = 1.5
 const ROAM_ARRIVE: float = 4.0
 ## Seconds a flier takes to drop to the ground when it dies.
 const FALL_TIME: float = 0.4
-## The rim light is weaker than on players and machines: the alien's many thin, curved parts
-## would glow all over.
-const RIM_STRENGTH: float = 0.45
-## While boosted or mended (see `AlienStatus.is_buffed`): how much bigger it gets, how fast it
-## grows and shrinks back (per second), and its outline's strength.
-const BUFFED_SCALE: float = 1.15
-const BUFFED_GROW_SPEED: float = 6.0
-const BUFFED_RIM_STRENGTH: float = 1.6
-## A hit flash covers the model in white.
-const COLOR_FLASH := Color(1.0, 1.0, 1.0, 0.85)
-## Seconds a hit flash lasts.
-const FLASH_DURATION: float = 0.1
 ## Seconds the body takes to grow out of the ground when the alien appears.
 const HATCH_DURATION: float = 0.4
 ## Faster than this (m/s), it faces where it goes; slower, where it wants to go.
@@ -118,9 +102,6 @@ static var ai_on: bool = true
 ## Whether aliens off screen stop their legs and clips (see `_on_screen_changed`). Without a display
 ## (headless: tests, a server) nothing is ever on screen, so it's off there.
 static var culls_off_screen: bool = DisplayServer.get_name() != "headless"
-## Shared by all aliens (see `RIM_STRENGTH`).
-static var _rim: ShaderMaterial
-static var _buffed_rim: ShaderMaterial
 
 ## Set by `AlienStrain.spawn`.
 @export var strain: AlienStrain
@@ -186,28 +167,22 @@ var _push_applied := Vector3.ZERO
 var _lunge_direction := Vector3.ZERO
 var _lunge_length: float = 0.0
 var _lunge_velocity := Vector3.ZERO
-var _flash_left: float = 0.0
 ## Seconds since a burrower came up.
 var _surfaced_for: float = 0.0
 ## Seconds it still backs off after an attack (`strain.retreat_time`).
 var _retreat_left: float = 0.0
-## Walking back to `home` after leaving a downed player alone (until it's there or finds prey).
-var _going_home: bool = false
 ## The route's point it walks to, or -1.
 var _route_index: int = -1
 ## Which way it circles its target (`strain.circles`): 1 or -1.
 var _circle_side: float = 1.0 if randf() < 0.5 else -1.0
 var _dig_tween: Tween
 var _ripple: BurrowRipple
-## Laid over the model: the hit flash, and the rim light as its next pass.
-var _overlay := StandardMaterial3D.new()
-## The eyes' and glands' own materials, flaring during a wind-up, and their usual energy.
-var _glows: Array[BaseMaterial3D] = []
-var _glow_energies: Array[float] = []
 var _hatch_tween: Tween
 var _legs := AlienLegs.new()
 var _pose := AlienPose.new(status)
 var _pathing: AlienPathing
+var _targeting := AlienTargeting.new(self)
+var _look: AlienLook
 var _screen := VisibleOnScreenNotifier3D.new()
 
 @onready var _body: Node3D = $Body
@@ -230,27 +205,8 @@ func _ready() -> void:
 	_legs.step_distance_per_speed *= strain.stride
 	_legs.step_height *= strain.stride
 	(_model.find_child("Skeleton3D", true, false) as Skeleton3D).add_child(_legs)
-	_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_overlay.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	if not _rim:
-		_rim = preload("res://assets/shaders/rim_light.tres").duplicate() as ShaderMaterial
-		_rim.set_shader_parameter(&"strength", RIM_STRENGTH)
-		_buffed_rim = _rim.duplicate() as ShaderMaterial
-		_buffed_rim.set_shader_parameter(&"color", COLOR_GLOW)
-		_buffed_rim.set_shader_parameter(&"strength", BUFFED_RIM_STRENGTH)
-	_overlay.next_pass = _rim
-	# Seen behind cliffs too, as a red silhouette.
 	var creature := _model.find_child("Creature", true, false) as GeometryInstance3D
-	creature.material_overlay = OccludedSilhouette.overlay(OccludedSilhouette.ALIEN_COLOR, _overlay)
-	OccludedSilhouette.mark_visible(_model)
-	RenderLayers.put(_model, RenderLayers.CHARACTERS)
-	for part: String in ["Eyes", "Glands"]:
-		var glowing := _model.find_child(part, true, false) as MeshInstance3D
-		if glowing and glowing.mesh.surface_get_material(0) is BaseMaterial3D:
-			var glow := glowing.mesh.surface_get_material(0).duplicate() as BaseMaterial3D
-			_glows.append(glow)
-			_glow_energies.append(glow.emission_energy_multiplier)
-			glowing.material_override = glow
+	_look = AlienLook.new(self, _model, creature)
 	if strain.burrows:
 		_ripple = BurrowRipple.new()
 		add_child(_ripple)
@@ -270,7 +226,7 @@ func _ready() -> void:
 	if strain.flies():
 		add_to_group(AlienFlight.GROUP)
 	_watch_screen(creature)
-	_update_look()
+	_look.update(0.0, 0.0)
 	_body.scale = Vector3.ONE * 0.01
 	_hatch_tween = create_tween()
 	_hatch_tween.tween_property(_body, ^"scale", Vector3.ONE, HATCH_DURATION)
@@ -293,7 +249,7 @@ func _physics_process(delta: float) -> void:
 	if not ai_on or status.asleep:
 		_stand_still()
 	elif _phase == AttackPhase.NONE:
-		_update_target()
+		_targeting.update()
 		if strain.burrows:
 			_update_burrow()
 
@@ -322,13 +278,13 @@ func _physics_process(delta: float) -> void:
 	elif target and _retreat_left > 0.0:
 		wanted = _pathing.direction_away_from(target)
 		facing = _offset_to(target)
-	elif not target and strain.roams and not route.is_empty() and not _going_home:
+	elif not target and strain.roams and not route.is_empty() and not _targeting.going_home:
 		wanted = _roam()
-	elif not target and (_going_home or (strain.leash > 0.0 and role != Role.HUNTER)):
+	elif not target and (_targeting.going_home or (strain.leash > 0.0 and role != Role.HUNTER)):
 		# Back to where it hatched.
 		var back: Vector3 = home - global_position
 		var away: bool = Vector2(back.x, back.z).length() > HOME_RADIUS
-		_going_home = _going_home and away
+		_targeting.going_home = _targeting.going_home and away
 		if away:
 			wanted = _pathing.direction_to(home)
 	elif target:
@@ -391,26 +347,17 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(delta: float) -> void:
-	_flash_left = maxf(_flash_left - delta, 0.0)
 	if _ripple:
 		_ripple.active = underground and not dead
 		var moving: float = 0.5 if Vector2(velocity.x, velocity.z).length() > 0.5 else 0.0
 		_ripple.strength = 1.0 if is_winding_up() else moving
 	_animator.speed = 0.0 if dead else Vector2(velocity.x, velocity.z).length()
-	var buffed: bool = status.is_buffed() and not dead
-	var size: float = BUFFED_SCALE if buffed else 1.0
-	_model.scale = _model.scale.lerp(Vector3.ONE * size, 1.0 - exp(-BUFFED_GROW_SPEED * delta))
-	var rim: ShaderMaterial = _buffed_rim if buffed else _rim
-	if cloaking and cloaking.is_cloaked():
-		rim = null
-	if _overlay.next_pass != rim:
-		_overlay.next_pass = rim
 	if not dead:
 		# Keeps the scale: it grows while hatching.
 		var pose: Transform3D = _pose.update(delta)
 		_body.position = pose.origin
 		_body.quaternion = pose.basis.get_rotation_quaternion()
-	_update_look()
+	_look.update(delta, _winding())
 
 
 ## Hits `victim` (a player or a miner) for `amount` (scaled by `damage_factor`) and plays the
@@ -589,7 +536,7 @@ func take_damage(amount: float, by: Node = null, with: WeaponType = null) -> voi
 	var player: Player = GameEvents.player_of(by)
 	GameEvents.bus.alien_damaged.emit(player, with, self, minf(amount, health))
 	health = maxf(health - amount, 0.0)
-	_flash_left = FLASH_DURATION
+	_look.flash()
 	if health == 0.0:
 		_die()
 		GameEvents.bus.alien_killed.emit(player, with, self)
@@ -611,89 +558,6 @@ static func living_load(tree: SceneTree) -> float:
 	for alien: Alien in tree.get_nodes_in_group(GROUP):
 		total += alien.strain.cap_share
 	return total
-
-
-## Keeps chasing the target while it's in `strain.chase_range` (with a leash: while it's within
-## `strain.leash` of home), otherwise picks the nearest prey in `strain.detection_range`.
-## Hunters keep their prey and pick it from any distance. Raiders keep their miner until it
-## breaks and pick the nearest working one from any distance, turning on a player only while one
-## stands in reach; without a working miner they act like guards. Guards defending their nest go
-## for its attacker first.
-func _update_target() -> void:
-	if role == Role.GUARD and _defends():
-		return
-	if role == Role.RAIDER and _update_miner_target():
-		var in_way: Player = _player_in_reach()
-		if in_way:
-			target = in_way
-		return
-	if is_instance_valid(target) and target is Player:
-		var chased := target as Player
-		if is_prey(get_tree(), chased) and (role == Role.HUNTER or _keeps_chasing(chased)):
-			return
-		# It leaves a downed player alone and walks back towards its nest (see `RescueDrone`).
-		_going_home = _going_home or chased.fallen
-	target = null
-	var nearest_distance: float = INF if role == Role.HUNTER else strain.detection_range
-	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
-		if not is_prey(get_tree(), player):
-			continue
-		var distance: float = horizontal_distance(player)
-		if distance <= nearest_distance and (role == Role.HUNTER or _within_leash(player)):
-			target = player
-			nearest_distance = distance
-	_going_home = _going_home and target == null
-
-
-## Whether it defends its nest (`status.defending`): the attacker is prey and within its leash,
-## then it's the target. Otherwise it forgets them.
-func _defends() -> bool:
-	if not is_instance_valid(status.defending):
-		status.defending = null
-		return false
-	var attacker := status.defending as Player
-	if attacker and is_prey(get_tree(), attacker) and _within_leash(attacker):
-		target = attacker
-		return true
-	status.defending = null
-	return false
-
-
-## Whether a guard (or a raider without a miner) keeps chasing `node`: within its chase range,
-## and with a leash, not too far from home.
-func _keeps_chasing(node: Node3D) -> bool:
-	return horizontal_distance(node) <= strain.chase_range and _within_leash(node)
-
-
-## Whether `node` is within `strain.leash` of home (always without a leash).
-func _within_leash(node: Node3D) -> bool:
-	if strain.leash <= 0.0:
-		return true
-	var offset: Vector3 = node.global_position - home
-	return Vector2(offset.x, offset.z).length() <= strain.leash
-
-
-## A living player outside within reach of its closest attack (in a raider's way), or null.
-func _player_in_reach() -> Player:
-	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
-		if is_prey(get_tree(), player) and horizontal_distance(player) <= strain.reach():
-			return player
-	return null
-
-
-## Keeps the target miner while it works, otherwise picks the nearest working one. Returns
-## whether there is one.
-func _update_miner_target() -> bool:
-	if is_instance_valid(target) and target is Miner and not (target as Miner).broken:
-		return true
-	target = null
-	var nearest_distance: float = INF
-	for miner: Miner in get_tree().get_nodes_in_group(Miner.GROUP):
-		var distance: float = horizontal_distance(miner)
-		if not miner.broken and distance <= nearest_distance:
-			target = miner
-			nearest_distance = distance
-	return target != null
 
 
 ## Starts the first attack that is ready and has the target in range. Returns whether one started.
@@ -939,22 +803,13 @@ func _on_screen_changed() -> void:
 	set_process(shown)
 
 
-func _update_look() -> void:
-	var shade := Color(0.0, 0.0, 0.0, 0.0)
-	if _flash_left > 0.0:
-		shade = COLOR_FLASH
-	# Only on a change: every change updates the material on the renderer.
-	if _overlay.albedo_color != shade:
-		_overlay.albedo_color = shade
-	var fast: float = EYE_FLARE_FAST if status.is_fast() else 0.0
-	# A clip that is the telegraph (rearing up, swelling) brightens them over its wind-up.
+## How far (0 to 1) it is into a wind-up: crouched, or into a clip that is the telegraph (rearing
+## up, swelling).
+func _winding() -> float:
 	var winding: float = _pose.crouched()
 	if _phase == AttackPhase.WIND_UP and _attack.clip_lead > 0.0 and _attack.wind_up > 0.0:
 		winding = maxf(winding, _phase_time / _attack.wind_up)
-	var flare: float = (1.0 + fast + EYE_FLARE * winding) * status.eye_glow()
-	for i: int in _glows.size():
-		if _glows[i].emission_energy_multiplier != _glow_energies[i] * flare:
-			_glows[i].emission_energy_multiplier = _glow_energies[i] * flare
+	return winding
 
 
 func _on_velocity_computed(safe_velocity: Vector3) -> void:

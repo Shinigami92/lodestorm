@@ -18,7 +18,8 @@ extends Node3D
 ## deck, the walls facing the camera (`Hull/LowerCut`) and the whole upper deck (`Hull/Upper`,
 ## `Rooms/Upper`, the lifts' upper gates) only cast shadows; on the upper deck, its walls facing
 ## the camera and the roof (`Hull/Upper/Cut`) do. What draws over everything (`OVERLAY_GROUP`)
-## only shows while the camera looks into the upper deck.
+## only shows while the camera looks into the upper deck. The crew go by the deck they stand on,
+## not by their room's: they walk between the decks (e.g. to a tour's start).
 ## Inner walls between the camera and the corridor keep a low stub, so the rooms stay outlined.
 ## Windows in the outer walls look out from every room along them (and in from outside).
 ## A countdown above the door (running outwards from it, clear of the silos) shows the mission time
@@ -124,6 +125,9 @@ var _aboard: Array[Player] = []
 var _armed: Array[Player] = []
 ## What the cutaway shows right now.
 var _view: View = View.OUTSIDE
+## Whether each crew member aboard shows (else only their shadow: on the upper deck while the
+## camera looks into the lower one), as last cut away.
+var _crew_shown: Dictionary[Npc, bool] = {}
 var _ramp_angle: float = RAMP_CLOSED_ANGLE
 ## Where the ramp last set off to (it sounds each time it sets off).
 var _ramp_heading: float = NAN
@@ -438,6 +442,7 @@ func _update_view() -> void:
 	if view != _view:
 		_view = view
 		_apply_view()
+	_update_crew()
 
 
 ## Weapons work outside the ship (not at a station) and in the shooting range; aboard, reloads
@@ -492,6 +497,23 @@ func _apply_view() -> void:
 	for overlay: Node in get_tree().get_nodes_in_group(OVERLAY_GROUP):
 		if is_ancestor_of(overlay):
 			(overlay as Node3D).visible = _view == View.UPPER
+	# The rooms above cut their crew away with them: each again by their own deck.
+	_crew_shown.clear()
+	_update_crew()
+
+
+## Cuts the crew away by the deck they stand on: on the upper deck, only their shadows while the
+## camera looks into the lower one.
+func _update_crew() -> void:
+	for node: Node in get_tree().get_nodes_in_group(Npc.CREW_GROUP):
+		var npc := node as Npc
+		if not is_ancestor_of(npc):
+			continue
+		var upper: bool = to_local(npc.global_position).y >= UPPER_DECK_HEIGHT
+		var shown: bool = _view != View.LOWER or not upper
+		if _crew_shown.get(npc, not shown) != shown:
+			_crew_shown[npc] = shown
+			CutAway.show(npc, shown)
 
 
 func _on_body_entered(body: Node3D) -> void:

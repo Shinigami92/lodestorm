@@ -141,7 +141,7 @@ Each step builds on the ones before it (steps 1–15 and the balance are done, c
   - [x] **C2** first content: the quartermaster's chain ending in Brask's blueprint, the depot master's requests, the first overheard talk
   - [ ] **Fixes** before C3 and D (found in play, each its own PR):
     - [x] things on the lower deck (e.g. the medical bay's beds) can be used through the upper deck's floor while standing above them
-    - [ ] NPCs on the upper deck show while the player is on the lower deck
+    - [x] NPCs on the upper deck show while the player is on the lower deck
     - [ ] Kade is silent at the depot (his voice lines exist)
     - [ ] the cabins' doors can be heard but not seen
     - [ ] `alien.gd` is at the 1000-line cap: split it before it grows

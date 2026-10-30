@@ -82,6 +82,28 @@ func test_overlays_only_show_on_their_deck() -> void:
 	assert_false(plates.visible, "outside")
 
 
+## The crew go by the deck they stand on, not by their room's: the quartermaster waits at the tour's
+## start on the upper deck (a new game) and only casts shadows from below, like the bridge's pilot.
+## Shown again, the markers still cast no shadows.
+func test_crew_go_by_their_deck() -> void:
+	var quartermaster: Npc = _room("Quartermaster") as Npc
+	var pilot: Npc = _room("Pilot") as Npc
+	var medic: Npc = _room("Medic") as Npc
+	var marker: GeometryInstance3D = pilot.get_node("NewMarker/Round")
+	assert_gt(_ship.to_local(quartermaster.global_position).y, Ship.UPPER_DECK_HEIGHT)
+	assert_eq(_casts(quartermaster), GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+	assert_eq(_casts(pilot), GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+	assert_eq(_casts(medic), GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	await _move(_player, _room("MessHall").global_position)
+	assert_eq(_casts(quartermaster), GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	assert_eq(_casts(pilot), GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	assert_eq(marker.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+	await _move(_player, _inside())
+	medic.global_position = quartermaster.global_position + _ship.global_basis.x
+	await wait_physics_frames(2)
+	assert_eq(_casts(medic), GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY, "walked up")
+
+
 func test_every_room_is_aboard() -> void:
 	for room: Node3D in _rooms():
 		await _move(_player, _outside())
@@ -217,6 +239,13 @@ func _shell(path: String) -> GeometryInstance3D:
 	for node: Node in model.find_children("Shell*", "MeshInstance3D", true, false):
 		return node as GeometryInstance3D
 	return null
+
+
+## How the first mesh of `npc`'s body casts shadows.
+func _casts(npc: Npc) -> GeometryInstance3D.ShadowCastingSetting:
+	for node: Node in npc.body.find_children("*", "MeshInstance3D", true, false):
+		return (node as GeometryInstance3D).cast_shadow
+	return GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 func _room(room_name: String) -> Node3D:

@@ -2,12 +2,16 @@ class_name Npc
 extends Station
 ## A crew member aboard (see docs/design/crew.md), who `profile` says, standing at
 ## their spot: their `Body` (an `NpcBody`: the look, turning towards players, the name plate) and
-## an amber marker above their head while they have something the players haven't heard yet.
+## an amber marker above their head: round while they have something the players haven't heard
+## yet, a diamond while they offer a quest or a quest step can be handed in at them
+## (`has_quest_news`).
 ##
 ## Talking to them is a station (`interact`): the camera frames them and the player, their lines
 ## show in a speech bubble above their head (`Bubble`, a `SpeechBubble`), and the card beside
 ## them (a `TalkCard`) lists the open topics of their `Dialogue` (`get_choices`) or moves the
-## topic on: their `talk` (an `NpcTalk`). Each line is also spoken from their head, in their
+## topic on: their `talk` (an `NpcTalk`). Their quests (`get_quests`, the ship's `QuestLog`) join
+## the list first: a quest they offer (its `Quest.offer`) and a step handed in at them (its
+## `QuestStep.hand_in`). Each line is also spoken from their head, in their
 ## recorded voice (`say`: `VoiceLines`, on the Voice bus), and stops when the next one comes.
 ## Where they are and go aboard is their `routine` (an `NpcRoutine`: walking, the `flight_seat`
 ## while the ship flies, their `work_spots`, a tour).
@@ -45,6 +49,7 @@ var routine: NpcRoutine
 
 ## Used without a ship (e.g. tests of a lone NPC).
 var _own_story := Story.new()
+var _own_quests := QuestLog.new()
 ## Whether the bubble shows a line said aside (`say_aside`), not a talk.
 var _aside: bool = false
 var _new_marker_time: float = 0.0
@@ -52,11 +57,14 @@ var _new_marker_time: float = 0.0
 @onready var bubble: WorldPanel = $Bubble
 @onready var body: NpcBody = $Body
 @onready var _new_marker: Node3D = $NewMarker
+@onready var _quest_marker: Node3D = $NewMarker/Diamond
+@onready var _news_marker: Node3D = $NewMarker/Round
 
 
 func _ready() -> void:
 	super()
 	body.profile = profile
+	_own_quests.story = _own_story
 	routine = NpcRoutine.new(self)
 	talk = NpcTalk.new(self)
 	bubble.visible = false
@@ -77,7 +85,10 @@ func _process(delta: float) -> void:
 	super(delta)
 	body.faces = user
 	body.plate_allowed = not user and not _aside
-	_new_marker.visible = not user and has_news(_listener())
+	var quest_news: bool = not user and has_quest_news(_listener())
+	_new_marker.visible = quest_news or (not user and has_news(_listener()))
+	_quest_marker.visible = quest_news
+	_news_marker.visible = not quest_news
 	if _new_marker.visible:
 		_new_marker_time += delta
 		_new_marker.rotation.y = _new_marker_time * 1.5
@@ -99,8 +110,14 @@ func get_plate_text() -> String:
 	return body.get_plate_text()
 
 
-## The topics open now for `listener` (the player talking to them when null), in the dialogue's
-## order (see `Topic.is_open`).
+## The quests the topics heard and handed in go into: the ship's.
+func get_quests() -> QuestLog:
+	return ship.quests if ship else _own_quests
+
+
+## The topics open now for `listener` (the player talking to them when null): their quests' first
+## (the offers, then the steps handed in at them), then the dialogue's in its order (see
+## `Topic.is_open`).
 func get_choices(listener: Player = null) -> Array[Topic]:
 	var choices: Array[Topic] = []
 	if not profile or not profile.dialogue:
@@ -113,6 +130,11 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 		choices.append_array([tour.resume, tour.abort])
 		return choices
 	var reaches: Array[StringName] = get_reached_bodies()
+	var quests: QuestLog = get_quests()
+	for quest: Quest in quests.offered_by(profile.id, reaches):
+		choices.append(quest.offer)
+	for quest: Quest in quests.steps_at(profile.id):
+		choices.append(quests.current_step(quest).hand_in)
 	for listed: Topic in profile.dialogue.topics:
 		if listed.is_open(listener, story, reaches):
 			choices.append(listed)
@@ -135,8 +157,14 @@ func get_reached_bodies() -> Array[StringName]:
 	return reaches
 
 
-## Whether nobody has heard `listed` to the end yet.
-func is_new(listed: Topic) -> bool:
+## Whether nobody has heard `listed` to the end yet; for a quest step's hand-in, whether `listener`
+## (the player talking to them when null) can hand it in now.
+func is_new(listed: Topic, listener: Player = null) -> bool:
+	var quests: QuestLog = get_quests()
+	var quest: Quest = quests.quest_for(listed)
+	if quest and quests.is_accepted(quest):
+		var payer: Player = listener if listener else user
+		return payer != null and quests.can_hand_in(quest, payer.hold)
 	return not get_story().is_set(listed.id)
 
 
@@ -148,7 +176,24 @@ func has_news(listener: Player = null) -> bool:
 	var greeting: Topic = get_greeting()
 	if greeting and is_new(greeting):
 		return true
-	return get_choices(listener).any(is_new)
+	return get_choices(listener).any(func(listed: Topic) -> bool: return is_new(listed, listener))
+
+
+## Whether they offer `listener` (the player talking to them when null) a quest, or `listener` can
+## hand in a quest step at them now (the diamond marker).
+func has_quest_news(listener: Player = null) -> bool:
+	if not profile or (routine and routine.tour):
+		return false
+	var quests: QuestLog = get_quests()
+	if not quests.offered_by(profile.id, get_reached_bodies()).is_empty():
+		return true
+	var payer: Player = listener if listener else user
+	return (
+		payer != null
+		and quests.steps_at(profile.id).any(
+			func(quest: Quest) -> bool: return quests.can_hand_in(quest, payer.hold)
+		)
+	)
 
 
 ## The greeting their first talk starts with: their tour's offer while they wait at its start,

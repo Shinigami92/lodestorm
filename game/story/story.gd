@@ -6,8 +6,8 @@ extends Resource
 ## Flags are saved by name, so a name never changes once it's in a release. A name is lowercase
 ## parts joined by dots, the first saying whose it is (`is_valid_flag`):
 ## - `<npc>.<topic>`: a topic heard, `<npc>` the `NpcProfile.id` (`quartermaster.ammo`);
-## - `quest.<quest>.<step>`: a quest step done, `quest.<quest>` the quest itself;
-## - `reward.<quest>`: a quest's reward handed out;
+## - `quest.<quest>.<step>`: a quest step handed in (its rewards with it), `quest.<quest>` the
+##   quest's last one (see `Quest`);
 ## - `crew.<npc>.joined`: a crew member aboard;
 ## - `event.<event>`: something that happens once per game (`CrewReactions`), e.g.
 ##   `event.first_death`, `event.landed.<body>`.

@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="QuestCatalog" format=3 uid="uid://dxjfy1vra5tju"]
+
+[ext_resource type="Script" uid="uid://dpec6xdtyobe5" path="res://game/quests/quest_catalog.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")

@@ -1,13 +1,13 @@
 class_name SaveGame
 extends Node
 ## Keeps the progress between sessions in one save: the host's (the ship's story flags, heat
-## shield, furnaces unlocked, cradles open and crew reactions, where it is) in `ship.json` and the
-## local player's (their health, hold, batches in the furnaces, weapons and blueprints, loadout,
-## upgrade levels, skill ranks, crafted miners and hints seen) in `player.json`, both in `save/`
-## under `directory`. It loads them when the map starts and saves whenever progress changes while
-## no mission is underway; what changes during a mission is saved once it's over (returned or
-## lost), so quitting mid-mission loses that run like dying. The settings (`GameSettings`) are kept
-## apart and survive `reset_progress`.
+## shield, furnaces unlocked, cradles open, crew reactions and quests, where it is) in `ship.json`
+## and the local player's (their health, hold, batches in the furnaces, weapons and blueprints,
+## loadout, upgrade levels, skill ranks, crafted miners and hints seen) in `player.json`, both in
+## `save/` under `directory`. It loads them when the map starts and saves whenever progress
+## changes while no mission is underway; what changes during a mission is saved once it's over
+## (returned or lost), so quitting mid-mission loses that run like dying. The settings
+## (`GameSettings`) are kept apart and survive `reset_progress`.
 ## Every saved system writes and reads its own part (`save_data`, `load_data`, see `SaveData`);
 ## this only puts the parts together under their keys. Entries that don't read are skipped, and a
 ## file that can't be read or is of another version is kept as `<name>.corrupt` while the game
@@ -81,6 +81,7 @@ func _ready() -> void:
 		ship.furnaces.changed.connect(_on_progress_changed)
 		ship.cradles.changed.connect(_on_progress_changed)
 		ship.reactions.changed.connect(_on_progress_changed)
+		ship.quests.changed.connect(_on_progress_changed)
 	if player:
 		player.hold.changed.connect(_on_progress_changed)
 		player.refining.changed.connect(_on_progress_changed)
@@ -155,6 +156,7 @@ static func ship_data(of_ship: Ship) -> Dictionary:
 		"furnaces": of_ship.furnaces.save_data(),
 		"cradles": of_ship.cradles.save_data(),
 		"reactions": of_ship.reactions.save_data(),
+		"quests": of_ship.quests.save_data(),
 		"at": of_ship.voyage.save_data() if of_ship.voyage else null,
 	}
 
@@ -182,6 +184,7 @@ func _apply_ship(data: Dictionary) -> void:
 	_loaded(ship.furnaces.load_data(data.get("furnaces")))
 	_loaded(ship.cradles.load_data(data.get("cradles")))
 	_loaded(ship.reactions.load_data(data.get("reactions")))
+	_loaded(ship.quests.load_data(data.get("quests")))
 	# After the heat shield: the ship stays only where it reaches.
 	if voyage:
 		_loaded(voyage.load_data(data.get("at")))

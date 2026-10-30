@@ -34,19 +34,21 @@ func test_stowed_and_shut_until_the_ramp_is_down_for_a_run() -> void:
 	assert_eq(slide.position.y, 0.0, "down on the ground with the ramp")
 
 
-func test_banks_everything_carried_and_the_run_goes_on() -> void:
+func test_banks_all_but_the_ammo_reserve_and_the_run_goes_on() -> void:
 	await _open()
 	await _move(_player, _beside_hatch())
 	_player.cargo.add(KYRITE, 60.0)
 	_player.cargo.add(MERIDINE, 20.0)
 	assert_eq(_player.interact(), _hatch as Interactable, "the hatch is what the player uses")
 	assert_true(_hatch.is_flowing(_player))
+	var reserve: float = CargoHatch.AMMO_RESERVE / KYRITE.ammo_yield
 	await _wait(CargoHatch.FLOW_TIME * 0.5)
-	assert_gt(_player.cargo.total(), 0.0, "it flows in over a while")
+	assert_between(_player.cargo.total(), reserve + 1.0, 79.0, "it flows in over a while")
 	await _wait(CargoHatch.FLOW_TIME * 0.5 + 0.2)
 	assert_false(_hatch.is_flowing(_player))
-	assert_almost_eq(_player.cargo.total(), 0.0, 0.001)
-	assert_almost_eq(_player.hold.amount(KYRITE), 60.0, 0.001)
+	assert_almost_eq(_player.cargo.amount(KYRITE), reserve, 0.001, "the commonest kept for ammo")
+	assert_almost_eq(_player.cargo.amount(MERIDINE), 0.0, 0.001)
+	assert_almost_eq(_player.hold.amount(KYRITE), 60.0 - reserve, 0.001)
 	assert_almost_eq(_player.hold.amount(MERIDINE), 20.0, 0.001)
 	assert_signal_emit_count(GameEvents.bus, "ore_hauled", 2, "once per ore, not every tick")
 	assert_eq(_mission.state, Mission.State.RUNNING, "still outside, still running")
@@ -71,7 +73,9 @@ func test_players_bank_at_the_same_time() -> void:
 	await _open()
 	await _move(_player, _beside_hatch())
 	await _move(other, _beside_hatch() + Vector3(0.0, 0.0, 0.8))
-	_player.cargo.add(KYRITE, 30.0)
+	var reserve: float = CargoHatch.AMMO_RESERVE / KYRITE.ammo_yield
+	_player.cargo.add(KYRITE, reserve + 30.0)
+	other.cargo.add(KYRITE, reserve)
 	other.cargo.add(MERIDINE, 10.0)
 	_hatch.use(_player)
 	_hatch.use(other)
@@ -87,6 +91,23 @@ func test_nothing_carried_starts_no_flow() -> void:
 	await _move(_player, _beside_hatch())
 	_hatch.use(_player)
 	assert_false(_hatch.is_flowing(_player))
+
+
+func test_only_the_reserve_carried_starts_no_flow() -> void:
+	await _open()
+	await _move(_player, _beside_hatch())
+	_player.cargo.add(KYRITE, CargoHatch.AMMO_RESERVE / KYRITE.ammo_yield)
+	_hatch.use(_player)
+	assert_false(_hatch.is_flowing(_player))
+
+
+func test_reserve_is_worth_the_ammo_from_the_commonest_ore_first() -> void:
+	var cargo: Dictionary[OreType, float] = {MERIDINE: 50.0, KYRITE: 10.0}
+	var kept: Dictionary[OreType, float] = OreAmmo.reserve(cargo, CargoHatch.AMMO_RESERVE)
+	assert_almost_eq(kept[KYRITE], 10.0, 0.001, "all of the commonest")
+	var rest: float = (CargoHatch.AMMO_RESERVE - 10.0 * KYRITE.ammo_yield) / MERIDINE.ammo_yield
+	assert_almost_eq(kept[MERIDINE], rest, 0.001, "the rest from the next one, by its yield")
+	assert_almost_eq(OreAmmo.value(kept), CargoHatch.AMMO_RESERVE, 0.001)
 
 
 func test_dying_mid_flow_keeps_what_went_in() -> void:

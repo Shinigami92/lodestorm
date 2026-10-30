@@ -1,5 +1,17 @@
 {
   "de": {
+    "0bb5ce2ee9a98829": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Vier Schmelzöfen, Brannik, und kein einziger ist warm. Dieses Schiff könnte seine eigenen Barren herstellen."
+    },
+    "1e397dacfdb88383": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich weiß. Die Hälfte ihrer Stromleitungen habe ich selbst verlegt, damals, als ich mich um den Strom der Station gekümmert habe."
+    },
     "252b7e307ffadb58": {
       "anchor": "d41e7c855e6c7261",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -162,6 +174,12 @@
       "seed": 1,
       "text": "Die vier Schmelzöfen im Frachtraum machen aus Erz Legierungsbarren. Bessere Ausrüstung braucht diese Barren früher oder später."
     },
+    "de1bc5e7789200aa": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Du sagst immer \"wir\". Du bist doch der, der weiter hinein will."
+    },
     "e177152daacbb9af": {
       "anchor": "d41e7c855e6c7261",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -182,6 +200,18 @@
     }
   },
   "en": {
+    "0bb5ce2ee9a98829": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Four furnaces, Brannik, and not one of them warm. This ship could be refining its own bars."
+    },
+    "1e397dacfdb88383": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I know. I laid half of their power lines myself, back when I ran the station's power."
+    },
     "252b7e307ffadb58": {
       "anchor": "d2ad127d30de6e63",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -343,6 +373,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The four furnaces in the cargo bay turn ore into alloy bars. Better gear needs those bars sooner or later."
+    },
+    "de1bc5e7789200aa": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "You keep saying \"we\". You're the one who wants to go further in."
     },
     "e177152daacbb9af": {
       "anchor": "d2ad127d30de6e63",

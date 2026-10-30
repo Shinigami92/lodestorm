@@ -2280,6 +2280,118 @@ msgstr "Nester zerstören"
 msgid "Deliver %s"
 msgstr "%s liefern"
 
+#: game/quests/depot_master/request_air_scrubbers.tres
+msgid "Air scrubbers"
+msgstr "Luftfilter"
+
+#: game/quests/depot_master/request_air_scrubbers.tres
+msgid "Every air scrubber on this station has a Halcyne core, and nine of them are wearing out. 60 Halcyne would replace them all."
+msgstr "Jeder Luftfilter auf dieser Station hat einen Kern aus Halcyne, und neun davon nutzen sich gerade ab. 60 Halcyne würden sie alle ersetzen."
+
+#: game/quests/depot_master/request_air_scrubbers.tres
+msgid "Bring Kade 60 Halcyne for the air scrubbers."
+msgstr "Bring Kade 60 Halcyne für die Luftfilter."
+
+#: game/quests/depot_master/request_air_scrubbers.tres
+msgid "60 Halcyne. Nine new cores. Everyone aboard breathes a little easier, even if they never find out why."
+msgstr "60 Halcyne. Neun neue Kerne. Alle an Bord atmen ein bisschen leichter, auch wenn sie nie erfahren, warum."
+
+#: game/quests/depot_master/request_cold_stores.tres
+msgid "Cold stores"
+msgstr "Kühllager"
+
+#: game/quests/depot_master/request_cold_stores.tres
+msgid "The cold stores need Pallin for their cooling lines. If they fail, we lose a month of food, so I'd like 100 Pallin before they do."
+msgstr "Die Kühllager brauchen Pallin für ihre Kühlleitungen. Fallen sie aus, verlieren wir Essen für einen Monat, also hätte ich gern 100 Pallin, bevor das passiert."
+
+#: game/quests/depot_master/request_cold_stores.tres
+msgid "Bring Kade 100 Pallin for the cold stores."
+msgstr "Bring Kade 100 Pallin für die Kühllager."
+
+#: game/quests/depot_master/request_cold_stores.tres
+msgid "100 Pallin. That's one month of food I don't have to worry about."
+msgstr "100 Pallin. Das ist ein Monat Essen, um den ich mir keine Sorgen machen muss."
+
+#: game/quests/depot_master/request_filter_frames.tres
+msgid "Filter frames"
+msgstr "Filterrahmen"
+
+#: game/quests/depot_master/request_filter_frames.tres
+msgid "The water recyclers' filter frames are made of Kyrite, and three of them cracked this week. I need 150 Kyrite to replace them."
+msgstr "Die Filterrahmen der Wasseraufbereitung sind aus Kyrite, und diese Woche sind drei davon gesprungen. Ich brauche 150 Kyrite, um sie zu ersetzen."
+
+#: game/quests/depot_master/request_filter_frames.tres
+msgid "Bring Kade 150 Kyrite for the filter frames."
+msgstr "Bring Kade 150 Kyrite für die Filterrahmen."
+
+#: game/quests/depot_master/request_filter_frames.tres
+msgid "150 Kyrite, logged. That's three new frames and two spare ones."
+msgstr "150 Kyrite, eingetragen. Das sind drei neue Rahmen und zwei auf Vorrat."
+
+#: game/quests/depot_master/request_hull_patches.tres
+msgid "Hull patches"
+msgstr "Rumpfflicken"
+
+#: game/quests/depot_master/request_hull_patches.tres
+msgid "Debris hit the docking ring yesterday, in four places. The patches are made of Olvane, so I need 120 of it."
+msgstr "Gestern hat Schrott den Andockring getroffen, an vier Stellen. Die Flicken sind aus Olvane, also brauche ich 120 davon."
+
+#: game/quests/depot_master/request_hull_patches.tres
+msgid "Bring Kade 120 Olvane for the hull patches."
+msgstr "Bring Kade 120 Olvane für die Rumpfflicken."
+
+#: game/quests/depot_master/request_hull_patches.tres
+msgid "120 Olvane. Four patches, and the ring holds pressure again. Thank you."
+msgstr "120 Olvane. Vier Flicken, und der Ring hält wieder den Druck. Danke."
+
+#: game/quests/depot_master/request_power_cells.tres
+msgid "Power cells"
+msgstr "Energiezellen"
+
+#: game/quests/depot_master/request_power_cells.tres
+msgid "The station's power cells are made with Duskine, and the night shift has been running on reserve for a week. I need 60 Duskine."
+msgstr "Die Energiezellen der Station werden mit Duskine gebaut, und die Nachtschicht läuft seit einer Woche auf Reserve. Ich brauche 60 Duskine."
+
+#: game/quests/depot_master/request_power_cells.tres
+msgid "Bring Kade 60 Duskine for the power cells."
+msgstr "Bring Kade 60 Duskine für die Energiezellen."
+
+#: game/quests/depot_master/request_power_cells.tres
+msgid "60 Duskine. Twelve new cells, and the night shift gets its lights back."
+msgstr "60 Duskine. Zwölf neue Zellen, und die Nachtschicht hat wieder Licht."
+
+#: game/quests/depot_master/request_pump_seals.tres
+msgid "Pump seals"
+msgstr "Pumpendichtungen"
+
+#: game/quests/depot_master/request_pump_seals.tres
+msgid "The hydroponics' pumps need Tessar seals, and we have six left for forty pumps. 100 Tessar would cover the rest of the year."
+msgstr "Die Pumpen der Hydrokultur brauchen Dichtungen aus Tessar, und wir haben noch sechs für vierzig Pumpen. 100 Tessar würden für den Rest des Jahres reichen."
+
+#: game/quests/depot_master/request_pump_seals.tres
+msgid "Bring Kade 100 Tessar for the pump seals."
+msgstr "Bring Kade 100 Tessar für die Pumpendichtungen."
+
+#: game/quests/depot_master/request_pump_seals.tres
+msgid "100 Tessar. Forty pumps, all sealed. The greenhouse crew owes you a salad."
+msgstr "100 Tessar. Vierzig Pumpen, alle abgedichtet. Die Gewächshauscrew schuldet dir einen Salat."
+
+#: game/quests/depot_master/request_scanner_lenses.tres
+msgid "Scanner lenses"
+msgstr "Scannerlinsen"
+
+#: game/quests/depot_master/request_scanner_lenses.tres
+msgid "The clinic's scanners need Vyrel for their lenses. Two of their three scanners are down, so 80 Vyrel would help a lot of people."
+msgstr "Die Scanner der Klinik brauchen Vyrel für ihre Linsen. Zwei ihrer drei Scanner sind ausgefallen, also würden 80 Vyrel vielen Leuten helfen."
+
+#: game/quests/depot_master/request_scanner_lenses.tres
+msgid "Bring Kade 80 Vyrel for the scanner lenses."
+msgstr "Bring Kade 80 Vyrel für die Scannerlinsen."
+
+#: game/quests/depot_master/request_scanner_lenses.tres
+msgid "80 Vyrel. All three scanners will be running again by tomorrow."
+msgstr "80 Vyrel. Bis morgen laufen wieder alle drei Scanner."
+
 #: game/quests/hunt_goal.gd
 msgid "Hunt: %s and their brood nest"
 msgstr "Jagd: %s und ihr Brutnest"
@@ -2291,6 +2403,142 @@ msgstr "Jagd: %s"
 #: game/quests/mine_goal.gd
 msgid "Mine %s in one run"
 msgstr "%s in einer Mission abbauen"
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "A good welcome"
+msgstr "Ein guter Empfang"
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "About that job..."
+msgstr "Zu dem Auftrag..."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "I've got a job for you, and it starts small. Ostra's workshops are running out of Kyrite, and without it, the repairs stop."
+msgstr "Ich hab einen Auftrag für dich, und er fängt klein an. Den Werkstätten auf Ostra geht das Kyrite aus, und ohne Kyrite stehen die Reparaturen still."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "So our first 300 Kyrite go to Kade at the depot. The colony looks after us, so we look after the colony."
+msgstr "Also gehen unsere ersten 300 Kyrite an Kade ins Depot. Die Kolonie sorgt für uns, also sorgen wir für die Kolonie."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Do that well, and I'll have more for you after."
+msgstr "Mach das gut, dann hab ich danach mehr für dich."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Bring Kade 300 Kyrite at the depot on Waypost Ostra."
+msgstr "Bring Kade 300 Kyrite ins Depot auf Waypost Ostra."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik's Kyrite"
+msgstr "Branniks Kyrite"
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Three hundred Kyrite from Brannik's crew. He told me you'd come, and it's already in my books."
+msgstr "Dreihundert Kyrite von Branniks Crew. Er hat mir gesagt, dass du kommst, und es steht schon in meinen Büchern."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "That keeps the workshops going for about two weeks. I don't say that lightly."
+msgstr "Damit laufen die Werkstätten etwa zwei Wochen. Das sage ich nicht leichtfertig."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "And since you're here: our surveyors left markers in Hollow Mire last month, and two nests have grown right next to them. Brannik said you'd see to it."
+msgstr "Und wo du schon hier bist: Unsere Vermesser haben letzten Monat in Hollow Mire Markierungen gesetzt, und direkt daneben sind zwei Nester gewachsen. Brannik meinte, du kümmerst dich darum."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Destroy the two nests by the survey markers in Hollow Mire."
+msgstr "Zerstör die zwei Nester bei den Vermessungsmarkierungen in Hollow Mire."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik here. The survey markers are somewhere down there, with the two nests beside them. Clear them out, and watch your back."
+msgstr "Hier Brannik. Die Vermessungsmarkierungen sind irgendwo da unten, mit den zwei Nestern daneben. Räum sie weg, und pass auf dich auf."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik here. The survey markers are somewhere down there, with the two nests beside them. Clear them out, and watch each other's backs."
+msgstr "Hier Brannik. Die Vermessungsmarkierungen sind irgendwo da unten, mit den zwei Nestern daneben. Räumt sie weg, und passt aufeinander auf."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The survey nests"
+msgstr "Die Nester bei den Markierungen"
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Kade will be pleased. Those markers cost the colony more than you'd think."
+msgstr "Kade wird sich freuen. Diese Markierungen haben die Kolonie mehr gekostet, als man denkt."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Now, something of mine. On landfall day, a lander went down in Redscar Flats, with the colony's weapon blueprints aboard. Its crates ended up all over the flats."
+msgstr "Jetzt etwas von mir. Am Tag der Landung ist in Redscar Flats ein Lander abgestürzt, mit den Waffenbauplänen der Kolonie an Bord. Seine Kisten liegen über die ganze Ebene verstreut."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "One of those blueprints is in three pieces somewhere in those crates. Bring them to me. And Tamsin doesn't talk about that day, so don't ask her."
+msgstr "Einer dieser Baupläne steckt in drei Teilen irgendwo in diesen Kisten. Bring sie mir. Und Tamsin redet nicht über diesen Tag, also frag sie nicht danach."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Both nests are down. Good work. Now get back aboard in one piece."
+msgstr "Beide Nester sind zerstört. Gute Arbeit. Jetzt komm heil zurück an Bord."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Both nests are down. Good work. Now get back aboard in one piece, all of you."
+msgstr "Beide Nester sind zerstört. Gute Arbeit. Jetzt kommt alle heil zurück an Bord."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Recover the three blueprint fragments from the crates in Redscar Flats."
+msgstr "Birg die drei Bauplanfragmente aus den Kisten in Redscar Flats."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The lander's crates are spread out down there. Open every one you find. Three pieces, that's all we need."
+msgstr "Die Kisten des Landers liegen da unten verstreut. Mach jede auf, die du findest. Drei Teile, mehr brauchen wir nicht."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The lander's crates are spread out down there. Split up if you like, and open every one you find. Three pieces, that's all we need."
+msgstr "Die Kisten des Landers liegen da unten verstreut. Teilt euch ruhig auf und macht jede auf, die ihr findet. Drei Teile, mehr brauchen wir nicht."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The blueprint"
+msgstr "Der Bauplan"
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Three pieces. That's a whole blueprint again."
+msgstr "Drei Teile. Das ist wieder ein ganzer Bauplan."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "It's the shotgun the colony's guards carried. It doesn't reach far, but nothing gets close to you twice."
+msgstr "Das ist die Schrotflinte, die die Wachen der Kolonie getragen haben. Sie reicht nicht weit, aber nichts kommt zweimal an dich heran."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "I have my reasons for wanting you ready for what's further in. Build it, and show me it works."
+msgstr "Ich habe meine Gründe, warum du für das bereit sein sollst, was weiter innen wartet. Bau sie, und zeig mir, dass sie funktioniert."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "That's all three pieces. Bring them home, and don't let anything take them off you."
+msgstr "Das sind alle drei Teile. Bring sie nach Hause, und lass sie dir von nichts abnehmen."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "That's all three pieces. Bring them home, all of you, and don't let anything take them off you."
+msgstr "Das sind alle drei Teile. Bringt sie alle zusammen nach Hause, und lasst sie euch von nichts abnehmen."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Build the shotgun from its blueprint."
+msgstr "Bau die Schrotflinte nach ihrem Bauplan."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "The shotgun"
+msgstr "Die Schrotflinte"
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "There it is. Treat it well, and it'll do the same for you."
+msgstr "Da ist sie ja. Behandle sie gut, dann tut sie das auch für dich."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Try it on the range first. And ask me about it any time: I know a trick or two about loading shells."
+msgstr "Probier sie zuerst am Schießstand aus. Und frag mich jederzeit danach: Ich kenne den einen oder anderen Trick beim Laden der Patronen."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik here. I hear the shotgun is built. Come and show it to me."
+msgstr "Hier Brannik. Ich höre, die Schrotflinte ist gebaut. Komm vorbei und zeig sie mir."
+
+#: game/quests/quartermaster/colony_arms.tres
+msgid "Brannik here. I hear the shotgun is built. Come and show it to me, all of you."
+msgstr "Hier Brannik. Ich höre, die Schrotflinte ist gebaut. Kommt alle vorbei und zeigt sie mir."
 
 #: game/quests/quest_panel.gd
 msgid "From your hold"
@@ -3217,6 +3465,30 @@ msgstr "Prototypen der Expedition"
 #: game/stations/weapon_rack.gd
 msgid "Colony arms"
 msgstr "Waffen der Kolonie"
+
+#: game/talks/cold_furnaces.tres
+msgid "Four furnaces, Brannik, and not one of them warm. This ship could be refining its own bars."
+msgstr "Vier Schmelzöfen, Brannik, und kein einziger ist warm. Dieses Schiff könnte seine eigenen Barren herstellen."
+
+#: game/talks/cold_furnaces.tres
+msgid "It could. But every burner on Ostra runs the colony's own smelters, and they can't spare a single one."
+msgstr "Könnte es. Aber jeder Brenner auf Ostra läuft in den Schmelzen der Kolonie, und auf keinen davon können sie verzichten."
+
+#: game/talks/cold_furnaces.tres
+msgid "I know. I laid half of their power lines myself, back when I ran the station's power."
+msgstr "Ich weiß. Die Hälfte ihrer Stromleitungen habe ich selbst verlegt, damals, als ich mich um den Strom der Station gekümmert habe."
+
+#: game/talks/cold_furnaces.tres
+msgid "Then we bring them enough ore that one day they can. We've done harder things for less."
+msgstr "Dann bringen wir ihnen so viel Erz, dass sie es eines Tages können. Wir haben schon Schwereres für weniger getan."
+
+#: game/talks/cold_furnaces.tres
+msgid "You keep saying \"we\". You're the one who wants to go further in."
+msgstr "Du sagst immer \"wir\". Du bist doch der, der weiter hinein will."
+
+#: game/talks/cold_furnaces.tres
+msgid "Watch your furnaces, Okoro."
+msgstr "Pass auf deine Öfen auf, Okoro."
 
 #: game/ui/credits.tscn
 msgid "Design and direction"

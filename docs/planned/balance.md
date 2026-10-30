@@ -18,7 +18,7 @@ The ship is the survey's old ship, stripped and sold off when the survey ended a
 
 ## Furnaces through the main quest
 
-- **All four through the main quest, one per act in acts 1–4:** the first early in act 1 (Okoro's furnace quest becomes a main step, since crafted miners need Cobrel), then one each in acts 2, 3 and 4. Each of acts 1–4 brings a cradle and a furnace.
+- **All four through the main quest, one per act in acts 2–5** (changed 2026-10-30): the first early in act 2 (Okoro's furnace quest, a main step; see First content in [`quests.md`](quests.md)), then one each in acts 3, 4 and 5 (act 5 gathers the alloys for the flare shield anyway). Act 1 is capped at MK3 and alloys are only needed from MK4, so it needs none; crafted miners (built from Cobrel) come with the first furnace in act 2, and act 1 runs on standard-issue miners (its cradle still adds one). The cradles stay one per act in acts 1–4.
 - **No more furnaces as skills:** only the main quest adds furnaces; "furnaces running faster" stays a mining skill (see [`skills.md`](skills.md)).
 
 ## Co-op: the team's miners

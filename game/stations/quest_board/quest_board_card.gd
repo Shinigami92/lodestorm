@@ -2,13 +2,15 @@ class_name QuestBoardCard
 extends StationCard
 ## The quest board's holo card (see `QuestBoardStation`): a quest (its giver, where its step is
 ## handed in, the step with its goals and rewards, `QuestPanel`; "Track"), the done quests' group
-## ("Show"/"Hide"), a job (what it reaches, the time left) or a tab (what it lists).
+## ("Show"/"Hide"), a job (what it reaches, the time left), a message (who left it, what it says,
+## which line plays; "Play"/"Stop") or a tab (what it lists).
 
 var _panel := QuestPanel.new()
 
 @onready var _title: Label = %Title
 @onready var _note: Label = %Note
 @onready var _where: Label = %Where
+@onready var _lines: Label = %Lines
 @onready var _status: Label = %Status
 @onready var _action: Button = %Action
 
@@ -27,6 +29,7 @@ func show_part(part: StationPart) -> void:
 		return
 	_panel.visible = false
 	_where.visible = false
+	_lines.visible = false
 	_status.visible = false
 	_action.visible = false
 	var entry: BoardEntry = board.entry_of(part)
@@ -38,6 +41,8 @@ func show_part(part: StationPart) -> void:
 		_title.text = entry.title
 		_note.text = tr("Quests whose last step is handed in.")
 		_show_action(tr("Hide") if entry.done else tr("Show"), false)
+	elif entry.kind == BoardEntry.Kind.MESSAGE:
+		_show_message(board, entry.received)
 	else:
 		_show_job(entry)
 
@@ -52,18 +57,22 @@ func press_primary() -> bool:
 		return true
 	if entry.kind == BoardEntry.Kind.QUEST and not entry.done and not entry.tracked:
 		return board.track(entry.quest)
+	if entry.kind == BoardEntry.Kind.MESSAGE:
+		board.play(entry)
+		return true
 	return false
 
 
-## The texts of the card (for tests and probes): title, note, where, status.
+## The texts of the card (for tests and probes): title, note, where, lines, status.
 func get_texts() -> PackedStringArray:
 	var texts: PackedStringArray = [_title.text, _note.text]
 	texts.append(_where.text if _where.visible else "")
+	texts.append(_lines.text if _lines.visible else "")
 	texts.append(_status.text if _status.visible else "")
 	return texts
 
 
-## The card's button (for tests and probes): "Track", "Show" or "Hide".
+## The card's button (for tests and probes): "Track", "Show", "Hide", "Play" or "Stop".
 func get_action() -> Button:
 	return _action
 
@@ -77,9 +86,12 @@ func _show_tab(board: QuestBoardStation) -> void:
 	if board.tab == QuestBoardStation.Tab.QUESTS:
 		_title.text = tr("Quests")
 		_note.text = tr("What people asked of you, and how far it is.")
-	else:
+	elif board.tab == QuestBoardStation.Tab.JOBS:
 		_title.text = tr("Jobs")
 		_note.text = tr("Upgrades, skills, miners and furnaces at work, and what's done.")
+	else:
+		_title.text = tr("Messages")
+		_note.text = tr("What people left for the ship while it was away.")
 
 
 func _show_quest(board: QuestBoardStation, entry: BoardEntry) -> void:
@@ -104,6 +116,31 @@ func _show_quest(board: QuestBoardStation, entry: BoardEntry) -> void:
 	var viewer: Player = board.viewer()
 	_panel.show_quest(quest, quests, viewer.hold if viewer else null, false)
 	_show_action(tr("Tracked") if entry.tracked else tr("Track"), entry.tracked)
+
+
+## A message: who left it (their role and where they are), its lines, and which one plays or
+## whether it's heard.
+func _show_message(board: QuestBoardStation, entry: ReceivedMessage) -> void:
+	var from: StringName = entry.message.from
+	_title.text = board.lists.npc_name(from)
+	_note.text = board.lists.place_of(from)
+	var profile: NpcProfile = NpcProfile.find(from)
+	if profile and not profile.display_name.is_empty():
+		_note.text = "%s · %s" % [tr(profile.role), _note.text]
+	var playing: bool = board.speaker.playing_entry == entry
+	var said: PackedStringArray = []
+	for line: String in entry.message.lines:
+		said.append(tr(line))
+	_lines.visible = true
+	_lines.text = "\n".join(said)
+	var count: int = entry.message.lines.size()
+	if playing and count > 1:
+		_show_status(tr("Playing (%d of %d)") % [board.speaker.line + 1, count], CardPalette.STATUS)
+	elif playing:
+		_show_status(tr("Playing"), CardPalette.STATUS)
+	elif not entry.heard:
+		_show_status(tr("Not heard yet"), CardPalette.STATUS)
+	_show_action(tr("Stop") if playing else tr("Play"), false)
 
 
 func _show_job(entry: BoardEntry) -> void:

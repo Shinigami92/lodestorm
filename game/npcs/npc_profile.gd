@@ -49,6 +49,9 @@ static var _paths: Dictionary[StringName, String] = {}
 @export var reactions: Array[CrewReaction] = []
 ## A walk through the ship they give (Brannik's), or none.
 @export var tour: Tour
+## What someone living on a station says when they call the ship because something waits for the
+## players there (see `MessageLog`), one of them at random (the English texts, translated).
+@export var calls: Array[String] = []
 
 
 ## The lines they have for `event` about `subject`, worded for several players `together` or one
@@ -103,6 +106,7 @@ func spoken_lines() -> Dictionary[StringName, PackedStringArray]:
 	for reaction: CrewReaction in reactions:
 		said.append_array(reaction.lines)
 	said.append_array(remarks)
+	said.append_array(calls)
 	var once: PackedStringArray = []
 	for line: String in said:
 		if line not in once:

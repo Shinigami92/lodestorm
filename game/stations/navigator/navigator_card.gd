@@ -5,7 +5,8 @@ extends StationCard
 ## reached; "Zoom in"); a region: its biome and tier, danger, timer and ores ("Zoom in", "Set as
 ## destination"); the landing site: the mission's location name and where
 ## things stand (destination set, scanning, in flight, landed); a station: its kind ("Zoom in",
-## "Set as destination") and where things stand (destination set, docked). A body out of the heat
+## "Set as destination"), who waits there for the players and where things stand (destination set,
+## docked). A body out of the heat
 ## shield's
 ## reach, and its regions, say which MK level it needs, with the ores of that plate's cost.
 
@@ -136,7 +137,7 @@ func _show_region(navigator: NavigatorStation, shown_region: Region) -> ShieldPl
 
 
 ## A station the ship docks at: "Zoom in" at the star system (its map on the table), "Set as
-## destination", and where things stand.
+## destination", who waits there (`StationWait`) and where things stand.
 func _show_station(navigator: NavigatorStation, shown_station: CelestialBody) -> void:
 	var voyage: Voyage = navigator.voyage
 	var offer: MissionBrief = navigator.get_offer(shown_station)
@@ -155,7 +156,28 @@ func _show_station(navigator: NavigatorStation, shown_station: CelestialBody) ->
 		text = tr("Docked: lower the ramp in the cargo bay.")
 	elif chosen:
 		text = tr("Destination set: set course at the cockpit.")
+	var waiting: String = _waiting_text(navigator, shown_station)
+	if not waiting.is_empty():
+		text = waiting + ("\n" + text if not text.is_empty() else "")
 	_status.text = text
+
+
+## Who waits at `shown_station` for the players, e.g. "Waiting for you: Selin, Kade"; empty: nobody.
+func _waiting_text(navigator: NavigatorStation, shown_station: CelestialBody) -> String:
+	var ship: Ship = navigator.ship
+	if not ship:
+		return ""
+	var names: PackedStringArray = []
+	for wait: StationWait in ship.messages.waits(shown_station.id):
+		var profile: NpcProfile = NpcProfile.find(wait.npc)
+		var named: String = String(wait.npc)
+		if profile:
+			named = (
+				profile.display_name if not profile.display_name.is_empty() else tr(profile.role)
+			)
+		if named not in names:
+			names.append(named)
+	return tr("Waiting for you: %s") % ", ".join(names) if not names.is_empty() else ""
 
 
 ## `interact`: zooms in, or at a landing site chooses it as the destination.

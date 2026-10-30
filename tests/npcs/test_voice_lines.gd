@@ -31,6 +31,7 @@ func test_a_profile_says_every_line_it_holds_once() -> void:
 	var reaction := CrewReaction.new()
 	reaction.lines = ["Good run."]
 	profile.reactions = [reaction]
+	profile.calls = ["Come by when you dock."]
 	assert_eq(profile.spoken_lines().keys(), [&"quartermaster"])
 	assert_eq(
 		profile.spoken_lines()[&"quartermaster"],
@@ -45,6 +46,7 @@ func test_a_profile_says_every_line_it_holds_once() -> void:
 				"Want to see the ship?",
 				"The mess hall.",
 				"Good run.",
+				"Come by when you dock.",
 			]
 		),
 		"the default prompt without prompts of their own, a repeated line once"

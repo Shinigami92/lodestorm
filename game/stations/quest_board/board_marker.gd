@@ -2,9 +2,10 @@ class_name BoardMarker
 extends Control
 ## The sign at the start of a quest board line (see `BoardScreen`): a diamond for a quest (filled
 ## for the tracked one, like its markers in the world), an arrow for the done quests' group (down
-## while it's open).
+## while it's open), a dot for a message (filled while it's unheard, like the round marker of
+## something new in the world).
 
-enum Shape { NONE, ACTIVE, TRACKED, CLOSED, OPEN }
+enum Shape { NONE, ACTIVE, TRACKED, CLOSED, OPEN, UNHEARD, HEARD }
 
 ## Its size, in px.
 const SIZE: float = 24.0
@@ -37,6 +38,10 @@ func _draw() -> void:
 			else:
 				diamond.append(diamond[0])
 				draw_polyline(diamond, color, 2.0, true)
+		Shape.UNHEARD:
+			draw_circle(middle, half * 0.7, color, true, -1.0, true)
+		Shape.HEARD:
+			draw_circle(middle, half * 0.7, Color(color, 0.6), false, 2.0, true)
 		Shape.CLOSED:
 			draw_colored_polygon(
 				PackedVector2Array(

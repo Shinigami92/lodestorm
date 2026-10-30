@@ -144,6 +144,12 @@
       "seed": 1,
       "text": "Was willst du wissen?"
     },
+    "6e64aa7e3fc16594": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier ist Nell. Ich hab euch etwas zu erzählen, und so was schreibt man nicht in eine Nachricht. Kommt auf einen Drink vorbei."
+    },
     "7293cbd51dbe9566": {
       "anchor": "723542c79895f99e",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -167,6 +173,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Was darf ich dir bringen?"
+    },
+    "8df196e04c9e626d": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nell hier. Eure Plätze an meinem Tresen sind noch frei. Kommt vorbei, wenn ihr angedockt seid, ich würde gern mit euch reden."
     },
     "b2d2f396695f191f": {
       "anchor": "723542c79895f99e",
@@ -215,6 +227,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "In Drift Basin auf Orrel liegt ein Wrack halb im Salz versunken. Die Crews sagen, es sieht aus, als wäre es schon immer dort gewesen."
+    },
+    "f2d8f3caa8becfff": {
+      "anchor": "723542c79895f99e",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nell hier, aus der Bar. Jemand hat nach euch gefragt. Na gut, ich war's. Kommt vorbei, wenn ihr andockt."
     },
     "fe6a7766b49f438e": {
       "anchor": "723542c79895f99e",
@@ -368,6 +386,12 @@
       "seed": 1,
       "text": "What do you want to know?"
     },
+    "6e64aa7e3fc16594": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "It's Nell. I've got something to tell you, and it's not the kind of thing I'd put in a message. Come and have a drink."
+    },
     "7293cbd51dbe9566": {
       "anchor": "fa812c9290e8d92d",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -391,6 +415,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "What can I get you?"
+    },
+    "8df196e04c9e626d": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nell here. Your seats at my counter are still free. Come by when you're docked, I'd like a word."
     },
     "b2d2f396695f191f": {
       "anchor": "fa812c9290e8d92d",
@@ -439,6 +469,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "In Drift Basin on Orrel, a wreck lies half sunk in the salt. The crews say it looks as if it had always been there."
+    },
+    "f2d8f3caa8becfff": {
+      "anchor": "fa812c9290e8d92d",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nell here, from the bar. Someone's been asking about you. Well, I have. Come by when you dock."
     },
     "fe6a7766b49f438e": {
       "anchor": "fa812c9290e8d92d",

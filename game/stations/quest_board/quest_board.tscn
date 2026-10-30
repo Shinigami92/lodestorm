@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://bxdoxdq2ycs00"]
+
+[ext_resource type="Script" uid="uid://u12nrjlq00o4" path="res://game/stations/quest_board/quest_board_station.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cq853sda6cped" path="res://game/ui/world_panel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://b46iclw1rxck3" path="res://game/stations/quest_board/board_screen.tscn" id="3_screen"]
+[ext_resource type="PackedScene" uid="uid://lisfw2gd4bnh" path="res://game/stations/quest_board/quest_board_card.tscn" id="4_card"]
+[ext_resource type="Script" uid="uid://c642f1wr07wux" path="res://game/interaction/interactable.gd" id="5_use"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_backing"]
+albedo_color = Color(0.05, 0.06, 0.07, 1)
+metallic = 0.6
+roughness = 0.45
+
+[sub_resource type="BoxMesh" id="BoxMesh_backing"]
+material = SubResource("StandardMaterial3D_backing")
+size = Vector3(2.4, 1.7, 0.08)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rim"]
+albedo_color = Color(0.3, 0.85, 1, 1)
+emission_enabled = true
+emission = Color(0.3, 0.85, 1, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_rim"]
+material = SubResource("StandardMaterial3D_rim")
+size = Vector3(2.3, 0.025, 0.03)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_highlight"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_highlight"]
+material = SubResource("StandardMaterial3D_highlight")
+size = Vector3(2.4, 0.02, 0.6)
+
+[node name="QuestBoard" type="Node3D" node_paths=PackedStringArray("view_focus")]
+script = ExtResource("1_script")
+view_height = 3.0
+view_focus = NodePath("Focus")
+
+[node name="Backing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0.04)
+mesh = SubResource("BoxMesh_backing")
+
+[node name="Rim" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.77, 0.09)
+mesh = SubResource("BoxMesh_rim")
+
+[node name="Screen" parent="." instance=ExtResource("2_panel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0.09)
+size = Vector2(2.2, 1.5)
+pixels_per_meter = 500.0
+menu = ExtResource("3_screen")
+
+[node name="Focus" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 1.75, 0.3)
+
+[node name="Use" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.3)
+script = ExtResource("5_use")
+interact_range = 1.2
+footprint = Vector2(2.4, 0.6)
+
+[node name="Highlight" type="MeshInstance3D" parent="Use"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+visible = false
+mesh = SubResource("BoxMesh_highlight")
+
+[node name="Card" parent="." instance=ExtResource("2_panel")]
+size = Vector2(1.3, 1.8)
+pixels_per_meter = 500.0
+transparent = true
+menu = ExtResource("4_card")

@@ -1,6 +1,6 @@
 # Quests (planned)
 
-Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1): quests as data, offering with the diamond marker, accepting, hand-ins, and the goals deliver, mine and build (see [Quests](../design/missions.md#quests)); the rest below is still to come. Crates hold supply caches, no fragments yet.
+Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1, A2): quests as data, offering with the diamond marker, accepting, hand-ins, the goals deliver, mine and build, the quest board's quests and jobs, and tracking (see [Quests](../design/missions.md#quests)); the rest below is still to come. Crates hold supply caches, no fragments yet.
 
 ## How quests work
 
@@ -25,9 +25,9 @@ A quest step can ask for the fragments of a blueprint in a region (e.g. "recover
 
 ## Seeing them
 
-- **The quest board** on the bridge, next to the navigator, used like any station (not on the player). It lists the **Main** and **Side** quests (a row per quest: its name, giver, where, and the step's progress) with a collapsed **Done** group; a quest's detail shows the step's text, where it's done, the rewards and **Track**. It also holds the expedition's logs and the **Jobs**: the furnaces, upgrades and skills running on the wall clock with the time left, finished ones on top until seen (each station shows its own as well, see [Progression](../design/progression.md)). Lists scroll with group headings, and a test checks the board in every language with the most content.
+- **The quest board** (built in A2, see [Quests](../design/missions.md#quests)): still to come is its **Logs** tab with the expedition's logs, together with the first logs (16 D), and a step's region on its card (with the quest sites, B).
 - **The comms console** beside the quest board: messages from Ostra and later Pell, left while the ship is away, put out by the story director like the other beats between missions (see Between missions in [`story.md`](story.md)).
-- **Tracking:** one quest at a time (one per session in co-op, so the group follows one goal); anyone can accept, hand in and change the tracked one.
+- **Tracking** (built in A2: one quest per session, see [Quests](../design/missions.md#quests)); what follows it is below.
 - **During a run** nothing needs looking up: the navigator shows an amber diamond on regions with an active step (filled for the tracked quest), on their plate and on the globe, and on a station where a hand-in or a beat waits (see Between missions in [`story.md`](story.md)); in the location, the tracked quest's site, the crates with its fragments and its nests show amber beams (also in the hologram); the suit ring points to the tracked quest's site (see [`player-display.md`](player-display.md)). Over the radio (a radio bubble): a short line when landing in a region with an active step and when a step's goal is done ("That's the second nest. Come back to me."); the lines stay with the quest and can be heard again at the giver.
 
 ## Co-op

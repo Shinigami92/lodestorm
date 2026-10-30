@@ -6,6 +6,7 @@
 script = ExtResource("1_profile")
 id = &"water_technician"
 role = "Water technician"
+station = &"ostra"
 accent_color = Color(0.45, 0.55, 0.6, 1)
 suit_tint = Color(0.64, 0.6, 0.58, 1)
 remarks = Array[String](["Every drop you drink on this station has been through my pipes more often than you'd like to know.", "My first break in two days. The pumps can manage one hour without me.", "Don't tell Nell, but her water tastes of the recyclers too. Everyone's does.", "We lose a little water every week, and I still haven't found out where it goes.", "My friend here keeps the workshops running, and I keep the water running. Between us, the station keeps going."])

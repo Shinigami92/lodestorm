@@ -110,6 +110,7 @@ script = ExtResource("1_profile")
 id = &"bartender"
 display_name = "Nell"
 role = "Bartender"
+station = &"ostra"
 model = "uid://b42gv4simpcog"
 activities = Array[StringName]([&"WipeCounter", &"PolishGlass", &"ShelveBottle", &"WipeTable", &"ClearGlass", &"LookAround", &"Stretch", &"CheckWrist"])
 props = Dictionary[StringName, PackedScene]({

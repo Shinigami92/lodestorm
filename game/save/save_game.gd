@@ -3,11 +3,11 @@ extends Node
 ## Keeps the progress between sessions in one save: the host's (the ship's story flags, heat
 ## shield, furnaces unlocked, cradles open, crew reactions and quests, where it is) in `ship.json`
 ## and the local player's (their health, hold, batches in the furnaces, weapons and blueprints,
-## loadout, upgrade levels, skill ranks, crafted miners and hints seen) in `player.json`, both in
-## `save/` under `directory`. It loads them when the map starts and saves whenever progress
-## changes while no mission is underway; what changes during a mission is saved once it's over
-## (returned or lost), so quitting mid-mission loses that run like dying. The settings
-## (`GameSettings`) are kept apart and survive `reset_progress`.
+## loadout, upgrade levels, skill ranks, crafted miners, hints seen and jobs finished since the
+## quest board showed them) in `player.json`, both in `save/` under `directory`. It loads them when
+## the map starts and saves whenever progress changes while no mission is underway; what changes
+## during a mission is saved once it's over (returned or lost), so quitting mid-mission loses that
+## run like dying. The settings (`GameSettings`) are kept apart and survive `reset_progress`.
 ## Every saved system writes and reads its own part (`save_data`, `load_data`, see `SaveData`);
 ## this only puts the parts together under their keys. Entries that don't read are skipped, and a
 ## file that can't be read or is of another version is kept as `<name>.corrupt` while the game
@@ -91,6 +91,7 @@ func _ready() -> void:
 		player.skills.changed.connect(_on_progress_changed)
 		player.fleet.changed.connect(_on_progress_changed)
 		player.hints.changed.connect(_on_progress_changed)
+		player.finished_jobs.changed.connect(_on_progress_changed)
 		player.health_changed.connect(_on_health_changed)
 	if voyage:
 		voyage.selected.connect(_on_progress_changed.unbind(1))
@@ -175,6 +176,7 @@ static func player_data(of_player: Player) -> Dictionary:
 		"skills": of_player.skills.save_data(),
 		"fleet": of_player.fleet.save_data(),
 		"hints": of_player.hints.save_data(),
+		"finished": of_player.finished_jobs.save_data(),
 	}
 
 
@@ -199,6 +201,7 @@ func _apply_player(data: Dictionary) -> void:
 	_loaded(player.skills.load_data(data.get("skills")))
 	_loaded(player.fleet.load_data(data.get("fleet")))
 	_loaded(player.hints.load_data(data.get("hints")))
+	_loaded(player.finished_jobs.load_data(data.get("finished")))
 	# After the upgrades and skills (they set the maximum), before the jobs done since take effect
 	# (one adds its difference, as it would have in the game). A save without it keeps full health.
 	if data.has("health"):

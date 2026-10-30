@@ -6,6 +6,7 @@
 script = ExtResource("1_profile")
 id = &"dock_hand"
 role = "Dock hand"
+station = &"ostra"
 accent_color = Color(0.45, 0.55, 0.6, 1)
 suit_tint = Color(0.64, 0.6, 0.58, 1)
 remarks = Array[String](["End of my shift. The crates can wait until tomorrow.", "Twelve hours on the hangar floor, and Nell still makes me pay for my drink.", "If you need a hand in the hangar, don't ask me today. Ask me tomorrow.", "The clamps holding your ship? I greased those myself. You're welcome.", "The best seat in the bar is right here, closest to the counter."])

@@ -42,6 +42,7 @@ script = ExtResource("1_profile")
 id = &"rival_captain"
 display_name = "Rook"
 role = "Prospector captain"
+station = &"ostra"
 model = "uid://ca77wnexkh6be"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist"])
 accent_color = Color(0.95, 0.3, 0.25, 1)

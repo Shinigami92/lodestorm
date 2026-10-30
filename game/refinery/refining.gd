@@ -9,6 +9,8 @@ extends Resource
 
 ## Emitted when `count` bars of `alloy` from `slot`'s furnace went into the hold.
 signal bars_finished(slot: int, alloy: AlloyType, count: int)
+## Emitted when a batch is done: its last bar went into the hold (`slot`'s furnace is free).
+signal batch_finished(slot: int, alloy: AlloyType, bars: int)
 
 ## Furnaces a ship can have.
 const SLOTS: int = 4
@@ -124,8 +126,11 @@ func _deliver(slot: int, hold: PlayerHold, now: float) -> int:
 		return 0
 	batch.done += count
 	hold.add(batch.alloy, count)
-	if batch.done >= batch.bars:
+	var finished: bool = batch.done >= batch.bars
+	if finished:
 		batches[slot] = null
 	bars_finished.emit(slot, batch.alloy, count)
+	if finished:
+		batch_finished.emit(slot, batch.alloy, batch.bars)
 	emit_changed()
 	return count

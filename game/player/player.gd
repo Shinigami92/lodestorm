@@ -109,6 +109,8 @@ var refining := Refining.new()
 var fleet := MinerFleet.new()
 ## The one-time hints it has seen (saved with the player).
 var hints := PlayerHints.new()
+## Its jobs finished since it last looked at the quest board (saved with the player).
+var finished_jobs := FinishedJobs.new()
 ## Current health, from 0 to `max_health()` (see `vitals`).
 var health: float:
 	get:
@@ -207,6 +209,7 @@ func _ready() -> void:
 	skills = skills.duplicate() if skills else Skills.new()
 	skills.ranks = skills.ranks.duplicate()
 	skills.changed.connect(_on_skills_changed)
+	finished_jobs.watch(upgrades, skills, fleet, refining)
 	_add_armor_pips()
 	_scanner.name = "OreScanner"
 	_scanner.position = Vector3.UP * 0.05

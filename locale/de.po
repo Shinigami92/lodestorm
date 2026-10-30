@@ -1928,6 +1928,8 @@ msgstr "Funk"
 
 #: game/npcs/talk_card.gd
 #: game/quests/quest_panel.gd
+#: game/stations/quest_board/board_lists.gd
+#: game/stations/quest_board/quest_board_card.gd
 msgid "Done"
 msgstr "Fertig"
 
@@ -2506,6 +2508,7 @@ msgstr "Schlafen"
 #: game/stations/hold/hold_card.tscn
 #: game/stations/loadout/loadout_card.tscn
 #: game/stations/navigator/navigator_card.tscn
+#: game/stations/quest_board/quest_board_card.tscn
 #: game/stations/refinery/furnace_card.tscn
 #: game/stations/refinery/rack_card.tscn
 #: game/stations/skill_graph/skill_card.tscn
@@ -2814,6 +2817,7 @@ msgid "Takes %s"
 msgstr "Dauer: %s"
 
 #: game/stations/offer_card.gd
+#: game/stations/quest_board/quest_board_card.gd
 msgid "Time left: %s"
 msgstr "Restzeit: %s"
 
@@ -2828,6 +2832,123 @@ msgstr "Wirklich anhalten"
 #: game/stations/offer_card.gd
 msgid "Stop"
 msgstr "Anhalten"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "No quests yet. Talk to people."
+msgstr "Noch keine Aufträge. Sprich mit den Leuten."
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Done (%d)"
+msgstr "Erledigt (%d)"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Finished"
+msgstr "Fertig geworden"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Under way"
+msgstr "Läuft"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Nothing under way."
+msgstr "Gerade läuft nichts."
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Main"
+msgstr "Hauptauftrag"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Requests"
+msgstr "Anfragen"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Side"
+msgstr "Nebenaufträge"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "aboard"
+msgstr "an Bord"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "%d of %d bars done"
+msgstr "%d von %d Barren fertig"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Miner %s"
+msgstr "Miner %s"
+
+#: game/stations/quest_board/board_lists.gd
+#: game/stations/skill_graph/skill_card.gd
+msgid "Rank %d under way"
+msgstr "Rang %d läuft"
+
+#: game/stations/quest_board/board_lists.gd
+#: game/stations/upgrade/upgrade_card.gd
+msgid "MK%d under way"
+msgstr "MK%d läuft"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Being built"
+msgstr "Wird gebaut"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Rank %d done"
+msgstr "Rang %d fertig"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "MK%d done"
+msgstr "MK%d fertig"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "%d bars done"
+msgstr "%d Barren fertig"
+
+#: game/stations/quest_board/board_lists.gd
+msgid "Built"
+msgstr "Gebaut"
+
+#: game/stations/quest_board/board_screen.gd
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Quests"
+msgstr "Aufträge"
+
+#: game/stations/quest_board/board_screen.gd
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Jobs"
+msgstr "Arbeiten"
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Quests whose last step is handed in."
+msgstr "Aufträge, deren letzter Schritt abgegeben ist."
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Hide"
+msgstr "Ausblenden"
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Show"
+msgstr "Zeigen"
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "What people asked of you, and how far it is."
+msgstr "Worum dich die Leute gebeten haben, und wie weit es ist."
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Upgrades, skills, miners and furnaces at work, and what's done."
+msgstr "Upgrades, Fähigkeiten, Miner und Öfen bei der Arbeit, und was fertig ist."
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Hand in: %s (%s)"
+msgstr "Abgeben bei: %s (%s)"
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Tracked"
+msgstr "Verfolgt"
+
+#: game/stations/quest_board/quest_board_card.gd
+#: game/stations/quest_board/quest_board_card.tscn
+msgid "Track"
+msgstr "Verfolgen"
 
 #: game/stations/refinery/furnace_card.gd
 msgid "Furnace"
@@ -2924,10 +3045,6 @@ msgid "Learn"
 msgstr "Lernen"
 
 #: game/stations/skill_graph/skill_card.gd
-msgid "Rank %d under way"
-msgstr "Rang %d läuft"
-
-#: game/stations/skill_graph/skill_card.gd
 msgid "Learning"
 msgstr "Wird gelernt"
 
@@ -2962,10 +3079,6 @@ msgstr "MK%d auch:"
 #: game/stations/upgrade/upgrade_card.gd
 msgid "MK%d mines harder ores too."
 msgstr "MK%d baut auch härtere Erze ab."
-
-#: game/stations/upgrade/upgrade_card.gd
-msgid "MK%d under way"
-msgstr "MK%d läuft"
 
 #: game/stations/upgrade/upgrade_card.gd
 msgid "Blueprint"

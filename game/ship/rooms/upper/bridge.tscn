@@ -6,6 +6,7 @@
 [ext_resource type="Resource" uid="uid://b3d5d8411ot80" path="res://game/npcs/crew/pilot.tres" id="91_profile"]
 [ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 [ext_resource type="Script" uid="uid://dppq7a1sy5iu8" path="res://game/npcs/work_spot.gd" id="95_work_spot"]
+[ext_resource type="PackedScene" uid="uid://bxdoxdq2ycs00" path="res://game/stations/quest_board/quest_board.tscn" id="12_quest_board"]
 
 [node name="Bridge" type="Node3D"]
 
@@ -19,6 +20,9 @@ font_size = 56
 
 [node name="Navigator" parent="." node_paths=PackedStringArray("holo_table") instance=ExtResource("11_navigator")]
 holo_table = NodePath("../HoloTable")
+
+[node name="QuestBoard" parent="." instance=ExtResource("12_quest_board")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14.45)
 
 [node name="PilotSeatSpot" type="Marker3D" parent="."]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -27.6, 0, -1.5)

@@ -26,6 +26,7 @@ const STATIONS: PackedStringArray = [
 	"Rooms/Lower/Skills/SkillGraph",
 	"Rooms/Lower/Armory/Locker1",
 	"Rooms/Upper/Bridge/Navigator",
+	"Rooms/Upper/Bridge/QuestBoard",
 	"Rooms/Upper/Cockpit/FlightConsole",
 	"Rooms/Upper/Cabin1/BedStation",
 	"Rooms/Lower/MedicalBay/MedBed1",

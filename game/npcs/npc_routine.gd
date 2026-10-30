@@ -3,7 +3,8 @@ extends RefCounted
 ## Where a crew member (`npc`) is and goes aboard (see docs/design/crew.md), each
 ## physics frame (`update`). They walk instead of appearing somewhere (`NpcWalker`, over the
 ## ship's navigation, taking the lift between the decks), at `WALK_SPEED`, standing while a player
-## is within `NpcBody.NOTICE_RANGE` m; while someone talks to them, they stay where they are.
+## is within `NpcBody.NOTICE_RANGE` m (not on the way to a talk's spot); while someone talks to
+## them, they stay where they are.
 ## With a `flight_seat` (`Npc.flight_seat`), they walk there once a destination is chosen at the
 ## navigator or the ship flies (faster, `HURRY_SPEED`, stopping for nobody on the way), sit down and
 ## wait for the course or watch the autopilot, stay seated `SEAT_LINGER` s after it has landed or
@@ -13,6 +14,9 @@ extends RefCounted
 ## starts them there), and while it runs (`start_tour`, an `NpcTour`) they walk ahead from stop to
 ## stop (faster, stopping for nobody: they lead) and say each stop's lines, then go back to their
 ## spot.
+## With an overheard talk waiting for them (`talk_place`, see `OverheardTalks`), they walk to their
+## place at its spot and wait there, doing nothing else; while it plays (`Npc.overheard`) they stay
+## put, even for the flight seat.
 ## With work spots (`Npc.work_spots`), they move on now and then (every `MOVE_ON_TIME` s) from where
 ## they work to another of them or back to their own spot (each as likely as its `weight`; one
 ## outside their own room only once their greeting is heard), and play there only what fits (a
@@ -41,11 +45,15 @@ const HOME_ACTIVITIES: Array[StringName] = [&"LookAround", &"Stretch", &"CheckWr
 const MOVE_ON_TIME := Vector2(20.0, 40.0)
 ## How far from their feet they're used away from their own spot (npc.tscn's "Use"), in m.
 const USE_RANGE: float = 1.8
+## How close to their place for an overheard talk they count as there, in m.
+const TALK_PLACE_REACH: float = 0.3
 
 ## Whose routine it is.
 var npc: Npc
 ## The tour they give right now, or null.
 var tour: NpcTour
+## Their place at the spot of an overheard talk waiting for them, or null.
+var talk_place: Node3D
 
 ## Their own spot (where the scene places them), in their parent's space.
 var _home: Transform3D
@@ -125,10 +133,11 @@ func is_away() -> bool:
 
 
 ## Where they want to be now (global): the flight seat while a destination is chosen or the ship
-## flies (until they've sat there `SEAT_LINGER` s after), else the tour's stop or start, else the
-## work spot they're at (`get_work_spot`), else their own spot.
+## flies (until they've sat there `SEAT_LINGER` s after), else the tour's stop or start, else their
+## place at an overheard talk's spot (`talk_place`), else the work spot they're at
+## (`get_work_spot`), else their own spot.
 func get_post() -> Transform3D:
-	var place: Node3D = _spot
+	var place: Node3D = talk_place if talk_place else _spot
 	if _wants_seat():
 		place = npc.flight_seat
 	elif tour:
@@ -136,6 +145,18 @@ func get_post() -> Transform3D:
 	elif is_waiting() and npc.ship:
 		place = npc.ship.get_node_or_null(NodePath("Tour/" + String(npc.profile.tour.start)))
 	return place.global_transform if place else _get_home()
+
+
+## Whether they stand at their place for an overheard talk (`talk_place`), facing its way.
+func is_at_talk_place() -> bool:
+	if not talk_place or is_underway() or npc.body.sitting:
+		return false
+	var place: Transform3D = talk_place.global_transform
+	if place.origin.distance_to(npc.global_position) > TALK_PLACE_REACH:
+		return false
+	var parent: Node3D = npc.get_parent_node_3d()
+	var yaw: float = (parent.global_basis.inverse() * place.basis).get_euler().y
+	return absf(angle_difference(npc.rotation.y, yaw)) < 0.1
 
 
 ## The work spot they're at or on their way to, or null at their own spot.
@@ -194,7 +215,7 @@ func update(delta: float) -> void:
 	if tour and tour.is_lost(delta):
 		end_tour()
 	_place_use()
-	if npc.user:
+	if npc.user or npc.overheard:
 		_walker.stop()
 		if tour:
 			tour.hush()
@@ -206,7 +227,9 @@ func update(delta: float) -> void:
 	if body.get_sit_amount() > 0.0 and not body.sitting:
 		return  # getting up
 	var leads: bool = seat or tour != null
-	if not leads and Player.nearest(npc.get_tree(), npc.global_position, NpcBody.NOTICE_RANGE):
+	# On the way to a talk they don't stand for players either: one may wait at its spot.
+	var keeps_on: bool = leads or talk_place != null
+	if not keeps_on and Player.nearest(npc.get_tree(), npc.global_position, NpcBody.NOTICE_RANGE):
 		_walker.stop()
 		return
 	var navigation: DeckNavigation = _get_navigation()
@@ -221,9 +244,9 @@ func update(delta: float) -> void:
 		if not body.sitting and absf(angle_difference(npc.rotation.y, yaw)) < 0.05:
 			body.sitting = true
 		return
-	if tour:
+	if tour or talk_place:
 		body.allow_activities([&"Nothing"] as Array[StringName])
-		if tour.at_stop(delta):
+		if tour and tour.at_stop(delta):
 			end_tour()
 		return
 	body.allow_activities(_activities_here())

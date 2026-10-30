@@ -19,7 +19,8 @@ extends Station
 ## instead of their greeting, its invite ("Show me the ship") is among their topics once the offer
 ## is heard and starts the tour when heard to the end (the talk closes); during the tour the card
 ## offers only going on and ending it. A tour's stops are said aside (`say_aside`): in the bubble
-## above their head without a talk, and in their voice.
+## above their head without a talk, and in their voice. So are an overheard talk's lines
+## (`OverheardTalks`), and while it plays (`overheard`) nobody can talk to them.
 
 ## The camera's focus while talking: this far right on screen (in m) from between them and the
 ## player, at this height, so the card on their right stays in view.
@@ -46,6 +47,13 @@ var voice: AudioStreamPlayer3D
 var talk: NpcTalk
 ## Where they are and go aboard.
 var routine: NpcRoutine
+## Whether an overheard talk of theirs plays (see `OverheardTalks`): they stay put, facing the
+## other, and can't be talked to; no name plate or marker meanwhile.
+var overheard: bool = false:
+	set(value):
+		overheard = value
+		if use_point:
+			use_point.enabled = not value
 
 ## Used without a ship (e.g. tests of a lone NPC).
 var _own_story := Story.new()
@@ -84,9 +92,12 @@ func _physics_process(delta: float) -> void:
 func _process(delta: float) -> void:
 	super(delta)
 	body.faces = user
-	body.plate_allowed = not user and not _aside
-	var quest_news: bool = not user and has_quest_news(_listener())
-	_new_marker.visible = quest_news or (not user and has_news(_listener()))
+	body.holds_facing = overheard
+	# No plate or marker under a bubble: theirs or, in an overheard talk, the other one's.
+	var free: bool = not user and not _aside and not overheard
+	body.plate_allowed = free
+	var quest_news: bool = free and has_quest_news(_listener())
+	_new_marker.visible = quest_news or (free and has_news(_listener()))
 	_quest_marker.visible = quest_news
 	_news_marker.visible = not quest_news
 	if _new_marker.visible:
@@ -202,6 +213,11 @@ func get_greeting() -> Topic:
 	if routine and routine.is_waiting():
 		return profile.tour.offer
 	return profile.dialogue.greeting if profile and profile.dialogue else null
+
+
+## Whether `player` may talk to them: not while an overheard talk of theirs plays.
+func can_use(_player: Player) -> bool:
+	return not overheard
 
 
 ## Whether the player talking to them is a guest aboard (in co-op, not the host): the ship and its

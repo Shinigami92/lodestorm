@@ -25,6 +25,8 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"OreType": [&"display_name"],
 	"Message": [&"lines"],
 	"NpcProfile": [&"role", &"remarks", &"calls"],
+	# Its lines are built into it.
+	"OverheardTalk": [],
 	# Its steps and topics are built into it.
 	"Quest": [&"title"],
 	"QuestStep": [&"text"],
@@ -36,6 +38,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	# Only for the clusters built into it.
 	"SkillTree": [],
 	"StarSystem": [&"display_name"],
+	"TalkLine": [&"text"],
 	"Topic": [&"title", &"lines", &"guest_lines", &"away_lines"],
 	"TourStop": [&"lines"],
 	"Upgrade": [&"display_name", &"description"],

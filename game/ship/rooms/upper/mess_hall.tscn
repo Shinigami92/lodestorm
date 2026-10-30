@@ -5,6 +5,7 @@
 [ext_resource type="Resource" uid="uid://bfb5jhhy2trv5" path="res://game/npcs/crew/cook.tres" id="91_profile"]
 [ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 [ext_resource type="Script" uid="uid://dppq7a1sy5iu8" path="res://game/npcs/work_spot.gd" id="95_work_spot"]
+[ext_resource type="Script" uid="uid://drxy3f7k8buie" path="res://game/talks/talk_spot.gd" id="96_talk_spot"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_prop"]
 material = ExtResource("mat_prop")
@@ -54,3 +55,7 @@ activities = Array[StringName]([&"Tap"])
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -5, 0, -12.4)
 script = ExtResource("95_work_spot")
 activities = Array[StringName]([&"LookAround", &"CheckWrist"])
+
+[node name="MessTable" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0, -5.2)
+script = ExtResource("96_talk_spot")

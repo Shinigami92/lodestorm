@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="TalkCatalog" format=3 uid="uid://oli2iv1283rb"]
+
+[ext_resource type="Script" uid="uid://dumu2vjeo8mx1" path="res://game/talks/talk_catalog.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")

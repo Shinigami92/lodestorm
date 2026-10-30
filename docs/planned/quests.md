@@ -31,7 +31,7 @@ A quest step can ask for the fragments of a blueprint in a region (e.g. "recover
 
 ## Seeing them
 
-- **The quest board** (built in A2, see [Quests](../design/missions.md#quests)): still to come is its **Logs** tab with the expedition's logs, together with the first logs (16 D).
+- **The quest board** (built in A2, see [Quests](../design/missions.md#quests)): still to come is its **Logs** tab with the expedition's logs and the kept overheard talks heard so far (`OverheardTalk.kept`, its flag set; played again like a message), together with the first logs (16 D).
 - **Messages** (built in A3b: the quest board's Messages tab, the calls from a station, see Between missions in [Story](../design/story.md)); the messages themselves come with the acts' content (from Ostra, later Pell).
 - **Tracking** (built in A2: one quest per session, see [Quests](../design/missions.md#quests)); what follows it is below.
 - **During a run** nothing needs looking up (built, B3 and B4: the diamonds, beams, the suit ring's arrow and the radio calls; see Finding a step and Radio calls in [Missions](../design/missions.md#quests)). The quests' lines themselves come with their content (C on).

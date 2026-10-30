@@ -247,10 +247,12 @@ func _scroll_to(index: int) -> void:
 		_scroll.scroll_vertical = int(ceilf(bottom - _scroll.size.y))
 
 
-## The theme's style of a button `state` with an amber frame.
+## The theme's style of a button `state` with an amber frame; disabled (a quest step's "Hand in"
+## that can't be yet) on the normal one, so it keeps the button's padding.
 func _selected_style(button: Button, state: StringName) -> StyleBox:
 	if not _selected_styles.has(state):
-		var style: StyleBox = button.get_theme_stylebox(state).duplicate()
+		var base: StringName = &"normal" if state == &"disabled" else state
+		var style: StyleBox = button.get_theme_stylebox(base).duplicate()
 		var flat := style as StyleBoxFlat
 		if flat:
 			flat.border_color = CardPalette.STATUS

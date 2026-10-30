@@ -1,10 +1,16 @@
 extends GutTest
-## What the active quest steps put into a visit to a region (`QuestVisit`): their quest sites and
-## quest nests, in the location too, and what's done there counting once someone is back aboard.
+## What the active quest steps put into a visit to a region (`QuestVisit`): their quest sites,
+## quest nests and hunts (a brood nest, a lair), in the location too, and what's done there
+## counting once someone is back aboard.
 
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const CAMP: PackedScene = preload("res://game/locations/parts/expedition_camp.tscn")
+const DEN: PackedScene = preload("res://game/locations/parts/den.tscn")
+const HIVE_HOLLOW: PackedScene = preload("res://game/locations/parts/hive_hollow.tscn")
+const BROOD: PackedScene = preload("res://game/aliens/nest/brood_clutch.tscn")
+const HIVE: AlienHive = preload("res://game/aliens/hive/hive.tres")
+const SPITTER: AlienStrain = preload("res://game/aliens/strains/spitter/spitter.tres")
 const REGION: StringName = &"redscar"
 
 var _log: QuestLog
@@ -144,3 +150,135 @@ func test_the_location_places_the_site_and_the_nests() -> void:
 	location.quest_visit.commit()
 	assert_eq(_log.goal_progress(_quest, 0), 1.0, "the site reached")
 	assert_eq(_log.goal_progress(_quest, 1), 1.0, "a quest nest destroyed")
+
+
+## A hunt in `REGION`: five spitters from an egg clutch in a den, or the Ravager in its lair.
+static func make_hunt(apex: bool = false) -> Quest:
+	var hunt := HuntGoal.new()
+	hunt.region = REGION
+	hunt.site_part = PartPlacement.new()
+	hunt.site_part.scene = HIVE_HOLLOW if apex else DEN
+	hunt.strain = HIVE.apex if apex else SPITTER
+	hunt.amount = 5
+	if not apex:
+		hunt.nest_scene = BROOD
+	var step := QuestStep.new()
+	step.id = &"hunt"
+	step.goals = [hunt]
+	var quest := Quest.new()
+	quest.id = &"the_hunt"
+	quest.giver = &"quartermaster"
+	quest.steps = [step]
+	return quest
+
+
+func _accept_hunt(apex: bool = false) -> Quest:
+	var quest: Quest = make_hunt(apex)
+	_log.catalog.quests = [quest]
+	_log.accept(quest, [])
+	return quest
+
+
+func test_a_hunt_needs_its_kills_and_then_the_brood_nest() -> void:
+	var quest: Quest = _accept_hunt()
+	var visit := QuestVisit.new(_log, REGION)
+	var entry: QuestVisit.Entry = visit.entries[0]
+	assert_eq(entry.hunted, SPITTER)
+	assert_eq(entry.brood, BROOD)
+	assert_eq(visit.kills_left(entry), 5)
+	for i: int in 7:
+		visit.count_kill(entry)
+	visit.commit()
+	assert_eq(_log.goal_progress(quest, 0), 5.0, "the kills, not the nest")
+	var next := QuestVisit.new(_log, REGION)
+	assert_eq(next.entries.size(), 1, "the brood nest comes again")
+	assert_eq(next.kills_left(next.entries[0]), 0, "hatching no more for the hunt")
+	next.count_brood(next.entries[0])
+	next.commit()
+	assert_eq(_log.goal_progress(quest, 0), 6.0, "done")
+
+
+func test_the_brood_nest_counts_once_the_kills_are_done() -> void:
+	var quest: Quest = _accept_hunt()
+	var visit := QuestVisit.new(_log, REGION)
+	var entry: QuestVisit.Entry = visit.entries[0]
+	visit.count_brood(entry)
+	for i: int in 3:
+		visit.count_kill(entry)
+	visit.commit()
+	assert_eq(_log.goal_progress(quest, 0), 3.0, "the nest waits for the kills")
+	for i: int in 2:
+		visit.count_kill(entry)
+	visit.commit()
+	assert_eq(_log.goal_progress(quest, 0), 6.0, "back aboard with every kill: the nest too")
+
+
+func test_a_lost_run_forgets_the_brood_nest() -> void:
+	var quest: Quest = _accept_hunt()
+	var visit := QuestVisit.new(_log, REGION)
+	var entry: QuestVisit.Entry = visit.entries[0]
+	for i: int in 5:
+		visit.count_kill(entry)
+	visit.count_brood(entry)
+	visit.drop()
+	visit.commit()
+	assert_eq(_log.goal_progress(quest, 0), 0.0)
+
+
+func test_the_cards_count_only_the_kills() -> void:
+	var hunt := make_hunt().steps[0].goals[0] as HuntGoal
+	assert_eq(hunt.target(), 6.0)
+	assert_eq(hunt.counted(), 5.0)
+	var lair := make_hunt(true).steps[0].goals[0] as HuntGoal
+	assert_eq(lair.target(), 1.0)
+	assert_eq(lair.counted(), 1.0)
+
+
+## The location puts the brood nest at the den's anchor: it hatches only spitters, as many as the
+## hunt needs, once a player comes close; their kills and the nest count.
+func test_the_location_places_the_brood_nest() -> void:
+	var quest: Quest = _accept_hunt()
+	var location: GeneratedLocation = _location()
+	var nest := location.get_node_or_null(^"AlienNests/BroodNest") as AlienNest
+	assert_not_null(nest, "a brood nest")
+	var den: LocationParts.Placed = location.parts.placed_for(location.quest_visit.entries[0].site)
+	assert_not_null(den, "the den placed")
+	if not nest or not den:
+		return
+	assert_eq(nest.position, den.markers(PartMarker.Kind.QUEST_ANCHOR)[0], "at its anchor")
+	assert_eq(nest.kind, AlienNest.Kind.BROOD)
+	assert_eq(nest.brood, SPITTER)
+	assert_eq(nest.brood_left, 5)
+	assert_false(nest.is_awake(), "asleep until a player comes close")
+	nest.hatch(Alien.Role.HUNTER, SPITTER).take_damage(1.0e6)
+	nest.body.take_damage(1.0e6)
+	location.quest_visit.commit()
+	assert_eq(_log.goal_progress(quest, 0), 1.0, "a kill; the nest waits for the rest")
+
+
+## A Ravager hunt: it sleeps at the hollow's anchor (the location's own doesn't roam), and its
+## death counts.
+func test_the_location_places_the_lair() -> void:
+	var quest: Quest = _accept_hunt(true)
+	var location: GeneratedLocation = _location()
+	var lair := location.get_node_or_null(^"Lair") as ApexLair
+	assert_not_null(lair, "a lair")
+	assert_null(location.get_node_or_null(^"Apex"), "no other Ravager")
+	if not lair:
+		return
+	assert_eq(lair.apex.strain, HIVE.apex)
+	assert_true(lair.apex.status.asleep, "asleep")
+	lair.apex.take_damage(1.0e9)
+	location.quest_visit.commit()
+	assert_eq(_log.goal_progress(quest, 0), 1.0)
+
+
+func _location() -> GeneratedLocation:
+	var location := LOCATION.instantiate() as GeneratedLocation
+	location.world_seed = 5
+	location.biome = DUST
+	location.area_count = 6
+	location.alien_tier = 3
+	location.quest_visit = QuestVisit.new(_log, REGION)
+	add_child_autofree(location)
+	return location

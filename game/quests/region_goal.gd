@@ -2,7 +2,8 @@
 extends QuestGoal
 ## A goal done out in one region (see docs/planned/quests.md, Quest sites): while its step is
 ## active, every visit to the region gets what it needs (a `QuestVisit`: its quest site, its quest
-## nests), and what's done there counts once someone is back aboard.
+## nests, the strain it hunts in a brood nest or a lair), and what's done there counts once someone
+## is back aboard.
 
 ## The region it's done in: its `Region.id`.
 @export var region: StringName
@@ -17,3 +18,14 @@ func site() -> PartPlacement:
 ## How many quest nests it puts into a visit, with `progress` so far; none by default.
 func nests(_progress: float) -> int:
 	return 0
+
+
+## The strain it hunts at its site, or null (none by default).
+func hunted() -> AlienStrain:
+	return null
+
+
+## The brood nest it puts at its site, hatching `hunted`, or null: none, or `hunted` sleeps in a
+## lair there.
+func brood_nest() -> PackedScene:
+	return null

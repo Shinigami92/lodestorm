@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AlienNestSettings" format=3 uid="uid://be5r2wsr5ndgy"]
+
+[ext_resource type="Script" uid="uid://c0v17dm172lms" path="res://game/aliens/nest/alien_nest_settings.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+guards = 0
+wake_range = 22.0
+brood_pack = 2.0
+hunter_interval_start = 25.0
+hunter_interval_end = 15.0
+max_hunters_start = 3.0
+max_hunters_end = 4.0
+max_raiders_start = 0.0
+max_raiders_end = 0.0
+health = 1200.0
+bursts = 3
+hatch_radius = 4.0

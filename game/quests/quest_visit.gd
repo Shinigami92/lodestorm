@@ -2,8 +2,10 @@ class_name QuestVisit
 extends RefCounted
 ## What the active quest steps put into one visit to a region (see docs/planned/quests.md, Quest
 ## sites), made when its location is prepared: a quest site per goal that has one, the quest nests
-## still to destroy. What's done there is counted here (`count`) and goes into the ship's quests
-## once someone is back aboard (`commit`); a lost run drops it (`drop`).
+## still to destroy, a hunt's brood nest or lair at its site. What's done there is counted here
+## (`count`, a hunt's `count_kill` and `count_brood`) and goes into the ship's quests once someone
+## is back aboard (`commit`); a lost run drops it (`drop`). A brood nest destroyed counts once the
+## hunt's kills are all done (in this visit or before), so it stays waiting until they are.
 
 
 ## One goal of an active step done in the region.
@@ -17,6 +19,12 @@ class Entry:
 	var site: PartPlacement
 	## How many quest nests it puts into the visit.
 	var nests: int
+	## The strain it hunts at its site, and the brood nest hatching it there (null: it sleeps in
+	## a lair there).
+	var hunted: AlienStrain
+	var brood: PackedScene
+	## Whether its brood nest was destroyed this visit and isn't counted yet.
+	var brood_down: bool = false
 	## What's done this visit and not counted yet, and what's left of the goal when the visit was
 	## made.
 	var pending: float = 0.0
@@ -50,6 +58,8 @@ func _init(quest_log: QuestLog = null, region: StringName = &"") -> void:
 			entry.goal = i
 			entry.site = goal.site().duplicate() if goal.site() else null
 			entry.nests = goal.nests(so_far)
+			entry.hunted = goal.hunted()
+			entry.brood = goal.brood_nest()
 			entry.room = goal.target() - so_far
 			entries.append(entry)
 
@@ -77,9 +87,35 @@ func count(entry: Entry, amount: float = 1.0) -> void:
 	entry.pending = minf(entry.pending + amount, entry.room)
 
 
+## Counts a kill for `entry`'s hunt (with a brood nest, up to the kills left: the nest is the last).
+func count_kill(entry: Entry) -> void:
+	entry.pending = minf(entry.pending + 1.0, entry.room - (1.0 if entry.brood else 0.0))
+
+
+## `entry`'s brood nest was destroyed: it counts once the kills are all done.
+func count_brood(entry: Entry) -> void:
+	entry.brood_down = true
+
+
+## How many kills `entry`'s brood nest may still hatch: what's left of its hunt but the nest.
+func kills_left(entry: Entry) -> int:
+	return maxi(floori(entry.room - entry.pending) - 1, 0)
+
+
+## Whether a hunt here has the hive's `apex` sleep in its lair (the location's own roams no more).
+func has_lair(apex: AlienStrain) -> bool:
+	for entry: Entry in entries:
+		if entry.hunted == apex and not entry.brood:
+			return true
+	return false
+
+
 ## Puts what's counted into the ship's quests (someone is back aboard).
 func commit() -> void:
 	for entry: Entry in entries:
+		if entry.brood_down and entry.pending >= entry.room - 1.0:
+			entry.pending += 1.0
+			entry.brood_down = false
 		if entry.pending <= 0.0:
 			continue
 		if _log:
@@ -92,6 +128,7 @@ func commit() -> void:
 func drop() -> void:
 	for entry: Entry in entries:
 		entry.pending = 0.0
+		entry.brood_down = false
 
 
 ## What it puts into the location, as text: two visits with the same key place the same things.
@@ -99,7 +136,12 @@ func key() -> String:
 	var parts: PackedStringArray = []
 	for entry: Entry in entries:
 		var site: String = entry.site.scene.resource_path if entry.site else ""
+		var brood: String = entry.brood.resource_path if entry.brood else ""
+		var room: float = entry.room if entry.hunted else 0.0
 		parts.append(
-			"%s/%s/%d/%s/%d" % [entry.quest.id, entry.step.id, entry.goal, site, entry.nests]
+			(
+				"%s/%s/%d/%s/%d/%s/%s"
+				% [entry.quest.id, entry.step.id, entry.goal, site, entry.nests, brood, room]
+			)
 		)
 	return ";".join(parts)

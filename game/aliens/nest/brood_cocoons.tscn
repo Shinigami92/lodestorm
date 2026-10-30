@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bae7c7xjlftal"]
+
+[ext_resource type="Script" uid="uid://du8153qdwkql5" path="res://game/aliens/nest/alien_nest.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://be5r2wsr5ndgy" path="res://game/aliens/nest/brood_nest_settings.tres" id="2_settings"]
+[ext_resource type="Resource" uid="uid://b1n2rik6l2xeh" path="res://game/aliens/hive/hive.tres" id="3_hive"]
+[ext_resource type="PackedScene" uid="uid://dgcklcofyr6kh" path="res://assets/aliens/brood_cocoons/brood_cocoons.glb" id="4_model"]
+[ext_resource type="Script" uid="uid://cgn6i1bumpenm" path="res://game/weapons/destructible.gd" id="5_body"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_brood"]
+height = 3
+radius = 1.9
+
+[node name="BroodCocoons" type="Node3D"]
+script = ExtResource("1_script")
+settings = ExtResource("2_settings")
+hive = ExtResource("3_hive")
+kind = 2
+mouth_center = Vector3(0, 0.508, 0)
+
+[node name="Body" type="StaticBody3D" parent="."]
+script = ExtResource("5_body")
+aim_height = 1.3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_brood")
+
+[node name="Model" parent="." instance=ExtResource("4_model")]

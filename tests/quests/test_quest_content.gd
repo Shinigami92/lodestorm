@@ -4,6 +4,7 @@ extends GutTest
 
 const NPC_FOLDERS: Array[String] = ["res://game/npcs/crew/", "res://game/npcs/ostra/"]
 const SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
+const HIVE: AlienHive = preload("res://game/aliens/hive/hive.tres")
 
 
 func test_every_quest_keeps_to_the_scheme() -> void:
@@ -37,7 +38,8 @@ func test_every_quest_keeps_to_the_scheme() -> void:
 				_assert_said_by(step.hand_in, quest.hand_in_npc(step), where)
 
 
-## `goal` is done in a region that exists, a site's goal has its site and says what it is.
+## `goal` is done in a region that exists, a site's goal has its site and says what it is, a hunt
+## has its site and hunts a strain from a brood nest, or the apex in its lair where it lives.
 func _assert_doable(goal: QuestGoal, where: String) -> void:
 	var out_there := goal as RegionGoal
 	if out_there:
@@ -46,6 +48,28 @@ func _assert_doable(goal: QuestGoal, where: String) -> void:
 	if reach:
 		assert_not_null(reach.site_part, "%s: its site" % where)
 		assert_false(reach.place.is_empty(), "%s: what its site is" % where)
+	var hunt := goal as HuntGoal
+	if hunt:
+		_assert_huntable(hunt, where)
+
+
+func _assert_huntable(hunt: HuntGoal, where: String) -> void:
+	assert_not_null(hunt.site_part, "%s: its site" % where)
+	assert_has(HIVE.strains, hunt.strain, "%s: a strain of the hive" % where)
+	var region: Region = SYSTEM.region_by_id(hunt.region)
+	var body: CelestialBody = SYSTEM.body_of(region) if region else null
+	if hunt.strain != HIVE.apex:
+		assert_not_null(hunt.nest_scene, "%s: a brood nest" % where)
+		var nest := hunt.nest_scene.instantiate() as AlienNest if hunt.nest_scene else null
+		if nest:
+			assert_eq(nest.kind, AlienNest.Kind.BROOD, "%s: a brood nest" % where)
+			nest.free()
+		if body:
+			assert_lte(hunt.strain.tier, body.tier, "%s: a strain of its body" % where)
+		return
+	assert_null(hunt.nest_scene, "%s: the apex sleeps in a lair" % where)
+	if body:
+		assert_gte(body.tier, HIVE.apex_from_tier, "%s: where the apex lives" % where)
 
 
 ## `topic` has a title, lines and an id of `npc`'s.

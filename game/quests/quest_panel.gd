@@ -75,9 +75,10 @@ func _show_goals(step: QuestStep, quest: Quest, quests: QuestLog, offering: bool
 		var row: Label = _label(&"CardText", _goals)
 		var done: float = quests.goal_progress(quest, i)
 		row.text = "•  " + goal.describe()
-		if goal.target() > 1.0:
-			var amount: int = roundi(goal.target())
-			row.text += "  " + ("%d" % amount if offering else "%d / %d" % [floori(done), amount])
+		if goal.counted() > 1.0:
+			var amount: int = roundi(goal.counted())
+			var so_far: int = mini(floori(done), amount)
+			row.text += "  " + ("%d" % amount if offering else "%d / %d" % [so_far, amount])
 		if not offering and done >= goal.target():
 			row.text += "  " + tr("Done")
 			row.add_theme_color_override(&"font_color", CardPalette.GOOD)

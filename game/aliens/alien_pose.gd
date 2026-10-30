@@ -2,7 +2,8 @@ class_name AlienPose
 extends RefCounted
 ## Moves an alien's body (the node holding its model) on top of its clips, until the models get
 ## their own clips: crouching for a wind-up, arcing through a leap, rearing up when staggered, a
-## small jolt per hit and sinking into the ground (burrowers). Values TBD (playtest).
+## small jolt per hit, sinking into the ground (burrowers) and lying low while it sleeps (its
+## `AlienStatus.asleep`, rising when it wakes). Values TBD (playtest).
 
 ## How low the body drops when fully crouched (m), and how far its nose dips (radians).
 const CROUCH_DROP: float = 0.14
@@ -14,6 +15,9 @@ const JOLT_PITCH: float = -0.12
 const JOLT_TIME: float = 0.15
 ## How fast the crouch follows (higher = snappier).
 const CROUCH_SPEED: float = 20.0
+## How low the body lies while it sleeps (m; only the apex sleeps so far), and how fast it rises.
+const SLEEP_DROP: float = 0.7
+const WAKE_SPEED: float = 2.5
 
 ## 0 (standing) to 1 (fully crouched): where the crouch is going.
 var crouch: float = 0.0
@@ -28,6 +32,13 @@ var stagger_time: float = 1.0
 
 var _crouched: float = 0.0
 var _jolt_left: float = 0.0
+## How far it lies down (0 to 1), and the alien's status that says whether it sleeps.
+var _lying: float = 0.0
+var _status: AlienStatus
+
+
+func _init(status: AlienStatus = null) -> void:
+	_status = status
 
 
 ## Starts a hit's jolt.
@@ -50,9 +61,12 @@ func crouched() -> float:
 ## alien -Z, so the body is turned around).
 func update(delta: float) -> Transform3D:
 	_crouched = lerpf(_crouched, crouch, 1.0 - exp(-CROUCH_SPEED * delta))
+	var asleep: float = 1.0 if _status and _status.asleep else 0.0
+	_lying = lerpf(_lying, asleep, 1.0 - exp(-WAKE_SPEED * delta))
 	_jolt_left = maxf(_jolt_left - delta, 0.0)
 	stagger_left = maxf(stagger_left - delta, 0.0)
 	var height: float = -CROUCH_DROP * _crouched + 4.0 * leap_height * leap * (1.0 - leap) - sink
+	height -= SLEEP_DROP * _lying
 	# Positive pitch dips the nose.
 	var pitch: float = CROUCH_PITCH * _crouched
 	pitch += JOLT_PITCH * _jolt_left / JOLT_TIME

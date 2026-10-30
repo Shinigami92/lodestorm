@@ -1,6 +1,6 @@
 # Quests (planned)
 
-Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1–A3): quests as data, offering with the diamond marker, accepting, hand-ins, the goals deliver, mine and build, the quest board's quests, jobs and messages, tracking, the story director and the calls from stations with their diamond on the navigator, the goals reach a site and clear nests with the quest sites and quest nests they put into a region's visits (see [Quests](../design/missions.md#quests) and Between missions in [Story](../design/story.md)); the rest below is still to come. Crates hold supply caches, no fragments yet.
+Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1–A3): quests as data, offering with the diamond marker, accepting, hand-ins, the goals deliver, mine and build, the quest board's quests, jobs and messages, tracking, the story director and the calls from stations with their diamond on the navigator, the goals reach a site, clear nests and hunt with the quest sites, quest nests, brood nests and lairs they put into a region's visits (see [Quests](../design/missions.md#quests) and Between missions in [Story](../design/story.md)); the rest below is still to come. Crates hold supply caches, no fragments yet.
 
 ## How quests work
 
@@ -14,12 +14,7 @@ Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All value
 
 ## Quest nests and hunts
 
-Decided 2026-10-30.
-
-- **Looks of their own:** the nests a quest puts into a region are told apart by their shape from the camera, not only by being bigger, and by a glow of their own (not amber, which stays the quests' marker). Two kinds besides the ordinary nest, so three silhouettes: the **quest nest** and the **brood nest**. Greybox shapes first (variants of the nest's model), finished in the art pass.
-- **Quest nests (clear nests):** while the step is active, every visit to its region places its own group of quest nests, as many as are still to destroy, in the areas far enough from the ship (like the ordinary ones, which stay); only these count. They hatch like ordinary nests. Each one destroyed counts once someone is back aboard, so the next visit places only the ones left.
-- **Brood nest (hunt a strain):** the hunt's site (a map part) holds a brood nest. Once a player comes close it hatches the hunted strain in packs, until the hunt's count is reached; only kills of that strain from it count. The step also needs the brood nest destroyed (a small boss fight). Kills and the nest count once someone is back aboard; while some are missing, the next visit places the brood nest again.
-- **The Ravager's lair (hunt the Ravager):** a lair at the site (a map part) where the Ravager sleeps until a player comes close; killing it does the job. Only on bodies where it lives (tier 3 and on).
+Decided 2026-10-30, built (B1a, B1b: see Quests in [Missions](../design/missions.md#quests) and the nests in [Aliens](../design/aliens.md)). The quest nest, the brood nests' three looks (egg clutch, cocoon cluster, burrow mouth) and the lairs' two (den, hive hollow) are greybox, finished in the art pass; more looks are data (a scene each), so hunts can vary.
 
 ## Blueprint fragments and quest items
 

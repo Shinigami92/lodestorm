@@ -30,21 +30,27 @@ extends Node3D
 ## pop for each alien hatching (not the guards it starts with), hits in its flesh, a groaning
 ## swell for a burst's warning and the collapse.
 ## A quest puts nests of its own into a region (`kind`, see docs/planned/quests.md, Quest nests and
-## hunts): a different model and a glow of their own, so they're told apart by their shape.
+## hunts): a different model and a glow of their own, so they're told apart by their shape. A brood
+## nest (a hunt's, `brood`) hatches only the hunted strain, and only once a player came close
+## (`AlienNestSettings.wake_range`); its packs stop once it hatched the kills the hunt still needs
+## (`brood_left`), its bursts don't.
 
 ## Emitted when an alien hatches.
 signal hatched(alien: Alien)
 ## Emitted when it's destroyed (the quests' "clear nests" goal counts these).
 signal destroyed
 
-## An ordinary nest, or one a quest put there (the "clear nests" goal counts only these).
-enum Kind { ORDINARY, QUEST }
+## An ordinary nest, one a quest put there (the "clear nests" goal counts only these), or a hunt's
+## brood nest.
+enum Kind { ORDINARY, QUEST, BROOD }
 
 const GROUP: StringName = &"alien_nests"
 
 const COLOR_GLOW := Alien.COLOR_GLOW
 ## A quest nest's glow: its own, neither the hive's nor the quests' amber.
 const QUEST_GLOW := Color(1.0, 0.16, 0.12)
+## A brood nest's glow.
+const BROOD_GLOW := Color(0.72, 0.28, 1.0)
 ## Glow pulses per second at escalation 0 and 1.
 const PULSE_RATE_CALM: float = 0.4
 const PULSE_RATE_FRENZY: float = 2.0
@@ -100,6 +106,9 @@ static var _hatch_frame: int = -1
 @export var kind: Kind = Kind.ORDINARY
 ## The middle of the mouth's bowl, in the model: the mouth swells around it, sounds play there.
 @export var mouth_center: Vector3 = Vector3(0.0, 0.96, 0.0)
+## How bright its glands glow against its mouth (big glowing parts, like a clutch's eggs, less so
+## they don't wash out).
+@export_range(0.0, 1.0) var gland_glow: float = 1.0
 
 ## What it hatches: set by the location before the nest enters the tree (its body's tier, biome
 ## and danger); otherwise the hive's for the mission's tier.
@@ -114,6 +123,11 @@ var raider_cooldown: float
 var raider_draw_factor: float = 1.0
 ## How many times it burst (0 to `settings.bursts`): its cracks and its dimmer glow show it.
 var stage: int = 0
+## A brood nest's strain: its packs, bursts and answers to screams are only of it; null: its
+## table's.
+var brood: AlienStrain
+## How many more of `brood` its packs may hatch (the kills the hunt still needs); -1: no end.
+var brood_left: int = -1
 
 var _hunters: Array[Alien] = []
 ## The aliens waiting to hatch, in turn, and the seconds until the next one may.
@@ -138,6 +152,9 @@ var _flicker_left: float = 0.0
 var _destroyed: bool = false
 var _dark: float = 0.0
 var _glow := StandardMaterial3D.new()
+var _gland := StandardMaterial3D.new()
+## Whether a player came within `settings.wake_range`.
+var _woken: bool = false
 
 ## What weapons hit and wear down.
 @onready var body: Destructible = $Body
@@ -164,10 +181,11 @@ func _ready() -> void:
 	_glow.albedo_color = glow_color()
 	_glow.emission_enabled = true
 	_glow.emission = glow_color()
+	_gland.emission_enabled = true
 	for part: String in ["Mouth", "Glands"]:
 		var glowing := _model.find_child(part, true, false) as GeometryInstance3D
 		if glowing:
-			glowing.material_override = _glow
+			glowing.material_override = _glow if part == "Mouth" else _gland
 	for crack: GeometryInstance3D in _cracks():
 		crack.material_override = _glow
 		crack.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -211,6 +229,11 @@ func _physics_process(delta: float) -> void:
 	_hatch_next()
 	if _destroyed or not (_find_mission() and _mission.is_running()):
 		return
+	if not is_awake():
+		_woken = _player_near()
+		# Its first pack comes right away.
+		hunter_cooldown = 0.0
+		return
 	# The frenzy sends hunters at their highest rate, from its start on.
 	var hunting: float = 1.0 if frenzied else level
 	if frenzied:
@@ -246,6 +269,9 @@ func _process(delta: float) -> void:
 	_glow.albedo_color = color
 	_glow.emission = color
 	_glow.emission_energy_multiplier = energy * (1.0 - _dark)
+	_gland.albedo_color = color * gland_glow
+	_gland.emission = color
+	_gland.emission_energy_multiplier = _glow.emission_energy_multiplier * gland_glow
 	if _mouth:
 		var swell: float = 1.0 + WARNING_SWELL * warning
 		_mouth.scale = Vector3.ONE * swell
@@ -254,13 +280,18 @@ func _process(delta: float) -> void:
 
 ## Lets a pack of hunters (see `HatchTable.pick_pack`) hatch around the nest, one after another
 ## (the first right away if it may), unless the cap is reached; `boost` times faster for `seconds`
-## (an answered scream). Returns its strains (none without a pack that fits).
+## (an answered scream). A brood nest's are of its strain, once it's awake. Returns its strains
+## (none without a pack that fits).
 func hatch_pack(boost: float = 1.0, seconds: float = 0.0) -> Array[AlienStrain]:
 	var strains: Array[AlienStrain] = []
-	var pack: AlienPack = table.pick_pack(_rng, escalation())
+	if not is_awake():
+		return strains
+	var pack: AlienPack = _brood_pack() if brood else table.pick_pack(_rng, escalation())
 	if not pack or is_full(pack.cap_load()):
 		return strains
 	strains = pack.aliens()
+	if brood and brood_left >= 0:
+		brood_left -= strains.size()
 	for strain: AlienStrain in strains:
 		_wait_to_hatch(strain, Alien.Role.HUNTER, boost, seconds)
 	_hatch_next()
@@ -382,9 +413,19 @@ func max_health() -> float:
 	return health * (1.0 + settings.health_per_player * maxi(players - 1, 0))
 
 
-## The glow of its mouth, glands and cracks: a quest nest's own, else the hive's.
+## The glow of its mouth, glands and cracks: a quest or brood nest's own, else the hive's.
 func glow_color() -> Color:
-	return QUEST_GLOW if kind == Kind.QUEST else COLOR_GLOW
+	match kind:
+		Kind.QUEST:
+			return QUEST_GLOW
+		Kind.BROOD:
+			return BROOD_GLOW
+	return COLOR_GLOW
+
+
+## Whether it sends hunters: once a player came within `settings.wake_range` (always without one).
+func is_awake() -> bool:
+	return _woken or settings.wake_range <= 0.0
 
 
 ## Whether weapons destroyed it: a husk that hatches nothing more.
@@ -483,8 +524,11 @@ func _waiting_load(role: int = -1) -> float:
 	return total
 
 
-## A strain for a single alien with `role`: one of that role's, or one from a pack.
+## A strain for a single alien with `role`: one of that role's, or one from a pack (a brood
+## nest's hunters: its strain).
 func _any_strain(role: Alien.Role) -> AlienStrain:
+	if brood and role == Alien.Role.HUNTER:
+		return brood
 	var level: float = escalation()
 	if role != Alien.Role.HUNTER:
 		var single: AlienStrain = table.pick_single(_rng, level, role)
@@ -495,6 +539,29 @@ func _any_strain(role: Alien.Role) -> AlienStrain:
 		var members: Array[AlienStrain] = pack.aliens()
 		return members[_rng.randi() % members.size()]
 	return hive.strains[0]
+
+
+## A brood nest's next pack: as many of its strain as fit in `settings.brood_pack` cap shares (at
+## least one), no more than `brood_left`; null once that's none.
+func _brood_pack() -> AlienPack:
+	var count: int = maxi(floori(settings.brood_pack / brood.cap_share), 1)
+	if brood_left >= 0:
+		count = mini(count, brood_left)
+	if count <= 0:
+		return null
+	var pack := AlienPack.new()
+	pack.members[brood] = count
+	return pack
+
+
+## Whether a living player outside is within `settings.wake_range` (horizontally).
+func _player_near() -> bool:
+	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
+		var offset: Vector3 = player.global_position - global_position
+		var near: bool = Vector2(offset.x, offset.z).length() <= settings.wake_range
+		if near and Alien.is_prey(get_tree(), player):
+			return true
+	return false
 
 
 ## How much faster raiders hatch for the working miners whose nearest nest it is: each adds

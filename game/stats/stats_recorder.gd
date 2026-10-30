@@ -484,7 +484,9 @@ func _on_mission_started(brief: MissionBrief) -> void:
 		fields["duration"] = snappedf(mission.duration(), 0.1)
 	if player:
 		fields["gear"] = _gear()
-	fields["map"] = RunSnapshot.map(get_tree(), ship)
+	# Not while the map is being freed (a player leaving the ship as it goes).
+	if is_inside_tree():
+		fields["map"] = RunSnapshot.map(get_tree(), ship)
 	_write_line("mission_started", fields)
 
 
@@ -505,7 +507,7 @@ func _on_mission_ended(_brief: MissionBrief, returned: bool) -> void:
 			"time_left": snappedf(mission.time_left, 0.1) if mission else 0.0,
 			"storm_seconds": snappedf(mission.storm_time, 0.1) if mission else 0.0,
 			"debug": _debug_run,
-			"left": RunSnapshot.leftovers(get_tree()),
+			"left": RunSnapshot.leftovers(get_tree()) if is_inside_tree() else {},
 			"counters": run.to_data(),
 		}
 	)

@@ -2877,6 +2877,10 @@ msgid "Destination set: set course at the cockpit."
 msgstr "Ziel gesetzt: Kurs im Cockpit setzen."
 
 #: game/stations/navigator/navigator_card.gd
+msgid "Quest: %s"
+msgstr "Auftrag: %s"
+
+#: game/stations/navigator/navigator_card.gd
 msgid "Waiting for you: %s"
 msgstr "Erwartet euch: %s"
 

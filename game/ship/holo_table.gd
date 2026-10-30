@@ -9,7 +9,9 @@ extends Node3D
 ## the ores lie and plan their route; at the hologram's scale the deposits themselves are specks.
 ## Parts of the location in `LANDMARK_GROUP` (points of interest) show in the landmark color too,
 ## each with a thicker beam in it so it reads at the hologram's scale; the ones in `HIDDEN_GROUP`
-## (crates, so finding them stays a discovery) don't show.
+## (crates, so finding them stays a discovery) don't show. What the tracked quest still needs there
+## (each lit `QuestMark`, also on a crate) shows as a tall amber beam, out once it's done or another
+## quest is tracked.
 ## The location may still be outside the tree (a mission's location prepared before the flight).
 
 const LOCATION_COLOR := Color(0.3, 0.85, 1.0)
@@ -25,10 +27,15 @@ const HIDDEN_GROUP: StringName = &"hidden_in_hologram"
 @export var marker_size: Vector2 = Vector2(0.025, 0.3)
 ## Size of the beams of the landmarks in the location (radius, height), in m of the hologram.
 @export var landmark_marker_size: Vector2 = Vector2(0.06, 0.4)
+## Size of the beams of what the tracked quest needs (radius, height), in m of the hologram.
+@export var quest_marker_size: Vector2 = Vector2(0.03, 0.75)
 
 var _location_material: ShaderMaterial = hologram_material(LOCATION_COLOR)
 var _landmark_material: ShaderMaterial = hologram_material(LANDMARK_COLOR)
 var _marker_materials: Dictionary[OreType, ShaderMaterial] = {}
+## Each quest beam and the mark it stands for (lit or not, checked every `QuestMark.CHECK`).
+var _quest_beams: Dictionary[MeshInstance3D, QuestMark] = {}
+var _check_left: float = 0.0
 
 @onready var _content: Node3D = $Hologram/Content
 @onready var _markers: Node3D = $Hologram/Markers
@@ -37,6 +44,16 @@ var _marker_materials: Dictionary[OreType, ShaderMaterial] = {}
 func _ready() -> void:
 	# Hidden with the deck it stands on when that's cut away, not left casting shadows.
 	add_to_group(CutAway.HIDE_GROUP)
+
+
+func _process(delta: float) -> void:
+	_check_left -= delta
+	if _check_left > 0.0:
+		return
+	_check_left = QuestMark.CHECK
+	for beam: MeshInstance3D in _quest_beams:
+		var mark: QuestMark = _quest_beams[beam]
+		beam.visible = is_instance_valid(mark) and mark.is_lit()
 
 
 ## Shows `location` (as it is right now) and the `landmarks` in it as a hologram; null clears it.
@@ -48,6 +65,7 @@ func show_location(
 		# Freed right away: they're only copies, and the next location may follow in the same frame.
 		for child: Node in parent.get_children():
 			child.free()
+	_quest_beams.clear()
 	if not location:
 		return
 	if location.is_inside_tree():
@@ -106,9 +124,14 @@ func get_landmark_markers() -> Array[MeshInstance3D]:
 func _beams(landmarks: bool) -> Array[MeshInstance3D]:
 	var markers: Array[MeshInstance3D] = []
 	for marker: MeshInstance3D in _markers.get_children():
-		if marker.has_meta(&"landmark") == landmarks:
+		if marker.has_meta(&"landmark") == landmarks and not _quest_beams.has(marker):
 			markers.append(marker)
 	return markers
+
+
+## The quest beams in the hologram and the marks they stand for (shown while lit).
+func get_quest_markers() -> Dictionary[MeshInstance3D, QuestMark]:
+	return _quest_beams.duplicate()
 
 
 func _add_markers(location: Node3D) -> void:
@@ -124,7 +147,27 @@ func _add_markers(location: Node3D) -> void:
 	landmark_mesh.height = landmark_marker_size.y
 	landmark_mesh.radial_segments = 12
 	landmark_mesh.rings = 1
+	var quest_mesh := CylinderMesh.new()
+	quest_mesh.top_radius = quest_marker_size.x
+	quest_mesh.bottom_radius = quest_marker_size.x
+	quest_mesh.height = quest_marker_size.y
+	quest_mesh.radial_segments = 8
+	quest_mesh.rings = 1
+	var quest_material: ShaderMaterial = hologram_material(QuestMark.COLOR)
+	quest_material.set_shader_parameter(&"energy", 3.0)
 	for node: Node in location.find_children("*", "Node3D", true, false):
+		var mark := node as QuestMark
+		if mark:
+			var quest_beam := MeshInstance3D.new()
+			quest_beam.mesh = quest_mesh
+			quest_beam.material_override = quest_material
+			quest_beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			var on: Vector3 = _content.transform * _relative(mark, location).origin
+			quest_beam.position = on + Vector3.UP * quest_marker_size.y * 0.5
+			quest_beam.visible = mark.is_lit()
+			_markers.add_child(quest_beam)
+			_quest_beams[quest_beam] = mark
+			continue
 		if node.is_in_group(LANDMARK_GROUP) and _is_shown(node as Node3D, location):
 			var beam := MeshInstance3D.new()
 			beam.mesh = landmark_mesh

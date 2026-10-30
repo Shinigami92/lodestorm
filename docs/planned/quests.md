@@ -1,6 +1,6 @@
 # Quests (planned)
 
-Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1–A3): quests as data, offering with the diamond marker, accepting, hand-ins, the goals deliver, mine and build, the quest board's quests, jobs and messages, tracking, the story director and the calls from stations with their diamond on the navigator, the goals reach a site, clear nests, hunt, recover fragments and recover an item with the quest sites, quest nests, brood nests, lairs, fragments in crates and items they put into a region's visits (see [Quests](../design/missions.md#quests) and Between missions in [Story](../design/story.md)); the rest below is still to come.
+Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All values **TBD (playtest)**. Built so far (A1–A3): quests as data, offering with the diamond marker, accepting, hand-ins, the goals deliver, mine and build, the quest board's quests, jobs and messages, tracking, the story director and the calls from stations with their diamond on the navigator, the goals reach a site, clear nests, hunt, recover fragments and recover an item with the quest sites, quest nests, brood nests, lairs, fragments in crates and items they put into a region's visits, and finding a step (the navigator's diamonds on regions, the amber beams, the suit ring's arrow, a goal's region on the cards; see [Quests](../design/missions.md#quests) and Between missions in [Story](../design/story.md)); the rest below is still to come.
 
 ## How quests work
 
@@ -31,10 +31,10 @@ A quest step can ask for the fragments of a blueprint in a region (e.g. "recover
 
 ## Seeing them
 
-- **The quest board** (built in A2, see [Quests](../design/missions.md#quests)): still to come is its **Logs** tab with the expedition's logs, together with the first logs (16 D), and a step's region on its card (with the quest sites, B).
+- **The quest board** (built in A2, see [Quests](../design/missions.md#quests)): still to come is its **Logs** tab with the expedition's logs, together with the first logs (16 D).
 - **Messages** (built in A3b: the quest board's Messages tab, the calls from a station, see Between missions in [Story](../design/story.md)); the messages themselves come with the acts' content (from Ostra, later Pell).
 - **Tracking** (built in A2: one quest per session, see [Quests](../design/missions.md#quests)); what follows it is below.
-- **During a run** nothing needs looking up: the navigator shows an amber diamond on regions with an active step (filled for the tracked quest), on their plate and on the globe (the stations' diamonds are built, A3b); in the location, the tracked quest's site, the crates with its fragments and its nests show amber beams (also in the hologram); the suit ring points to the tracked quest's site (see [`player-display.md`](player-display.md)). Over the radio (a radio bubble): a short line when landing in a region with an active step and when a step's goal is done ("That's the second nest. Come back to me."); the lines stay with the quest and can be heard again at the giver.
+- **During a run** nothing needs looking up (the diamonds, beams and the suit ring's arrow are built, B3: see Finding a step in [Missions](../design/missions.md#quests)). Over the radio (a radio bubble): a short line when landing in a region with an active step and when a step's goal is done ("That's the second nest. Come back to me."); the lines stay with the quest and can be heard again at the giver.
 
 ## Co-op
 

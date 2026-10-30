@@ -14,7 +14,8 @@ extends Node3D
 ## its crater is carved from the start, its meteorite and ore appear with the impact.
 ## What the active quest steps need here (`quest_visit`) comes in too: their quest sites as set
 ## pieces (at each one's quest anchor a `QuestSite`, or a hunt's brood nest or the Ravager asleep
-## in its lair) and their quest nests after the ordinary ones.
+## in its lair) and their quest nests after the ordinary ones; each of them, and every crate with a
+## fragment, carries a `QuestMark` (a beam while its quest is tracked).
 ## Everything the generator places is greybox; the values are TBD (playtest).
 ## The layout, the parts, the ground's shape and the hazard draw one after another from the seed
 ## itself; the ore fields, the nests and everything after them each draw from a random stream of
@@ -212,6 +213,7 @@ func build() -> void:
 	_hazards.build(self)
 	_scatter.build(self)
 	parts.build(self, _crate_contents())
+	_mark_crates()
 	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()
 	_add_quest_sites()
@@ -786,6 +788,7 @@ func _add_nests() -> void:
 		nest.position = sites.nests[i].position
 		if quest:
 			nest.destroyed.connect(quest_visit.count.bind(quest, 1.0))
+			nest.destroyed.connect(QuestMark.on(nest, quest, quest_visit).close)
 		nests.add_child(nest)
 	if table:
 		_add_apex(table)
@@ -838,13 +841,24 @@ func _add_quest_sites() -> void:
 			item.name = "QuestItem"
 			item.entry = entry
 			item.position = at
+			# Picked up, it goes with the item.
+			QuestMark.on(item, entry, quest_visit)
 			add_child(item, true)
 		elif entry.fragments == 0:
 			var site := QuestSite.new()
 			site.name = "QuestSite"
 			site.position = at
 			site.reached.connect(quest_visit.count.bind(entry, 1.0).unbind(1))
+			site.reached.connect(QuestMark.on(site, entry, quest_visit).close.unbind(1))
 			add_child(site, true)
+
+
+## A mark on every crate holding a fragment, out once it's opened.
+func _mark_crates() -> void:
+	for crate: Crate in find_children("*", "Crate", true, false):
+		var fragment := crate.content as BlueprintFragment
+		if fragment:
+			crate.used.connect(QuestMark.on(crate, fragment.entry, quest_visit).close.unbind(1))
 
 
 ## `entry`'s brood nest at `at`: it hatches the hunted strain, as many as the hunt still needs;
@@ -863,6 +877,7 @@ func _add_brood_nest(entry: QuestVisit.Entry, at: Vector3) -> void:
 				alien.died.connect(quest_visit.count_kill.bind(entry))
 	)
 	nest.destroyed.connect(quest_visit.count_brood.bind(entry))
+	nest.destroyed.connect(QuestMark.on(nest, entry, quest_visit).close)
 	(get_node(^"AlienNests") as Node3D).add_child(nest)
 
 
@@ -879,7 +894,13 @@ func _add_lair(entry: QuestVisit.Entry, at: Vector3) -> void:
 	lair.asleep = true
 	# The apex appears when the location enters the tree.
 	var count: Callable = quest_visit.count_kill.bind(entry)
-	lair.ready.connect(func() -> void: lair.apex.died.connect(count), CONNECT_ONE_SHOT)
+	var mark: QuestMark = QuestMark.on(lair, entry, quest_visit, at)
+	lair.ready.connect(
+		func() -> void:
+			lair.apex.died.connect(count)
+			lair.apex.died.connect(mark.close),
+		CONNECT_ONE_SHOT
+	)
 	add_child(lair, true)
 
 

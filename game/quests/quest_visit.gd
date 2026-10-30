@@ -71,6 +71,22 @@ func _init(quest_log: QuestLog = null, region: StringName = &"") -> void:
 			entries.append(entry)
 
 
+## The regions (their `Region.id`) where a goal of an active step of `quest_log` isn't done yet:
+## whether one of them is the tracked quest's (the navigator's diamonds).
+static func regions(quest_log: QuestLog) -> Dictionary[StringName, bool]:
+	var found: Dictionary[StringName, bool] = {}
+	for id: StringName in quest_log.accepted:
+		var quest: Quest = quest_log.catalog.find(id)
+		var step: QuestStep = quest_log.current_step(quest) if quest else null
+		if not step:
+			continue
+		for i: int in step.goals.size():
+			var goal := step.goals[i] as RegionGoal
+			if goal and quest_log.goal_progress(quest, i) < goal.target():
+				found[goal.region] = found.get(goal.region, false) or id == quest_log.tracked
+	return found
+
+
 ## The quest sites' map parts, to place as set pieces.
 func sites() -> Array[PartPlacement]:
 	var parts: Array[PartPlacement] = []
@@ -96,6 +112,11 @@ func fragment_entries() -> Array[Entry]:
 		for i: int in entry.fragments:
 			fragments.append(entry)
 	return fragments
+
+
+## Whether `entry`'s quest is the one tracked (its marks show, see `QuestMark`).
+func is_tracked(entry: Entry) -> bool:
+	return _log != null and _log.tracked == entry.quest.id
 
 
 ## Counts `amount` done towards `entry`'s goal this visit (up to what was left of it).

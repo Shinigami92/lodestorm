@@ -8,8 +8,9 @@ extends CharacterBody3D
 ## there as a preview, see `picker`), picks miners up again with `interact`, both taking a few
 ## seconds while it stays near the miner (`handling`), and carries the ore that miners' hoses
 ## move to it (`cargo`), shown in canisters on its back and as a badge rising above it
-## (`OreArrival`), and the quest items it found (`quest_pack`, also on its back). An arrow on the
-## suit ring's edge points back to the ship (`ShipPointer`). Uses the nearest interactable in range
+## (`OreArrival`), and the quest items it found (`quest_pack`, also on its back). Arrows on the
+## suit ring's edge point back to the ship (`ShipPointer`) and to what the tracked quest still
+## needs out there (`QuestPointer`). Uses the nearest interactable in range
 ## (buttons, terminals, ...) with `interact`. While it uses a 3D
 ## menu (`menu`), it stands still and only the menu gets its input. Its health (`vitals`) shows on
 ## the suit ring around its feet (`SuitRing`, with the ammo, the spare magazines and the dash) and
@@ -162,6 +163,8 @@ var _armor_pips := MkPips.new()
 var _scanner := OreScanner.new()
 ## Points to its own miners that need it.
 var _miner_radar := MinerRadar.new()
+## Points to what the tracked quest still needs out here.
+var _quest_pointer := QuestPointer.new()
 
 @onready var _weapon_mount: Marker3D = $WeaponMount
 @onready var _shield_mount: Marker3D = $ShieldMount
@@ -184,6 +187,7 @@ func _notification(what: int) -> void:
 		return
 	var components: Array[Node] = [aim, reticle, vitals, arms, suit_dash, rescue_drone, handling]
 	components.append_array([picker, sounds, radio, _armor_pips, _scanner, _miner_radar])
+	components.append(_quest_pointer)
 	for component: Node in components:
 		if not component.get_parent():
 			component.free()
@@ -225,6 +229,9 @@ func _ready() -> void:
 	_miner_radar.holder = self
 	_miner_radar.position = Vector3.UP * 0.05
 	add_child(_miner_radar)
+	_quest_pointer.name = "QuestPointer"
+	_quest_pointer.position = Vector3.UP * 0.05
+	add_child(_quest_pointer)
 	_cargo_rack.safe_share = skills.value(Skill.Effect.HARDENED_CANISTER)
 	input.holder = self
 	suit_dash.name = "SuitDash"

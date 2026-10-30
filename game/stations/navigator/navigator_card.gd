@@ -3,12 +3,11 @@ extends StationCard
 ## The holo card of the navigator (`NavigatorStation`): what's selected and what can be done with
 ## it. The star: its name; a body: its kind and tier, its signature ore ("?" while it can't be
 ## reached; "Zoom in"); a region: its biome and tier, danger, timer and ores ("Zoom in", "Set as
-## destination"); the landing site: the mission's location name and where
-## things stand (destination set, scanning, in flight, landed); a station: its kind ("Zoom in",
-## "Set as destination"), who waits there for the players and where things stand (destination set,
-## docked). A body out of the heat
-## shield's
-## reach, and its regions, say which MK level it needs, with the ores of that plate's cost.
+## destination") and the quest steps active there; the landing site: the mission's location name
+## and where things stand (destination set, scanning, in flight, landed); a station: its kind
+## ("Zoom in", "Set as destination"), who waits there for the players and where things stand
+## (destination set, docked). A body out of the heat shield's reach, and its regions, say which MK
+## level it needs, with the ores of that plate's cost.
 
 const DANGER_COLORS: Array[Color] = [
 	Color(0.45, 0.95, 0.55), Color(1.0, 0.75, 0.3), Color(1.0, 0.4, 0.35)
@@ -131,6 +130,9 @@ func _show_region(navigator: NavigatorStation, shown_region: Region) -> ShieldPl
 	var chosen: bool = offer != null and voyage != null and offer == voyage.destination
 	_choose.disabled = not reachable or not voyage or not voyage.can_select() or chosen
 	_status.text = _region_status(navigator, shown_region, offer)
+	var quests: String = _quests_text(navigator, shown_region)
+	if not quests.is_empty():
+		_status.text = quests + ("\n" + _status.text if not _status.text.is_empty() else "")
 	if region_body and not reachable:
 		return _needed_plate(navigator, region_body)
 	return null
@@ -160,6 +162,22 @@ func _show_station(navigator: NavigatorStation, shown_station: CelestialBody) ->
 	if not waiting.is_empty():
 		text = waiting + ("\n" + text if not text.is_empty() else "")
 	_status.text = text
+
+
+## The quests with a step active in `shown_region`, on one line, e.g. "Quest: Brannik's chain";
+## empty: none (what the step asks there is on the quest board).
+func _quests_text(navigator: NavigatorStation, shown_region: Region) -> String:
+	var ship: Ship = navigator.ship
+	if not ship:
+		return ""
+	var titles: PackedStringArray = []
+	for entry: QuestVisit.Entry in QuestVisit.new(ship.quests, shown_region.id).entries:
+		var title: String = tr(entry.quest.title)
+		if title not in titles:
+			titles.append(title)
+	if titles.is_empty():
+		return ""
+	return tr("Quest: %s") % ", ".join(titles)
 
 
 ## Who waits at `shown_station` for the players, e.g. "Waiting for you: Selin, Kade"; empty: nobody.

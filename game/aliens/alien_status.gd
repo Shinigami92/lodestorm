@@ -2,13 +2,15 @@ class_name AlienStatus
 extends RefCounted
 ## What the hive, other aliens and players' weapons do to an alien right now (`Alien.status`): a
 ## shrieker's boost, the hive's frenzy, a tender's link, its nest calling its guards, a gravity
-## well holding it, a weapon slowing it (a saw) and a shield stopping its charge. Values TBD
-## (playtest).
+## well holding it, a weapon slowing it (a saw), a shield stopping its charge and sleeping in its
+## lair (see `AlienSleep`). Values TBD (playtest).
 
 ## Seconds a well's hold lasts after its last renewal (wells renew it every physics step).
 const HOLD_GRACE: float = 0.1
 ## How fast an alien a well doesn't hold (the apex) moves while it's in one.
 const WELL_SLOW: float = 0.5
+## Its eyes' glow while it sleeps, against awake.
+const SLEEP_GLOW: float = 0.05
 
 ## How much faster the hive makes it (its frenzy at the end of a run, set by its nest).
 var hive_speed: float = 1.0
@@ -24,6 +26,8 @@ var pull := Vector3.ZERO
 ## Whether a shield's field stopped its heavy blow (see `ShieldField.block`): a charge under way
 ## ends dazed, as if it ran into rock (see `AlienCharge`).
 var blocked: bool = false
+## Whether it sleeps (see `AlienSleep`): it stands still, its body low and its eyes dark.
+var asleep: bool = false
 
 ## A scream's boost: how much faster it is, and for how many more seconds.
 var _boost: float = 1.0
@@ -75,6 +79,11 @@ func is_boosted() -> bool:
 ## Whether it's faster than its strain right now (a boost, the frenzy): its eyes glow brighter.
 func is_fast() -> bool:
 	return is_boosted() or hive_speed > 1.0
+
+
+## How bright its eyes glow against awake: dark while it sleeps.
+func eye_glow() -> float:
+	return SLEEP_GLOW if asleep else 1.0
 
 
 ## How much faster than its strain it is.

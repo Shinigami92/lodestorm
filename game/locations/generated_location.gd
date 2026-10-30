@@ -13,7 +13,8 @@ extends Node3D
 ## place ore, nests and crates first. A far one is the late deposit's impact site (`LateDeposit`):
 ## its crater is carved from the start, its meteorite and ore appear with the impact.
 ## What the active quest steps need here (`quest_visit`) comes in too: their quest sites as set
-## pieces (a `QuestSite` at each one's quest anchor) and their quest nests after the ordinary ones.
+## pieces (at each one's quest anchor a `QuestSite`, or a hunt's brood nest or the Ravager asleep
+## in its lair) and their quest nests after the ordinary ones.
 ## Everything the generator places is greybox; the values are TBD (playtest).
 ## The layout, the parts, the ground's shape and the hazard draw one after another from the seed
 ## itself; the ore fields, the nests and everything after them each draw from a random stream of
@@ -27,6 +28,7 @@ extends Node3D
 const ORE_NODE: PackedScene = preload("res://game/mining/ore_node.tscn")
 const ALIEN_NEST: PackedScene = preload("res://game/aliens/nest/alien_nest.tscn")
 const QUEST_NEST: PackedScene = preload("res://game/aliens/nest/quest_nest.tscn")
+const HIVE: AlienHive = preload("res://game/aliens/hive/hive.tres")
 const LATE_DEPOSIT: PartPlacement = preload("res://game/locations/parts/late_deposit.tres")
 ## Grid squares per chunk side: the ground and the scatter are cut into chunks so the parts out of
 ## view are culled.
@@ -159,6 +161,8 @@ var _chunk_faces: Array[PackedVector3Array] = []
 var _scatter := LocationScatter.new()
 var _planned: bool = false
 var _built: bool = false
+## What the nests hatch here, once made (see `_hatch_table`).
+var _table: HatchTable
 
 
 func _ready() -> void:
@@ -779,8 +783,7 @@ func _add_nests() -> void:
 	for i: int in sites.nests.size():
 		var quest: QuestVisit.Entry = sites.nests[i].quest
 		var nest := (QUEST_NEST if quest else ALIEN_NEST).instantiate() as AlienNest
-		if not table:
-			table = nest.hive.table(alien_tier, biome, preview_strain, world_seed)
+		table = _hatch_table(nest.hive)
 		nest.table = table
 		nest.name = "Nest%d" % (i + 1)
 		nest.position = sites.nests[i].position
@@ -791,8 +794,8 @@ func _add_nests() -> void:
 		_add_apex(table)
 
 
-## A `QuestSite` at the quest anchor of every quest site's part (its middle without one): reaching
-## it counts for its goal.
+## What every quest site's part holds at its quest anchor (its middle without one): a hunt's brood
+## nest or its strain asleep in a lair, else a `QuestSite` that counts for its goal when reached.
 func _add_quest_sites() -> void:
 	if not quest_visit:
 		return
@@ -801,11 +804,60 @@ func _add_quest_sites() -> void:
 		if not part:
 			continue
 		var anchors: Array[Vector3] = part.markers(PartMarker.Kind.QUEST_ANCHOR)
-		var site := QuestSite.new()
-		site.name = "QuestSite"
-		site.position = anchors[0] if not anchors.is_empty() else part.origin
-		site.reached.connect(quest_visit.count.bind(entry, 1.0).unbind(1))
-		add_child(site, true)
+		var at: Vector3 = anchors[0] if not anchors.is_empty() else part.origin
+		if entry.hunted and entry.brood:
+			_add_brood_nest(entry, at)
+		elif entry.hunted:
+			_add_lair(entry, at)
+		else:
+			var site := QuestSite.new()
+			site.name = "QuestSite"
+			site.position = at
+			site.reached.connect(quest_visit.count.bind(entry, 1.0).unbind(1))
+			add_child(site, true)
+
+
+## `entry`'s brood nest at `at`: it hatches the hunted strain, as many as the hunt still needs;
+## kills of it and the nest destroyed count for the hunt.
+func _add_brood_nest(entry: QuestVisit.Entry, at: Vector3) -> void:
+	var nest := entry.brood.instantiate() as AlienNest
+	nest.name = "BroodNest"
+	nest.table = _hatch_table(nest.hive)
+	nest.brood = entry.hunted
+	nest.brood_left = quest_visit.kills_left(entry)
+	nest.position = at
+	nest.rotation.y = _stream("brood_nest").randf() * TAU
+	nest.hatched.connect(
+		func(alien: Alien) -> void:
+			if alien.strain == entry.hunted:
+				alien.died.connect(quest_visit.count_kill.bind(entry))
+	)
+	nest.destroyed.connect(quest_visit.count_brood.bind(entry))
+	(get_node(^"AlienNests") as Node3D).add_child(nest)
+
+
+## The hunted strain (the Ravager) asleep at `at`, in its lair, until a player comes close: killing
+## it counts for the hunt.
+func _add_lair(entry: QuestVisit.Entry, at: Vector3) -> void:
+	var table: HatchTable = _hatch_table(HIVE)
+	var lair := ApexLair.new()
+	lair.name = "Lair"
+	lair.strain = entry.hunted
+	lair.health_factor = table.health_factor
+	lair.damage_factor = table.damage_factor
+	lair.route = [at] as Array[Vector3]
+	lair.asleep = true
+	# The apex appears when the location enters the tree.
+	var count: Callable = quest_visit.count_kill.bind(entry)
+	lair.ready.connect(func() -> void: lair.apex.died.connect(count), CONNECT_ONE_SHOT)
+	add_child(lair, true)
+
+
+## What the nests hatch here (made once, from `hive`).
+func _hatch_table(hive: AlienHive) -> HatchTable:
+	if not _table:
+		_table = hive.table(alien_tier, biome, preview_strain, world_seed)
+	return _table
 
 
 ## The late deposit at its part (its time drawn from a stream of its own), with its ore `nodes`;
@@ -832,6 +884,8 @@ func _add_apex(table: HatchTable) -> void:
 	var hive: AlienHive = table.hive
 	var rng: RandomNumberGenerator = _stream("apex")
 	if rng.randf() >= hive.apex_chance_at(alien_tier):
+		return
+	if quest_visit and quest_visit.has_lair(hive.apex):
 		return
 	var route: Array[Vector3] = []
 	for area: LocationLayout.Area in layout.areas:

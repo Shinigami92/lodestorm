@@ -2278,6 +2278,14 @@ msgstr ""
 msgid "Deliver %s"
 msgstr ""
 
+#: game/quests/hunt_goal.gd
+msgid "Hunt: %s and their brood nest"
+msgstr ""
+
+#: game/quests/hunt_goal.gd
+msgid "Hunt: %s"
+msgstr ""
+
 #: game/quests/mine_goal.gd
 msgid "Mine %s in one run"
 msgstr ""

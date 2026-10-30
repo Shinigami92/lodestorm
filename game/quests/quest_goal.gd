@@ -13,6 +13,12 @@ func target() -> float:
 	return 1.0
 
 
+## How much of `target` the cards count as a number (more than 1: "3 / 5"); `target` by default (a
+## hunt counts only its kills, not its brood nest).
+func counted() -> float:
+	return target()
+
+
 ## What it takes of a `haul` brought aboard (units per ore) towards it, with `progress` so far
 ## (units per ore; its progress grows by their sum); nothing by default.
 func take_from(_haul: Dictionary[OreType, float], _progress: float) -> Dictionary[OreType, float]:

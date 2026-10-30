@@ -206,7 +206,7 @@ var _glows: Array[BaseMaterial3D] = []
 var _glow_energies: Array[float] = []
 var _hatch_tween: Tween
 var _legs := AlienLegs.new()
-var _pose := AlienPose.new()
+var _pose := AlienPose.new(status)
 var _pathing: AlienPathing
 var _screen := VisibleOnScreenNotifier3D.new()
 
@@ -290,7 +290,7 @@ func _physics_process(delta: float) -> void:
 	_count_down(delta)
 	if _held() and _attack and _attack.moves():
 		_end_attack()
-	if not ai_on:
+	if not ai_on or status.asleep:
 		_stand_still()
 	elif _phase == AttackPhase.NONE:
 		_update_target()
@@ -300,7 +300,7 @@ func _physics_process(delta: float) -> void:
 	var wanted := Vector3.ZERO
 	var lunging: bool = false
 	var facing := Vector3.ZERO
-	if _staggered > 0.0 or not ai_on:
+	if _staggered > 0.0 or not ai_on or status.asleep:
 		pass
 	elif _phase != AttackPhase.NONE:
 		_lunge_velocity = Vector3.ZERO
@@ -799,21 +799,21 @@ func _chase(distance: float) -> Vector3:
 
 
 ## Horizontal direction along its route: to the point it walks to, and once there to another one,
-## picked at random.
+## picked at random; a route of one point (a lair) it stays at.
 func _roam() -> Vector3:
-	var arrived: bool = false
-	if _route_index >= 0:
-		var offset: Vector3 = route[_route_index] - global_position
-		arrived = Vector2(offset.x, offset.z).length() < ROAM_ARRIVE
+	var to: Vector3 = route[maxi(_route_index, 0)] - global_position
+	var arrived: bool = _route_index >= 0 and Vector2(to.x, to.z).length() < ROAM_ARRIVE
 	if _route_index < 0 or arrived:
 		var next: int = randi() % route.size()
 		if route.size() > 1 and next == _route_index:
 			next = (next + 1) % route.size()
+		elif arrived and route.size() == 1:
+			return Vector3.ZERO
 		_route_index = next
 	return _pathing.direction_to(route[_route_index])
 
 
-## Without its AI (`ai_on`): no target, the attack under way broken off, up from under the ground.
+## Without its AI (`ai_on`) or asleep: no target, no attack under way, up from under the ground.
 func _stand_still() -> void:
 	target = null
 	if _phase != AttackPhase.NONE:
@@ -951,7 +951,7 @@ func _update_look() -> void:
 	var winding: float = _pose.crouched()
 	if _phase == AttackPhase.WIND_UP and _attack.clip_lead > 0.0 and _attack.wind_up > 0.0:
 		winding = maxf(winding, _phase_time / _attack.wind_up)
-	var flare: float = 1.0 + fast + EYE_FLARE * winding
+	var flare: float = (1.0 + fast + EYE_FLARE * winding) * status.eye_glow()
 	for i: int in _glows.size():
 		if _glows[i].emission_energy_multiplier != _glow_energies[i] * flare:
 			_glows[i].emission_energy_multiplier = _glow_energies[i] * flare

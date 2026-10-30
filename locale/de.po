@@ -2280,6 +2280,14 @@ msgstr "Nester zerstören"
 msgid "Deliver %s"
 msgstr "%s liefern"
 
+#: game/quests/hunt_goal.gd
+msgid "Hunt: %s and their brood nest"
+msgstr "Jagd: %s und ihr Brutnest"
+
+#: game/quests/hunt_goal.gd
+msgid "Hunt: %s"
+msgstr "Jagd: %s"
+
 #: game/quests/mine_goal.gd
 msgid "Mine %s in one run"
 msgstr "%s in einer Mission abbauen"

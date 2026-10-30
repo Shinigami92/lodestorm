@@ -7,6 +7,12 @@ extends Resource
 
 ## Guards that hatch when the nest appears and wait around it.
 @export var guards: int = 1
+## It sends hunters only once a living player outside came this close (horizontally, m; a brood
+## nest wakes); 0: from the mission's start.
+@export var wake_range: float = 0.0
+## A brood nest's packs (see `AlienNest.brood`): as many of its strain as fit in this many cap
+## shares, at least one.
+@export var brood_pack: float = 2.0
 ## Seconds between packs of hunters when the mission starts ...
 @export var hunter_interval_start: float = 60.0
 ## ... and when the storm hits.

@@ -166,6 +166,95 @@ func test_returned_haul_and_totals_survive_a_restart() -> void:
 	assert_eq(_session_logs().size(), 2)
 
 
+func test_session_names_the_commit() -> void:
+	var started: Dictionary = _logged("session_started")
+	var commit: String = started["commit"]
+	assert_eq(commit, BuildInfo.commit())
+	assert_eq(commit.length(), 40, "the project folder is a git checkout")
+	assert_true(commit.is_valid_hex_number(), "a sha")
+	assert_has(started, "branch")
+
+
+func test_run_logs_the_map_where_the_player_was_and_what_was_left() -> void:
+	await _open()
+	await _move(_ship.to_global(Vector3(22.0, 0.0, 0.0)))
+	await _move(_ship.to_global(Vector3(10.0, 2.5, 0.0)))
+	assert_eq(_mission.state, Mission.State.RETURNED)
+	var map: Dictionary = _logged("mission_started")["map"]
+	var nodes: Array = map["nodes"]
+	assert_eq(nodes.size(), get_tree().get_nodes_in_group(OreNode.GROUP).size())
+	assert_eq(str((nodes[0] as Array)[0]).get_slice("/", 0), "ores", "each node names its ore")
+	assert_eq((map["ship"] as Array).size(), 2, "the ship's x and z")
+	var track: Dictionary = _logged("track")
+	assert_eq(str(track["where"]), "outside", "logged as the run starts")
+	assert_has(track, "hp")
+	assert_has(_logged_events(), "weapon_drawn")
+	assert_gt(_recorder.totals.value("seconds_still"), 0.0, "stood still outside")
+	var ended: Dictionary = _logged("mission_ended")
+	var debug: bool = ended["debug"]
+	assert_false(debug)
+	var time_left: float = ended["time_left"]
+	assert_gt(time_left, 0.0)
+	var left: Dictionary = ended["left"]
+	for key: String in ["ore_left", "nodes_dry", "aliens", "nests"]:
+		assert_has(left, key)
+
+
+func test_developer_tools_mark_the_run_and_the_session() -> void:
+	await _open()
+	await _move(_ship.to_global(Vector3(22.0, 0.0, 0.0)))
+	GameEvents.bus.debug_used.emit("tuning miner_settings:fill_rate = 4.0")
+	await _move(_ship.to_global(Vector3(10.0, 2.5, 0.0)))
+	var debug: bool = _logged("mission_ended")["debug"]
+	assert_true(debug)
+	assert_eq(str(_logged("debug_used")["action"]), "tuning miner_settings:fill_rate = 4.0")
+	assert_eq(
+		_recorder.totals.value("debug_actions", ["tuning miner_settings:fill_rate"]),
+		1.0,
+		"counted without the value"
+	)
+	_map.free()
+	var lines: Array[Dictionary] = _log_lines()
+	var session_debug: bool = lines[-1]["debug"]
+	assert_true(session_debug, "the session's end says so")
+	await _start()
+
+
+func test_miners_filling_and_taking_damage_are_counted() -> void:
+	var node := _map.get_node("Location/OreNodes/KyriteA") as OreNode
+	var miner: Miner = node.place_miner(_player.miner_scene)
+	miner.fleet = _player.fleet
+	miner.settings = MinerSettings.new()
+	miner.settings.fill_rate = 100.0
+	miner.settings.capacity = 5.0
+	miner.settings.hose_range = 0.0
+	await wait_physics_frames(5)
+	assert_true(miner.is_full())
+	assert_eq(_recorder.totals.value("miners_filled"), 1.0)
+	var filled: Dictionary = _logged("miner_filled")
+	var tank: float = filled["tank"]
+	var node_left: float = filled["node_left"]
+	var number: float = filled["miner"]
+	assert_eq(tank, 5.0)
+	assert_eq(node_left, roundf(node.amount))
+	assert_eq(number, 0.0, "standard-issue")
+	miner.take_damage(30.0)
+	assert_eq(_recorder.totals.value("miner_damage_taken"), 30.0)
+
+
+func test_menu_time_is_logged_when_it_closes() -> void:
+	var bed := _ship.get_node("Rooms/Lower/MedicalBay/MedBed1") as MedBedStation
+	_player.menu = bed
+	await wait_physics_frames(10)
+	_player.menu = null
+	await wait_physics_frames(2)
+	var closed: Dictionary = _logged("menu_closed")
+	assert_eq(str(closed["menu"]), _recorder.id_of(bed))
+	var seconds: float = closed["seconds"]
+	assert_gt(seconds, 0.0)
+	assert_gt(_recorder.totals.value("menu_seconds", [_recorder.id_of(bed)]), 0.0)
+
+
 func test_older_totals_are_kept_and_newer_ones_put_aside() -> void:
 	_map.free()
 	var path: String = StatsRecorder.stats_directory().path_join(StatsRecorder.TOTALS_FILE)

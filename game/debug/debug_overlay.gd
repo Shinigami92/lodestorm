@@ -9,7 +9,8 @@ extends CanvasLayer
 ## shield, the furnaces and the cradles, the crew's reactions and radio, and teammates standing
 ## still (to see their rings before co-op, and hurt to heal them), and switches for god mode
 ## (players take no damage) and the aliens' AI (off: they stand still).
-## Integer settings get whole-number sliders.
+## Integer settings get whole-number sliders. Every shortcut, switch and slider used is told to the
+## statistics (`GameEvents.debug_used`), so a session's log says it wasn't played plainly.
 
 ## Sliders per settings resource: property, min, max, step. All ranges are generous on purpose.
 const TUNING: Dictionary[String, Array] = {
@@ -894,6 +895,13 @@ func _add_slider(box: VBoxContainer, resource: Resource, path: String, row: Arra
 				resource.set(property, new_value)
 			value_label.text = _format(new_value, slider.step)
 	)
+	slider.drag_ended.connect(
+		func(changed: bool) -> void:
+			if changed:
+				var file: String = path.get_file().get_basename()
+				var text: String = "tuning %s:%s = %s" % [file, property, slider.value]
+				GameEvents.bus.debug_used.emit(text)
+	)
 
 
 func _heading(text: String) -> Label:
@@ -926,6 +934,7 @@ func _button(parent: Control, text: String, action: Callable) -> Button:
 	button.clip_text = true
 	button.focus_mode = Control.FOCUS_NONE
 	button.pressed.connect(action)
+	button.pressed.connect(func() -> void: GameEvents.bus.debug_used.emit(text))
 	parent.add_child(button)
 	return button
 
@@ -938,6 +947,10 @@ func _switch(parent: Control, text: String, on: bool, action: Callable) -> Check
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.focus_mode = Control.FOCUS_NONE
 	button.toggled.connect(action)
+	button.toggled.connect(
+		func(now_on: bool) -> void:
+			GameEvents.bus.debug_used.emit("%s: %s" % [text, "on" if now_on else "off"])
+	)
 	parent.add_child(button)
 	return button
 

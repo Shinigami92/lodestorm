@@ -499,6 +499,24 @@ func _next_beat() -> void:
 		ship.director.direct(Beat.Returns.ANY, body.id if body else &"")
 
 
+## Has someone at a station call every ship (a call on the quest board's Messages tab), each time
+## the next one of them with calls.
+func _station_call() -> void:
+	var callers: Array[NpcProfile] = []
+	callers.assign(
+		NpcProfile.all().filter(
+			func(profile: NpcProfile) -> bool: return not profile.calls.is_empty()
+		)
+	)
+	if callers.is_empty():
+		return
+	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
+		var profile: NpcProfile = callers[ship.messages.received.size() % callers.size()]
+		var line: int = randi_range(0, profile.calls.size() - 1)
+		ship.messages.received.append(ReceivedMessage.calling(profile, line))
+		ship.messages.emit_changed()
+
+
 ## Has the crew call the storm warning over the radio, to every player outside.
 func _radio_storm() -> void:
 	for ship: Ship in get_tree().get_nodes_in_group(Ship.GROUP):
@@ -726,6 +744,7 @@ func _build() -> void:
 	_button(crew, "Radio: all events", _transmit_reactions)
 	_button(crew, "Radio: storm", _radio_storm)
 	_button(crew, "Story: next beat", _next_beat)
+	_button(crew, "Messages: a station call", _station_call)
 	var progress: GridContainer = _group(state, "Progress")
 	_button(progress, "Give blueprints", _give_blueprints)
 	_button(progress, "Unlock weapons", _unlock_weapons)

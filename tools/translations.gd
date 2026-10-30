@@ -23,7 +23,8 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"Dialogue": [&"prompts"],
 	"LocationBiome": [&"display_name"],
 	"OreType": [&"display_name"],
-	"NpcProfile": [&"role", &"remarks"],
+	"Message": [&"lines"],
+	"NpcProfile": [&"role", &"remarks", &"calls"],
 	# Its steps and topics are built into it.
 	"Quest": [&"title"],
 	"QuestStep": [&"text"],

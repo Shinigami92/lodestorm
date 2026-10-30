@@ -9,6 +9,7 @@ extends Resource
 ## - `quest.<quest>.<step>`: a quest step handed in (its rewards with it), `quest.<quest>` the
 ##   quest's last one (see `Quest`);
 ## - `beat.<beat>`: a beat put out by the story director (see `Beat`);
+## - `message.<message>`: a message heard to the end (see `Message`);
 ## - `crew.<npc>.joined`: a crew member aboard;
 ## - `event.<event>`: something that happens once per game (`CrewReactions`), e.g.
 ##   `event.first_death`, `event.landed.<body>`.

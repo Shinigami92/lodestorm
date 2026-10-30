@@ -1,6 +1,7 @@
 extends "res://tests/support/menu_fit.gd"
 ## The quest board on the bridge (`QuestBoardStation`, `BoardLists`, `QuestBoardCard`): the quests
 ## in their groups, tracking, the done group, the jobs with the finished ones on top until seen,
+## the messages played from its speaker (heard to the end, its marker while one is unheard),
 ## walking and scrolling the lines, and its screen and card fitting in every language.
 
 const QUEST_LOG_TEST := preload("res://tests/quests/test_quest_log.gd")
@@ -89,6 +90,8 @@ func test_walking_the_lines_and_the_tabs() -> void:
 	_board.step(Vector2.RIGHT)
 	assert_eq(_board.tab, QuestBoardStation.Tab.JOBS)
 	_board.step(Vector2.RIGHT)
+	assert_eq(_board.tab, QuestBoardStation.Tab.MESSAGES)
+	_board.step(Vector2.RIGHT)
 	assert_eq(_board.tab, QuestBoardStation.Tab.QUESTS, "around")
 	_board.close()
 
@@ -142,6 +145,42 @@ func test_jobs_finished_show_until_seen() -> void:
 	assert_eq(_lines()[0], "heading Under way")
 
 
+func test_messages_play_until_heard() -> void:
+	var messages: MessageLog = _ship.messages
+	var selin: NpcProfile = NpcProfile.find(&"councillor")
+	var kade: NpcProfile = NpcProfile.find(&"depot_master")
+	messages.received.append(ReceivedMessage.calling(selin, 0))
+	messages.received.append(ReceivedMessage.calling(kade, 1))
+	_board.set_tab(QuestBoardStation.Tab.MESSAGES)
+	assert_eq(_lines(), ["message " + kade.calls[1], "message " + selin.calls[0]] as Array[String])
+	assert_eq(_board.entries[0].note, "Kade", "who left it")
+	var marker := _board.get_node("UnheardMarker") as Node3D
+	assert_true(marker.visible, "two unheard")
+	_board.open(_player)
+	await wait_process_frames(2)
+	var card := _board.card_menu as QuestBoardCard
+	assert_eq(_board.entry_of(_board.selected).received, messages.received[1], "the newest")
+	assert_eq(card.get_texts()[0], "Kade")
+	assert_eq(card.get_texts()[3], kade.calls[1])
+	assert_eq(card.get_action().text, "Play")
+	assert_true(card.press_primary())
+	assert_eq(_board.speaker.playing_entry, messages.received[1])
+	assert_eq(card.get_action().text, "Stop")
+	card.press_primary()
+	assert_null(_board.speaker.playing_entry, "stopped")
+	assert_false(messages.received[1].heard, "not to the end")
+	card.press_primary()
+	_board.speaker._process(1000.0)
+	assert_true(messages.received[1].heard, "played to the end")
+	assert_null(_board.speaker.playing_entry)
+	_board.update_list()
+	assert_true(marker.visible, "Selin's still unheard")
+	messages.hear(messages.received[0])
+	_board.update_list()
+	assert_false(marker.visible)
+	_board.close()
+
+
 func test_board_fits_in_every_language() -> void:
 	var kinds: Array[Quest.Kind] = []
 	for kind: Quest.Kind in [Quest.Kind.MAIN, Quest.Kind.SIDE, Quest.Kind.REQUEST]:
@@ -164,6 +203,9 @@ func test_board_fits_in_every_language() -> void:
 	_ship.quests.progress.erase(widest.id)
 	_finish(quests[5])
 	_player.finished_jobs.add(FinishedJob.new(ARMOR, 8))
+	for profile: NpcProfile in NpcProfile.all():
+		for line: int in profile.calls.size():
+			_ship.messages.received.append(ReceivedMessage.calling(profile, line))
 	var screen := _board.screen.content as BoardScreen
 	var layout := Vector2(_board.screen.size * _board.screen.pixels_per_meter)
 	for locale: String in SettingsList.languages():

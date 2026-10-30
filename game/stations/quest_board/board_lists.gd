@@ -1,8 +1,9 @@
 class_name BoardLists
 extends RefCounted
 ## What the quest board lists (see `QuestBoardStation`), as `BoardEntry` lines: the quests in
-## groups by kind (main, side, requests) and the done ones in a group that opens, or a player's
-## jobs (the ones finished since they last looked on top, then the ones under way, soonest first).
+## groups by kind (main, side, requests) and the done ones in a group that opens, a player's jobs
+## (the ones finished since they last looked on top, then the ones under way, soonest first), or
+## the ship's messages (newest first).
 
 const ARSENAL: Arsenal = preload("res://game/weapons/all_weapons.tres")
 const STAR_SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
@@ -85,6 +86,22 @@ func job_lines(player: Player, now: float) -> Array[BoardEntry]:
 		lines.append_array(running)
 	if lines.is_empty():
 		lines.append(BoardEntry.new(BoardEntry.Kind.NOTE, tr("Nothing under way.")))
+	return lines
+
+
+## The messages in `messages` (the ship's), newest first: their first line and who left them.
+func message_lines(messages: MessageLog) -> Array[BoardEntry]:
+	var lines: Array[BoardEntry] = []
+	for i: int in range(messages.received.size() - 1, -1, -1):
+		var entry: ReceivedMessage = messages.received[i]
+		var said: Array[String] = entry.message.lines
+		var title: String = tr(said[0]) if not said.is_empty() else ""
+		var line := BoardEntry.new(BoardEntry.Kind.MESSAGE, title, "message:%d" % i)
+		line.received = entry
+		line.note = npc_name(entry.message.from)
+		lines.append(line)
+	if lines.is_empty():
+		lines.append(BoardEntry.new(BoardEntry.Kind.NOTE, tr("No messages yet.")))
 	return lines
 
 

@@ -1,10 +1,11 @@
 class_name BoardScreen
 extends PanelContainer
-## The quest board's screen (see `QuestBoardStation`): its tabs (Quests, Jobs) over a list of
-## `LINES` lines showing the board's `BoardEntry`s from a scroll position. Headings are amber, a
-## quest's line has its giver and a bar for its active step, the tracked one a filled diamond, a
-## job its time left. The station marks the selected and the hovered line (or tab) and asks where
-## they are (`line_rect`, `line_at`) to place its parts and to point with the mouse.
+## The quest board's screen (see `QuestBoardStation`): its tabs (Quests, Jobs, Messages) over a list
+## of `LINES` lines showing the board's `BoardEntry`s from a scroll position. Headings are amber, a
+## quest's line has its giver and a bar for its active step, the tracked one a filled diamond, a job
+## its time left, a message who left it and a dot (filled while unheard). The station marks the
+## selected and the hovered line (or tab) and asks where they are (`line_rect`, `line_at`) to place
+## its parts and to point with the mouse.
 
 ## Lines the list shows at once.
 const LINES: int = 10
@@ -14,7 +15,7 @@ const LINE_HEIGHT: float = 52.0
 const BAR_WIDTH: float = 120.0
 const BAR_HEIGHT: float = 8.0
 ## How many tabs (`QuestBoardStation.Tab`).
-const TABS: int = 2
+const TABS: int = 3
 
 var _tabs: Array[PanelContainer] = []
 var _tab_labels: Array[Label] = []
@@ -139,9 +140,10 @@ func line_fits(index: int) -> bool:
 
 
 func _update_tab_texts(news: Array[int]) -> void:
+	var names: Array[String] = [tr("Quests"), tr("Jobs"), tr("Messages")]
 	for i: int in _tab_labels.size():
 		var count: int = news[i] if i < news.size() else 0
-		var named: String = tr("Quests") if i == 0 else tr("Jobs")
+		var named: String = names[i]
 		_tab_labels[i].text = named + (" (%d)" % count if count > 0 else "")
 
 
@@ -168,6 +170,9 @@ func _show_line(i: int, entry: BoardEntry) -> void:
 		marker.shape = BoardMarker.Shape.TRACKED if entry.tracked else BoardMarker.Shape.ACTIVE
 	elif entry and entry.kind == BoardEntry.Kind.DONE:
 		marker.shape = BoardMarker.Shape.OPEN if entry.done else BoardMarker.Shape.CLOSED
+	elif entry and entry.kind == BoardEntry.Kind.MESSAGE:
+		var heard: bool = entry.received.heard
+		marker.shape = BoardMarker.Shape.HEARD if heard else BoardMarker.Shape.UNHEARD
 	marker.queue_redraw()
 
 

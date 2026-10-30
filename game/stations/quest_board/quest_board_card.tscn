@@ -40,6 +40,13 @@ layout_mode = 2
 theme_type_variation = &"CardStatus"
 autowrap_mode = 3
 
+[node name="Lines" type="Label" parent="Layout"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_type_variation = &"CardText"
+autowrap_mode = 3
+
 [node name="Status" type="Label" parent="Layout"]
 unique_name_in_owner = true
 auto_translate_mode = 2

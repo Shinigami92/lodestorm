@@ -121,3 +121,4 @@ props = Dictionary[StringName, PackedScene]({
 accent_color = Color(1, 0.45, 0.7, 1)
 suit_tint = Color(0.74, 0.68, 0.7, 1)
 dialogue = SubResource("Resource_dialogue")
+calls = Array[String](["Nell here, from the bar. Someone's been asking about you. Well, I have. Come by when you dock.", "It's Nell. I've got something to tell you, and it's not the kind of thing I'd put in a message. Come and have a drink.", "Nell here. Your seats at my counter are still free. Come by when you're docked, I'd like a word."])

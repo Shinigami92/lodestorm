@@ -4,10 +4,10 @@
 An NPC is voiced once assets/voice/source/<npc id>/ holds its anchors (anchor.py): one per voice language, listed
 in voice.json. Its lines are what the game says it speaks (`VoiceLines.lines_by_speaker`, written by
 tools/voice_lines.gd, run headless with GODOT4_EDITOR): its profile's (the prompts, the greeting, the topics, the
-tour, the reactions, the remarks) and lines of other files it says (a quest's hand-in), in English (the translation
-keys) and translated from locale/<language>.po. A line's recording is assets/voice/<npc id>/<language>/<hash>.ogg,
-the hash being the first 16 hex digits of the SHA-256 of the English line, so the game finds a line's file from its
-text (`VoiceLines`). manifest.json next to the anchors records what made each file (the text spoken, the anchor's
+tour, the reactions, the remarks, the calls) and lines of other files it says (a quest's hand-in, a message), in
+English (the translation keys) and translated from locale/<language>.po. A line's recording is
+assets/voice/<npc id>/<language>/<hash>.ogg, the hash being the first 16 hex digits of the SHA-256 of the English
+line, so the game finds a line's file from its text (`VoiceLines`). manifest.json next to the anchors records what made each file (the text spoken, the anchor's
 hash, the model, the seed).
 """
 

@@ -1,14 +1,14 @@
 class_name NavigatorHologram
 extends Node3D
 ## The navigator's hologram above the bridge's holo table (the `NavigatorStation` it belongs to says
-## what's shown): the star system (`System`: the star, an orbit line per body spread evenly so
-## every body fits on the table, a hologram sphere per planet and moon, a ring-and-hub shape per
-## station, a name plate per body with its signature ore, "?" while out of reach, the ship's marker
-## and routes to where it can go) and a body's globe (`Globe`: its regions as bordered areas on the
-## surface in their biome's color, a plate per region with its name, danger pips and ores). What
-## can't be reached is see-through. `show_zoom` places them for the navigator's zoom: the system
-## grows around the body until it becomes the globe, the globe around the region until the landing
-## site (the holo table's location hologram) takes over.
+## what's shown): the star system (`System`: the star, an orbit line per body spread evenly so every
+## body fits on the table, a hologram sphere per planet and moon, a ring-and-hub shape per station,
+## a name plate per body with its signature ore, "?" while out of reach, the ship's marker and
+## routes to where it can go, an amber diamond on a station where someone waits) and a body's globe
+## (`Globe`: its regions as bordered areas on the surface in their biome's color, a plate per region
+## with its name, danger pips and ores). What can't be reached is see-through. `show_zoom` places
+## them for the navigator's zoom: the system grows around the body until it becomes the globe, the
+## globe around the region until the landing site (the holo table's location hologram) takes over.
 
 ## How see-through what can't be reached is.
 const UNREACHABLE_FADE: float = 0.35
@@ -21,6 +21,9 @@ const ORBIT_COLOR := Color(0.3, 0.85, 1.0)
 ## The ship's marker and the route to the destination; the routes to the other reachable bodies.
 const SHIP_COLOR := Color(1.0, 0.72, 0.3)
 const ROUTE_COLOR := Color(0.3, 0.85, 1.0)
+## The diamond on a station where someone waits (see `StationWait`): its color and size, in m.
+const WAIT_COLOR := Color(1.0, 0.75, 0.3)
+const WAIT_SIZE: float = 0.09
 ## Distance between a route's dots, in m, and how high a route arcs (of its length).
 const ROUTE_STEP: float = 0.045
 const ROUTE_ARC: float = 0.22
@@ -67,6 +70,8 @@ var _routes: Node3D
 var _route_materials: Dictionary[Color, ShaderMaterial] = {}
 ## The globe's region plates and where each region's center lies on it.
 var _region_plates: Dictionary[HoloPlate, Vector3] = {}
+## The diamond of each station (its id), shown while someone waits there (`show_waits`).
+var _wait_markers: Dictionary[StringName, Node3D] = {}
 
 
 ## Whether the system view is built (it is once the star system is known).
@@ -101,7 +106,20 @@ func clear() -> void:
 	_system_materials.clear()
 	_system_plates.clear()
 	_region_plates.clear()
+	_wait_markers.clear()
 	_routes = null
+
+
+## Shows the diamond on each station in `waiting` (its id: whether the tracked quest waits there,
+## then it's filled; else outlined) and hides the others.
+func show_waits(waiting: Dictionary[StringName, bool]) -> void:
+	for id: StringName in _wait_markers:
+		var marker: Node3D = _wait_markers[id]
+		marker.visible = waiting.has(id)
+		if marker.visible:
+			var filled: bool = waiting[id]
+			(marker.get_node(^"Filled") as Node3D).visible = filled
+			(marker.get_node(^"Outlined") as Node3D).visible = not filled
 
 
 ## How far `shown_body`'s orbit lies from what it orbits in the system view, in m: the star's
@@ -322,6 +340,8 @@ func _build_system() -> void:
 		part.outline = shape
 		_body_parts[shown_body] = part
 		_add_body_plate(shown_body, part)
+		if shown_body.kind == CelestialBody.Kind.STATION:
+			_add_wait_marker(shown_body, part)
 	var star := StationPart.new()
 	star.item = system
 	star.pick_radius = body_scale * 0.8
@@ -349,6 +369,35 @@ func _add_body_plate(shown_body: CelestialBody, part: StationPart) -> void:
 	)
 	part.add_child(plate)
 	_system_plates[plate] = 1.0 if reachable else UNREACHABLE_FADE + 0.25
+
+
+## The diamond of `station` (hidden until someone waits there), beside its shape in `part`: filled
+## and outlined, one of them shown.
+func _add_wait_marker(station: CelestialBody, part: StationPart) -> void:
+	var marker := Node3D.new()
+	marker.name = "Waiting"
+	marker.visible = false
+	var reach: float = station.size * body_scale * 0.5
+	marker.position = Vector3(reach + WAIT_SIZE * 1.2, reach + WAIT_SIZE * 0.5, 0.0)
+	var box := BoxMesh.new()
+	box.size = Vector3(WAIT_SIZE, WAIT_SIZE, WAIT_SIZE * 0.4)
+	var filled: MeshInstance3D = _hologram_mesh(box, WAIT_COLOR, 1.6)
+	filled.name = "Filled"
+	filled.rotation.z = PI * 0.25
+	marker.add_child(filled)
+	# A torus of four segments is a square: stood up, a diamond's outline.
+	var edge: float = WAIT_SIZE * 0.1
+	var square := TorusMesh.new()
+	square.inner_radius = WAIT_SIZE * 0.7 - edge
+	square.outer_radius = WAIT_SIZE * 0.7 + edge
+	square.rings = 4
+	square.ring_segments = 4
+	var outlined: MeshInstance3D = _hologram_mesh(square, WAIT_COLOR, 1.6)
+	outlined.name = "Outlined"
+	outlined.rotation.x = PI * 0.5
+	marker.add_child(outlined)
+	part.add_child(marker)
+	_wait_markers[station.id] = marker
 
 
 ## A dotted arc from `start` to `end` (bright for the destination's route).

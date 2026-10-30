@@ -36,6 +36,12 @@
       "seed": 1,
       "text": "Was kann ich für dich tun?"
     },
+    "2315c9aea3c0dbd8": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Selin hier, von Waypost Ostra. Wenn ihr das nächste Mal in der Nähe seid, dockt bei uns an. Ich würde gern persönlich mit euch sprechen."
+    },
     "44429f7f8efd9f11": {
       "anchor": "14158481aef7c3cc",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -78,6 +84,12 @@
       "seed": 1,
       "text": "Man sagt mir nach, ich wähle meine Worte zu vorsichtig. Vielleicht stimmt das. Aber auf einer so kleinen Station spricht sich ein unbedachtes Wort schnell herum."
     },
+    "8947515464de5f38": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Selin hier. Es gibt etwas, das ich mit euch besprechen möchte. Kommt zu mir, wenn ihr andockt."
+    },
     "9c3cb662918d3386": {
       "anchor": "14158481aef7c3cc",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -101,6 +113,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Wir tagen am langen Tisch im Ratsbüro. Er ist der einzige auf der Station, der groß genug ist, also landet auch jeder Streit dort."
+    },
+    "eadd37966080e0f9": {
+      "anchor": "14158481aef7c3cc",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier ist Selin. Manches sagt man besser von Angesicht zu Angesicht. Sucht mich auf, wenn ihr an Ostra angedockt habt."
     }
   },
   "en": {
@@ -139,6 +157,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "What can I do for you?"
+    },
+    "2315c9aea3c0dbd8": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Selin here, from Waypost Ostra. Next time you're nearby, dock with us. I'd like a word with you in person."
     },
     "44429f7f8efd9f11": {
       "anchor": "d0c62621f6133826",
@@ -182,6 +206,12 @@
       "seed": 1,
       "text": "People say I'm too careful with my words. Maybe they're right. But on a station this small, a careless word travels fast."
     },
+    "8947515464de5f38": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Selin here. There's something I'd like to discuss with you. Come and see me when you dock."
+    },
     "9c3cb662918d3386": {
       "anchor": "d0c62621f6133826",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -205,6 +235,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "We meet at the long table in the council office. It's the only one on the station that's big enough, so every argument ends up there too."
+    },
+    "eadd37966080e0f9": {
+      "anchor": "d0c62621f6133826",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "This is Selin. Some things are better said face to face. Find me when you're docked at Ostra."
     }
   }
 }

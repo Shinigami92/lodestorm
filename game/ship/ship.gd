@@ -105,6 +105,9 @@ var reactions := CrewReactions.new()
 var quests := QuestLog.new()
 ## What's new in the story on each return (after a run, or docking), saved with the ship.
 var director := StoryDirector.new()
+## The messages left for the ship (and calls from people waiting at a station), saved with the
+## ship.
+var messages := MessageLog.new()
 ## Lets the levels and skill ranks under way take effect once done.
 var progress_clock: ProgressClock
 ## Where the crew can walk aboard.
@@ -298,11 +301,14 @@ func _count_quests() -> void:
 	events.miner_built.connect(_on_built.unbind(2))
 
 
-## Lets the story director count what its beats wait for and direct each return.
+## Lets the story director count what its beats wait for and direct each return, and the messages
+## come in after it.
 func _direct_story() -> void:
 	director.story = story
 	director.quests = quests
 	director.heat_shield = heat_shield
+	messages.story = story
+	messages.director = director
 	var events: GameEvents = GameEvents.bus
 	events.mission_started.connect(_on_mission_started)
 	events.player_died.connect(director.count_fall.unbind(2))
@@ -321,10 +327,12 @@ func _on_mission_started(brief: MissionBrief) -> void:
 
 func _on_mission_ended() -> void:
 	director.end_run(_body_id())
+	messages.come_in(_body_id())
 
 
 func _on_docked() -> void:
 	director.dock(_body_id())
+	messages.come_in(_body_id())
 
 
 ## The id of the body the ship is at, or empty.

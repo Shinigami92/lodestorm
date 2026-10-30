@@ -15,7 +15,9 @@ extends Station
 ## A station the ship can dock at is picked like a region, without a globe: zooming into it (to
 ## 1) shows its map on the holo table like a landing site (`Voyage.preview`), and "Set as
 ## destination" (also `interact` there) chooses the visit. A station without a map, the star and
-## locked planets and regions can't be zoomed into: zooming stops short of them.
+## locked planets and regions can't be zoomed into: zooming stops short of them. A station where
+## someone waits for the players (`StationWait`) has an amber diamond, filled for the tracked
+## quest, and its card says who.
 ## Its `hologram` (`NavigatorHologram`, the `View` child) builds and places the views; the star's
 ## name is on the card. The card floats beside the hologram, so it never covers
 ## a region.
@@ -33,6 +35,8 @@ const UNREACHABLE_LIMIT: float = 0.45
 ## The landing site's size on the table (of the holo table's own), so the card beside it leaves
 ## it free.
 const LANDING_SCALE: float = 0.8
+## Seconds between looks at who waits at the stations.
+const WAITS_REFRESH: float = 0.5
 
 ## Where the card floats, from the hologram's center: right and up on screen, in m.
 @export var card_spot: Vector2 = Vector2(2.6, 0.3)
@@ -55,6 +59,7 @@ var level: Level:
 var _site: StationPart
 var _parts: Array[StationPart] = []
 var _parts_level: Level = Level.SYSTEM
+var _since_waits: float = WAITS_REFRESH
 
 ## The system view and the globe (above the table).
 @onready var hologram: NavigatorHologram = $View
@@ -88,6 +93,9 @@ func _process(delta: float) -> void:
 		zoom = zoom_target
 	_keep_landing_site_shown()
 	_show_zoom()
+	_since_waits += delta
+	if _since_waits >= WAITS_REFRESH:
+		_show_waits()
 	if user:
 		refresh()
 
@@ -415,6 +423,18 @@ func _rebuild(new_level: Level) -> void:
 
 ## Places the views for `zoom` (see `NavigatorHologram.show_zoom`), and the landing site on the
 ## holo table once the zoom reaches it.
+## Puts the diamonds on the stations where someone waits (filled for the tracked quest).
+func _show_waits() -> void:
+	_since_waits = 0.0
+	var waiting: Dictionary[StringName, bool] = {}
+	if ship:
+		var tracked: Quest = ship.quests.get_tracked()
+		for wait: StationWait in ship.messages.waits():
+			var is_tracked: bool = tracked != null and wait.quest == tracked
+			waiting[wait.station] = waiting.get(wait.station, false) or is_tracked
+	hologram.show_waits(waiting)
+
+
 func _show_zoom() -> void:
 	hologram.show_zoom(zoom, body, region)
 	if holo_table:

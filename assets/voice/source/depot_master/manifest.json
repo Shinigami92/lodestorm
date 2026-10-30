@@ -18,6 +18,12 @@
       "seed": 1,
       "text": "Ich? Ich führe die Bücher. Ich weiß, wie viele Kisten wir von allem haben, bis zur letzten Schraube."
     },
+    "15c31108ec065ddb": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kade hier. Lasst mich nicht zu lange warten. Kommt ins Depot, wenn ihr das nächste Mal angedockt seid."
+    },
     "1e51577dfff52e00": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -84,6 +90,12 @@
       "seed": 1,
       "text": "Frag nur."
     },
+    "73a34912ec31af85": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier ist Kade vom Depot. Es hat sich etwas ergeben, das euch betrifft. Schaut vorbei, wenn ihr andockt."
+    },
     "79c91dc7254cd25b": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -113,6 +125,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Alles, was die Kolonie isst, atmet und verbaut, lagert in meinem Depot: Essen, Luftfilter, Ersatzteile und Metall."
+    },
+    "fa084231e8a91182": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kade vom Depot. An meinem Tresen wartet etwas auf euch. Kommt vorbei, wenn ihr andockt."
     }
   },
   "en": {
@@ -133,6 +151,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Me? I keep the books. I know how many crates of anything we have, down to the last bolt."
+    },
+    "15c31108ec065ddb": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kade here. Don't keep me waiting too long. Come by the depot next time you're docked."
     },
     "1e51577dfff52e00": {
       "anchor": "06a309e0b3e2b83b",
@@ -200,6 +224,12 @@
       "seed": 1,
       "text": "Ask away."
     },
+    "73a34912ec31af85": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "This is Kade at the depot. Something's come up, and it concerns you. Stop by when you dock."
+    },
     "79c91dc7254cd25b": {
       "anchor": "06a309e0b3e2b83b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -229,6 +259,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Everything the colony eats, breathes and builds with is stored in my depot: food, air filters, spare parts and metal."
+    },
+    "fa084231e8a91182": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kade, from the depot. Something's waiting for you at my counter. Come by when you dock."
     }
   }
 }

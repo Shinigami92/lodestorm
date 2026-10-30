@@ -1189,6 +1189,18 @@ msgid "Bartender"
 msgstr "Barkeeperin"
 
 #: game/npcs/ostra/bartender.tres
+msgid "Nell here, from the bar. Someone's been asking about you. Well, I have. Come by when you dock."
+msgstr "Nell hier, aus der Bar. Jemand hat nach euch gefragt. Na gut, ich war's. Kommt vorbei, wenn ihr andockt."
+
+#: game/npcs/ostra/bartender.tres
+msgid "It's Nell. I've got something to tell you, and it's not the kind of thing I'd put in a message. Come and have a drink."
+msgstr "Hier ist Nell. Ich hab euch etwas zu erzählen, und so was schreibt man nicht in eine Nachricht. Kommt auf einen Drink vorbei."
+
+#: game/npcs/ostra/bartender.tres
+msgid "Nell here. Your seats at my counter are still free. Come by when you're docked, I'd like a word."
+msgstr "Nell hier. Eure Plätze an meinem Tresen sind noch frei. Kommt vorbei, wenn ihr angedockt seid, ich würde gern mit euch reden."
+
+#: game/npcs/ostra/bartender.tres
 msgid "What can I get you?"
 msgstr "Was darf ich dir bringen?"
 
@@ -1679,6 +1691,18 @@ msgid "Council member"
 msgstr "Ratsmitglied"
 
 #: game/npcs/ostra/councillor.tres
+msgid "Selin here. There's something I'd like to discuss with you. Come and see me when you dock."
+msgstr "Selin hier. Es gibt etwas, das ich mit euch besprechen möchte. Kommt zu mir, wenn ihr andockt."
+
+#: game/npcs/ostra/councillor.tres
+msgid "This is Selin. Some things are better said face to face. Find me when you're docked at Ostra."
+msgstr "Hier ist Selin. Manches sagt man besser von Angesicht zu Angesicht. Sucht mich auf, wenn ihr an Ostra angedockt habt."
+
+#: game/npcs/ostra/councillor.tres
+msgid "Selin here, from Waypost Ostra. Next time you're nearby, dock with us. I'd like a word with you in person."
+msgstr "Selin hier, von Waypost Ostra. Wenn ihr das nächste Mal in der Nähe seid, dockt bei uns an. Ich würde gern persönlich mit euch sprechen."
+
+#: game/npcs/ostra/councillor.tres
 msgid "Yes? What would you like to know?"
 msgstr "Ja? Was möchtest du wissen?"
 
@@ -1753,6 +1777,18 @@ msgstr "Man sagt mir nach, ich wähle meine Worte zu vorsichtig. Vielleicht stim
 #: game/npcs/ostra/depot_master.tres
 msgid "Depot master"
 msgstr "Depotleitung"
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Kade, from the depot. Something's waiting for you at my counter. Come by when you dock."
+msgstr "Kade vom Depot. An meinem Tresen wartet etwas auf euch. Kommt vorbei, wenn ihr andockt."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "Kade here. Don't keep me waiting too long. Come by the depot next time you're docked."
+msgstr "Kade hier. Lasst mich nicht zu lange warten. Kommt ins Depot, wenn ihr das nächste Mal angedockt seid."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "This is Kade at the depot. Something's come up, and it concerns you. Stop by when you dock."
+msgstr "Hier ist Kade vom Depot. Es hat sich etwas ergeben, das euch betrifft. Schaut vorbei, wenn ihr andockt."
 
 #: game/npcs/ostra/depot_master.tres
 msgid "Make it quick, I've got crates to count."
@@ -1845,6 +1881,18 @@ msgstr "Aber ich kenne gern die Leute, die das Erz heraufbringen. Also komm vorb
 #: game/npcs/ostra/rival_captain.tres
 msgid "Prospector captain"
 msgstr "Prospektoren-Kapitän"
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Rook here. Don't flatter yourselves, this isn't a social call. Come and find me when you dock."
+msgstr "Rook hier. Bildet euch nichts ein, das ist kein Freundschaftsanruf. Sucht mich, wenn ihr andockt."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "It's Rook. I've got something to say, and I'd rather say it to your faces. Next time you dock at Ostra."
+msgstr "Hier ist Rook. Ich hab euch was zu sagen, und das sag ich euch lieber ins Gesicht. Beim nächsten Andocken an Ostra."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Rook. If you can tear yourselves away from the planets for a moment, come to the station. We need to talk."
+msgstr "Rook. Wenn ihr euch mal kurz von den Planeten losreißen könnt, kommt zur Station. Wir müssen reden."
 
 #: game/npcs/ostra/rival_captain.tres
 msgid "What, need more advice already?"
@@ -2805,6 +2853,10 @@ msgid "Destination set: set course at the cockpit."
 msgstr "Ziel gesetzt: Kurs im Cockpit setzen."
 
 #: game/stations/navigator/navigator_card.gd
+msgid "Waiting for you: %s"
+msgstr "Erwartet euch: %s"
+
+#: game/stations/navigator/navigator_card.gd
 msgid "Needs heat shield MK%d (engine room)"
 msgstr "Braucht Hitzeschild MK%d (Maschinenraum)"
 
@@ -2830,6 +2882,7 @@ msgid "Stop for sure"
 msgstr "Wirklich anhalten"
 
 #: game/stations/offer_card.gd
+#: game/stations/quest_board/quest_board_card.gd
 msgid "Stop"
 msgstr "Anhalten"
 
@@ -2852,6 +2905,10 @@ msgstr "Läuft"
 #: game/stations/quest_board/board_lists.gd
 msgid "Nothing under way."
 msgstr "Gerade läuft nichts."
+
+#: game/stations/quest_board/board_lists.gd
+msgid "No messages yet."
+msgstr "Noch keine Nachrichten."
 
 #: game/stations/quest_board/board_lists.gd
 msgid "Main"
@@ -2917,6 +2974,11 @@ msgstr "Aufträge"
 msgid "Jobs"
 msgstr "Arbeiten"
 
+#: game/stations/quest_board/board_screen.gd
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Messages"
+msgstr "Nachrichten"
+
 #: game/stations/quest_board/quest_board_card.gd
 msgid "Quests whose last step is handed in."
 msgstr "Aufträge, deren letzter Schritt abgegeben ist."
@@ -2938,6 +3000,10 @@ msgid "Upgrades, skills, miners and furnaces at work, and what's done."
 msgstr "Upgrades, Fähigkeiten, Miner und Öfen bei der Arbeit, und was fertig ist."
 
 #: game/stations/quest_board/quest_board_card.gd
+msgid "What people left for the ship while it was away."
+msgstr "Was Leute dem Schiff hinterlassen haben, während es fort war."
+
+#: game/stations/quest_board/quest_board_card.gd
 msgid "Hand in: %s (%s)"
 msgstr "Abgeben bei: %s (%s)"
 
@@ -2949,6 +3015,22 @@ msgstr "Verfolgt"
 #: game/stations/quest_board/quest_board_card.tscn
 msgid "Track"
 msgstr "Verfolgen"
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Playing (%d of %d)"
+msgstr "Läuft (%d von %d)"
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Playing"
+msgstr "Läuft"
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Not heard yet"
+msgstr "Noch nicht angehört"
+
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Play"
+msgstr "Abspielen"
 
 #: game/stations/refinery/furnace_card.gd
 msgid "Furnace"

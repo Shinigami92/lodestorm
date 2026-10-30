@@ -2304,6 +2304,14 @@ msgstr "Belohnung"
 msgid "Blueprint: %s"
 msgstr "Bauplan: %s"
 
+#: game/quests/quest_panel.gd
+msgid "Furnaces lit: %d"
+msgstr "Schmelzöfen angefeuert: %d"
+
+#: game/quests/quest_panel.gd
+msgid "Miner cradles opened: %d"
+msgstr "Miner-Halterungen frei: %d"
+
 #: game/quests/reach_goal.gd
 msgid "Find %s"
 msgstr "%s finden"

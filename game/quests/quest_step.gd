@@ -23,6 +23,10 @@ const READY: StringName = &"ready"
 @export var items: Dictionary[ItemType, int] = {}
 ## A blueprint it pays: every player there learns it.
 @export var blueprint: WeaponType
+## Furnaces it unlocks in the ship's refinery (see `Furnaces`), lit at the hand-in.
+@export_range(0, 4) var furnaces: int = 0
+## Miners' cradles it opens on the ship (see `Cradles`) at the hand-in.
+@export_range(0, 4) var cradles: int = 0
 ## What its NPC says over the radio once all its goals are done, instead of the last one's
 ## `QuestGoal.done_line` (e.g. "That's the second nest. Come back to me."; see `QuestRadio`), or
 ## null.

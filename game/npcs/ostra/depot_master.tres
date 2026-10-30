@@ -56,3 +56,4 @@ accent_color = Color(1, 0.6, 0.2, 1)
 suit_tint = Color(0.72, 0.68, 0.62, 1)
 dialogue = SubResource("Resource_dialogue")
 calls = Array[String](["Kade, from the depot. Something's waiting for you at my counter. Come by when you dock.", "Kade here. Don't keep me waiting too long. Come by the depot next time you're docked.", "This is Kade at the depot. Something's come up, and it concerns you. Stop by when you dock."])
+open_requests = 2

@@ -304,6 +304,8 @@ static func nearest(tree: SceneTree, from: Vector3) -> Ship:
 ## someone is back aboard; a lost run counts nothing) and what's built.
 func _count_quests() -> void:
 	quests.story = story
+	quests.furnaces = furnaces
+	quests.cradles = cradles
 	var events: GameEvents = GameEvents.bus
 	events.mission_started.connect(quests.start_run.unbind(1))
 	player_boarded.connect(_count_visit)

@@ -182,3 +182,46 @@ func test_tracked_saved_and_read_back() -> void:
 	stale.catalog = _log.catalog
 	assert_false(stale.load_data({"accepted": [], "tracked": "ammo_run"}), "not accepted")
 	assert_null(stale.get_tracked())
+
+
+## A request of the depot master's: deliver 300 Kyrite (one step).
+static func make_request(id: StringName) -> Quest:
+	var request: Quest = make_quest(id, &"depot_master")
+	request.kind = Quest.Kind.REQUEST
+	request.steps.resize(1)
+	return request
+
+
+func test_a_step_lights_furnaces_and_opens_cradles() -> void:
+	_quest.steps[0].furnaces = 2
+	_quest.steps[0].cradles = 1
+	_log.accept(_quest, [])
+	_log.take_from({KYRITE: 300.0})
+	var payer: Player = autofree(Player.new())
+	assert_true(_log.hand_in(_quest, payer, []))
+	assert_eq(_log.furnaces.unlocked, 2)
+	assert_eq(_log.cradles.open, Cradles.START + 1)
+
+
+func test_requests_come_back_in_turn() -> void:
+	var requests: Array[Quest] = [make_request(&"r1"), make_request(&"r2"), make_request(&"r3")]
+	_log.catalog.quests.append_array(requests)
+	var payer: Player = autofree(Player.new())
+	assert_eq(_log.offered_by(&"depot_master", [], 2), requests.slice(0, 2), "two open")
+	assert_true(_log.accept(requests[0], []))
+	assert_eq(_log.offered_by(&"depot_master", [], 2), requests.slice(1, 2), "one accepted")
+	_log.take_from({KYRITE: 300.0})
+	assert_true(_log.hand_in(requests[0], payer, []))
+	assert_false(_log.is_accepted(requests[0]), "offered again later")
+	assert_false(_log.story.is_set(requests[0].flag()))
+	assert_eq(_log.offered_by(&"depot_master", [], 2), requests.slice(1, 3), "the next ones")
+	_log.accept(requests[2], [])
+	_log.take_from({KYRITE: 300.0})
+	assert_true(_log.hand_in(requests[2], payer, []))
+	assert_eq(_log.offered_by(&"depot_master", [], 2), requests.slice(0, 2), "from the first again")
+	assert_eq(_log.offered_by(&"quartermaster", [], 2), [_quest], "a quest isn't a request")
+	var saved: Dictionary = JSON.parse_string(JSON.stringify(_log.save_data()))
+	var read := QuestLog.new()
+	read.catalog = _log.catalog
+	assert_true(read.load_data(saved))
+	assert_eq(read.last_requests[&"depot_master"], &"r3")

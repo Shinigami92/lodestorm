@@ -25,7 +25,7 @@ The game lives in `game/`, one folder per feature: its scenes, scripts and resou
 | `ship/` | ship, flight, lift, doors, the cargo hatch, neon signs, the shell's look (`ShipShell`, room looks), floor guide (Waypost Ostra's), holo table; the generated `hull.tscn`, `rooms/` (a scene per room), shared `materials/` | the modeled hull and rooms |
 | `space_station/` | `SpaceStation` (a station the ship docks at); one folder per station with its generated map (`ostra/`) | the second station, outposts |
 | `stations/` | `Station`, `StationPart`, `StationCard`, `OfferCard`; one folder per station with its scene, script and card | med bed, quest board, comms station |
-| `story/` | story flags and their naming scheme | quests, reputation, expedition logs |
+| `story/` | story flags and their naming scheme | quests, expedition logs |
 | `ui/` | `WorldMenu`, `WorldPanel`, terminal, settings (`SettingsList`, the terminal's `SettingsMenu`), credits, the screen fade, card widgets (`ItemCost`, `BadgeRow`, `PipRow`) and `CardPalette`; `title/` (the title view), `boot/` (the boot screen) | |
 | `weapons/` | the weapon framework (`Weapon`, `WeaponType`, `WeaponPart`; `feeds/`, `triggers/`, `deliveries/`, `effects/`), one folder per weapon in `types/` (its type, scene, feed, trigger, delivery, effects and parts), ammo, damage numbers, `Destructible` (what weapons wear down besides aliens), `WeaponTarget` (an alien or a destructible, told apart in one place) | more weapons, feeds, triggers, deliveries, effects |
 | `world/` | star system, celestial bodies, regions | more systems |

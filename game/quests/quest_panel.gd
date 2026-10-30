@@ -3,7 +3,7 @@ extends VBoxContainer
 ## A quest on a holo card (the talk card's offer and hand-in, the quest board): what its step asks,
 ## its goals (with how far they are, once accepted, and under one done out in a region where it is:
 ## the region and its planet or moon), what the hold pays of the rest at a hand-in (red where it's
-## short), and what it pays: ores and alloys as badges, a blueprint and reputation as lines below.
+## short), and what it pays: ores and alloys as badges, a blueprint as a line below.
 
 const STAR_SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
 
@@ -104,15 +104,11 @@ func _where(goal: RegionGoal) -> String:
 func _show_rewards(paying: Array) -> void:
 	var items: Dictionary[ItemType, int] = {}
 	var extras: Array[String] = []
-	var trust: int = 0
 	for step: QuestStep in paying:
 		for item: ItemType in step.items:
 			items[item] = items.get(item, 0) + step.items[item]
 		if step.blueprint:
 			extras.append(tr("Blueprint: %s") % step.blueprint.display_name)
-		trust += step.reputation
-	if trust > 0:
-		extras.append(tr("Reputation +%d") % trust)
 	_rewards.show_items(items.keys(), items)
 	_rewards.visible = not items.is_empty()
 	_extras.text = "\n".join(extras)

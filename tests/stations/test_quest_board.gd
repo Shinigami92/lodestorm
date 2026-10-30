@@ -199,7 +199,6 @@ func test_board_fits_in_every_language() -> void:
 	for ore: OreType in ores:
 		step.items[ore] = 999
 	step.blueprint = load("res://game/weapons/types/brask/brask.tres") as WeaponType
-	step.reputation = 3
 	_ship.quests.progress.erase(widest.id)
 	_finish(quests[5])
 	_player.finished_jobs.add(FinishedJob.new(ARMOR, 8))

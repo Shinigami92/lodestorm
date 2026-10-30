@@ -2304,10 +2304,6 @@ msgstr "Belohnung"
 msgid "Blueprint: %s"
 msgstr "Bauplan: %s"
 
-#: game/quests/quest_panel.gd
-msgid "Reputation +%d"
-msgstr "Ansehen +%d"
-
 #: game/quests/reach_goal.gd
 msgid "Find %s"
 msgstr "%s finden"

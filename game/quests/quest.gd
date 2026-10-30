@@ -21,8 +21,6 @@ enum Kind { MAIN, SIDE, REQUEST }
 @export var requires: Array[StringName] = []
 ## A planet or moon it's about (its `CelestialBody.id`): only offered once the ship reaches it.
 @export var requires_body: StringName = &""
-## How much the giver must trust the players first (their reputation, 0–`QuestLog.REPUTATION_MAX`).
-@export_range(0, 5) var requires_reputation: int = 0
 ## What the giver says about it, a topic in their list while it's offered (e.g. "About that
 ## job..."); heard to the end, the offer card shows what it asks and pays. Its `id` is the giver's
 ## (`<giver>.<topic>`, see `Story`).
@@ -41,10 +39,10 @@ func step_flag(step: QuestStep) -> StringName:
 
 
 ## Whether its giver offers it now: `story` has the flags it `requires`, its `requires_body` is
-## among the bodies the ship `reaches` (their ids) and the giver's `reputation` is high enough.
-## Whether it's accepted already is the `QuestLog`'s.
-func is_open(story: Story, reaches: Array[StringName], reputation: int) -> bool:
-	if not story.is_set_all(requires) or reputation < requires_reputation:
+## among the bodies the ship `reaches` (their ids). Whether it's accepted already is the
+## `QuestLog`'s.
+func is_open(story: Story, reaches: Array[StringName]) -> bool:
+	if not story.is_set_all(requires):
 		return false
 	return requires_body.is_empty() or requires_body in reaches
 

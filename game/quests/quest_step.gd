@@ -23,8 +23,6 @@ const READY: StringName = &"ready"
 @export var items: Dictionary[ItemType, int] = {}
 ## A blueprint it pays: every player there learns it.
 @export var blueprint: WeaponType
-## Reputation with the quest's giver it pays (pips, up to `QuestLog.REPUTATION_MAX`).
-@export_range(0, 5) var reputation: int = 0
 ## What its NPC says over the radio once all its goals are done, instead of the last one's
 ## `QuestGoal.done_line` (e.g. "That's the second nest. Come back to me."; see `QuestRadio`), or
 ## null.

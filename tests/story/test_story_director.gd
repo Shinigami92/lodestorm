@@ -166,7 +166,7 @@ func test_flag_and_quest_conditions() -> void:
 	assert_true(done.holds(_director, beat))
 
 
-func test_act_shield_and_reputation_conditions() -> void:
+func test_act_and_shield_conditions() -> void:
 	var beat: Beat = make_beat(&"beat")
 	var act := ActCondition.new()
 	act.from = 2
@@ -185,12 +185,6 @@ func test_act_shield_and_reputation_conditions() -> void:
 	_director.heat_shield.take_from(share)
 	assert_almost_eq(_director.heat_shield.paid_share(), 0.4, 0.001)
 	assert_true(third.holds(_director, beat))
-	var trust := ReputationCondition.new()
-	trust.npc = &"quartermaster"
-	trust.pips = 2
-	assert_false(trust.holds(_director, beat))
-	_director.quests.reputation[&"quartermaster"] = 2
-	assert_true(trust.holds(_director, beat))
 
 
 func test_ore_region_and_fall_conditions() -> void:

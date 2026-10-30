@@ -12,8 +12,7 @@ const PEOPLE: String = "res://game/npcs"
 static var _paths: Dictionary[StringName, String] = {}
 
 ## Who they are in the story's flags (the start of their topics' ids, see `Story`) and later in
-## quests and reputation, e.g. `quartermaster`: saved, so it never changes; not a name (names may
-## still change).
+## quests, e.g. `quartermaster`: saved, so it never changes; not a name (names may still change).
 @export var id: StringName
 ## Their name (a name: not translated); none for ambient colonists (the plate shows the role).
 @export var display_name: String

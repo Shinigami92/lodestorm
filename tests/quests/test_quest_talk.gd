@@ -56,7 +56,6 @@ func test_offer_card_accepts() -> void:
 	assert_not_null(card.get_button("Accept"))
 	assert_not_null(card.get_button("Not now"))
 	assert_eq(card.get_quest_panel().get_goal_texts(), ["•  Deliver Kyrite  300"])
-	assert_string_contains(card.get_quest_panel().get_extras(), "Reputation +1")
 	var speech := _npc.bubble.content as SpeechBubble
 	assert_eq(speech.get_line(), _quest.offer.lines[-1], "the offer's last line stays")
 	card.get_button("Accept").pressed.emit()
@@ -93,7 +92,6 @@ func test_hand_in_pays_the_rest_from_the_hold() -> void:
 	card.get_button("Hand in").pressed.emit()
 	assert_eq(_player.hold.amount(KYRITE), 50.0, "the missing 100 from the hold")
 	assert_eq(_player.hold.amount(MERISK), merisk_before + 2.0, "the reward")
-	assert_eq(_ship.quests.reputation[&"quartermaster"], 1)
 	assert_true(_ship.story.is_set(&"quest.ammo_run.kyrite"))
 	assert_eq(_npc.talk.topic, _quest.steps[0].hand_in, "then they say its lines")
 	assert_eq(_ship.quests.current_step(_quest), _quest.steps[1], "the next step")

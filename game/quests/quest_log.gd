@@ -1,23 +1,21 @@
 class_name QuestLog
 extends Resource
 ## The ship's quests (the host's, saved with the ship, see docs/planned/quests.md): which ones are
-## accepted (in that order), how far the active step's goals are, and the reputation with each
-## NPC. Which step is active follows from the story's flags: the first one not handed in yet
-## (`Quest.step_flag`). Hauls brought aboard pay into active deliveries after the heat shield's
-## plate (`take_from`), what a run brought aboard counts for mining (`count_hauled`), what's
-## built counts once a player has it (`check_built`), and what's done out in a region once someone
-## is back aboard (`add_progress`, from a `QuestVisit`). A step is handed in at its NPC (`hand_in`):
-## what's still missing of its deliveries comes from the hold of whoever hands it in, its rewards
-## go to everyone there. One quest is tracked (`tracked`, the session's: its markers come later):
-## accepting one tracks it while none is, and once the tracked one is done the main quest is.
-## The radio calls heard of the active steps are kept too (`calls`, see `QuestRadio`).
+## accepted (in that order) and how far the active step's goals are. Which step is active follows
+## from the story's flags: the first one not handed in yet (`Quest.step_flag`). Hauls brought
+## aboard pay into active deliveries after the heat shield's plate (`take_from`), what a run
+## brought aboard counts for mining (`count_hauled`), what's built counts once a player has it
+## (`check_built`), and what's done out in a region once someone is back aboard (`add_progress`,
+## from a `QuestVisit`). A step is handed in at its NPC (`hand_in`): what's still missing of its
+## deliveries comes from the hold of whoever hands it in, its rewards go to everyone there. One
+## quest is tracked (`tracked`, the session's: its markers come later): accepting one tracks it
+## while none is, and once the tracked one is done the main quest is. The radio calls heard of the
+## active steps are kept too (`calls`, see `QuestRadio`).
 
 ## Emitted when goal `index` of `quest`'s active step gets done (not when a step starts with it
 ## done already).
 signal goal_done(quest: Quest, index: int)
 
-## The most reputation with one NPC (five pips on their name plate).
-const REPUTATION_MAX: int = 5
 const CATALOG: QuestCatalog = preload("res://game/quests/quests.tres")
 
 ## Every quest there is.
@@ -29,8 +27,6 @@ var story := Story.new()
 var accepted: Array[StringName] = []
 ## Per accepted quest not done yet (its id): its active step's progress, one number per goal.
 var progress: Dictionary[StringName, PackedFloat64Array] = {}
-## Reputation per NPC (their `NpcProfile.id`), 0–`REPUTATION_MAX`.
-var reputation: Dictionary[StringName, int] = {}
 ## The quest the session follows (its id), an accepted one not done yet; empty: none.
 var tracked: StringName = &""
 ## The radio calls heard of the active steps.
@@ -84,8 +80,7 @@ func offered_by(npc: StringName, reaches: Array[StringName]) -> Array[Quest]:
 	for quest: Quest in catalog.quests:
 		if quest.giver != npc or is_accepted(quest):
 			continue
-		var trust: int = reputation.get(npc, 0)
-		if quest.is_open(story, reaches, trust):
+		if quest.is_open(story, reaches):
 			offered.append(quest)
 	return offered
 
@@ -161,8 +156,8 @@ func accept(quest: Quest, players: Array[Player]) -> bool:
 
 
 ## Hands in `quest`'s active step: what's missing comes from `payer`'s hold, the step's flag is set,
-## its ores, alloys and blueprint go to every one of `players` (the session) and its reputation to
-## the giver; then the next step starts, or the quest is done (its flag). Returns whether it did.
+## its ores, alloys and blueprint go to every one of `players` (the session); then the next step
+## starts, or the quest is done (its flag). Returns whether it did.
 func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 	var step: QuestStep = current_step(quest)
 	if not step or not can_hand_in(quest, payer.hold):
@@ -175,9 +170,6 @@ func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 			player.hold.add(item, step.items[item])
 		if step.blueprint:
 			player.arsenal.learn(step.blueprint)
-	if step.reputation > 0:
-		var trust: int = reputation.get(quest.giver, 0)
-		reputation[quest.giver] = mini(trust + step.reputation, REPUTATION_MAX)
 	progress.erase(quest.id)
 	calls.forget(quest)
 	story.set_flag(quest.step_flag(step))
@@ -242,19 +234,15 @@ func check_built(players: Array[Player]) -> void:
 	)
 
 
-## What's saved: the quests accepted, the active steps' progress, the reputation, the quest
-## tracked and the calls heard.
+## What's saved: the quests accepted, the active steps' progress, the quest tracked and the calls
+## heard.
 func save_data() -> Dictionary:
 	var saved_progress: Dictionary = {}
 	for id: StringName in progress:
 		saved_progress[String(id)] = Array(progress[id])
-	var saved_reputation: Dictionary = {}
-	for npc: StringName in reputation:
-		saved_reputation[String(npc)] = reputation[npc]
 	return {
 		"accepted": accepted.map(func(id: StringName) -> String: return String(id)),
 		"progress": saved_progress,
-		"reputation": saved_reputation,
 		"tracked": String(tracked),
 		"heard": calls.save_data(),
 	}
@@ -282,13 +270,6 @@ func load_data(saved: Variant) -> bool:
 			progress[StringName(id as String)] = _numbers(goals as Array)
 		else:
 			complete = SaveData.skipped("quest progress", id)
-	var saved_reputation: Variant = data.get("reputation", {})
-	for npc: Variant in saved_reputation if saved_reputation is Dictionary else {}:
-		var trust: float = SaveData.number((saved_reputation as Dictionary)[npc], -1.0)
-		if npc is String and trust >= 0.0:
-			reputation[StringName(npc as String)] = mini(int(trust), REPUTATION_MAX)
-		else:
-			complete = SaveData.skipped("reputation", npc)
 	var saved_tracked: Variant = data.get("tracked", "")
 	var tracking: String = saved_tracked if saved_tracked is String else "?"
 	if not tracking.is_empty() and not track(catalog.find(StringName(tracking))):

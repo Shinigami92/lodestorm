@@ -74,6 +74,22 @@ func test_door_stays_open_a_moment_then_closes() -> void:
 	assert_eq(door.openness, 0.0)
 
 
+## A door in a wall cut away for the camera is cut like it: the part up to the stub stays in sight,
+## the part above only casts shadows and moves with the one below.
+func test_door_in_a_cut_wall_is_cut_with_it() -> void:
+	var door := _ship.get_node("Hull/LowerCorridorBackLintel2Door") as ShipDoor
+	var top := _ship.get_node("Hull/LowerCut/LowerCorridorBackLintel2DoorCut") as ShipDoor
+	assert_eq(top.lead, door)
+	await _move(door.global_position + door.global_basis.z * 2.0)
+	await wait_physics_frames(40)
+	assert_eq(door.openness, 1.0)
+	assert_eq(top.openness, 1.0, "the part above opens with it")
+	var lower := door.get_child(0) as MeshInstance3D
+	var upper := top.get_child(0) as MeshInstance3D
+	assert_eq(lower.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON, "in sight")
+	assert_eq(upper.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+
+
 ## Doors never block: nothing in them collides.
 func test_door_has_no_collision() -> void:
 	var door := _ship.get_node("Hull/CargoWallLowerLintelDoor") as ShipDoor

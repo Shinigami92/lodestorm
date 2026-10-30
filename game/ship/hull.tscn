@@ -2172,110 +2172,250 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -80.75, 2.5, 0)
 width = 3
 height = 3
 
-[node name="NoseCorridorBackLintelDoor" parent="LowerCut" instance=ExtResource("door")]
+[node name="NoseCorridorBackLintelDoor" parent="." instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -2.75)
+width = 3
+height = 1
+
+[node name="NoseCorridorBackLintelDoorCut" parent="LowerCut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -2.75)
 width = 3
 height = 3
+lead = NodePath("../../NoseCorridorBackLintelDoor")
+bottom = 1
 
-[node name="NoseCorridorFrontLintelDoor" parent="LowerCut" instance=ExtResource("door")]
+[node name="NoseCorridorFrontLintelDoor" parent="." instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, 2.75)
+width = 3
+height = 1
+
+[node name="NoseCorridorFrontLintelDoorCut" parent="LowerCut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, 2.75)
 width = 3
 height = 3
+lead = NodePath("../../NoseCorridorFrontLintelDoor")
+bottom = 1
 
-[node name="LowerCorridorBackLintel1Door" parent="LowerCut" instance=ExtResource("door")]
+[node name="LowerCorridorBackLintel1Door" parent="." instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -49.5, 2.5, -2.75)
+width = 2
+height = 1
+
+[node name="LowerCorridorBackLintel1DoorCut" parent="LowerCut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -49.5, 2.5, -2.75)
 width = 2
 height = 3
+lead = NodePath("../../LowerCorridorBackLintel1Door")
+bottom = 1
 
-[node name="LowerCorridorBackLintel2Door" parent="LowerCut" instance=ExtResource("door")]
+[node name="LowerCorridorBackLintel2Door" parent="." instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 2.5, -2.75)
+width = 3
+height = 1
+
+[node name="LowerCorridorBackLintel2DoorCut" parent="LowerCut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 2.5, -2.75)
 width = 3
 height = 3
+lead = NodePath("../../LowerCorridorBackLintel2Door")
+bottom = 1
 
-[node name="LowerCorridorFrontLintel1Door" parent="LowerCut" instance=ExtResource("door")]
+[node name="LowerCorridorFrontLintel1Door" parent="." instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.6875, 2.5, 2.75)
+width = 3
+height = 1
+
+[node name="LowerCorridorFrontLintel1DoorCut" parent="LowerCut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.6875, 2.5, 2.75)
 width = 3
 height = 3
+lead = NodePath("../../LowerCorridorFrontLintel1Door")
+bottom = 1
 
-[node name="LowerCorridorFrontLintel2Door" parent="LowerCut" instance=ExtResource("door")]
+[node name="LowerCorridorFrontLintel2Door" parent="." instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 2.5, 2.75)
+width = 3
+height = 1
+
+[node name="LowerCorridorFrontLintel2DoorCut" parent="LowerCut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 2.5, 2.75)
 width = 3
 height = 3
+lead = NodePath("../../LowerCorridorFrontLintel2Door")
+bottom = 1
 
-[node name="LowerCorridorFrontLintel3Door" parent="LowerCut" instance=ExtResource("door")]
+[node name="LowerCorridorFrontLintel3Door" parent="." instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 2.5, 2.75)
+width = 3
+height = 1
+
+[node name="LowerCorridorFrontLintel3DoorCut" parent="LowerCut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 2.5, 2.75)
 width = 3
 height = 3
+lead = NodePath("../../LowerCorridorFrontLintel3Door")
+bottom = 1
 
-[node name="LowerCorridorFrontLintel4Door" parent="LowerCut" instance=ExtResource("door")]
+[node name="LowerCorridorFrontLintel4Door" parent="." instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 2.5, 2.75)
+width = 3
+height = 1
+
+[node name="LowerCorridorFrontLintel4DoorCut" parent="LowerCut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 2.5, 2.75)
 width = 3
 height = 3
+lead = NodePath("../../LowerCorridorFrontLintel4Door")
+bottom = 1
 
 [node name="CockpitWallLintelDoor" parent="Upper" instance=ExtResource("door")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -80.75, 7, 0)
 width = 3
 height = 3
 
-[node name="UpperCorridorBackLintel1Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorBackLintel1Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, -2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorBackLintel1DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, -2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorBackLintel1Door")
+bottom = 1
 
-[node name="UpperCorridorBackLintel2Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorBackLintel2Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, -2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorBackLintel2DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, -2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorBackLintel2Door")
+bottom = 1
 
-[node name="UpperCorridorBackLintel3Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorBackLintel3Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, -2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorBackLintel3DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, -2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorBackLintel3Door")
+bottom = 1
 
-[node name="UpperCorridorBackLintel4Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorBackLintel4Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, -2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorBackLintel4DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, -2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorBackLintel4Door")
+bottom = 1
 
-[node name="UpperCorridorBackLintel5Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorBackLintel5Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, -2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorBackLintel5DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, -2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorBackLintel5Door")
+bottom = 1
 
-[node name="UpperCorridorBackLintel6Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorBackLintel6Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, -2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorBackLintel6DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, -2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorBackLintel6Door")
+bottom = 1
 
-[node name="UpperCorridorFrontLintel1Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorFrontLintel1Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, 2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorFrontLintel1DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 7, 2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorFrontLintel1Door")
+bottom = 1
 
-[node name="UpperCorridorFrontLintel2Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorFrontLintel2Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, 2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorFrontLintel2DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.75, 7, 2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorFrontLintel2Door")
+bottom = 1
 
-[node name="UpperCorridorFrontLintel3Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorFrontLintel3Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, 2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorFrontLintel3DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.25, 7, 2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorFrontLintel3Door")
+bottom = 1
 
-[node name="UpperCorridorFrontLintel4Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorFrontLintel4Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, 2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorFrontLintel4DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.25, 7, 2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorFrontLintel4Door")
+bottom = 1
 
-[node name="UpperCorridorFrontLintel5Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorFrontLintel5Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, 2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorFrontLintel5DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.25, 7, 2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorFrontLintel5Door")
+bottom = 1
 
-[node name="UpperCorridorFrontLintel6Door" parent="Upper/Cut" instance=ExtResource("door")]
+[node name="UpperCorridorFrontLintel6Door" parent="Upper" instance=ExtResource("door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, 2.75)
+width = 1.5
+height = 1
+
+[node name="UpperCorridorFrontLintel6DoorCut" parent="Upper/Cut" node_paths=PackedStringArray("lead") instance=ExtResource("door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, 2.75)
 width = 1.5
 height = 3
+lead = NodePath("../../UpperCorridorFrontLintel6Door")
+bottom = 1
 
 [node name="CockpitLamp1" type="SpotLight3D" parent="Upper"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -93.75, 10.7, 0)

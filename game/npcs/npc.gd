@@ -199,7 +199,8 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 			continue
 		if listed.is_open(listener, story, reaches):
 			choices.append(listed)
-	if tour and tour.invite.is_open(listener, story):
+	# Also when they stopped waiting before its offer was heard (see `NpcRoutine.is_waiting`).
+	if tour and (tour.invite.is_open(listener, story) or (routine and not routine.is_waiting())):
 		choices.append(tour.invite)
 	return choices
 

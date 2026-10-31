@@ -1,10 +1,12 @@
 extends "res://tests/support/menu_fit.gd"
 ## The quest board on the bridge (`QuestBoardStation`, `BoardLists`, `QuestBoardCard`): the quests
-## in their groups, tracking, the done group, the jobs with the finished ones on top until seen,
-## the messages played from its speaker (heard to the end, its marker while one is unheard),
-## walking and scrolling the lines, and its screen and card fitting in every language.
+## in their groups, tracking, setting where a quest's step goes as the destination, the done
+## group, the jobs with the finished ones on top until seen, the messages played from its speaker
+## (heard to the end, its marker while one is unheard), walking and scrolling the lines, and its
+## screen and card fitting in every language.
 
 const QUEST_LOG_TEST := preload("res://tests/quests/test_quest_log.gd")
+const QUEST_ITEMS_TEST := preload("res://tests/quests/test_quest_items.gd")
 const FULL_HOLD := preload("res://tests/support/full_hold.gd")
 const BOARD: String = "Rooms/Upper/Bridge/QuestBoard"
 const ARMOR: Upgrade = preload("res://game/progression/upgrades/armor.tres")
@@ -71,6 +73,38 @@ func test_the_card_tracks_a_quest() -> void:
 	assert_eq(_ship.quests.get_tracked(), quests[1])
 	assert_eq(_board.entry_of(_board.selected).quest, quests[1], "still selected")
 	assert_true(_board.entry_of(_board.selected).tracked)
+	_board.close()
+
+
+## "Set as destination" chooses where a quest's step goes: the region of its goals out there, or
+## the station it's handed in at; none for a step done aboard.
+func test_the_card_sets_where_a_step_goes_as_the_destination() -> void:
+	var aboard: Quest = _accept_quests([Quest.Kind.SIDE])[0]
+	var out_there: Quest = QUEST_ITEMS_TEST.make_quest()
+	var at_ostra: Quest = QUEST_LOG_TEST.make_quest(&"at_ostra", &"depot_master")
+	for quest: Quest in [out_there, at_ostra]:
+		_ship.quests.catalog.quests.append(quest)
+		_ship.quests.accept(quest, [_player])
+	var voyage: Voyage = _ship.voyage
+	var system: StarSystem = voyage.settings.system
+	assert_null(_board.course_for(aboard), "handed in aboard: nowhere to go")
+	var region: Region = system.region_by_id(QUEST_ITEMS_TEST.REGION)
+	assert_eq(_board.course_for(out_there), voyage.offer_for(region), "its goals' region")
+	var ostra: CelestialBody = system.body_by_id(&"ostra")
+	assert_eq(_board.course_for(at_ostra), voyage.offer_for_station(ostra), "Kade's station")
+	_board.open(_player)
+	await wait_process_frames(2)
+	var card := _board.card_menu as QuestBoardCard
+	assert_false(card.get_course().visible, "no button for the step done aboard")
+	_board._select_entry(_board.entries.find_custom(_is_entry_of.bind(out_there)))
+	await wait_process_frames(1)
+	assert_true(card.get_course().visible)
+	assert_false(card.get_course().disabled)
+	card.get_course().pressed.emit()
+	await wait_process_frames(1)
+	assert_eq(voyage.destination, voyage.offer_for(region), "chosen as at the navigator")
+	assert_true(card.get_course().disabled, "chosen already")
+	assert_eq(card.get_texts()[4], "Destination set: the pilot takes off from the cockpit.")
 	_board.close()
 
 
@@ -250,6 +284,10 @@ func _finish(quest: Quest) -> void:
 	for step: QuestStep in quest.steps:
 		_ship.quests.story.set_flag(quest.step_flag(step))
 	_ship.quests.story.set_flag(quest.flag())
+
+
+func _is_entry_of(entry: BoardEntry, quest: Quest) -> bool:
+	return entry.quest == quest
 
 
 ## The board's lines as "<kind> <title or quest id>".

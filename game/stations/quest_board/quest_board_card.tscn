@@ -65,6 +65,12 @@ layout_mode = 2
 focus_mode = 0
 text = "Track"
 
+[node name="Course" type="Button" parent="Layout/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Set as destination"
+
 [node name="Close" type="Button" parent="Layout/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2

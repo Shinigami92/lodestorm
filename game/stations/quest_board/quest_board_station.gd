@@ -7,9 +7,11 @@ extends Station
 ## above it while one is unheard. Its parts are the open tab and the screen's lines (a `StationPart`
 ## on each line's right end; the screen marks the selected and hovered one); `move_*` up and down
 ## walk the lines and scroll the list, left and right and `tab_prev`/`tab_next` switch tabs, the
-## wheel scrolls. The card beside the board shows the selected line: a quest with "Track", the done
-## quests' group with "Show"/"Hide", a job, a message with "Play"/"Stop", or the tab. Closing it
-## after the jobs were shown clears its user's finished ones (`FinishedJobs`).
+## wheel scrolls. The card beside the board shows the selected line: a quest with "Track" and "Set
+## as destination" (where its step goes, `QuestVisit.destination`: chosen as at the navigator, the
+## pilot then sets course from the cockpit), the done quests' group with "Show"/"Hide", a job, a
+## message with "Play"/"Stop", or the tab. Closing it after the jobs were shown clears its user's
+## finished ones (`FinishedJobs`).
 
 enum Tab { QUESTS, JOBS, MESSAGES }
 
@@ -171,6 +173,35 @@ func track(quest: Quest) -> bool:
 	if not quest_log or not quest_log.track(quest):
 		return false
 	update_list()
+	return true
+
+
+## Where the ship would go for `quest`'s active step (see `QuestVisit.destination`): the mission
+## on offer in its region or the visit to its station, or null (all done aboard, or nothing on offer
+## there, e.g. out of the heat shield's reach).
+func course_for(quest: Quest) -> MissionBrief:
+	var voyage: Voyage = ship.voyage if ship else null
+	var quest_log: QuestLog = get_quests()
+	var system: StarSystem = voyage.settings.system if voyage and voyage.settings else null
+	if not system or not quest_log:
+		return null
+	var id: StringName = QuestVisit.destination(quest_log, quest)
+	if id.is_empty():
+		return null
+	var region: Region = system.region_by_id(id)
+	if region:
+		return voyage.offer_for(region)
+	var station: CelestialBody = system.body_by_id(id)
+	return voyage.offer_for_station(station) if station else null
+
+
+## Chooses where `quest`'s active step goes as the destination (`course_for`, like at the
+## navigator). Returns whether it did.
+func choose_course(quest: Quest) -> bool:
+	var offer: MissionBrief = course_for(quest)
+	if not offer or offer == ship.voyage.brief or not ship.voyage.choose(offer):
+		return false
+	refresh()
 	return true
 
 

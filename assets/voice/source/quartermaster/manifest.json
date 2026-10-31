@@ -306,12 +306,6 @@
       "seed": 1,
       "text": "Du kannst nachladen, wann immer du willst, solange du noch ein Ersatzmagazin oder Erz dafür hast. Ist das Magazin leer, lädt deine Waffe von selbst nach."
     },
-    "b0c420a275bb105c": {
-      "anchor": "a4a1fdb2cb84ecb9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Nebenan ist das Cockpit. Sobald ein Ziel feststeht, wird hier an der Flugkonsole der Kurs gesetzt, und das kann jeder."
-    },
     "b3b5ccb3df3c4671": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -485,6 +479,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 3,
       "text": "Wie kann ich dir helfen?"
+    },
+    "fbb0f8b802981309": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Nebenan ist das Cockpit. Sobald wir ein Ziel haben, startet Tamsin von hier aus. Den Hebel an der Flugkonsole kann aber auch jeder selbst ziehen."
     },
     "fcf01f53f94b24ce": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -818,12 +818,6 @@
       "seed": 1,
       "text": "You can reload whenever you want, as long as you still have a spare magazine or ore to pay for it. When the magazine runs empty, your weapon reloads by itself."
     },
-    "b0c420a275bb105c": {
-      "anchor": "772c7907f9411bf4",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Next door is the cockpit. Once a destination is set, the course is set at the flight console in here, and anyone can do that."
-    },
     "b3b5ccb3df3c4671": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -997,6 +991,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "How can I help you?"
+    },
+    "fbb0f8b802981309": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Next door is the cockpit. Once we have a destination, Tamsin takes us out from here. Anyone can pull the lever on the flight console, too."
     },
     "fcf01f53f94b24ce": {
       "anchor": "772c7907f9411bf4",

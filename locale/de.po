@@ -775,8 +775,8 @@ msgid "Flying"
 msgstr "Fliegen"
 
 #: game/npcs/crew/pilot.tres
-msgid "Once the destination is set, the course is set at the flight console in the cockpit. Anyone can do that, not just me."
-msgstr "Sobald das Ziel steht, wird der Kurs an der Flugkonsole im Cockpit gesetzt. Das kann jeder, nicht nur ich."
+msgid "Once we have a destination, I take us out from the cockpit as soon as everyone is aboard. Anyone there before me can pull the lever on the flight console."
+msgstr "Sobald wir ein Ziel haben, starte ich vom Cockpit aus, wenn alle an Bord sind. Wer vor mir dort ist, kann den Hebel an der Flugkonsole auch selbst ziehen."
 
 #: game/npcs/crew/pilot.tres
 msgid "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down."
@@ -1135,8 +1135,8 @@ msgid "The bridge. Tamsin flies the ship, and here at the holo table you pick wi
 msgstr "Die Brücke. Tamsin fliegt das Schiff, und hier am Holotisch suchst du mit ihr aus, wohin es als Nächstes geht. Jede Reise beginnt an diesem Tisch."
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Next door is the cockpit. Once a destination is set, the course is set at the flight console in here, and anyone can do that."
-msgstr "Nebenan ist das Cockpit. Sobald ein Ziel feststeht, wird hier an der Flugkonsole der Kurs gesetzt, und das kann jeder."
+msgid "Next door is the cockpit. Once we have a destination, Tamsin takes us out from here. Anyone can pull the lever on the flight console, too."
+msgstr "Nebenan ist das Cockpit. Sobald wir ein Ziel haben, startet Tamsin von hier aus. Den Hebel an der Flugkonsole kann aber auch jeder selbst ziehen."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "This lift takes us down to the lower deck. Up here are the cabins and the bridge, and everything for your gear is down there."
@@ -3329,12 +3329,15 @@ msgid "Nowhere to land: its moons can be visited."
 msgstr "Keine Landung möglich: Seine Monde lassen sich anfliegen."
 
 #: game/stations/navigator/navigator_card.gd
+#: game/stations/quest_board/quest_board_card.gd
+#: game/stations/quest_board/quest_board_card.tscn
 msgid "Set as destination"
 msgstr "Als Ziel setzen"
 
 #: game/stations/navigator/navigator_card.gd
-msgid "Destination set: set course at the cockpit."
-msgstr "Ziel gesetzt: Kurs im Cockpit setzen."
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Destination set: the pilot takes off from the cockpit."
+msgstr "Ziel gesetzt: Die Pilotin fliegt los."
 
 #: game/stations/navigator/navigator_card.gd
 msgid "Quest: %s"

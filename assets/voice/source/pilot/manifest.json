@@ -30,6 +30,12 @@
       "seed": 1,
       "text": "Skelde. Durch die Aschefelder hier fließt Lava, und die Schlote können jeden Moment ausbrechen. Da draußen stehen zu bleiben ist keine gute Idee."
     },
+    "1456b3384a360d50": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sobald wir ein Ziel haben, starte ich vom Cockpit aus, wenn alle an Bord sind. Wer vor mir dort ist, kann den Hebel an der Flugkonsole auch selbst ziehen."
+    },
     "1495147e46d005b1": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -131,12 +137,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Sturm zieht auf. Komm zurück zum Schiff."
-    },
-    "780796cf64410b3f": {
-      "anchor": "3581bf6c2d6006f9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Sobald das Ziel steht, wird der Kurs an der Flugkonsole im Cockpit gesetzt. Das kann jeder, nicht nur ich."
     },
     "7aa7a888197fcd2c": {
       "anchor": "3581bf6c2d6006f9",
@@ -314,6 +314,12 @@
       "seed": 1,
       "text": "Skelde. Lava runs through the ash fields here, and the vents can burst at any moment. Standing still out there is a bad idea."
     },
+    "1456b3384a360d50": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Once we have a destination, I take us out from the cockpit as soon as everyone is aboard. Anyone there before me can pull the lever on the flight console."
+    },
     "1495147e46d005b1": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -415,12 +421,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Storm's coming in. Get back to the ship."
-    },
-    "780796cf64410b3f": {
-      "anchor": "b39c4473829e205a",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Once the destination is set, the course is set at the flight console in the cockpit. Anyone can do that, not just me."
     },
     "7aa7a888197fcd2c": {
       "anchor": "b39c4473829e205a",

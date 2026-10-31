@@ -1,6 +1,7 @@
 extends GutTest
 ## The eight crew members aboard (`Npc`): each at their post, telling them apart, the pilot in the
-## cockpit while a destination is chosen and the ship flies (walking there and back), moving on
+## cockpit while a destination is chosen and the ship flies (walking there and back, setting course
+## herself once everyone is aboard), moving on
 ## between their spot and their work spots and doing there only what fits.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
@@ -109,9 +110,14 @@ func test_pilot_walks_to_the_cockpit_sits_and_walks_back() -> void:
 	assert_almost_eq(pilot.global_position, home, Vector3.ONE * 0.05, "back on the bridge")
 
 
-func test_a_chosen_destination_sends_her_to_the_seat_to_wait_for_the_course() -> void:
+func test_a_chosen_destination_sends_her_to_the_seat_to_wait_for_everyone() -> void:
 	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var player := _map.get_node("Player") as Player
 	var voyage: Voyage = _ship.voyage
+	player.global_position = _ship.to_global(Vector3(30.0, 0.1, 0.0))
+	player.reset_physics_interpolation()
+	await wait_physics_frames(5)
+	assert_false(_ship.is_aboard(player), "a player outside")
 	assert_true(voyage.choose(voyage.offers[1]), "Set as destination")
 	await _until(func() -> bool: return pilot.body.is_walking(), 10.0)
 	assert_true(pilot.body.is_walking(), "she's on her way before the course is set")
@@ -119,10 +125,26 @@ func test_a_chosen_destination_sends_her_to_the_seat_to_wait_for_the_course() ->
 	assert_true(pilot.body.sitting)
 	assert_false(_ship.flight.is_flying())
 	await wait_physics_frames(int(NpcRoutine.SEAT_LINGER * 2.0 * Engine.physics_ticks_per_second))
-	assert_true(pilot.body.sitting, "waits there for the course")
+	assert_true(pilot.body.sitting, "waits there until everyone is aboard")
+	assert_false(_ship.flight.is_flying())
 	voyage.destination = null
 	await _until(func() -> bool: return pilot.body.is_walking(), NpcRoutine.SEAT_LINGER + 3.0)
 	assert_false(pilot.body.sitting, "no destination any more: back to the bridge")
+
+
+func test_she_sets_course_herself_once_everyone_is_aboard() -> void:
+	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var voyage: Voyage = _ship.voyage
+	var offer: MissionBrief = voyage.offers[1]
+	assert_true(_ship.is_aboard(_map.get_node("Player") as Player))
+	assert_true(voyage.choose(offer), "Set as destination")
+	await _until(func() -> bool: return pilot.body.sitting, 40.0)
+	assert_true(pilot.body.sitting)
+	assert_false(_ship.flight.is_flying(), "not before she sits")
+	await _until(func() -> bool: return _ship.flight.is_flying(), NpcRoutine.TAKE_OFF_DELAY + 2.0)
+	assert_true(_ship.flight.is_flying(), "then she sets course")
+	assert_eq(voyage.brief, offer)
+	assert_true(pilot.body.sitting, "and flies the ship")
 
 
 func test_walking_back_she_stops_for_a_player() -> void:

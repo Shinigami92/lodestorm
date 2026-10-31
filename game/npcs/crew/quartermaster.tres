@@ -139,7 +139,7 @@ lines = Array[String](["The bridge. Tamsin flies the ship, and here at the holo 
 [sub_resource type="Resource" id="Tour_stop_Cockpit"]
 script = ExtResource("11_tour_stop")
 id = &"Cockpit"
-lines = Array[String](["Next door is the cockpit. Once a destination is set, the course is set at the flight console in here, and anyone can do that."])
+lines = Array[String](["Next door is the cockpit. Once we have a destination, Tamsin takes us out from here. Anyone can pull the lever on the flight console, too."])
 
 [sub_resource type="Resource" id="Tour_stop_Lift"]
 script = ExtResource("11_tour_stop")

@@ -234,6 +234,12 @@
       "seed": 1,
       "text": "Dreihundert Kyrite von Branniks Crew. Er hat mir gesagt, dass du kommst, und es steht schon in meinen Büchern."
     },
+    "d9fe77c0f4cb38c1": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollow Mire ist aber nicht die Ebene. Bring deine Ausrüstung in Ordnung, bevor du runtergehst."
+    },
     "e543c5a4d95fe410": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -499,6 +505,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Three hundred Kyrite from Brannik's crew. He told me you'd come, and it's already in my books."
+    },
+    "d9fe77c0f4cb38c1": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollow Mire isn't the flats, though. Get your gear in order before you go down there."
     },
     "e543c5a4d95fe410": {
       "anchor": "06a309e0b3e2b83b",

@@ -18,7 +18,7 @@
 script = ExtResource("s_topic")
 id = &"depot_master.overdue"
 title = "Overdue"
-lines = Array[String](["Can I ask you something? There's an old prospector, Hollis, who works alone down in Hollow Mire. Every few weeks he comes up for his supplies, as regular as clockwork.", "This time he's three weeks late, and nobody has heard from him. His crates are still sitting on my shelf.", "He gave me the position of his camp once, in case something happened. I'll send it to your ship. Would you go down and see if he's all right?"])
+lines = Array[String](["Can I ask you something? There's an old prospector, Hollis, who works alone down in Hollow Mire. Every few weeks he comes up for his supplies, as regular as clockwork.", "This time he's three weeks late, and nobody has heard from him. His crates are still sitting on my shelf.", "He gave me the position of his camp once, in case something happened. I'll send it to your ship. Would you go down and see if he's all right?", "Hollow Mire isn't the flats, though. Get your gear in order before you go down there."])
 
 [sub_resource type="Resource" id="RadioLine_landing"]
 script = ExtResource("s_radio")

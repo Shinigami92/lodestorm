@@ -156,10 +156,14 @@ Alongside, any time:
 
 - [ ] **Playtest feedback** (2026-10-31, the first play of C3c; each its own PR, a short round where it's a decision):
   - [ ] Tamsin starts the flight herself when she reaches the pilot seat and a destination is set but the flight hasn't started yet
-  - [ ] Ilse watches the crew's vitals: one transmission telling a player low on health and out of a fight for some seconds to come back to the ship and not overdo it
   - [ ] the quests in an NPC's talk list (e.g. Kade's) set apart from the normal topics
   - [ ] the course can be set at the bridge's wall panel (the quest board) too
-  - [ ] a hint (someone's line) to place a miner first for ore to reload with, and only then go deeper with ore on the back, so nobody dies from running out of ammo by accident
+  - [ ] **Surviving the first planet** (decided 2026-10-31 after the third C3c playtest: a new crew went to Hollow Mire with the starting gear and died twice; one PR, a writing round for the lines first; the regions stay as hard as they are):
+    - Tamsin at the navigator: when the destination is harder than the crew is equipped for (e.g. a normal region and no upgrade bought yet), one line aside, once per step in difficulty ("Hollow Mire? It's rougher than the flats. If it were up to me, we'd get some upgrades first.")
+    - Brannik after the first lost run: a call after Ilse's, pointing at the upgrade stations before going out again
+    - Tamsin's landing call in a harder region, once per region, saying what waits there ("The nests here are thicker than in the flats. Stay close to the ship until you know the place."); only where she knows the place (a region visited before or one the crews at Ostra talk about), not every planet and region
+    - Ilse watches the crew's vitals: one transmission telling a player low on health and out of a fight for some seconds to come back to the ship and not overdo it
+    - a hint (someone's line) to place a miner first for ore to reload with, and only then go deeper with ore on the back, so nobody dies from running out of ammo by accident
   - [ ] Brannik, ignored at the start (his tour never taken), goes to the armory after the first flight set at the navigator instead of waiting on
   - [ ] Waypost Ostra in front of Torvane (the first planet) on the navigator
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))

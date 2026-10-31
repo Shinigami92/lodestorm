@@ -2395,6 +2395,10 @@ msgid "He gave me the position of his camp once, in case something happened. I'l
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres
+msgid "Hollow Mire isn't the flats, though. Get your gear in order before you go down there."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
 msgid "Find Hollis' camp in Hollow Mire and see if he's all right."
 msgstr ""
 

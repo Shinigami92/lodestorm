@@ -20,11 +20,15 @@ func hear(quest: Quest, key: StringName) -> bool:
 
 
 ## The lines of `step` (`quest`'s active one) heard so far, oldest first, worded for several
-## players `together` or one (English).
+## players `together` or one (English): those the NPC it's handed in at said (not another's, e.g.
+## the pilot's for someone without a radio, see `RadioLine.speaker`), so they can say them again.
 func lines(quest: Quest, step: QuestStep, together: bool) -> Array[String]:
 	var found: Array[String] = []
+	var own: StringName = quest.hand_in_npc(step)
 	for key: String in heard.get(quest.id, PackedStringArray()):
 		var said: RadioLine = step.radio_line(StringName(key))
+		if said and not said.speaker.is_empty() and said.speaker != own:
+			continue
 		if said and not said.for_players(together).is_empty():
 			found.append(said.for_players(together))
 	return found

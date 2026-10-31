@@ -49,5 +49,5 @@ hardness = 4
 script = ExtResource("2_upgrade")
 display_name = "Drill"
 description = "Miners mine faster"
-hardness = 1
 levels = Array[ExtResource("1_level")]([SubResource("Mk2"), SubResource("Mk3"), SubResource("Mk4"), SubResource("Mk5"), SubResource("Mk6"), SubResource("Mk7"), SubResource("Mk8")])
+hardness = 1

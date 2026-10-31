@@ -48,6 +48,12 @@
       "seed": 1,
       "text": "Habt ihr das gehört? Gerade ist ein Meteor eingeschlagen, und im Krater leuchtet Erz. Der Lärm hat bestimmt geweckt, was in der Nähe lebt, also seid vorsichtig."
     },
+    "1fea3a750d963558": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Tamsin. Nach Kades Position ist Hollis' Lager nicht weit von unserem Landeplatz. Geh nachsehen, ob es ihm gut geht."
+    },
     "22fd7649278d31e4": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -149,6 +155,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Sturmfront auf dem Scanner. Zeit, zurückzukommen."
+    },
+    "90fdbeedf0955fa0": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Tamsin. Nach Kades Position ist Hollis' Lager nicht weit von unserem Landeplatz. Geht zusammen hin und seht nach, ob es ihm gut geht."
     },
     "913b0628d3f31201": {
       "anchor": "3581bf6c2d6006f9",
@@ -320,6 +332,12 @@
       "seed": 1,
       "text": "Did you all hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful."
     },
+    "1fea3a750d963558": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go and see if he's all right."
+    },
     "22fd7649278d31e4": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -421,6 +439,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Storm front on the scanner. Time to head back."
+    },
+    "90fdbeedf0955fa0": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go over together and see if he's all right."
     },
     "913b0628d3f31201": {
       "anchor": "b39c4473829e205a",

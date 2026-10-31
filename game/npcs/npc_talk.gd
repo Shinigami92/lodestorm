@@ -61,8 +61,14 @@ func open() -> void:
 	choice = 0
 	_set_paused(false)
 	var dialogue: Dialogue = npc.profile.dialogue if npc.profile else null
-	if dialogue:
-		prompt = dialogue.pick_prompt(prompt)
+	var for_step: Array[String] = _step_prompts()
+	if not for_step.is_empty():
+		var others: Array[String] = for_step.filter(
+			func(said: String) -> bool: return said != prompt
+		)
+		prompt = others.pick_random() if not others.is_empty() else for_step[0]
+	elif dialogue:
+		prompt = dialogue.pick_prompt(prompt, npc.waits_to_join)
 
 
 ## Plays the greeting while nobody has heard it, else shows the list and says the prompt (once the
@@ -272,6 +278,18 @@ func _confirm_quest() -> void:
 	if quests.hand_in(quest, npc.user, players):
 		quest = null
 		talk_about(handed.hand_in)
+
+
+## At their place before joining: the prompts of the steps handed in at them there
+## (`QuestStep.place_prompts`); none elsewhere.
+func _step_prompts() -> Array[String]:
+	var found: Array[String] = []
+	if not npc.waits_to_join or not npc.profile:
+		return found
+	var quests: QuestLog = npc.get_quests()
+	for waiting: Quest in quests.steps_at(npc.profile.id):
+		found.append_array(quests.current_step(waiting).place_prompts)
+	return found
 
 
 ## Whether they stand outside their own room (for the lines that fit elsewhere).

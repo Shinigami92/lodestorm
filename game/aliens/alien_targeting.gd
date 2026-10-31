@@ -6,7 +6,8 @@ extends RefCounted
 ## `strain.detection_range`. Hunters keep their prey and pick it from any distance. Raiders keep
 ## their miner until it breaks and pick the nearest working one from any distance, turning on a
 ## player only while one stands in reach; without a working miner they act like guards. Guards
-## defending their nest go for its attacker first (`AlienStatus.defending`).
+## defending their nest go for its attacker first (`AlienStatus.defending`). Nobody within an
+## `AlienRepeller`'s reach is prey (`Alien.is_prey`, `_is_miner_prey`).
 
 ## Walking back to `Alien.home` after leaving a downed player alone (until it's there or finds
 ## prey).
@@ -89,17 +90,23 @@ func _player_in_reach() -> Player:
 	return null
 
 
-## Keeps the target miner while it works, otherwise picks the nearest working one. Returns
-## whether there is one.
+## Keeps the target miner while it works, otherwise picks the nearest working one (none within an
+## `AlienRepeller`'s reach). Returns whether there is one.
 func _update_miner_target() -> bool:
+	var tree: SceneTree = _alien.get_tree()
 	var target: Node3D = _alien.target
-	if is_instance_valid(target) and target is Miner and not (target as Miner).broken:
+	if is_instance_valid(target) and target is Miner and _is_miner_prey(tree, target as Miner):
 		return true
 	_alien.target = null
 	var nearest_distance: float = INF
-	for miner: Miner in _alien.get_tree().get_nodes_in_group(Miner.GROUP):
+	for miner: Miner in tree.get_nodes_in_group(Miner.GROUP):
 		var distance: float = _alien.horizontal_distance(miner)
-		if not miner.broken and distance <= nearest_distance:
+		if _is_miner_prey(tree, miner) and distance <= nearest_distance:
 			_alien.target = miner
 			nearest_distance = distance
 	return _alien.target != null
+
+
+## Whether `miner` is worth going for: working, and not within a repeller's reach.
+static func _is_miner_prey(tree: SceneTree, miner: Miner) -> bool:
+	return not miner.broken and not AlienRepeller.covering(tree, miner.global_position)

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="3_77lei"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
 
 [sub_resource type="Resource" id="Resource_greeting"]
@@ -9,7 +10,6 @@ script = ExtResource("3_topic")
 id = &"suit_tech.greeting"
 title = "Hello"
 lines = Array[String](["Hi! I keep your suits running: the armor in my room, and the skills in the room next to it.", "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."])
-
 
 [sub_resource type="Resource" id="Resource_armor"]
 script = ExtResource("3_topic")
@@ -41,11 +41,11 @@ topics = Array[ExtResource("3_topic")]([SubResource("Resource_armor"), SubResour
 [resource]
 script = ExtResource("1_profile")
 id = &"suit_tech"
-join_flag = &"crew.suit_tech.joined"
 display_name = "Wren"
 role = "Suit tech"
 model = "uid://gv0ici1ifm8d"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.3, 0.95, 0.85, 1)
+join_flag = &"crew.suit_tech.joined"
 cabin = 6
 dialogue = SubResource("Resource_dialogue")

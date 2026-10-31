@@ -48,12 +48,12 @@ lines = Array[String](["Moons around a gas giant! When I signed on, I never thou
 [resource]
 script = ExtResource("1_profile")
 id = &"cook"
-join_flag = &"crew.cook.joined"
 display_name = "Fenna"
 role = "Cook"
 model = "uid://vo056vbv74lc"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(1, 0.55, 0.8, 1)
+join_flag = &"crew.cook.joined"
 cabin = 8
 dialogue = SubResource("Resource_dialogue")
 reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_gaulm")])

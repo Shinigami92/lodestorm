@@ -488,4 +488,5 @@ def main() -> None:
     print("STATS", C.stats())
 
 
-main()
+if __name__ == "__main__":  # the old miner's build imports the parts (miner_old_build.py)
+    main()

@@ -10,7 +10,8 @@
 [ext_resource type="Resource" uid="uid://vjmlu4pw1dwv" path="res://game/quests/depot_master/request_scanner_lenses.tres" id="q5"]
 [ext_resource type="Resource" uid="uid://bil8n0na5lyin" path="res://game/quests/depot_master/request_power_cells.tres" id="q6"]
 [ext_resource type="Resource" uid="uid://ki0elrvyn7he" path="res://game/quests/depot_master/request_air_scrubbers.tres" id="q7"]
+[ext_resource type="Resource" uid="uid://brxychn5o3wmh" path="res://game/quests/depot_master/overdue.tres" id="q8"]
 
 [resource]
 script = ExtResource("1_script")
-quests = Array[ExtResource("2_quest")]([ExtResource("q0"), ExtResource("q1"), ExtResource("q2"), ExtResource("q3"), ExtResource("q4"), ExtResource("q5"), ExtResource("q6"), ExtResource("q7")])
+quests = Array[ExtResource("2_quest")]([ExtResource("q0"), ExtResource("q1"), ExtResource("q2"), ExtResource("q3"), ExtResource("q4"), ExtResource("q5"), ExtResource("q6"), ExtResource("q7"), ExtResource("q8")])

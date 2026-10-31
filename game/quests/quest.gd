@@ -19,6 +19,9 @@ enum Kind { MAIN, SIDE, REQUEST }
 @export var giver: StringName
 ## Story flags it needs before it's offered (e.g. another quest's `flag`).
 @export var requires: Array[StringName] = []
+## A story flag that keeps it from being offered once set (e.g. a crew member's
+## `NpcProfile.join_flag`: nobody asks the players to find someone already aboard); empty: none.
+@export var until: StringName = &""
 ## A planet or moon it's about (its `CelestialBody.id`): only offered once the ship reaches it.
 @export var requires_body: StringName = &""
 ## What the giver says about it, a topic in their list while it's offered (e.g. "About that
@@ -38,11 +41,11 @@ func step_flag(step: QuestStep) -> StringName:
 	return StringName("quest.%s.%s" % [id, step.id])
 
 
-## Whether its giver offers it now: `story` has the flags it `requires`, its `requires_body` is
-## among the bodies the ship `reaches` (their ids). Whether it's accepted already is the
-## `QuestLog`'s.
+## Whether its giver offers it now: `story` has the flags it `requires` (and not its `until`),
+## its `requires_body` is among the bodies the ship `reaches` (their ids). Whether it's accepted
+## already is the `QuestLog`'s.
 func is_open(story: Story, reaches: Array[StringName]) -> bool:
-	if not story.is_set_all(requires):
+	if not story.is_set_all(requires) or (not until.is_empty() and story.is_set(until)):
 		return false
 	return requires_body.is_empty() or requires_body in reaches
 
@@ -62,20 +65,24 @@ func reward_items() -> Dictionary[ItemType, int]:
 
 
 ## Every line said in it, by who says it (see `VoiceLines.SPEAKING`): the offer's by the giver,
-## each step's hand-in and radio calls (alone and together) by the NPC it's handed in at, the
-## English texts, each once.
+## each step's hand-in, prompts at their place and radio calls (alone and together) by the NPC
+## it's handed in at (a call by its `RadioLine.speaker` if it names one), the English texts, each
+## once.
 func spoken_lines() -> Dictionary[StringName, PackedStringArray]:
 	var by_speaker: Dictionary[StringName, PackedStringArray] = {}
 	_add_lines(by_speaker, giver, offer)
 	for step: QuestStep in steps:
 		var npc: StringName = hand_in_npc(step)
 		_add_lines(by_speaker, npc, step.hand_in)
-		var radio := Topic.new()
+		var prompts := Topic.new()
+		prompts.lines.assign(step.place_prompts)
+		_add_lines(by_speaker, npc, prompts)
 		for said: RadioLine in step.radio_lines():
+			var radio := Topic.new()
 			radio.lines.append(said.text)
 			if not said.coop_text.is_empty():
 				radio.lines.append(said.coop_text)
-		_add_lines(by_speaker, npc, radio)
+			_add_lines(by_speaker, said.speaker if not said.speaker.is_empty() else npc, radio)
 	return by_speaker
 
 

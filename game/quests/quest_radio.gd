@@ -100,10 +100,11 @@ func _is_ready(quest: Quest, step: QuestStep) -> bool:
 	return true
 
 
-## `line` of `quest`'s `step` (its call `key`) from the NPC it's handed in at, to every living
-## player.
+## `line` of `quest`'s `step` (its call `key`) from the NPC it's handed in at (or the line's
+## `RadioLine.speaker`), to every living player.
 func _call(quest: Quest, step: QuestStep, line: RadioLine, key: StringName) -> void:
-	var caller: NpcProfile = NpcProfile.find(quest.hand_in_npc(step))
+	var who: StringName = line.speaker if not line.speaker.is_empty() else quest.hand_in_npc(step)
+	var caller: NpcProfile = NpcProfile.find(who)
 	var english: String = line.for_players(ship.reactions.is_together())
 	if not caller or english.is_empty():
 		return

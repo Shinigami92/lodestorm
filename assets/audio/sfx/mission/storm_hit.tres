@@ -10,7 +10,6 @@ stream_0/stream = ExtResource("2_variant")
 [resource]
 script = ExtResource("1_script")
 stream = SubResource("AudioStreamRandomizer_variants")
-volume_db = 0.0
 limit = 1
 unit_size = 30.0
 max_distance = 100.0

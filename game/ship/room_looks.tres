@@ -105,4 +105,25 @@ accent_color = Color(1, 0.7, 0.22, 1)
 
 [resource]
 script = ExtResource("1_looks")
-looks = Dictionary[StringName, ExtResource("2_look")]({&"Cockpit": SubResource("Resource_Cockpit"), &"Bridge": SubResource("Resource_Bridge"), &"UpperLobby": SubResource("Resource_UpperLobby"), &"UpperCorridor": SubResource("Resource_UpperCorridor"), &"MessHall": SubResource("Resource_MessHall"), &"Cabin": SubResource("Resource_Cabin"), &"Crew": SubResource("Resource_Crew"), &"SpecimenLab": SubResource("Resource_SpecimenLab"), &"MedicalBay": SubResource("Resource_MedicalBay"), &"NoseCorridor": SubResource("Resource_NoseCorridor"), &"EngineRoom": SubResource("Resource_EngineRoom"), &"LowerLobby": SubResource("Resource_LowerLobby"), &"ShootingRange": SubResource("Resource_ShootingRange"), &"Armory": SubResource("Resource_Armory"), &"LowerCorridor": SubResource("Resource_LowerCorridor"), &"Weapons": SubResource("Resource_Weapons"), &"Armor": SubResource("Resource_Armor"), &"Skills": SubResource("Resource_Skills"), &"Miners": SubResource("Resource_Miners"), &"CargoBay": SubResource("Resource_CargoBay")})
+looks = Dictionary[StringName, ExtResource("2_look")]({
+&"Armor": SubResource("Resource_Armor"),
+&"Armory": SubResource("Resource_Armory"),
+&"Bridge": SubResource("Resource_Bridge"),
+&"Cabin": SubResource("Resource_Cabin"),
+&"CargoBay": SubResource("Resource_CargoBay"),
+&"Cockpit": SubResource("Resource_Cockpit"),
+&"Crew": SubResource("Resource_Crew"),
+&"EngineRoom": SubResource("Resource_EngineRoom"),
+&"LowerCorridor": SubResource("Resource_LowerCorridor"),
+&"LowerLobby": SubResource("Resource_LowerLobby"),
+&"MedicalBay": SubResource("Resource_MedicalBay"),
+&"MessHall": SubResource("Resource_MessHall"),
+&"Miners": SubResource("Resource_Miners"),
+&"NoseCorridor": SubResource("Resource_NoseCorridor"),
+&"ShootingRange": SubResource("Resource_ShootingRange"),
+&"Skills": SubResource("Resource_Skills"),
+&"SpecimenLab": SubResource("Resource_SpecimenLab"),
+&"UpperCorridor": SubResource("Resource_UpperCorridor"),
+&"UpperLobby": SubResource("Resource_UpperLobby"),
+&"Weapons": SubResource("Resource_Weapons")
+})

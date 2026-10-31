@@ -25,7 +25,16 @@ extends Station
 ## (`is_present`): hidden, still and nobody can talk to them. Until then they wait at their place
 ## (a second NPC of their profile there, `waits_to_join`, e.g. Dace at his stall at Ostra), and once
 ## they join, that one walks aboard (`NpcBoarding`) and theirs aboard takes over at the door
-## (`arrive`), walking on to their post.
+## (`arrive`), walking on to their post. There they're talked to only about what fits before
+## joining: the topics that go once they join (`Topic.until` their `NpcProfile.join_flag`) and their
+## quests, no greeting. Someone waiting out in a location (e.g. Hollis at his camp, see
+## `LocationQuests`) sees the quests as they are out there (`quests_view`); talking to them there
+## stops the game solo (`pausing`, like the pause panel: aliens, the timer, the storm), so nobody is
+## hurt meanwhile, and it goes on once the talk ends. In co-op the others cover them.
+
+## Emitted when they set off for the ship from their place before joining (by `NpcBoarding`).
+@warning_ignore("unused_signal")
+signal walks_aboard
 
 ## Every crew member (the ship cuts them away by the deck they stand on, see `Ship`).
 const CREW_GROUP: StringName = &"crew"
@@ -51,8 +60,8 @@ const VOICE_MAX_DISTANCE: float = 30.0
 ## booth's bench.
 @export var seated: bool = false
 ## Whether this is a crew member's place before they join (`NpcProfile.join_flag`): there until
-## the flag is set, then walking aboard (`NpcBoarding`), gone once through the door. Nobody talks
-## to them there yet (their topics before joining come with their join quests).
+## the flag is set, then walking aboard (`NpcBoarding`), gone once through the door. Talked to there
+## only while they have something to say before joining (`get_choices`).
 @export var waits_to_join: bool = false
 
 ## Speaks their lines, from their head.
@@ -61,6 +70,9 @@ var voice: AudioStreamPlayer3D
 var talk: NpcTalk
 ## Where they are and go aboard.
 var routine: NpcRoutine
+## The quests as they see them where they stand (out in a location, a `VisitQuests`); null: the
+## ship's.
+var quests_view: QuestLog
 ## Whether an overheard talk of theirs plays (see `OverheardTalks`): they stay put, facing the
 ## other, and can't be talked to; no name plate or marker meanwhile.
 var overheard: bool = false:
@@ -75,6 +87,8 @@ var _own_quests := QuestLog.new()
 var _aside: bool = false
 ## At their place before joining: whether they've joined (walking aboard or gone).
 var _joined: bool = false
+## Whether a talk out in a location stopped the game (solo).
+var _pausing: bool = false
 var _new_marker_time: float = 0.0
 
 @onready var bubble: WorldPanel = $Bubble
@@ -152,14 +166,17 @@ func get_plate_text() -> String:
 	return body.get_plate_text()
 
 
-## The quests the topics heard and handed in go into: the ship's.
+## The quests the topics heard and handed in go into: the ship's (as seen from where they stand,
+## `quests_view`).
 func get_quests() -> QuestLog:
+	if quests_view:
+		return quests_view
 	return ship.quests if ship else _own_quests
 
 
 ## The topics open now for `listener` (the player talking to them when null): their quests' first
 ## (the offers, then the steps handed in at them), then the dialogue's in its order (see
-## `Topic.is_open`).
+## `Topic.is_open`; at their place before joining, only those that go once they join).
 func get_choices(listener: Player = null) -> Array[Topic]:
 	var choices: Array[Topic] = []
 	if not profile or not profile.dialogue:
@@ -178,6 +195,8 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 	for quest: Quest in quests.steps_at(profile.id):
 		choices.append(quests.current_step(quest).hand_in)
 	for listed: Topic in profile.dialogue.topics:
+		if waits_to_join and listed.until != profile.join_flag:
+			continue
 		if listed.is_open(listener, story, reaches):
 			choices.append(listed)
 	if tour and tour.invite.is_open(listener, story):
@@ -213,7 +232,7 @@ func is_new(listed: Topic, listener: Player = null) -> bool:
 ## Whether they have something nobody has heard yet for `listener` (the greeting or an open
 ## topic; the player talking to them when null).
 func has_news(listener: Player = null) -> bool:
-	if not profile or not profile.dialogue or waits_to_join:
+	if not profile or not profile.dialogue or (waits_to_join and not _talks_here()):
 		return false
 	var greeting: Topic = get_greeting()
 	if greeting and is_new(greeting):
@@ -224,7 +243,7 @@ func has_news(listener: Player = null) -> bool:
 ## Whether they offer `listener` (the player talking to them when null) a quest, or `listener` can
 ## hand in a quest step at them now (the diamond marker).
 func has_quest_news(listener: Player = null) -> bool:
-	if not profile or waits_to_join or (routine and routine.tour):
+	if not profile or (waits_to_join and not _talks_here()) or (routine and routine.tour):
 		return false
 	var quests: QuestLog = get_quests()
 	if not quests.offered_by(profile.id, get_reached_bodies(), profile.open_requests).is_empty():
@@ -239,8 +258,10 @@ func has_quest_news(listener: Player = null) -> bool:
 
 
 ## The greeting their first talk starts with: their tour's offer while they wait at its start,
-## else their dialogue's.
+## else their dialogue's; none at their place before joining.
 func get_greeting() -> Topic:
+	if waits_to_join:
+		return null
 	if routine and routine.is_waiting():
 		return profile.tour.offer
 	return profile.dialogue.greeting if profile and profile.dialogue else null
@@ -276,14 +297,23 @@ func arrive(at: Transform3D) -> void:
 
 
 ## Shows them and lets them move while they're here (`is_present`), else hides and stills them; at
-## their place before joining, they start walking aboard once they join.
+## their place before joining, they start walking aboard once they join, and stop if that's taken
+## back (a lost run).
 func update_presence() -> void:
-	if waits_to_join and not _joined and profile.is_aboard(get_story()):
+	var aboard: bool = profile.is_aboard(get_story()) if profile else true
+	if waits_to_join and not _joined and aboard:
 		_joined = true
 		routine.start_boarding()
+	elif waits_to_join and _joined and not aboard:
+		_joined = false
+		routine.stop_boarding()
 	var present: bool = is_present()
 	visible = present
-	process_mode = PROCESS_MODE_INHERIT if present else PROCESS_MODE_DISABLED
+	if not present:
+		process_mode = PROCESS_MODE_DISABLED
+	else:
+		# A talk out there that stopped the game keeps them going (see `_set_pausing`).
+		process_mode = PROCESS_MODE_ALWAYS if _pausing else PROCESS_MODE_INHERIT
 	_update_use()
 
 
@@ -325,6 +355,7 @@ func _shortcut(event: InputEvent) -> bool:
 
 
 func _opened() -> void:
+	_set_pausing(SaveGame.is_solo(get_tree()) and _is_out_there())
 	talk.open()
 	_place_focus()
 	super()
@@ -336,6 +367,7 @@ func _opened() -> void:
 
 
 func _closed() -> void:
+	_set_pausing(false)
 	super()
 	_update_use()
 	talk.close()
@@ -352,11 +384,24 @@ func _watch_story() -> void:
 	update_presence()
 
 
-## Lets players talk to them while they're here (not at their place before joining), nobody talks
-## to them yet and no overheard talk of theirs plays.
+## Lets players talk to them while they're here (at their place before joining, while they have
+## something to say there), nobody talks to them yet and no overheard talk of theirs plays.
 func _update_use() -> void:
 	if use_point:
-		use_point.enabled = is_present() and not waits_to_join and not user and not overheard
+		var here: bool = not waits_to_join or _talks_here()
+		use_point.enabled = is_present() and here and not user and not overheard
+
+
+## At their place before joining: whether they have something to say there (a topic that goes once
+## they join, or quests as seen out there).
+func _talks_here() -> bool:
+	if quests_view:
+		return true
+	var topics: Array[Topic] = profile.dialogue.topics if profile and profile.dialogue else []
+	var flag: StringName = profile.join_flag if profile else &""
+	return (
+		not flag.is_empty() and topics.any(func(listed: Topic) -> bool: return listed.until == flag)
+	)
 
 
 ## Who the "something new" marker is for: the player talking to them, else the nearest one.
@@ -382,3 +427,30 @@ func _place_focus() -> void:
 
 func _place_bubble() -> void:
 	SpeechBubble.place(bubble, body.get_head_position())
+
+
+func _exit_tree() -> void:
+	# Never leaves the game stopped (e.g. the location goes away).
+	_set_pausing(false)
+
+
+## Stops the game (`paused`) or lets it go on; while stopped, they and their talk keep going.
+func _set_pausing(paused: bool) -> void:
+	if _pausing == paused or not is_inside_tree():
+		return
+	_pausing = paused
+	get_tree().paused = paused
+	if paused:
+		process_mode = PROCESS_MODE_ALWAYS
+	else:
+		process_mode = PROCESS_MODE_INHERIT if is_present() else PROCESS_MODE_DISABLED
+
+
+## Whether they stand out in a generated location (not aboard or at a station).
+func _is_out_there() -> bool:
+	var at: Node = get_parent()
+	while at:
+		if at is GeneratedLocation:
+			return true
+		at = at.get_parent()
+	return false

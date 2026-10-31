@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://cfp2hlhi1noj6" path="res://game/ship/ship_flight.gd" id="13_flight"]
 [ext_resource type="Resource" uid="uid://ldovtj8kwgqc" path="res://game/ship/flight_settings.tres" id="14_flight_settings"]
 [ext_resource type="PackedScene" uid="uid://d08cgpg47au8u" path="res://game/stations/hold/ore_hold.tscn" id="40_ore_hold"]
-[ext_resource type="PackedScene" uid="uid://1h2fjsrbugii" path="res://game/stations/refinery/refinery.tscn" id="90_refinery"]
 [ext_resource type="PackedScene" uid="uid://ddy8vwia8viwq" path="res://game/ship/hull.tscn" id="60_hull"]
 [ext_resource type="PackedScene" uid="uid://bgkql5ud28cj7" path="res://game/ship/rooms/upper/cockpit.tscn" id="61_cockpit"]
 [ext_resource type="PackedScene" uid="uid://m0p5ps2frbfx" path="res://game/ship/rooms/upper/bridge.tscn" id="62_bridge"]
@@ -25,8 +24,6 @@
 [ext_resource type="PackedScene" uid="uid://pioxtj57jlvk" path="res://game/ship/rooms/upper/crew_7.tscn" id="75_crew_7"]
 [ext_resource type="PackedScene" uid="uid://bw62jq8ykdwru" path="res://game/ship/rooms/upper/crew_4.tscn" id="76_crew_4"]
 [ext_resource type="PackedScene" uid="uid://n6hnmmk4vwfx" path="res://game/ship/rooms/upper/crew_8.tscn" id="77_crew_8"]
-[ext_resource type="PackedScene" uid="uid://bd66ics55wo5u" path="res://game/ship/rooms/lower/specimen_lab.tscn" id="92_specimen_lab"]
-[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="93_neon_sign"]
 [ext_resource type="PackedScene" uid="uid://ds53bpwny3pdg" path="res://game/ship/rooms/lower/medical_bay.tscn" id="78_medical_bay"]
 [ext_resource type="PackedScene" uid="uid://2jwixpr1oqas" path="res://game/ship/rooms/lower/nose_corridor.tscn" id="79_nose_corridor"]
 [ext_resource type="PackedScene" uid="uid://ce4h8o3dea7nk" path="res://game/ship/rooms/lower/engine_room.tscn" id="80_engine_room"]
@@ -39,9 +36,12 @@
 [ext_resource type="PackedScene" uid="uid://4sxy5ln6r01" path="res://game/ship/rooms/lower/skills.tscn" id="87_skills"]
 [ext_resource type="PackedScene" uid="uid://dwst14ybcrvcl" path="res://game/ship/rooms/lower/miners.tscn" id="88_miners"]
 [ext_resource type="PackedScene" uid="uid://mvfidldmdr6j" path="res://game/ship/rooms/cargo_bay.tscn" id="89_cargo_bay"]
+[ext_resource type="PackedScene" uid="uid://1h2fjsrbugii" path="res://game/stations/refinery/refinery.tscn" id="90_refinery"]
 [ext_resource type="PackedScene" uid="uid://dlgypxsvta8yt" path="res://assets/ship/ship_exterior.glb" id="91_exterior"]
 [ext_resource type="Script" uid="uid://d1hgqk4whsnbo" path="res://game/ship/ship_exterior.gd" id="92_exterior_script"]
+[ext_resource type="PackedScene" uid="uid://bd66ics55wo5u" path="res://game/ship/rooms/lower/specimen_lab.tscn" id="92_specimen_lab"]
 [ext_resource type="PackedScene" uid="uid://d5bsb6c78rhv" path="res://game/ship/cargo_hatch.tscn" id="93_cargo_hatch"]
+[ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="93_neon_sign"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_n_5_3x0_2x4_8"]
 size = Vector3(5.3, 0.2, 4.8)
@@ -132,7 +132,7 @@ script = ExtResource("1_script")
 
 [node name="Hull" parent="." unique_id=1099256681 instance=ExtResource("60_hull")]
 
-[node name="Exterior" parent="." node_paths=PackedStringArray("flight") instance=ExtResource("91_exterior")]
+[node name="Exterior" parent="." unique_id=1133565506 node_paths=PackedStringArray("flight") instance=ExtResource("91_exterior")]
 script = ExtResource("92_exterior_script")
 flight = NodePath("../Flight")
 
@@ -140,7 +140,7 @@ flight = NodePath("../Flight")
 
 [node name="Lower" type="Node3D" parent="Rooms" unique_id=860414341]
 
-[node name="SpecimenLab" parent="Rooms/Lower" instance=ExtResource("92_specimen_lab")]
+[node name="SpecimenLab" parent="Rooms/Lower" unique_id=993548646 instance=ExtResource("92_specimen_lab")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -85.25, 2.5, 0)
 
 [node name="MedicalBay" parent="Rooms/Lower" unique_id=2047369333 instance=ExtResource("78_medical_bay")]
@@ -178,14 +178,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 2.5, 8.75)
 
 [node name="Guides" type="Node3D" parent="Rooms/Lower" unique_id=44489949]
 
-[node name="ToCargoBay" parent="Rooms/Lower/Guides" instance=ExtResource("93_neon_sign")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 3.0, -2.47)
+[node name="ToCargoBay" parent="Rooms/Lower/Guides" unique_id=1895846975 instance=ExtResource("93_neon_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 3, -2.47)
 text = "Cargo bay · Ramp"
 color = Color(1, 0.72, 0.3, 1)
 font_size = 28
 arrow = 2
 
-[node name="ToNose" parent="Rooms/Lower/Guides" instance=ExtResource("93_neon_sign")]
+[node name="ToNose" parent="Rooms/Lower/Guides" unique_id=1000901377 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 4.25, -2.47)
 text = "Lift · Medical · Engine"
 color = Color(1, 0.72, 0.3, 1)
@@ -193,7 +193,7 @@ font_size = 36
 arrow = 1
 anchor = 2
 
-[node name="ToNoseLift" parent="Rooms/Lower/Guides" instance=ExtResource("93_neon_sign")]
+[node name="ToNoseLift" parent="Rooms/Lower/Guides" unique_id=479997574 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 5.4, -7.97)
 text = "Lift
 Bridge · Cabins"
@@ -201,7 +201,7 @@ color = Color(1, 0.72, 0.3, 1)
 font_size = 44
 arrow = 3
 
-[node name="ToTail" parent="Rooms/Lower/Guides" instance=ExtResource("93_neon_sign")]
+[node name="ToTail" parent="Rooms/Lower/Guides" unique_id=1596527165 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.2, 4.25, -2.47)
 text = "Range · Armory
 Cargo bay"
@@ -265,7 +265,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 7, 8.75)
 
 [node name="Guides" type="Node3D" parent="Rooms/Upper" unique_id=1028103118]
 
-[node name="ToLowerDeck" parent="Rooms/Upper/Guides" instance=ExtResource("93_neon_sign")]
+[node name="ToLowerDeck" parent="Rooms/Upper/Guides" unique_id=340679660 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.75, 10.6, -7.97)
 text = "Lift
 Lower deck"
@@ -273,7 +273,7 @@ color = Color(1, 0.72, 0.3, 1)
 font_size = 44
 arrow = 4
 
-[node name="ToBridge" parent="Rooms/Upper/Guides" instance=ExtResource("93_neon_sign")]
+[node name="ToBridge" parent="Rooms/Upper/Guides" unique_id=1473232124 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.7, 8.75, -2.47)
 text = "Bridge
 Cockpit"
@@ -282,7 +282,7 @@ font_size = 28
 arrow = 1
 anchor = 2
 
-[node name="ToCabins" parent="Rooms/Upper/Guides" instance=ExtResource("93_neon_sign")]
+[node name="ToCabins" parent="Rooms/Upper/Guides" unique_id=1893043908 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41.8, 8.75, -2.47)
 text = "Cabins · Mess
 Cargo lift"
@@ -291,7 +291,7 @@ font_size = 28
 arrow = 2
 anchor = 1
 
-[node name="FromBridge" parent="Rooms/Upper/Guides" instance=ExtResource("93_neon_sign")]
+[node name="FromBridge" parent="Rooms/Upper/Guides" unique_id=2023010615 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.4, 10.95, -14.47)
 text = "Lift · Cabins · Mess"
 color = Color(1, 0.72, 0.3, 1)
@@ -299,7 +299,7 @@ font_size = 32
 arrow = 2
 anchor = 2
 
-[node name="ToCargoLift" parent="Rooms/Upper/Guides" instance=ExtResource("93_neon_sign")]
+[node name="ToCargoLift" parent="Rooms/Upper/Guides" unique_id=319443081 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.8, 10.95, -14.47)
 text = "Lift
 Cargo bay · Ramp"
@@ -308,7 +308,7 @@ font_size = 32
 arrow = 2
 anchor = 1
 
-[node name="FromMess" parent="Rooms/Upper/Guides" instance=ExtResource("93_neon_sign")]
+[node name="FromMess" parent="Rooms/Upper/Guides" unique_id=423380974 instance=ExtResource("93_neon_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.2, 10.95, -14.47)
 text = "Cabins · Lift · Bridge"
 color = Color(1, 0.72, 0.3, 1)
@@ -469,7 +469,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.63, 0)
 cast_shadow = 0
 mesh = SubResource("BoxMesh_button_face")
 
-[node name="CargoHatch" parent="." node_paths=PackedStringArray("ship") instance=ExtResource("93_cargo_hatch")]
+[node name="CargoHatch" parent="." unique_id=992237942 node_paths=PackedStringArray("ship") instance=ExtResource("93_cargo_hatch")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.8, 0, 7)
 ship = NodePath("..")
 
@@ -480,7 +480,7 @@ monitorable = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Interior" unique_id=941260892]
 shape = SubResource("BoxShape3D_interior")
 
-[node name="Nose" type="CollisionShape3D" parent="Interior"]
+[node name="Nose" type="CollisionShape3D" parent="Interior" unique_id=1342643335]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56.875, 0, 0)
 shape = SubResource("BoxShape3D_interior_nose")
 
@@ -493,14 +493,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, -8.75)
 [node name="OreHold" parent="." unique_id=1339607864 instance=ExtResource("40_ore_hold")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 2.5, 0)
 
-[node name="Refinery" parent="." node_paths=PackedStringArray("hold") instance=ExtResource("90_refinery")]
+[node name="Refinery" parent="." unique_id=1434365091 node_paths=PackedStringArray("hold") instance=ExtResource("90_refinery")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 2.5, 10)
 hold = NodePath("../OreHold")
 
 [node name="Countdown" type="Label3D" parent="." unique_id=1573614227]
-layers = 8
 auto_translate_mode = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.2, 8, 0)
+layers = 8
 pixel_size = 0.015
 billboard = 1
 no_depth_test = true
@@ -513,43 +513,43 @@ uppercase = true
 script = ExtResource("13_flight")
 settings = ExtResource("14_flight_settings")
 
-[node name="Tour" type="Node3D" parent="."]
+[node name="Tour" type="Node3D" parent="." unique_id=199716749]
 
-[node name="Start" type="Marker3D" parent="Tour"]
+[node name="Start" type="Marker3D" parent="Tour" unique_id=1726778043]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -48.75, 7, 0.4)
 
-[node name="MessHall" type="Marker3D" parent="Tour"]
+[node name="MessHall" type="Marker3D" parent="Tour" unique_id=820000132]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16.5, 7, 0)
 
-[node name="Bridge" type="Marker3D" parent="Tour"]
+[node name="Bridge" type="Marker3D" parent="Tour" unique_id=812517524]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -60.5, 7, 1.5)
 
-[node name="Cockpit" type="Marker3D" parent="Tour"]
+[node name="Cockpit" type="Marker3D" parent="Tour" unique_id=1178777547]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -83.5, 7, 1.5)
 
-[node name="Lift" type="Marker3D" parent="Tour"]
+[node name="Lift" type="Marker3D" parent="Tour" unique_id=1527043315]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -54.75, 7, 1.2)
 
-[node name="MedicalBay" type="Marker3D" parent="Tour"]
+[node name="MedicalBay" type="Marker3D" parent="Tour" unique_id=1875284872]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -69.25, 2.5, -4.5)
 
-[node name="EngineRoom" type="Marker3D" parent="Tour"]
+[node name="EngineRoom" type="Marker3D" parent="Tour" unique_id=1929393016]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.25, 2.5, 4.5)
 
-[node name="ShootingRange" type="Marker3D" parent="Tour"]
+[node name="ShootingRange" type="Marker3D" parent="Tour" unique_id=1312740292]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -49.5, 2.5, -4.5)
 
-[node name="Weapons" type="Marker3D" parent="Tour"]
+[node name="Weapons" type="Marker3D" parent="Tour" unique_id=1400935983]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.6875, 2.5, 4.5)
 
-[node name="Armor" type="Marker3D" parent="Tour"]
+[node name="Armor" type="Marker3D" parent="Tour" unique_id=1369368675]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.5625, 2.5, 4.5)
 
-[node name="Skills" type="Marker3D" parent="Tour"]
+[node name="Skills" type="Marker3D" parent="Tour" unique_id=266429799]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4375, 2.5, 4.5)
 
-[node name="Miners" type="Marker3D" parent="Tour"]
+[node name="Miners" type="Marker3D" parent="Tour" unique_id=698656278]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.3125, 2.5, 4.5)
 
-[node name="Armory" type="Marker3D" parent="Tour"]
+[node name="Armory" type="Marker3D" parent="Tour" unique_id=1568730637]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -12.5, 2.5, -4.5)

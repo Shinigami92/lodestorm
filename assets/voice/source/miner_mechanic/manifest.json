@@ -1,5 +1,11 @@
 {
   "de": {
+    "20e2c8ae56b4ebfb": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Fünfundzwanzig Jahre grabe ich jetzt auf diesen Planeten. Ich kam mit der Vermessung her und bin geblieben, als sie zusammengepackt hat und abgezogen ist."
+    },
     "25e0908c3518d83c": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -18,11 +24,29 @@
       "seed": 1,
       "text": "Stell dich nah an ein Erzvorkommen und stell einen Miner auf. Er erscheint zuerst als Hologramm und wird von unten nach oben echt."
     },
+    "3893678d8afb78e0": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Schon Glück mit der Kupplung gehabt?"
+    },
+    "3b10908c2e4d8d45": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "An meiner Schürfstelle ist ein Nest gewachsen, direkt auf der Ader, an der ich gearbeitet habe. Als ich meinen Miner da rausgeschleppt habe, ist seine Antriebskupplung glatt durchgebrochen."
+    },
     "3d648fe24a6e83f7": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Die Miner haben da draußen hart gearbeitet, das sieht man. Solche Ladungen halten dieses Schiff am Laufen."
+    },
+    "48e701040eb62b15": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier draußen hat man Zeit. Erzähl."
     },
     "4eab799865d8aad2": {
       "anchor": "b3d782e0b74c1da4",
@@ -48,6 +72,12 @@
       "seed": 1,
       "text": "Wenn die Lampe an einem Miner bernsteinfarben blinkt, ist sein Vorkommen leer. Heb ihn auf und such ihm ein neues."
     },
+    "5aba0ec1831224c0": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich hatte mal eine Crew. Einer nach dem anderen hatte genug von den Stürmen. Ich nicht."
+    },
     "5dfb780833bd50bd": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -59,6 +89,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Geht's um die Miner?"
+    },
+    "740c76e62c8b724b": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ist das Nest an meiner Schürfstelle schon weg?"
     },
     "78df0bafcf779a61": {
       "anchor": "b3d782e0b74c1da4",
@@ -84,6 +120,12 @@
       "seed": 1,
       "text": "Hm. Du kommst wegen der Miner. Gut. Sie bezahlen alles auf diesem Schiff, also behandle sie anständig."
     },
+    "8a59efd323e3288b": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Euer Schiff da... das kenne ich. Ich bin damit bei der Vermessung geflogen, damals, als es die Route kartiert hat. Hätte nicht gedacht, dass ich es noch mal sehe."
+    },
     "8ddcb054203446b0": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -96,6 +138,12 @@
       "seed": 1,
       "text": "Das nenne ich eine Ladung. Die Miner graben am besten, wenn niemand die Aliens an sie heranlässt. Das ist der ganze Trick."
     },
+    "9109cd233fa05cb6": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brenn das Nest aus, damit ich wieder an meine Ader komme, und such mir eine neue Kupplung. Die Vermessung hat überall in diesem Tal Kisten zurückgelassen. In einer davon ist eine, wenn du lange genug suchst."
+    },
     "9707df3cc2ef2d54": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -107,6 +155,36 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hm. Erzähl."
+    },
+    "9bd825ab16c18475": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kade hat dich geschickt, oder? Sag ihm, ich bin noch nicht tot. Ich sitze nur fest."
+    },
+    "a40b04dcdee950b9": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist sie. Einen Moment... So. Hör sie dir an. Zwanzig Jahre alt, und sie klingt immer noch besser als alles, was sie auf Ostra bauen."
+    },
+    "a876f3f6f1b85181": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Endlich findet mich mal jemand. Ich könnte Hilfe bei einem meiner alten Miner gebrauchen."
+    },
+    "bbff7b98d6da7061": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Was gibt's?"
+    },
+    "c65cdbb13a8c5976": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Eure Miner brauchen jemanden, der sich mit ihnen auskennt. Ich komme mit. Lass mich zusammenpacken, dann treffen wir uns am Schiff."
     },
     "c8870b7edd1a5639": {
       "anchor": "b3d782e0b74c1da4",
@@ -132,6 +210,12 @@
       "seed": 1,
       "text": "Rüste den Bohrer eines Miners auf der Plattform auf, und ich sage dir, welche Erze er mit voller Geschwindigkeit schafft. Wenn du einen Miner aufstellst, kommt der schnellste für dieses Erz."
     },
+    "f6cb3baa1b7e9d64": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Pfosten neben der Hütte ist ein alter Abwehrsender der Vermessung. Die Viecher hier draußen mögen sein Summen nicht, also lassen sie mich in Ruhe."
+    },
     "fc9a0c417283a98d": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -140,6 +224,12 @@
     }
   },
   "en": {
+    "20e2c8ae56b4ebfb": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Twenty-five years I've been digging on these planets. I came out with the survey, and I stayed when it packed up and left."
+    },
     "25e0908c3518d83c": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -158,11 +248,29 @@
       "seed": 1,
       "text": "Stand close to an ore node and place a miner. It shows up as a hologram first and turns real from the bottom up."
     },
+    "3893678d8afb78e0": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Any luck with that coupling?"
+    },
+    "3b10908c2e4d8d45": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "A nest grew up at my dig site, right on the vein I was working. Hauling my miner out of there cracked its drive coupling clean through."
+    },
     "3d648fe24a6e83f7": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
+    },
+    "48e701040eb62b15": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Out here, there's time. Go on."
     },
     "4eab799865d8aad2": {
       "anchor": "7e5f365715a8dd68",
@@ -188,6 +296,12 @@
       "seed": 1,
       "text": "When the lamp on a miner blinks amber, its node is dry. Pick it up and find it a new one."
     },
+    "5aba0ec1831224c0": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I had a crew once. They got tired of the storms, one by one. I didn't."
+    },
     "5dfb780833bd50bd": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -199,6 +313,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Something about the miners?"
+    },
+    "740c76e62c8b724b": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Is the nest at my dig site gone yet?"
     },
     "78df0bafcf779a61": {
       "anchor": "7e5f365715a8dd68",
@@ -224,6 +344,12 @@
       "seed": 1,
       "text": "Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well."
     },
+    "8a59efd323e3288b": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That ship of yours... I know her. I flew on her with the survey, back when she charted the lane. Didn't think I'd see her again."
+    },
     "8ddcb054203446b0": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -236,6 +362,12 @@
       "seed": 1,
       "text": "That's a haul. The miners dig best when nobody lets the aliens near them. That's the whole trick."
     },
+    "9109cd233fa05cb6": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Burn that nest out, so I can get back to my vein, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
+    },
     "9707df3cc2ef2d54": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -247,6 +379,36 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hm. Go on."
+    },
+    "9bd825ab16c18475": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
+    },
+    "a40b04dcdee950b9": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's the one. Give me a moment... There. Listen to her. Twenty years old, and she still sounds better than anything they build at Ostra."
+    },
+    "a876f3f6f1b85181": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Finally, somebody found me. I could use a hand with one of my old miners."
+    },
+    "bbff7b98d6da7061": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What is it?"
+    },
+    "c65cdbb13a8c5976": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Your miners will need someone who knows them. I'm coming with you. Let me pack up, and I'll meet you at the ship."
     },
     "c8870b7edd1a5639": {
       "anchor": "7e5f365715a8dd68",
@@ -271,6 +433,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Upgrade a miner's drill on the pad, and I'll tell you which ores it gets through at full speed. When you place a miner, the fastest one for that ore goes."
+    },
+    "f6cb3baa1b7e9d64": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That post by the shelter is an old survey repeller. The things out here don't like its hum, so they leave me be."
     },
     "fc9a0c417283a98d": {
       "anchor": "7e5f365715a8dd68",

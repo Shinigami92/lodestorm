@@ -99,14 +99,15 @@ func reaction_lines(
 
 
 ## Every line said in this profile, by who says it (see `VoiceLines.SPEAKING`): theirs, under
-## their `id`: the prompts (with a dialogue, `DEFAULT_PROMPT` without any of their own), the
-## greeting's and every topic's (also a guest's and the ones for elsewhere), their tour's, their
-## reactions' and their remarks, the English texts, each once.
+## their `id`: the prompts (with a dialogue, `DEFAULT_PROMPT` without any of their own; also those
+## at their place before joining), the greeting's and every topic's (also a guest's and the ones
+## for elsewhere), their tour's, their reactions' and their remarks, the English texts, each once.
 func spoken_lines() -> Dictionary[StringName, PackedStringArray]:
 	var said: Array[String] = []
 	var topics: Array[Topic] = []
 	if dialogue:
 		said.append_array(dialogue.get_prompts())
+		said.append_array(dialogue.place_prompts)
 		topics.append(dialogue.greeting)
 		topics.append_array(dialogue.topics)
 	if tour:

@@ -28,6 +28,9 @@ const LANDING_GAP: float = 10.0
 ## How close a nest may be to the landing site in a straight line, relative to
 ## `LocationBiome.nest_min_distance` (which counts along the passes).
 const NEST_STRAIGHT_SHARE: float = 0.6
+## How close a nest may be to a part where someone waits (a `PartMarker.Kind.PERSON`, e.g. Hollis'
+## camp), in m: nobody lives next to a nest. TBD (playtest).
+const PERSON_NEST_DISTANCE: float = 30.0
 
 
 ## An ore node's place.
@@ -315,8 +318,9 @@ func _pick_quest_nests() -> void:
 		push_warning("No room for %d quest nests" % wanted.size())
 
 
-## A spot for a nest in `area`, far enough from the landing site, the other nests and `ore_sites`
-## (on `side` of a rich field if one is given, see `_field_side`); `Vector3.INF` without room.
+## A spot for a nest in `area`, far enough from the landing site, the other nests, `ore_sites` and
+## parts where someone waits (on `side` of a rich field if one is given, see `_field_side`);
+## `Vector3.INF` without room.
 func _nest_spot(
 	rng: RandomNumberGenerator,
 	area: LocationLayout.Area,
@@ -325,6 +329,10 @@ func _nest_spot(
 ) -> Vector3:
 	var placed: Array[Vector3] = nest_positions()
 	var closest: float = _location.biome.nest_min_distance * NEST_STRAIGHT_SHARE
+	var people: Array[Vector3] = []
+	for part: LocationParts.Placed in _location.parts.placed:
+		if part.info.count(PartMarker.Kind.PERSON) > 0:
+			people.append(part.origin)
 	return _location.find_site(
 		rng,
 		NEST_RADIUS,
@@ -333,6 +341,7 @@ func _nest_spot(
 				_location.landing_distance(at) >= closest
 				and _far_from(at, placed, _location.nest_spacing)
 				and _far_from(at, ore_sites, _location.nest_ore_spacing)
+				and _far_from(at, people, PERSON_NEST_DISTANCE)
 				and (side.is_empty() or (at - side[0]).dot(side[1]) > 0.0)
 			),
 		area.center,

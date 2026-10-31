@@ -10,7 +10,8 @@ extends Node
 ## run ends, won or lost); a ready rescue drone gets them up first (restocked with each run's
 ## ramp). Bodies farther in (a higher `tier`) have more and
 ## stronger aliens, an earlier warning and a harsher storm.
-## The mission is won (`returned`) once every living player is back aboard, in time or during the
+## The mission is won (`returned`) once every living player is back aboard and nobody is still on
+## their way aboard (a crew member joining out there, see `NpcBoarding`), in time or during the
 ## storm: their cargo is the haul (see `Ship.store_haul`), the dead respawn aboard and the ramp
 ## goes up.
 ## It's lost (`lost`) when nobody is left alive; after `settings.respawn_delay` everyone respawns
@@ -219,7 +220,9 @@ func _check_outcome() -> void:
 		if not ship.is_aboard(player):
 			return
 	if anyone_alive:
-		_return(players)
+		# Someone joining out there still on their way aboard: the run waits for them.
+		if NpcBoarding.walking(get_tree()).is_empty():
+			_return(players)
 	else:
 		state = State.LOST
 		_bank_secured(players)

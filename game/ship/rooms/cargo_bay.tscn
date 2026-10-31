@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://r27phcqt0kpl" path="res://game/ship/neon_sign.tscn" id="30_neon_sign"]
 [ext_resource type="Script" uid="uid://drxy3f7k8buie" path="res://game/talks/talk_spot.gd" id="96_talk_spot"]
+[ext_resource type="Script" uid="uid://db7cvixuwi3wy" path="res://game/story/story_shown.gd" id="40_story_shown"]
+[ext_resource type="PackedScene" uid="uid://n746p13jywoe" path="res://game/mining/old_miner.tscn" id="41_old_miner"]
 
 [node name="CargoBay" type="Node3D"]
 
@@ -30,3 +32,10 @@ arrow = 3
 [node name="Furnaces" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15, 0, 11.6)
 script = ExtResource("96_talk_spot")
+
+[node name="HollisMiner" type="Node3D" parent="."]
+transform = Transform3D(-0.766, 0, -0.643, 0, 1, 0, 0.643, 0, -0.766, 6.5, 0, 11)
+script = ExtResource("40_story_shown")
+flag = &"crew.miner_mechanic.joined"
+
+[node name="OldMiner" parent="HollisMiner" instance=ExtResource("41_old_miner")]

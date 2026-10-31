@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c8q6bkm7m3hp6" path="res://game/npcs/npc_profile.gd" id="1_profile"]
 [ext_resource type="Script" uid="uid://ddeb65xhvagk2" path="res://game/npcs/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" uid="uid://dn5vusrjjqgbe" path="res://game/npcs/crew_reaction.gd" id="3_gl6ri"]
 [ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="3_topic"]
 
 [sub_resource type="Resource" id="Resource_greeting"]

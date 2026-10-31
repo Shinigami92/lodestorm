@@ -77,6 +77,8 @@ func _show_goals(step: QuestStep, quest: Quest, quests: QuestLog, offering: bool
 	for i: int in step.goals.size():
 		var goal: QuestGoal = step.goals[i]
 		var row: Label = _label(&"CardText", _goals)
+		# A long goal (German ones especially) wraps instead of widening the card past its frame.
+		row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		var done: float = quests.goal_progress(quest, i)
 		row.text = "•  " + goal.describe()
 		if goal.counted() > 1.0:

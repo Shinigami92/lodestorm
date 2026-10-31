@@ -1,21 +1,27 @@
 [gd_resource type="Resource" script_class="Quest" format=3 uid="uid://dp3070v2cd3bg"]
 
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
-[ext_resource type="Script" uid="uid://csxt02vdhmgmi" path="res://game/quests/deliver_goal.gd" id="s_deliver"]
-[ext_resource type="Script" uid="uid://bbh57jogeoedv" path="res://game/quests/quest_goal.gd" id="s_goal"]
-[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="s_topic"]
-[ext_resource type="Script" uid="uid://7vg4utlxx3ie" path="res://game/quests/quest_step.gd" id="s_step"]
-[ext_resource type="Script" uid="uid://dwkdaijmiqcvw" path="res://game/quests/radio_line.gd" id="s_radio"]
-[ext_resource type="Script" uid="uid://ci42qpedn185n" path="res://game/quests/clear_nests_goal.gd" id="s_nests"]
 [ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="ore_olvane"]
-[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="s_item_type"]
-[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
-[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="s_placement"]
-[ext_resource type="Script" uid="uid://d4oba3ngd53d" path="res://game/quests/recover_fragments_goal.gd" id="s_fragments"]
-[ext_resource type="Resource" uid="uid://7jm5s1jr48n5" path="res://game/weapons/types/brask/brask.tres" id="weapon_brask"]
-[ext_resource type="Script" uid="uid://16u5jwtdfxul" path="res://game/quests/build_goal.gd" id="s_build"]
 [ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
+[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
+[ext_resource type="Script" uid="uid://16u5jwtdfxul" path="res://game/quests/build_goal.gd" id="s_build"]
+[ext_resource type="Script" uid="uid://csxt02vdhmgmi" path="res://game/quests/deliver_goal.gd" id="s_deliver"]
+[ext_resource type="Script" uid="uid://d4oba3ngd53d" path="res://game/quests/recover_fragments_goal.gd" id="s_fragments"]
+[ext_resource type="Script" uid="uid://bbh57jogeoedv" path="res://game/quests/quest_goal.gd" id="s_goal"]
+[ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="s_item_type"]
+[ext_resource type="Script" uid="uid://ci42qpedn185n" path="res://game/quests/clear_nests_goal.gd" id="s_nests"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="s_placement"]
 [ext_resource type="Script" uid="uid://bdto4xx2jvios" path="res://game/quests/quest.gd" id="s_quest"]
+[ext_resource type="Script" uid="uid://dwkdaijmiqcvw" path="res://game/quests/radio_line.gd" id="s_radio"]
+[ext_resource type="Script" uid="uid://7vg4utlxx3ie" path="res://game/quests/quest_step.gd" id="s_step"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="s_topic"]
+[ext_resource type="Resource" uid="uid://7jm5s1jr48n5" path="res://game/weapons/types/brask/brask.tres" id="weapon_brask"]
+
+[sub_resource type="Resource" id="Topic_19"]
+script = ExtResource("s_topic")
+id = &"quartermaster.job_colony_arms"
+title = "About that job..."
+lines = Array[String](["I've got a job for you, and it starts small. Ostra's workshops are running out of Kyrite, and without it, the repairs stop.", "So our first 300 Kyrite go to Kade at the depot. The colony looks after us, so we look after the colony.", "Do that well, and I'll have more for you after."])
 
 [sub_resource type="Resource" id="DeliverGoal_1"]
 script = ExtResource("s_deliver")
@@ -45,7 +51,6 @@ coop_text = "Brannik here. The survey markers are somewhere down there, with the
 script = ExtResource("s_nests")
 region = &"mire"
 landing_line = SubResource("RadioLine_4")
-amount = 2
 
 [sub_resource type="Resource" id="Topic_6"]
 script = ExtResource("s_topic")
@@ -64,24 +69,25 @@ id = &"survey_nests"
 text = "Destroy the two nests by the survey markers in Hollow Mire."
 goals = Array[ExtResource("s_goal")]([SubResource("ClearNestsGoal_5")])
 hand_in = SubResource("Topic_6")
-items = Dictionary[ExtResource("s_item_type"), int]({ExtResource("ore_olvane"): 60})
+items = Dictionary[ExtResource("s_item_type"), int]({
+ExtResource("ore_olvane"): 60
+})
 ready_line = SubResource("RadioLine_7")
-
-[sub_resource type="Resource" id="PartPlacement_9"]
-script = ExtResource("s_placement")
-scene = ExtResource("part_wreck")
 
 [sub_resource type="Resource" id="RadioLine_10"]
 script = ExtResource("s_radio")
 text = "The lander's crates are spread out down there. Open every one you find. Three pieces, that's all we need."
 coop_text = "The lander's crates are spread out down there. Split up if you like, and open every one you find. Three pieces, that's all we need."
 
+[sub_resource type="Resource" id="PartPlacement_9"]
+script = ExtResource("s_placement")
+scene = ExtResource("part_wreck")
+
 [sub_resource type="Resource" id="RecoverFragmentsGoal_11"]
 script = ExtResource("s_fragments")
+site_part = SubResource("PartPlacement_9")
 region = &"redscar"
 landing_line = SubResource("RadioLine_10")
-amount = 3
-site_part = SubResource("PartPlacement_9")
 
 [sub_resource type="Resource" id="Topic_12"]
 script = ExtResource("s_topic")
@@ -124,14 +130,10 @@ id = &"build"
 text = "Build the shotgun from its blueprint."
 goals = Array[ExtResource("s_goal")]([SubResource("BuildGoal_15")])
 hand_in = SubResource("Topic_16")
-items = Dictionary[ExtResource("s_item_type"), int]({ExtResource("ore_vyrel"): 40})
+items = Dictionary[ExtResource("s_item_type"), int]({
+ExtResource("ore_vyrel"): 40
+})
 ready_line = SubResource("RadioLine_17")
-
-[sub_resource type="Resource" id="Topic_19"]
-script = ExtResource("s_topic")
-id = &"quartermaster.job_colony_arms"
-title = "About that job..."
-lines = Array[String](["I've got a job for you, and it starts small. Ostra's workshops are running out of Kyrite, and without it, the repairs stop.", "So our first 300 Kyrite go to Kade at the depot. The colony looks after us, so we look after the colony.", "Do that well, and I'll have more for you after."])
 
 [resource]
 script = ExtResource("s_quest")

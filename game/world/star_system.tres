@@ -4,25 +4,25 @@
 [ext_resource type="Script" uid="uid://b6huhxdwk744g" path="res://game/world/celestial_body.gd" id="2_body"]
 [ext_resource type="Script" uid="uid://c3c4hiep58pra" path="res://game/world/region.gd" id="3_region"]
 [ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="6_ore_type"]
-[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
-[ext_resource type="Resource" uid="uid://dc5iplqjbh04" path="res://game/locations/biomes/dust.tres" id="biome_dust"]
-[ext_resource type="Resource" uid="uid://caubseewpqqlm" path="res://game/locations/biomes/overgrowth.tres" id="biome_overgrowth"]
-[ext_resource type="Resource" uid="uid://dwg0aqwrvn0kw" path="res://game/locations/biomes/frost.tres" id="biome_frost"]
-[ext_resource type="Resource" uid="uid://ulap8g7ne47t" path="res://game/locations/biomes/salt.tres" id="biome_salt"]
 [ext_resource type="Resource" uid="uid://bu060ey10pkem" path="res://game/locations/biomes/ash.tres" id="biome_ash"]
+[ext_resource type="Resource" uid="uid://dc5iplqjbh04" path="res://game/locations/biomes/dust.tres" id="biome_dust"]
+[ext_resource type="Resource" uid="uid://dwg0aqwrvn0kw" path="res://game/locations/biomes/frost.tres" id="biome_frost"]
 [ext_resource type="Resource" uid="uid://dliboajrm4wqt" path="res://game/locations/biomes/glass.tres" id="biome_glass"]
-[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
+[ext_resource type="Resource" uid="uid://caubseewpqqlm" path="res://game/locations/biomes/overgrowth.tres" id="biome_overgrowth"]
+[ext_resource type="Resource" uid="uid://ulap8g7ne47t" path="res://game/locations/biomes/salt.tres" id="biome_salt"]
+[ext_resource type="PackedScene" uid="uid://dd4x4eni5bhlc" path="res://game/space_station/ostra/ostra.tscn" id="map_ostra"]
+[ext_resource type="Resource" uid="uid://1v26qj8f1fdi" path="res://game/ores/types/ore_aethrine.tres" id="ore_aethrine"]
 [ext_resource type="Resource" uid="uid://ducxpyjy6s8wo" path="res://game/ores/types/ore_emerin.tres" id="ore_emerin"]
 [ext_resource type="Resource" uid="uid://dsspev82ieiuo" path="res://game/ores/types/ore_indral.tres" id="ore_indral"]
-[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
 [ext_resource type="Resource" uid="uid://bogktyyctiqjj" path="res://game/ores/types/ore_noctile.tres" id="ore_noctile"]
-[ext_resource type="Resource" uid="uid://1v26qj8f1fdi" path="res://game/ores/types/ore_aethrine.tres" id="ore_aethrine"]
+[ext_resource type="Resource" uid="uid://bytgjnmcbep72" path="res://game/ores/types/ore_selyx.tres" id="ore_selyx"]
 [ext_resource type="PackedScene" uid="uid://xwf5jkcqbffk" path="res://game/locations/parts/expedition_camp.tscn" id="part_camp"]
 [ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
 [ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
-[ext_resource type="PackedScene" uid="uid://dd4x4eni5bhlc" path="res://game/space_station/ostra/ostra.tscn" id="map_ostra"]
 
 [sub_resource type="Resource" id="SetPiece_redscar"]
 script = ExtResource("part_placement")
@@ -120,7 +120,7 @@ id = &"ostra"
 display_name = "Waypost Ostra"
 short_name = "Ostra"
 kind = 2
-color = Color(0.55, 0.85, 1.0, 1)
+color = Color(0.55, 0.85, 1, 1)
 size = 0.5
 orbit_radius = 0.3
 orbit_angle = 250.0
@@ -323,7 +323,6 @@ tier = 4
 color = Color(0.82, 0.82, 0.78, 1)
 size = 0.4
 orbit_radius = 0.22
-orbit_angle = 0.0
 orbits = SubResource("Body_gaulm")
 regions = Array[ExtResource("3_region")]([SubResource("Region_drift"), SubResource("Region_lantern")])
 signature_ores = Array[ExtResource("6_ore_type")]([ExtResource("ore_selyx")])

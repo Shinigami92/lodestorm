@@ -123,7 +123,7 @@ kind = 2
 color = Color(0.55, 0.85, 1, 1)
 size = 0.5
 orbit_radius = 0.3
-orbit_angle = 250.0
+orbit_angle = 140.0
 orbits = SubResource("Body_torvane")
 map = ExtResource("map_ostra")
 

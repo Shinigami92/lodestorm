@@ -1,7 +1,8 @@
 class_name QuestBoardCard
 extends StationCard
 ## The quest board's holo card (see `QuestBoardStation`): a quest (its giver, where its step is
-## handed in, the step with its goals and rewards, `QuestPanel`; "Track"), the done quests' group
+## handed in, the step with its goals and rewards, `QuestPanel`; "Track" and "Set as destination"
+## where its step goes), the done quests' group
 ## ("Show"/"Hide"), a job (what it reaches, the time left), a message (who left it, what it says,
 ## which line plays; "Play"/"Stop") or a tab (what it lists).
 
@@ -13,6 +14,7 @@ var _panel := QuestPanel.new()
 @onready var _lines: Label = %Lines
 @onready var _status: Label = %Status
 @onready var _action: Button = %Action
+@onready var _course: Button = %Course
 
 
 func _ready() -> void:
@@ -20,6 +22,7 @@ func _ready() -> void:
 	%Layout.add_child(_panel)
 	%Layout.move_child(_panel, _where.get_index() + 1)
 	_action.pressed.connect(press_primary)
+	_course.pressed.connect(_on_course_pressed)
 
 
 func show_part(part: StationPart) -> void:
@@ -32,6 +35,7 @@ func show_part(part: StationPart) -> void:
 	_lines.visible = false
 	_status.visible = false
 	_action.visible = false
+	_course.visible = false
 	var entry: BoardEntry = board.entry_of(part)
 	if not entry:
 		_show_tab(board)
@@ -77,6 +81,11 @@ func get_action() -> Button:
 	return _action
 
 
+## The card's "Set as destination" button (for tests and probes).
+func get_course() -> Button:
+	return _course
+
+
 ## The quest's panel (for tests and probes).
 func get_quest_panel() -> QuestPanel:
 	return _panel
@@ -116,6 +125,25 @@ func _show_quest(board: QuestBoardStation, entry: BoardEntry) -> void:
 	var viewer: Player = board.viewer()
 	_panel.show_quest(quest, quests, viewer.hold if viewer else null, false)
 	_show_action(tr("Tracked") if entry.tracked else tr("Track"), entry.tracked)
+	_show_course(board, quest)
+
+
+## "Set as destination" for where `quest`'s step goes (none when it's all done aboard), and the
+## status once it's chosen or the ship is there.
+func _show_course(board: QuestBoardStation, quest: Quest) -> void:
+	var offer: MissionBrief = board.course_for(quest)
+	var voyage: Voyage = board.ship.voyage if board.ship else null
+	if not offer or not voyage:
+		return
+	_course.visible = true
+	_course.text = tr("Set as destination")
+	var there: bool = offer == voyage.brief and not voyage.flight.is_flying()
+	var chosen: bool = offer == voyage.destination and offer != voyage.brief
+	_course.disabled = there or chosen or not voyage.can_select()
+	if chosen:
+		_show_status(
+			tr("Destination set: the pilot takes off from the cockpit."), CardPalette.STATUS
+		)
 
 
 ## A message: who left it (their role and where they are), its lines, and which one plays or
@@ -141,6 +169,13 @@ func _show_message(board: QuestBoardStation, entry: ReceivedMessage) -> void:
 	elif not entry.heard:
 		_show_status(tr("Not heard yet"), CardPalette.STATUS)
 	_show_action(tr("Stop") if playing else tr("Play"), false)
+
+
+func _on_course_pressed() -> void:
+	var board := station as QuestBoardStation
+	var entry: BoardEntry = board.entry_of(board.selected) if board else null
+	if entry and entry.quest:
+		board.choose_course(entry.quest)
 
 
 func _show_job(entry: BoardEntry) -> void:

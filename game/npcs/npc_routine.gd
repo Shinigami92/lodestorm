@@ -9,11 +9,13 @@ extends RefCounted
 ## navigator or the ship flies (faster, `HURRY_SPEED`, stopping for nobody on the way), sit down and
 ## wait for the course or watch the autopilot, stay seated `SEAT_LINGER` s after it has landed or
 ## docked (a short flight that's over before they're there: they still sit down for that long),
-## get up and walk back.
-## With a `Tour` (their profile's), they wait at its start until its offer is heard (a new game
-## starts them there), and while it runs (`start_tour`, an `NpcTour`) they walk ahead from stop to
-## stop (faster, stopping for nobody: they lead) and say each stop's lines, then go back to their
-## spot.
+## get up and walk back. Seated there with a destination chosen, they set course themselves after
+## `TAKE_OFF_DELAY` s once its location is scanned, everyone is aboard and nobody of the crew still
+## walks aboard (the host's pilot: the ship's decisions are the host's).
+## With a `Tour` (their profile's), they wait at its start until its offer is heard or the first
+## destination is chosen at the navigator (a new game starts them there), and while it runs
+## (`start_tour`, an `NpcTour`) they walk ahead from stop to stop (faster, stopping for nobody: they
+## lead) and say each stop's lines, then go back to their spot.
 ## With an overheard talk waiting for them (`talk_place`, see `OverheardTalks`), they walk to their
 ## place at its spot and wait there, doing nothing else; while it plays (`Npc.overheard`) they stay
 ## put, even for the flight seat.
@@ -39,6 +41,9 @@ const WALK_SPEED: float = 1.3
 const HURRY_SPEED: float = 2.0
 ## Seconds they stay in the `flight_seat` once the ship has landed or docked. TBD (playtest).
 const SEAT_LINGER: float = 5.0
+## Seconds they sit in the `flight_seat` with a destination chosen before setting course. TBD
+## (playtest).
+const TAKE_OFF_DELAY: float = 1.5
 ## How fast they turn to face the way their spot or seat faces (per s, smoothed).
 const TURN_SPEED: float = 5.0
 ## What they do at their own spot when they have work spots (the crew's shared clips that need
@@ -69,6 +74,8 @@ var _seat_trip: bool = false
 ## Whether they came aboard at the door and walk on to their post (stopping for nobody).
 var _arriving: bool = false
 var _linger: float = 0.0
+## Seconds they've sat in the flight seat with a destination chosen.
+var _seated_for: float = 0.0
 ## The work spot they're at or on their way to (null: their own spot), and the seconds left until
 ## they move on.
 var _spot: WorkSpot
@@ -111,10 +118,14 @@ func is_underway() -> bool:
 	return _walker.is_underway()
 
 
-## Whether they wait at their tour's start for its offer to be heard (a new game).
+## Whether they wait at their tour's start for its offer to be heard (a new game): not once the
+## first destination is chosen (the players went their own way).
 func is_waiting() -> bool:
 	var given: Tour = npc.profile.tour if npc.profile else null
-	return given != null and tour == null and not npc.get_story().is_set(given.offer.id)
+	if not given or tour or npc.get_story().is_set(given.offer.id):
+		return false
+	var voyage: Voyage = npc.ship.voyage if npc.ship else null
+	return not voyage or (voyage.destination == null and voyage.at_body == null)
 
 
 ## The room they stand in (its node name in the map, e.g. "Armory"; in a doorway still the one
@@ -281,6 +292,8 @@ func update(delta: float) -> void:
 	if seat:
 		if not body.sitting and absf(angle_difference(npc.rotation.y, yaw)) < 0.05:
 			body.sitting = true
+		if flight_seat:
+			_take_off(delta)
 		return
 	if tour or talk_place:
 		body.allow_activities([&"Nothing"] as Array[StringName])
@@ -383,6 +396,25 @@ func _count_seat_trip(delta: float) -> void:
 	elif npc.body.sitting and npc.body.get_sit_amount() >= 1.0:
 		_linger -= delta
 		_seat_trip = _linger > 0.0
+
+
+## Sets course for the destination chosen once they've sat in the flight seat for
+## `TAKE_OFF_DELAY` s, its location is scanned, everyone is aboard and nobody of the crew still
+## walks aboard (see the class description).
+func _take_off(delta: float) -> void:
+	var voyage: Voyage = npc.ship.voyage
+	if not voyage or not _destination_chosen() or npc.body.get_sit_amount() < 1.0:
+		_seated_for = 0.0
+		return
+	_seated_for += delta
+	if (
+		_seated_for >= TAKE_OFF_DELAY
+		and npc.multiplayer.is_server()
+		and not voyage.is_preparing(voyage.destination)
+		and npc.ship.everyone_aboard()
+		and NpcBoarding.walking(npc.get_tree()).is_empty()
+	):
+		voyage.confirm()
 
 
 ## What they may do where they stand (see the class description); empty: everything their

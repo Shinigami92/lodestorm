@@ -112,6 +112,24 @@ static func regions(quest_log: QuestLog) -> Dictionary[StringName, bool]:
 	return found
 
 
+## Where the ship goes for `quest`'s active step (the quest board's "Set as destination"): the
+## region (its `Region.id`) of its first goal out there not done yet, else the region where it meets
+## someone, else the station (its `CelestialBody.id`) of whoever it's handed in at; empty when it's
+## all done aboard (or no step is active).
+static func destination(quest_log: QuestLog, quest: Quest) -> StringName:
+	var step: QuestStep = quest_log.current_step(quest) if quest else null
+	if not step:
+		return &""
+	for i: int in step.goals.size():
+		var goal := step.goals[i] as RegionGoal
+		if goal and quest_log.goal_progress(quest, i) < goal.target():
+			return goal.region
+	if not step.meets_in.is_empty() and step.meets_at:
+		return step.meets_in
+	var profile: NpcProfile = NpcProfile.find(quest.hand_in_npc(step))
+	return profile.station if profile else &""
+
+
 ## The quest sites' map parts, to place as set pieces (each once, also when goals and meetings
 ## share it).
 func sites() -> Array[PartPlacement]:

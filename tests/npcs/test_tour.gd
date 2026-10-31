@@ -1,6 +1,7 @@
 extends GutTest
 ## Brannik's tour (`Tour`, `NpcTour`, `NpcRoutine`): on a new game he waits in front of the cabins
-## with the offer; "Later" sends him to the armory; "Show me the ship" starts the tour, he waits at
+## with the offer; "Later" sends him to the armory, and so does the first destination chosen
+## without talking to him (the tour still on offer); "Show me the ship" starts the tour, he waits at
 ## each stop for the player and says its line; talking to him during it offers going on or ending
 ## it; a player who walks off ends it; he takes the lift between the decks, and the lift waits for
 ## him while he steps on.
@@ -32,6 +33,24 @@ func test_a_new_game_starts_with_him_waiting_at_the_cabins() -> void:
 	assert_false(_brannik.routine.is_waiting(), "Later: he doesn't wait any more")
 	await _until(func() -> bool: return _brannik.body.is_walking(), 10.0)
 	assert_true(_brannik.body.is_walking(), "on his way to the armory")
+
+
+func test_the_first_destination_chosen_sends_him_to_the_armory() -> void:
+	await _load()
+	assert_true(_brannik.routine.is_waiting())
+	var voyage: Voyage = _ship.voyage
+	assert_true(voyage.choose(voyage.offers[0]), "Set as destination at the navigator")
+	assert_false(_brannik.routine.is_waiting(), "he doesn't wait any more")
+	await _until(func() -> bool: return _brannik.body.is_walking(), 10.0)
+	assert_true(_brannik.body.is_walking(), "on his way to the armory")
+	assert_eq(
+		_brannik.get_greeting(),
+		_brannik.profile.dialogue.greeting,
+		"his own greeting, not the offer"
+	)
+	assert_true(
+		_brannik.get_choices(_player).has(_brannik.profile.tour.invite), "the tour still on offer"
+	)
 
 
 func test_once_the_offer_is_heard_he_starts_in_the_armory() -> void:

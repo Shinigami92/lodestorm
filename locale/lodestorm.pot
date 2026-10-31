@@ -773,7 +773,7 @@ msgid "Flying"
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
-msgid "Once the destination is set, the course is set at the flight console in the cockpit. Anyone can do that, not just me."
+msgid "Once we have a destination, I take us out from the cockpit as soon as everyone is aboard. Anyone there before me can pull the lever on the flight console."
 msgstr ""
 
 #: game/npcs/crew/pilot.tres
@@ -1133,7 +1133,7 @@ msgid "The bridge. Tamsin flies the ship, and here at the holo table you pick wi
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
-msgid "Next door is the cockpit. Once a destination is set, the course is set at the flight console in here, and anyone can do that."
+msgid "Next door is the cockpit. Once we have a destination, Tamsin takes us out from here. Anyone can pull the lever on the flight console, too."
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
@@ -3327,11 +3327,14 @@ msgid "Nowhere to land: its moons can be visited."
 msgstr ""
 
 #: game/stations/navigator/navigator_card.gd
+#: game/stations/quest_board/quest_board_card.gd
+#: game/stations/quest_board/quest_board_card.tscn
 msgid "Set as destination"
 msgstr ""
 
 #: game/stations/navigator/navigator_card.gd
-msgid "Destination set: set course at the cockpit."
+#: game/stations/quest_board/quest_board_card.gd
+msgid "Destination set: the pilot takes off from the cockpit."
 msgstr ""
 
 #: game/stations/navigator/navigator_card.gd

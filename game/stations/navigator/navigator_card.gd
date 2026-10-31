@@ -157,7 +157,7 @@ func _show_station(navigator: NavigatorStation, shown_station: CelestialBody) ->
 	elif offer == voyage.brief:
 		text = tr("Docked: lower the ramp in the cargo bay.")
 	elif chosen:
-		text = tr("Destination set: set course at the cockpit.")
+		text = tr("Destination set: the pilot takes off from the cockpit.")
 	var waiting: String = _waiting_text(navigator, shown_station)
 	if not waiting.is_empty():
 		text = waiting + ("\n" + text if not text.is_empty() else "")
@@ -227,7 +227,7 @@ func _region_status(
 	elif voyage.is_preparing(offer):
 		text = tr("Scanning the location...")
 	else:
-		text = tr("Destination set: set course at the cockpit.")
+		text = tr("Destination set: the pilot takes off from the cockpit.")
 	return text
 
 

@@ -160,6 +160,8 @@ Alongside, any time:
   - [ ] the quests in an NPC's talk list (e.g. Kade's) set apart from the normal topics
   - [ ] the course can be set at the bridge's wall panel (the quest board) too
   - [ ] a hint (someone's line) to place a miner first for ore to reload with, and only then go deeper with ore on the back, so nobody dies from running out of ammo by accident
+  - [ ] Brannik, ignored at the start (his tour never taken), goes to the armory after the first flight set at the navigator instead of waiting on
+  - [ ] Waypost Ostra in front of Torvane (the first planet) on the navigator
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)

@@ -21,7 +21,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"CelestialBody": [&"display_name"],
 	"ClearNestsGoal": [&"task"],
 	"CrewReaction": [&"lines"],
-	"Dialogue": [&"prompts"],
+	"Dialogue": [&"prompts", &"place_prompts"],
 	"LocationBiome": [&"display_name"],
 	"OreType": [&"display_name"],
 	"Message": [&"lines"],

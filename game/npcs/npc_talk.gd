@@ -62,7 +62,7 @@ func open() -> void:
 	_set_paused(false)
 	var dialogue: Dialogue = npc.profile.dialogue if npc.profile else null
 	if dialogue:
-		prompt = dialogue.pick_prompt(prompt)
+		prompt = dialogue.pick_prompt(prompt, npc.waits_to_join)
 
 
 ## Plays the greeting while nobody has heard it, else shows the list and says the prompt (once the

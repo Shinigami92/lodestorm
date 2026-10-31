@@ -57,6 +57,7 @@ until = &"crew.miner_mechanic.joined"
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["What do you need?", "Hm. Go on.", "Make it quick. The miners won't fix themselves.", "Something about the miners?"])
+place_prompts = Array[String](["Hm. Go on.", "What is it?", "Out here, there's time. Go on."])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_placing"), SubResource("Resource_fleet"), SubResource("Resource_drills"), SubResource("Resource_dry"), SubResource("Resource_about"), SubResource("Resource_about_camp")])
 
 [sub_resource type="Resource" id="Reaction_big_haul"]

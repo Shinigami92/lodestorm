@@ -145,6 +145,22 @@ func test_someone_aboard_keeps_it() -> void:
 	assert_eq(next.entries.size(), 2, "the nest at his dig site and his part")
 
 
+## What they say again before the step's card is only their own calls (not the pilot's landing call
+## for them), and at their place they have their own prompts.
+func test_they_say_only_their_own_lines() -> void:
+	var landing := RadioLine.new()
+	landing.text = "Pilot here. The camp is close."
+	landing.speaker = &"pilot"
+	(_quest.steps[0].goals[0] as RegionGoal).landing_line = landing
+	_log.accept(_quest, [])
+	assert_true(_log.calls.hear(_quest, QuestStep.landing_key(0)))
+	assert_true(_log.calls.lines(_quest, _quest.steps[0], false).is_empty(), "the pilot's call")
+	var dialogue: Dialogue = NpcProfile.find(HOLLIS).dialogue
+	assert_false(dialogue.place_prompts.is_empty(), "prompts for his camp")
+	assert_eq(dialogue.get_prompts(true), dialogue.place_prompts)
+	assert_eq(dialogue.get_prompts(), dialogue.prompts, "aboard, the crew's")
+
+
 ## The location places the camp, Hollis at its person marker (talked to about what's out here),
 ## the nest at his dig site and his part in a crate.
 func test_the_location_places_them() -> void:

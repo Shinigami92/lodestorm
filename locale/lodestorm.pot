@@ -589,6 +589,14 @@ msgid "Something about the miners?"
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
+msgid "What is it?"
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "Out here, there's time. Go on."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
 msgid "Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well."
 msgstr ""
 

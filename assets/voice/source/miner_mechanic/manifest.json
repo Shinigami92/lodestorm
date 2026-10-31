@@ -42,6 +42,12 @@
       "seed": 1,
       "text": "Die Miner haben da draußen hart gearbeitet, das sieht man. Solche Ladungen halten dieses Schiff am Laufen."
     },
+    "48e701040eb62b15": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier draußen hat man Zeit. Erzähl."
+    },
     "4eab799865d8aad2": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -150,6 +156,12 @@
       "seed": 1,
       "text": "Das ist sie. Einen Moment... So. Hör sie dir an. Zwanzig Jahre alt, und sie klingt immer noch besser als alles, was sie auf Ostra bauen."
     },
+    "bbff7b98d6da7061": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Was gibt's?"
+    },
     "c65cdbb13a8c5976": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -235,6 +247,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
+    },
+    "48e701040eb62b15": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Out here, there's time. Go on."
     },
     "4eab799865d8aad2": {
       "anchor": "7e5f365715a8dd68",
@@ -343,6 +361,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "That's the one. Give me a moment... There. Listen to her. Twenty years old, and she still sounds better than anything they build at Ostra."
+    },
+    "bbff7b98d6da7061": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What is it?"
     },
     "c65cdbb13a8c5976": {
       "anchor": "7e5f365715a8dd68",

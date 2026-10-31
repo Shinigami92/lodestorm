@@ -43,7 +43,7 @@ script = ExtResource("3_topic")
 id = &"depot_master.hollis"
 title = "Hollis"
 lines = Array[String](["So you found Hollis, and now he flies with you. I'd never have guessed he'd leave that valley for anyone.", "I'll have his crates carried over to your ship. And tell him to come by my counter when you're docked. I'd like to hear it from him."])
-requires = Array[StringName]([&"quest.overdue"])
+requires = Array[StringName]([&"depot_master.greeting", &"quest.overdue"])
 
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")

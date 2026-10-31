@@ -63,8 +63,13 @@ func test_their_topics_are_their_own_and_open_after_talking() -> void:
 		for topic: Topic in profile.dialogue.topics:
 			assert_true(Story.is_valid_flag(topic.id), String(topic.id))
 			assert_string_starts_with(String(topic.id), String(profile.id) + ".")
+			# Told at their place before joining (gone once they join), where there's no greeting.
+			var before_joining: bool = (
+				not profile.join_flag.is_empty() and topic.until == profile.join_flag
+			)
 			assert_false(
-				topic.requires.is_empty(), String(topic.id) + " after the greeting or more"
+				topic.requires.is_empty() and not before_joining,
+				String(topic.id) + " after the greeting or more"
 			)
 			assert_false(topic.lines.is_empty(), String(topic.id))
 

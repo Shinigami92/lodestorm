@@ -21,5 +21,6 @@ shape = SubResource("CylinderShape3D_body")
 [node name="Model" parent="." instance=ExtResource("1_model")]
 
 [node name="Glass" parent="Model/Miner" index="10"]
+layers = 8
 cast_shadow = 0
 material_override = SubResource("StandardMaterial3D_glass")

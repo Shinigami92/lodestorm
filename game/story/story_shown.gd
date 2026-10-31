@@ -1,7 +1,8 @@
 class_name StoryShown
 extends Node3D
 ## Scenery that shows once a story `flag` is set (the nearest ship's `Story`), or, with `until`,
-## until then: e.g. Dace's stall at Ostra with its shutter down once he's aboard.
+## until then: e.g. Dace's stall at Ostra with its shutter down once he's aboard, Hollis' old miner
+## in the cargo bay. Hidden, it's switched off too, so its colliders don't block anyone.
 
 ## The story flag it follows (e.g. `crew.gunsmith.joined`).
 @export var flag: StringName
@@ -25,3 +26,4 @@ func _watch() -> void:
 
 func _update() -> void:
 	visible = _story.is_set(flag) != until
+	process_mode = PROCESS_MODE_INHERIT if visible else PROCESS_MODE_DISABLED

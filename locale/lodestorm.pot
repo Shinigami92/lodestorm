@@ -673,6 +673,14 @@ msgid "I knew some of the people on the first expedition. Good people. Nobody ha
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
+msgid "Twenty-five years I've been digging on these planets. I came out with the survey, and I stayed when it packed up and left."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "I had a crew once. They got tired of the storms, one by one. I didn't."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
 msgid "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
 msgstr ""
 
@@ -1944,6 +1952,18 @@ msgstr ""
 msgid "But I like to know the people who bring the ore up. So come by whenever you're docked, even if it's only to talk."
 msgstr ""
 
+#: game/npcs/ostra/depot_master.tres
+msgid "Hollis"
+msgstr ""
+
+#: game/npcs/ostra/depot_master.tres
+msgid "So you found Hollis, and now he flies with you. I'd never have guessed he'd leave that valley for anyone."
+msgstr ""
+
+#: game/npcs/ostra/depot_master.tres
+msgid "I'll have his crates carried over to your ship. And tell him to come by my counter when you're docked. I'd like to hear it from him."
+msgstr ""
+
 #: game/npcs/ostra/rival_captain.tres
 msgid "Prospector captain"
 msgstr ""
@@ -2344,6 +2364,82 @@ msgstr ""
 
 #: game/quests/deliver_goal.gd
 msgid "Deliver %s"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Overdue"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Can I ask you something? There's an old prospector, Hollis, who works alone down in Hollow Mire. Every few weeks he comes up for his supplies, as regular as clockwork."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "This time he's three weeks late, and nobody has heard from him. His crates are still sitting on my shelf."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "He gave me the position of his camp once, in case something happened. I'll send it to your ship. Would you go down and see if he's all right?"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Find Hollis' camp in Hollow Mire and see if he's all right."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Hollis' camp"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go and see if he's all right."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go over together and see if he's all right."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Kade sent us"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "My miner drew them in, the way miners do. One morning there was a nest grown right around it, and the drive coupling cracked clean through."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Burn that nest off it, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Clear the nest around Hollis' miner and find him a drive coupling in the crates of Hollow Mire."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Clear the nest around his miner"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Recover a drive coupling"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "The coupling"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "That's the one. Give me a moment... There. Listen to her. Twenty years old, and she still sounds better than anything they build at Ostra."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "That ship of yours... I know her. I flew on her with the survey, back when she charted the lane. Didn't think I'd see her again."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Your miners will need someone who knows them. I'm coming with you. Let me pack up, and I'll meet you at the ship."
 msgstr ""
 
 #: game/quests/depot_master/request_air_scrubbers.tres

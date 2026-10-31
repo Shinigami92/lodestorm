@@ -5,7 +5,10 @@ extends RefCounted
 ## (a station's) to the foot of the ship's ramp, waiting there while it isn't down, straight up it
 ## (`Ship.ramp_way`) and a step in through the door, where the ship's own crew member of their
 ## profile takes over (`Npc.arrive`) and walks on to their post; they're gone from their place. They
-## walk at `NpcRoutine.WALK_SPEED` without stopping for players (one may follow them).
+## walk at `NpcRoutine.WALK_SPEED` without stopping for players (one may follow them); out in a
+## location (from their camp, over its `LocationWalkway`, their feet on its ground) at
+## `OUTSIDE_SPEED`, since the run waits for them. They set off once nobody talks to them
+## (`Npc.walks_aboard`).
 ## Without the ship standing where they are (in flight, or docked elsewhere), they're aboard at
 ## once, at their post (`start` returns null).
 ## While anyone walks aboard (`walking`), the ship doesn't leave (see `Voyage.can_confirm`) and its
@@ -17,6 +20,8 @@ enum Leg { TO_RAMP, AT_RAMP, UP_RAMP, INSIDE }
 const GROUP: StringName = &"crew_boarding"
 ## How far past the door's sill they step in before their crew member aboard takes over, in m.
 const STEP_IN: float = 0.8
+## How fast they walk to the ship out in a location, in m/s. TBD (playtest).
+const OUTSIDE_SPEED: float = 2.2
 
 ## Who walks aboard.
 var npc: Npc
@@ -26,6 +31,8 @@ var leg: Leg = Leg.TO_RAMP
 var _walker: NpcWalker
 var _navigation: DeckNavigation
 var _ship: Ship
+## Whether they've set off (see `Npc.walks_aboard`).
+var _set_off: bool = false
 
 
 func _init(who: Npc, walker: NpcWalker, navigation: DeckNavigation) -> void:
@@ -87,18 +94,32 @@ static func is_walking(tree: SceneTree, id: StringName) -> bool:
 	return walking(tree).any(func(who: Npc) -> bool: return who.profile.id == id)
 
 
+## Stops them where they are: they aren't on their way aboard any more (their joining was taken
+## back).
+func cancel() -> void:
+	_walker.stop()
+	npc.remove_from_group(GROUP)
+
+
 ## Walks on for `delta` s. Returns whether they're through the door (their crew member aboard has
 ## taken over; they've left `GROUP`).
 func update(delta: float) -> bool:
 	if not is_instance_valid(_ship):
 		return _hand_over()
+	if not _set_off:
+		_set_off = true
+		npc.walks_aboard.emit()
 	var way: PackedVector3Array = _ship.ramp_way()
 	var foot: Vector3 = way[0]
 	var sill: Vector3 = way[1]
-	var speed: float = NpcRoutine.WALK_SPEED
+	var outside := _navigation as LocationWalkway
+	var speed: float = OUTSIDE_SPEED if outside else NpcRoutine.WALK_SPEED
 	match leg:
 		Leg.TO_RAMP:
-			if _walker.walk_to(foot, speed, _navigation, delta):
+			var there: bool = _walker.walk_to(foot, speed, _navigation, delta)
+			if outside:
+				npc.global_position.y = outside.ground_at(npc.global_position)
+			if there:
 				leg = Leg.AT_RAMP
 		Leg.AT_RAMP:
 			if _ship.is_ramp_down():

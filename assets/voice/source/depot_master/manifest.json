@@ -72,11 +72,23 @@
       "seed": 1,
       "text": "Das ist kein guter Kurs, und das soll er auch nicht sein. Er ist für den Fall, dass dir ein Erz fehlt und du von einem anderen viel zu viel hast."
     },
+    "2e030c57f3230889": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich lasse seine Kisten zu eurem Schiff bringen. Und sag ihm, er soll an meinem Tresen vorbeikommen, wenn ihr angedockt seid. Ich würde es gern von ihm selbst hören."
+    },
     "35698d277c88c267": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "120 Olvane. Vier Flicken, und der Ring hält wieder den Druck. Danke."
+    },
+    "3583555c698d436a": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Diesmal ist er drei Wochen überfällig, und niemand hat von ihm gehört. Seine Kisten stehen immer noch in meinem Regal."
     },
     "3a999a0bcbdf1293": {
       "anchor": "4dc636caa23416cd",
@@ -89,6 +101,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Ihr seid sicher die Crew vom Schiff im Hangar. Ich bin Kade und leite das Versorgungsdepot. Jede Kiste, die an Bord dieser Station kommt, geht zuerst über meinen Tresen."
+    },
+    "3ca1153f545dada8": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Du hast Hollis also gefunden, und jetzt fliegt er mit euch. Ich hätte nie gedacht, dass er dieses Tal für irgendwen verlässt."
     },
     "3ccf03008d3269eb": {
       "anchor": "4dc636caa23416cd",
@@ -174,6 +192,12 @@
       "seed": 1,
       "text": "60 Duskine. Zwölf neue Zellen, und die Nachtschicht hat wieder Licht."
     },
+    "8f3ce0fd941af438": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Er hat mir einmal die Position seines Lagers gegeben, falls etwas passiert. Ich schicke sie an euer Schiff. Würdest du runtergehen und nachsehen, ob es ihm gut geht?"
+    },
     "9833906a3b230256": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -185,6 +209,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Deshalb zählt die Kolonie auf Prospektoren-Crews wie eure. Ohne euch wären die Vorräte dieser Station in einem Jahr aufgebraucht."
+    },
+    "ae5f6b3ada4080f7": {
+      "anchor": "4dc636caa23416cd",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kann ich dich etwas fragen? Da ist ein alter Prospektor, Hollis, der ganz allein unten in Hollow Mire arbeitet. Alle paar Wochen kommt er seine Vorräte holen, pünktlich wie ein Uhrwerk."
     },
     "b8f664ecd0770008": {
       "anchor": "4dc636caa23416cd",
@@ -308,11 +338,23 @@
       "seed": 1,
       "text": "It's not a good rate, and it's not meant to be. It's for when you're short of one ore and have far too much of another."
     },
+    "2e030c57f3230889": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I'll have his crates carried over to your ship. And tell him to come by my counter when you're docked. I'd like to hear it from him."
+    },
     "35698d277c88c267": {
       "anchor": "06a309e0b3e2b83b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "120 Olvane. Four patches, and the ring holds pressure again. Thank you."
+    },
+    "3583555c698d436a": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "This time he's three weeks late, and nobody has heard from him. His crates are still sitting on my shelf."
     },
     "3a999a0bcbdf1293": {
       "anchor": "06a309e0b3e2b83b",
@@ -325,6 +367,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "You must be the crew from the ship in the hangar. I'm Kade, and I run the supply depot. Every crate that comes aboard this station passes my counter first."
+    },
+    "3ca1153f545dada8": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So you found Hollis, and now he flies with you. I'd never have guessed he'd leave that valley for anyone."
     },
     "3ccf03008d3269eb": {
       "anchor": "06a309e0b3e2b83b",
@@ -410,6 +458,12 @@
       "seed": 1,
       "text": "60 Duskine. Twelve new cells, and the night shift gets its lights back."
     },
+    "8f3ce0fd941af438": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "He gave me the position of his camp once, in case something happened. I'll send it to your ship. Would you go down and see if he's all right?"
+    },
     "9833906a3b230256": {
       "anchor": "06a309e0b3e2b83b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -421,6 +475,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "That's why the colony counts on prospecting crews like yours. Without you, this station would run dry within a year."
+    },
+    "ae5f6b3ada4080f7": {
+      "anchor": "06a309e0b3e2b83b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Can I ask you something? There's an old prospector, Hollis, who works alone down in Hollow Mire. Every few weeks he comes up for his supplies, as regular as clockwork."
     },
     "b8f664ecd0770008": {
       "anchor": "06a309e0b3e2b83b",

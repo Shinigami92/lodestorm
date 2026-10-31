@@ -16,6 +16,12 @@ const READY: StringName = &"ready"
 @export var goals: Array[QuestGoal] = []
 ## Who it's handed in at: their `NpcProfile.id`; empty: the quest's giver.
 @export var hand_in_to: StringName = &""
+## Where that NPC waits out in a region while it's active (someone who isn't aboard yet, e.g.
+## Hollis at his camp): the region (its `Region.id`) and the map part they stand at (at its
+## `PartMarker.Kind.PERSON` marker), placed in every visit there like a quest site; it's handed in
+## there during the run (see `QuestVisit.hand_in`). Empty: they're aboard or at a station.
+@export var meets_in: StringName = &""
+@export var meets_at: PartPlacement
 ## Its entry in that NPC's list while it's active (its title), and what they say once it's handed
 ## in (its lines, e.g. thanks and what comes next). Its `id` is theirs (`<npc>.<topic>`).
 @export var hand_in: Topic

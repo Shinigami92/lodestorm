@@ -13,9 +13,10 @@ extends Node3D
 ## place ore, nests and crates first. A far one is the late deposit's impact site (`LateDeposit`):
 ## its crater is carved from the start, its meteorite and ore appear with the impact.
 ## What the active quest steps need here (`quest_visit`) comes in too: their quest sites as set
-## pieces (at each one's quest anchor a `QuestSite`, or a hunt's brood nest or the Ravager asleep
-## in its lair) and their quest nests after the ordinary ones; each of them, and every crate with a
-## fragment, carries a `QuestMark` (a beam while its quest is tracked).
+## pieces, their quest nests spread after the ordinary ones, their fragments in the crates, and
+## what the sites hold and the people waiting there (`quests`, a `LocationQuests`); each carries a
+## `QuestMark` (a beam while its quest is tracked). People walk over the aliens' walkable area
+## (`walkway`).
 ## Everything the generator places is greybox; the values are TBD (playtest).
 ## The layout, the parts, the ground's shape and the hazard draw one after another from the seed
 ## itself; the ore fields, the nests and everything after them each draw from a random stream of
@@ -125,6 +126,10 @@ var sites := LocationSites.new(self)
 var quest_visit: QuestVisit
 ## The ground along its passes: their lanes, the ramps between terraces and the trails' paths.
 var passes: LocationPasses
+## What the quest visit puts at its sites, and the people waiting there.
+var quests := LocationQuests.new(self)
+## Where people walk (over the aliens' walkable area), once built; null without one.
+var walkway: LocationWalkway
 
 ## Grid points players can walk to from the ship (1 = reachable).
 var _reachable: PackedByteArray
@@ -159,7 +164,7 @@ var _chunk_faces: Array[PackedVector3Array] = []
 var _scatter := LocationScatter.new()
 var _planned: bool = false
 var _built: bool = false
-## What the nests hatch here, once made (see `_hatch_table`).
+## What the nests hatch here, once made (see `hatch_table`).
 var _table: HatchTable
 
 
@@ -213,10 +218,9 @@ func build() -> void:
 	_hazards.build(self)
 	_scatter.build(self)
 	parts.build(self, _crate_contents())
-	_mark_crates()
 	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()
-	_add_quest_sites()
+	quests.build()
 	_add_late_deposit(late_ores)
 	if navigation_mesh:
 		var navigation := LocationNavigation.new()
@@ -224,6 +228,11 @@ func build() -> void:
 		navigation.navigation_mesh = navigation_mesh
 		navigation.bake_in_background = true
 		add_child(navigation)
+		walkway = LocationWalkway.new()
+		walkway.name = "Walkway"
+		walkway.region = navigation
+		walkway.location = self
+		add_child(walkway)
 
 
 ## Whether `build` added the world's nodes.
@@ -782,7 +791,7 @@ func _add_nests() -> void:
 	for i: int in sites.nests.size():
 		var quest: QuestVisit.Entry = sites.nests[i].quest
 		var nest := (QUEST_NEST if quest else ALIEN_NEST).instantiate() as AlienNest
-		table = _hatch_table(nest.hive)
+		table = hatch_table(nest.hive)
 		nest.table = table
 		nest.name = "Nest%d" % (i + 1)
 		nest.position = sites.nests[i].position
@@ -820,92 +829,8 @@ func _crate_contents() -> Array[CrateContent]:
 	return contents
 
 
-## What every quest site's part holds at its quest anchor (its middle without one): a hunt's brood
-## nest or its strain asleep in a lair, an item to recover (`QuestItem`), else (if it isn't only
-## there for its crate) a `QuestSite` that counts for its goal when reached.
-func _add_quest_sites() -> void:
-	if not quest_visit:
-		return
-	for entry: QuestVisit.Entry in quest_visit.entries:
-		var part: LocationParts.Placed = parts.placed_for(entry.site)
-		if not part:
-			continue
-		var anchors: Array[Vector3] = part.markers(PartMarker.Kind.QUEST_ANCHOR)
-		var at: Vector3 = anchors[0] if not anchors.is_empty() else part.origin
-		if entry.hunted and entry.brood:
-			_add_brood_nest(entry, at)
-		elif entry.hunted:
-			_add_lair(entry, at)
-		elif entry.item:
-			var item := QuestItem.new()
-			item.name = "QuestItem"
-			item.entry = entry
-			item.position = at
-			# Picked up, it goes with the item.
-			QuestMark.on(item, entry, quest_visit)
-			add_child(item, true)
-		elif entry.fragments == 0:
-			var site := QuestSite.new()
-			site.name = "QuestSite"
-			site.position = at
-			site.reached.connect(quest_visit.count.bind(entry, 1.0).unbind(1))
-			site.reached.connect(QuestMark.on(site, entry, quest_visit).close.unbind(1))
-			add_child(site, true)
-
-
-## A mark on every crate holding a fragment, out once it's opened.
-func _mark_crates() -> void:
-	for crate: Crate in find_children("*", "Crate", true, false):
-		var fragment := crate.content as BlueprintFragment
-		if fragment:
-			crate.used.connect(QuestMark.on(crate, fragment.entry, quest_visit).close.unbind(1))
-
-
-## `entry`'s brood nest at `at`: it hatches the hunted strain, as many as the hunt still needs;
-## kills of it and the nest destroyed count for the hunt.
-func _add_brood_nest(entry: QuestVisit.Entry, at: Vector3) -> void:
-	var nest := entry.brood.instantiate() as AlienNest
-	nest.name = "BroodNest"
-	nest.table = _hatch_table(nest.hive)
-	nest.brood = entry.hunted
-	nest.brood_left = quest_visit.kills_left(entry)
-	nest.position = at
-	nest.rotation.y = _stream("brood_nest").randf() * TAU
-	nest.hatched.connect(
-		func(alien: Alien) -> void:
-			if alien.strain == entry.hunted:
-				alien.died.connect(quest_visit.count_kill.bind(entry))
-	)
-	nest.destroyed.connect(quest_visit.count_brood.bind(entry))
-	nest.destroyed.connect(QuestMark.on(nest, entry, quest_visit).close)
-	(get_node(^"AlienNests") as Node3D).add_child(nest)
-
-
-## The hunted strain (the Ravager) asleep at `at`, in its lair, until a player comes close: killing
-## it counts for the hunt.
-func _add_lair(entry: QuestVisit.Entry, at: Vector3) -> void:
-	var table: HatchTable = _hatch_table(HIVE)
-	var lair := ApexLair.new()
-	lair.name = "Lair"
-	lair.strain = entry.hunted
-	lair.health_factor = table.health_factor
-	lair.damage_factor = table.damage_factor
-	lair.route = [at] as Array[Vector3]
-	lair.asleep = true
-	# The apex appears when the location enters the tree.
-	var count: Callable = quest_visit.count_kill.bind(entry)
-	var mark: QuestMark = QuestMark.on(lair, entry, quest_visit, at)
-	lair.ready.connect(
-		func() -> void:
-			lair.apex.died.connect(count)
-			lair.apex.died.connect(mark.close),
-		CONNECT_ONE_SHOT
-	)
-	add_child(lair, true)
-
-
 ## What the nests hatch here (made once, from `hive`).
-func _hatch_table(hive: AlienHive) -> HatchTable:
+func hatch_table(hive: AlienHive) -> HatchTable:
 	if not _table:
 		_table = hive.table(alien_tier, biome, preview_strain, world_seed)
 	return _table

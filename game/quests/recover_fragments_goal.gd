@@ -10,10 +10,13 @@ extends RegionGoal
 ## A map part with a crate marker, placed in every visit while the step is active (e.g. a wreck), so
 ## there's always a crate to find one in; null: only the region's own crates.
 @export var site_part: PartPlacement
+## What it says on the cards instead of "Recover the blueprint fragments" (the English text,
+## translated), e.g. "Recover a drive coupling" for a part a crate holds; empty: that.
+@export var task: String = ""
 
 
 func describe() -> String:
-	return tr("Recover the blueprint fragments")
+	return tr(task) if not task.is_empty() else tr("Recover the blueprint fragments")
 
 
 func target() -> float:

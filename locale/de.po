@@ -675,6 +675,14 @@ msgid "I knew some of the people on the first expedition. Good people. Nobody ha
 msgstr "Ich kannte ein paar Leute von der ersten Expedition. Gute Leute. Seit Langem hat niemand mehr etwas von ihnen gehört."
 
 #: game/npcs/crew/miner_mechanic.tres
+msgid "Twenty-five years I've been digging on these planets. I came out with the survey, and I stayed when it packed up and left."
+msgstr "Fünfundzwanzig Jahre grabe ich jetzt auf diesen Planeten. Ich kam mit der Vermessung her und bin geblieben, als sie zusammengepackt hat und abgezogen ist."
+
+#: game/npcs/crew/miner_mechanic.tres
+msgid "I had a crew once. They got tired of the storms, one by one. I didn't."
+msgstr "Ich hatte mal eine Crew. Einer nach dem anderen hatte genug von den Stürmen. Ich nicht."
+
+#: game/npcs/crew/miner_mechanic.tres
 msgid "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
 msgstr "Die Miner haben da draußen hart gearbeitet, das sieht man. Solche Ladungen halten dieses Schiff am Laufen."
 
@@ -1946,6 +1954,18 @@ msgstr "Ich selbst war noch nie unten auf der Oberfläche. Ich habe die Stürme 
 msgid "But I like to know the people who bring the ore up. So come by whenever you're docked, even if it's only to talk."
 msgstr "Aber ich kenne gern die Leute, die das Erz heraufbringen. Also komm vorbei, wann immer ihr angedockt seid, auch wenn es nur zum Reden ist."
 
+#: game/npcs/ostra/depot_master.tres
+msgid "Hollis"
+msgstr "Hollis"
+
+#: game/npcs/ostra/depot_master.tres
+msgid "So you found Hollis, and now he flies with you. I'd never have guessed he'd leave that valley for anyone."
+msgstr "Du hast Hollis also gefunden, und jetzt fliegt er mit euch. Ich hätte nie gedacht, dass er dieses Tal für irgendwen verlässt."
+
+#: game/npcs/ostra/depot_master.tres
+msgid "I'll have his crates carried over to your ship. And tell him to come by my counter when you're docked. I'd like to hear it from him."
+msgstr "Ich lasse seine Kisten zu eurem Schiff bringen. Und sag ihm, er soll an meinem Tresen vorbeikommen, wenn ihr angedockt seid. Ich würde es gern von ihm selbst hören."
+
 #: game/npcs/ostra/rival_captain.tres
 msgid "Prospector captain"
 msgstr "Prospektoren-Kapitän"
@@ -2347,6 +2367,82 @@ msgstr "Nester zerstören"
 #: game/quests/deliver_goal.gd
 msgid "Deliver %s"
 msgstr "%s liefern"
+
+#: game/quests/depot_master/overdue.tres
+msgid "Overdue"
+msgstr "Überfällig"
+
+#: game/quests/depot_master/overdue.tres
+msgid "Can I ask you something? There's an old prospector, Hollis, who works alone down in Hollow Mire. Every few weeks he comes up for his supplies, as regular as clockwork."
+msgstr "Kann ich dich etwas fragen? Da ist ein alter Prospektor, Hollis, der ganz allein unten in Hollow Mire arbeitet. Alle paar Wochen kommt er seine Vorräte holen, pünktlich wie ein Uhrwerk."
+
+#: game/quests/depot_master/overdue.tres
+msgid "This time he's three weeks late, and nobody has heard from him. His crates are still sitting on my shelf."
+msgstr "Diesmal ist er drei Wochen überfällig, und niemand hat von ihm gehört. Seine Kisten stehen immer noch in meinem Regal."
+
+#: game/quests/depot_master/overdue.tres
+msgid "He gave me the position of his camp once, in case something happened. I'll send it to your ship. Would you go down and see if he's all right?"
+msgstr "Er hat mir einmal die Position seines Lagers gegeben, falls etwas passiert. Ich schicke sie an euer Schiff. Würdest du runtergehen und nachsehen, ob es ihm gut geht?"
+
+#: game/quests/depot_master/overdue.tres
+msgid "Find Hollis' camp in Hollow Mire and see if he's all right."
+msgstr "Finde Hollis' Lager in Hollow Mire und sieh nach, ob es ihm gut geht."
+
+#: game/quests/depot_master/overdue.tres
+msgid "Hollis' camp"
+msgstr "Hollis' Lager"
+
+#: game/quests/depot_master/overdue.tres
+msgid "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go and see if he's all right."
+msgstr "Hier Tamsin. Nach Kades Position ist Hollis' Lager nicht weit von unserem Landeplatz. Geh nachsehen, ob es ihm gut geht."
+
+#: game/quests/depot_master/overdue.tres
+msgid "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go over together and see if he's all right."
+msgstr "Hier Tamsin. Nach Kades Position ist Hollis' Lager nicht weit von unserem Landeplatz. Geht zusammen hin und seht nach, ob es ihm gut geht."
+
+#: game/quests/depot_master/overdue.tres
+msgid "Kade sent us"
+msgstr "Kade schickt uns"
+
+#: game/quests/depot_master/overdue.tres
+msgid "Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
+msgstr "Hm. Kade hat dich geschickt, oder? Sag ihm, ich bin noch nicht tot. Ich sitze nur fest."
+
+#: game/quests/depot_master/overdue.tres
+msgid "My miner drew them in, the way miners do. One morning there was a nest grown right around it, and the drive coupling cracked clean through."
+msgstr "Mein Miner hat sie angelockt, wie Miner das eben tun. Eines Morgens war ein Nest direkt um ihn herum gewachsen, und die Antriebskupplung ist glatt durchgebrochen."
+
+#: game/quests/depot_master/overdue.tres
+msgid "Burn that nest off it, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
+msgstr "Brenn das Nest von ihm runter und such mir eine neue Kupplung. Die Vermessung hat überall in diesem Tal Kisten zurückgelassen. In einer davon ist eine, wenn du lange genug suchst."
+
+#: game/quests/depot_master/overdue.tres
+msgid "Clear the nest around Hollis' miner and find him a drive coupling in the crates of Hollow Mire."
+msgstr "Räum das Nest um Hollis' Miner weg und finde in den Kisten von Hollow Mire eine Antriebskupplung für ihn."
+
+#: game/quests/depot_master/overdue.tres
+msgid "Clear the nest around his miner"
+msgstr "Räum das Nest um seinen Miner weg"
+
+#: game/quests/depot_master/overdue.tres
+msgid "Recover a drive coupling"
+msgstr "Birg eine Antriebskupplung"
+
+#: game/quests/depot_master/overdue.tres
+msgid "The coupling"
+msgstr "Die Kupplung"
+
+#: game/quests/depot_master/overdue.tres
+msgid "That's the one. Give me a moment... There. Listen to her. Twenty years old, and she still sounds better than anything they build at Ostra."
+msgstr "Das ist sie. Einen Moment... So. Hör sie dir an. Zwanzig Jahre alt, und sie klingt immer noch besser als alles, was sie auf Ostra bauen."
+
+#: game/quests/depot_master/overdue.tres
+msgid "That ship of yours... I know her. I flew on her with the survey, back when she charted the lane. Didn't think I'd see her again."
+msgstr "Euer Schiff da... das kenne ich. Ich bin damit bei der Vermessung geflogen, damals, als es die Route kartiert hat. Hätte nicht gedacht, dass ich es noch mal sehe."
+
+#: game/quests/depot_master/overdue.tres
+msgid "Your miners will need someone who knows them. I'm coming with you. Let me pack up, and I'll meet you at the ship."
+msgstr "Eure Miner brauchen jemanden, der sich mit ihnen auskennt. Ich komme mit. Lass mich zusammenpacken, dann treffen wir uns am Schiff."
 
 #: game/quests/depot_master/request_air_scrubbers.tres
 msgid "Air scrubbers"

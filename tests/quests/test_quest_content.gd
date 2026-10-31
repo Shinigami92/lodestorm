@@ -1,6 +1,7 @@
 extends GutTest
 ## The game's quests (`game/quests/quests.tres`): ids that save, NPCs that exist, topics named
-## after who says them, and steps that can be done (in regions that exist).
+## after who says them, and steps that can be done (in regions that exist); a step met out in a
+## region has its person's spot there and pays nothing a lost run couldn't take back.
 
 const NPC_FOLDERS: Array[String] = ["res://game/npcs/crew/", "res://game/npcs/ostra/"]
 const SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
@@ -36,6 +37,19 @@ func test_every_quest_keeps_to_the_scheme() -> void:
 			assert_not_null(step.hand_in, "%s: a hand-in" % where)
 			if step.hand_in:
 				_assert_said_by(step.hand_in, quest.hand_in_npc(step), where)
+			if step.meets_at:
+				_assert_met_out_there(step, where)
+
+
+## A step met out in a region (`QuestStep.meets_at`): the region exists, its part has a spot for
+## the person, and it pays only a crew member joining (a lost run takes the hand-in back, see
+## `QuestVisit.drop`).
+func _assert_met_out_there(step: QuestStep, where: String) -> void:
+	assert_not_null(SYSTEM.region_by_id(step.meets_in), "%s: where it's met" % where)
+	assert_gt(_markers_in(step.meets_at.scene, PartMarker.Kind.PERSON), 0, "%s: a spot" % where)
+	assert_true(step.items.is_empty(), "%s: pays no ore" % where)
+	assert_null(step.blueprint, "%s: pays no blueprint" % where)
+	assert_eq(step.furnaces + step.cradles, 0, "%s: opens nothing aboard" % where)
 
 
 ## The first content: Brannik's chain once its beat is out, Kade's requests (two at a time) once
@@ -48,9 +62,20 @@ func test_the_first_jobs_are_offered_in_turn() -> void:
 	quests.story.set_flag(&"beat.first_job")
 	assert_eq(quests.offered_by(&"quartermaster", []).size(), 1)
 	quests.story.set_flag(&"depot_master.greeting")
-	var requests: Array[Quest] = quests.offered_by(&"depot_master", [], kade.open_requests)
+	var requests: Array[Quest] = quests.offered_by(&"depot_master", [], kade.open_requests).filter(
+		func(quest: Quest) -> bool: return quest.kind == Quest.Kind.REQUEST
+	)
 	assert_eq(requests.size(), 2)
-	assert_true(requests.all(func(quest: Quest) -> bool: return quest.kind == Quest.Kind.REQUEST))
+
+
+## Hollis' quest: Kade offers it once his greeting is heard, not once Hollis is aboard.
+func test_nobody_is_sent_to_find_someone_aboard() -> void:
+	var quests := QuestLog.new()
+	var overdue: Quest = quests.catalog.find(&"overdue")
+	quests.story.set_flag(&"depot_master.greeting")
+	assert_has(quests.offered_by(&"depot_master", []), overdue)
+	NpcProfile.join_whole_crew(quests.story)
+	assert_does_not_have(quests.offered_by(&"depot_master", []), overdue)
 
 
 ## `goal` is done in a region that exists, a site's goal has its site and says what it is, a hunt
@@ -69,7 +94,12 @@ func _assert_doable(goal: QuestGoal, where: String) -> void:
 		_assert_huntable(hunt, where)
 	var fragments := goal as RecoverFragmentsGoal
 	if fragments and fragments.site_part:
-		assert_gt(_crates_in(fragments.site_part.scene), 0, "%s: its site has a crate" % where)
+		var crates: int = _markers_in(fragments.site_part.scene, PartMarker.Kind.CRATE)
+		assert_gt(crates, 0, "%s: its site has a crate" % where)
+	var nests := goal as ClearNestsGoal
+	if nests and nests.site_part:
+		var spots: int = _markers_in(nests.site_part.scene, PartMarker.Kind.QUEST_NEST)
+		assert_gt(spots, 0, "%s: its site has room for the nests" % where)
 	var item := goal as RecoverItemGoal
 	if item:
 		assert_not_null(item.site_part, "%s: its site" % where)
@@ -77,15 +107,15 @@ func _assert_doable(goal: QuestGoal, where: String) -> void:
 		assert_false(item.item.is_empty(), "%s: what it is" % where)
 
 
-## How many crate markers `part` has.
-func _crates_in(part: PackedScene) -> int:
+## How many markers of `kind` `part` has.
+func _markers_in(part: PackedScene, kind: PartMarker.Kind) -> int:
 	var scene: Node = part.instantiate()
-	var crates: int = 0
+	var found: int = 0
 	for marker: PartMarker in scene.find_children("*", "PartMarker", true, false):
-		if marker.kind == PartMarker.Kind.CRATE:
-			crates += 1
+		if marker.kind == kind:
+			found += 1
 	scene.free()
-	return crates
+	return found
 
 
 func _assert_huntable(hunt: HuntGoal, where: String) -> void:

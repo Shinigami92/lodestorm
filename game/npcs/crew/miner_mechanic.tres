@@ -47,11 +47,18 @@ title = "About Hollis"
 lines = Array[String](["I've been digging in this system longer than anyone else aboard. Longer than most people at Ostra, too.", "I knew some of the people on the first expedition. Good people. Nobody has heard from them in a long time."])
 requires = Array[StringName]([&"miner_mechanic.greeting"])
 
+[sub_resource type="Resource" id="Resource_about_camp"]
+script = ExtResource("3_topic")
+id = &"miner_mechanic.about_camp"
+title = "About Hollis"
+lines = Array[String](["Twenty-five years I've been digging on these planets. I came out with the survey, and I stayed when it packed up and left.", "I had a crew once. They got tired of the storms, one by one. I didn't."])
+until = &"crew.miner_mechanic.joined"
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["What do you need?", "Hm. Go on.", "Make it quick. The miners won't fix themselves.", "Something about the miners?"])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_placing"), SubResource("Resource_fleet"), SubResource("Resource_drills"), SubResource("Resource_dry"), SubResource("Resource_about")])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_placing"), SubResource("Resource_fleet"), SubResource("Resource_drills"), SubResource("Resource_dry"), SubResource("Resource_about"), SubResource("Resource_about_camp")])
 
 [sub_resource type="Resource" id="Reaction_big_haul"]
 script = ExtResource("9_reaction")

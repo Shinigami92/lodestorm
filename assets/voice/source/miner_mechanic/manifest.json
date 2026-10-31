@@ -1,5 +1,23 @@
 {
   "de": {
+    "00a46371a22f1c52": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mein Miner hat sie angelockt, wie Miner das eben tun. Eines Morgens war ein Nest direkt um ihn herum gewachsen, und die Antriebskupplung ist glatt durchgebrochen."
+    },
+    "1a251362f18f29d2": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hm. Kade hat dich geschickt, oder? Sag ihm, ich bin noch nicht tot. Ich sitze nur fest."
+    },
+    "20e2c8ae56b4ebfb": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Fünfundzwanzig Jahre grabe ich jetzt auf diesen Planeten. Ich kam mit der Vermessung her und bin geblieben, als sie zusammengepackt hat und abgezogen ist."
+    },
     "25e0908c3518d83c": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -48,6 +66,12 @@
       "seed": 1,
       "text": "Wenn die Lampe an einem Miner bernsteinfarben blinkt, ist sein Vorkommen leer. Heb ihn auf und such ihm ein neues."
     },
+    "5aba0ec1831224c0": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich hatte mal eine Crew. Einer nach dem anderen hatte genug von den Stürmen. Ich nicht."
+    },
     "5dfb780833bd50bd": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -84,6 +108,12 @@
       "seed": 1,
       "text": "Hm. Du kommst wegen der Miner. Gut. Sie bezahlen alles auf diesem Schiff, also behandle sie anständig."
     },
+    "8a59efd323e3288b": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Euer Schiff da... das kenne ich. Ich bin damit bei der Vermessung geflogen, damals, als es die Route kartiert hat. Hätte nicht gedacht, dass ich es noch mal sehe."
+    },
     "8ddcb054203446b0": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -107,6 +137,24 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hm. Erzähl."
+    },
+    "a40b04dcdee950b9": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist sie. Einen Moment... So. Hör sie dir an. Zwanzig Jahre alt, und sie klingt immer noch besser als alles, was sie auf Ostra bauen."
+    },
+    "be9d2a6be3b08fdb": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brenn das Nest von ihm runter und such mir eine neue Kupplung. Die Vermessung hat überall in diesem Tal Kisten zurückgelassen. In einer davon ist eine, wenn du lange genug suchst."
+    },
+    "c65cdbb13a8c5976": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Eure Miner brauchen jemanden, der sich mit ihnen auskennt. Ich komme mit. Lass mich zusammenpacken, dann treffen wir uns am Schiff."
     },
     "c8870b7edd1a5639": {
       "anchor": "b3d782e0b74c1da4",
@@ -140,6 +188,24 @@
     }
   },
   "en": {
+    "00a46371a22f1c52": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "My miner drew them in, the way miners do. One morning there was a nest grown right around it, and the drive coupling cracked clean through."
+    },
+    "1a251362f18f29d2": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
+    },
+    "20e2c8ae56b4ebfb": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Twenty-five years I've been digging on these planets. I came out with the survey, and I stayed when it packed up and left."
+    },
     "25e0908c3518d83c": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -188,6 +254,12 @@
       "seed": 1,
       "text": "When the lamp on a miner blinks amber, its node is dry. Pick it up and find it a new one."
     },
+    "5aba0ec1831224c0": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I had a crew once. They got tired of the storms, one by one. I didn't."
+    },
     "5dfb780833bd50bd": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -224,6 +296,12 @@
       "seed": 1,
       "text": "Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well."
     },
+    "8a59efd323e3288b": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That ship of yours... I know her. I flew on her with the survey, back when she charted the lane. Didn't think I'd see her again."
+    },
     "8ddcb054203446b0": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -247,6 +325,24 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hm. Go on."
+    },
+    "a40b04dcdee950b9": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's the one. Give me a moment... There. Listen to her. Twenty years old, and she still sounds better than anything they build at Ostra."
+    },
+    "be9d2a6be3b08fdb": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Burn that nest off it, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
+    },
+    "c65cdbb13a8c5976": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Your miners will need someone who knows them. I'm coming with you. Let me pack up, and I'll meet you at the ship."
     },
     "c8870b7edd1a5639": {
       "anchor": "7e5f365715a8dd68",

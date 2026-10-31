@@ -1,0 +1,99 @@
+[gd_resource type="Resource" script_class="Quest" format=3 uid="uid://brxychn5o3wmh"]
+
+[ext_resource type="Script" uid="uid://bdto4xx2jvios" path="res://game/quests/quest.gd" id="s_quest"]
+[ext_resource type="Script" uid="uid://7vg4utlxx3ie" path="res://game/quests/quest_step.gd" id="s_step"]
+[ext_resource type="Script" uid="uid://bbh57jogeoedv" path="res://game/quests/quest_goal.gd" id="s_goal"]
+[ext_resource type="Script" uid="uid://d4mou2chyp0bp" path="res://game/quests/reach_goal.gd" id="s_reach"]
+[ext_resource type="Script" uid="uid://ci42qpedn185n" path="res://game/quests/clear_nests_goal.gd" id="s_nests"]
+[ext_resource type="Script" uid="uid://d4oba3ngd53d" path="res://game/quests/recover_fragments_goal.gd" id="s_fragments"]
+[ext_resource type="Script" uid="uid://dwkdaijmiqcvw" path="res://game/quests/radio_line.gd" id="s_radio"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="s_topic"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="s_placement"]
+[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="outpost_scene"]
+[ext_resource type="PackedScene" uid="uid://x1e7xln0plg3" path="res://game/locations/parts/hollis_camp.tscn" id="camp_scene"]
+
+[sub_resource type="Resource" id="PartPlacement_camp"]
+script = ExtResource("s_placement")
+scene = ExtResource("camp_scene")
+rule = 2
+
+[sub_resource type="Resource" id="PartPlacement_outpost"]
+script = ExtResource("s_placement")
+scene = ExtResource("outpost_scene")
+
+[sub_resource type="Resource" id="RadioLine_landing"]
+script = ExtResource("s_radio")
+text = "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go and see if he's all right."
+coop_text = "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go over together and see if he's all right."
+speaker = &"pilot"
+
+[sub_resource type="Resource" id="ReachGoal_camp"]
+script = ExtResource("s_reach")
+site_part = SubResource("PartPlacement_camp")
+place = "Hollis' camp"
+region = &"mire"
+landing_line = SubResource("RadioLine_landing")
+
+[sub_resource type="Resource" id="Topic_found"]
+script = ExtResource("s_topic")
+id = &"miner_mechanic.overdue_found"
+title = "Kade sent us"
+lines = Array[String](["Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck.", "My miner drew them in, the way miners do. One morning there was a nest grown right around it, and the drive coupling cracked clean through.", "Burn that nest off it, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."])
+
+[sub_resource type="Resource" id="QuestStep_find"]
+script = ExtResource("s_step")
+id = &"find"
+text = "Find Hollis' camp in Hollow Mire and see if he's all right."
+goals = Array[ExtResource("s_goal")]([SubResource("ReachGoal_camp")])
+hand_in_to = &"miner_mechanic"
+meets_in = &"mire"
+meets_at = SubResource("PartPlacement_camp")
+hand_in = SubResource("Topic_found")
+
+[sub_resource type="Resource" id="ClearNestsGoal_miner"]
+script = ExtResource("s_nests")
+amount = 1
+site_part = SubResource("PartPlacement_camp")
+task = "Clear the nest around his miner"
+region = &"mire"
+
+[sub_resource type="Resource" id="RecoverFragmentsGoal_coupling"]
+script = ExtResource("s_fragments")
+amount = 1
+site_part = SubResource("PartPlacement_outpost")
+task = "Recover a drive coupling"
+region = &"mire"
+
+[sub_resource type="Resource" id="Topic_coupling"]
+script = ExtResource("s_topic")
+id = &"miner_mechanic.overdue_coupling"
+title = "The coupling"
+lines = Array[String](["That's the one. Give me a moment... There. Listen to her. Twenty years old, and she still sounds better than anything they build at Ostra.", "That ship of yours... I know her. I flew on her with the survey, back when she charted the lane. Didn't think I'd see her again.", "Your miners will need someone who knows them. I'm coming with you. Let me pack up, and I'll meet you at the ship."])
+
+[sub_resource type="Resource" id="QuestStep_miner"]
+script = ExtResource("s_step")
+id = &"miner"
+text = "Clear the nest around Hollis' miner and find him a drive coupling in the crates of Hollow Mire."
+goals = Array[ExtResource("s_goal")]([SubResource("ClearNestsGoal_miner"), SubResource("RecoverFragmentsGoal_coupling")])
+hand_in_to = &"miner_mechanic"
+meets_in = &"mire"
+meets_at = SubResource("PartPlacement_camp")
+hand_in = SubResource("Topic_coupling")
+joins = &"miner_mechanic"
+
+[sub_resource type="Resource" id="Topic_offer"]
+script = ExtResource("s_topic")
+id = &"depot_master.overdue"
+title = "Overdue"
+lines = Array[String](["Can I ask you something? There's an old prospector, Hollis, who works alone down in Hollow Mire. Every few weeks he comes up for his supplies, as regular as clockwork.", "This time he's three weeks late, and nobody has heard from him. His crates are still sitting on my shelf.", "He gave me the position of his camp once, in case something happened. I'll send it to your ship. Would you go down and see if he's all right?"])
+
+[resource]
+script = ExtResource("s_quest")
+id = &"overdue"
+title = "Overdue"
+kind = 1
+giver = &"depot_master"
+requires = Array[StringName]([&"depot_master.greeting"])
+until = &"crew.miner_mechanic.joined"
+offer = SubResource("Topic_offer")
+steps = Array[ExtResource("s_step")]([SubResource("QuestStep_find"), SubResource("QuestStep_miner")])

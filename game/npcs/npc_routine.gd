@@ -211,6 +211,14 @@ func start_boarding() -> void:
 	boarding = NpcBoarding.start(npc, _walker, _get_navigation())
 
 
+## Their joining was taken back (a lost run, see `QuestVisit.drop`): they stop on their way aboard
+## and stay where they are.
+func stop_boarding() -> void:
+	if boarding:
+		boarding.cancel()
+	boarding = null
+
+
 ## They've come aboard at the door (see `Npc.arrive`): on to their post, stopping for nobody.
 func arrive() -> void:
 	_walker.stop()
@@ -314,21 +322,24 @@ func _get_plan() -> RoomPlan:
 	return _plan
 
 
-## Where they walk on the ship or station they're on, or null (straight to where they go).
+## Where they walk on the ship, station or location they're on, or null (straight to where they
+## go).
 func _get_navigation() -> DeckNavigation:
 	var map: Node3D = _get_map()
 	if map is Ship:
 		return (map as Ship).navigation
 	if map is SpaceStation:
 		return (map as SpaceStation).navigation
+	if map is GeneratedLocation:
+		return (map as GeneratedLocation).walkway
 	return null
 
 
-## The ship or station they're on (the nearest one above them), or null.
+## The ship, station or location they're on (the nearest one above them), or null.
 func _get_map() -> Node3D:
 	var at: Node = npc.get_parent() if not _map else null
 	while at and not _map:
-		if at is Ship or at is SpaceStation:
+		if at is Ship or at is SpaceStation or at is GeneratedLocation:
 			_map = at as Node3D
 		at = at.get_parent()
 	return _map

@@ -2881,6 +2881,10 @@ msgstr "Hangar · Schiff"
 msgid "Concourse · Hangar"
 msgstr "Halle · Hangar"
 
+#: game/space_station/ostra/ostra.tscn
+msgid "Dace · Machinist"
+msgstr "Dace · Feinmechanik"
+
 #: game/stations/bed/bed_card.gd
 msgid "A run is underway: sleeping now loses it."
 msgstr "Eine Mission läuft: Wer jetzt schläft, verliert sie."
@@ -2974,6 +2978,10 @@ msgstr "Wähle ein Ziel am Navigator auf der Brücke."
 #: game/stations/navigator/navigator_card.gd
 msgid "Scanning the location..."
 msgstr "Ort wird gescannt …"
+
+#: game/stations/flight/flight_card.gd
+msgid "Wait until %s is aboard."
+msgstr "Warten, bis %s an Bord ist."
 
 #: game/stations/flight/flight_card.gd
 msgid "Set course to dock there."

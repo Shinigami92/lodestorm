@@ -22,7 +22,10 @@ extends Station
 ## above their head without a talk, and in their voice. So are an overheard talk's lines
 ## (`OverheardTalks`), and while it plays (`overheard`) nobody can talk to them.
 ## A crew member who joins later (`NpcProfile.join_flag`) isn't there until they're aboard
-## (`is_present`): hidden, still and nobody can talk to them.
+## (`is_present`): hidden, still and nobody can talk to them. Until then they wait at their place
+## (a second NPC of their profile there, `waits_to_join`, e.g. Dace at his stall at Ostra), and once
+## they join, that one walks aboard (`NpcBoarding`) and theirs aboard takes over at the door
+## (`arrive`), walking on to their post.
 
 ## Every crew member (the ship cuts them away by the deck they stand on, see `Ship`).
 const CREW_GROUP: StringName = &"crew"
@@ -44,6 +47,13 @@ const VOICE_MAX_DISTANCE: float = 30.0
 @export var work_spots: Array[WorkSpot] = []
 ## What they do at their own spot when they have work spots; none: `NpcRoutine.HOME_ACTIVITIES`.
 @export var home_activities: Array[StringName] = []
+## Whether they sit at their own spot (on the seat behind it, like at the `flight_seat`), e.g. on a
+## booth's bench.
+@export var seated: bool = false
+## Whether this is a crew member's place before they join (`NpcProfile.join_flag`): there until
+## the flag is set, then walking aboard (`NpcBoarding`), gone once through the door. Nobody talks
+## to them there yet (their topics before joining come with their join quests).
+@export var waits_to_join: bool = false
 
 ## Speaks their lines, from their head.
 var voice: AudioStreamPlayer3D
@@ -63,6 +73,8 @@ var _own_story := Story.new()
 var _own_quests := QuestLog.new()
 ## Whether the bubble shows a line said aside (`say_aside`), not a talk.
 var _aside: bool = false
+## At their place before joining: whether they've joined (walking aboard or gone).
+var _joined: bool = false
 var _new_marker_time: float = 0.0
 
 @onready var bubble: WorldPanel = $Bubble
@@ -122,10 +134,17 @@ func get_story() -> Story:
 	return ship.story if ship else _own_story
 
 
-## Whether they're here: a crew member once they're aboard (`NpcProfile.is_aboard`), anyone
-## else always.
+## Whether they're here: a crew member once they're aboard (`NpcProfile.is_aboard`) and not on
+## their way aboard any more (`NpcBoarding.is_walking`); at their place before joining
+## (`waits_to_join`), until they join and while they walk aboard; anyone else always.
 func is_present() -> bool:
-	return not profile or not profile.station.is_empty() or profile.is_aboard(get_story())
+	if not profile:
+		return true
+	if waits_to_join:
+		return not profile.is_aboard(get_story()) or (routine != null and routine.boarding != null)
+	if not profile.station.is_empty():
+		return true
+	return profile.is_aboard(get_story()) and not NpcBoarding.is_walking(get_tree(), profile.id)
 
 
 ## Their name and role, as the name plate shows them.
@@ -194,7 +213,7 @@ func is_new(listed: Topic, listener: Player = null) -> bool:
 ## Whether they have something nobody has heard yet for `listener` (the greeting or an open
 ## topic; the player talking to them when null).
 func has_news(listener: Player = null) -> bool:
-	if not profile or not profile.dialogue:
+	if not profile or not profile.dialogue or waits_to_join:
 		return false
 	var greeting: Topic = get_greeting()
 	if greeting and is_new(greeting):
@@ -205,7 +224,7 @@ func has_news(listener: Player = null) -> bool:
 ## Whether they offer `listener` (the player talking to them when null) a quest, or `listener` can
 ## hand in a quest step at them now (the diamond marker).
 func has_quest_news(listener: Player = null) -> bool:
-	if not profile or (routine and routine.tour):
+	if not profile or waits_to_join or (routine and routine.tour):
 		return false
 	var quests: QuestLog = get_quests()
 	if not quests.offered_by(profile.id, get_reached_bodies(), profile.open_requests).is_empty():
@@ -245,6 +264,27 @@ func step(direction: Vector2) -> void:
 
 func get_look_target() -> Vector3:
 	return body.global_position
+
+
+## Comes aboard at `at` (global, inside the ramp's door; from their place before joining, see
+## `NpcBoarding`) and walks on from there to their post.
+func arrive(at: Transform3D) -> void:
+	global_transform = at
+	reset_physics_interpolation()
+	routine.arrive()
+	update_presence()
+
+
+## Shows them and lets them move while they're here (`is_present`), else hides and stills them; at
+## their place before joining, they start walking aboard once they join.
+func update_presence() -> void:
+	if waits_to_join and not _joined and profile.is_aboard(get_story()):
+		_joined = true
+		routine.start_boarding()
+	var present: bool = is_present()
+	visible = present
+	process_mode = PROCESS_MODE_INHERIT if present else PROCESS_MODE_DISABLED
+	_update_use()
 
 
 ## Says `english` (a line's English text) aside, without a talk: in the bubble above their head
@@ -303,25 +343,20 @@ func _closed() -> void:
 	bubble.set_on_top(false)
 
 
-## Follows the story for whether they're here (`is_present`).
+## Follows the story for whether they're here (`is_present`); at their place before joining, one
+## who joined already (a save) is gone from it.
 func _watch_story() -> void:
-	get_story().changed.connect(_update_presence)
-	_update_presence()
+	var story: Story = get_story()
+	_joined = waits_to_join and profile.is_aboard(story)
+	story.changed.connect(update_presence)
+	update_presence()
 
 
-## Shows them and lets them move while they're here (`is_present`), else hides and stills them.
-func _update_presence() -> void:
-	var present: bool = is_present()
-	visible = present
-	process_mode = PROCESS_MODE_INHERIT if present else PROCESS_MODE_DISABLED
-	_update_use()
-
-
-## Lets players talk to them while they're here, nobody talks to them yet and no overheard talk of
-## theirs plays.
+## Lets players talk to them while they're here (not at their place before joining), nobody talks
+## to them yet and no overheard talk of theirs plays.
 func _update_use() -> void:
 	if use_point:
-		use_point.enabled = is_present() and not user and not overheard
+		use_point.enabled = is_present() and not waits_to_join and not user and not overheard
 
 
 ## Who the "something new" marker is for: the player talking to them, else the nearest one.

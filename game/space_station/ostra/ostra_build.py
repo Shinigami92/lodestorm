@@ -181,10 +181,21 @@ for i, z in enumerate([16.5, 23.0]):
     for side, sname in [(-1, "Back"), (1, "Front")]:
         box(f"BoothBench{i + 1}{sname}", (1.8, SEAT, 0.8), (88.5, SEAT / 2, z + side * 1.3))
         box(f"BoothBackrest{i + 1}{sname}", (1.8, 1.1, 0.15), (88.5, 0.55, z + side * 1.775))
-# A stall: its counter towards the hall, a rack behind the one standing at it.
+# A stall: its counter towards the hall, a rack behind the one standing at it; the first one is
+# Dace's, a workbench with a vise behind him instead (his shutter and sign: see DACE_STALL).
 for i, x in enumerate([100.0, 110.0, 120.0]):
     box(f"Stall{i + 1}", (3, 1.0, 1.2), (x, 0.5, 18))
-    box(f"StallRack{i + 1}", (3, 2.2, 0.4), (x, 1.1, 15.2))
+    if i > 0:
+        box(f"StallRack{i + 1}", (3, 2.2, 0.4), (x, 1.1, 15.2))
+box("DaceBench", (3, 0.95, 0.8), (100, 0.475, 15.0))
+box("DaceVise", (0.3, 0.25, 0.3), (99.0, 1.075, 15.0), kind="mesh")
+# Wren's suit workbench in the hangar, by the side door to the depot: the bench along the wall with
+# her tools on it (they stay there once she's aboard), a suit's frame beside it.
+box("SuitBench", (0.9, 0.95, 2.2), (55.2, 0.475, -25.6))
+box("SuitFrame", (0.5, 1.9, 0.7), (55.4, 0.95, -23.4))
+box("SuitHelmet", (0.3, 0.3, 0.3), (55.2, 1.1, -25.9), kind="mesh")
+box("SuitTool1", (0.35, 0.08, 0.2), (55.1, 0.99, -26.4), kind="mesh")
+box("SuitTool2", (0.15, 0.25, 0.15), (55.3, 1.075, -24.9), kind="mesh")
 for i, x in enumerate([140.0, 156.0]):
     box(f"Bench{i + 1}", (5, SEAT, 0.8), (x, SEAT / 2, -20))
 
@@ -262,6 +273,10 @@ subs += [
     '[sub_resource type="BoxMesh" id="BoxMesh_clamp_arm"]',
     'material = ExtResource("mat_prop")',
     "size = Vector3(1.2, 0.8, 4)",
+    "",
+    '[sub_resource type="BoxMesh" id="BoxMesh_shutter"]',
+    f'material = SubResource("StandardMaterial3D_{kit.material_id}")',
+    "size = Vector3(3.2, 2.3, 0.08)",
     "",
     '[sub_resource type="SphereMesh" id="SphereMesh_dome"]',
     f'material = SubResource("StandardMaterial3D_{kit.material_id}")',
@@ -439,8 +454,27 @@ WORK_SPOTS = {
 }
 # What they do at their own place, where it's not the shared clips' default (NpcRoutine.HOME_ACTIVITIES).
 HOME_ACTIVITIES = {"Nell": ["WipeCounter", "PolishGlass", "ShelveBottle"]}
+# The crew who join later, at their places until they do (Npc.waits_to_join; see
+# docs/planned/crew.md): name, crew profile, where (x, z), facing yaw. Dace at his stall, Wren at her
+# suit workbench, Fenna on the back bench of Rook's booth (SEATED_CREW: sitting, feet as for a seated
+# colonist). Once they join, they walk aboard and their place stays empty.
+CREW_PROFILES = "res://game/npcs/crew/"
+JOINING = [
+    ("Dace", "gunsmith", (100, 16.4), 0),
+    ("Wren", "suit_tech", (54.2, -25.6), 90),
+    ("Fenna", "cook", (88.3, 22.25), 0),
+]
+SEATED_CREW = {"Fenna"}
+JOINING_SPOTS = {
+    "Dace": [("Bench", (100, 15.9), 180, ["LookAround", "CheckWrist"], 1, False)],
+    "Wren": [("Frame", (54.5, -23.4), 90, ["LookAround", "CheckWrist"], 1, False)],
+}
+# Dace's stall once he's aboard: its shutter down over the counter (StoryShown), his sign above the
+# stall either way. Where (x, z) and the join flag it follows.
+DACE_STALL = ((100, 18.0), "crew.gunsmith.joined")
 COLONISTS = [
-    ("Mechanic", "mechanic", (0.95, 0.9, 0.8), (100, 16.4), 0, []),
+    # At the middle stall (the first one is Dace's).
+    ("Mechanic", "mechanic", (0.95, 0.9, 0.8), (110, 16.4), 0, []),
     ("BarterTrader", "barter_trader", (0.8, 0.85, 0.95), (120, 16.4), 0, []),
     ("Gardener", "gardener", (0.9, 1, 0.85), (110, 19.4), 180, []),
     ("DockHand", "dock_hand", (0.9, 0.95, 1), (60.4, 24), -90, []),
@@ -513,6 +547,46 @@ for name, profile, (px, pz), facing in PEOPLE:
             f"transform = {xform((0, 0.02, -ahead))}",
             "",
         ]
+for name, profile, (px, pz), facing in JOINING:
+    spots = JOINING_SPOTS.get(name, [])
+    paths = ", ".join(f'NodePath("../{name}{spot[0]}")' for spot in spots)
+    nodes += [
+        f'[node name="{name}" parent="People" node_paths=PackedStringArray("work_spots") instance=ExtResource("npc")]',
+        f"transform = {xform((px, 0, pz), yaw(facing))}",
+        f'profile = ExtResource("crew_{profile}")',
+        f"work_spots = [{paths}]",
+    ]
+    nodes += ["seated = true"] if name in SEATED_CREW else []
+    nodes += ["waits_to_join = true", ""]
+    for spot, (sx, sz), sfacing, activities, weight, like_home in spots:
+        nodes += [
+            f'[node name="{name}{spot}" type="Marker3D" parent="People"]',
+            f"transform = {xform((sx, 0, sz), yaw(sfacing))}",
+            'script = ExtResource("work_spot")',
+            f"activities = Array[StringName]([{names(activities)}])",
+            "",
+        ]
+(stall_x, stall_z), stall_flag = DACE_STALL
+nodes += [
+    '[node name="DaceStall" type="Node3D" parent="."]',
+    f"transform = {xform((stall_x, 0, stall_z))}",
+    "",
+    # Above his workbench behind him, so it never covers him.
+    '[node name="Sign" parent="DaceStall" instance=ExtResource("neon_sign")]',
+    f"transform = {xform((0, 2.9, -3.3))}",
+    'text = "Dace · Machinist"',
+    "color = Color(0.45, 0.8, 1, 1)",
+    "font_size = 40",
+    "",
+    '[node name="Shutter" type="Node3D" parent="DaceStall"]',
+    'script = ExtResource("story_shown")',
+    f'flag = &"{stall_flag}"',
+    "",
+    '[node name="Mesh" type="MeshInstance3D" parent="DaceStall/Shutter"]',
+    f"transform = {xform((0, 1.15, 0.7))}",
+    'mesh = SubResource("BoxMesh_shutter")',
+    "",
+]
 for name, profile, tint, (px, pz), facing, route in COLONISTS:
     nodes += [
         f'[node name="{name}" parent="People" instance=ExtResource("colonist")]',
@@ -571,9 +645,13 @@ ext = [
     ("PackedScene", NPC_SCENE, "npc"),
     ("PackedScene", COLONIST_SCENE, "colonist"),
     ("PackedScene", EXCHANGE_SCENE, "exchange"),
+    ("PackedScene", "res://game/ship/neon_sign.tscn", "neon_sign"),
+    ("Script", "res://game/story/story_shown.gd", "story_shown"),
 ]
 for profile in sorted({p[1] for p in PEOPLE}):
     ext.append(("Resource", f"{PROFILES}{profile}.tres", f"profile_{profile}"))
+for profile in sorted({j[1] for j in JOINING}):
+    ext.append(("Resource", f"{CREW_PROFILES}{profile}.tres", f"crew_{profile}"))
 for profile in sorted({c[1] for c in COLONISTS}):
     ext.append(("Resource", f"{PROFILES}colonists/{profile}.tres", f"colonist_{profile}"))
 out = write(OUT, ROOT, ext, subs, nodes, "ostra_build.py")

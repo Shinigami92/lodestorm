@@ -38,10 +38,9 @@ script = ExtResource("1_level")
 multiplier = 2.75
 seconds = 21600
 
-
 [resource]
 script = ExtResource("2_part")
+stat = 11
 display_name = "Heal rate"
 description = "Heals and repairs faster"
 levels = Array[ExtResource("1_level")]([SubResource("Mk2"), SubResource("Mk3"), SubResource("Mk4"), SubResource("Mk5"), SubResource("Mk6"), SubResource("Mk7"), SubResource("Mk8")])
-stat = 11

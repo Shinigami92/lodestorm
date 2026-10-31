@@ -1,13 +1,19 @@
 [gd_resource type="Resource" script_class="Quest" format=3 uid="uid://vjmlu4pw1dwv"]
 
+[ext_resource type="Resource" uid="uid://dymgaqh26njgt" path="res://game/ores/types/ore_tessar.tres" id="ore_tessar"]
 [ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
 [ext_resource type="Script" uid="uid://csxt02vdhmgmi" path="res://game/quests/deliver_goal.gd" id="s_deliver"]
 [ext_resource type="Script" uid="uid://bbh57jogeoedv" path="res://game/quests/quest_goal.gd" id="s_goal"]
-[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="s_topic"]
-[ext_resource type="Resource" uid="uid://dymgaqh26njgt" path="res://game/ores/types/ore_tessar.tres" id="ore_tessar"]
 [ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="s_item_type"]
-[ext_resource type="Script" uid="uid://7vg4utlxx3ie" path="res://game/quests/quest_step.gd" id="s_step"]
 [ext_resource type="Script" uid="uid://bdto4xx2jvios" path="res://game/quests/quest.gd" id="s_quest"]
+[ext_resource type="Script" uid="uid://7vg4utlxx3ie" path="res://game/quests/quest_step.gd" id="s_step"]
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="s_topic"]
+
+[sub_resource type="Resource" id="Topic_4"]
+script = ExtResource("s_topic")
+id = &"depot_master.request_scanner_lenses"
+title = "Scanner lenses"
+lines = Array[String](["The clinic's scanners need Vyrel for their lenses. Two of their three scanners are down, so 80 Vyrel would help a lot of people."])
 
 [sub_resource type="Resource" id="DeliverGoal_1"]
 script = ExtResource("s_deliver")
@@ -26,13 +32,9 @@ id = &"deliver"
 text = "Bring Kade 80 Vyrel for the scanner lenses."
 goals = Array[ExtResource("s_goal")]([SubResource("DeliverGoal_1")])
 hand_in = SubResource("Topic_2")
-items = Dictionary[ExtResource("s_item_type"), int]({ExtResource("ore_tessar"): 40})
-
-[sub_resource type="Resource" id="Topic_4"]
-script = ExtResource("s_topic")
-id = &"depot_master.request_scanner_lenses"
-title = "Scanner lenses"
-lines = Array[String](["The clinic's scanners need Vyrel for their lenses. Two of their three scanners are down, so 80 Vyrel would help a lot of people."])
+items = Dictionary[ExtResource("s_item_type"), int]({
+ExtResource("ore_tessar"): 40
+})
 
 [resource]
 script = ExtResource("s_quest")

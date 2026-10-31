@@ -14,7 +14,6 @@ id = &"quartermaster.greeting"
 title = "Hello"
 lines = Array[String](["Good, you're here. Before the next mission, let me tell you how the armory works. Keeping your gear and your ammo in order is my job.", "At your locker, pick the weapons you want to take on a mission. You can only carry up to two at a time, though.", "During a mission, you only have the weapons you carry. So choose wisely, or we'll be welcoming you in the medical bay.", "If you have questions about ammo or reloading, just ask me. Better here than out there with a swarm on your back."])
 
-
 [sub_resource type="Resource" id="Resource_ammo"]
 script = ExtResource("3_topic")
 id = &"quartermaster.ammo"
@@ -100,11 +99,11 @@ event = &"big_haul"
 requires = Array[StringName]([&"crew.gunsmith.joined", &"crew.suit_tech.joined"])
 lines = Array[String](["Now that's a haul. With that much ore aboard, a few of those upgrades are finally in reach.", "Good haul. Careless crews don't stay lucky for long, though. The next mission can go wrong just as fast.", "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."])
 
-[sub_resource type="Resource" id="Tour_offer"]
+[sub_resource type="Resource" id="Tour_abort"]
 script = ExtResource("3_topic")
-id = &"quartermaster.tour_offer"
-title = "Hello"
-lines = Array[String](["There you are. Before the first mission, let me walk you through the ship once, so you know who does what and where to find them.", "It won't take long. If you'd rather look around on your own, that's fine too. You'll find me in the armory."])
+id = &"quartermaster.tour_abort"
+title = "End the tour"
+lines = Array[String](["All right. You know where to find me: in the armory, on the lower deck."])
 
 [sub_resource type="Resource" id="Tour_invite"]
 script = ExtResource("3_topic")
@@ -113,17 +112,17 @@ title = "Show me the ship"
 lines = Array[String](["Follow me, then. We start in the mess hall and end in my armory, and I'll wait for you at every stop."])
 requires = Array[StringName]([&"quartermaster.tour_offer"])
 
+[sub_resource type="Resource" id="Tour_offer"]
+script = ExtResource("3_topic")
+id = &"quartermaster.tour_offer"
+title = "Hello"
+lines = Array[String](["There you are. Before the first mission, let me walk you through the ship once, so you know who does what and where to find them.", "It won't take long. If you'd rather look around on your own, that's fine too. You'll find me in the armory."])
+
 [sub_resource type="Resource" id="Tour_resume"]
 script = ExtResource("3_topic")
 id = &"quartermaster.tour_resume"
 title = "Go on"
 lines = Array[String](["Right, let's keep going."])
-
-[sub_resource type="Resource" id="Tour_abort"]
-script = ExtResource("3_topic")
-id = &"quartermaster.tour_abort"
-title = "End the tour"
-lines = Array[String](["All right. You know where to find me: in the armory, on the lower deck."])
 
 [sub_resource type="Resource" id="Tour_stop_MessHall"]
 script = ExtResource("11_tour_stop")

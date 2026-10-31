@@ -6,17 +6,41 @@
 [ext_resource type="PackedScene" uid="uid://cyl7o2webmhio" path="res://assets/rocks/rocks.glb" id="3_rocks"]
 [ext_resource type="PackedScene" uid="uid://vgi6vo04bk0s" path="res://assets/plants/plants.glb" id="4_plants"]
 [ext_resource type="Material" uid="uid://nx37wdaeeuii" path="res://assets/terrain/salt_terrain.tres" id="9_terrain"]
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="alien_strain"]
+[ext_resource type="Resource" uid="uid://b1qi3mgf8juj8" path="res://game/aliens/strains/burrower/burrower.tres" id="burrower"]
 [ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="ore_olvane"]
 [ext_resource type="Resource" uid="uid://cad77sebiwhrt" path="res://game/ores/types/ore_ressa.tres" id="ore_ressa"]
 [ext_resource type="Resource" uid="uid://dymgaqh26njgt" path="res://game/ores/types/ore_tessar.tres" id="ore_tessar"]
 [ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
-[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
-[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
-[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
-[ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
-[ext_resource type="Resource" uid="uid://b1qi3mgf8juj8" path="res://game/aliens/strains/burrower/burrower.tres" id="burrower"]
-[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="alien_strain"]
+[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
+[ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
+[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
+
+[sub_resource type="StandardMaterial3D" id="Material_brine"]
+albedo_color = Color(0.1, 0.17, 0.18, 1)
+roughness = 0.08
+
+[sub_resource type="Resource" id="Placement_wreck"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+
+[sub_resource type="Resource" id="Placement_outpost"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
+
+[sub_resource type="Resource" id="Placement_vein"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+weight = 0.8
+
+[sub_resource type="Resource" id="Placement_crater"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+weight = 0.8
 
 [sub_resource type="Resource" id="Resource_boulder_a"]
 script = ExtResource("2_scatter")
@@ -119,30 +143,6 @@ max_tilt = 5.0
 visibility_range = 100.0
 cast_shadow = false
 
-[sub_resource type="StandardMaterial3D" id="Material_brine"]
-albedo_color = Color(0.1, 0.17, 0.18, 1)
-roughness = 0.08
-
-[sub_resource type="Resource" id="Placement_wreck"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_wreck")
-
-[sub_resource type="Resource" id="Placement_outpost"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_outpost")
-
-[sub_resource type="Resource" id="Placement_vein"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_vein")
-rule = 4
-weight = 0.8
-
-[sub_resource type="Resource" id="Placement_crater"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_crater")
-rule = 3
-weight = 0.8
-
 [resource]
 script = ExtResource("1_biome")
 display_name = "Salt pans"
@@ -173,11 +173,9 @@ rock_relief = 2.5
 plateau_step = 2.0
 bump_height = 0.3
 ground_material = ExtResource("9_terrain")
-low_ground_tint = Color(0.9, 0.9, 0.9, 1)
 tint_variation = 0.05
 scree = 0.3
 scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_outcrop_a"), SubResource("Resource_stones_a"), SubResource("Resource_rubble_a"), SubResource("Resource_dust_debris_a"), SubResource("Resource_dust_debris_b")])
-ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_tessar"), ExtResource("ore_vyrel"), ExtResource("ore_ressa")])
-nests_per_area = 0.9
 part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
+ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_tessar"), ExtResource("ore_vyrel"), ExtResource("ore_ressa")])
 favored_strains = Array[ExtResource("alien_strain")]([ExtResource("burrower")])

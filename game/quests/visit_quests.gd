@@ -9,6 +9,9 @@ extends QuestLog
 ## The visit they wait in.
 var visit: QuestVisit
 
+## The ship's quests (weak: they're connected to this, which mustn't keep them alive).
+var _ship_quests: WeakRef
+
 
 func _init(ship_quests: QuestLog = null, in_visit: QuestVisit = null) -> void:
 	visit = in_visit
@@ -23,7 +26,8 @@ func _init(ship_quests: QuestLog = null, in_visit: QuestVisit = null) -> void:
 	last_requests = ship_quests.last_requests
 	tracked = ship_quests.tracked
 	calls = ship_quests.calls
-	ship_quests.changed.connect(_follow.bind(ship_quests))
+	_ship_quests = weakref(ship_quests)
+	ship_quests.changed.connect(_follow)
 
 
 func goal_progress(quest: Quest, index: int) -> float:
@@ -46,6 +50,8 @@ func _players() -> Array[Player]:
 
 
 ## The ship's quests changed: so do these.
-func _follow(ship_quests: QuestLog) -> void:
-	tracked = ship_quests.tracked
+func _follow() -> void:
+	var ship_quests := _ship_quests.get_ref() as QuestLog
+	if ship_quests:
+		tracked = ship_quests.tracked
 	emit_changed()

@@ -38,11 +38,10 @@ script = ExtResource("1_level")
 multiplier = 4.5
 seconds = 21600
 
-
 [resource]
 script = ExtResource("2_part")
+stat = 1
 display_name = "Battery"
 description = "More wells per battery"
 levels = Array[ExtResource("1_level")]([SubResource("Mk2"), SubResource("Mk3"), SubResource("Mk4"), SubResource("Mk5"), SubResource("Mk6"), SubResource("Mk7"), SubResource("Mk8")])
 cost_scale = 0.75
-stat = 1

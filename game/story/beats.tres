@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dy6frxky8ctoa" path="res://game/story/beat_catalog.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://cxkuxq5kasacx" path="res://game/story/beat.gd" id="2_beat"]
+[ext_resource type="Script" uid="uid://c5x84y3actxa4" path="res://game/story/beat_condition.gd" id="2_ee3fe"]
 
 [sub_resource type="Resource" id="Beat_first_job"]
 script = ExtResource("2_beat")

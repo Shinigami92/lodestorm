@@ -4,7 +4,6 @@
 [ext_resource type="AudioStream" uid="uid://d17udta57siql" path="res://assets/audio/sfx/stations/job_done_1.wav" id="2_variant"]
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_variants"]
-random_pitch = 1.0
 streams_count = 1
 stream_0/stream = ExtResource("2_variant")
 

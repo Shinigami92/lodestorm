@@ -69,6 +69,31 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 18.0
+bg_color = Color(0.025, 0.04, 0.055, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.3, 0.85, 1, 0.6)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_separator"]
+color = Color(0.3, 0.85, 1, 0.35)
+thickness = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_fill"]
+content_margin_top = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.3, 0.85, 1, 0.6)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider"]
 content_margin_top = 8.0
 content_margin_bottom = 8.0
@@ -83,19 +108,6 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_fill"]
-content_margin_top = 8.0
-content_margin_bottom = 8.0
-bg_color = Color(0.3, 0.85, 1, 0.6)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_separator"]
-color = Color(0.3, 0.85, 1, 0.35)
-thickness = 2
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 44.0
 content_margin_top = 32.0
@@ -107,18 +119,6 @@ border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
 border_color = Color(0.3, 0.85, 1, 0.5)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-content_margin_left = 24.0
-content_margin_top = 18.0
-content_margin_right = 24.0
-content_margin_bottom = 18.0
-bg_color = Color(0.025, 0.04, 0.055, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.3, 0.85, 1, 0.6)
 
 [resource]
 default_font_size = 30
@@ -159,6 +159,7 @@ CheckBox/styles/hover_pressed = SubResource("StyleBoxFlat_button_hover")
 CheckBox/styles/normal = SubResource("StyleBoxFlat_button")
 CheckBox/styles/pressed = SubResource("StyleBoxFlat_button")
 HSeparator/constants/separation = 24
+HSeparator/styles/separator = SubResource("StyleBoxLine_separator")
 HSlider/icons/grabber = ExtResource("3_grabber")
 HSlider/icons/grabber_disabled = ExtResource("3_grabber")
 HSlider/icons/grabber_highlight = ExtResource("4_grabber_highlight")
@@ -166,10 +167,9 @@ HSlider/styles/focus = SubResource("StyleBoxFlat_focus")
 HSlider/styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
 HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
 HSlider/styles/slider = SubResource("StyleBoxFlat_slider")
-HSeparator/styles/separator = SubResource("StyleBoxLine_separator")
 Label/colors/font_color = Color(0.78, 0.9, 1, 1)
-RichTextLabel/colors/default_color = Color(0.78, 0.9, 1, 1)
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
+RichTextLabel/colors/default_color = Color(0.78, 0.9, 1, 1)
 Title/base_type = &"Label"
 Title/colors/font_color = Color(0.3, 0.85, 1, 1)
 Title/font_sizes/font_size = 46

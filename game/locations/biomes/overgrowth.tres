@@ -6,65 +6,37 @@
 [ext_resource type="PackedScene" uid="uid://cyl7o2webmhio" path="res://assets/rocks/rocks.glb" id="3_rocks"]
 [ext_resource type="PackedScene" uid="uid://vgi6vo04bk0s" path="res://assets/plants/plants.glb" id="4_plants"]
 [ext_resource type="Material" uid="uid://dvdm2lo37ofyu" path="res://assets/terrain/overgrowth_terrain.tres" id="9_terrain"]
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="alien_strain"]
 [ext_resource type="Resource" uid="uid://dfy3xlckv7gf7" path="res://game/ores/types/ore_duskine.tres" id="ore_duskine"]
 [ext_resource type="Resource" uid="uid://btgl46jl831y2" path="res://game/ores/types/ore_olvane.tres" id="ore_olvane"]
 [ext_resource type="Resource" uid="uid://cad77sebiwhrt" path="res://game/ores/types/ore_ressa.tres" id="ore_ressa"]
 [ext_resource type="Resource" uid="uid://dymgaqh26njgt" path="res://game/ores/types/ore_tessar.tres" id="ore_tessar"]
-[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
-[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
-[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
-[ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
-
-[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="alien_strain"]
+[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
+[ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
+[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
 [ext_resource type="Resource" uid="uid://b4v1uo3absmiu" path="res://game/aliens/strains/stalker/stalker.tres" id="stalker"]
 
-[sub_resource type="Resource" id="Resource_growth_stalk"]
-script = ExtResource("2_scatter")
-display_name = "Growth stalk"
-model = ExtResource("4_plants")
-model_part = &"Overgrowth_Tube_a"
-density = 9.0
-clustering = 0.0
-min_scale = 1.8
-max_scale = 2.8
-max_slope = 2.0
-sink = 0.1
-max_tilt = 8.0
-blocking_height = 2.9
-on_barrier = true
+[sub_resource type="Resource" id="Placement_wreck"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
 
-[sub_resource type="Resource" id="Resource_growth_cap"]
-script = ExtResource("2_scatter")
-display_name = "Growth cap"
-model = ExtResource("4_plants")
-model_part = &"Overgrowth_Fungus_b"
-density = 2.0
-clustering = 0.5
-patch_size = 20.0
-min_scale = 1.8
-max_scale = 2.6
-max_slope = 2.0
-sink = 0.1
-max_tilt = 6.0
-blocking_height = 2.3
-on_barrier = true
+[sub_resource type="Resource" id="Placement_outpost"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
 
-[sub_resource type="Resource" id="Resource_growth_root"]
-script = ExtResource("2_scatter")
-display_name = "Growth root"
-model = ExtResource("4_plants")
-model_part = &"Overgrowth_Fungus_a"
-density = 10.0
-clustering = 0.0
-min_scale = 0.7
-max_scale = 0.95
-max_slope = 2.0
-sink = 0.05
-max_tilt = 10.0
-blocking_height = 1.0
-cast_shadow = false
-on_barrier = true
+[sub_resource type="Resource" id="Placement_vein"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+weight = 0.8
+
+[sub_resource type="Resource" id="Placement_crater"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+weight = 0.8
 
 [sub_resource type="Resource" id="Resource_grove_stalk"]
 script = ExtResource("2_scatter")
@@ -99,6 +71,52 @@ blocking_radius = 0.5
 blocking_height = 2.7
 spacing = 4.0
 area_kinds = Array[int]([18])
+
+[sub_resource type="Resource" id="Resource_growth_stalk"]
+script = ExtResource("2_scatter")
+display_name = "Growth stalk"
+model = ExtResource("4_plants")
+model_part = &"Overgrowth_Tube_a"
+density = 9.0
+clustering = 0.0
+min_scale = 1.8
+max_scale = 2.8
+max_slope = 2.0
+sink = 0.1
+max_tilt = 8.0
+blocking_height = 2.9
+on_barrier = true
+
+[sub_resource type="Resource" id="Resource_growth_cap"]
+script = ExtResource("2_scatter")
+display_name = "Growth cap"
+model = ExtResource("4_plants")
+model_part = &"Overgrowth_Fungus_b"
+density = 2.0
+patch_size = 20.0
+min_scale = 1.8
+max_scale = 2.6
+max_slope = 2.0
+sink = 0.1
+max_tilt = 6.0
+blocking_height = 2.3
+on_barrier = true
+
+[sub_resource type="Resource" id="Resource_growth_root"]
+script = ExtResource("2_scatter")
+display_name = "Growth root"
+model = ExtResource("4_plants")
+model_part = &"Overgrowth_Fungus_a"
+density = 10.0
+clustering = 0.0
+min_scale = 0.7
+max_scale = 0.95
+max_slope = 2.0
+sink = 0.05
+max_tilt = 10.0
+blocking_height = 1.0
+on_barrier = true
+cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_overgrowth_tube_a"]
 script = ExtResource("2_scatter")
@@ -283,26 +301,6 @@ max_tilt = 10.0
 visibility_range = 120.0
 cast_shadow = false
 
-[sub_resource type="Resource" id="Placement_wreck"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_wreck")
-
-[sub_resource type="Resource" id="Placement_outpost"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_outpost")
-
-[sub_resource type="Resource" id="Placement_vein"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_vein")
-rule = 4
-weight = 0.8
-
-[sub_resource type="Resource" id="Placement_crater"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_crater")
-rule = 3
-weight = 0.8
-
 [resource]
 script = ExtResource("1_biome")
 display_name = "Overgrowth"
@@ -334,7 +332,6 @@ ground_material = ExtResource("9_terrain")
 low_ground_tint = Color(0.85, 0.85, 0.85, 1)
 scree = 0.35
 scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_grove_stalk"), SubResource("Resource_grove_tube"), SubResource("Resource_growth_stalk"), SubResource("Resource_growth_cap"), SubResource("Resource_growth_root"), SubResource("Resource_overgrowth_tube_a"), SubResource("Resource_overgrowth_fungus_b"), SubResource("Resource_overgrowth_fungus_a"), SubResource("Resource_overgrowth_frond_a"), SubResource("Resource_overgrowth_frond_b"), SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_boulder_c"), SubResource("Resource_boulder_d"), SubResource("Resource_stones_a"), SubResource("Resource_stones_b"), SubResource("Resource_rubble_a")])
-ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_tessar"), ExtResource("ore_duskine"), ExtResource("ore_ressa")])
-nests_per_area = 0.9
 part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
+ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_tessar"), ExtResource("ore_duskine"), ExtResource("ore_ressa")])
 favored_strains = Array[ExtResource("alien_strain")]([ExtResource("stalker")])

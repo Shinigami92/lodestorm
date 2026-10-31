@@ -187,7 +187,7 @@ func _notification(what: int) -> void:
 		return
 	var components: Array[Node] = [aim, reticle, vitals, arms, suit_dash, rescue_drone, handling]
 	components.append_array([picker, sounds, radio, _armor_pips, _scanner, _miner_radar])
-	components.append(_quest_pointer)
+	components.append_array([_quest_pointer, quest_pack])
 	for component: Node in components:
 		if not component.get_parent():
 			component.free()

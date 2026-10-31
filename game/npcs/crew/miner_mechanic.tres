@@ -11,7 +11,6 @@ id = &"miner_mechanic.greeting"
 title = "Hello"
 lines = Array[String](["Hm. You're here about the miners. Good. They pay for everything on this ship, so treat them well.", "Your own miner, M-01, waits in its cradle. Out there, the miners dig while you keep the aliens off them."])
 
-
 [sub_resource type="Resource" id="Resource_placing"]
 script = ExtResource("3_topic")
 id = &"miner_mechanic.placing"
@@ -68,12 +67,12 @@ lines = Array[String](["The miners worked hard out there, I can tell. Hauls like
 [resource]
 script = ExtResource("1_profile")
 id = &"miner_mechanic"
-join_flag = &"crew.miner_mechanic.joined"
 display_name = "Hollis"
 role = "Miner mechanic"
 model = "uid://8e2njl0pikb5"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.55, 0.9, 0.3, 1)
+join_flag = &"crew.miner_mechanic.joined"
 cabin = 7
 dialogue = SubResource("Resource_dialogue")
 reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_big_haul")])

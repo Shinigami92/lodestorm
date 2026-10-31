@@ -4,8 +4,8 @@
 [ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="2_item_type"]
 [ext_resource type="Script" uid="uid://dn3kp4h0ew8sm" path="res://game/progression/skills/skill.gd" id="9_skill"]
 [ext_resource type="Resource" uid="uid://cgxpfq8uqcagh" path="res://game/ores/types/ore_pallin.tres" id="ore_pallin"]
-[ext_resource type="Resource" uid="uid://buke7va311wqe" path="res://game/progression/skills/tree/careful_reload.tres" id="requires"]
 [ext_resource type="Resource" uid="uid://b3rmqqe4l0edl" path="res://game/ores/types/ore_vyrel.tres" id="ore_vyrel"]
+[ext_resource type="Resource" uid="uid://buke7va311wqe" path="res://game/progression/skills/tree/careful_reload.tres" id="requires"]
 
 [sub_resource type="Resource" id="Rank_1"]
 script = ExtResource("1_rank")
@@ -13,8 +13,8 @@ cost = Dictionary[ExtResource("2_item_type"), int]({
 ExtResource("ore_pallin"): 300,
 ExtResource("ore_vyrel"): 180
 })
-value = 30
 seconds = 900
+value = 30
 
 [sub_resource type="Resource" id="Rank_2"]
 script = ExtResource("1_rank")
@@ -22,8 +22,8 @@ cost = Dictionary[ExtResource("2_item_type"), int]({
 ExtResource("ore_pallin"): 360,
 ExtResource("ore_vyrel"): 240
 })
-value = 20
 seconds = 2400
+value = 20
 
 [resource]
 script = ExtResource("9_skill")

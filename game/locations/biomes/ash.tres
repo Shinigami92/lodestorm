@@ -5,18 +5,44 @@
 [ext_resource type="Script" uid="uid://dosnyf5q78qco" path="res://game/ores/ore_type.gd" id="3_ore_type"]
 [ext_resource type="PackedScene" uid="uid://cyl7o2webmhio" path="res://assets/rocks/rocks.glb" id="3_rocks"]
 [ext_resource type="Material" uid="uid://ch0rp5jvgixln" path="res://assets/terrain/ash_terrain.tres" id="9_terrain"]
+[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="alien_strain"]
+[ext_resource type="Resource" uid="uid://6hywtomscl4b" path="res://game/aliens/strains/darter/darter.tres" id="darter"]
 [ext_resource type="Resource" uid="uid://dfy3xlckv7gf7" path="res://game/ores/types/ore_duskine.tres" id="ore_duskine"]
 [ext_resource type="Resource" uid="uid://1uonnxu85sni" path="res://game/ores/types/ore_halcyne.tres" id="ore_halcyne"]
 [ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
 [ext_resource type="Resource" uid="uid://dymgaqh26njgt" path="res://game/ores/types/ore_tessar.tres" id="ore_tessar"]
-[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
-[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
-[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
-[ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://btunae83bcr70" path="res://game/locations/parts/meteor_crater.tscn" id="part_crater"]
+[ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="part_outpost"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
+[ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
+[ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
 
-[ext_resource type="Script" uid="uid://dryscppkdg2ut" path="res://game/aliens/alien_strain.gd" id="alien_strain"]
-[ext_resource type="Resource" uid="uid://6hywtomscl4b" path="res://game/aliens/strains/darter/darter.tres" id="darter"]
+[sub_resource type="StandardMaterial3D" id="Material_lava"]
+albedo_color = Color(0.9, 0.25, 0.05, 1)
+roughness = 0.6
+emission_enabled = true
+emission = Color(1, 0.35, 0.05, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="Resource" id="Placement_wreck"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_wreck")
+
+[sub_resource type="Resource" id="Placement_outpost"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_outpost")
+
+[sub_resource type="Resource" id="Placement_vein"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_vein")
+rule = 4
+weight = 0.8
+
+[sub_resource type="Resource" id="Placement_crater"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_crater")
+rule = 3
+weight = 0.8
 
 [sub_resource type="Resource" id="Resource_boulder_a"]
 script = ExtResource("2_scatter")
@@ -128,33 +154,6 @@ max_tilt = 10.0
 visibility_range = 120.0
 cast_shadow = false
 
-[sub_resource type="StandardMaterial3D" id="Material_lava"]
-albedo_color = Color(0.9, 0.25, 0.05, 1)
-roughness = 0.6
-emission_enabled = true
-emission = Color(1, 0.35, 0.05, 1)
-emission_energy_multiplier = 2.5
-
-[sub_resource type="Resource" id="Placement_wreck"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_wreck")
-
-[sub_resource type="Resource" id="Placement_outpost"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_outpost")
-
-[sub_resource type="Resource" id="Placement_vein"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_vein")
-rule = 4
-weight = 0.8
-
-[sub_resource type="Resource" id="Placement_crater"]
-script = ExtResource("part_placement")
-scene = ExtResource("part_crater")
-rule = 3
-weight = 0.8
-
 [resource]
 script = ExtResource("1_biome")
 display_name = "Ash fields"
@@ -189,7 +188,6 @@ low_ground_tint = Color(0.85, 0.85, 0.85, 1)
 tint_variation = 0.1
 scree = 0.6
 scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder_a"), SubResource("Resource_boulder_b"), SubResource("Resource_boulder_c"), SubResource("Resource_boulder_d"), SubResource("Resource_stones_a"), SubResource("Resource_stones_b"), SubResource("Resource_rubble_a")])
-ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_kyrite"), ExtResource("ore_tessar"), ExtResource("ore_duskine"), ExtResource("ore_halcyne")])
-nests_per_area = 0.9
 part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
+ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_kyrite"), ExtResource("ore_tessar"), ExtResource("ore_duskine"), ExtResource("ore_halcyne")])
 favored_strains = Array[ExtResource("alien_strain")]([ExtResource("darter")])

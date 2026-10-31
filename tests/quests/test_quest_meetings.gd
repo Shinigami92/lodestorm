@@ -153,6 +153,10 @@ func test_the_location_places_them() -> void:
 	location.biome = DUST
 	location.area_count = 10
 	location.quest_visit = QuestVisit.new(_log, REGION)
+	# Built outside the tree first, like a prepared location the holo table previews.
+	location.build()
+	var early := location.quests.person(HOLLIS).get_node(^"HandInMark") as HandInMark
+	assert_false(early.is_lit(), "asked outside the tree")
 	add_child_autofree(location)
 	var visit: QuestVisit = location.quest_visit
 	var hollis: Npc = location.quests.person(HOLLIS)

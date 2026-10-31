@@ -3337,7 +3337,7 @@ msgstr "Als Ziel setzen"
 #: game/stations/navigator/navigator_card.gd
 #: game/stations/quest_board/quest_board_card.gd
 msgid "Destination set: the pilot takes off from the cockpit."
-msgstr "Ziel gesetzt: Die Pilotin startet vom Cockpit aus."
+msgstr "Ziel gesetzt: Die Pilotin fliegt los."
 
 #: game/stations/navigator/navigator_card.gd
 msgid "Quest: %s"

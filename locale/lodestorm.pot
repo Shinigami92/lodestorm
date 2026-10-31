@@ -2399,6 +2399,10 @@ msgid "Find Hollis' camp in Hollow Mire and see if he's all right."
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres
+msgid "Finally, somebody found me. I could use a hand with one of my old miners."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
 msgid "Hollis' camp"
 msgstr ""
 
@@ -2415,7 +2419,7 @@ msgid "Kade sent us"
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres
-msgid "Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
+msgid "Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres
@@ -2428,6 +2432,14 @@ msgstr ""
 
 #: game/quests/depot_master/overdue.tres
 msgid "Clear the nest at Hollis' dig site and find him a drive coupling in the crates of Hollow Mire."
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Any luck with that coupling?"
+msgstr ""
+
+#: game/quests/depot_master/overdue.tres
+msgid "Is the nest at my dig site gone yet?"
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres

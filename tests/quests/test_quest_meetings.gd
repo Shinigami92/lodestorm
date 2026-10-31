@@ -9,6 +9,7 @@ const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const CAMP: PackedScene = preload("res://game/locations/parts/hollis_camp.tscn")
 const DIG_SITE: PackedScene = preload("res://game/locations/parts/hollis_dig_site.tscn")
 const OUTPOST: PackedScene = preload("res://game/locations/parts/outpost.tscn")
+const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
 const REGION: StringName = &"redscar"
 const HOLLIS: StringName = &"miner_mechanic"
 
@@ -38,6 +39,10 @@ static func make_quest() -> Quest:
 	find.hand_in_to = HOLLIS
 	find.meets_in = REGION
 	find.meets_at = camp
+	find.hand_in = Topic.new()
+	find.hand_in.id = &"miner_mechanic.test_found"
+	find.hand_in.title = "Kade sent us"
+	find.hand_in.lines = ["Kade sent you."]
 	var nest := ClearNestsGoal.new()
 	nest.region = REGION
 	nest.amount = 1
@@ -55,6 +60,10 @@ static func make_quest() -> Quest:
 	free.meets_in = REGION
 	free.meets_at = camp
 	free.joins = HOLLIS
+	free.hand_in = Topic.new()
+	free.hand_in.id = &"miner_mechanic.test_coupling"
+	free.hand_in.title = "The coupling"
+	free.hand_in.lines = ["That's the one."]
 	var quest := Quest.new()
 	quest.id = &"overdue_test"
 	quest.giver = &"depot_master"
@@ -210,6 +219,35 @@ func test_the_location_places_them() -> void:
 	var payer: Player = autofree(Player.new())
 	assert_true(hollis.get_quests().hand_in(_quest, payer, []), "handed in out there")
 	assert_eq(_log.current_step(_quest), _quest.steps[1])
+
+
+## Talking to him out there stops the game solo, and a story change meanwhile (a hand-in) keeps him
+## going: he isn't stopped with the rest (the game would seem frozen). At his camp he greets with
+## the step's prompts.
+func test_a_talk_out_there_pauses_without_stopping_him() -> void:
+	_quest.steps[0].place_prompts = ["Finally, somebody found me."]
+	_log.accept(_quest, [])
+	var location := LOCATION.instantiate() as GeneratedLocation
+	location.world_seed = 5
+	location.biome = DUST
+	location.area_count = 10
+	location.quest_visit = QuestVisit.new(_log, REGION)
+	add_child_autofree(location)
+	var player := PLAYER_SCENE.instantiate() as Player
+	add_child_autofree(player)
+	await wait_process_frames(2)
+	var hollis: Npc = location.quests.person(HOLLIS)
+	hollis.open(player)
+	var paused: bool = get_tree().paused
+	var prompt: String = hollis.talk.prompt
+	hollis.get_story().set_flag(&"test.something_changed")
+	var mode: Node.ProcessMode = hollis.process_mode
+	hollis.close()
+	assert_true(paused, "solo, the run stops while they talk")
+	assert_eq(prompt, "Finally, somebody found me.", "the step's prompt")
+	assert_eq(mode, Node.PROCESS_MODE_ALWAYS, "a story change doesn't stop him")
+	assert_false(get_tree().paused, "on again once the talk ends")
+	assert_eq(hollis.process_mode, Node.PROCESS_MODE_INHERIT)
 
 
 ## Where `camp`'s person marker is, in the part.

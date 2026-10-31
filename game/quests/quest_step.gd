@@ -22,6 +22,10 @@ const READY: StringName = &"ready"
 ## there during the run (see `QuestVisit.hand_in`). Empty: they're aboard or at a station.
 @export var meets_in: StringName = &""
 @export var meets_at: PartPlacement
+## What that NPC says while the talk's list shows at their place before joining while it's active
+## (instead of their own, e.g. Hollis glad to be found; the English texts, translated); none:
+## theirs.
+@export var place_prompts: Array[String] = []
 ## Its entry in that NPC's list while it's active (its title), and what they say once it's handed
 ## in (its lines, e.g. thanks and what comes next). Its `id` is theirs (`<npc>.<topic>`).
 @export var hand_in: Topic

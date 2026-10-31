@@ -2401,6 +2401,10 @@ msgid "Find Hollis' camp in Hollow Mire and see if he's all right."
 msgstr "Finde Hollis' Lager in Hollow Mire und sieh nach, ob es ihm gut geht."
 
 #: game/quests/depot_master/overdue.tres
+msgid "Finally, somebody found me. I could use a hand with one of my old miners."
+msgstr "Endlich findet mich mal jemand. Ich könnte Hilfe bei einem meiner alten Miner gebrauchen."
+
+#: game/quests/depot_master/overdue.tres
 msgid "Hollis' camp"
 msgstr "Hollis' Lager"
 
@@ -2417,8 +2421,8 @@ msgid "Kade sent us"
 msgstr "Kade schickt uns"
 
 #: game/quests/depot_master/overdue.tres
-msgid "Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
-msgstr "Hm. Kade hat dich geschickt, oder? Sag ihm, ich bin noch nicht tot. Ich sitze nur fest."
+msgid "Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
+msgstr "Kade hat dich geschickt, oder? Sag ihm, ich bin noch nicht tot. Ich sitze nur fest."
 
 #: game/quests/depot_master/overdue.tres
 msgid "A nest grew up at my dig site, right on the vein I was working. Hauling my miner out of there cracked its drive coupling clean through."
@@ -2431,6 +2435,14 @@ msgstr "Brenn das Nest aus, damit ich wieder an meine Ader komme, und such mir e
 #: game/quests/depot_master/overdue.tres
 msgid "Clear the nest at Hollis' dig site and find him a drive coupling in the crates of Hollow Mire."
 msgstr "Räum das Nest an Hollis' Schürfstelle weg und finde in den Kisten von Hollow Mire eine Antriebskupplung für ihn."
+
+#: game/quests/depot_master/overdue.tres
+msgid "Any luck with that coupling?"
+msgstr "Schon Glück mit der Kupplung gehabt?"
+
+#: game/quests/depot_master/overdue.tres
+msgid "Is the nest at my dig site gone yet?"
+msgstr "Ist das Nest an meiner Schürfstelle schon weg?"
 
 #: game/quests/depot_master/overdue.tres
 msgid "Clear the nest at his dig site"

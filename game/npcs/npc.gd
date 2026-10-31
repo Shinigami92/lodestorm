@@ -309,7 +309,11 @@ func update_presence() -> void:
 		routine.stop_boarding()
 	var present: bool = is_present()
 	visible = present
-	process_mode = PROCESS_MODE_INHERIT if present else PROCESS_MODE_DISABLED
+	if not present:
+		process_mode = PROCESS_MODE_DISABLED
+	else:
+		# A talk out there that stopped the game keeps them going (see `_set_pausing`).
+		process_mode = PROCESS_MODE_ALWAYS if _pausing else PROCESS_MODE_INHERIT
 	_update_use()
 
 
@@ -436,7 +440,10 @@ func _set_pausing(paused: bool) -> void:
 		return
 	_pausing = paused
 	get_tree().paused = paused
-	process_mode = PROCESS_MODE_ALWAYS if paused else PROCESS_MODE_INHERIT
+	if paused:
+		process_mode = PROCESS_MODE_ALWAYS
+	else:
+		process_mode = PROCESS_MODE_INHERIT if is_present() else PROCESS_MODE_DISABLED
 
 
 ## Whether they stand out in a generated location (not aboard or at a station).

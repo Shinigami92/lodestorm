@@ -65,14 +65,18 @@ func reward_items() -> Dictionary[ItemType, int]:
 
 
 ## Every line said in it, by who says it (see `VoiceLines.SPEAKING`): the offer's by the giver,
-## each step's hand-in and radio calls (alone and together) by the NPC it's handed in at (a call by
-## its `RadioLine.speaker` if it names one), the English texts, each once.
+## each step's hand-in, prompts at their place and radio calls (alone and together) by the NPC
+## it's handed in at (a call by its `RadioLine.speaker` if it names one), the English texts, each
+## once.
 func spoken_lines() -> Dictionary[StringName, PackedStringArray]:
 	var by_speaker: Dictionary[StringName, PackedStringArray] = {}
 	_add_lines(by_speaker, giver, offer)
 	for step: QuestStep in steps:
 		var npc: StringName = hand_in_npc(step)
 		_add_lines(by_speaker, npc, step.hand_in)
+		var prompts := Topic.new()
+		prompts.lines.assign(step.place_prompts)
+		_add_lines(by_speaker, npc, prompts)
 		for said: RadioLine in step.radio_lines():
 			var radio := Topic.new()
 			radio.lines.append(said.text)

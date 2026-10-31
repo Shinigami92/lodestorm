@@ -42,7 +42,7 @@ landing_line = SubResource("RadioLine_landing")
 script = ExtResource("s_topic")
 id = &"miner_mechanic.overdue_found"
 title = "Kade sent us"
-lines = Array[String](["Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck.", "A nest grew up at my dig site, right on the vein I was working. Hauling my miner out of there cracked its drive coupling clean through.", "Burn that nest out, so I can get back to my vein, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."])
+lines = Array[String](["Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck.", "A nest grew up at my dig site, right on the vein I was working. Hauling my miner out of there cracked its drive coupling clean through.", "Burn that nest out, so I can get back to my vein, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."])
 
 [sub_resource type="Resource" id="QuestStep_find"]
 script = ExtResource("s_step")
@@ -52,6 +52,7 @@ goals = Array[ExtResource("s_goal")]([SubResource("ReachGoal_camp")])
 hand_in_to = &"miner_mechanic"
 meets_in = &"mire"
 meets_at = SubResource("PartPlacement_camp")
+place_prompts = Array[String](["Finally, somebody found me. I could use a hand with one of my old miners."])
 hand_in = SubResource("Topic_found")
 
 [sub_resource type="Resource" id="PartPlacement_dig"]
@@ -91,6 +92,7 @@ goals = Array[ExtResource("s_goal")]([SubResource("ClearNestsGoal_miner"), SubRe
 hand_in_to = &"miner_mechanic"
 meets_in = &"mire"
 meets_at = SubResource("PartPlacement_camp")
+place_prompts = Array[String](["Any luck with that coupling?", "Is the nest at my dig site gone yet?"])
 hand_in = SubResource("Topic_coupling")
 joins = &"miner_mechanic"
 

@@ -30,7 +30,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"OverheardTalk": [],
 	# Its steps and topics are built into it.
 	"Quest": [&"title"],
-	"QuestStep": [&"text"],
+	"QuestStep": [&"text", &"place_prompts"],
 	"RadioLine": [&"text", &"coop_text"],
 	"ReachGoal": [&"place"],
 	"RecoverFragmentsGoal": [&"task"],

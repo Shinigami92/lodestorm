@@ -316,6 +316,37 @@ func test_med_bed_card_fits_in_every_language() -> void:
 			_assert_fits(card, layout, "%s med bed, healed %d" % [locale, health])
 
 
+## Every quest's card fits an NPC's card in every language: its offer, and each step's hand-in
+## with every goal done (the longest: each goal says "Done").
+func test_every_quest_card_fits_in_every_language() -> void:
+	var npc := _ship.get_node(NPCS["res://game/npcs/crew/quartermaster.tres"]) as Npc
+	var quests: QuestLog = _ship.quests
+	npc.open(_player)
+	for quest: Quest in quests.catalog.quests:
+		if not quests.is_accepted(quest):
+			quests.accept(quest, [_player])
+		for locale: String in SettingsList.languages():
+			TranslationServer.set_locale(locale)
+			for step: QuestStep in quest.steps:
+				quests.story.clear_flag(quest.step_flag(step))
+			npc.talk.quest = quest
+			npc.talk.offering = true
+			npc.refresh()
+			await wait_process_frames(1)
+			_assert_card_fits(npc, "%s %s offered" % [locale, quest.id])
+			npc.talk.offering = false
+			for step: QuestStep in quest.steps:
+				var done := PackedFloat64Array()
+				for goal: QuestGoal in step.goals:
+					done.append(goal.target())
+				quests.progress[quest.id] = done
+				npc.refresh()
+				await wait_process_frames(1)
+				_assert_card_fits(npc, "%s %s.%s handed in" % [locale, quest.id, step.id])
+				quests.story.set_flag(quest.step_flag(step))
+	npc.close()
+
+
 func test_every_terminal_fits_in_every_language() -> void:
 	for locale: String in SettingsList.languages():
 		TranslationServer.set_locale(locale)

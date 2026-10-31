@@ -18,9 +18,8 @@ const GAP: float = 0.012
 ## Draws over the hologram's see-through meshes (and the globe).
 const PRIORITY: int = 20
 
-## The pips' circle and the diamonds (filled, outlined), made once.
+## The pips' circle, made once.
 static var _pip_texture: ImageTexture
-static var _diamond_textures: Array[ImageTexture] = []
 
 ## How see-through it is (1: fully visible), e.g. for what can't be reached yet.
 var opacity: float = 1.0:
@@ -33,7 +32,7 @@ var diamond: Diamond = Diamond.NONE:
 		diamond = value
 		_diamond.visible = value != Diamond.NONE
 		if _diamond.visible:
-			_diamond.texture = diamond_texture(value == Diamond.FILLED)
+			_diamond.texture = QuestMark.diamond_texture(value == Diamond.FILLED)
 
 var _name := Label3D.new()
 var _diamond := Sprite3D.new()
@@ -64,7 +63,7 @@ func _init(
 	_name.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	_setup(_name)
 	add_child(_name)
-	_diamond.texture = diamond_texture(true)
+	_diamond.texture = QuestMark.diamond_texture(true)
 	_diamond.pixel_size = DIAMOND_SIZE / _diamond.texture.get_width()
 	_diamond.position.y = font_size * PIXEL_SIZE * 1.1 + DIAMOND_SIZE * 0.5
 	_diamond.visible = false
@@ -129,27 +128,6 @@ func get_ores() -> Array[OreType]:
 ## How many of its pips are lit.
 func get_lit_pips() -> int:
 	return _pip_colors.filter(func(c: Color) -> bool: return c != PIP_COLOR_OFF).size()
-
-
-## A white diamond with a soft edge, `filled` or only its outline.
-static func diamond_texture(filled: bool) -> ImageTexture:
-	if _diamond_textures.is_empty():
-		var size: int = 32
-		var half: float = size * 0.5
-		for solid: bool in [true, false]:
-			var image := Image.create_empty(size, size, false, Image.FORMAT_RGBA8)
-			for y: int in size:
-				for x: int in size:
-					var from_center: Vector2 = (
-						(Vector2(x + 0.5, y + 0.5) - Vector2(half, half)).abs()
-					)
-					var inside: float = half - 1.0 - (from_center.x + from_center.y)
-					var alpha: float = clampf(inside, 0.0, 1.0)
-					if not solid:
-						alpha = minf(alpha, clampf(4.0 - inside, 0.0, 1.0))
-					image.set_pixel(x, y, Color(1.0, 1.0, 1.0, alpha))
-			_diamond_textures.append(ImageTexture.create_from_image(image))
-	return _diamond_textures[0 if filled else 1]
 
 
 ## A white disc with a soft edge, for the pips.

@@ -40,11 +40,19 @@ title = "About Ilse"
 lines = Array[String](["I used to run the clinic at Ostra. The council's reports say the storms are nothing to worry about.", "Then I count the injuries that come back from these runs. The numbers don't match the reports, so I'm keeping my own."])
 requires = Array[StringName]([&"medic.greeting"])
 
+[sub_resource type="Resource" id="Resource_suit"]
+script = ExtResource("3_topic")
+id = &"medic.suit"
+title = "Your suit"
+lines = Array[String](["Until someone takes over the suits, the fitting frame on the lower deck works on its own. It reinforces your suit's armor, so you can take more hits out there.", "The skill graph beside it teaches your suit new things, like a quick dash or more spare magazines. Both cost ore from your hold and take a while to finish."])
+requires = Array[StringName]([&"medic.greeting"])
+until = &"crew.suit_tech.joined"
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["What can I do for you?", "How are you feeling?", "Ask me anything. I have a moment.", "Is something bothering you?"])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_wounds"), SubResource("Resource_beds"), SubResource("Resource_falling"), SubResource("Resource_about")])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_wounds"), SubResource("Resource_beds"), SubResource("Resource_falling"), SubResource("Resource_about"), SubResource("Resource_suit")])
 
 [sub_resource type="Resource" id="Reaction_first_death"]
 script = ExtResource("9_reaction")

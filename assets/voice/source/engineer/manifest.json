@@ -78,6 +78,12 @@
       "seed": 1,
       "text": "Im Moment sind sie alle kalt. Ihre Brenner wurden mit allem anderen verkauft, was sich abschrauben ließ, bevor Brannik das Schiff gekauft hat. Ich arbeite daran, den ersten wieder in Gang zu bringen."
     },
+    "6a19a03b47eca2ba": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bleib in Reichweite seines Schlauchs, dann füllt er Erz in deinen Rücken. Heb ihn auf, bevor du gehst, dann bekommst du auch, was noch in seinem Tank ist."
+    },
     "7b3091d59ac78a86": {
       "anchor": "d41e7c855e6c7261",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -95,6 +101,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Welche Platte als Nächstes kommt und was aus dem Laderaum bezahlt wird, entscheidet die Crew, der dieses Schiff gehört. Dein eigener Laderaum bleibt deiner, für deine eigene Ausrüstung."
+    },
+    "897b166f87ac3b12": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bis jemand die Miner übernimmt, halte ich sie am Laufen. Stell dich da draußen nah an ein Erzvorkommen und stell einen auf. Er gräbt, während du ihm die Aliens vom Leib hältst."
     },
     "8d35a92790664fa5": {
       "anchor": "d41e7c855e6c7261",
@@ -161,6 +173,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Schild um den Antriebskern ist die beste Antwort, die ich bisher habe. Jede Platte, die wir einbauen, bringt mir etwas Neues bei, und ich schreibe alles auf."
+    },
+    "b63a9ca0d6034edd": {
+      "anchor": "d41e7c855e6c7261",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ihr nehmt alle so viele Miner mit, wie wir Halterungen haben. Deine eigenen kannst du auf der Plattform im Miner-Raum aufrüsten."
     },
     "c1b13ca284b34009": {
       "anchor": "d41e7c855e6c7261",
@@ -278,6 +296,12 @@
       "seed": 1,
       "text": "Right now they're all cold. Their burners were sold with everything else that came loose, before Brannik bought the ship. I'm working on getting the first one going again."
     },
+    "6a19a03b47eca2ba": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Stay within reach of its hose, and it fills your back with ore. Pick it up before you leave, and you also get what's still in its tank."
+    },
     "7b3091d59ac78a86": {
       "anchor": "d2ad127d30de6e63",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -295,6 +319,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Which plate comes next and what's paid from the hold is up to the crew this ship belongs to. Your own hold stays yours, for your own gear."
+    },
+    "897b166f87ac3b12": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Until someone takes over the miners, I keep them running. Out there, stand close to an ore node and place one. It digs while you keep the aliens off it."
     },
     "8d35a92790664fa5": {
       "anchor": "d2ad127d30de6e63",
@@ -361,6 +391,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The shield around the drive core is the best answer I have so far. Every plate we install teaches me something new, and I write all of it down."
+    },
+    "b63a9ca0d6034edd": {
+      "anchor": "d2ad127d30de6e63",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Each of you takes as many miners as we have cradles. Your own you can upgrade on the pad in the miners' room."
     },
     "c1b13ca284b34009": {
       "anchor": "d2ad127d30de6e63",

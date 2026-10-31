@@ -105,11 +105,29 @@ func is_host() -> bool:
 
 
 ## Whether plate MK `level` can be worked on now: it's the next one, someone uses the station,
-## they're the host and no mission is underway.
+## they're the host, no mission is underway and it doesn't wait for the crew (`waits_for_crew`).
 func can_work_on(level: int) -> bool:
 	var shield: HeatShield = get_heat_shield()
 	return (
-		shield != null and level == shield.mk + 1 and user != null and is_host() and not is_locked()
+		shield != null
+		and level == shield.mk + 1
+		and user != null
+		and is_host()
+		and not is_locked()
+		and not waits_for_crew(level)
+	)
+
+
+## Whether plate MK `level` needs the whole crew aboard (`ShieldPlate.needs_whole_crew`) and
+## someone isn't yet.
+func waits_for_crew(level: int) -> bool:
+	var shield: HeatShield = get_heat_shield()
+	var plate: ShieldPlate = shield.plate_for(level) if shield else null
+	return (
+		plate != null
+		and plate.needs_whole_crew
+		and ship != null
+		and not NpcProfile.whole_crew_aboard(ship.story)
 	)
 
 

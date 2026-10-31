@@ -94,13 +94,13 @@ func _is_open(candidate: OverheardTalk, story: Story) -> bool:
 	return candidate.is_open(story) and candidate.speakers().size() == 2
 
 
-## The NPCs who say `candidate`'s lines, by `NpcProfile.id` (the ones found).
+## The NPCs who say `candidate`'s lines, by `NpcProfile.id` (the ones found and aboard).
 func _find_cast(candidate: OverheardTalk) -> Dictionary[StringName, Npc]:
 	var cast: Dictionary[StringName, Npc] = {}
 	var speakers: Array[StringName] = candidate.speakers()
 	for menu: Node in get_tree().get_nodes_in_group(WorldMenu.GROUP):
 		var npc := menu as Npc
-		if npc and npc.profile and npc.profile.id in speakers:
+		if npc and npc.profile and npc.profile.id in speakers and npc.is_present():
 			cast[npc.profile.id] = npc
 	return cast
 

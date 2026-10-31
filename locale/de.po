@@ -317,6 +317,22 @@ msgid "The shield around the drive core is the best answer I have so far. Every 
 msgstr "Der Schild um den Antriebskern ist die beste Antwort, die ich bisher habe. Jede Platte, die wir einbauen, bringt mir etwas Neues bei, und ich schreibe alles auf."
 
 #: game/npcs/crew/engineer.tres
+msgid "The miners"
+msgstr "Die Miner"
+
+#: game/npcs/crew/engineer.tres
+msgid "Until someone takes over the miners, I keep them running. Out there, stand close to an ore node and place one. It digs while you keep the aliens off it."
+msgstr "Bis jemand die Miner übernimmt, halte ich sie am Laufen. Stell dich da draußen nah an ein Erzvorkommen und stell einen auf. Er gräbt, während du ihm die Aliens vom Leib hältst."
+
+#: game/npcs/crew/engineer.tres
+msgid "Stay within reach of its hose, and it fills your back with ore. Pick it up before you leave, and you also get what's still in its tank."
+msgstr "Bleib in Reichweite seines Schlauchs, dann füllt er Erz in deinen Rücken. Heb ihn auf, bevor du gehst, dann bekommst du auch, was noch in seinem Tank ist."
+
+#: game/npcs/crew/engineer.tres
+msgid "Each of you takes as many miners as we have cradles. Your own you can upgrade on the pad in the miners' room."
+msgstr "Ihr nehmt alle so viele Miner mit, wie wir Halterungen haben. Deine eigenen kannst du auf der Plattform im Miner-Raum aufrüsten."
+
+#: game/npcs/crew/engineer.tres
 msgid "The new plate holds. Vehra is in reach now, the next planet inwards. The aliens there are tougher than on Torvane."
 msgstr "Die neue Platte hält. Vehra ist jetzt in Reichweite, der nächste Planet weiter innen. Die Aliens dort halten mehr aus als auf Torvane."
 
@@ -536,6 +552,18 @@ msgstr "Früher habe ich die Klinik auf Ostra geleitet. Laut den Berichten des R
 #: game/npcs/crew/medic.tres
 msgid "Then I count the injuries that come back from these runs. The numbers don't match the reports, so I'm keeping my own."
 msgstr "Dann zähle ich die Verletzungen, die von diesen Einsätzen zurückkommen. Die Zahlen passen nicht zu den Berichten, also führe ich meine eigenen."
+
+#: game/npcs/crew/medic.tres
+msgid "Your suit"
+msgstr "Dein Anzug"
+
+#: game/npcs/crew/medic.tres
+msgid "Until someone takes over the suits, the fitting frame on the lower deck works on its own. It reinforces your suit's armor, so you can take more hits out there."
+msgstr "Bis jemand die Anzüge übernimmt, arbeitet der Anpassungsrahmen auf dem unteren Deck von allein. Er verstärkt die Panzerung deines Anzugs, damit du da draußen mehr Treffer einstecken kannst."
+
+#: game/npcs/crew/medic.tres
+msgid "The skill graph beside it teaches your suit new things, like a quick dash or more spare magazines. Both cost ore from your hold and take a while to finish."
+msgstr "Der Fähigkeitenbaum daneben bringt deinem Anzug Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine. Beides kostet Erz aus deinem Laderaum und dauert eine Weile."
 
 #: game/npcs/crew/medic.tres
 msgid "Easy, take a breath. You fell out there and woke up in my medical bay. It happens to everyone once. Let's make sure it doesn't happen often."
@@ -999,6 +1027,18 @@ msgid "Weapons only work inside the range, and a force field in the doorway stop
 msgstr "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
 
 #: game/npcs/crew/quartermaster.tres
+msgid "The weapons room"
+msgstr "Der Waffenraum"
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Until we find a gunsmith, the bench in the weapons room works on its own. Lay one of your weapons on it, and it shows what the next level of each part does and what it costs."
+msgstr "Bis wir einen Waffenschmied finden, arbeitet die Werkbank im Waffenraum von allein. Leg eine deiner Waffen darauf, dann zeigt sie dir, was die nächste Stufe jedes Teils bringt und was sie kostet."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Upgrades take a while, but they keep going while you're out there. A weapon you don't own yet, the bench builds right away once you have its blueprint. That only costs the ore."
+msgstr "Upgrades dauern eine Weile, laufen aber weiter, während du da draußen bist. Eine Waffe, die du noch nicht hast, baut die Werkbank sofort, sobald du ihren Bauplan hast. Das kostet nur das Erz."
+
+#: game/npcs/crew/quartermaster.tres
 msgid "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
 msgstr "Du bist heil zurück, und mit Erz auf dem Rücken. So soll eine erste Mission enden."
 
@@ -1067,6 +1107,10 @@ msgid "This is the mess hall. Fenna cooks for all of us, and she hears everythin
 msgstr "Das ist die Messe. Fenna kocht für uns alle, und sie bekommt alles mit, was an Bord passiert. Es lohnt sich also, hier vorbeizuschauen."
 
 #: game/npcs/crew/quartermaster.tres
+msgid "This is the mess hall. We still need someone for the galley. Until then, we all cook for ourselves."
+msgstr "Das ist die Messe. Für die Kombüse fehlt uns noch jemand. Bis dahin kocht jeder für sich selbst."
+
+#: game/npcs/crew/quartermaster.tres
 msgid "The bridge. Tamsin flies the ship, and here at the holo table you pick with her where we go next. Every trip starts at that table."
 msgstr "Die Brücke. Tamsin fliegt das Schiff, und hier am Holotisch suchst du mit ihr aus, wohin es als Nächstes geht. Jede Reise beginnt an diesem Tisch."
 
@@ -1095,8 +1139,24 @@ msgid "Dace's weapons room. He builds new weapons from their blueprints, and at 
 msgstr "Der Waffenraum von Dace. Er baut neue Waffen nach ihren Bauplänen, und an seiner Werkbank macht er deine besser."
 
 #: game/npcs/crew/quartermaster.tres
+msgid "The weapons room. Its bench builds new weapons from their blueprints and makes yours better."
+msgstr "Der Waffenraum. Seine Werkbank baut neue Waffen nach ihren Bauplänen und macht deine besser."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "We still need someone for this room. Until then, the bench works on its own."
+msgstr "Für diesen Raum fehlt uns noch jemand. Bis dahin arbeitet die Werkbank von allein."
+
+#: game/npcs/crew/quartermaster.tres
 msgid "Wren looks after your suit in here. Better armor means you can take more hits out there."
 msgstr "Hier kümmert sich Wren um deinen Anzug. Bessere Panzerung heißt, dass du da draußen mehr Treffer einstecken kannst."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Your suit's armor is reinforced in here. Better armor means you can take more hits out there."
+msgstr "Hier wird die Panzerung deines Anzugs verstärkt. Bessere Panzerung heißt, dass du da draußen mehr Treffer einstecken kannst."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "We still need someone for this room. Until then, the fitting frame works on its own."
+msgstr "Für diesen Raum fehlt uns noch jemand. Bis dahin arbeitet der Anpassungsrahmen von allein."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "The skill graph. Your suit learns new things in here, like a quick dash or more spare magazines."
@@ -1109,6 +1169,14 @@ msgstr "Hollis und die Miner. Sie holen da draußen das Erz aus dem Boden, währ
 #: game/npcs/crew/quartermaster.tres
 msgid "They sold the cradles with everything else that came loose. We got two back."
 msgstr "Die Halterungen wurden mit allem anderen verkauft, was sich abschrauben ließ. Zwei haben wir zurückbekommen."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "The miners. They dig the ore out there, while you keep the aliens off them."
+msgstr "Die Miner. Sie holen da draußen das Erz aus dem Boden, während du ihnen die Aliens vom Leib hältst."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "We still need someone for this room. Until then, Okoro keeps the miners going."
+msgstr "Für diesen Raum fehlt uns noch jemand. Bis dahin hält Okoro die Miner am Laufen."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "And this is my armory, where the tour ends. The cargo bay and the ramp are right through there. Ask me about your weapons and ammo whenever you like."
@@ -2553,6 +2621,10 @@ msgid "Blueprint: %s"
 msgstr "Bauplan: %s"
 
 #: game/quests/quest_panel.gd
+msgid "Joins the crew: %s"
+msgstr "Kommt an Bord: %s"
+
+#: game/quests/quest_panel.gd
 msgid "Furnaces lit: %d"
 msgstr "Schmelzöfen angefeuert: %d"
 
@@ -2959,6 +3031,10 @@ msgstr "Eingebaut"
 #: game/stations/heat_shield/heat_shield_card.gd
 msgid "Needs MK%d first."
 msgstr "Braucht zuerst MK%d."
+
+#: game/stations/heat_shield/heat_shield_card.gd
+msgid "The whole crew has to be aboard first."
+msgstr "Erst muss die ganze Crew an Bord sein."
 
 #: game/stations/heat_shield/heat_shield_card.gd
 msgid "Only the host can change the ship's project."

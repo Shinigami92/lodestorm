@@ -37,6 +37,10 @@ static var _paths: Dictionary[StringName, String] = {}
 @export var accent_color: Color = Color(0.3, 0.85, 1.0)
 ## Multiplies the suit's colors, so NPCs in it look darker than players (not on an own model).
 @export var suit_tint: Color = Color(0.7, 0.7, 0.75)
+## The story flag a crew member joins with (`crew.<id>.joined`, set by a quest step's
+## `QuestStep.joins`); empty: aboard from the start (Brannik, Tamsin, Okoro and Ilse). Until then
+## they aren't aboard: not at their post, no talks or radio calls (see `is_aboard`).
+@export var join_flag: StringName = &""
 ## A crew member's cabin aboard (1–8, see docs/design/ship.md; not used yet). Station NPCs
 ## have none.
 @export_range(1, 8) var cabin: int = 1
@@ -56,11 +60,18 @@ static var _paths: Dictionary[StringName, String] = {}
 @export_range(0, 4) var open_requests: int = 1
 
 
+## Whether they're aboard in `story`: from the start, or once their `join_flag` is set.
+func is_aboard(story: Story) -> bool:
+	return join_flag.is_empty() or (story != null and story.is_set(join_flag))
+
+
 ## The lines they have for `event` about `subject`, worded for several players `together` or one
-## alone: the subject's own before the ones for any, and within those the ones worded for the
-## players before the ones for either; empty: they don't react to it.
+## alone, as far as `story` has what each reaction `CrewReaction.requires` (null: none of those):
+## the subject's own before the ones for any, then the ones with flags required before the ones
+## without, and within those the ones worded for the players before the ones for either; empty:
+## they don't react to it.
 func reaction_lines(
-	event: StringName, subject: StringName = &"", together: bool = false
+	event: StringName, subject: StringName = &"", together: bool = false, story: Story = null
 ) -> Array[String]:
 	var fitting: CrewReaction = null
 	var best: int = -1
@@ -74,8 +85,11 @@ func reaction_lines(
 			continue
 		if reaction.players != CrewReaction.Players.ANY and reaction.players != wording:
 			continue
+		if not reaction.requires.is_empty() and not (story and story.is_set_all(reaction.requires)):
+			continue
 		var score: int = (
-			(2 if not reaction.subject.is_empty() else 0)
+			(4 if not reaction.subject.is_empty() else 0)
+			+ (2 if not reaction.requires.is_empty() else 0)
 			+ (1 if reaction.players != CrewReaction.Players.ANY else 0)
 		)
 		if score > best:
@@ -105,6 +119,7 @@ func spoken_lines() -> Dictionary[StringName, PackedStringArray]:
 	if tour:
 		for stop: TourStop in tour.stops:
 			said.append_array(stop.lines)
+			said.append_array(stop.empty_lines)
 	for reaction: CrewReaction in reactions:
 		said.append_array(reaction.lines)
 	said.append_array(remarks)
@@ -120,6 +135,26 @@ func spoken_lines() -> Dictionary[StringName, PackedStringArray]:
 ## Every profile in `PEOPLE` and its subfolders, named or not (ambient colonists have no name).
 static func all() -> Array[NpcProfile]:
 	return _profiles_in(PEOPLE)
+
+
+## The crew: every profile with a dialogue who lives aboard (no `station`), named.
+static func crew() -> Array[NpcProfile]:
+	return all().filter(
+		func(profile: NpcProfile) -> bool:
+			return profile.station.is_empty() and profile.dialogue != null
+	)
+
+
+## Whether the whole crew is aboard in `story` (e.g. before heat shield MK2, see `ShieldPlate`).
+static func whole_crew_aboard(story: Story) -> bool:
+	return crew().all(func(profile: NpcProfile) -> bool: return profile.is_aboard(story))
+
+
+## Brings the whole crew aboard in `story`: every `join_flag` set (debug tools, tests).
+static func join_whole_crew(story: Story) -> void:
+	for profile: NpcProfile in crew():
+		if not profile.join_flag.is_empty():
+			story.set_flag(profile.join_flag)
 
 
 ## The profile whose `id` is `npc` (e.g. a quest's giver), or null.

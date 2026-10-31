@@ -15,7 +15,7 @@ extends Node
 
 const GROUP: StringName = &"save_games"
 ## The save format; raise it when the format changes (older saves start over).
-const VERSION: int = 6
+const VERSION: int = 7
 const SHIP_FILE: String = "ship.json"
 const PLAYER_FILE: String = "player.json"
 

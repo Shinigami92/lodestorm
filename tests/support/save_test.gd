@@ -23,7 +23,8 @@ func after_each() -> void:
 
 
 func _start() -> void:
-	_map = TEST_MAP.instantiate() as Node3D
+	# A new game's start: the story holds only what a test sets or loads.
+	_map = TEST_MAP.instantiate(false) as Node3D
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_ship = _map.get_node("Ship") as Ship

@@ -134,11 +134,12 @@ func test_jobs_keep_what_was_paid() -> void:
 func test_story_survives_a_restart() -> void:
 	_ship.story.set_flag(&"quartermaster.greeting")
 	_ship.story.set_flag(&"quartermaster.ammo")
+	var flags: Array = _ship.story.save_data()
 	await wait_process_frames(1)
 	await _restart()
 	assert_true(_ship.story.is_set(&"quartermaster.greeting"))
 	assert_true(_ship.story.is_set(&"quartermaster.ammo"))
-	assert_eq(_ship.story.flags.size(), 2)
+	assert_eq(_ship.story.save_data(), flags, "nothing more, nothing less")
 
 
 func test_mission_progress_is_saved_when_it_is_over() -> void:

@@ -27,6 +27,9 @@ const READY: StringName = &"ready"
 @export_range(0, 4) var furnaces: int = 0
 ## Miners' cradles it opens on the ship (see `Cradles`) at the hand-in.
 @export_range(0, 4) var cradles: int = 0
+## A crew member who joins at the hand-in (their `NpcProfile.id`): their `NpcProfile.join_flag`
+## is set; empty: nobody.
+@export var joins: StringName = &""
 ## What its NPC says over the radio once all its goals are done, instead of the last one's
 ## `QuestGoal.done_line` (e.g. "That's the second nest. Come back to me."; see `QuestRadio`), or
 ## null.

@@ -47,20 +47,22 @@ func show_part(part: StationPart) -> void:
 		shield_station.opened_by(level),
 		hold,
 		shield_station.is_locked(),
-		shield_station.is_host()
+		shield_station.is_host(),
+		shield_station.waits_for_crew(level)
 	)
 
 
 ## Shows plate MK `level` of `shield` (null: nothing). `opens`: the names of the bodies it opens;
 ## `hold`: what the hold has; `locked`: whether a mission is underway; `host`: whether the player
-## using it is the host.
+## using it is the host; `crew_missing`: whether it waits for the whole crew aboard.
 func show_plate(
 	shield: HeatShield,
 	level: int,
 	opens: PackedStringArray = [],
 	hold: Dictionary[ItemType, float] = {},
 	locked: bool = false,
-	host: bool = true
+	host: bool = true,
+	crew_missing: bool = false
 ) -> void:
 	mk = level
 	visible = shield != null and level >= 2
@@ -88,6 +90,8 @@ func show_plate(
 	var status: String = ""
 	if is_next and locked:
 		status = _locked_text()
+	elif is_next and crew_missing:
+		status = tr("The whole crew has to be aboard first.")
 	elif is_next and not host:
 		status = tr("Only the host can change the ship's project.")
 	elif is_next and shield.project:
@@ -99,7 +103,7 @@ func show_plate(
 	_project.visible = is_next and not shield.project
 	_pay.text = tr("Pay the rest from the hold")
 	_project.text = tr("Make it the ship's project")
-	var usable: bool = is_next and not locked and host
+	var usable: bool = is_next and not locked and host and not crew_missing
 	_pay.disabled = not usable or not _hold_covers_any(shield.missing(), hold)
 	_project.disabled = not usable or shield.project
 

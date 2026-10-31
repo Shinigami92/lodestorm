@@ -172,8 +172,9 @@ func accept(quest: Quest, players: Array[Player]) -> bool:
 
 ## Hands in `quest`'s active step: what's missing comes from `payer`'s hold, the step's flag is set,
 ## its ores, alloys and blueprint go to every one of `players` (the session), its furnaces and
-## cradles to the ship; then the next step starts, or the quest is done (its flag; a request is
-## offered again later). Returns whether it did.
+## cradles to the ship, the crew member it `QuestStep.joins` comes aboard; then the next step
+## starts, or the quest is done (its flag; a request is offered again later). Returns whether it
+## did.
 func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 	var step: QuestStep = current_step(quest)
 	if not step or not can_hand_in(quest, payer.hold):
@@ -190,6 +191,9 @@ func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 		furnaces.unlock()
 	for i: int in step.cradles:
 		cradles.open_next()
+	var joining: NpcProfile = NpcProfile.find(step.joins) if not step.joins.is_empty() else null
+	if joining and not joining.join_flag.is_empty():
+		story.set_flag(joining.join_flag)
 	progress.erase(quest.id)
 	calls.forget(quest)
 	story.set_flag(quest.step_flag(step))

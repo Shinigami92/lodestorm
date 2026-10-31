@@ -73,6 +73,9 @@ const RAMP_HINT_SCENE: PackedScene = preload("res://game/ship/ramp_hint.tscn")
 @export var ramp_duration: float = 2.0
 ## Whose view the cutaway follows (the camera's player); without one, the first player aboard.
 @export var viewer: Node3D
+## Whether the crew members who join later (`NpcProfile.join_flag`) come aboard through their
+## quests; off: the whole crew is aboard from the start. Off until the join quests exist (16 C3d).
+@export var crew_joins_later: bool = false
 
 ## The mission whose time the countdown shows; set by the mission.
 var mission: Mission
@@ -156,6 +159,8 @@ var _button_material := StandardMaterial3D.new()
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	if not crew_joins_later:
+		NpcProfile.join_whole_crew(story)
 	# Players ready before the ship; those after it find it themselves (see `Player`).
 	for player: Player in get_tree().get_nodes_in_group(Player.GROUP):
 		player.fleet.cradles = cradles

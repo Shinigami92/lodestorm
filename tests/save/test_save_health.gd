@@ -57,7 +57,7 @@ func test_hints_are_saved_with_the_player() -> void:
 	var hints: Array = _saved(SaveGame.PLAYER_FILE)["hints"]
 	assert_eq(hints, [String(RampHint.HINT)])
 	var story: Array = _saved(SaveGame.SHIP_FILE)["story"]
-	assert_true(story.is_empty())
+	assert_does_not_have(story, String(RampHint.HINT))
 	await _restart()
 	assert_true(_player.hints.is_seen(RampHint.HINT))
 

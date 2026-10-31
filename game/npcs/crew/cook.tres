@@ -17,7 +17,7 @@ script = ExtResource("3_topic")
 id = &"cook.crew"
 title = "The crew"
 lines = Array[String](["Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door.", "Hollis keeps the miners going. Ilse has the medical bay at the nose, and Okoro is down in the engine room with the heat shield.", "Tamsin flies the ship. You'll find her on the bridge, or in the cockpit while we're flying. And you'll always find me in the mess hall."])
-requires = Array[StringName]([&"cook.greeting"])
+requires = Array[StringName]([&"cook.greeting", &"crew.gunsmith.joined", &"crew.suit_tech.joined", &"crew.miner_mechanic.joined"])
 
 [sub_resource type="Resource" id="Resource_news"]
 script = ExtResource("3_topic")
@@ -48,6 +48,7 @@ lines = Array[String](["Moons around a gas giant! When I signed on, I never thou
 [resource]
 script = ExtResource("1_profile")
 id = &"cook"
+join_flag = &"crew.cook.joined"
 display_name = "Fenna"
 role = "Cook"
 model = "uid://vo056vbv74lc"

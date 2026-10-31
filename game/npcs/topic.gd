@@ -2,8 +2,9 @@ class_name Topic
 extends Resource
 ## Something to talk about with an NPC (see `Dialogue`): its title on the talk card and what the
 ## NPC says about it, one speech bubble per line. It shows once the story flags it `requires` are
-## set, to players who own its `requires_weapon`, and once the ship reaches its `requires_body`;
-## hearing it to the end sets its `id` as a flag. With `guest_lines`, a guest aboard (a co-op player
+## set (until its `until` flag is: a stand-in topic, gone once its crew member joins), to players
+## who own its `requires_weapon`, and once the ship reaches its `requires_body`; hearing it to the
+## end sets its `id` as a flag. With `guest_lines`, a guest aboard (a co-op player
 ## who isn't the host) hears those instead (e.g. the heat shield is the host's to decide on). With
 ## `away_lines`, the NPC says those while they stand outside their own room (`NpcRoutine.is_away`):
 ## a topic whose `lines` need the room ("here", "next door", something they point at) says the
@@ -25,6 +26,9 @@ extends Resource
 @export var away_lines: Array[String] = []
 ## Story flags it needs before it shows (e.g. another topic's id).
 @export var requires: Array[StringName] = []
+## A story flag that hides it once set (e.g. a crew member's `NpcProfile.join_flag`: one aboard
+## from the start explains their post until they join); empty: it stays.
+@export var until: StringName = &""
 ## A weapon it's about: it only shows to a player who owns it (e.g. Brask once built).
 @export var requires_weapon: WeaponType
 ## A planet or moon it's about (its `CelestialBody.id`): it only shows once the ship reaches it
@@ -36,7 +40,7 @@ extends Resource
 ## `requires`, `listener` owns its `requires_weapon`, and its `requires_body` is among the bodies
 ## the ship `reaches` (their ids). Topics with more conditions (a quest's) override it.
 func is_open(listener: Player, story: Story, reaches: Array[StringName] = []) -> bool:
-	if not story.is_set_all(requires):
+	if not story.is_set_all(requires) or (not until.is_empty() and story.is_set(until)):
 		return false
 	if not requires_body.is_empty() and requires_body not in reaches:
 		return false

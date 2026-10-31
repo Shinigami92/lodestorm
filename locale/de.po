@@ -2398,7 +2398,7 @@ msgstr "Er hat mir einmal die Position seines Lagers gegeben, falls etwas passie
 
 #: game/quests/depot_master/overdue.tres
 msgid "Hollow Mire isn't the flats, though. Get your gear in order before you go down there."
-msgstr "Hollow Mire ist aber nicht die Ebene. Bring deine Ausrüstung in Ordnung, bevor du runtergehst."
+msgstr "In Hollow Mire geht es allerdings rauer zu als in Redscar Flats. Bring deine Ausrüstung in Ordnung, bevor du runtergehst."
 
 #: game/quests/depot_master/overdue.tres
 msgid "Find Hollis' camp in Hollow Mire and see if he's all right."

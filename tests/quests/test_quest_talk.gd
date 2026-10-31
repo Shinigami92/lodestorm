@@ -115,6 +115,48 @@ func test_hand_in_waits_for_the_hold() -> void:
 	assert_null(_npc.talk.quest)
 
 
+func test_steps_ready_to_hand_in_come_first() -> void:
+	var waiting: Quest = QUEST_LOG_TEST.make_quest(&"waiting", &"quartermaster")
+	var due: Quest = QUEST_LOG_TEST.make_quest(&"ready", &"quartermaster")
+	var offered: Quest = QUEST_LOG_TEST.make_quest(&"offered", &"quartermaster")
+	# More Kyrite than the hold has: accepted first, but not ready.
+	(waiting.steps[0].goals[0] as DeliverGoal).amount = 1000
+	_ship.quests.catalog.quests = [waiting, due, offered]
+	_ship.quests.accept(waiting, [_player])
+	_ship.quests.accept(due, [_player])
+	_player.hold.add(KYRITE, 300.0)
+	assert_true(_ship.quests.can_hand_in(due, _player.hold), "the hold covers it")
+	assert_false(_ship.quests.can_hand_in(waiting, _player.hold))
+	await _talk()
+	var entries: Array[Topic] = _npc.get_quest_choices(_player)
+	assert_eq(
+		entries,
+		[due.steps[0].hand_in, offered.offer, waiting.steps[0].hand_in],
+		"ready, offer, rest"
+	)
+	assert_eq(_npc.get_choices().slice(0, 3), entries, "at the top of the list")
+
+
+func test_quests_carry_a_diamond_above_a_line() -> void:
+	var tracked: Quest = QUEST_LOG_TEST.make_quest(&"tracked", &"quartermaster")
+	tracked.steps[0].hand_in.title = "Tracked job"
+	_quest.offer.title = "Offered job"
+	_ship.quests.catalog.quests = [_quest, tracked]
+	_ship.quests.accept(tracked, [_player])
+	_ship.quests.tracked = tracked.id
+	await _talk()
+	var card := _npc.card_menu as TalkCard
+	assert_eq(card.get_button("Tracked job").icon, QuestMark.diamond_texture(true), "filled")
+	assert_eq(card.get_button("Offered job").icon, QuestMark.diamond_texture(false), "hollow")
+	assert_null(card.get_button("Goodbye").icon, "topics have none")
+	var divider := card.find_child("QuestDivider", true, false) as HSeparator
+	assert_true(divider.visible)
+	assert_eq(divider.get_index(), 2, "below the two quests")
+	_ship.quests.catalog.quests = []
+	_npc.talk.set_choice(0)
+	assert_false(divider.visible, "no quests, no line")
+
+
 func _talk() -> void:
 	_player.global_position = _npc.use_point.global_position + Vector3(0.0, 0.0, 1.0)
 	_player.reset_physics_interpolation()

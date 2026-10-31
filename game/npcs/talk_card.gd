@@ -1,10 +1,12 @@
 class_name TalkCard
 extends StationCard
 ## The holo card beside an NPC while a player talks to them (`Npc`): their name and role, then
-## either the open topics and "Goodbye" (an amber dot on topics nobody has heard yet), or while a
-## topic is told its title, how far it is ("2 / 3") and "Continue" ("Done" on the last line) and
-## "Back"; or a quest's card (a `QuestPanel`, see `NpcTalk.quest`) with "Accept" and "Not now" for
-## an offer, or "Hand in" (only while it can be) and "Back" for a step. The button `interact`
+## either the open topics and "Goodbye" (an amber dot on topics nobody has heard yet; the quests
+## at the top set apart by an amber diamond, filled for the tracked one like its markers in the
+## world, and a line below them), or while a topic is told its title, how far it is ("2 / 3") and
+## "Continue" ("Done" on the last line) and "Back"; or a quest's card (a `QuestPanel`, see
+## `NpcTalk.quest`) with "Accept" and "Not now" for an offer, or "Hand in" (only while it can be)
+## and "Back" for a step. The button `interact`
 ## presses has an amber frame (not the focus, see `LoadoutCard`).
 ## Past `MAX_ROWS` entries the list scrolls, keeping the framed one in view (an NPC with many
 ## topics, like the bartender's rumors about every planet). With auto-continue on, an amber bar
@@ -17,6 +19,10 @@ const SELECTED_STATES: Array[StringName] = [
 ]
 ## Marks a topic nobody has heard yet.
 const NEW_DOT: String = "●  "
+## The gap between a quest's diamond and its title, in px.
+const ICON_GAP: int = 12
+## How strong the quests' amber is on the line below them.
+const DIVIDER_ALPHA: float = 0.5
 ## The most entries the list shows at once; more scroll.
 const MAX_ROWS: int = 7
 ## Height of the auto-continue bar and its inset from the button's edges (inside the amber
@@ -41,6 +47,8 @@ var _selected_styles: Dictionary[StringName, StyleBox] = {}
 var _progress_bar: ColorRect
 ## Pauses or resumes moving on by itself: right of the first button (made with it).
 var _pause_button: Button
+## The line between the quests at the top of the list and the topics (made when first shown).
+var _divider: HSeparator
 
 @onready var _name: Label = %Name
 @onready var _role: Label = %Role
@@ -77,12 +85,20 @@ func show_part(part: StationPart) -> void:
 		return
 	var texts: Array[String] = []
 	var new: Array[bool] = []
+	var icons: Array[Texture2D] = []
+	var quest_rows: int = 0
+	var quests: QuestLog = npc.get_quests()
 	for choice: Topic in npc.get_choices():
 		texts.append(tr(choice.title))
 		new.append(npc.is_new(choice))
+		var quest: Quest = quests.quest_for(choice)
+		icons.append(QuestMark.diamond_texture(quests.tracked == quest.id) if quest else null)
+		if quest:
+			quest_rows += 1
 	texts.append(tr("Goodbye"))
 	new.append(false)
-	_show_buttons(texts, new, npc.talk.choice)
+	icons.append(null)
+	_show_buttons(texts, new, npc.talk.choice, icons, quest_rows)
 	_pause_button.visible = false
 
 
@@ -157,14 +173,34 @@ func get_button(text: String) -> Button:
 	return null
 
 
-## One button per entry in `texts` (`new`: with the amber dot), `selected` framed amber.
-func _show_buttons(texts: Array[String], new: Array[bool], selected: int) -> void:
+## One button per entry in `texts` (`new`: with the amber dot; `icons`: the sign in front of it, a
+## quest's diamond, null for none), `selected` framed amber; with `divided` > 0 the divider below
+## that many entries.
+func _show_buttons(
+	texts: Array[String],
+	new: Array[bool],
+	selected: int,
+	icons: Array[Texture2D] = [],
+	divided: int = 0
+) -> void:
+	if not _divider:
+		_divider = HSeparator.new()
+		_divider.name = "QuestDivider"
+		var line := StyleBoxLine.new()
+		line.color = Color(QuestMark.COLOR, DIVIDER_ALPHA)
+		line.thickness = 2
+		_divider.add_theme_stylebox_override(&"separator", line)
+		_list.add_child(_divider)
 	while _buttons.size() < texts.size():
 		var button := Button.new()
 		button.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		button.focus_mode = Control.FOCUS_NONE
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.pressed.connect(_on_button_pressed.bind(_buttons.size()))
+		button.add_theme_constant_override(&"icon_max_width", int(BoardMarker.SIZE))
+		button.add_theme_constant_override(&"h_separation", ICON_GAP)
+		for state: StringName in ICON_COLORS:
+			button.add_theme_color_override(state, QuestMark.COLOR)
 		if _buttons.is_empty():
 			_list.add_child(_first_row(button))
 		else:
@@ -177,6 +213,7 @@ func _show_buttons(texts: Array[String], new: Array[bool], selected: int) -> voi
 		if not button.visible:
 			continue
 		button.text = (NEW_DOT if new[i] else "") + texts[i]
+		button.icon = icons[i] if i < icons.size() else null
 		if new[i]:
 			button.add_theme_color_override(&"font_color", CardPalette.STATUS)
 		else:
@@ -189,6 +226,11 @@ func _show_buttons(texts: Array[String], new: Array[bool], selected: int) -> voi
 	var gap: int = _list.get_theme_constant(&"separation")
 	var row: float = _buttons[0].get_combined_minimum_size().y + gap
 	_scroll.custom_minimum_size.y = mini(texts.size(), MAX_ROWS) * row - gap
+	_divider.visible = divided > 0
+	if _divider.visible:
+		# Below the first `divided` buttons: the first sits in its own row, the others in the list.
+		_list.move_child(_divider, divided)
+		_scroll.custom_minimum_size.y += _divider.get_combined_minimum_size().y + gap
 	_scroll_to.call_deferred(selected)
 
 

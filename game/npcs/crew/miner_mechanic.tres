@@ -50,7 +50,7 @@ requires = Array[StringName]([&"miner_mechanic.greeting"])
 script = ExtResource("3_topic")
 id = &"miner_mechanic.about_camp"
 title = "About Hollis"
-lines = Array[String](["Twenty-five years I've been digging on these planets. I came out with the survey, and I stayed when it packed up and left.", "I had a crew once. They got tired of the storms, one by one. I didn't."])
+lines = Array[String](["Twenty-five years I've been digging on these planets. I came out with the survey, and I stayed when it packed up and left.", "I had a crew once. They got tired of the storms, one by one. I didn't.", "That post by the shelter is an old survey repeller. The things out here don't like its hum, so they leave me be."])
 until = &"crew.miner_mechanic.joined"
 
 [sub_resource type="Resource" id="Resource_dialogue"]

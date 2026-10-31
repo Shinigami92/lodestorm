@@ -28,7 +28,9 @@ extends Station
 ## (`arrive`), walking on to their post. There they're talked to only about what fits before
 ## joining: the topics that go once they join (`Topic.until` their `NpcProfile.join_flag`) and their
 ## quests, no greeting. Someone waiting out in a location (e.g. Hollis at his camp, see
-## `LocationQuests`) sees the quests as they are out there (`quests_view`).
+## `LocationQuests`) sees the quests as they are out there (`quests_view`); talking to them there
+## stops the game solo (`pausing`, like the pause panel: aliens, the timer, the storm), so nobody is
+## hurt meanwhile, and it goes on once the talk ends. In co-op the others cover them.
 
 ## Emitted when they set off for the ship from their place before joining (by `NpcBoarding`).
 @warning_ignore("unused_signal")
@@ -85,6 +87,8 @@ var _own_quests := QuestLog.new()
 var _aside: bool = false
 ## At their place before joining: whether they've joined (walking aboard or gone).
 var _joined: bool = false
+## Whether a talk out in a location stopped the game (solo).
+var _pausing: bool = false
 var _new_marker_time: float = 0.0
 
 @onready var bubble: WorldPanel = $Bubble
@@ -347,6 +351,7 @@ func _shortcut(event: InputEvent) -> bool:
 
 
 func _opened() -> void:
+	_set_pausing(SaveGame.is_solo(get_tree()) and _is_out_there())
 	talk.open()
 	_place_focus()
 	super()
@@ -358,6 +363,7 @@ func _opened() -> void:
 
 
 func _closed() -> void:
+	_set_pausing(false)
 	super()
 	_update_use()
 	talk.close()
@@ -417,3 +423,27 @@ func _place_focus() -> void:
 
 func _place_bubble() -> void:
 	SpeechBubble.place(bubble, body.get_head_position())
+
+
+func _exit_tree() -> void:
+	# Never leaves the game stopped (e.g. the location goes away).
+	_set_pausing(false)
+
+
+## Stops the game (`paused`) or lets it go on; while stopped, they and their talk keep going.
+func _set_pausing(paused: bool) -> void:
+	if _pausing == paused or not is_inside_tree():
+		return
+	_pausing = paused
+	get_tree().paused = paused
+	process_mode = PROCESS_MODE_ALWAYS if paused else PROCESS_MODE_INHERIT
+
+
+## Whether they stand out in a generated location (not aboard or at a station).
+func _is_out_there() -> bool:
+	var at: Node = get_parent()
+	while at:
+		if at is GeneratedLocation:
+			return true
+		at = at.get_parent()
+	return false

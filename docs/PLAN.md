@@ -148,12 +148,18 @@ Each step builds on the ones before it (steps 1–15 and the balance are done, c
   - [ ] **C3** **crew joining** ([`planned/crew.md`](planned/crew.md)):
     - [x] **C3a** the rules: four aboard at the start, the join flags, the crew not aboard yet (not at their posts, no talks or transmissions), stand-in topics, lines naming someone gated by their flag (with a test), Vehra waiting for the whole crew, a quest step's reward "joins the crew", the debug overlay's "Join the crew"
     - [x] **C3b** waiting at Ostra and walking aboard: Dace's stall, Wren's suit workbench, Fenna sitting at Rook's booth, the walk to their post, leaving and the ramp waiting for them, their places afterwards (their topics before joining moved to C3d)
-    - [x] **C3c** Hollis out there: Kade's "Overdue" (two steps handed in at Hollis at his camp in Hollow Mire during the run; a lost run takes them back), the first person in a generated location (his camp, his old miner in a nest, talked to there), the next step's goals there already, walking to the ship over the location's walkable area, Tamsin's landing call, the beam back to him, his old miner (a worn model) as a prop in the cargo bay, Kade's topic afterwards; lines and voices
+    - [x] **C3c** Hollis out there: Kade's "Overdue" (two steps handed in at Hollis at his camp in Hollow Mire during the run; a lost run takes them back), the first person in a generated location (his camp with an old survey repeller keeping aliens off, his old miner, talked to there; solo the run stops while talking), the nest at his dig site elsewhere in the region, the next step's goals there already, walking to the ship over the location's walkable area, Tamsin's landing call, the beam back to him, his old miner (a worn model) as a prop in the cargo bay, Kade's topic afterwards; lines and voices
     - [ ] **C3d** the other three join quests (Dace's delivery, Wren's survey suit, Fenna's galley crate) and their topics before joining (talked to at their places), a writing round for their lines first, voices; then a new game starts without the four (the switch `Ship.crew_joins_later` C3a left off goes)
   - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first; the furnaces with acts 2–5, the first one Okoro's quest in act 2, and the cradles with acts 1–4, [`planned/balance.md`](planned/balance.md)), the expedition's logs (with the quest board's Logs tab), each act's time between missions (personal beats, talks, messages, Ostra's change and traffic, Ostra Control, colonists' remarks, steps back on earlier bodies; the frame in [`planned/world.md`](planned/world.md)); the crew gatherings, Brannik's range challenges and Fenna's dishes once the crew can sit
 
 Alongside, any time:
 
+- [ ] **Playtest feedback** (2026-10-31, the first play of C3c; each its own PR, a short round where it's a decision):
+  - [ ] Tamsin starts the flight herself when she reaches the pilot seat and a destination is set but the flight hasn't started yet
+  - [ ] Ilse watches the crew's vitals: one transmission telling a player low on health and out of a fight for some seconds to come back to the ship and not overdo it
+  - [ ] the quests in an NPC's talk list (e.g. Kade's) set apart from the normal topics
+  - [ ] the course can be set at the bridge's wall panel (the quest board) too
+  - [ ] a hint (someone's line) to place a miner first for ore to reload with, and only then go deeper with ore on the back, so nobody dies from running out of ammo by accident
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)

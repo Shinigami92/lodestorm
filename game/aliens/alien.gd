@@ -256,6 +256,7 @@ func _physics_process(delta: float) -> void:
 	var wanted := Vector3.ZERO
 	var lunging: bool = false
 	var facing := Vector3.ZERO
+	var repeller: AlienRepeller = AlienRepeller.covering(get_tree(), global_position)
 	if _staggered > 0.0 or not ai_on or status.asleep:
 		pass
 	elif _phase != AttackPhase.NONE:
@@ -275,6 +276,9 @@ func _physics_process(delta: float) -> void:
 		if is_instance_valid(target):
 			facing = _offset_to(target)
 			_start_attack(facing.length())
+	elif repeller:
+		# Within a repeller's reach: out again, whatever it was after.
+		wanted = _pathing.direction_away_from(repeller)
 	elif target and _retreat_left > 0.0:
 		wanted = _pathing.direction_away_from(target)
 		facing = _offset_to(target)
@@ -542,9 +546,10 @@ func take_damage(amount: float, by: Node = null, with: WeaponType = null) -> voi
 		GameEvents.bus.alien_killed.emit(player, with, self)
 
 
-## Whether `player` can be hunted: standing (not down or dead) and not aboard a ship.
+## Whether `player` can be hunted: standing (not down or dead), not aboard a ship and not within
+## an `AlienRepeller`'s reach.
 static func is_prey(tree: SceneTree, player: Player) -> bool:
-	if player.fallen:
+	if player.fallen or AlienRepeller.covering(tree, player.global_position):
 		return false
 	for ship: Ship in tree.get_nodes_in_group(Ship.GROUP):
 		if ship.is_aboard(player):

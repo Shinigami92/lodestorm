@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cg4q1jcoxlcav" path="res://game/items/item_type.gd" id="9_8es61"]
 [ext_resource type="PackedScene" uid="uid://x1e7xln0plg3" path="res://game/locations/parts/hollis_camp.tscn" id="camp_scene"]
+[ext_resource type="PackedScene" uid="uid://cllgx1qdqcssm" path="res://game/locations/parts/hollis_dig_site.tscn" id="dig_scene"]
 [ext_resource type="PackedScene" uid="uid://cnejc8qe1ltf4" path="res://game/locations/parts/outpost.tscn" id="outpost_scene"]
 [ext_resource type="Script" uid="uid://d4oba3ngd53d" path="res://game/quests/recover_fragments_goal.gd" id="s_fragments"]
 [ext_resource type="Script" uid="uid://bbh57jogeoedv" path="res://game/quests/quest_goal.gd" id="s_goal"]
@@ -41,7 +42,7 @@ landing_line = SubResource("RadioLine_landing")
 script = ExtResource("s_topic")
 id = &"miner_mechanic.overdue_found"
 title = "Kade sent us"
-lines = Array[String](["Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck.", "My miner drew them in, the way miners do. One morning there was a nest grown right around it, and the drive coupling cracked clean through.", "Burn that nest off it, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."])
+lines = Array[String](["Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck.", "A nest grew up at my dig site, right on the vein I was working. Hauling my miner out of there cracked its drive coupling clean through.", "Burn that nest out, so I can get back to my vein, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."])
 
 [sub_resource type="Resource" id="QuestStep_find"]
 script = ExtResource("s_step")
@@ -53,11 +54,16 @@ meets_in = &"mire"
 meets_at = SubResource("PartPlacement_camp")
 hand_in = SubResource("Topic_found")
 
+[sub_resource type="Resource" id="PartPlacement_dig"]
+script = ExtResource("s_placement")
+scene = ExtResource("dig_scene")
+rule = 3
+
 [sub_resource type="Resource" id="ClearNestsGoal_miner"]
 script = ExtResource("s_nests")
 amount = 1
-site_part = SubResource("PartPlacement_camp")
-task = "Clear the nest around his miner"
+site_part = SubResource("PartPlacement_dig")
+task = "Clear the nest at his dig site"
 region = &"mire"
 
 [sub_resource type="Resource" id="PartPlacement_outpost"]
@@ -80,7 +86,7 @@ lines = Array[String](["That's the one. Give me a moment... There. Listen to her
 [sub_resource type="Resource" id="QuestStep_miner"]
 script = ExtResource("s_step")
 id = &"miner"
-text = "Clear the nest around Hollis' miner and find him a drive coupling in the crates of Hollow Mire."
+text = "Clear the nest at Hollis' dig site and find him a drive coupling in the crates of Hollow Mire."
 goals = Array[ExtResource("s_goal")]([SubResource("ClearNestsGoal_miner"), SubResource("RecoverFragmentsGoal_coupling")])
 hand_in_to = &"miner_mechanic"
 meets_in = &"mire"

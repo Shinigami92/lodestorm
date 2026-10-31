@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://x5qe10ai7345" path="res://game/locations/parts/map_part.gd" id="1_part"]
 [ext_resource type="Script" uid="uid://uqm3dgi8uv5j" path="res://game/locations/parts/part_marker.gd" id="2_marker"]
 [ext_resource type="PackedScene" uid="uid://n746p13jywoe" path="res://game/mining/old_miner.tscn" id="3_old_miner"]
+[ext_resource type="Script" uid="uid://dqkil1140f4pt" path="res://game/aliens/alien_repeller.gd" id="4_repeller"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
 albedo_color = Color(0.11, 0.1, 0.085, 1)
@@ -41,6 +42,36 @@ albedo_color = Color(0.9, 0.7, 0.4, 1)
 emission_enabled = true
 emission = Color(1, 0.7, 0.35, 1)
 emission_energy_multiplier = 1.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_post"]
+top_radius = 0.09
+bottom_radius = 0.12
+height = 1.9
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_post"]
+height = 1.9
+radius = 0.12
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_emitter"]
+top_radius = 0.05
+bottom_radius = 0.22
+height = 0.35
+radial_segments = 12
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_repeller_light"]
+albedo_color = Color(0.5, 0.85, 1, 1)
+emission_enabled = true
+emission = Color(0.45, 0.8, 1, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_repeller_light"]
+radius = 0.06
+height = 0.12
+radial_segments = 8
+rings = 4
 
 [sub_resource type="BoxMesh" id="BoxMesh_shelter"]
 size = Vector3(4.2, 2.6, 3.0)
@@ -208,14 +239,34 @@ shape = SubResource("CylinderShape3D_drum")
 [node name="OldMiner" parent="." groups=["packs_up"] instance=ExtResource("3_old_miner")]
 transform = Transform3D(0.819, 0, 0.574, 0, 1, 0, -0.574, 0, 0.819, -3.7, 0, -0.6)
 
+[node name="Repeller" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0, 3.6)
+
+[node name="Post" type="MeshInstance3D" parent="Repeller"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+mesh = SubResource("CylinderMesh_post")
+surface_material_override/0 = SubResource("StandardMaterial3D_dark")
+
+[node name="Shape" type="CollisionShape3D" parent="Repeller"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("CylinderShape3D_post")
+
+[node name="Emitter" type="MeshInstance3D" parent="Repeller"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05, 0)
+mesh = SubResource("CylinderMesh_emitter")
+surface_material_override/0 = SubResource("StandardMaterial3D_hull")
+
+[node name="Light" type="MeshInstance3D" parent="Repeller"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.27, 0)
+mesh = SubResource("SphereMesh_repeller_light")
+surface_material_override/0 = SubResource("StandardMaterial3D_repeller_light")
+
+[node name="Field" type="Node3D" parent="Repeller"]
+script = ExtResource("4_repeller")
+
 [node name="Anchor" type="Marker3D" parent="."]
 script = ExtResource("2_marker")
 kind = 3
-
-[node name="NestAtMiner" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.9, 0, -2.3)
-script = ExtResource("2_marker")
-kind = 4
 
 [node name="Hollis" type="Marker3D" parent="."]
 transform = Transform3D(-0.906, 0, 0.423, 0, 1, 0, -0.423, 0, -0.906, 1.2, 0, -1.6)

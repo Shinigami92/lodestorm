@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://cllgx1qdqcssm"]
+
+[ext_resource type="Script" uid="uid://x5qe10ai7345" path="res://game/locations/parts/map_part.gd" id="1_part"]
+[ext_resource type="Script" uid="uid://uqm3dgi8uv5j" path="res://game/locations/parts/part_marker.gd" id="2_marker"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.1, 0.09, 0.075, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ground"]
+top_radius = 5.5
+bottom_radius = 5.5
+height = 0.04
+radial_segments = 24
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+albedo_color = Color(0.32, 0.3, 0.27, 1)
+metallic = 0.6
+roughness = 0.65
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rust"]
+albedo_color = Color(0.34, 0.2, 0.12, 1)
+metallic = 0.3
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
+albedo_color = Color(0.16, 0.15, 0.14, 1)
+roughness = 0.95
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_leg"]
+top_radius = 0.06
+bottom_radius = 0.08
+height = 2.6
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_spool"]
+top_radius = 0.45
+bottom_radius = 0.45
+height = 0.5
+radial_segments = 16
+rings = 1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_spool"]
+height = 0.5
+radius = 0.45
+
+[sub_resource type="BoxMesh" id="BoxMesh_plate"]
+size = Vector3(1.6, 0.08, 1.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rock"]
+size = Vector3(1.6, 1.1, 1.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rock"]
+size = Vector3(1.6, 1.1, 1.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_stake"]
+size = Vector3(0.08, 0.9, 0.08)
+
+[node name="HollisDigSite" type="Node3D"]
+script = ExtResource("1_part")
+display_name = "Prospector's dig site"
+footprint = 9.0
+prop_radius = 6.0
+
+[node name="Trampled" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("CylinderMesh_ground")
+surface_material_override/0 = SubResource("StandardMaterial3D_ground")
+
+[node name="Tripod" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0, 3.6)
+
+[node name="Leg1" type="MeshInstance3D" parent="Tripod"]
+transform = Transform3D(0.966, 0.259, 0, -0.259, 0.966, 0, 0, 0, 1, -0.33, 1.25, 0)
+mesh = SubResource("CylinderMesh_leg")
+surface_material_override/0 = SubResource("StandardMaterial3D_rust")
+
+[node name="Leg2" type="MeshInstance3D" parent="Tripod"]
+transform = Transform3D(0.966, -0.224, -0.129, 0.259, 0.837, 0.483, 0, -0.5, 0.866, 0.17, 1.25, -0.29)
+mesh = SubResource("CylinderMesh_leg")
+surface_material_override/0 = SubResource("StandardMaterial3D_rust")
+
+[node name="Leg3" type="MeshInstance3D" parent="Tripod"]
+transform = Transform3D(0.966, -0.224, 0.129, 0.259, 0.837, -0.483, 0, 0.5, 0.866, 0.17, 1.25, 0.29)
+mesh = SubResource("CylinderMesh_leg")
+surface_material_override/0 = SubResource("StandardMaterial3D_rust")
+
+[node name="Spool" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -3.4, 0.45, 2.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="Spool"]
+mesh = SubResource("CylinderMesh_spool")
+surface_material_override/0 = SubResource("StandardMaterial3D_metal")
+
+[node name="Shape" type="CollisionShape3D" parent="Spool"]
+shape = SubResource("CylinderShape3D_spool")
+
+[node name="Plate" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0, 0.342, 0, 1, 0, -0.342, 0, 0.94, 0.4, 0.06, -0.9)
+mesh = SubResource("BoxMesh_plate")
+surface_material_override/0 = SubResource("StandardMaterial3D_metal")
+
+[node name="Rock1" type="StaticBody3D" parent="."]
+transform = Transform3D(0.866, 0.1, 0.49, -0.087, 0.995, -0.05, -0.492, 0.004, 0.871, -4.3, 0.45, -1.8)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rock1"]
+mesh = SubResource("BoxMesh_rock")
+surface_material_override/0 = SubResource("StandardMaterial3D_rock")
+
+[node name="Shape" type="CollisionShape3D" parent="Rock1"]
+shape = SubResource("BoxShape3D_rock")
+
+[node name="Stake1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.45, -3.4)
+mesh = SubResource("BoxMesh_stake")
+surface_material_override/0 = SubResource("StandardMaterial3D_rust")
+
+[node name="Stake2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.45, 3.9)
+mesh = SubResource("BoxMesh_stake")
+surface_material_override/0 = SubResource("StandardMaterial3D_rust")
+
+[node name="Vein" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0, 2.6)
+script = ExtResource("2_marker")
+band = 1
+
+[node name="Nest" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, -1.0)
+script = ExtResource("2_marker")
+kind = 4

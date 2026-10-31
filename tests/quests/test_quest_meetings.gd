@@ -7,6 +7,7 @@ extends GutTest
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 const CAMP: PackedScene = preload("res://game/locations/parts/hollis_camp.tscn")
+const DIG_SITE: PackedScene = preload("res://game/locations/parts/hollis_dig_site.tscn")
 const OUTPOST: PackedScene = preload("res://game/locations/parts/outpost.tscn")
 const REGION: StringName = &"redscar"
 const HOLLIS: StringName = &"miner_mechanic"
@@ -22,7 +23,7 @@ func before_each() -> void:
 	_log.catalog.quests = [_quest]
 
 
-## Find Hollis' camp (handed in at him there), then clear the nest at his miner and bring a part
+## Find Hollis' camp (handed in at him there), then clear the nest at his dig site and bring a part
 ## from a crate (an outpost brings one; handed in there too: he joins).
 static func make_quest() -> Quest:
 	var camp := PartPlacement.new()
@@ -40,7 +41,8 @@ static func make_quest() -> Quest:
 	var nest := ClearNestsGoal.new()
 	nest.region = REGION
 	nest.amount = 1
-	nest.site_part = camp
+	nest.site_part = PartPlacement.new()
+	nest.site_part.scene = DIG_SITE
 	var part := RecoverFragmentsGoal.new()
 	part.region = REGION
 	part.amount = 1
@@ -66,7 +68,7 @@ func test_they_wait_at_their_part_while_the_step_is_active() -> void:
 	var visit := QuestVisit.new(_log, REGION)
 	assert_eq(visit.meetings.size(), 1)
 	assert_eq(visit.meeting_for(_quest), visit.meetings[0])
-	assert_eq(visit.sites().size(), 2, "the camp (shared) and the outpost")
+	assert_eq(visit.sites().size(), 3, "the camp (shared), the dig site and the outpost")
 	assert_eq(visit.meetings[0].site, visit.entries[0].site)
 	assert_true(QuestVisit.regions(_log).has(REGION))
 	assert_true(QuestVisit.new(_log, &"mire").meetings.is_empty(), "only in its region")
@@ -76,12 +78,12 @@ func test_the_next_steps_goals_are_there_already() -> void:
 	_log.accept(_quest, [])
 	_log.tracked = _quest.id
 	var visit := QuestVisit.new(_log, REGION)
-	assert_eq(visit.entries.size(), 3, "the camp, the nest at his miner and his part")
+	assert_eq(visit.entries.size(), 3, "the camp, the nest at his dig site and his part")
 	assert_true(visit.entries[2].upcoming)
 	assert_eq(visit.fragment_entries().size(), 1, "his part in a crate already")
 	var nest: QuestVisit.Entry = visit.entries[1]
 	assert_true(nest.upcoming)
-	assert_eq(nest.site, visit.entries[0].site, "at the camp")
+	assert_eq(nest.site.scene, DIG_SITE, "at his dig site")
 	assert_true(visit.nest_entries().is_empty(), "not spread over the region")
 	assert_false(visit.is_tracked(nest), "no mark before its step starts")
 	visit.count(nest)
@@ -140,11 +142,11 @@ func test_someone_aboard_keeps_it() -> void:
 	assert_eq(_log.current_step(_quest), _quest.steps[1], "still handed in")
 	var next := QuestVisit.new(_log, REGION)
 	assert_eq(next.meeting_for(_quest), next.meetings[0], "he waits for the next step")
-	assert_eq(next.entries.size(), 2, "the nest at his miner and his part")
+	assert_eq(next.entries.size(), 2, "the nest at his dig site and his part")
 
 
 ## The location places the camp, Hollis at its person marker (talked to about what's out here),
-## the nest at his miner and his part in a crate.
+## the nest at his dig site and his part in a crate.
 func test_the_location_places_them() -> void:
 	_log.accept(_quest, [])
 	_log.tracked = _quest.id
@@ -175,7 +177,13 @@ func test_the_location_places_them() -> void:
 	var nests: Array[Node] = location.get_node(^"AlienNests").get_children().filter(
 		func(nest: Node) -> bool: return nest.name.begins_with("QuestNest")
 	)
-	assert_eq(nests.size(), 1, "the nest at his miner")
+	assert_eq(nests.size(), 1, "the nest at his dig site")
+	var dig: LocationParts.Placed = location.parts.placed_for(visit.entries[1].site)
+	if dig and not nests.is_empty():
+		var spot: Vector3 = dig.markers(PartMarker.Kind.QUEST_NEST)[0]
+		assert_eq((nests[0] as Node3D).position, spot, "at its quest nest marker")
+	var aliens_kept_off := hollis.get_node(^"HandRepeller") as AlienRepeller
+	assert_not_null(aliens_kept_off, "his hand repeller")
 	(location.get_node(^"QuestSite") as QuestSite).reached.emit(null)
 	assert_true(mark.is_lit(), "the camp found: back to him")
 	var filled: Array[Crate] = []

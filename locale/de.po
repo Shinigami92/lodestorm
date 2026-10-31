@@ -683,6 +683,10 @@ msgid "I had a crew once. They got tired of the storms, one by one. I didn't."
 msgstr "Ich hatte mal eine Crew. Einer nach dem anderen hatte genug von den Stürmen. Ich nicht."
 
 #: game/npcs/crew/miner_mechanic.tres
+msgid "That post by the shelter is an old survey repeller. The things out here don't like its hum, so they leave me be."
+msgstr "Der Pfosten neben der Hütte ist ein alter Abwehrsender der Vermessung. Die Viecher hier draußen mögen sein Summen nicht, also lassen sie mich in Ruhe."
+
+#: game/npcs/crew/miner_mechanic.tres
 msgid "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
 msgstr "Die Miner haben da draußen hart gearbeitet, das sieht man. Solche Ladungen halten dieses Schiff am Laufen."
 
@@ -2409,20 +2413,20 @@ msgid "Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
 msgstr "Hm. Kade hat dich geschickt, oder? Sag ihm, ich bin noch nicht tot. Ich sitze nur fest."
 
 #: game/quests/depot_master/overdue.tres
-msgid "My miner drew them in, the way miners do. One morning there was a nest grown right around it, and the drive coupling cracked clean through."
-msgstr "Mein Miner hat sie angelockt, wie Miner das eben tun. Eines Morgens war ein Nest direkt um ihn herum gewachsen, und die Antriebskupplung ist glatt durchgebrochen."
+msgid "A nest grew up at my dig site, right on the vein I was working. Hauling my miner out of there cracked its drive coupling clean through."
+msgstr "An meiner Schürfstelle ist ein Nest gewachsen, direkt auf der Ader, an der ich gearbeitet habe. Als ich meinen Miner da rausgeschleppt habe, ist seine Antriebskupplung glatt durchgebrochen."
 
 #: game/quests/depot_master/overdue.tres
-msgid "Burn that nest off it, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
-msgstr "Brenn das Nest von ihm runter und such mir eine neue Kupplung. Die Vermessung hat überall in diesem Tal Kisten zurückgelassen. In einer davon ist eine, wenn du lange genug suchst."
+msgid "Burn that nest out, so I can get back to my vein, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
+msgstr "Brenn das Nest aus, damit ich wieder an meine Ader komme, und such mir eine neue Kupplung. Die Vermessung hat überall in diesem Tal Kisten zurückgelassen. In einer davon ist eine, wenn du lange genug suchst."
 
 #: game/quests/depot_master/overdue.tres
-msgid "Clear the nest around Hollis' miner and find him a drive coupling in the crates of Hollow Mire."
-msgstr "Räum das Nest um Hollis' Miner weg und finde in den Kisten von Hollow Mire eine Antriebskupplung für ihn."
+msgid "Clear the nest at Hollis' dig site and find him a drive coupling in the crates of Hollow Mire."
+msgstr "Räum das Nest an Hollis' Schürfstelle weg und finde in den Kisten von Hollow Mire eine Antriebskupplung für ihn."
 
 #: game/quests/depot_master/overdue.tres
-msgid "Clear the nest around his miner"
-msgstr "Räum das Nest um seinen Miner weg"
+msgid "Clear the nest at his dig site"
+msgstr "Räum das Nest an seiner Schürfstelle weg"
 
 #: game/quests/depot_master/overdue.tres
 msgid "Recover a drive coupling"

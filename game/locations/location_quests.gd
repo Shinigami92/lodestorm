@@ -7,16 +7,19 @@ extends RefCounted
 ## reached; a goal's quest nests at its site's quest nest markers (`ClearNestsGoal.site_part`); a
 ## mark on every crate holding a fragment; and the NPCs waiting there for a step to be handed in
 ## (`QuestVisit.meetings`: at their part's person marker, talked to there through a `VisitQuests`,
-## with a `HandInMark`). A step handed in out there brings the next one's goals in during the run
-## (`QuestVisit.extended`): its site's things, its fragments in unopened crates (as many as there
-## are). Someone who joins the crew there packs up what belongs to them at their part (its nodes in
-## `PACKS_UP_GROUP`, e.g. Hollis' old miner) as they set off for the ship.
+## with a `HandInMark` and a hand repeller that keeps aliens off them, see `AlienRepeller`). A
+## step handed in out there brings the next one's goals in during the run (`QuestVisit.extended`):
+## its site's things, its fragments in unopened crates (as many as there are). Someone who joins
+## the crew there packs up what belongs to them at their part (its nodes in `PACKS_UP_GROUP`, e.g.
+## Hollis' old miner) as they set off for the ship.
 
 const NPC: PackedScene = preload("res://game/npcs/npc.tscn")
 ## A part's nodes that the NPC waiting there packs up when they leave for the ship.
 const PACKS_UP_GROUP: StringName = &"packs_up"
 ## How long packing it up takes (it shrinks away), in s.
 const PACK_UP_TIME: float = 0.8
+## How far the hand repeller of someone waiting out there keeps aliens off, in m. TBD (playtest).
+const HAND_REPELLER_RADIUS: float = 4.0
 
 var _location: GeneratedLocation
 var _visit: QuestVisit
@@ -161,6 +164,10 @@ func _add_person(meeting: QuestVisit.Entry) -> void:
 		npc.quests_view = _visit.view()
 		npc.transform = _person_spot(part)
 		npc.walks_aboard.connect(_pack_up.bind(part))
+		var repeller := AlienRepeller.new()
+		repeller.name = "HandRepeller"
+		repeller.radius = HAND_REPELLER_RADIUS
+		npc.add_child(repeller)
 		_people[id] = npc
 		_location.add_child(npc, true)
 	HandInMark.on_person(npc, meeting, _visit)

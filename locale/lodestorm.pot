@@ -681,6 +681,10 @@ msgid "I had a crew once. They got tired of the storms, one by one. I didn't."
 msgstr ""
 
 #: game/npcs/crew/miner_mechanic.tres
+msgid "That post by the shelter is an old survey repeller. The things out here don't like its hum, so they leave me be."
+msgstr ""
+
+#: game/npcs/crew/miner_mechanic.tres
 msgid "The miners worked hard out there, I can tell. Hauls like that are what keep this ship going."
 msgstr ""
 
@@ -2407,19 +2411,19 @@ msgid "Hm. Kade sent you, didn't he? Tell him I'm not dead yet. Just stuck."
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres
-msgid "My miner drew them in, the way miners do. One morning there was a nest grown right around it, and the drive coupling cracked clean through."
+msgid "A nest grew up at my dig site, right on the vein I was working. Hauling my miner out of there cracked its drive coupling clean through."
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres
-msgid "Burn that nest off it, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
+msgid "Burn that nest out, so I can get back to my vein, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres
-msgid "Clear the nest around Hollis' miner and find him a drive coupling in the crates of Hollow Mire."
+msgid "Clear the nest at Hollis' dig site and find him a drive coupling in the crates of Hollow Mire."
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres
-msgid "Clear the nest around his miner"
+msgid "Clear the nest at his dig site"
 msgstr ""
 
 #: game/quests/depot_master/overdue.tres

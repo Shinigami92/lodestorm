@@ -1,11 +1,5 @@
 {
   "de": {
-    "00a46371a22f1c52": {
-      "anchor": "b3d782e0b74c1da4",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Mein Miner hat sie angelockt, wie Miner das eben tun. Eines Morgens war ein Nest direkt um ihn herum gewachsen, und die Antriebskupplung ist glatt durchgebrochen."
-    },
     "1a251362f18f29d2": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -35,6 +29,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Stell dich nah an ein Erzvorkommen und stell einen Miner auf. Er erscheint zuerst als Hologramm und wird von unten nach oben echt."
+    },
+    "3b10908c2e4d8d45": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "An meiner Schürfstelle ist ein Nest gewachsen, direkt auf der Ader, an der ich gearbeitet habe. Als ich meinen Miner da rausgeschleppt habe, ist seine Antriebskupplung glatt durchgebrochen."
     },
     "3d648fe24a6e83f7": {
       "anchor": "b3d782e0b74c1da4",
@@ -126,6 +126,12 @@
       "seed": 1,
       "text": "Das nenne ich eine Ladung. Die Miner graben am besten, wenn niemand die Aliens an sie heranlässt. Das ist der ganze Trick."
     },
+    "9109cd233fa05cb6": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brenn das Nest aus, damit ich wieder an meine Ader komme, und such mir eine neue Kupplung. Die Vermessung hat überall in diesem Tal Kisten zurückgelassen. In einer davon ist eine, wenn du lange genug suchst."
+    },
     "9707df3cc2ef2d54": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -143,12 +149,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Das ist sie. Einen Moment... So. Hör sie dir an. Zwanzig Jahre alt, und sie klingt immer noch besser als alles, was sie auf Ostra bauen."
-    },
-    "be9d2a6be3b08fdb": {
-      "anchor": "b3d782e0b74c1da4",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Brenn das Nest von ihm runter und such mir eine neue Kupplung. Die Vermessung hat überall in diesem Tal Kisten zurückgelassen. In einer davon ist eine, wenn du lange genug suchst."
     },
     "c65cdbb13a8c5976": {
       "anchor": "b3d782e0b74c1da4",
@@ -180,6 +180,12 @@
       "seed": 1,
       "text": "Rüste den Bohrer eines Miners auf der Plattform auf, und ich sage dir, welche Erze er mit voller Geschwindigkeit schafft. Wenn du einen Miner aufstellst, kommt der schnellste für dieses Erz."
     },
+    "f6cb3baa1b7e9d64": {
+      "anchor": "b3d782e0b74c1da4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Der Pfosten neben der Hütte ist ein alter Abwehrsender der Vermessung. Die Viecher hier draußen mögen sein Summen nicht, also lassen sie mich in Ruhe."
+    },
     "fc9a0c417283a98d": {
       "anchor": "b3d782e0b74c1da4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -188,12 +194,6 @@
     }
   },
   "en": {
-    "00a46371a22f1c52": {
-      "anchor": "7e5f365715a8dd68",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "My miner drew them in, the way miners do. One morning there was a nest grown right around it, and the drive coupling cracked clean through."
-    },
     "1a251362f18f29d2": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -223,6 +223,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Stand close to an ore node and place a miner. It shows up as a hologram first and turns real from the bottom up."
+    },
+    "3b10908c2e4d8d45": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "A nest grew up at my dig site, right on the vein I was working. Hauling my miner out of there cracked its drive coupling clean through."
     },
     "3d648fe24a6e83f7": {
       "anchor": "7e5f365715a8dd68",
@@ -314,6 +320,12 @@
       "seed": 1,
       "text": "That's a haul. The miners dig best when nobody lets the aliens near them. That's the whole trick."
     },
+    "9109cd233fa05cb6": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Burn that nest out, so I can get back to my vein, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
+    },
     "9707df3cc2ef2d54": {
       "anchor": "7e5f365715a8dd68",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -331,12 +343,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "That's the one. Give me a moment... There. Listen to her. Twenty years old, and she still sounds better than anything they build at Ostra."
-    },
-    "be9d2a6be3b08fdb": {
-      "anchor": "7e5f365715a8dd68",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Burn that nest off it, and find me a new coupling. The survey left crates all over this valley. One of them has one, if you look long enough."
     },
     "c65cdbb13a8c5976": {
       "anchor": "7e5f365715a8dd68",
@@ -367,6 +373,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Upgrade a miner's drill on the pad, and I'll tell you which ores it gets through at full speed. When you place a miner, the fastest one for that ore goes."
+    },
+    "f6cb3baa1b7e9d64": {
+      "anchor": "7e5f365715a8dd68",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That post by the shelter is an old survey repeller. The things out here don't like its hum, so they leave me be."
     },
     "fc9a0c417283a98d": {
       "anchor": "7e5f365715a8dd68",

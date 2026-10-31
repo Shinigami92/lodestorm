@@ -25,6 +25,10 @@ extends RefCounted
 ## used at their feet (`Npc.use_point` within `USE_RANGE` m), unless the spot is `use_like_home`.
 ## They walk over the navigation of the map they're on (the ship's, a station's: `DeckNavigation`);
 ## a station's people's spots move with it (it glides in while the ship docks).
+## Seated (`Npc.seated`), they sit at their own spot (on the seat behind it) and get up to go.
+## At their place before joining (`Npc.waits_to_join`), once they join they get up and walk aboard
+## (`start_boarding`, an `NpcBoarding`); aboard, their crew member taking over at the door
+## (`arrive`) walks on to their post without stopping for players.
 ## They know which room they stand in (`get_room`, from their map's `RoomPlan`) and whether it's
 ## their own (`is_away`: the room of their own spot), so what they say fits where they are (see
 ## `Topic.away_lines`).
@@ -54,12 +58,16 @@ var npc: Npc
 var tour: NpcTour
 ## Their place at the spot of an overheard talk waiting for them, or null.
 var talk_place: Node3D
+## Their walk aboard from their place before joining, or null.
+var boarding: NpcBoarding
 
 ## Their own spot (where the scene places them), in their parent's space.
 var _home: Transform3D
 ## Whether they're on their way to the flight seat or sitting there (from the flight's start until
 ## they've sat `SEAT_LINGER` s after it), and the seconds left to sit after the flight.
 var _seat_trip: bool = false
+## Whether they came aboard at the door and walk on to their post (stopping for nobody).
+var _arriving: bool = false
 var _linger: float = 0.0
 ## The work spot they're at or on their way to (null: their own spot), and the seconds left until
 ## they move on.
@@ -138,7 +146,7 @@ func is_away() -> bool:
 ## (`get_work_spot`), else their own spot.
 func get_post() -> Transform3D:
 	var place: Node3D = talk_place if talk_place else _spot
-	if _wants_seat():
+	if _wants_flight_seat():
 		place = npc.flight_seat
 	elif tour:
 		place = tour.get_marker()
@@ -194,6 +202,22 @@ func start_tour(leader: Player) -> void:
 		_spot = null
 
 
+## Starts their walk aboard (they've joined; see `NpcBoarding.start`: none without the ship where
+## they are).
+func start_boarding() -> void:
+	end_tour()
+	_spot = null
+	talk_place = null
+	boarding = NpcBoarding.start(npc, _walker, _get_navigation())
+
+
+## They've come aboard at the door (see `Npc.arrive`): on to their post, stopping for nobody.
+func arrive() -> void:
+	_walker.stop()
+	_spot = null
+	_arriving = true
+
+
 ## Ends the tour (done, lost or asked for); they go back to their spot.
 func end_tour() -> void:
 	if tour:
@@ -211,6 +235,9 @@ func update(delta: float) -> void:
 		if is_waiting():
 			npc.global_transform = get_post()
 			npc.reset_physics_interpolation()
+		elif _sits_at_home():
+			body.sitting = true
+			body.settle()
 	_count_seat_trip(delta)
 	if tour and tour.is_lost(delta):
 		end_tour()
@@ -221,14 +248,16 @@ func update(delta: float) -> void:
 			tour.hush()
 		return
 	var post: Transform3D = get_post()
-	var seat: bool = _wants_seat()
+	var flight_seat: bool = _wants_flight_seat()
+	var seat: bool = flight_seat or _sits_at_home()
 	if body.sitting and not seat:
 		body.sitting = false
-	if body.get_sit_amount() > 0.0 and not body.sitting:
-		return  # getting up
-	var leads: bool = seat or tour != null
+	# Getting up first; walking aboard goes its own way.
+	if (body.get_sit_amount() > 0.0 and not body.sitting) or _walk_aboard(delta):
+		return
+	var leads: bool = flight_seat or tour != null
 	# On the way to a talk they don't stand for players either: one may wait at its spot.
-	var keeps_on: bool = leads or talk_place != null
+	var keeps_on: bool = leads or talk_place != null or _arriving
 	if not keeps_on and Player.nearest(npc.get_tree(), npc.global_position, NpcBody.NOTICE_RANGE):
 		_walker.stop()
 		return
@@ -236,6 +265,7 @@ func update(delta: float) -> void:
 	var speed: float = HURRY_SPEED if leads else WALK_SPEED
 	if not _walker.walk_to(post.origin, speed, navigation, delta):
 		return
+	_arriving = false
 	_place_use()
 	var parent: Node3D = npc.get_parent_node_3d()
 	var yaw: float = (parent.global_basis.inverse() * post.basis).get_euler().y
@@ -254,6 +284,17 @@ func update(delta: float) -> void:
 		_move_on_left -= delta
 		if _move_on_left <= 0.0:
 			move_on()
+
+
+## Walks on aboard for `delta` s while they do (`boarding`), gone once through the door. Returns
+## whether they did.
+func _walk_aboard(delta: float) -> bool:
+	if not boarding:
+		return false
+	if boarding.update(delta):
+		boarding = null
+		npc.update_presence()
+	return true
 
 
 ## Their own spot, global.
@@ -349,5 +390,18 @@ func _destination_chosen() -> bool:
 	return voyage != null and voyage.destination != null and voyage.destination != voyage.brief
 
 
-func _wants_seat() -> bool:
+func _wants_flight_seat() -> bool:
 	return npc.flight_seat != null and _seat_trip
+
+
+## Whether they sit at their own spot now: seated (`Npc.seated`) and nowhere else to be.
+func _sits_at_home() -> bool:
+	return (
+		npc.seated
+		and not boarding
+		and not tour
+		and not _spot
+		and not talk_place
+		and not _arriving
+		and not _wants_flight_seat()
+	)

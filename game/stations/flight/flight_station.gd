@@ -26,9 +26,10 @@ func _process(delta: float) -> void:
 		refresh()
 
 
-## Whether course can be set now (a destination picked, nothing locks it).
+## Whether course can be set now (a destination picked, nothing locks it, nobody of the crew
+## walking aboard, see `NpcBoarding`).
 func can_launch() -> bool:
-	return voyage != null and voyage.can_confirm()
+	return voyage != null and voyage.can_confirm() and NpcBoarding.walking(get_tree()).is_empty()
 
 
 ## Sets course for the destination. Returns whether it did.

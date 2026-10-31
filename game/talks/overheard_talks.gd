@@ -94,13 +94,18 @@ func _is_open(candidate: OverheardTalk, story: Story) -> bool:
 	return candidate.is_open(story) and candidate.speakers().size() == 2
 
 
+## Whether `npc` is a crew member there aboard (not at their place before joining).
+static func _is_aboard(npc: Npc) -> bool:
+	return npc.is_present() and not npc.waits_to_join
+
+
 ## The NPCs who say `candidate`'s lines, by `NpcProfile.id` (the ones found and aboard).
 func _find_cast(candidate: OverheardTalk) -> Dictionary[StringName, Npc]:
 	var cast: Dictionary[StringName, Npc] = {}
 	var speakers: Array[StringName] = candidate.speakers()
 	for menu: Node in get_tree().get_nodes_in_group(WorldMenu.GROUP):
 		var npc := menu as Npc
-		if npc and npc.profile and npc.profile.id in speakers and npc.is_present():
+		if npc and npc.profile and npc.profile.id in speakers and _is_aboard(npc):
 			cast[npc.profile.id] = npc
 	return cast
 

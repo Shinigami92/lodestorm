@@ -74,7 +74,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	ship.ramp_button.enabled = _can_start_run() or ship.flight.is_docked()
+	ship.ramp_button.enabled = _can_use_ramp()
 	_follow_duration()
 	match state:
 		State.RUNNING:
@@ -170,6 +170,14 @@ func bank(players: Array[Player]) -> void:
 func bank_ore(player: Player, haul: Dictionary[OreType, float]) -> void:
 	_count_hauled(player, haul)
 	ship.store_haul(haul, _players())
+
+
+## Whether the ramp button works: before a run or during it (see `_can_start_run`) or docked, but
+## not to raise the ramp while a crew member walks aboard (see `NpcBoarding`).
+func _can_use_ramp() -> bool:
+	if ship.ramp_open and not NpcBoarding.walking(get_tree()).is_empty():
+		return false
+	return _can_start_run() or ship.flight.is_docked()
 
 
 ## Takes the ore the hardened canister kept safe when `players` died this run into the hold (see
@@ -346,7 +354,7 @@ func _on_player_left(_player: Player) -> void:
 
 
 func _on_landed() -> void:
-	ship.ramp_button.enabled = _can_start_run() or ship.flight.is_docked()
+	ship.ramp_button.enabled = _can_use_ramp()
 
 
 ## Course is set for a new mission: its timer, and no run there yet.
@@ -355,7 +363,7 @@ func _on_selected() -> void:
 	time_left = duration()
 	_duration = duration()
 	storm_time = 0.0
-	ship.ramp_button.enabled = _can_start_run() or ship.flight.is_docked()
+	ship.ramp_button.enabled = _can_use_ramp()
 
 
 ## High above the old location: the run that was there is over.

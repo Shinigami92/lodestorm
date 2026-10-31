@@ -62,6 +62,7 @@ func press_primary() -> bool:
 
 func _status_text(voyage: Voyage) -> String:
 	var text: String = ""
+	var boarding: Array[Npc] = NpcBoarding.walking(get_tree())
 	if not voyage:
 		text = ""
 	elif voyage.flight.is_flying():
@@ -72,6 +73,8 @@ func _status_text(voyage: Voyage) -> String:
 		text = tr("Pick a destination at the navigator on the bridge.")
 	elif voyage.is_preparing(voyage.destination):
 		text = tr("Scanning the location...")
+	elif not boarding.is_empty():
+		text = tr("Wait until %s is aboard.") % boarding[0].profile.display_name
 	elif voyage.can_confirm():
 		text = (
 			tr("Set course to dock there.")

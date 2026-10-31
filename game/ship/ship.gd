@@ -65,6 +65,8 @@ const WARNING_BLINK_RATE: float = 2.0
 const RAMP_CLOSED_ANGLE: float = PI * 0.5
 ## asin(2.5 / 5): the 5 m ramp reaches 2.5 m down from the door to the ground (30°).
 const RAMP_OPEN_ANGLE: float = -0.523599
+## The ramp's length from its hinge at the door's sill to its foot, in m (its mesh's).
+const RAMP_LENGTH: float = 5.0
 ## The ramp moving (as long as `ramp_duration`): latches, hydraulics, the clunk at the end.
 const RAMP_SOUND: Sound = preload("res://assets/audio/sfx/mission/ramp.tres")
 const RAMP_HINT_SCENE: PackedScene = preload("res://game/ship/ramp_hint.tscn")
@@ -232,6 +234,14 @@ func everyone_aboard() -> bool:
 ## Whether the ramp is all the way down.
 func is_ramp_down() -> bool:
 	return _ramp_angle == RAMP_OPEN_ANGLE
+
+
+## The way up the lowered ramp along its middle (global): its foot on the ground, then its top at
+## the door's sill (e.g. for a crew member walking aboard, see `NpcBoarding`).
+func ramp_way() -> PackedVector3Array:
+	var down := Vector3(cos(RAMP_OPEN_ANGLE), sin(RAMP_OPEN_ANGLE), 0.0)
+	var sill: Vector3 = _ramp.position
+	return PackedVector3Array([to_global(sill + down * RAMP_LENGTH), to_global(sill)])
 
 
 ## Whether the ramp is all the way up, closing the door.

@@ -166,6 +166,8 @@ Alongside, any time:
     - a hint (someone's line) to place a miner first for ore to reload with, and only then go deeper with ore on the back, so nobody dies from running out of ammo by accident
   - [ ] Brannik, ignored at the start (his tour never taken), goes to the armory after the first flight set at the navigator instead of waiting on
   - [ ] Waypost Ostra in front of Torvane (the first planet) on the navigator
+  - [ ] aliens can never get aboard: today they only turn away because nobody inside is their prey (`Alien.is_prey`); a hard barrier at the ramp's door that only aliens collide with would make it certain
+  - [ ] the game doesn't pause by itself when the window loses focus (alt+tab), or a setting for it ("Pause when the window loses focus"; today `PausePanel.pause_on_focus_loss`, solo only)
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)

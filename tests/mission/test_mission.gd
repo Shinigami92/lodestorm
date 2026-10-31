@@ -2,6 +2,7 @@ extends GutTest
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const PLAYER_SCENE: PackedScene = preload("res://game/player/player.tscn")
+const NPC_SCENE: PackedScene = preload("res://game/npcs/npc.tscn")
 
 var _map: Node3D
 var _player: Player
@@ -171,6 +172,24 @@ func test_next_mission_resets_timer_and_outside_world() -> void:
 	await _move(_player, _outside())
 	assert_eq(_mission.state, Mission.State.RUNNING)
 	assert_signal_emit_count(_mission, "started", 2)
+
+
+## Someone joining out there still on their way aboard (`NpcBoarding`): the run waits for them, the
+## ramp stays down, and it ends once they're through the door.
+func test_the_run_waits_for_someone_walking_aboard() -> void:
+	await _open()
+	await _move(_player, _outside())
+	var walker := NPC_SCENE.instantiate() as Npc
+	_map.add_child(walker)
+	walker.position = _outside()
+	walker.add_to_group(NpcBoarding.GROUP)
+	await _move(_player, _inside())
+	await wait_physics_frames(5)
+	assert_ne(_mission.state, Mission.State.RETURNED, "waits for them")
+	assert_true(_ship.ramp_open, "the ramp stays down")
+	walker.remove_from_group(NpcBoarding.GROUP)
+	await wait_physics_frames(2)
+	assert_eq(_mission.state, Mission.State.RETURNED, "aboard: the run is over")
 
 
 ## Presses the ramp button and waits until the ramp is down.

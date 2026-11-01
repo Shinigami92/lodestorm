@@ -569,6 +569,18 @@ msgstr "Der Fähigkeitenbaum daneben bringt deinem Anzug Neues bei, zum Beispiel
 msgid "Easy, take a breath. You fell out there and woke up in my medical bay. It happens to everyone once. Let's make sure it doesn't happen often."
 msgstr "Ganz ruhig, atme erst mal durch. Du bist da draußen gefallen und in meiner Krankenstation aufgewacht. Das passiert jedem einmal. Sorgen wir dafür, dass es nicht oft passiert."
 
+#: game/npcs/crew/medic.tres
+msgid "Your vitals don't look good from here. Come back aboard and lie down on one of my med beds before you go on."
+msgstr "Deine Werte sehen von hier aus nicht gut aus. Komm an Bord und leg dich auf eins meiner Medizinbetten, bevor du weitermachst."
+
+#: game/npcs/crew/medic.tres
+msgid "You're badly hurt, I can see it from here. A med bed has you back on your feet in no time, so come back to the ship."
+msgstr "Du bist schwer verletzt, das sehe ich von hier. Ein Medizinbett bringt dich im Nu wieder auf die Beine, also komm zurück zum Schiff."
+
+#: game/npcs/crew/medic.tres
+msgid "Please don't overdo it out there. You can't take much more, and one of my med beds is waiting for you."
+msgstr "Übertreib es da draußen bitte nicht. Viel hältst du nicht mehr aus, und eins meiner Medizinbetten wartet auf dich."
+
 #: game/npcs/crew/miner_mechanic.tres
 msgid "Miner mechanic"
 msgstr "Minermechaniker"
@@ -911,6 +923,102 @@ msgstr "Habt ihr das gehört? Gerade ist ein Meteor eingeschlagen, und im Krater
 msgid "A meteor just came down out there. It brought something rich with it, by the look of that light. The way back from there is long, though, so stay together."
 msgstr "Da draußen ist gerade ein Meteor niedergegangen. Nach dem Licht zu urteilen, hat er etwas Wertvolles mitgebracht. Der Weg zurück von dort ist allerdings weit, also bleibt zusammen."
 
+#: game/npcs/crew/pilot.tres
+msgid "Hollow Mire? It's rougher than the flats. If it were up to me, we'd get some upgrades first."
+msgstr "Hollow Mire? Da geht es rauer zu als in Redscar Flats. Wenn es nach mir ginge, würden wir uns vorher ein paar Upgrades holen."
+
+#: game/npcs/crew/pilot.tres
+msgid "That's rough ground for the gear we have. If it were up to me, we'd get some upgrades first."
+msgstr "Das ist raues Gelände für die Ausrüstung, die wir haben. Wenn es nach mir ginge, würden wir uns vorher ein paar Upgrades holen."
+
+#: game/npcs/crew/pilot.tres
+msgid "I'll fly us there, of course. It's just harder down there than our gear is made for, so a few upgrades first wouldn't hurt."
+msgstr "Ich fliege uns natürlich hin. Nur ist es da unten härter, als unsere Ausrüstung es verträgt. Ein paar Upgrades vorher würden nicht schaden."
+
+#: game/npcs/crew/pilot.tres
+msgid "It's not my call where we land. But I'd want better armor and better weapons before I walked out there."
+msgstr "Wo wir landen, entscheide nicht ich. Aber ich würde mit besserer Panzerung und besseren Waffen da rausgehen wollen."
+
+#: game/npcs/crew/pilot.tres
+msgid "Hollow Mire. The nests here are thicker than in the flats, and the growth hides them until they're close. Better not stray far from the ship before you know your way around."
+msgstr "Hollow Mire. Hier stehen die Nester dichter als in Redscar Flats, und der Bewuchs verbirgt sie, bis sie nah sind. Besser entfernt man sich nicht weit vom Schiff, bevor man sich auskennt."
+
+#: game/npcs/crew/pilot.tres
+msgid "Cinder Steps, the roughest ground on Torvane. The nests are thickest here, and the ore around the crater pulls crews in deeper than is good for them."
+msgstr "Cinder Steps, die rauste Gegend auf Torvane. Nirgends auf Torvane stehen die Nester dichter, und das Erz rund um den Krater lockt Crews tiefer hinein, als gut für sie ist."
+
+#: game/npcs/crew/pilot.tres
+msgid "Rimeback. The nests are thicker than in Pale Basin, and the frozen lakes are slick. The crystal wall is worth it, but a dead end has only one way out."
+msgstr "Rimeback. Die Nester stehen dichter als in Pale Basin, und die gefrorenen Seen sind glatt. Die Kristallwand lohnt sich, aber aus einer Sackgasse führt nur ein Weg heraus."
+
+#: game/npcs/crew/pilot.tres
+msgid "Glare Fields. The nests are thicker than on Hoarfrost Ridge, and the salt is wide open: you see them coming from far off, and they see you."
+msgstr "Glare Fields. Die Nester stehen dichter als auf dem Hoarfrost Ridge, und das Salz ist weit offen: Man sieht sie von Weitem kommen, und sie einen auch."
+
+#: game/npcs/crew/pilot.tres
+msgid "Ember Reach, the roughest place on Vehra. The nests are thickest here, and the canyons are narrow. Know your way back before you go looking for that wreck."
+msgstr "Ember Reach, die rauste Gegend auf Vehra. Nirgends auf Vehra stehen die Nester dichter, und die Schluchten sind eng. Wer das Wrack sucht, sollte den Rückweg kennen."
+
+#: game/npcs/crew/pilot.tres
+msgid "Brine Terraces. The nests are thicker than in Sunken Verge, and there's little cover on the causeways. Keep your distance in a fight out there."
+msgstr "Brine Terraces. Die Nester stehen dichter als in Sunken Verge, und auf den Dämmen gibt es kaum Deckung. Da draußen hält man im Kampf besser Abstand."
+
+#: game/npcs/crew/pilot.tres
+msgid "Whiteshelf. The nests are thicker than in Sunken Verge, and the crater lies out in the open salt. The ore around it is worth the walk, but there's little cover on the way."
+msgstr "Whiteshelf. Die Nester stehen dichter als in Sunken Verge, und der Krater liegt im offenen Salz. Das Erz drumherum lohnt den Weg, aber unterwegs gibt es kaum Deckung."
+
+#: game/npcs/crew/pilot.tres
+msgid "Mossgrave, the roughest place on Cassor. The nests are thickest here, and the growth hides them until they're close. Don't go deep in without knowing your way back."
+msgstr "Mossgrave, die rauste Gegend auf Cassor. Nirgends auf Cassor stehen die Nester dichter, und der Bewuchs verbirgt sie, bis sie nah sind. Tief hinein geht man nur, wenn man den Rückweg kennt."
+
+#: game/npcs/crew/pilot.tres
+msgid "Quiet Scar. The crews say it's quieter here than anywhere else, and none of them trust it. I don't either, so keep your eyes open."
+msgstr "Quiet Scar. Die Crews sagen, hier ist es ruhiger als überall sonst, und keiner von ihnen traut dem. Ich auch nicht, also Augen auf."
+
+#: game/npcs/crew/pilot.tres
+msgid "Drift Basin. The salt is wide open, so there's little cover from whatever comes. And that wreck looks as if it had always been there. I don't like it."
+msgstr "Drift Basin. Das Salz ist weit offen, es gibt kaum Deckung vor dem, was kommt. Und das Wrack sieht aus, als wäre es schon immer da gewesen. Das gefällt mir nicht."
+
+#: game/npcs/crew/pilot.tres
+msgid "Lantern Hollow, the roughest place on Orrel. The nests are thickest here, and the growth hides them. If you follow that beacon's light, know your way back."
+msgstr "Lantern Hollow, die rauste Gegend auf Orrel. Nirgends auf Orrel stehen die Nester dichter, und der Bewuchs verbirgt sie. Wer dem Licht der Bake folgt, sollte den Rückweg kennen."
+
+#: game/npcs/crew/pilot.tres
+msgid "Coldwake. The ice has nearly taken the old outpost back, and the frozen lakes are slick. Mind your footing when something's after you."
+msgstr "Coldwake. Das Eis hat sich den alten Außenposten fast zurückgeholt, und die gefrorenen Seen sind glatt. Wenn einem etwas folgt, rutscht man dort leicht weg."
+
+#: game/npcs/crew/pilot.tres
+msgid "Splitrock Steps, the roughest place on Iska. The nests are thickest here, and the crystal wall sits at the end of a dead end, with only one way out."
+msgstr "Splitrock Steps, die rauste Gegend auf Iska. Nirgends auf Iska stehen die Nester dichter, und die Kristallwand liegt am Ende einer Sackgasse, mit nur einem Weg heraus."
+
+#: game/npcs/crew/pilot.tres
+msgid "Black Tide. The nests are thicker than on Rustwind Plain, and the vents can burst at any moment. Stay off the scorched ground around them."
+msgstr "Black Tide. Die Nester stehen dichter als auf der Rustwind Plain, und die Schlote können jeden Moment ausbrechen. Den verbrannten Boden um sie herum meidet man besser."
+
+#: game/npcs/crew/pilot.tres
+msgid "Brimstone Cut. The nests are thicker than on Rustwind Plain, and the crystal wall is at the end of a dead end. Keep clear of the vents on the way."
+msgstr "Brimstone Cut. Die Nester stehen dichter als auf der Rustwind Plain, und die Kristallwand liegt am Ende einer Sackgasse. Unterwegs hält man besser Abstand zu den Schloten."
+
+#: game/npcs/crew/pilot.tres
+msgid "The Slag Terraces, the worst place on Skelde. The nests are thickest here, and the crossings over the lava are narrow. Know how you'll get back before you cross one."
+msgstr "Die Slag Terraces, die schlimmste Gegend auf Skelde. Nirgends auf Skelde stehen die Nester dichter, und die Übergänge über die Lava sind schmal. Bevor man einen überquert, sollte man wissen, wie man zurückkommt."
+
+#: game/npcs/crew/pilot.tres
+msgid "Sunward Scar. This close to the star, even the wreck out there has turned dark. Stay off the scorched ground: the vents don't give much warning."
+msgstr "Sunward Scar. So nah am Stern ist sogar das Wrack da draußen dunkel geworden. Den verbrannten Boden meidet man besser: Die Schlote warnen kaum."
+
+#: game/npcs/crew/pilot.tres
+msgid "Glassmere. The splinters in the shard gardens hurt anyone standing on them. Whoever set up that old camp out here came farther in than anyone else."
+msgstr "Glassmere. Die Splitter in den Scherbengärten verletzen jeden, der darauf steht. Wer das alte Lager hier aufgebaut hat, kam weiter herein als irgendwer sonst."
+
+#: game/npcs/crew/pilot.tres
+msgid "Mirror Flats, as rough as it gets on Zairen. The light off the glass is so bright you can barely see them coming, and the nests are thickest here."
+msgstr "Mirror Flats, rauer wird es auf Zairen nicht. Das Licht auf dem Glas ist so grell, dass man sie kaum kommen sieht, und dichter stehen die Nester nirgends."
+
+#: game/npcs/crew/pilot.tres
+msgid "The Fused Expanse, as rough as it gets on Zairen. The crystal wall has the rarest ore, but it sits at the end of a dead end. Getting there is the easy part."
+msgstr "Die Fused Expanse, rauer wird es auf Zairen nicht. An der Kristallwand liegt das seltenste Erz, aber sie steht am Ende einer Sackgasse. Hinzukommen ist der leichte Teil."
+
 #: game/npcs/crew/quartermaster.tres
 msgid "Quartermaster"
 msgstr "Quartiermeister"
@@ -1089,6 +1197,26 @@ msgstr "Gute Ladung. Aber wer leichtsinnig wird, hat nicht lange Glück. Die nä
 #: game/npcs/crew/quartermaster.tres
 msgid "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."
 msgstr "Schon wieder eine große Ladung. Wenn das so weitergeht, haben Dace und Wren keine ruhige Minute mehr."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "That one didn't go well. Before you go out again, have a look at the bench in the weapons room, the fitting frame and the skill graph. Better gear costs less than a lost haul."
+msgstr "Das ist nicht gut gelaufen. Bevor du wieder rausgehst, schau dir die Werkbank im Waffenraum, den Anpassungsrahmen und den Fähigkeitenbaum an. Bessere Ausrüstung kostet weniger als eine verlorene Ladung."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "That one didn't go well for any of us. Before you all go out again, have a look at the bench in the weapons room, the fitting frame and the skill graph. Better gear costs less than a lost haul."
+msgstr "Das ist für keinen von uns gut gelaufen. Bevor ihr wieder rausgeht, schaut euch die Werkbank im Waffenraum, den Anpassungsrahmen und den Fähigkeitenbaum an. Bessere Ausrüstung kostet weniger als eine verlorene Ladung."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Before you go far, get a miner going on a node near the ship. Your suit makes new rounds from the ore on your back, so fill up there before you head out deeper."
+msgstr "Bevor du weit gehst, setz einen Miner an ein Erzvorkommen nahe am Schiff. Dein Anzug stellt neue Munition aus dem Erz auf deinem Rücken her, also füll dort erst auf, bevor du tiefer reingehst."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "Before any of you go far, get your miners going on the nodes near the ship. Your suits make new rounds from the ore on your backs, so fill up there before you head out deeper."
+msgstr "Bevor jemand von euch weit geht, setzt eure Miner an die Erzvorkommen nahe am Schiff. Eure Anzüge stellen neue Munition aus dem Erz auf euren Rücken her, also füllt dort erst auf, bevor ihr tiefer reingeht."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "That was your last spare magazine, and there's no ore on your back for new rounds. Get to a miner and fill up before you go on."
+msgstr "Das war dein letztes Ersatzmagazin, und auf deinem Rücken ist kein Erz für neue Munition. Geh zu einem Miner und füll auf, bevor du weitermachst."
 
 #: game/npcs/crew/quartermaster.tres
 msgid "There you are. Before the first mission, let me walk you through the ship once, so you know who does what and where to find them."

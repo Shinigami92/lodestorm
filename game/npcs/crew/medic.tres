@@ -59,6 +59,11 @@ script = ExtResource("9_reaction")
 event = &"first_death"
 lines = Array[String](["Easy, take a breath. You fell out there and woke up in my medical bay. It happens to everyone once. Let's make sure it doesn't happen often."])
 
+[sub_resource type="Resource" id="Reaction_low_health"]
+script = ExtResource("9_reaction")
+event = &"low_health"
+lines = Array[String](["Your vitals don't look good from here. Come back aboard and lie down on one of my med beds before you go on.", "You're badly hurt, I can see it from here. A med bed has you back on your feet in no time, so come back to the ship.", "Please don't overdo it out there. You can't take much more, and one of my med beds is waiting for you."])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"medic"
@@ -69,4 +74,4 @@ activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"
 accent_color = Color(0.9, 0.94, 1, 1)
 cabin = 4
 dialogue = SubResource("Resource_dialogue")
-reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_death")])
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_death"), SubResource("Reaction_low_health")])

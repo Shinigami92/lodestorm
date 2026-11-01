@@ -7,7 +7,9 @@ extends Node
 ## who have lines for it, they take turns; each says their lines in turn, worded for a player
 ## alone or for several together. One-time events (the first run won, the first fall, the first
 ## landing on a body) set a story flag (`event.<event>`, `event.landed.<body>`), so they come once
-## per game. The storm warning goes only to the players outside.
+## per game. The storm warning goes only to the players outside. The calls that help a new crew
+## survive (a rough destination, the first lost run, a region's dangers, low health, the miner
+## first) are watched for by `survival`.
 ## The turns and the biggest haul are the host's, saved with the ship.
 
 ## Emitted when what's saved changes.
@@ -29,6 +31,19 @@ const FIRST_LANDING: StringName = &"first_landing"
 const STORM_WARNING: StringName = &"storm_warning"
 ## The late deposit's meteor came down (see `LateDeposit`).
 const DEPOSIT_LANDED: StringName = &"deposit_landed"
+## A destination harder than the crew's gear was chosen (the subject: its region's id; see
+## `SurvivalCalls`).
+const DESTINATION_ROUGH: StringName = &"destination_rough"
+## The first run lost: when everyone is awake again, after the first fall's call.
+const FIRST_RUN_LOST: StringName = &"first_run_lost"
+## The first player stepped out in a normal or hard region the pilot knows (the subject: its id).
+const REGION_LANDING: StringName = &"region_landing"
+## The first landing anywhere: fill up at a miner before going deeper.
+const MINER_HINT: StringName = &"miner_hint"
+## A player out there is badly hurt and out of the fight (only to them).
+const LOW_HEALTH: StringName = &"low_health"
+## A player's weapon used up its last spares out there with no ore on their back (only to them).
+const OUT_OF_SPARES: StringName = &"out_of_spares"
 ## Every event the crew calls in about.
 const EVENTS: Array[StringName] = [
 	FIRST_RUN_WON,
@@ -39,12 +54,20 @@ const EVENTS: Array[StringName] = [
 	FIRST_LANDING,
 	STORM_WARNING,
 	DEPOSIT_LANDED,
+	DESTINATION_ROUGH,
+	FIRST_RUN_LOST,
+	REGION_LANDING,
+	MINER_HINT,
+	LOW_HEALTH,
+	OUT_OF_SPARES,
 ]
 ## How much bigger than the biggest so far a run's haul must be to count as big. TBD (playtest).
 const BIG_HAUL_MARGIN: float = 1.25
 
 ## The ship whose crew calls.
 var ship: Ship
+## The calls that help a new crew survive out there.
+var survival := SurvivalCalls.new()
 ## How many lines each crew member has said about each event ("<npc>.<event>"): the next in turn.
 var said: Dictionary[StringName, int] = {}
 ## How many calls each event has had (by its name): whose turn it is among the crew with lines.
@@ -69,6 +92,9 @@ func _ready() -> void:
 	events.storm_warned.connect(transmit.bind(STORM_WARNING))
 	events.deposit_landed.connect(transmit.bind(DEPOSIT_LANDED).unbind(1))
 	ship.player_left.connect(_on_player_left)
+	survival.name = "Survival"
+	survival.reactions = self
+	add_child(survival)
 
 
 ## Calls in about `event` (about `subject`): the crew member whose turn it is among those with
@@ -130,8 +156,8 @@ func crew() -> Array[Npc]:
 	return found
 
 
-## Calls in about every event once (debug; queued one after another): the first planet inwards and
-## the first body stand in for the subjects.
+## Calls in about every event once (debug; queued one after another): the first planet inwards, the
+## first body and Hollow Mire stand in for the subjects.
 func transmit_all() -> void:
 	transmit(FIRST_RUN_WON)
 	transmit(BIG_HAUL)
@@ -147,6 +173,13 @@ func transmit_all() -> void:
 		transmit(FIRST_LANDING, system.bodies[0].id)
 	transmit(STORM_WARNING)
 	transmit(DEPOSIT_LANDED)
+	transmit(DESTINATION_ROUGH, &"mire")
+	transmit(FIRST_RUN_LOST)
+	transmit(REGION_LANDING, &"mire")
+	transmit(MINER_HINT)
+	if local:
+		transmit(LOW_HEALTH, &"", local)
+		transmit(OUT_OF_SPARES, &"", local)
 
 
 ## What's saved: the turns and the biggest haul.
@@ -255,6 +288,7 @@ func _on_player_respawned(player: Player) -> void:
 	if player in _fallen:
 		_fallen.erase(player)
 		transmit(FIRST_DEATH, &"", player)
+	survival.woke()
 
 
 ## The planet the new plate opened: the one of its tier around the star.
@@ -281,3 +315,4 @@ func _on_player_left(player: Player) -> void:
 		return
 	if _first(StringName("event.landed.%s" % body.id)):
 		transmit(FIRST_LANDING, body.id)
+	survival.landed()

@@ -8,7 +8,9 @@ const WORLD: int = 1
 const SHOTS_ONLY: int = 2
 ## Blocks walking but not shots or sight (the invisible walls at a gap's edge).
 const WALKING_ONLY: int = 4
+## Blocks aliens, nothing else: not players, crew, shots or sight (the ship's ramp door).
+const ALIENS_ONLY: int = 8
 ## What players and aliens bump into.
 const WALKERS: int = WORLD | WALKING_ONLY
-## What shots and sight lines hit: everything but `WALKING_ONLY`.
-const SHOTS: int = 0xFFFFFFFF & ~WALKING_ONLY
+## What shots and sight lines hit: everything but `WALKING_ONLY` and `ALIENS_ONLY`.
+const SHOTS: int = 0xFFFFFFFF & ~(WALKING_ONLY | ALIENS_ONLY)

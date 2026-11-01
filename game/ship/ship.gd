@@ -11,7 +11,9 @@ extends Node3D
 ## Ship and planet are one world, without loading screens. The ramp is closed by default; the
 ## button on the inner wall next to the door lowers it (see `Mission` for the flow); a hurt player
 ## standing at it is told once where to heal (`ramp_hint`); the cargo hatch outside beside it
-## (`CargoHatch`) comes down with it. The ship tracks who is aboard and
+## (`CargoHatch`) comes down with it. Aliens never get aboard: a barrier in the door
+## (`AlienBarrier`, on `PhysicsLayers.ALIENS_ONLY`) stops them, nobody else. The ship tracks who
+## is aboard and
 ## holsters their weapons inside, except in the shooting range's weapon zone (a barrier in its
 ## doorway keeps the shots inside), and outside too while docked at a station.
 ## While the `viewer` is aboard (and `show_outside` is off), the camera sees inside: on the lower
@@ -70,6 +72,12 @@ const RAMP_LENGTH: float = 5.0
 ## The ramp moving (as long as `ramp_duration`): latches, hydraulics, the clunk at the end.
 const RAMP_SOUND: Sound = preload("res://assets/audio/sfx/mission/ramp.tres")
 const RAMP_HINT_SCENE: PackedScene = preload("res://game/ship/ramp_hint.tscn")
+## The ramp door's size (`hull_layout.py`'s `RAMP_WIDTH`, `RAMP_DOOR_HEIGHT`), in m.
+const RAMP_DOOR_SIZE := Vector2(10.0, 3.5)
+## How far the alien barrier reaches past the door's edges into the walls, so nothing slips by (m).
+const BARRIER_OVERLAP: float = 0.5
+## How deep the alien barrier reaches into the ship from the ramp's hinge (the threshold's depth).
+const BARRIER_DEPTH: float = 0.5
 
 ## Seconds the ramp takes to go down or up. TBD (playtest).
 @export var ramp_duration: float = 2.0
@@ -173,6 +181,7 @@ func _ready() -> void:
 	flight.phase_changed.connect(_update_weapons.unbind(1))
 	_ramp_angle = RAMP_OPEN_ANGLE if ramp_open else RAMP_CLOSED_ANGLE
 	_ramp.rotation.z = _ramp_angle
+	_add_alien_barrier()
 	_button_material.emission_enabled = true
 	_button_face.material_override = _button_material
 	ramp_hint = RAMP_HINT_SCENE.instantiate() as RampHint
@@ -403,6 +412,26 @@ func _on_built() -> void:
 	var players: Array[Player] = []
 	players.assign(get_tree().get_nodes_in_group(Player.GROUP))
 	quests.check_built(players)
+
+
+## Fills the ramp door with a wall only aliens bump into (from the sill up, across the threshold).
+func _add_alien_barrier() -> void:
+	var barrier := StaticBody3D.new()
+	barrier.name = "AlienBarrier"
+	barrier.collision_layer = PhysicsLayers.ALIENS_ONLY
+	barrier.collision_mask = 0
+	var box := BoxShape3D.new()
+	box.size = Vector3(
+		BARRIER_DEPTH, RAMP_DOOR_SIZE.y + BARRIER_OVERLAP, RAMP_DOOR_SIZE.x + BARRIER_OVERLAP * 2.0
+	)
+	var shape := CollisionShape3D.new()
+	shape.shape = box
+	barrier.add_child(shape)
+	barrier.position = (
+		_ramp.position
+		+ Vector3(-BARRIER_DEPTH * 0.5, (RAMP_DOOR_SIZE.y + BARRIER_OVERLAP) * 0.5, 0.0)
+	)
+	add_child(barrier)
 
 
 func _update_display() -> void:

@@ -6,7 +6,8 @@ extends Node3D
 ## until it's done, no way is found. It lives on its own navigation map, so it never joins a
 ## location's (the aliens') or another map's. It follows its parent when that moves (a station
 ## gliding in while the ship docks). Doors have no collision and stay open in it; a closed ramp or
-## lift gate does too, it's a wall like any other. Only the decks' `floors` are kept, not the tops
+## lift gate does too, it's a wall like any other; the ramp door's alien barrier
+## (`PhysicsLayers.ALIENS_ONLY`) isn't. Only the decks' `floors` are kept, not the tops
 ## of tables and counters. Decks aren't joined (walking between them needs the lift, see
 ## `NpcWalker`).
 
@@ -77,6 +78,7 @@ func bake() -> void:
 	_mesh.agent_max_climb = 0.3
 	_mesh.agent_max_slope = 30.0
 	_mesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
+	_mesh.geometry_collision_mask = 0xFFFFFFFF & ~PhysicsLayers.ALIENS_ONLY
 	_mesh.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_ROOT_NODE_CHILDREN
 	_mesh.filter_baking_aabb = bake_box
 	var source := NavigationMeshSourceGeometryData3D.new()

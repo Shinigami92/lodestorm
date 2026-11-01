@@ -162,6 +162,15 @@ func test_focus_loss_pauses_solo() -> void:
 	assert_true(_panel.is_shown())
 	assert_true(get_tree().paused)
 	_panel.close()
+	# Out of a station: it closes and the card opens; also through the window's focus (the app's
+	# focus doesn't change while the game runs embedded in the editor).
+	var bed := _map.get_node("Ship/Rooms/Upper/Cabin1/BedStation") as WorldMenu
+	bed.open(_player)
+	get_window().focus_exited.emit()
+	assert_null(bed.user, "the station closes")
+	assert_true(_panel.is_shown(), "the card opens instead")
+	assert_true(get_tree().paused)
+	_panel.close()
 
 
 func test_not_while_using_a_menu() -> void:

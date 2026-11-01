@@ -33,11 +33,26 @@ title = "About Fenna"
 lines = Array[String](["I signed on to cook, but mostly I listen. Over a hot meal, people say more than they'd ever admit.", "Most of what I hear is nonsense. Some of it isn't. The trick is telling the difference."])
 requires = Array[StringName]([&"cook.greeting"])
 
+[sub_resource type="Resource" id="Resource_about_booth"]
+script = ExtResource("3_topic")
+id = &"cook.about_booth"
+title = "About Fenna"
+lines = Array[String](["I cooked in the settlements' canteen, and then for two years for Rook's crew. Good pay, long hours, and a captain who never knows when to turn back.", "I left after he flew us into the storms once too often. He still keeps my seat at his table. I think he hopes I'll come back."])
+until = &"crew.cook.joined"
+
+[sub_resource type="Resource" id="Resource_cooking"]
+script = ExtResource("3_topic")
+id = &"cook.cooking"
+title = "Cooking for us"
+lines = Array[String](["Cook for your crew? Maybe. But I hear your ship still has empty rooms, and I've cooked for half a table long enough.", "Find the rest of your crew first. A crew that keeps coming back is worth cooking for."])
+until = &"crew.cook.joined"
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["What'll it be?", "Hungry, or just curious?", "Go on, I've got a pot on, but I'm listening.", "Hey, you. What's on your mind?"])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_crew"), SubResource("Resource_news"), SubResource("Resource_about")])
+place_prompts = Array[String](["Sit down if you like. Rook won't mind, and if he does, even better.", "Hey, you. I've heard a thing or two about your crew.", "What can I tell you? I know everybody's business here."])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_crew"), SubResource("Resource_news"), SubResource("Resource_about"), SubResource("Resource_about_booth"), SubResource("Resource_cooking")])
 
 [sub_resource type="Resource" id="Reaction_planet_opened_gaulm"]
 script = ExtResource("9_reaction")
@@ -54,6 +69,7 @@ model = "uid://vo056vbv74lc"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(1, 0.55, 0.8, 1)
 join_flag = &"crew.cook.joined"
+waits_at = &"ostra"
 cabin = 8
 dialogue = SubResource("Resource_dialogue")
 reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_gaulm")])

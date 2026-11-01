@@ -127,7 +127,7 @@ static func destination(quest_log: QuestLog, quest: Quest) -> StringName:
 	if not step.meets_in.is_empty() and step.meets_at:
 		return step.meets_in
 	var profile: NpcProfile = NpcProfile.find(quest.hand_in_npc(step))
-	return profile.station if profile else &""
+	return profile.station_in(quest_log.story) if profile else &""
 
 
 ## The quest sites' map parts, to place as set pieces (each once, also when goals and meetings

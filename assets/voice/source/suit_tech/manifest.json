@@ -6,6 +6,30 @@
       "seed": 1,
       "text": "Dein Anzug kann viel mehr, als nur die Luft drinnen zu halten. Frag mich, und ich erzähle dir, was er alles lernen kann."
     },
+    "152fd52dee7f9192": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hi! Stimmt was nicht mit deinem Anzug? Lass mal sehen."
+    },
+    "1b9adde12a425f24": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Schon Glück gehabt auf Cinder Steps?"
+    },
+    "23da3201850f1c5b": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Da ist noch Arbeit dran, aber das kann ich an Bord machen. Wenn ich zum ersten Mal einen Planeten betrete, trag ich diesen Anzug."
+    },
+    "25cd41090784af8d": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Aber dafür bräuchte ich erst einen eigenen Anzug, einen für Planeten. Unsere taugen nur für die Docks. Mein Vater war bei der Vermessung, und er sagt, in ihren alten Kisten auf Cinder Steps liegt noch einer, in Einzelteilen."
+    },
     "3e8ad622b8efb856": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -30,6 +54,18 @@
       "seed": 1,
       "text": "Manche Fähigkeiten setzen eine andere voraus, und ich sage dir, welche. Die, die du jetzt gleich lernen und bezahlen kannst, pulsieren."
     },
+    "5fdedf138bbcb2f7": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich repariere die Anzüge der Station, die, die die Dockcrews draußen tragen. Ich bin hier geboren, und ich nehme Anzüge auseinander, seit ich einen Schraubenschlüssel halten kann."
+    },
+    "6544480e63fa0249": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kann ich dich was fragen? Euer Schiff hat einen ganzen Raum für Anzüge und niemanden, der sich darum kümmert. Das könnte ich machen. Keiner auf dieser Station kennt sich mit Anzügen besser aus als ich."
+    },
     "6a2489d0dec42e7d": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -48,6 +84,18 @@
       "seed": 1,
       "text": "Wenn ihr da unten herumlauft, auf einem echten Planeten unter einem echten Himmel, bin ich also ein bisschen neidisch. Erzähl mir irgendwann, wie es dort ist."
     },
+    "7576175782f7a941": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Er sagt auch, dass es der rauste Ort auf Torvane ist, also mach dich erst bereit. Bring mir die Teile, und ich setz den Anzug wieder zusammen. Und dann nehmt ihr mich mit?"
+    },
+    "8537de1c740b6dfd": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich hol nur meine Tasche. Wehe, ihr fliegt ohne mich los!"
+    },
     "86c748b906dfdd27": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -60,11 +108,23 @@
       "seed": 1,
       "text": "Frag mich ruhig alles!"
     },
+    "a2e56d8f04397d2c": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ist das alles? Schau dir diese Dichtungen an! So was hat hier auf Ostra noch nie jemand hingekriegt."
+    },
     "bdbca703ed087f2f": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Eine zu lernen kostet Erz aus deinem Laderaum und dauert eine Weile, genau wie ein Upgrade. Manche Fähigkeiten haben mehrere Ränge, jeder ein bisschen stärker."
+    },
+    "c3ddde6e803ab559": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich hab diese Station noch nie verlassen. Jede Crew, die hier andockt, ist schon auf Planeten gelaufen, die ich nur durchs Fenster kenne. Sind die Stürme da unten wirklich so schlimm, wie alle sagen?"
     },
     "e405e3727c82d9e9": {
       "anchor": "dc880a8ce29f2392",
@@ -77,6 +137,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Fähigkeitenbaum ist im Raum neben meinem. Jede Fähigkeit bringt deinem Anzug etwas Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
+    },
+    "f56f5179fdc18f28": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wo warst du heute? Irgendwo mit einem Himmel?"
+    },
+    "f70ef0def5dcc1fb": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Oh, hallo! Pass auf die Teile am Boden auf."
     }
   },
   "en": {
@@ -85,6 +157,30 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Your suit does a lot more than keep the air in. Ask me, and I'll tell you what it can learn."
+    },
+    "152fd52dee7f9192": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hi! Is something wrong with your suit? Let me see."
+    },
+    "1b9adde12a425f24": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Any luck on Cinder Steps?"
+    },
+    "23da3201850f1c5b": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "It needs work, but I can do that aboard. The first time I step onto a planet, I'll be wearing this."
+    },
+    "25cd41090784af8d": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "But first I'd need a suit of my own, one made for planets. Ours are only good for the docks. My father was with the survey, and he says its old crates on Cinder Steps still hold one, in pieces."
     },
     "3e8ad622b8efb856": {
       "anchor": "1bb393d288e21b8b",
@@ -110,6 +206,18 @@
       "seed": 1,
       "text": "Some skills need another one first, and I'll tell you which. The ones you can learn and pay for right now pulse."
     },
+    "5fdedf138bbcb2f7": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I fix the station's suits, the ones the dock crews wear outside. I was born here, and I've been taking suits apart since I could hold a wrench."
+    },
+    "6544480e63fa0249": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Can I ask you something? Your ship has a whole room for suits and nobody to look after them. I could do that. Nobody on this station knows suits better than I do."
+    },
     "6a2489d0dec42e7d": {
       "anchor": "1bb393d288e21b8b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -128,6 +236,18 @@
       "seed": 1,
       "text": "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."
     },
+    "7576175782f7a941": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "He also says it's the roughest place on Torvane, so get ready first. Bring me the pieces, and I'll put the suit back together. And then take me with you?"
+    },
+    "8537de1c740b6dfd": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I'll grab my bag. Don't you dare leave without me!"
+    },
     "86c748b906dfdd27": {
       "anchor": "1bb393d288e21b8b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -140,11 +260,23 @@
       "seed": 1,
       "text": "Ask me anything!"
     },
+    "a2e56d8f04397d2c": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Is that all of it? Look at these seals! Nobody on Ostra could ever make seals like these."
+    },
     "bdbca703ed087f2f": {
       "anchor": "1bb393d288e21b8b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Learning one costs ore from your hold and takes a while, just like an upgrade. Some skills have several ranks, each a bit stronger."
+    },
+    "c3ddde6e803ab559": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I've never set foot off this station. Every crew that docks here has walked on planets I've only seen through a window. Are the storms down there really as bad as they say?"
     },
     "e405e3727c82d9e9": {
       "anchor": "1bb393d288e21b8b",
@@ -157,6 +289,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The skill graph is in the room next to mine. Every skill teaches your suit something new, like a quick dash or more spare magazines."
+    },
+    "f56f5179fdc18f28": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Where have you been today? Somewhere with a sky?"
+    },
+    "f70ef0def5dcc1fb": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Oh, hi! Mind the parts on the floor."
     }
   }
 }

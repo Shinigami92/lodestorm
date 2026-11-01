@@ -60,6 +60,12 @@
       "seed": 1,
       "text": "Waffen funktionieren nur im Schießstand selbst, und ein Kraftfeld in der Tür hält jeden Schuss auf. Aus diesem Raum kommt nichts heraus."
     },
+    "29056c311e1f170c": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Werkbank im Waffenraum tut, was man ihr sagt, aber keiner an Bord versteht so viel von Waffen wie ein echter Waffenschmied."
+    },
     "2b4f119589ea4262": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -402,6 +408,12 @@
       "seed": 1,
       "text": "Drückst du mitten im Nachladen ab, hört sie mit dem Nachladen auf und feuert, was schon geladen ist."
     },
+    "e0789f3ebb997fc3": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Auf Ostra hat ein Maschinist einen Stand in der Halle, Dace. Er hat Teile für die erste Expedition gebaut. Sprich mal mit ihm, wenn wir das nächste Mal andocken."
+    },
     "e0a5519bf9c60944": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -601,6 +613,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Weapons only work inside the range, and a force field in the doorway stops every shot. Nothing leaves that room."
+    },
+    "29056c311e1f170c": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The bench in the weapons room does what it's told, but nobody aboard knows weapons the way a real gunsmith does."
     },
     "2b4f119589ea4262": {
       "anchor": "772c7907f9411bf4",
@@ -943,6 +961,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Pull the trigger in the middle of a reload, and it stops reloading and fires what's loaded."
+    },
+    "e0789f3ebb997fc3": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "There's a machinist with a stall in Ostra's concourse, Dace. He made parts for the first expedition. Have a word with him next time we dock."
     },
     "e0a5519bf9c60944": {
       "anchor": "772c7907f9411bf4",

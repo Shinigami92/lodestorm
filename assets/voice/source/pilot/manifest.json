@@ -150,6 +150,18 @@
       "seed": 1,
       "text": "Whiteshelf. Die Nester stehen dichter als in Sunken Verge, und der Krater liegt im offenen Salz. Das Erz drumherum lohnt den Weg, aber unterwegs gibt es kaum Deckung."
     },
+    "49024c23570e3432": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Tamsin. Rooks altes Versteck ist nicht weit von unserem Landeplatz. Fennas Kiste müsste noch da sein."
+    },
+    "4b021437e222ea03": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Tamsin. Wrens Anzug liegt irgendwo hier unten in den alten Kisten der Vermessung. Macht jede auf, die ihr findet, und passt aufeinander auf."
+    },
     "4b6d291431c70e83": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -173,6 +185,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Sturm ist im Anmarsch. Die Rampe ist unten, also kommt alle zurück."
+    },
+    "595e3f8f52d0a277": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist der ganze Anzug. Bring ihn heil an Bord."
+    },
+    "59fd912f82b9c338": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist Fennas Kiste. Bringt sie an Bord, alle zusammen, dann gibt's endlich mal was Ordentliches zu essen."
     },
     "61b4a7a5013f7a05": {
       "anchor": "3581bf6c2d6006f9",
@@ -222,6 +246,12 @@
       "seed": 1,
       "text": "Der Sturm zieht auf. Komm zurück zum Schiff."
     },
+    "78090da20847d912": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Tamsin. Wir haben Dace' Erz im Laderaum. Er ist an seinem Stand, wann immer wir auf Ostra andocken."
+    },
     "7aa7a888197fcd2c": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -239,6 +269,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Glare Fields. Die Nester stehen dichter als auf dem Hoarfrost Ridge, und das Salz ist weit offen: Man sieht sie von Weitem kommen, und sie einen auch."
+    },
+    "8ade1fc96869854c": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist Fennas Kiste. Bring sie an Bord, dann gibt's endlich mal was Ordentliches zu essen."
     },
     "904f734f33f3efbd": {
       "anchor": "3581bf6c2d6006f9",
@@ -402,6 +438,12 @@
       "seed": 1,
       "text": "Rimeback. Die Nester stehen dichter als in Pale Basin, und die gefrorenen Seen sind glatt. Die Kristallwand lohnt sich, aber aus einer Sackgasse führt nur ein Weg heraus."
     },
+    "e561f4029fc72663": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hier Tamsin. Wrens Anzug liegt irgendwo hier unten in den alten Kisten der Vermessung. Mach jede auf, die du findest, und pass auf dich auf."
+    },
     "ea86a104090612c3": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -425,6 +467,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Während einer Mission können wir keinen neuen Kurs setzen. Sobald alle wieder an Bord sind und die Rampe oben ist, heben wir von selbst wieder ab."
+    },
+    "fbf7441076ba92b8": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist der ganze Anzug. Bringt ihn heil an Bord, alle zusammen."
     }
   },
   "en": {
@@ -578,6 +626,18 @@
       "seed": 1,
       "text": "Whiteshelf. The nests are thicker than in Sunken Verge, and the crater lies out in the open salt. The ore around it is worth the walk, but there's little cover on the way."
     },
+    "49024c23570e3432": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Tamsin here. Rook's old cache isn't far from where we landed. Fenna's crate should still be there."
+    },
+    "4b021437e222ea03": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Tamsin here. Wren's suit is in the survey's old crates somewhere down here. Open every one you find, and watch each other's backs."
+    },
     "4b6d291431c70e83": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -601,6 +661,18 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The storm is on its way. The ramp is down, so come on back, all of you."
+    },
+    "595e3f8f52d0a277": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's the whole suit. Bring it back aboard in one piece."
+    },
+    "59fd912f82b9c338": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's Fenna's crate. Get it aboard, all of you, and we'll finally eat something decent."
     },
     "61b4a7a5013f7a05": {
       "anchor": "b39c4473829e205a",
@@ -650,6 +722,12 @@
       "seed": 1,
       "text": "Storm's coming in. Get back to the ship."
     },
+    "78090da20847d912": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Tamsin here. We've got Dace's ore in the hold. He's at his stall whenever we dock at Ostra."
+    },
     "7aa7a888197fcd2c": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -667,6 +745,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Glare Fields. The nests are thicker than on Hoarfrost Ridge, and the salt is wide open: you see them coming from far off, and they see you."
+    },
+    "8ade1fc96869854c": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's Fenna's crate. Get it aboard, and we'll finally eat something decent."
     },
     "904f734f33f3efbd": {
       "anchor": "b39c4473829e205a",
@@ -830,6 +914,12 @@
       "seed": 1,
       "text": "Rimeback. The nests are thicker than in Pale Basin, and the frozen lakes are slick. The crystal wall is worth it, but a dead end has only one way out."
     },
+    "e561f4029fc72663": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Tamsin here. Wren's suit is in the survey's old crates somewhere down here. Open every one you find, and watch your step."
+    },
     "ea86a104090612c3": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -853,6 +943,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."
+    },
+    "fbf7441076ba92b8": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's the whole suit. Bring it back aboard in one piece, all of you."
     }
   }
 }

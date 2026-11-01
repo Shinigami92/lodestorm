@@ -124,8 +124,9 @@ func test_a_quest_step_brings_them_aboard() -> void:
 
 
 ## Every line of the crew, and of their overheard talks, that names a crew member who joins later
-## waits for them: a topic or a reaction requires their join flag, a tour stop is their room (its
-## `empty_lines` without their name); their own lines don't count.
+## waits for them: a topic or a reaction requires their join flag (or the topic goes once they
+## join), a tour stop is their room (its `empty_lines` without their name); their own lines don't
+## count.
 func test_lines_name_someone_only_once_they_are_aboard() -> void:
 	var joining: Array[NpcProfile] = NpcProfile.crew().filter(
 		func(profile: NpcProfile) -> bool: return not profile.join_flag.is_empty()
@@ -156,7 +157,9 @@ func _check_profile(speaker: NpcProfile, named: NpcProfile) -> void:
 				assert_eq(stop.crew_member, named.id, "%s: tour stop %s" % [who, stop.id])
 			assert_false(_names(stop.empty_lines, named), "%s: tour stop %s" % [who, stop.id])
 	for topic: Topic in topics:
-		if topic and _names(_joined([topic.lines, topic.guest_lines, topic.away_lines]), named):
+		if not topic or topic.until == named.join_flag:
+			continue  # About them before they join (Brannik pointing the players to Dace).
+		if _names(_joined([topic.lines, topic.guest_lines, topic.away_lines]), named):
 			assert_has(topic.requires, named.join_flag, "%s: %s" % [who, topic.id])
 	for reaction: CrewReaction in speaker.reactions:
 		if _names(reaction.lines, named):

@@ -11,7 +11,10 @@
 [ext_resource type="Resource" uid="uid://bil8n0na5lyin" path="res://game/quests/depot_master/request_power_cells.tres" id="q6"]
 [ext_resource type="Resource" uid="uid://ki0elrvyn7he" path="res://game/quests/depot_master/request_air_scrubbers.tres" id="q7"]
 [ext_resource type="Resource" uid="uid://brxychn5o3wmh" path="res://game/quests/depot_master/overdue.tres" id="q8"]
+[ext_resource type="Resource" uid="uid://by807ijgqueax" path="res://game/quests/gunsmith/real_ore.tres" id="q9"]
+[ext_resource type="Resource" uid="uid://bc2klc84e822n" path="res://game/quests/suit_tech/out_there.tres" id="q10"]
+[ext_resource type="Resource" uid="uid://1v8ubjftsqvy" path="res://game/quests/cook/rooks_leftovers.tres" id="q11"]
 
 [resource]
 script = ExtResource("1_script")
-quests = Array[ExtResource("2_quest")]([ExtResource("q0"), ExtResource("q1"), ExtResource("q2"), ExtResource("q3"), ExtResource("q4"), ExtResource("q5"), ExtResource("q6"), ExtResource("q7"), ExtResource("q8")])
+quests = Array[ExtResource("2_quest")]([ExtResource("q0"), ExtResource("q1"), ExtResource("q2"), ExtResource("q3"), ExtResource("q4"), ExtResource("q5"), ExtResource("q6"), ExtResource("q7"), ExtResource("q8"), ExtResource("q9"), ExtResource("q10"), ExtResource("q11")])

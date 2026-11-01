@@ -32,11 +32,19 @@ title = "About Wren"
 lines = Array[String](["I was born on Ostra. Before I joined you, I'd never been off the station, not even once.", "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."])
 requires = Array[StringName]([&"suit_tech.greeting"])
 
+[sub_resource type="Resource" id="Resource_about_bench"]
+script = ExtResource("3_topic")
+id = &"suit_tech.about_bench"
+title = "About Wren"
+lines = Array[String](["I fix the station's suits, the ones the dock crews wear outside. I was born here, and I've been taking suits apart since I could hold a wrench.", "I've never set foot off this station. Every crew that docks here has walked on planets I've only seen through a window. Are the storms down there really as bad as they say?"])
+until = &"crew.suit_tech.joined"
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["Hi again! What do you need?", "Something wrong with your suit?", "Ask me anything!", "What can I do for you today?"])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_armor"), SubResource("Resource_skills"), SubResource("Resource_about")])
+place_prompts = Array[String](["Oh, hi! Mind the parts on the floor.", "Where have you been today? Somewhere with a sky?", "Hi! Is something wrong with your suit? Let me see."])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_armor"), SubResource("Resource_skills"), SubResource("Resource_about"), SubResource("Resource_about_bench")])
 
 [resource]
 script = ExtResource("1_profile")
@@ -47,5 +55,6 @@ model = "uid://gv0ici1ifm8d"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.3, 0.95, 0.85, 1)
 join_flag = &"crew.suit_tech.joined"
+waits_at = &"ostra"
 cabin = 6
 dialogue = SubResource("Resource_dialogue")

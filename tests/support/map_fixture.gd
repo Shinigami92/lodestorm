@@ -12,7 +12,6 @@ static func instantiate(crew_joined: bool = true) -> Node3D:
 	var map := MAP.instantiate() as Node3D
 	var voyage := map.get_node("Voyage") as Voyage
 	var ship := map.get_node("Ship") as Ship
-	ship.crew_joins_later = not crew_joined
 	if crew_joined:
 		NpcProfile.join_whole_crew(ship.story)
 	var location := LOCATION.instantiate() as Node3D

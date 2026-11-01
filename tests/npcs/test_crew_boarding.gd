@@ -29,8 +29,8 @@ func test_they_wait_at_their_places_until_they_join() -> void:
 		var aboard := _ship.get_node(PLACES[who]) as Npc
 		assert_eq(waiting.profile, aboard.profile, who)
 		assert_true(waiting.is_present() and waiting.visible, who + " at their place")
-		assert_false(waiting.use_point.enabled, who + ": their topics come with their quests")
-		assert_false(waiting.has_news(_player), who + ": no marker")
+		assert_true(waiting.use_point.enabled, who + " talks about themselves there")
+		assert_true(waiting.has_news(_player), who + ": nothing heard yet")
 		assert_false(aboard.is_present(), who + " not aboard")
 	assert_true(_people("Fenna").body.sitting, "Fenna sits at Rook's booth")
 	assert_false((_station.get_node("DaceStall/Shutter") as Node3D).visible, "his stall is open")

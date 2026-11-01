@@ -32,11 +32,18 @@ title = "About Rook"
 lines = Array[String](["I came in on one of the first haulers, before there was much of a station here. I've been prospecting ever since.", "My crew is small, but they're the best there is. We've landed in more regions than anyone else on this station.", "We'll see how long you last out there. If you're still flying in a few months, I'll buy you a drink."])
 requires = Array[StringName]([&"rival_captain.greeting"])
 
+[sub_resource type="Resource" id="Resource_fenna"]
+script = ExtResource("3_topic")
+id = &"rival_captain.fenna"
+title = "Fenna"
+lines = Array[String](["So Fenna went with you. Fine. Feed her well, she's fed my crew long enough.", "Give her a week, and she'll know every secret on your ship. Don't say I didn't warn you."])
+requires = Array[StringName]([&"rival_captain.greeting", &"crew.cook.joined"])
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["What, need more advice already?", "Go on, ask. I've got time.", "Still here? What do you want to know?", "Ask away. I don't charge for advice. Yet."])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_prospecting"), SubResource("Resource_survival"), SubResource("Resource_rook")])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_prospecting"), SubResource("Resource_survival"), SubResource("Resource_rook"), SubResource("Resource_fenna")])
 
 [resource]
 script = ExtResource("1_profile")

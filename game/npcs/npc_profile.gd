@@ -41,6 +41,9 @@ static var _paths: Dictionary[StringName, String] = {}
 ## `QuestStep.joins`); empty: aboard from the start (Brannik, Tamsin, Okoro and Ilse). Until then
 ## they aren't aboard: not at their post, no talks or radio calls (see `is_aboard`).
 @export var join_flag: StringName = &""
+## The station a crew member who joins later waits at until then (a `CelestialBody.id`, e.g.
+## `ostra` for Dace at his stall; see `Npc.waits_to_join`); empty: none (Hollis, out there).
+@export var waits_at: StringName = &""
 ## A crew member's cabin aboard (1–8, see docs/design/ship.md; not used yet). Station NPCs
 ## have none.
 @export_range(1, 8) var cabin: int = 1
@@ -63,6 +66,14 @@ static var _paths: Dictionary[StringName, String] = {}
 ## Whether they're aboard in `story`: from the start, or once their `join_flag` is set.
 func is_aboard(story: Story) -> bool:
 	return join_flag.is_empty() or (story != null and story.is_set(join_flag))
+
+
+## The station they're found on in `story` (a `CelestialBody.id`): their `station`, or the one
+## they wait at (`waits_at`) until they're aboard; empty: aboard the ship (or out there).
+func station_in(story: Story) -> StringName:
+	if not station.is_empty():
+		return station
+	return waits_at if not is_aboard(story) else &""
 
 
 ## The lines they have for `event` about `subject`, worded for several players `together` or one

@@ -1,0 +1,59 @@
+[gd_resource type="Resource" script_class="Quest" format=3 uid="uid://by807ijgqueax"]
+
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="s_topic"]
+[ext_resource type="Script" uid="uid://bdto4xx2jvios" path="res://game/quests/quest.gd" id="s_quest"]
+[ext_resource type="Script" uid="uid://7vg4utlxx3ie" path="res://game/quests/quest_step.gd" id="s_step"]
+[ext_resource type="Script" uid="uid://bbh57jogeoedv" path="res://game/quests/quest_goal.gd" id="s_goal"]
+[ext_resource type="Script" uid="uid://dwkdaijmiqcvw" path="res://game/quests/radio_line.gd" id="s_radio"]
+[ext_resource type="Script" uid="uid://csxt02vdhmgmi" path="res://game/quests/deliver_goal.gd" id="s_deliver"]
+[ext_resource type="Resource" uid="uid://io1gj2n1doh" path="res://game/ores/types/ore_kyrite.tres" id="ore_kyrite"]
+[ext_resource type="Resource" uid="uid://dpsft6t5eqvne" path="res://game/ores/types/ore_meridine.tres" id="ore_meridine"]
+
+[sub_resource type="Resource" id="Topic_offer"]
+script = ExtResource("s_topic")
+id = &"gunsmith.real_ore"
+title = "Real ore"
+lines = Array[String](["Word gets around. Your crew built a shotgun from one of the colony's old blueprints. That's more than anyone on Ostra has built in years.", "So here's my offer. Bring me Kyrite and Meridine straight from the ground, not the scrap I get here, and I'll make one of the expedition's parts the way it was meant to be made.", "If it holds, I'll close up this stall and come work at your bench. Deal?"])
+
+[sub_resource type="Resource" id="DeliverGoal_kyrite"]
+script = ExtResource("s_deliver")
+item = ExtResource("ore_kyrite")
+amount = 80
+
+[sub_resource type="Resource" id="DeliverGoal_meridine"]
+script = ExtResource("s_deliver")
+item = ExtResource("ore_meridine")
+amount = 20
+
+[sub_resource type="Resource" id="RadioLine_ready"]
+script = ExtResource("s_radio")
+text = "Tamsin here. We've got Dace's ore in the hold. He's at his stall whenever we dock at Ostra."
+coop_text = "Tamsin here. We've got Dace's ore in the hold. He's at his stall whenever we dock at Ostra."
+speaker = &"pilot"
+
+[sub_resource type="Resource" id="Topic_part"]
+script = ExtResource("s_topic")
+id = &"gunsmith.real_ore_part"
+title = "The first part"
+lines = Array[String](["Real Kyrite, real Meridine. You have no idea how long I've waited to work with ore like this.", "Every part I made from scrap cracked sooner or later. This one won't. I can tell just by holding it.", "I'm done with scrap. Give me a minute to close up the stall, and I'll meet you at your ship."])
+
+[sub_resource type="Resource" id="QuestStep_deliver"]
+script = ExtResource("s_step")
+id = &"deliver"
+text = "Bring Dace 80 Kyrite and 20 Meridine at his stall on Waypost Ostra."
+goals = Array[ExtResource("s_goal")]([SubResource("DeliverGoal_kyrite"), SubResource("DeliverGoal_meridine")])
+place_prompts = Array[String](["Got my ore yet?"])
+hand_in = SubResource("Topic_part")
+joins = &"gunsmith"
+ready_line = SubResource("RadioLine_ready")
+
+[resource]
+script = ExtResource("s_quest")
+id = &"real_ore"
+title = "Real ore"
+giver = &"gunsmith"
+requires = Array[StringName]([&"quest.colony_arms"])
+until = &"crew.gunsmith.joined"
+offer = SubResource("Topic_offer")
+replaces = &"gunsmith.coming_aboard"
+steps = Array[ExtResource("s_step")]([SubResource("QuestStep_deliver")])

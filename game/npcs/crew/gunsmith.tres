@@ -40,11 +40,26 @@ title = "About Dace"
 lines = Array[String](["Most of what's on that rack I've only ever seen in drawings. The first expedition brought designs no colony workshop had ever made.", "Sometimes I wonder what they needed weapons like these for."])
 requires = Array[StringName]([&"gunsmith.greeting"])
 
+[sub_resource type="Resource" id="Resource_about_stall"]
+script = ExtResource("3_topic")
+id = &"gunsmith.about_stall"
+title = "About Dace"
+lines = Array[String](["I'm a machinist from the settlements on Torvane. When the first expedition was getting ready out here, they hired me to make parts for their designs.", "Since they left, I've been fixing pumps and hatches out of scrap. I still have the drawings of every part I made for them. What I don't have is the ore to make them from."])
+until = &"crew.gunsmith.joined"
+
+[sub_resource type="Resource" id="Resource_coming_aboard"]
+script = ExtResource("3_topic")
+id = &"gunsmith.coming_aboard"
+title = "Coming aboard"
+lines = Array[String](["I've heard your ship has a weapons room and nobody at the bench. Don't think I haven't thought about it.", "But I'm not leaving my stall for a crew that hasn't built anything yet. Once you have, I'll hear about it, and we'll talk."])
+until = &"crew.gunsmith.joined"
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["What are we working on?", "Need something improved?", "Ask away, I've got a moment.", "Got a weapon that needs work?"])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_upgrades"), SubResource("Resource_time"), SubResource("Resource_building"), SubResource("Resource_about")])
+place_prompts = Array[String](["Need something fixed? Pumps, hatches, anything with a thread.", "Careful, the bench is still hot.", "Looking for something? Most of this was scrap last week."])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_upgrades"), SubResource("Resource_time"), SubResource("Resource_building"), SubResource("Resource_about"), SubResource("Resource_about_stall"), SubResource("Resource_coming_aboard")])
 
 [sub_resource type="Resource" id="Reaction_weapon_built"]
 script = ExtResource("9_reaction")
@@ -60,6 +75,7 @@ model = "uid://bj5ctmig16w2c"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.95, 0.28, 0.25, 1)
 join_flag = &"crew.gunsmith.joined"
+waits_at = &"ostra"
 cabin = 5
 dialogue = SubResource("Resource_dialogue")
 reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_weapon_built")])

@@ -175,8 +175,8 @@ func get_quests() -> QuestLog:
 
 
 ## The topics open now for `listener` (the player talking to them when null): their quests' first
-## (the offers, then the steps handed in at them), then the dialogue's in its order (see
-## `Topic.is_open`; at their place before joining, only those that go once they join).
+## (`get_quest_choices`), then the dialogue's in its order (see `Topic.is_open`; at their place
+## before joining, only those that go once they join).
 func get_choices(listener: Player = null) -> Array[Topic]:
 	var choices: Array[Topic] = []
 	if not profile or not profile.dialogue:
@@ -189,11 +189,7 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 		choices.append_array([tour.resume, tour.abort])
 		return choices
 	var reaches: Array[StringName] = get_reached_bodies()
-	var quests: QuestLog = get_quests()
-	for quest: Quest in quests.offered_by(profile.id, reaches, profile.open_requests):
-		choices.append(quest.offer)
-	for quest: Quest in quests.steps_at(profile.id):
-		choices.append(quests.current_step(quest).hand_in)
+	choices.append_array(get_quest_choices(listener))
 	for listed: Topic in profile.dialogue.topics:
 		if waits_to_join and listed.until != profile.join_flag:
 			continue
@@ -203,6 +199,31 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 	if tour and (tour.invite.is_open(listener, story) or (routine and not routine.is_waiting())):
 		choices.append(tour.invite)
 	return choices
+
+
+## The quest entries at the top of their list for `listener` (the player talking to them when
+## null; the talk card sets them apart): the steps handed in at them that `listener` can hand in
+## now, then the quests they offer, then the other steps handed in at them.
+func get_quest_choices(listener: Player = null) -> Array[Topic]:
+	var entries: Array[Topic] = []
+	if not profile or (routine and routine.tour):
+		return entries
+	if not listener:
+		listener = user
+	var quests: QuestLog = get_quests()
+	var steps: Array[Quest] = quests.steps_at(profile.id)
+	var can_hand: Array[Quest] = steps.filter(
+		func(quest: Quest) -> bool:
+			return listener != null and quests.can_hand_in(quest, listener.hold)
+	)
+	for quest: Quest in can_hand:
+		entries.append(quests.current_step(quest).hand_in)
+	for quest: Quest in quests.offered_by(profile.id, get_reached_bodies(), profile.open_requests):
+		entries.append(quest.offer)
+	for quest: Quest in steps:
+		if quest not in can_hand:
+			entries.append(quests.current_step(quest).hand_in)
+	return entries
 
 
 ## The ids of the planets and moons the ship reaches now (for topics about them, see

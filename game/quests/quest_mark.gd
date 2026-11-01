@@ -18,6 +18,9 @@ const BEAM_ALPHA: float = 0.35
 ## How often it looks whether its quest is tracked, in s.
 const CHECK: float = 0.25
 
+## The diamonds (filled, outlined), made once.
+static var _diamond_textures: Array[ImageTexture] = []
+
 ## The goal it's for, and the visit it belongs to.
 var entry: QuestVisit.Entry
 var visit: QuestVisit
@@ -97,3 +100,25 @@ func _make_beam() -> MeshInstance3D:
 	beam.visible = false
 	RenderLayers.put(beam, RenderLayers.EFFECTS)
 	return beam
+
+
+## A white diamond with a soft edge, `filled` or only its outline: the quests' sign (on the
+## navigator's plates, in an NPC's talk list).
+static func diamond_texture(filled: bool) -> ImageTexture:
+	if _diamond_textures.is_empty():
+		var size: int = 32
+		var half: float = size * 0.5
+		for solid: bool in [true, false]:
+			var image := Image.create_empty(size, size, false, Image.FORMAT_RGBA8)
+			for y: int in size:
+				for x: int in size:
+					var from_center: Vector2 = (
+						(Vector2(x + 0.5, y + 0.5) - Vector2(half, half)).abs()
+					)
+					var inside: float = half - 1.0 - (from_center.x + from_center.y)
+					var alpha: float = clampf(inside, 0.0, 1.0)
+					if not solid:
+						alpha = minf(alpha, clampf(4.0 - inside, 0.0, 1.0))
+					image.set_pixel(x, y, Color(1.0, 1.0, 1.0, alpha))
+			_diamond_textures.append(ImageTexture.create_from_image(image))
+	return _diamond_textures[0 if filled else 1]

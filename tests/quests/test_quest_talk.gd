@@ -115,6 +115,55 @@ func test_hand_in_waits_for_the_hold() -> void:
 	assert_null(_npc.talk.quest)
 
 
+func test_steps_ready_to_hand_in_come_first() -> void:
+	var waiting: Quest = QUEST_LOG_TEST.make_quest(&"waiting", &"quartermaster")
+	var due: Quest = QUEST_LOG_TEST.make_quest(&"ready", &"quartermaster")
+	var offered: Quest = QUEST_LOG_TEST.make_quest(&"offered", &"quartermaster")
+	# More Kyrite than the hold has: accepted first, but not ready.
+	(waiting.steps[0].goals[0] as DeliverGoal).amount = 1000
+	_ship.quests.catalog.quests = [waiting, due, offered]
+	_ship.quests.accept(waiting, [_player])
+	_ship.quests.accept(due, [_player])
+	_player.hold.add(KYRITE, 300.0)
+	assert_true(_ship.quests.can_hand_in(due, _player.hold), "the hold covers it")
+	assert_false(_ship.quests.can_hand_in(waiting, _player.hold))
+	await _talk()
+	var entries: Array[Topic] = _npc.get_quest_choices(_player)
+	assert_eq(
+		entries,
+		[due.steps[0].hand_in, offered.offer, waiting.steps[0].hand_in],
+		"ready, offer, rest"
+	)
+	assert_eq(_npc.get_choices().slice(0, 3), entries, "at the top of the list")
+
+
+func test_quests_carry_a_diamond_above_a_line() -> void:
+	var accepted: Quest = QUEST_LOG_TEST.make_quest(&"accepted", &"quartermaster")
+	accepted.steps[0].hand_in.title = "Accepted job"
+	_quest.offer.title = "Offered job"
+	_ship.quests.catalog.quests = [_quest, accepted]
+	_ship.quests.accept(accepted, [_player])
+	await _talk()
+	var card := _npc.card_menu as TalkCard
+	var offered: Button = card.get_button("Offered job")
+	assert_eq(offered.icon, QuestMark.diamond_texture(true), "news: filled")
+	assert_eq(offered.text, "Offered job", "the diamond instead of the dot")
+	var waiting: Button = card.get_button("Accepted job")
+	assert_eq(waiting.icon, QuestMark.diamond_texture(false), "a step to do: hollow")
+	assert_null(card.get_button("Goodbye").icon, "topics have none")
+	var divider := card.find_child("QuestDivider", true, false) as HSeparator
+	assert_true(divider.visible)
+	assert_eq(divider.get_index(), 2, "below the two quests")
+	_player.hold.add(KYRITE, 300.0)
+	_ship.story.set_flag(_quest.offer.id)
+	_npc.talk.set_choice(0)
+	assert_eq(card.get_button("Accepted job").icon, QuestMark.diamond_texture(true), "to hand in")
+	assert_eq(card.get_button("Offered job").icon, QuestMark.diamond_texture(false), "heard")
+	_ship.quests.catalog.quests = []
+	_npc.talk.set_choice(0)
+	assert_false(divider.visible, "no quests, no line")
+
+
 func _talk() -> void:
 	_player.global_position = _npc.use_point.global_position + Vector3(0.0, 0.0, 1.0)
 	_player.reset_physics_interpolation()

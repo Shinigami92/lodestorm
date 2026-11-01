@@ -1,6 +1,7 @@
 extends GutTest
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+const SWARMER: AlienStrain = preload("res://game/aliens/strains/swarmer/swarmer.tres")
 
 var _map: Node3D
 var _player: Player
@@ -33,6 +34,24 @@ func test_ramp_faces_screen_right() -> void:
 	assert_almost_eq(_ship.global_basis.x.dot(screen_right), 1.0, 0.001)
 	var to_door: Vector3 = _ship.get_boarding_position() - _ship.global_position
 	assert_gt(to_door.dot(screen_right), 0.0)
+
+
+## Aliens never get aboard: a barrier in the ramp's door stops them, not players, shots or sight.
+func test_only_aliens_bump_into_the_ramp_door() -> void:
+	await _open()
+	var outside: Vector3 = _ship.to_global(Vector3(17.0, 3.5, 0.0))
+	var inside: Vector3 = _ship.to_global(Vector3(12.0, 3.5, 0.0))
+	var barrier: Object = _ship.get_node("AlienBarrier")
+	var alien: Alien = SWARMER.spawn()
+	_map.add_child(alien)
+	alien.global_position = _outside() + Vector3(0.0, 0.0, 20.0)
+	var alien_mask: int = alien.collision_mask
+	alien.queue_free()
+	var hit: Object = _ray(outside, inside, alien_mask).get(&"collider") as Object
+	assert_eq(hit, barrier, "an alien bumps into it")
+	for mask: int in [_player.collision_mask, PhysicsLayers.SHOTS]:
+		hit = _ray(outside, inside, mask).get(&"collider") as Object
+		assert_ne(hit, barrier, "mask %d passes" % mask)
 
 
 func test_camera_sees_inside_while_aboard() -> void:
@@ -271,8 +290,8 @@ func _move(player: Player, target: Vector3) -> void:
 	await wait_physics_frames(5)
 
 
-## What a ray from `from` to `to` hits, ignoring the player.
-func _ray(from: Vector3, to: Vector3) -> Dictionary:
-	var query := PhysicsRayQueryParameters3D.create(from, to)
+## What a ray from `from` to `to` hits on `mask`'s layers, ignoring the player.
+func _ray(from: Vector3, to: Vector3, mask: int = 0xFFFFFFFF) -> Dictionary:
+	var query := PhysicsRayQueryParameters3D.create(from, to, mask)
 	query.exclude = [_player.get_rid()]
 	return _ship.get_world_3d().direct_space_state.intersect_ray(query)

@@ -197,6 +197,8 @@ func _ready() -> void:
 	if home == Vector3.INF:
 		home = global_position
 	add_to_group(GROUP)
+	# Never gets aboard: the ramp door's barrier stops it (see `Ship`), fliers too.
+	collision_mask |= PhysicsLayers.ALIENS_ONLY
 	health = max_health()
 	GameEvents.bus.alien_appeared.emit(self)
 	_animator.run_speed = strain.move_speed

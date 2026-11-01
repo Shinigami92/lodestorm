@@ -5,10 +5,10 @@ extends WorldPanel
 ## "Quit"; `pause` again (or "Resume") puts it away. Like the other 3D menus, the camera moves in
 ## while it's open, framing the player, the whole ring (its marks, pointers and the ship's
 ## countdown) and the card, and the player stands still meanwhile.
-## Solo, the game stops while it's open (`pausing`: aliens, the timer, the storm), and it opens by
-## itself when the window loses focus (`pause_on_focus_loss`). In co-op the game goes on, and the
-## card says so. "Quit" ends the game like the bed: aboard right away, during a run after asking
-## (the run is lost).
+## Solo, the game stops while it's open (`pausing`: aliens, the timer, the storm); it never opens
+## by itself (not when the game loses focus). In co-op the game goes on, and the card says so.
+## "Quit" ends the game like the bed: aboard right away, during a run after asking (the run is
+## lost).
 
 ## How far the card floats beside the suit ring (towards the camera's right, beyond its marks,
 ## pointers and the ship's countdown; m), centered on the feet on screen, so it covers neither.
@@ -19,9 +19,6 @@ const BODY_TOP: float = 2.0
 const MARGIN: float = 0.05
 ## Steps that settle the card's size and the view (each depends on the other).
 const FIT_STEPS: int = 6
-
-## Whether it opens by itself when the window loses focus, solo (off for windowed probes).
-static var pause_on_focus_loss: bool = true
 
 ## Whether "Quit" quits the game (off in tests).
 @export var quits: bool = true
@@ -77,17 +74,6 @@ func _input(event: InputEvent) -> void:
 		super(event)
 	elif event.is_action_pressed(&"pause") and can_open():
 		get_viewport().set_input_as_handled()
-		open(holder)
-
-
-func _notification(what: int) -> void:
-	if (
-		what == NOTIFICATION_APPLICATION_FOCUS_OUT
-		and pause_on_focus_loss
-		and not user
-		and can_open()
-		and SaveGame.is_solo(get_tree())
-	):
 		open(holder)
 
 

@@ -28,7 +28,6 @@ func before_each() -> void:
 func after_each() -> void:
 	TranslationServer.set_locale("en")
 	GameSettings.ring_size = GameSettings.RING_MEDIUM
-	PausePanel.pause_on_focus_loss = false
 	get_tree().paused = false
 	process_mode = Node.PROCESS_MODE_INHERIT
 
@@ -154,14 +153,11 @@ func test_someone_joining_lets_the_game_go_on() -> void:
 	guest.free()
 
 
-func test_focus_loss_pauses_solo() -> void:
+func test_focus_loss_leaves_it_closed() -> void:
 	_panel.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
-	assert_false(_panel.is_shown(), "not while turned off")
-	PausePanel.pause_on_focus_loss = true
-	_panel.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
-	assert_true(_panel.is_shown())
-	assert_true(get_tree().paused)
-	_panel.close()
+	get_window().focus_exited.emit()
+	assert_false(_panel.is_shown())
+	assert_false(get_tree().paused)
 
 
 func test_not_while_using_a_menu() -> void:

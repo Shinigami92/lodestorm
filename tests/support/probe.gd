@@ -22,10 +22,9 @@ var args: PackedStringArray = []
 
 
 func _init() -> void:
-	# No saves read or written, no title view, and no pause when the window loses focus.
+	# No saves read or written, and no title view.
 	SaveGame.directory = ""
 	TitleView.shows = false
-	PausePanel.pause_on_focus_loss = false
 
 
 func _ready() -> void:

@@ -102,6 +102,12 @@
       "seed": 1,
       "text": "Drift Basin. Das Salz ist weit offen, es gibt kaum Deckung vor dem, was kommt. Und das Wrack sieht aus, als wäre es schon immer da gewesen. Das gefällt mir nicht."
     },
+    "261ba7ca6c2bc31c": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das war das letzte Teil. Jetzt bring die Teile zum Schiff."
+    },
     "284d6320b337e01e": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -185,12 +191,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Sturm ist im Anmarsch. Die Rampe ist unten, also kommt alle zurück."
-    },
-    "595e3f8f52d0a277": {
-      "anchor": "3581bf6c2d6006f9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Das ist der ganze Anzug. Bring ihn heil an Bord."
     },
     "59fd912f82b9c338": {
       "anchor": "3581bf6c2d6006f9",
@@ -462,17 +462,17 @@
       "seed": 1,
       "text": "Cassor. Salzebenen und dichter Bewuchs, und der Boden dazwischen hält nicht immer. Da draußen gibt es Erdlöcher."
     },
+    "f7d820ec5d49d798": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das war das letzte Teil. Jetzt alle mit den Teilen zurück zum Schiff."
+    },
     "f889d730db3145a3": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Während einer Mission können wir keinen neuen Kurs setzen. Sobald alle wieder an Bord sind und die Rampe oben ist, heben wir von selbst wieder ab."
-    },
-    "fbf7441076ba92b8": {
-      "anchor": "3581bf6c2d6006f9",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Das ist der ganze Anzug. Bringt ihn heil an Bord, alle zusammen."
     }
   },
   "en": {
@@ -578,6 +578,12 @@
       "seed": 1,
       "text": "Drift Basin. The salt is wide open, so there's little cover from whatever comes. And that wreck looks as if it had always been there. I don't like it."
     },
+    "261ba7ca6c2bc31c": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's the last piece. Now get the pieces back to the ship."
+    },
     "284d6320b337e01e": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -661,12 +667,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The storm is on its way. The ramp is down, so come on back, all of you."
-    },
-    "595e3f8f52d0a277": {
-      "anchor": "b39c4473829e205a",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "That's the whole suit. Bring it back aboard in one piece."
     },
     "59fd912f82b9c338": {
       "anchor": "b39c4473829e205a",
@@ -938,17 +938,17 @@
       "seed": 1,
       "text": "Cassor. Salt flats and thick growth, and the ground in between doesn't always hold. There are sinkholes out there."
     },
+    "f7d820ec5d49d798": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's the last piece. Now everyone back to the ship with the pieces."
+    },
     "f889d730db3145a3": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "We can't set a new course during a mission. Once everyone is back aboard and the ramp is up, we take off again by ourselves."
-    },
-    "fbf7441076ba92b8": {
-      "anchor": "b39c4473829e205a",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "That's the whole suit. Bring it back aboard in one piece, all of you."
     }
   }
 }

@@ -152,7 +152,10 @@ func _show_line(i: int, entry: BoardEntry) -> void:
 	var note: Label = _notes[i]
 	title.text = entry.title if entry else ""
 	note.text = entry.note if entry else ""
-	var heading: bool = entry != null and entry.kind == BoardEntry.Kind.HEADING
+	# The done quests' group reads as a heading of its own too (with its arrow).
+	var heading: bool = (
+		entry != null and entry.kind in [BoardEntry.Kind.HEADING, BoardEntry.Kind.DONE]
+	)
 	title.theme_type_variation = &"CardStatus" if heading else &""
 	title.modulate = (
 		CardPalette.NOTE if entry and entry.kind == BoardEntry.Kind.NOTE else Color.WHITE

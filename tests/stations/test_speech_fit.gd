@@ -82,6 +82,29 @@ func test_every_quest_line_fits_in_every_language() -> void:
 	npc.close()
 
 
+## A quest's offer and its steps' hand-ins are rows of the talk card, a diamond in front of each.
+func test_every_quest_row_fits_the_talk_card_in_every_language() -> void:
+	var npc := _ship.get_node(NPCS[CREW[0].resource_path]) as Npc
+	_player.global_position = npc.use_point.global_position
+	npc.open(_player)
+	await wait_process_frames(1)
+	var card := npc.card_menu as TalkCard
+	var diamond: Texture2D = QuestMark.diamond_texture(true)
+	for locale: String in SettingsList.languages():
+		TranslationServer.set_locale(locale)
+		for quest: Quest in QuestLog.CATALOG.quests:
+			var topics: Array[Topic] = [quest.offer]
+			for step: QuestStep in quest.steps:
+				if step.hand_in:
+					topics.append(step.hand_in)
+			for topic: Topic in topics:
+				var texts: Array[String] = [tr(topic.title), tr("Goodbye")]
+				card._show_buttons(texts, [true, false], 0, [diamond, null], 1)
+				await wait_process_frames(1)
+				_assert_card_fits(npc, "%s %s row %s" % [locale, quest.id, topic.title])
+	npc.close()
+
+
 func test_every_station_line_card_and_remark_fits_in_every_language() -> void:
 	var voyage := _map.get_node("Voyage") as Voyage
 	voyage.select(voyage.offer_for_station(voyage.settings.system.body_by_id(&"ostra")))

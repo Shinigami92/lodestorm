@@ -1429,7 +1429,7 @@ msgid "Oh, hi! Mind the parts on the floor."
 msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
-msgid "Where have you been today? Somewhere with a sky?"
+msgid "Been down on a planet today? What was the sky like?"
 msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
@@ -3107,11 +3107,11 @@ msgid "Out there"
 msgstr ""
 
 #: game/quests/suit_tech/out_there.tres
-msgid "Can I ask you something? Your ship has a whole room for suits and nobody to look after them. I could do that. Nobody on this station knows suits better than I do."
+msgid "Can I ask you something? Ships like yours have a room just for suits. Who looks after yours? I could do that. Nobody on this station knows suits better than I do."
 msgstr ""
 
 #: game/quests/suit_tech/out_there.tres
-msgid "But first I'd need a suit of my own, one made for planets. Ours are only good for the docks. My father was with the survey, and he says its old crates on Cinder Steps still hold one, in pieces."
+msgid "But first I'd need a planet suit of my own. Every suit on Ostra is made for the docks, not for the storms down there. My father was with the survey, and he says its old crates on Cinder Steps still hold one, in pieces."
 msgstr ""
 
 #: game/quests/suit_tech/out_there.tres
@@ -3155,11 +3155,11 @@ msgid "I'll grab my bag. Don't you dare leave without me!"
 msgstr ""
 
 #: game/quests/suit_tech/out_there.tres
-msgid "That's the whole suit. Bring it back aboard in one piece."
+msgid "That's the last piece. Now get the pieces back to the ship."
 msgstr ""
 
 #: game/quests/suit_tech/out_there.tres
-msgid "That's the whole suit. Bring it back aboard in one piece, all of you."
+msgid "That's the last piece. Now everyone back to the ship with the pieces."
 msgstr ""
 
 #: game/refinery/alloys/alloy_auralt.tres

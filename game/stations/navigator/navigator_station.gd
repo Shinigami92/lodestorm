@@ -22,6 +22,8 @@ extends Station
 ## Its `hologram` (`NavigatorHologram`, the `View` child) builds and places the views; the star's
 ## name is on the card. The card floats beside the hologram, so it never covers
 ## a region.
+## A destination chosen elsewhere (the quest board's "Set as destination") shows on the table too:
+## its landing site or its station's map (`_follow_destination`).
 ## Players use it from anywhere around the table; walking away leaves the hologram as it is.
 
 enum Level { SYSTEM, BODY, REGION }
@@ -61,6 +63,8 @@ var _site: StationPart
 var _parts: Array[StationPart] = []
 var _parts_level: Level = Level.SYSTEM
 var _since_diamonds: float = DIAMONDS_REFRESH
+## The destination last looked at (see `_follow_destination`).
+var _followed: MissionBrief
 
 ## The system view and the globe (above the table).
 @onready var hologram: NavigatorHologram = $View
@@ -92,6 +96,7 @@ func _process(delta: float) -> void:
 	zoom = lerpf(zoom, zoom_target, 1.0 - exp(-ZOOM_SPEED * delta))
 	if absf(zoom - zoom_target) < 0.002:
 		zoom = zoom_target
+	_follow_destination()
 	_keep_landing_site_shown()
 	_show_zoom()
 	_since_diamonds += delta
@@ -356,6 +361,21 @@ func _show_landing_site() -> bool:
 func _show_station_map() -> bool:
 	var offer: MissionBrief = get_offer(body)
 	return offer != null and (offer == voyage.previewed or voyage.preview(offer))
+
+
+## Shows a destination chosen elsewhere (not the one shown, e.g. at the quest board): its landing
+## site, or its station's map. Not the place the ship is at (a save loaded while docked).
+func _follow_destination() -> void:
+	var chosen: MissionBrief = voyage.destination
+	if chosen == _followed:
+		return
+	_followed = chosen
+	if not chosen or chosen == voyage.brief or chosen == voyage.previewed:
+		return
+	if chosen.station:
+		show_body(chosen.station)
+	elif chosen.region:
+		show_region(chosen.region)
 
 
 ## At a landing site, keeps showing it (after a run, its region offers a new section); the same at

@@ -24,17 +24,23 @@
       "seed": 1,
       "text": "Da ist noch Arbeit dran, aber das kann ich an Bord machen. Wenn ich zum ersten Mal einen Planeten betrete, trag ich diesen Anzug."
     },
-    "25cd41090784af8d": {
+    "2b9f93802518dcd0": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "Aber dafür bräuchte ich erst einen eigenen Anzug, einen für Planeten. Unsere taugen nur für die Docks. Mein Vater war bei der Vermessung, und er sagt, in ihren alten Kisten auf Cinder Steps liegt noch einer, in Einzelteilen."
+      "text": "Warst du heute auf einem Planeten? Wie war der Himmel?"
     },
     "3e8ad622b8efb856": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Stimmt was nicht mit deinem Anzug?"
+    },
+    "4221429d21aed05c": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Aber dafür bräuchte ich erst einen eigenen Anzug für Planeten. Jeder Anzug auf Ostra ist für die Docks gemacht, nicht für die Stürme da unten. Mein Vater war bei der Vermessung, und er sagt, in ihren alten Kisten auf Cinder Steps liegt noch einer, in Einzelteilen."
     },
     "4accce84b3ff882e": {
       "anchor": "dc880a8ce29f2392",
@@ -59,12 +65,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Ich repariere die Anzüge der Station, die, die die Dockcrews draußen tragen. Ich bin hier geboren, und ich nehme Anzüge auseinander, seit ich einen Schraubenschlüssel halten kann."
-    },
-    "6544480e63fa0249": {
-      "anchor": "dc880a8ce29f2392",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Kann ich dich was fragen? Euer Schiff hat einen ganzen Raum für Anzüge und niemanden, der sich darum kümmert. Das könnte ich machen. Keiner auf dieser Station kennt sich mit Anzügen besser aus als ich."
     },
     "6a2489d0dec42e7d": {
       "anchor": "dc880a8ce29f2392",
@@ -95,6 +95,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Ich hol nur meine Tasche. Wehe, ihr fliegt ohne mich los!"
+    },
+    "85d1326f75dd26fd": {
+      "anchor": "dc880a8ce29f2392",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Kann ich dich was fragen? Schiffe wie eures haben einen eigenen Raum für Anzüge. Wer kümmert sich bei euch darum? Das könnte ich machen. Keiner auf dieser Station kennt Anzüge besser als ich."
     },
     "86c748b906dfdd27": {
       "anchor": "dc880a8ce29f2392",
@@ -138,12 +144,6 @@
       "seed": 1,
       "text": "Der Fähigkeitenbaum ist im Raum neben meinem. Jede Fähigkeit bringt deinem Anzug etwas Neues bei, zum Beispiel einen schnellen Schub oder mehr Ersatzmagazine."
     },
-    "f56f5179fdc18f28": {
-      "anchor": "dc880a8ce29f2392",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Wo warst du heute? Irgendwo mit einem Himmel?"
-    },
     "f70ef0def5dcc1fb": {
       "anchor": "dc880a8ce29f2392",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -176,17 +176,23 @@
       "seed": 1,
       "text": "It needs work, but I can do that aboard. The first time I step onto a planet, I'll be wearing this."
     },
-    "25cd41090784af8d": {
+    "2b9f93802518dcd0": {
       "anchor": "1bb393d288e21b8b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
-      "text": "But first I'd need a suit of my own, one made for planets. Ours are only good for the docks. My father was with the survey, and he says its old crates on Cinder Steps still hold one, in pieces."
+      "text": "Been down on a planet today? What was the sky like?"
     },
     "3e8ad622b8efb856": {
       "anchor": "1bb393d288e21b8b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Something wrong with your suit?"
+    },
+    "4221429d21aed05c": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "But first I'd need a planet suit of my own. Every suit on Ostra is made for the docks, not for the storms down there. My father was with the survey, and he says its old crates on Cinder Steps still hold one, in pieces."
     },
     "4accce84b3ff882e": {
       "anchor": "1bb393d288e21b8b",
@@ -211,12 +217,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "I fix the station's suits, the ones the dock crews wear outside. I was born here, and I've been taking suits apart since I could hold a wrench."
-    },
-    "6544480e63fa0249": {
-      "anchor": "1bb393d288e21b8b",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Can I ask you something? Your ship has a whole room for suits and nobody to look after them. I could do that. Nobody on this station knows suits better than I do."
     },
     "6a2489d0dec42e7d": {
       "anchor": "1bb393d288e21b8b",
@@ -247,6 +247,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "I'll grab my bag. Don't you dare leave without me!"
+    },
+    "85d1326f75dd26fd": {
+      "anchor": "1bb393d288e21b8b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Can I ask you something? Ships like yours have a room just for suits. Who looks after yours? I could do that. Nobody on this station knows suits better than I do."
     },
     "86c748b906dfdd27": {
       "anchor": "1bb393d288e21b8b",
@@ -289,12 +295,6 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The skill graph is in the room next to mine. Every skill teaches your suit something new, like a quick dash or more spare magazines."
-    },
-    "f56f5179fdc18f28": {
-      "anchor": "1bb393d288e21b8b",
-      "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
-      "text": "Where have you been today? Somewhere with a sky?"
     },
     "f70ef0def5dcc1fb": {
       "anchor": "1bb393d288e21b8b",

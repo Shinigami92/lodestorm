@@ -43,7 +43,7 @@ until = &"crew.suit_tech.joined"
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["Hi again! What do you need?", "Something wrong with your suit?", "Ask me anything!", "What can I do for you today?"])
-place_prompts = Array[String](["Oh, hi! Mind the parts on the floor.", "Where have you been today? Somewhere with a sky?", "Hi! Is something wrong with your suit? Let me see."])
+place_prompts = Array[String](["Oh, hi! Mind the parts on the floor.", "Been down on a planet today? What was the sky like?", "Hi! Is something wrong with your suit? Let me see."])
 topics = Array[ExtResource("3_topic")]([SubResource("Resource_armor"), SubResource("Resource_skills"), SubResource("Resource_about"), SubResource("Resource_about_bench")])
 
 [resource]

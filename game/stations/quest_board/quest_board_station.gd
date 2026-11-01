@@ -3,12 +3,12 @@ extends Station
 ## The quest board on the bridge's back wall (see docs/design/missions.md, Quests): a screen with
 ## three tabs, the ship's quests (`BoardLists.quest_lines`), the jobs of whoever looks at it
 ## (`BoardLists.job_lines`, the ones finished since they last looked on top) and the ship's messages
-## (`BoardLists.message_lines`), played aloud from its speaker (`BoardSpeaker`), an amber marker
-## above it while one is unheard. Its parts are the open tab and the screen's lines (a `StationPart`
-## on each line's right end; the screen marks the selected and hovered one); `move_*` up and down
-## walk the lines and scroll the list, left and right and `tab_prev`/`tab_next` switch tabs, the
-## wheel scrolls. The card beside the board shows the selected line: a quest with "Track" and "Set
-## as destination" (where its step goes, `QuestVisit.destination`: chosen as at the navigator, the
+## (`BoardLists.message_lines`), played aloud from its speaker (`BoardSpeaker`). Its parts are the
+## open tab and the screen's lines (a `StationPart` on each line's right end; the screen marks the
+## selected and hovered one); `move_*` up and down walk the lines and scroll the list, left and
+## right and `tab_prev`/`tab_next` switch tabs, the wheel scrolls. The card beside the board shows
+## the selected line: a quest with "Track" and "Set as destination" (where its step goes,
+## `QuestVisit.destination`: chosen as at the navigator, which then shows it on the holo table, the
 ## pilot then sets course from the cockpit), the done quests' group with "Show"/"Hide", a job, a
 ## message with "Play"/"Stop", or the tab. Closing it after the jobs were shown clears its user's
 ## finished ones (`FinishedJobs`).
@@ -19,10 +19,6 @@ enum Tab { QUESTS, JOBS, MESSAGES }
 const REFRESH: float = 1.0
 ## Gap between the board's right edge and the card, in m.
 const CARD_GAP: float = 0.3
-## Where the marker of unheard messages floats: above the board's top right corner (clear of the
-## room's sign over its middle), in m.
-const MARKER_HEIGHT: float = 3.75
-const MARKER_SIDE: float = 2.45
 
 ## The tab shown.
 var tab: Tab = Tab.QUESTS
@@ -47,9 +43,6 @@ var _tab_parts: Array[StationPart] = []
 var _jobs_shown: bool = false
 var _looker: Player
 var _since_refresh: float = 0.0
-var _marker_time: float = 0.0
-## Floats above the board while a message is unheard.
-var _unheard_marker: MeshInstance3D
 
 @onready var screen: WorldPanel = $Screen
 
@@ -66,7 +59,6 @@ func _ready() -> void:
 	speaker.name = "Speaker"
 	speaker.position = screen.position
 	add_child(speaker)
-	_add_unheard_marker()
 	update_list()
 
 
@@ -76,7 +68,6 @@ func _process(delta: float) -> void:
 	if _since_refresh >= REFRESH:
 		update_list()
 	_mark()
-	_float_marker(delta)
 
 
 ## The quest log shown: `quests` when set, else the ship's.
@@ -131,7 +122,6 @@ func update_list() -> void:
 	first = clampi(first, 0, maxi(entries.size() - BoardScreen.LINES, 0))
 	var unheard: int = message_log.unheard() if message_log else 0
 	var news: Array[int] = [0, player.finished_jobs.entries.size() if player else 0, unheard]
-	_unheard_marker.visible = unheard > 0
 	board.show_tabs(tab, news)
 	board.show_lines(entries, first)
 	_place_parts(board)
@@ -379,35 +369,6 @@ func _mark() -> void:
 			_tab_parts.find(selected),
 			_tab_parts.find(hovered)
 		)
-
-
-## The amber marker of unheard messages (round, like an NPC's for something new).
-func _add_unheard_marker() -> void:
-	var sphere := SphereMesh.new()
-	sphere.radius = 0.1
-	sphere.height = 0.2
-	sphere.radial_segments = 16
-	sphere.rings = 8
-	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_color = CardPalette.STATUS
-	sphere.material = material
-	_unheard_marker = MeshInstance3D.new()
-	_unheard_marker.name = "UnheardMarker"
-	_unheard_marker.mesh = sphere
-	_unheard_marker.layers = 8
-	_unheard_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_unheard_marker.position = Vector3(MARKER_SIDE, MARKER_HEIGHT, screen.position.z)
-	_unheard_marker.visible = false
-	add_child(_unheard_marker)
-
-
-## Bobs the marker of unheard messages while it shows.
-func _float_marker(delta: float) -> void:
-	if not _unheard_marker.visible:
-		return
-	_marker_time += delta
-	_unheard_marker.position.y = MARKER_HEIGHT + 0.04 * sin(_marker_time * 3.0)
 
 
 func _board() -> BoardScreen:

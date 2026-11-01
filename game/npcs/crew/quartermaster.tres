@@ -65,11 +65,19 @@ lines = Array[String](["Until we find a gunsmith, the bench in the weapons room 
 requires = Array[StringName]([&"quartermaster.greeting"])
 until = &"crew.gunsmith.joined"
 
+[sub_resource type="Resource" id="Resource_gunsmith"]
+script = ExtResource("3_topic")
+id = &"quartermaster.gunsmith"
+title = "A gunsmith"
+lines = Array[String](["The bench in the weapons room does what it's told, but nobody aboard knows weapons the way a real gunsmith does.", "There's a machinist with a stall in Ostra's concourse, Dace. He made parts for the first expedition. Have a word with him next time we dock."])
+requires = Array[StringName]([&"quartermaster.greeting", &"quest.colony_arms"])
+until = &"crew.gunsmith.joined"
+
 [sub_resource type="Resource" id="Resource_dialogue"]
 script = ExtResource("2_dialogue")
 greeting = SubResource("Resource_greeting")
 prompts = Array[String](["How can I help you?", "Something on your mind?", "Go ahead, I'm listening.", "Questions about your gear?"])
-topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResource("Resource_spares"), SubResource("Resource_reload"), SubResource("Resource_timing"), SubResource("Resource_brask"), SubResource("Resource_range"), SubResource("Resource_weapons_room")])
+topics = Array[ExtResource("3_topic")]([SubResource("Resource_ammo"), SubResource("Resource_spares"), SubResource("Resource_reload"), SubResource("Resource_timing"), SubResource("Resource_brask"), SubResource("Resource_range"), SubResource("Resource_weapons_room"), SubResource("Resource_gunsmith")])
 
 [sub_resource type="Resource" id="Reaction_first_run_won_solo"]
 script = ExtResource("9_reaction")

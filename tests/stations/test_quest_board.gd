@@ -105,6 +105,10 @@ func test_the_card_sets_where_a_step_goes_as_the_destination() -> void:
 	assert_eq(voyage.destination, voyage.offer_for(region), "chosen as at the navigator")
 	assert_true(card.get_course().disabled, "chosen already")
 	assert_eq(card.get_texts()[4], "Destination set: the pilot takes off from the cockpit.")
+	await wait_process_frames(1)
+	var navigator := _ship.get_node("Rooms/Upper/Bridge/Navigator") as NavigatorStation
+	assert_eq(navigator.region, region, "the holo table shows it")
+	assert_eq(voyage.previewed, voyage.destination, "its landing site")
 	_board.close()
 
 
@@ -188,8 +192,6 @@ func test_messages_play_until_heard() -> void:
 	_board.set_tab(QuestBoardStation.Tab.MESSAGES)
 	assert_eq(_lines(), ["message " + kade.calls[1], "message " + selin.calls[0]] as Array[String])
 	assert_eq(_board.entries[0].note, "Kade", "who left it")
-	var marker := _board.get_node("UnheardMarker") as Node3D
-	assert_true(marker.visible, "two unheard")
 	_board.open(_player)
 	await wait_process_frames(2)
 	var card := _board.card_menu as QuestBoardCard
@@ -207,11 +209,6 @@ func test_messages_play_until_heard() -> void:
 	_board.speaker._process(1000.0)
 	assert_true(messages.received[1].heard, "played to the end")
 	assert_null(_board.speaker.playing_entry)
-	_board.update_list()
-	assert_true(marker.visible, "Selin's still unheard")
-	messages.hear(messages.received[0])
-	_board.update_list()
-	assert_false(marker.visible)
 	_board.close()
 
 

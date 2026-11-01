@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="Quest" format=3 uid="uid://1v8ubjftsqvy"]
+
+[ext_resource type="Script" uid="uid://w5l30l8frnjf" path="res://game/npcs/topic.gd" id="s_topic"]
+[ext_resource type="Script" uid="uid://bdto4xx2jvios" path="res://game/quests/quest.gd" id="s_quest"]
+[ext_resource type="Script" uid="uid://7vg4utlxx3ie" path="res://game/quests/quest_step.gd" id="s_step"]
+[ext_resource type="Script" uid="uid://bbh57jogeoedv" path="res://game/quests/quest_goal.gd" id="s_goal"]
+[ext_resource type="Script" uid="uid://dwkdaijmiqcvw" path="res://game/quests/radio_line.gd" id="s_radio"]
+[ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="s_placement"]
+[ext_resource type="Script" uid="uid://cu8bl2uno8g2u" path="res://game/quests/recover_item_goal.gd" id="s_item"]
+[ext_resource type="PackedScene" uid="uid://dmfxiossn5f8f" path="res://game/locations/parts/prospectors_cache.tscn" id="cache_scene"]
+[ext_resource type="PackedScene" uid="uid://rmwla7ygc8p4" path="res://game/quests/items/sealed_case.tscn" id="case_scene"]
+
+[sub_resource type="Resource" id="Topic_offer"]
+script = ExtResource("s_topic")
+id = &"cook.rooks_leftovers"
+title = "Rook's leftovers"
+lines = Array[String](["So you found them all: a gunsmith, a suit tech, and old Hollis, of all people. The whole bar is talking about it.", "All right, I'll cook for you. But not without my galley crate. It's in Rook's old cache on Rimeback, on Lisk. We left supplies there on our way further in, a year ago, and on the way back nobody wanted to stop.", "Rook won't go back for it, and I won't ask him. Bring it to me, and I'll start packing."])
+
+[sub_resource type="Resource" id="RadioLine_landing"]
+script = ExtResource("s_radio")
+text = "Tamsin here. Rook's old cache isn't far from where we landed. Fenna's crate should still be there."
+coop_text = "Tamsin here. Rook's old cache isn't far from where we landed. Fenna's crate should still be there."
+speaker = &"pilot"
+
+[sub_resource type="Resource" id="PartPlacement_cache"]
+script = ExtResource("s_placement")
+scene = ExtResource("cache_scene")
+rule = 2
+
+[sub_resource type="Resource" id="RecoverItemGoal_crate"]
+script = ExtResource("s_item")
+site_part = SubResource("PartPlacement_cache")
+item = "the galley crate"
+item_scene = ExtResource("case_scene")
+region = &"rimeback"
+landing_line = SubResource("RadioLine_landing")
+
+[sub_resource type="Resource" id="RadioLine_ready"]
+script = ExtResource("s_radio")
+text = "That's Fenna's crate. Get it aboard, and we'll finally eat something decent."
+coop_text = "That's Fenna's crate. Get it aboard, all of you, and we'll finally eat something decent."
+speaker = &"pilot"
+
+[sub_resource type="Resource" id="Topic_crate"]
+script = ExtResource("s_topic")
+id = &"cook.rooks_leftovers_crate"
+title = "The galley crate"
+lines = Array[String](["My crate! Still sealed, and it still smells of Rook's terrible coffee.", "And don't ask me why we went so far in that time. Not yet. Some stories need a full table.", "Now go on. I'll say goodbye to Rook and meet you at the ship."])
+
+[sub_resource type="Resource" id="QuestStep_crate"]
+script = ExtResource("s_step")
+id = &"crate"
+text = "Recover Fenna's galley crate from Rook's old cache on Rimeback."
+goals = Array[ExtResource("s_goal")]([SubResource("RecoverItemGoal_crate")])
+place_prompts = Array[String](["Did you find my crate?"])
+hand_in = SubResource("Topic_crate")
+joins = &"cook"
+ready_line = SubResource("RadioLine_ready")
+
+[resource]
+script = ExtResource("s_quest")
+id = &"rooks_leftovers"
+title = "Rook's leftovers"
+giver = &"cook"
+requires = Array[StringName]([&"crew.gunsmith.joined", &"crew.suit_tech.joined", &"crew.miner_mechanic.joined"])
+until = &"crew.cook.joined"
+offer = SubResource("Topic_offer")
+replaces = &"cook.cooking"
+steps = Array[ExtResource("s_step")]([SubResource("QuestStep_crate")])

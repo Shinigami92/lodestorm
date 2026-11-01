@@ -6,6 +6,18 @@
       "seed": 1,
       "text": "Have a drink at the bar while you're there. Nell hears even more gossip than I do, and that's saying something."
     },
+    "0b8e5bcdb8b2fbd7": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sit down if you like. Rook won't mind, and if he does, even better."
+    },
+    "0ca4457b7921d910": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "And don't ask me why we went so far in that time. Not yet. Some stories need a full table."
+    },
     "23934cb1babd93ea": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -30,11 +42,47 @@
       "seed": 1,
       "text": "Brannik runs the armory and the ammo. Dace improves your weapons in the weapons room, and Wren looks after your suit in the room next door."
     },
+    "3cabcf8b80aa953d": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hey, you. I've heard a thing or two about your crew."
+    },
+    "49e66e141d81aa0b": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "All right, I'll cook for you. But not without my galley crate. It's in Rook's old cache on Rimeback, on Lisk. We left supplies there on our way further in, a year ago, and on the way back nobody wanted to stop."
+    },
     "561f91ace7bdc001": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hungry? Come by the mess hall and sit down anywhere. It's not fancy, but it's warm, and nobody out there is going to cook for you."
+    },
+    "67e9b2cc8d023ed6": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I cooked in the settlements' canteen, and then for two years for Rook's crew. Good pay, long hours, and a captain who never knows when to turn back."
+    },
+    "6a9e9473e32555bb": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Did you find my crate?"
+    },
+    "6bee24548015e11c": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I left after he flew us into the storms once too often. He still keeps my seat at his table. I think he hopes I'll come back."
+    },
+    "74cb0dfe6a0de341": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Find the rest of your crew first. A crew that keeps coming back is worth cooking for."
     },
     "7cdd4223838eb44d": {
       "anchor": "8ddec42848e6413f",
@@ -48,17 +96,41 @@
       "seed": 1,
       "text": "I signed on to cook, but mostly I listen. Over a hot meal, people say more than they'd ever admit."
     },
+    "8f7b083afbf294fd": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So you found them all: a gunsmith, a suit tech, and old Hollis, of all people. The whole bar is talking about it."
+    },
     "9d3e61f2cf8f5561": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hey, you. What's on your mind?"
     },
+    "a6b3ba6c8114eefa": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Now go on. I'll say goodbye to Rook and meet you at the ship."
+    },
     "a79c755c52dbdf13": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Moons around a gas giant! When I signed on, I never thought I'd see Gaulm out of a window. Somebody has to tell me what it looks like from down there."
+    },
+    "a82d26206e3c470e": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Cook for your crew? Maybe. But I hear your ship still has empty rooms, and I've cooked for half a table long enough."
+    },
+    "b5e158ef98c6529a": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "My crate! Still sealed, and it still smells of Rook's terrible coffee."
     },
     "bfe4447353106799": {
       "anchor": "8ddec42848e6413f",
@@ -84,11 +156,23 @@
       "seed": 1,
       "text": "Everyone comes through my mess hall sooner or later. So if you want to know what's going on aboard, I'm the one to ask."
     },
+    "eb7b1cc9c67fd0ec": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "What can I tell you? I know everybody's business here."
+    },
     "f1be5a379c938dfc": {
       "anchor": "8ddec42848e6413f",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hungry, or just curious?"
+    },
+    "fa2fee468331efff": {
+      "anchor": "8ddec42848e6413f",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Rook won't go back for it, and I won't ask him. Bring it to me, and I'll start packing."
     }
   }
 }

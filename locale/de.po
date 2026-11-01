@@ -121,6 +121,18 @@ msgid "Hey, you. What's on your mind?"
 msgstr "Na, du. Was liegt dir auf dem Herzen?"
 
 #: game/npcs/crew/cook.tres
+msgid "Sit down if you like. Rook won't mind, and if he does, even better."
+msgstr "Setz dich ruhig. Rook stört's nicht, und wenn doch, umso besser."
+
+#: game/npcs/crew/cook.tres
+msgid "Hey, you. I've heard a thing or two about your crew."
+msgstr "Hey, du. Über eure Crew hab ich schon das eine oder andere gehört."
+
+#: game/npcs/crew/cook.tres
+msgid "What can I tell you? I know everybody's business here."
+msgstr "Was willst du wissen? Hier weiß ich über jeden Bescheid."
+
+#: game/npcs/crew/cook.tres
 #: game/npcs/crew/engineer.tres
 #: game/npcs/crew/gunsmith.tres
 #: game/npcs/crew/medic.tres
@@ -186,6 +198,26 @@ msgstr "Angeheuert habe ich zum Kochen, aber vor allem höre ich zu. Bei einer w
 #: game/npcs/crew/cook.tres
 msgid "Most of what I hear is nonsense. Some of it isn't. The trick is telling the difference."
 msgstr "Das meiste, was ich höre, ist Unsinn. Manches nicht. Die Kunst ist, das eine vom anderen zu unterscheiden."
+
+#: game/npcs/crew/cook.tres
+msgid "I cooked in the settlements' canteen, and then for two years for Rook's crew. Good pay, long hours, and a captain who never knows when to turn back."
+msgstr "Ich hab in der Kantine der Siedlungen gekocht und danach zwei Jahre für Rooks Crew. Gute Bezahlung, lange Tage und ein Captain, der nie weiß, wann man umkehren sollte."
+
+#: game/npcs/crew/cook.tres
+msgid "I left after he flew us into the storms once too often. He still keeps my seat at his table. I think he hopes I'll come back."
+msgstr "Ich bin gegangen, nachdem er uns einmal zu oft in die Stürme geflogen hat. Meinen Platz an seinem Tisch hält er mir trotzdem frei. Ich glaube, er hofft, dass ich zurückkomme."
+
+#: game/npcs/crew/cook.tres
+msgid "Cooking for us"
+msgstr "Für uns kochen"
+
+#: game/npcs/crew/cook.tres
+msgid "Cook for your crew? Maybe. But I hear your ship still has empty rooms, and I've cooked for half a table long enough."
+msgstr "Für eure Crew kochen? Vielleicht. Aber ich hör, auf eurem Schiff stehen noch Räume leer, und für einen halben Tisch hab ich lange genug gekocht."
+
+#: game/npcs/crew/cook.tres
+msgid "Find the rest of your crew first. A crew that keeps coming back is worth cooking for."
+msgstr "Sucht erst den Rest eurer Crew zusammen. Für eine Crew, die immer wieder zurückkommt, lohnt sich das Kochen."
 
 #: game/npcs/crew/cook.tres
 msgid "Moons around a gas giant! When I signed on, I never thought I'd see Gaulm out of a window. Somebody has to tell me what it looks like from down there."
@@ -373,6 +405,18 @@ msgid "Got a weapon that needs work?"
 msgstr "Hast du eine Waffe, an der ich arbeiten soll?"
 
 #: game/npcs/crew/gunsmith.tres
+msgid "Need something fixed? Pumps, hatches, anything with a thread."
+msgstr "Muss was repariert werden? Pumpen, Luken, alles mit Gewinde."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Careful, the bench is still hot."
+msgstr "Vorsicht, die Werkbank ist noch heiß."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Looking for something? Most of this was scrap last week."
+msgstr "Suchst du was? Das meiste hier war letzte Woche noch Schrott."
+
+#: game/npcs/crew/gunsmith.tres
 msgid "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
 msgstr "Willkommen im Waffenraum. Im Regal hängt jede Waffe, die ich kenne, und an der Werkbank mache ich deine besser."
 
@@ -443,6 +487,26 @@ msgstr "Das meiste in diesem Regal kenne ich nur aus Zeichnungen. Die erste Expe
 #: game/npcs/crew/gunsmith.tres
 msgid "Sometimes I wonder what they needed weapons like these for."
 msgstr "Manchmal frage ich mich, wofür sie solche Waffen gebraucht haben."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "I'm a machinist from the settlements on Torvane. When the first expedition was getting ready out here, they hired me to make parts for their designs."
+msgstr "Ich bin Maschinist aus den Siedlungen auf Torvane. Als sich die erste Expedition hier draußen vorbereitet hat, haben sie mich angeheuert, Teile für ihre Entwürfe zu bauen."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Since they left, I've been fixing pumps and hatches out of scrap. I still have the drawings of every part I made for them. What I don't have is the ore to make them from."
+msgstr "Seit sie weg sind, flicke ich Pumpen und Luken aus Schrott. Die Zeichnungen von jedem Teil, das ich für sie gebaut hab, hab ich noch. Was mir fehlt, ist das Erz dafür."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Coming aboard"
+msgstr "An Bord kommen"
+
+#: game/npcs/crew/gunsmith.tres
+msgid "I've heard your ship has a weapons room and nobody at the bench. Don't think I haven't thought about it."
+msgstr "Ich hab gehört, euer Schiff hat einen Waffenraum, und niemand steht an der Werkbank. Glaub nicht, dass ich nicht schon darüber nachgedacht hab."
+
+#: game/npcs/crew/gunsmith.tres
+msgid "But I'm not leaving my stall for a crew that hasn't built anything yet. Once you have, I'll hear about it, and we'll talk."
+msgstr "Aber für eine Crew, die noch nichts gebaut hat, geb ich meinen Stand nicht auf. Sobald ihr was gebaut habt, hör ich davon, und dann reden wir."
 
 #: game/npcs/crew/gunsmith.tres
 msgid "A new weapon, fresh off my bench. Take it to the shooting range first, before you take it out there."
@@ -1167,6 +1231,18 @@ msgid "Upgrades take a while, but they keep going while you're out there. A weap
 msgstr "Upgrades dauern eine Weile, laufen aber weiter, während du da draußen bist. Eine Waffe, die du noch nicht hast, baut die Werkbank sofort, sobald du ihren Bauplan hast. Das kostet nur das Erz."
 
 #: game/npcs/crew/quartermaster.tres
+msgid "A gunsmith"
+msgstr "Ein Waffenschmied"
+
+#: game/npcs/crew/quartermaster.tres
+msgid "The bench in the weapons room does what it's told, but nobody aboard knows weapons the way a real gunsmith does."
+msgstr "Die Werkbank im Waffenraum tut, was man ihr sagt, aber keiner an Bord versteht so viel von Waffen wie ein echter Waffenschmied."
+
+#: game/npcs/crew/quartermaster.tres
+msgid "There's a machinist with a stall in Ostra's concourse, Dace. He made parts for the first expedition. Have a word with him next time we dock."
+msgstr "Auf Ostra hat ein Maschinist einen Stand in der Halle, Dace. Er hat Teile für die erste Expedition gebaut. Sprich mal mit ihm, wenn wir das nächste Mal andocken."
+
+#: game/npcs/crew/quartermaster.tres
 msgid "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
 msgstr "Du bist heil zurück, und mit Erz auf dem Rücken. So soll eine erste Mission enden."
 
@@ -1351,6 +1427,18 @@ msgid "What can I do for you today?"
 msgstr "Was kann ich heute für dich tun?"
 
 #: game/npcs/crew/suit_tech.tres
+msgid "Oh, hi! Mind the parts on the floor."
+msgstr "Oh, hallo! Pass auf die Teile am Boden auf."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Been down on a planet today? What was the sky like?"
+msgstr "Warst du heute auf einem Planeten? Wie war der Himmel?"
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Hi! Is something wrong with your suit? Let me see."
+msgstr "Hi! Stimmt was nicht mit deinem Anzug? Lass mal sehen."
+
+#: game/npcs/crew/suit_tech.tres
 msgid "Hi! I keep your suits running: the armor in my room, and the skills in the room next to it."
 msgstr "Hi! Ich halte eure Anzüge in Schuss: die Panzerung in meinem Raum und die Fähigkeiten im Raum daneben."
 
@@ -1399,6 +1487,14 @@ msgstr "Ich bin auf Ostra geboren. Bevor ich zu euch kam, war ich noch nie von d
 #: game/npcs/crew/suit_tech.tres
 msgid "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."
 msgstr "Wenn ihr da unten herumlauft, auf einem echten Planeten unter einem echten Himmel, bin ich also ein bisschen neidisch. Erzähl mir irgendwann, wie es dort ist."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "I fix the station's suits, the ones the dock crews wear outside. I was born here, and I've been taking suits apart since I could hold a wrench."
+msgstr "Ich repariere die Anzüge der Station, die, die die Dockcrews draußen tragen. Ich bin hier geboren, und ich nehme Anzüge auseinander, seit ich einen Schraubenschlüssel halten kann."
+
+#: game/npcs/crew/suit_tech.tres
+msgid "I've never set foot off this station. Every crew that docks here has walked on planets I've only seen through a window. Are the storms down there really as bad as they say?"
+msgstr "Ich hab diese Station noch nie verlassen. Jede Crew, die hier andockt, ist schon auf Planeten gelaufen, die ich nur durchs Fenster kenne. Sind die Stürme da unten wirklich so schlimm, wie alle sagen?"
 
 #: game/npcs/ostra/bartender.tres
 msgid "Bartender"
@@ -2198,6 +2294,18 @@ msgstr "Meine Crew ist klein, aber die beste, die es gibt. Wir sind in mehr Regi
 msgid "We'll see how long you last out there. If you're still flying in a few months, I'll buy you a drink."
 msgstr "Mal sehen, wie lange du da draußen durchhältst. Wenn du in ein paar Monaten noch fliegst, geb ich dir einen aus."
 
+#: game/npcs/ostra/rival_captain.tres
+msgid "Fenna"
+msgstr "Fenna"
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "So Fenna went with you. Fine. Feed her well, she's fed my crew long enough."
+msgstr "Fenna ist also mit euch gegangen. Schön. Gebt ihr gut zu essen, sie hat meine Crew lange genug durchgefüttert."
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Give her a week, and she'll know every secret on your ship. Don't say I didn't warn you."
+msgstr "Gib ihr eine Woche, und sie kennt jedes Geheimnis auf eurem Schiff. Sag nicht, ich hätte dich nicht gewarnt."
+
 #: game/npcs/radio_bubble.gd
 msgid "Radio"
 msgstr "Funk"
@@ -2504,6 +2612,62 @@ msgstr "Miner bauen"
 msgid "Clear the nests"
 msgstr "Nester zerstören"
 
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Rook's leftovers"
+msgstr "Rooks Reste"
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "So you found them all: a gunsmith, a suit tech, and old Hollis, of all people. The whole bar is talking about it."
+msgstr "Ihr habt sie also alle gefunden: einen Waffenschmied, eine Anzugtechnikerin und ausgerechnet den alten Hollis. Die ganze Bar redet davon."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "All right, I'll cook for you. But not without my galley crate. It's in Rook's old cache on Rimeback, on Lisk. We left supplies there on our way further in, a year ago, and on the way back nobody wanted to stop."
+msgstr "Also gut, ich koche für euch. Aber nicht ohne meine Kombüsenkiste. Die steht in Rooks altem Versteck auf Rimeback, auf Lisk. Wir haben dort vor einem Jahr Vorräte gelassen, auf dem Weg weiter rein, und auf dem Rückweg wollte keiner anhalten."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Rook won't go back for it, and I won't ask him. Bring it to me, and I'll start packing."
+msgstr "Rook fliegt da nicht mehr hin, und ich frag ihn nicht. Bring sie mir, dann fang ich an zu packen."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Recover Fenna's galley crate from Rook's old cache on Rimeback."
+msgstr "Birg Fennas Kombüsenkiste aus Rooks altem Versteck auf Rimeback."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Did you find my crate?"
+msgstr "Hast du meine Kiste gefunden?"
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "the galley crate"
+msgstr "die Kombüsenkiste"
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Tamsin here. Rook's old cache isn't far from where we landed. Fenna's crate should still be there."
+msgstr "Hier Tamsin. Rooks altes Versteck ist nicht weit von unserem Landeplatz. Fennas Kiste müsste noch da sein."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "The galley crate"
+msgstr "Die Kombüsenkiste"
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "My crate! Still sealed, and it still smells of Rook's terrible coffee."
+msgstr "Meine Kiste! Immer noch versiegelt, und sie riecht immer noch nach Rooks furchtbarem Kaffee."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "And don't ask me why we went so far in that time. Not yet. Some stories need a full table."
+msgstr "Und frag mich nicht, warum wir damals so weit reingeflogen sind. Noch nicht. Manche Geschichten brauchen einen vollen Tisch."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Now go on. I'll say goodbye to Rook and meet you at the ship."
+msgstr "Jetzt geh schon. Ich verabschiede mich von Rook, dann treffen wir uns am Schiff."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "That's Fenna's crate. Get it aboard, and we'll finally eat something decent."
+msgstr "Das ist Fennas Kiste. Bring sie an Bord, dann gibt's endlich mal was Ordentliches zu essen."
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "That's Fenna's crate. Get it aboard, all of you, and we'll finally eat something decent."
+msgstr "Das ist Fennas Kiste. Bringt sie an Bord, alle zusammen, dann gibt's endlich mal was Ordentliches zu essen."
+
 #: game/quests/deliver_goal.gd
 msgid "Deliver %s"
 msgstr "%s liefern"
@@ -2712,6 +2876,50 @@ msgstr "Bring Kade 80 Vyrel für die Scannerlinsen."
 msgid "80 Vyrel. All three scanners will be running again by tomorrow."
 msgstr "80 Vyrel. Bis morgen laufen wieder alle drei Scanner."
 
+#: game/quests/gunsmith/real_ore.tres
+msgid "Real ore"
+msgstr "Echtes Erz"
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Word gets around. Your crew built a shotgun from one of the colony's old blueprints. That's more than anyone on Ostra has built in years."
+msgstr "Es spricht sich rum. Eure Crew hat aus einem der alten Baupläne der Kolonie eine Schrotflinte gebaut. Das ist mehr, als hier auf Ostra seit Jahren jemand gebaut hat."
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "So here's my offer. Bring me Kyrite and Meridine straight from the ground, not the scrap I get here, and I'll make one of the expedition's parts the way it was meant to be made."
+msgstr "Also, mein Angebot: Bring mir Kyrite und Meridine frisch aus dem Boden, nicht den Schrott, den ich hier kriege, und ich bau eins der Teile der Expedition so, wie es gedacht war."
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "If it holds, I'll close up this stall and come work at your bench. Deal?"
+msgstr "Wenn es hält, mach ich diesen Stand dicht und arbeite an eurer Werkbank. Abgemacht?"
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Bring Dace 80 Kyrite and 20 Meridine at his stall on Waypost Ostra."
+msgstr "Bring Dace 80 Kyrite und 20 Meridine an seinen Stand auf Waypost Ostra."
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Got my ore yet?"
+msgstr "Hast du mein Erz schon?"
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "The first part"
+msgstr "Das erste Teil"
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Real Kyrite, real Meridine. You have no idea how long I've waited to work with ore like this."
+msgstr "Echtes Kyrite, echtes Meridine. Du hast keine Ahnung, wie lange ich darauf gewartet hab, mit so einem Erz zu arbeiten."
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Every part I made from scrap cracked sooner or later. This one won't. I can tell just by holding it."
+msgstr "Jedes Teil, das ich aus Schrott gebaut hab, ist früher oder später gerissen. Das hier nicht. Das merk ich schon, wenn ich es in der Hand halte."
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "I'm done with scrap. Give me a minute to close up the stall, and I'll meet you at your ship."
+msgstr "Schluss mit Schrott. Gib mir eine Minute, den Stand dichtzumachen, dann treffen wir uns an eurem Schiff."
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Tamsin here. We've got Dace's ore in the hold. He's at his stall whenever we dock at Ostra."
+msgstr "Hier Tamsin. Wir haben Dace' Erz im Laderaum. Er ist an seinem Stand, wann immer wir auf Ostra andocken."
+
 #: game/quests/hunt_goal.gd
 msgid "Hunt: %s and their brood nest"
 msgstr "Jagd: %s und ihr Brutnest"
@@ -2778,7 +2986,7 @@ msgstr "Hier Brannik. Die Vermessungsmarkierungen sind irgendwo da unten, mit de
 
 #: game/quests/quartermaster/colony_arms.tres
 msgid "The survey nests"
-msgstr "Die Nester bei den Markierungen"
+msgstr "Die Nester im Moor"
 
 #: game/quests/quartermaster/colony_arms.tres
 msgid "Kade will be pleased. Those markers cost the colony more than you'd think."
@@ -2895,6 +3103,66 @@ msgstr "Die Bauplanfragmente bergen"
 #: game/quests/recover_item_goal.gd
 msgid "Recover %s"
 msgstr "%s bergen"
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Out there"
+msgstr "Da draußen"
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Can I ask you something? Ships like yours have a room just for suits. Who looks after yours? I could do that. Nobody on this station knows suits better than I do."
+msgstr "Kann ich dich was fragen? Schiffe wie eures haben einen eigenen Raum für Anzüge. Wer kümmert sich bei euch darum? Das könnte ich machen. Keiner auf dieser Station kennt Anzüge besser als ich."
+
+#: game/quests/suit_tech/out_there.tres
+msgid "But first I'd need a planet suit of my own. Every suit on Ostra is made for the docks, not for the storms down there. My father was with the survey, and he says its old crates on Cinder Steps still hold one, in pieces."
+msgstr "Aber dafür bräuchte ich erst einen eigenen Anzug für Planeten. Jeder Anzug auf Ostra ist für die Docks gemacht, nicht für die Stürme da unten. Mein Vater war bei der Vermessung, und er sagt, in ihren alten Kisten auf Cinder Steps liegt noch einer, in Einzelteilen."
+
+#: game/quests/suit_tech/out_there.tres
+msgid "He also says it's the roughest place on Torvane, so get ready first. Bring me the pieces, and I'll put the suit back together. And then take me with you?"
+msgstr "Er sagt auch, dass es der rauste Ort auf Torvane ist, also mach dich erst bereit. Bring mir die Teile, und ich setz den Anzug wieder zusammen. Und dann nehmt ihr mich mit?"
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Recover the pieces of an old survey suit from the crates of Cinder Steps."
+msgstr "Birg die Teile eines alten Vermessungsanzugs aus den Kisten von Cinder Steps."
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Any luck on Cinder Steps?"
+msgstr "Schon Glück gehabt auf Cinder Steps?"
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Recover the suit's pieces"
+msgstr "Birg die Teile des Anzugs"
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Tamsin here. Wren's suit is in the survey's old crates somewhere down here. Open every one you find, and watch your step."
+msgstr "Hier Tamsin. Wrens Anzug liegt irgendwo hier unten in den alten Kisten der Vermessung. Mach jede auf, die du findest, und pass auf dich auf."
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Tamsin here. Wren's suit is in the survey's old crates somewhere down here. Open every one you find, and watch each other's backs."
+msgstr "Hier Tamsin. Wrens Anzug liegt irgendwo hier unten in den alten Kisten der Vermessung. Macht jede auf, die ihr findet, und passt aufeinander auf."
+
+#: game/quests/suit_tech/out_there.tres
+msgid "The survey suit"
+msgstr "Der alte Anzug"
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Is that all of it? Look at these seals! Nobody on Ostra could ever make seals like these."
+msgstr "Ist das alles? Schau dir diese Dichtungen an! So was hat hier auf Ostra noch nie jemand hingekriegt."
+
+#: game/quests/suit_tech/out_there.tres
+msgid "It needs work, but I can do that aboard. The first time I step onto a planet, I'll be wearing this."
+msgstr "Da ist noch Arbeit dran, aber das kann ich an Bord machen. Wenn ich zum ersten Mal einen Planeten betrete, trag ich diesen Anzug."
+
+#: game/quests/suit_tech/out_there.tres
+msgid "I'll grab my bag. Don't you dare leave without me!"
+msgstr "Ich hol nur meine Tasche. Wehe, ihr fliegt ohne mich los!"
+
+#: game/quests/suit_tech/out_there.tres
+msgid "That's the last piece. Now get the pieces back to the ship."
+msgstr "Das war das letzte Teil. Jetzt bring die Teile zum Schiff."
+
+#: game/quests/suit_tech/out_there.tres
+msgid "That's the last piece. Now everyone back to the ship with the pieces."
+msgstr "Das war das letzte Teil. Jetzt alle mit den Teilen zurück zum Schiff."
 
 #: game/refinery/alloys/alloy_auralt.tres
 msgid "Auralt"

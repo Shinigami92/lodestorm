@@ -145,11 +145,11 @@ Each step builds on the ones before it (steps 1–15 and the balance are done, c
     - [x] Rook is silent: he has no voice yet (his anchors, then his lines rendered)
     - [x] the cabins' doors can be heard but not seen (every door in a wall cut for the camera)
     - [x] `alien.gd` is at the 1000-line cap: split it before it grows (its target picking into `AlienTargeting`, its flash, rim light and glow into `AlienLook`)
-  - [ ] **C3** **crew joining** ([`planned/crew.md`](planned/crew.md)):
+  - [x] **C3** **crew joining** ([`planned/crew.md`](planned/crew.md)):
     - [x] **C3a** the rules: four aboard at the start, the join flags, the crew not aboard yet (not at their posts, no talks or transmissions), stand-in topics, lines naming someone gated by their flag (with a test), Vehra waiting for the whole crew, a quest step's reward "joins the crew", the debug overlay's "Join the crew"
     - [x] **C3b** waiting at Ostra and walking aboard: Dace's stall, Wren's suit workbench, Fenna sitting at Rook's booth, the walk to their post, leaving and the ramp waiting for them, their places afterwards (their topics before joining moved to C3d)
     - [x] **C3c** Hollis out there: Kade's "Overdue" (two steps handed in at Hollis at his camp in Hollow Mire during the run; a lost run takes them back), the first person in a generated location (his camp with an old survey repeller keeping aliens off, his old miner, talked to there; solo the run stops while talking), the nest at his dig site elsewhere in the region, the next step's goals there already, walking to the ship over the location's walkable area, Tamsin's landing call, the beam back to him, his old miner (a worn model) as a prop in the cargo bay, Kade's topic afterwards; lines and voices
-    - [ ] **C3d** the other three join quests (Dace's delivery, Wren's survey suit, Fenna's galley crate) and their topics before joining (talked to at their places), a writing round for their lines first, voices; then a new game starts without the four (the switch `Ship.crew_joins_later` C3a left off goes)
+    - [x] **C3d** the other three join quests (Dace's "Real ore", Wren's "Out there" on Cinder Steps, Fenna's "Rook's leftovers" on Rimeback), their topics before joining at their places (their offers taking the place of "coming aboard"), a step handed in at them waiting on Ostra, Brannik pointing to Dace, Rook's topic about Fenna, Tamsin's calls; lines and voices; a new game starts without the four
   - [ ] **D** and on: the main story act by act ([`planned/story.md`](planned/story.md); a writing round per act first; the furnaces with acts 2–5, the first one Okoro's quest in act 2, and the cradles with acts 1–4, [`planned/balance.md`](planned/balance.md)), the expedition's logs (with the quest board's Logs tab), each act's time between missions (personal beats, talks, messages, Ostra's change and traffic, Ostra Control, colonists' remarks, steps back on earlier bodies; the frame in [`planned/world.md`](planned/world.md)); the crew gatherings, Brannik's range challenges and Fenna's dishes once the crew can sit
 
 Alongside, any time:
@@ -168,6 +168,18 @@ Alongside, any time:
   - [x] Waypost Ostra in front of Torvane (the first planet) on the navigator
   - [x] aliens can never get aboard: a barrier in the ramp's door on a physics layer of its own (`PhysicsLayers.ALIENS_ONLY`) that only aliens bump into, fliers too (not players, crew, shots, sight or the crew's navigation)
   - [x] the game doesn't open the pause card by itself when it loses focus (alt+tab): it goes on as it is, solo too (`PausePanel.pause_on_focus_loss` removed)
+- [ ] **Playtest feedback** (2026-11-01, all quests through C3d in one play, with god mode and the debug overlay; each its own PR, a short round where it's a decision):
+  - [x] the holo table didn't show a destination set at the quest board (it kept the last one shown)
+  - [x] the round marker above the quest board is gone; its Done group reads as a heading
+  - [x] the talk card cut off at both sides: a German quest title too wide for it pushed it out of its panel ("Die Nester bei den Markierungen"); every quest's rows are checked now
+  - [x] Wren's lines: an odd German prompt, her offer knowing the armor room has nobody, why Ostra's suits won't do; Tamsin's call on the last piece
+  - [x] a very short noise at a hand-in at Kade: three of his German lines starting with a number came out of the voice model as 0.16 s of noise (re-rendered; a test checks every recording's length against its text)
+  - [ ] the course set at the quest board for Wren's suit with 2 of 3 pieces sent the ship to Ostra (not reproduced from the code, the holo table wasn't used; watch for it)
+  - [ ] Brannik repeats in his topics what he said over the radio out there ("Ammo" and "Spare magazines" say again what the miner hint and the last-spares call said)
+  - [ ] Brannik's tour: talking to him during it can start the armory talk; leaving the shooting range he walks through the wall
+  - [ ] the weapons room upgrades only to the first MK level until Dace joins, the higher ones locked until then
+  - [ ] walking at the NPCs' pace with the keyboard (to walk along with them)
+  - [ ] the ramp's sound going down
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)

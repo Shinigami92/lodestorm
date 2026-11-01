@@ -1,6 +1,6 @@
 extends "res://tests/support/menu_fit.gd"
 ## Everything the crew and the colonists say fits their bubble and card in every language: their
-## topics, radio calls and remarks.
+## topics, radio calls and remarks, and every quest's lines (offers, hand-ins, prompts, calls).
 
 const CREW: Array[NpcProfile] = [
 	preload("res://game/npcs/crew/quartermaster.tres"),
@@ -40,6 +40,69 @@ func test_every_crew_call_fits_in_every_language() -> void:
 					assert_lte(needed.x, layout.x + 0.5, "%s: %s wide" % [label, needed.x])
 					assert_lte(needed.y, layout.y + 0.5, "%s: %s high" % [label, needed.y])
 	radio.clear()
+
+
+func test_every_quest_line_fits_in_every_language() -> void:
+	var npc := _ship.get_node(NPCS[CREW[0].resource_path]) as Npc
+	_player.global_position = npc.use_point.global_position
+	npc.open(_player)
+	var radio: PlayerRadio = _player.radio
+	var bubble := radio.panel.content as RadioBubble
+	var layout := Vector2(radio.panel.size * radio.panel.pixels_per_meter)
+	for locale: String in SettingsList.languages():
+		TranslationServer.set_locale(locale)
+		for quest: Quest in QuestLog.CATALOG.quests:
+			var said: Array[String] = quest.offer.lines.duplicate()
+			for step: QuestStep in quest.steps:
+				said.append_array(step.hand_in.lines)
+				said.append_array(step.place_prompts)
+			for line: String in said:
+				(npc.bubble.content as SpeechBubble).show_line(tr(line))
+				await wait_process_frames(1)
+				_assert_bubble_fits(npc, "%s %s: %s" % [locale, quest.id, line])
+			for step: QuestStep in quest.steps:
+				var caller: NpcProfile = NpcProfile.find(quest.hand_in_npc(step))
+				for radio_line: RadioLine in step.radio_lines():
+					var speaker: NpcProfile = (
+						NpcProfile.find(radio_line.speaker)
+						if not radio_line.speaker.is_empty()
+						else caller
+					)
+					for text: String in [radio_line.text, radio_line.coop_text]:
+						if text.is_empty():
+							continue
+						radio.clear()
+						radio.hear(speaker, text)
+						await wait_process_frames(1)
+						var label: String = "%s %s call %s" % [locale, quest.id, text]
+						var needed: Vector2 = bubble.get_needed_size()
+						assert_lte(needed.x, layout.x + 0.5, "%s: %s wide" % [label, needed.x])
+						assert_lte(needed.y, layout.y + 0.5, "%s: %s high" % [label, needed.y])
+	radio.clear()
+	npc.close()
+
+
+## A quest's offer and its steps' hand-ins are rows of the talk card, a diamond in front of each.
+func test_every_quest_row_fits_the_talk_card_in_every_language() -> void:
+	var npc := _ship.get_node(NPCS[CREW[0].resource_path]) as Npc
+	_player.global_position = npc.use_point.global_position
+	npc.open(_player)
+	await wait_process_frames(1)
+	var card := npc.card_menu as TalkCard
+	var diamond: Texture2D = QuestMark.diamond_texture(true)
+	for locale: String in SettingsList.languages():
+		TranslationServer.set_locale(locale)
+		for quest: Quest in QuestLog.CATALOG.quests:
+			var topics: Array[Topic] = [quest.offer]
+			for step: QuestStep in quest.steps:
+				if step.hand_in:
+					topics.append(step.hand_in)
+			for topic: Topic in topics:
+				var texts: Array[String] = [tr(topic.title), tr("Goodbye")]
+				card._show_buttons(texts, [true, false], 0, [diamond, null], 1)
+				await wait_process_frames(1)
+				_assert_card_fits(npc, "%s %s row %s" % [locale, quest.id, topic.title])
+	npc.close()
 
 
 func test_every_station_line_card_and_remark_fits_in_every_language() -> void:

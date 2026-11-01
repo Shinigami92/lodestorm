@@ -119,6 +119,18 @@ msgid "Hey, you. What's on your mind?"
 msgstr ""
 
 #: game/npcs/crew/cook.tres
+msgid "Sit down if you like. Rook won't mind, and if he does, even better."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Hey, you. I've heard a thing or two about your crew."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "What can I tell you? I know everybody's business here."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
 #: game/npcs/crew/engineer.tres
 #: game/npcs/crew/gunsmith.tres
 #: game/npcs/crew/medic.tres
@@ -183,6 +195,26 @@ msgstr ""
 
 #: game/npcs/crew/cook.tres
 msgid "Most of what I hear is nonsense. Some of it isn't. The trick is telling the difference."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "I cooked in the settlements' canteen, and then for two years for Rook's crew. Good pay, long hours, and a captain who never knows when to turn back."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "I left after he flew us into the storms once too often. He still keeps my seat at his table. I think he hopes I'll come back."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Cooking for us"
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Cook for your crew? Maybe. But I hear your ship still has empty rooms, and I've cooked for half a table long enough."
+msgstr ""
+
+#: game/npcs/crew/cook.tres
+msgid "Find the rest of your crew first. A crew that keeps coming back is worth cooking for."
 msgstr ""
 
 #: game/npcs/crew/cook.tres
@@ -371,6 +403,18 @@ msgid "Got a weapon that needs work?"
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
+msgid "Need something fixed? Pumps, hatches, anything with a thread."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Careful, the bench is still hot."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Looking for something? Most of this was scrap last week."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
 msgid "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
 msgstr ""
 
@@ -440,6 +484,26 @@ msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
 msgid "Sometimes I wonder what they needed weapons like these for."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "I'm a machinist from the settlements on Torvane. When the first expedition was getting ready out here, they hired me to make parts for their designs."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Since they left, I've been fixing pumps and hatches out of scrap. I still have the drawings of every part I made for them. What I don't have is the ore to make them from."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "Coming aboard"
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "I've heard your ship has a weapons room and nobody at the bench. Don't think I haven't thought about it."
+msgstr ""
+
+#: game/npcs/crew/gunsmith.tres
+msgid "But I'm not leaving my stall for a crew that hasn't built anything yet. Once you have, I'll hear about it, and we'll talk."
 msgstr ""
 
 #: game/npcs/crew/gunsmith.tres
@@ -1165,6 +1229,18 @@ msgid "Upgrades take a while, but they keep going while you're out there. A weap
 msgstr ""
 
 #: game/npcs/crew/quartermaster.tres
+msgid "A gunsmith"
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "The bench in the weapons room does what it's told, but nobody aboard knows weapons the way a real gunsmith does."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
+msgid "There's a machinist with a stall in Ostra's concourse, Dace. He made parts for the first expedition. Have a word with him next time we dock."
+msgstr ""
+
+#: game/npcs/crew/quartermaster.tres
 msgid "You made it back in one piece, and with ore on your back. That's how I like a first mission to end."
 msgstr ""
 
@@ -1349,6 +1425,18 @@ msgid "What can I do for you today?"
 msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
+msgid "Oh, hi! Mind the parts on the floor."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Been down on a planet today? What was the sky like?"
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "Hi! Is something wrong with your suit? Let me see."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
 msgid "Hi! I keep your suits running: the armor in my room, and the skills in the room next to it."
 msgstr ""
 
@@ -1396,6 +1484,14 @@ msgstr ""
 
 #: game/npcs/crew/suit_tech.tres
 msgid "So when you walk around down there, on a real planet under a real sky, I'm a little jealous. Tell me what it's like sometime."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "I fix the station's suits, the ones the dock crews wear outside. I was born here, and I've been taking suits apart since I could hold a wrench."
+msgstr ""
+
+#: game/npcs/crew/suit_tech.tres
+msgid "I've never set foot off this station. Every crew that docks here has walked on planets I've only seen through a window. Are the storms down there really as bad as they say?"
 msgstr ""
 
 #: game/npcs/ostra/bartender.tres
@@ -2196,6 +2292,18 @@ msgstr ""
 msgid "We'll see how long you last out there. If you're still flying in a few months, I'll buy you a drink."
 msgstr ""
 
+#: game/npcs/ostra/rival_captain.tres
+msgid "Fenna"
+msgstr ""
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "So Fenna went with you. Fine. Feed her well, she's fed my crew long enough."
+msgstr ""
+
+#: game/npcs/ostra/rival_captain.tres
+msgid "Give her a week, and she'll know every secret on your ship. Don't say I didn't warn you."
+msgstr ""
+
 #: game/npcs/radio_bubble.gd
 msgid "Radio"
 msgstr ""
@@ -2502,6 +2610,62 @@ msgstr ""
 msgid "Clear the nests"
 msgstr ""
 
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Rook's leftovers"
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "So you found them all: a gunsmith, a suit tech, and old Hollis, of all people. The whole bar is talking about it."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "All right, I'll cook for you. But not without my galley crate. It's in Rook's old cache on Rimeback, on Lisk. We left supplies there on our way further in, a year ago, and on the way back nobody wanted to stop."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Rook won't go back for it, and I won't ask him. Bring it to me, and I'll start packing."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Recover Fenna's galley crate from Rook's old cache on Rimeback."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Did you find my crate?"
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "the galley crate"
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Tamsin here. Rook's old cache isn't far from where we landed. Fenna's crate should still be there."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "The galley crate"
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "My crate! Still sealed, and it still smells of Rook's terrible coffee."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "And don't ask me why we went so far in that time. Not yet. Some stories need a full table."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "Now go on. I'll say goodbye to Rook and meet you at the ship."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "That's Fenna's crate. Get it aboard, and we'll finally eat something decent."
+msgstr ""
+
+#: game/quests/cook/rooks_leftovers.tres
+msgid "That's Fenna's crate. Get it aboard, all of you, and we'll finally eat something decent."
+msgstr ""
+
 #: game/quests/deliver_goal.gd
 msgid "Deliver %s"
 msgstr ""
@@ -2710,6 +2874,50 @@ msgstr ""
 msgid "80 Vyrel. All three scanners will be running again by tomorrow."
 msgstr ""
 
+#: game/quests/gunsmith/real_ore.tres
+msgid "Real ore"
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Word gets around. Your crew built a shotgun from one of the colony's old blueprints. That's more than anyone on Ostra has built in years."
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "So here's my offer. Bring me Kyrite and Meridine straight from the ground, not the scrap I get here, and I'll make one of the expedition's parts the way it was meant to be made."
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "If it holds, I'll close up this stall and come work at your bench. Deal?"
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Bring Dace 80 Kyrite and 20 Meridine at his stall on Waypost Ostra."
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Got my ore yet?"
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "The first part"
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Real Kyrite, real Meridine. You have no idea how long I've waited to work with ore like this."
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Every part I made from scrap cracked sooner or later. This one won't. I can tell just by holding it."
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "I'm done with scrap. Give me a minute to close up the stall, and I'll meet you at your ship."
+msgstr ""
+
+#: game/quests/gunsmith/real_ore.tres
+msgid "Tamsin here. We've got Dace's ore in the hold. He's at his stall whenever we dock at Ostra."
+msgstr ""
+
 #: game/quests/hunt_goal.gd
 msgid "Hunt: %s and their brood nest"
 msgstr ""
@@ -2892,6 +3100,66 @@ msgstr ""
 
 #: game/quests/recover_item_goal.gd
 msgid "Recover %s"
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Out there"
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Can I ask you something? Ships like yours have a room just for suits. Who looks after yours? I could do that. Nobody on this station knows suits better than I do."
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "But first I'd need a planet suit of my own. Every suit on Ostra is made for the docks, not for the storms down there. My father was with the survey, and he says its old crates on Cinder Steps still hold one, in pieces."
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "He also says it's the roughest place on Torvane, so get ready first. Bring me the pieces, and I'll put the suit back together. And then take me with you?"
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Recover the pieces of an old survey suit from the crates of Cinder Steps."
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Any luck on Cinder Steps?"
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Recover the suit's pieces"
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Tamsin here. Wren's suit is in the survey's old crates somewhere down here. Open every one you find, and watch your step."
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Tamsin here. Wren's suit is in the survey's old crates somewhere down here. Open every one you find, and watch each other's backs."
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "The survey suit"
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "Is that all of it? Look at these seals! Nobody on Ostra could ever make seals like these."
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "It needs work, but I can do that aboard. The first time I step onto a planet, I'll be wearing this."
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "I'll grab my bag. Don't you dare leave without me!"
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "That's the last piece. Now get the pieces back to the ship."
+msgstr ""
+
+#: game/quests/suit_tech/out_there.tres
+msgid "That's the last piece. Now everyone back to the ship with the pieces."
 msgstr ""
 
 #: game/refinery/alloys/alloy_auralt.tres

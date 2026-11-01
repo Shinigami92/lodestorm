@@ -90,6 +90,12 @@
       "seed": 1,
       "text": "Bei jeder Landung ist es ein neues Stück Land, auch in einer Region, in der du schon warst. Einen guten Fleck kann also niemand für sich behalten."
     },
+    "d5084e5e98ec4b27": {
+      "anchor": "efa620052fc1fe0b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Fenna ist also mit euch gegangen. Schön. Gebt ihr gut zu essen, sie hat meine Crew lange genug durchgefüttert."
+    },
     "da0a5e9ac9a7fcfc": {
       "anchor": "efa620052fc1fe0b",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -107,6 +113,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Sieh mal an, wer da ist. Noch eine Crew, die glaubt, da unten auf den Planeten ihr Auskommen zu finden. Ich bin Rook, Kapitän der besten Prospektoren-Crew im System."
+    },
+    "f7789669efc1fe51": {
+      "anchor": "efa620052fc1fe0b",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Gib ihr eine Woche, und sie kennt jedes Geheimnis auf eurem Schiff. Sag nicht, ich hätte dich nicht gewarnt."
     },
     "febabf687f3fd4d0": {
       "anchor": "efa620052fc1fe0b",
@@ -206,6 +218,12 @@
       "seed": 1,
       "text": "Every time you land, it's a new stretch of ground, even in a region you've been to before. So nobody gets to keep a good spot for themselves."
     },
+    "d5084e5e98ec4b27": {
+      "anchor": "76b747e0a4a2ba3a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So Fenna went with you. Fine. Feed her well, she's fed my crew long enough."
+    },
     "da0a5e9ac9a7fcfc": {
       "anchor": "76b747e0a4a2ba3a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -223,6 +241,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Well, look who's here. Another crew that thinks it can make a living down on those planets. I'm Rook, captain of the best prospecting crew in the system."
+    },
+    "f7789669efc1fe51": {
+      "anchor": "76b747e0a4a2ba3a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Give her a week, and she'll know every secret on your ship. Don't say I didn't warn you."
     },
     "febabf687f3fd4d0": {
       "anchor": "76b747e0a4a2ba3a",

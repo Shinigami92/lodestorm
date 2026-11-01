@@ -6,17 +6,71 @@
       "seed": 1,
       "text": "Ich kann an mehreren Teilen gleichzeitig arbeiten, aber pro Teil nur an einer Stufe. Wenn du es dir anders überlegst, sag mir, dass ich aufhören soll, und du bekommst alles zurück."
     },
+    "077843ec8df8ac3c": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Schluss mit Schrott. Gib mir eine Minute, den Stand dichtzumachen, dann treffen wir uns an eurem Schiff."
+    },
+    "0d0d838bc6535333": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Jedes Teil, das ich aus Schrott gebaut hab, ist früher oder später gerissen. Das hier nicht. Das merk ich schon, wenn ich es in der Hand halte."
+    },
+    "10177b2ade6a4302": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Aber für eine Crew, die noch nichts gebaut hat, geb ich meinen Stand nicht auf. Sobald ihr was gebaut habt, hör ich davon, und dann reden wir."
+    },
     "1c51716fbe49f224": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Manchmal frage ich mich, wofür sie solche Waffen gebraucht haben."
     },
+    "1d1e5698d0a2bc13": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Also, mein Angebot: Bring mir Kyrite und Meridine frisch aus dem Boden, nicht den Schrott, den ich hier kriege, und ich bau eins der Teile der Expedition so, wie es gedacht war."
+    },
     "2029a9eecadff7e4": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Wie weit ich gehen kann, hängt vom Hitzeschild ab. Mit jeder neuen Platte im Maschinenraum kann ich eine Stufe mehr draufsetzen."
+    },
+    "223823100627d6f2": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich bin Maschinist aus den Siedlungen auf Torvane. Als sich die erste Expedition hier draußen vorbereitet hat, haben sie mich angeheuert, Teile für ihre Entwürfe zu bauen."
+    },
+    "25d14b379270f685": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Echtes Kyrite, echtes Meridine. Du hast keine Ahnung, wie lange ich darauf gewartet hab, mit so einem Erz zu arbeiten."
+    },
+    "2895043cc56d1464": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Vorsicht, die Werkbank ist noch heiß."
+    },
+    "2a3cf8d349ab7e2b": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Muss was repariert werden? Pumpen, Luken, alles mit Gewinde."
+    },
+    "2b941d327459e645": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hast du mein Erz schon?"
     },
     "30eaa0a515e13111": {
       "anchor": "6be268e10ec28642",
@@ -36,6 +90,18 @@
       "seed": 1,
       "text": "Willkommen im Waffenraum. Im Regal hängt jede Waffe, die ich kenne, und an der Werkbank mache ich deine besser."
     },
+    "5227a13ac1416dfa": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wenn es hält, mach ich diesen Stand dicht und arbeite an eurer Werkbank. Abgemacht?"
+    },
+    "64c56020456c9f53": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich hab gehört, euer Schiff hat einen Waffenraum, und niemand steht an der Werkbank. Glaub nicht, dass ich nicht schon darüber nachgedacht hab."
+    },
     "826e02a71cea1c25": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -48,6 +114,12 @@
       "seed": 1,
       "text": "Die durchsichtigen im Regal besitzt du noch nicht. Ich brauche den Bauplan einer Waffe, bevor ich sie dir bauen kann."
     },
+    "8d67aabc9e4dd36f": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Es spricht sich rum. Eure Crew hat aus einem der alten Baupläne der Kolonie eine Schrotflinte gebaut. Das ist mehr, als hier auf Ostra seit Jahren jemand gebaut hat."
+    },
     "8db8cff94433ab28": {
       "anchor": "6be268e10ec28642",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -59,6 +131,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Such dir im Regal eine deiner Waffen aus und leg sie auf die Werkbank. Jede Waffe hat drei Teile, die ich verbessern kann, und jedes Teil hat seine eigene Lichterreihe auf der Waffe."
+    },
+    "93f2e5123ce885c8": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Seit sie weg sind, flicke ich Pumpen und Luken aus Schrott. Die Zeichnungen von jedem Teil, das ich für sie gebaut hab, hab ich noch. Was mir fehlt, ist das Erz dafür."
     },
     "a9d28d3ca1bf13f1": {
       "anchor": "6be268e10ec28642",
@@ -77,6 +155,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Woran arbeiten wir?"
+    },
+    "c3e62702aafb8757": {
+      "anchor": "6be268e10ec28642",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Suchst du was? Das meiste hier war letzte Woche noch Schrott."
     },
     "c6cd3afcc3fcf036": {
       "anchor": "6be268e10ec28642",
@@ -134,17 +218,71 @@
       "seed": 1,
       "text": "I can work on several parts at once, but only on one level per part. If you change your mind, tell me to stop, and you get the whole cost back."
     },
+    "077843ec8df8ac3c": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I'm done with scrap. Give me a minute to close up the stall, and I'll meet you at your ship."
+    },
+    "0d0d838bc6535333": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Every part I made from scrap cracked sooner or later. This one won't. I can tell just by holding it."
+    },
+    "10177b2ade6a4302": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "But I'm not leaving my stall for a crew that hasn't built anything yet. Once you have, I'll hear about it, and we'll talk."
+    },
     "1c51716fbe49f224": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Sometimes I wonder what they needed weapons like these for."
     },
+    "1d1e5698d0a2bc13": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "So here's my offer. Bring me Kyrite and Meridine straight from the ground, not the scrap I get here, and I'll make one of the expedition's parts the way it was meant to be made."
+    },
     "2029a9eecadff7e4": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "How far I can go depends on the heat shield. Every new plate in the engine room lets me add one more level."
+    },
+    "223823100627d6f2": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I'm a machinist from the settlements on Torvane. When the first expedition was getting ready out here, they hired me to make parts for their designs."
+    },
+    "25d14b379270f685": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Real Kyrite, real Meridine. You have no idea how long I've waited to work with ore like this."
+    },
+    "2895043cc56d1464": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Careful, the bench is still hot."
+    },
+    "2a3cf8d349ab7e2b": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Need something fixed? Pumps, hatches, anything with a thread."
+    },
+    "2b941d327459e645": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Got my ore yet?"
     },
     "30eaa0a515e13111": {
       "anchor": "663d8198f7a23d6c",
@@ -164,6 +302,18 @@
       "seed": 1,
       "text": "Welcome to the weapons room. The rack holds every weapon I know of, and the bench is where I make yours better."
     },
+    "5227a13ac1416dfa": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "If it holds, I'll close up this stall and come work at your bench. Deal?"
+    },
+    "64c56020456c9f53": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I've heard your ship has a weapons room and nobody at the bench. Don't think I haven't thought about it."
+    },
     "826e02a71cea1c25": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -176,6 +326,12 @@
       "seed": 1,
       "text": "The see-through ones on the rack you don't own yet. I need a weapon's blueprint before I can build it for you."
     },
+    "8d67aabc9e4dd36f": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Word gets around. Your crew built a shotgun from one of the colony's old blueprints. That's more than anyone on Ostra has built in years."
+    },
     "8db8cff94433ab28": {
       "anchor": "663d8198f7a23d6c",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -187,6 +343,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Pick one of your weapons at the rack and lay it on the bench. Every weapon has three parts I can improve, and each part has its own row of lights on the weapon."
+    },
+    "93f2e5123ce885c8": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Since they left, I've been fixing pumps and hatches out of scrap. I still have the drawings of every part I made for them. What I don't have is the ore to make them from."
     },
     "a9d28d3ca1bf13f1": {
       "anchor": "663d8198f7a23d6c",
@@ -205,6 +367,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "What are we working on?"
+    },
+    "c3e62702aafb8757": {
+      "anchor": "663d8198f7a23d6c",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Looking for something? Most of this was scrap last week."
     },
     "c6cd3afcc3fcf036": {
       "anchor": "663d8198f7a23d6c",

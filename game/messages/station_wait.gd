@@ -1,17 +1,18 @@
 class_name StationWait
 extends RefCounted
 ## Someone at a station waiting for the players (see docs/design/story.md, Between missions): a beat
-## they carry, put out and waiting, or a quest step handed in at them with all its goals done. The
-## navigator shows an amber diamond on their station, and they call the ship once (`MessageLog`).
+## they carry, put out and waiting, a quest step handed in at them with all its goals done, or the
+## offer of a crew member waiting there to join. The navigator shows an amber diamond on their
+## station, and those with call lines call the ship once (`MessageLog`).
 
-## What waits, as its story flag (the beat's, or the step's once handed in): it keeps the call to
-## one.
+## What waits, as its story flag (the beat's, the step's once handed in, or the offer's once heard):
+## it keeps the call to one.
 var key: StringName
 ## Who waits: their `NpcProfile.id`.
 var npc: StringName
 ## Where: their station's `CelestialBody.id`.
 var station: StringName
-## The quest whose step waits; null: a beat.
+## The quest whose step or offer waits; null: a beat.
 var quest: Quest
 
 
@@ -24,11 +25,12 @@ func _init(what: StringName, who: StringName, where: StringName, of_quest: Quest
 
 ## Everything waiting at a station now: `director`'s waiting beats carried by someone who lives on
 ## one, then the quests' (`director.quests`) active steps handed in at someone there with every
-## goal done, in the order accepted.
+## goal done, in the order accepted, then the offers nobody has heard yet of the crew members
+## waiting there to join (`NpcProfile.waits_at`, e.g. Fenna's once the other three are aboard).
 static func find_all(director: StoryDirector) -> Array[StationWait]:
 	var found: Array[StationWait] = []
 	for beat: Beat in director.waiting():
-		var where: StringName = _station_of(beat.npc)
+		var where: StringName = _station_of(beat.npc, director.story)
 		if not where.is_empty():
 			found.append(StationWait.new(beat.flag(), beat.npc, where))
 	var quests: QuestLog = director.quests
@@ -38,16 +40,24 @@ static func find_all(director: StoryDirector) -> Array[StationWait]:
 		if not step or not _goals_done(quests, accepted, step):
 			continue
 		var at_npc: StringName = accepted.hand_in_npc(step)
-		var where: StringName = _station_of(at_npc)
+		var where: StringName = _station_of(at_npc, director.story)
 		if not where.is_empty():
 			found.append(StationWait.new(accepted.step_flag(step), at_npc, where, accepted))
+	for profile: NpcProfile in NpcProfile.crew():
+		var waits_at: StringName = profile.station_in(director.story)
+		if waits_at.is_empty():
+			continue
+		for offered: Quest in quests.offered_by(profile.id, []):
+			if offered.offer and not director.story.is_set(offered.offer.id):
+				found.append(StationWait.new(offered.offer.id, profile.id, waits_at, offered))
 	return found
 
 
-## The station `who` (an `NpcProfile.id`) lives on, or empty (aboard, or nobody).
-static func _station_of(who: StringName) -> StringName:
+## The station `who` (an `NpcProfile.id`) is on in `story` (`NpcProfile.station_in`, e.g. a crew
+## member waiting there to join), or empty (aboard, or nobody).
+static func _station_of(who: StringName, story: Story) -> StringName:
 	var profile: NpcProfile = NpcProfile.find(who) if not who.is_empty() else null
-	return profile.station if profile else &""
+	return profile.station_in(story) if profile else &""
 
 
 ## Whether every goal of `step` (the active one of `of_quest`) is done, deliveries filled.

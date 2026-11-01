@@ -34,6 +34,7 @@ const RESOURCE_TEXTS: Dictionary[String, Array] = {
 	"RadioLine": [&"text", &"coop_text"],
 	"ReachGoal": [&"place"],
 	"RecoverFragmentsGoal": [&"task"],
+	"RecoverItemGoal": [&"item"],
 	"Region": [&"display_name"],
 	"Skill": [&"display_name", &"description"],
 	"SkillCluster": [&"display_name"],

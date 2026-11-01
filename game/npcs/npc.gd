@@ -190,8 +190,9 @@ func get_choices(listener: Player = null) -> Array[Topic]:
 		return choices
 	var reaches: Array[StringName] = get_reached_bodies()
 	choices.append_array(get_quest_choices(listener))
+	var replaced: Array[StringName] = _replaced_topics()
 	for listed: Topic in profile.dialogue.topics:
-		if waits_to_join and listed.until != profile.join_flag:
+		if (waits_to_join and listed.until != profile.join_flag) or listed.id in replaced:
 			continue
 		if listed.is_open(listener, story, reaches):
 			choices.append(listed)
@@ -424,6 +425,18 @@ func _talks_here() -> bool:
 	return (
 		not flag.is_empty() and topics.any(func(listed: Topic) -> bool: return listed.until == flag)
 	)
+
+
+## The ids of the topics the offers of their quests took the place of (`Quest.replaces`): of the
+## quests they give whose `requires` are set.
+func _replaced_topics() -> Array[StringName]:
+	var replaced: Array[StringName] = []
+	var story: Story = get_story()
+	for quest: Quest in get_quests().catalog.quests:
+		if quest.giver == profile.id and not quest.replaces.is_empty():
+			if story.is_set_all(quest.requires):
+				replaced.append(quest.replaces)
+	return replaced
 
 
 ## Who the "something new" marker is for: the player talking to them, else the nearest one.

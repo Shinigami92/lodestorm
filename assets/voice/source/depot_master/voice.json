@@ -15,6 +15,11 @@
     "model": "Qwen3-TTS-12Hz-1.7B-VoiceDesign",
     "seed": 14,
     "picked_from": "ostra2/kade/qwen3_s14_de.flac",
-    "picked": "2026-10-25"
+    "picked": "2026-10-25",
+    "reroll": {
+      "1120ccdd378a1547": 4,
+      "35698d277c88c267": 7,
+      "3a999a0bcbdf1293": 3
+    }
   }
 }

@@ -28,6 +28,9 @@ enum Kind { MAIN, SIDE, REQUEST }
 ## job..."); heard to the end, the offer card shows what it asks and pays. Its `id` is the giver's
 ## (`<giver>.<topic>`, see `Story`).
 @export var offer: Topic
+## A topic of the giver's (its id) the `offer` takes the place of once the quest's `requires` are
+## set (e.g. Dace's "Coming aboard", until he offers his join quest); empty: none.
+@export var replaces: StringName = &""
 @export var steps: Array[QuestStep] = []
 
 

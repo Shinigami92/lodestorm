@@ -41,15 +41,17 @@ func test_only_aliens_bump_into_the_ramp_door() -> void:
 	await _open()
 	var outside: Vector3 = _ship.to_global(Vector3(17.0, 3.5, 0.0))
 	var inside: Vector3 = _ship.to_global(Vector3(12.0, 3.5, 0.0))
-	var barrier: Node = _ship.get_node("AlienBarrier")
+	var barrier: Object = _ship.get_node("AlienBarrier")
 	var alien: Alien = SWARMER.spawn()
 	_map.add_child(alien)
 	alien.global_position = _outside() + Vector3(0.0, 0.0, 20.0)
 	var alien_mask: int = alien.collision_mask
 	alien.queue_free()
-	assert_eq(_ray(outside, inside, alien_mask).get(&"collider"), barrier, "an alien bumps into it")
+	var hit: Object = _ray(outside, inside, alien_mask).get(&"collider") as Object
+	assert_eq(hit, barrier, "an alien bumps into it")
 	for mask: int in [_player.collision_mask, PhysicsLayers.SHOTS]:
-		assert_ne(_ray(outside, inside, mask).get(&"collider"), barrier, "mask %d passes" % mask)
+		hit = _ray(outside, inside, mask).get(&"collider") as Object
+		assert_ne(hit, barrier, "mask %d passes" % mask)
 
 
 func test_camera_sees_inside_while_aboard() -> void:

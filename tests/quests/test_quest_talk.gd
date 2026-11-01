@@ -138,20 +138,27 @@ func test_steps_ready_to_hand_in_come_first() -> void:
 
 
 func test_quests_carry_a_diamond_above_a_line() -> void:
-	var tracked: Quest = QUEST_LOG_TEST.make_quest(&"tracked", &"quartermaster")
-	tracked.steps[0].hand_in.title = "Tracked job"
+	var accepted: Quest = QUEST_LOG_TEST.make_quest(&"accepted", &"quartermaster")
+	accepted.steps[0].hand_in.title = "Accepted job"
 	_quest.offer.title = "Offered job"
-	_ship.quests.catalog.quests = [_quest, tracked]
-	_ship.quests.accept(tracked, [_player])
-	_ship.quests.tracked = tracked.id
+	_ship.quests.catalog.quests = [_quest, accepted]
+	_ship.quests.accept(accepted, [_player])
 	await _talk()
 	var card := _npc.card_menu as TalkCard
-	assert_eq(card.get_button("Tracked job").icon, QuestMark.diamond_texture(true), "filled")
-	assert_eq(card.get_button("Offered job").icon, QuestMark.diamond_texture(false), "hollow")
+	var offered: Button = card.get_button("Offered job")
+	assert_eq(offered.icon, QuestMark.diamond_texture(true), "news: filled")
+	assert_eq(offered.text, "Offered job", "the diamond instead of the dot")
+	var waiting: Button = card.get_button("Accepted job")
+	assert_eq(waiting.icon, QuestMark.diamond_texture(false), "a step to do: hollow")
 	assert_null(card.get_button("Goodbye").icon, "topics have none")
 	var divider := card.find_child("QuestDivider", true, false) as HSeparator
 	assert_true(divider.visible)
 	assert_eq(divider.get_index(), 2, "below the two quests")
+	_player.hold.add(KYRITE, 300.0)
+	_ship.story.set_flag(_quest.offer.id)
+	_npc.talk.set_choice(0)
+	assert_eq(card.get_button("Accepted job").icon, QuestMark.diamond_texture(true), "to hand in")
+	assert_eq(card.get_button("Offered job").icon, QuestMark.diamond_texture(false), "heard")
 	_ship.quests.catalog.quests = []
 	_npc.talk.set_choice(0)
 	assert_false(divider.visible, "no quests, no line")

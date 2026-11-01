@@ -2,8 +2,9 @@ class_name TalkCard
 extends StationCard
 ## The holo card beside an NPC while a player talks to them (`Npc`): their name and role, then
 ## either the open topics and "Goodbye" (an amber dot on topics nobody has heard yet; the quests
-## at the top set apart by an amber diamond, filled for the tracked one like its markers in the
-## world, and a line below them), or while a topic is told its title, how far it is ("2 / 3") and
+## at the top set apart by an amber diamond instead, filled while there's news, an offer nobody
+## has heard yet or a step to hand in now, else hollow while a step still waits to be done, and a
+## line below them), or while a topic is told its title, how far it is ("2 / 3") and
 ## "Continue" ("Done" on the last line) and "Back"; or a quest's card (a `QuestPanel`, see
 ## `NpcTalk.quest`) with "Accept" and "Not now" for an offer, or "Hand in" (only while it can be)
 ## and "Back" for a step. The button `interact`
@@ -92,7 +93,7 @@ func show_part(part: StationPart) -> void:
 		texts.append(tr(choice.title))
 		new.append(npc.is_new(choice))
 		var quest: Quest = quests.quest_for(choice)
-		icons.append(QuestMark.diamond_texture(quests.tracked == quest.id) if quest else null)
+		icons.append(QuestMark.diamond_texture(new[-1]) if quest else null)
 		if quest:
 			quest_rows += 1
 	texts.append(tr("Goodbye"))
@@ -173,9 +174,9 @@ func get_button(text: String) -> Button:
 	return null
 
 
-## One button per entry in `texts` (`new`: with the amber dot; `icons`: the sign in front of it, a
-## quest's diamond, null for none), `selected` framed amber; with `divided` > 0 the divider below
-## that many entries.
+## One button per entry in `texts` (`new`: amber, with the dot unless it has an icon; `icons`: the
+## sign in front of it, a quest's diamond, null for none), `selected` framed amber; with
+## `divided` > 0 the divider below that many entries.
 func _show_buttons(
 	texts: Array[String],
 	new: Array[bool],
@@ -212,8 +213,9 @@ func _show_buttons(
 		button.disabled = false
 		if not button.visible:
 			continue
-		button.text = (NEW_DOT if new[i] else "") + texts[i]
 		button.icon = icons[i] if i < icons.size() else null
+		# A quest's diamond shows what's new itself (filled), the dot only on the others.
+		button.text = (NEW_DOT if new[i] and not button.icon else "") + texts[i]
 		if new[i]:
 			button.add_theme_color_override(&"font_color", CardPalette.STATUS)
 		else:

@@ -201,6 +201,35 @@ resume = SubResource("Tour_resume")
 abort = SubResource("Tour_abort")
 stops = Array[ExtResource("11_tour_stop")]([SubResource("Tour_stop_MessHall"), SubResource("Tour_stop_Bridge"), SubResource("Tour_stop_Cockpit"), SubResource("Tour_stop_Lift"), SubResource("Tour_stop_MedicalBay"), SubResource("Tour_stop_EngineRoom"), SubResource("Tour_stop_ShootingRange"), SubResource("Tour_stop_Weapons"), SubResource("Tour_stop_Armor"), SubResource("Tour_stop_Skills"), SubResource("Tour_stop_Miners"), SubResource("Tour_stop_Armory")])
 
+[sub_resource type="Resource" id="Reaction_first_run_lost_solo"]
+script = ExtResource("9_reaction")
+event = &"first_run_lost"
+players = 1
+lines = Array[String](["That one didn't go well. Before you go out again, have a look at the bench in the weapons room, the fitting frame and the skill graph. Better gear costs less than a lost haul."])
+
+[sub_resource type="Resource" id="Reaction_first_run_lost_coop"]
+script = ExtResource("9_reaction")
+event = &"first_run_lost"
+players = 2
+lines = Array[String](["That one didn't go well for any of us. Before you all go out again, have a look at the bench in the weapons room, the fitting frame and the skill graph. Better gear costs less than a lost haul."])
+
+[sub_resource type="Resource" id="Reaction_miner_hint_solo"]
+script = ExtResource("9_reaction")
+event = &"miner_hint"
+players = 1
+lines = Array[String](["Before you go far, get a miner going on a node near the ship. Your suit makes new rounds from the ore on your back, so fill up there before you head out deeper."])
+
+[sub_resource type="Resource" id="Reaction_miner_hint_coop"]
+script = ExtResource("9_reaction")
+event = &"miner_hint"
+players = 2
+lines = Array[String](["Before any of you go far, get your miners going on the nodes near the ship. Your suits make new rounds from the ore on your backs, so fill up there before you head out deeper."])
+
+[sub_resource type="Resource" id="Reaction_out_of_spares"]
+script = ExtResource("9_reaction")
+event = &"out_of_spares"
+lines = Array[String](["That was your last spare magazine, and there's no ore on your back for new rounds. Get to a miner and fill up before you go on."])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"quartermaster"
@@ -210,5 +239,5 @@ model = "uid://r7da5xautqps"
 activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"])
 accent_color = Color(0.65, 0.45, 1, 1)
 dialogue = SubResource("Resource_dialogue")
-reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_run_won_solo"), SubResource("Reaction_first_run_won_coop"), SubResource("Reaction_weapon_built"), SubResource("Reaction_big_haul"), SubResource("Reaction_big_haul_crew")])
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_first_run_won_solo"), SubResource("Reaction_first_run_won_coop"), SubResource("Reaction_weapon_built"), SubResource("Reaction_big_haul"), SubResource("Reaction_big_haul_crew"), SubResource("Reaction_first_run_lost_solo"), SubResource("Reaction_first_run_lost_coop"), SubResource("Reaction_miner_hint_solo"), SubResource("Reaction_miner_hint_coop"), SubResource("Reaction_out_of_spares")])
 tour = SubResource("Tour")

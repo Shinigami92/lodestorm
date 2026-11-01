@@ -94,6 +94,8 @@ signal story_flag_set(flag: StringName)
 
 # Missions and the ship.
 
+## A mission was chosen as the destination (at the navigator or the quest board).
+signal destination_chosen(brief: MissionBrief)
 ## A run started (the first player left the ship).
 signal mission_started(brief: MissionBrief)
 ## The storm's warning started (see `Mission.warning_time`).

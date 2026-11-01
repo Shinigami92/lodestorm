@@ -143,6 +143,137 @@ event = &"deposit_landed"
 players = 2
 lines = Array[String](["Something came down out there, and it's glowing. If that's ore, it's the good kind. Go and take a look if you think you can make it, all of you.", "Did you all hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful.", "A meteor just came down out there. It brought something rich with it, by the look of that light. The way back from there is long, though, so stay together."])
 
+[sub_resource type="Resource" id="Reaction_destination_rough_mire"]
+script = ExtResource("9_reaction")
+event = &"destination_rough"
+subject = &"mire"
+lines = Array[String](["Hollow Mire? It's rougher than the flats. If it were up to me, we'd get some upgrades first."])
+
+[sub_resource type="Resource" id="Reaction_destination_rough"]
+script = ExtResource("9_reaction")
+event = &"destination_rough"
+lines = Array[String](["That's rough ground for the gear we have. If it were up to me, we'd get some upgrades first.", "I'll fly us there, of course. It's just harder down there than our gear is made for, so a few upgrades first wouldn't hurt.", "It's not my call where we land. But I'd want better armor and better weapons before I walked out there."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_mire"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"mire"
+lines = Array[String](["Hollow Mire. The nests here are thicker than in the flats, and the growth hides them until they're close. Better not stray far from the ship before you know your way around."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_cinder"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"cinder"
+lines = Array[String](["Cinder Steps, the roughest ground on Torvane. The nests are thickest here, and the ore around the crater pulls crews in deeper than is good for them."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_rimeback"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"rimeback"
+lines = Array[String](["Rimeback. The nests are thicker than in Pale Basin, and the frozen lakes are slick. The crystal wall is worth it, but a dead end has only one way out."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_glare"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"glare"
+lines = Array[String](["Glare Fields. The nests are thicker than on Hoarfrost Ridge, and the salt is wide open: you see them coming from far off, and they see you."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_ember"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"ember"
+lines = Array[String](["Ember Reach, the roughest place on Vehra. The nests are thickest here, and the canyons are narrow. Know your way back before you go looking for that wreck."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_brine"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"brine"
+lines = Array[String](["Brine Terraces. The nests are thicker than in Sunken Verge, and there's little cover on the causeways. Keep your distance in a fight out there."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_whiteshelf"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"whiteshelf"
+lines = Array[String](["Whiteshelf. The nests are thicker than in Sunken Verge, and the crater lies out in the open salt. The ore around it is worth the walk, but there's little cover on the way."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_mossgrave"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"mossgrave"
+lines = Array[String](["Mossgrave, the roughest place on Cassor. The nests are thickest here, and the growth hides them until they're close. Don't go deep in without knowing your way back."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_quiet"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"quiet"
+lines = Array[String](["Quiet Scar. The crews say it's quieter here than anywhere else, and none of them trust it. I don't either, so keep your eyes open."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_drift"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"drift"
+lines = Array[String](["Drift Basin. The salt is wide open, so there's little cover from whatever comes. And that wreck looks as if it had always been there. I don't like it."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_lantern"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"lantern"
+lines = Array[String](["Lantern Hollow, the roughest place on Orrel. The nests are thickest here, and the growth hides them. If you follow that beacon's light, know your way back."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_coldwake"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"coldwake"
+lines = Array[String](["Coldwake. The ice has nearly taken the old outpost back, and the frozen lakes are slick. Mind your footing when something's after you."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_splitrock"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"splitrock"
+lines = Array[String](["Splitrock Steps, the roughest place on Iska. The nests are thickest here, and the crystal wall sits at the end of a dead end, with only one way out."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_blacktide"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"blacktide"
+lines = Array[String](["Black Tide. The nests are thicker than on Rustwind Plain, and the vents can burst at any moment. Stay off the scorched ground around them."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_brimstone"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"brimstone"
+lines = Array[String](["Brimstone Cut. The nests are thicker than on Rustwind Plain, and the crystal wall is at the end of a dead end. Keep clear of the vents on the way."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_slag"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"slag"
+lines = Array[String](["The Slag Terraces, the worst place on Skelde. The nests are thickest here, and the crossings over the lava are narrow. Know how you'll get back before you cross one."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_sunward"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"sunward"
+lines = Array[String](["Sunward Scar. This close to the star, even the wreck out there has turned dark. Stay off the scorched ground: the vents don't give much warning."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_glassmere"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"glassmere"
+lines = Array[String](["Glassmere. The splinters in the shard gardens hurt anyone standing on them. Whoever set up that old camp out here came farther in than anyone else."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_mirror"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"mirror"
+lines = Array[String](["Mirror Flats, as rough as it gets on Zairen. The light off the glass is so bright you can barely see them coming, and the nests are thickest here."])
+
+[sub_resource type="Resource" id="Reaction_region_landing_fused"]
+script = ExtResource("9_reaction")
+event = &"region_landing"
+subject = &"fused"
+lines = Array[String](["The Fused Expanse, as rough as it gets on Zairen. The crystal wall has the rarest ore, but it sits at the end of a dead end. Getting there is the easy part."])
+
 [resource]
 script = ExtResource("1_profile")
 id = &"pilot"
@@ -153,4 +284,4 @@ activities = Array[StringName]([&"LookAround", &"Stretch", &"CheckWrist", &"Tap"
 accent_color = Color(0.3, 0.72, 1, 1)
 cabin = 2
 dialogue = SubResource("Resource_dialogue")
-reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_cassor"), SubResource("Reaction_planet_opened_zairen"), SubResource("Reaction_first_landing_torvane"), SubResource("Reaction_first_landing_lisk"), SubResource("Reaction_first_landing_vehra"), SubResource("Reaction_first_landing_cassor"), SubResource("Reaction_first_landing_mirr"), SubResource("Reaction_first_landing_orrel"), SubResource("Reaction_first_landing_iska"), SubResource("Reaction_first_landing_skelde"), SubResource("Reaction_first_landing_zairen"), SubResource("Reaction_storm_warning_solo"), SubResource("Reaction_storm_warning_coop"), SubResource("Reaction_deposit_landed_solo"), SubResource("Reaction_deposit_landed_coop")])
+reactions = Array[ExtResource("9_reaction")]([SubResource("Reaction_planet_opened_cassor"), SubResource("Reaction_planet_opened_zairen"), SubResource("Reaction_first_landing_torvane"), SubResource("Reaction_first_landing_lisk"), SubResource("Reaction_first_landing_vehra"), SubResource("Reaction_first_landing_cassor"), SubResource("Reaction_first_landing_mirr"), SubResource("Reaction_first_landing_orrel"), SubResource("Reaction_first_landing_iska"), SubResource("Reaction_first_landing_skelde"), SubResource("Reaction_first_landing_zairen"), SubResource("Reaction_storm_warning_solo"), SubResource("Reaction_storm_warning_coop"), SubResource("Reaction_deposit_landed_solo"), SubResource("Reaction_deposit_landed_coop"), SubResource("Reaction_destination_rough_mire"), SubResource("Reaction_destination_rough"), SubResource("Reaction_region_landing_mire"), SubResource("Reaction_region_landing_cinder"), SubResource("Reaction_region_landing_rimeback"), SubResource("Reaction_region_landing_glare"), SubResource("Reaction_region_landing_ember"), SubResource("Reaction_region_landing_brine"), SubResource("Reaction_region_landing_whiteshelf"), SubResource("Reaction_region_landing_mossgrave"), SubResource("Reaction_region_landing_quiet"), SubResource("Reaction_region_landing_drift"), SubResource("Reaction_region_landing_lantern"), SubResource("Reaction_region_landing_coldwake"), SubResource("Reaction_region_landing_splitrock"), SubResource("Reaction_region_landing_blacktide"), SubResource("Reaction_region_landing_brimstone"), SubResource("Reaction_region_landing_slag"), SubResource("Reaction_region_landing_sunward"), SubResource("Reaction_region_landing_glassmere"), SubResource("Reaction_region_landing_mirror"), SubResource("Reaction_region_landing_fused")])

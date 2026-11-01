@@ -30,6 +30,12 @@
       "seed": 1,
       "text": "Noch eine für die Waffenkammer. Du findest sie bei den anderen an der Wand, also nimm, was am besten zur nächsten Mission passt."
     },
+    "126524551dc6a7dd": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das war dein letztes Ersatzmagazin, und auf deinem Rücken ist kein Erz für neue Munition. Geh zu einem Miner und füll auf, bevor du weitermachst."
+    },
     "1668e9dbe7bc3a9c": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -101,6 +107,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Gut, dann weiter."
+    },
+    "3b2a6f5c4d47c397": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bevor du weit gehst, setz einen Miner an ein Erzvorkommen nahe am Schiff. Dein Anzug stellt neue Munition aus dem Erz auf deinem Rücken her, also füll dort erst auf, bevor du tiefer reingehst."
     },
     "3cedd3913415a6e2": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -240,6 +252,12 @@
       "seed": 1,
       "text": "Hier Brannik. Ich höre, die Schrotflinte ist gebaut. Kommt alle vorbei und zeigt sie mir."
     },
+    "87062b8162336d96": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist für keinen von uns gut gelaufen. Bevor ihr wieder rausgeht, schaut euch die Werkbank im Waffenraum, den Anpassungsrahmen und den Fähigkeitenbaum an. Bessere Ausrüstung kostet weniger als eine verlorene Ladung."
+    },
     "8ba38ea7d21cf343": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -299,6 +317,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Je seltener das Erz, desto mehr Munition bekommst du aus der gleichen Menge."
+    },
+    "ae3e5d43558f2a85": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Bevor jemand von euch weit geht, setzt eure Miner an die Erzvorkommen nahe am Schiff. Eure Anzüge stellen neue Munition aus dem Erz auf euren Rücken her, also füllt dort erst auf, bevor ihr tiefer reingeht."
     },
     "aef02d5522bd8c98": {
       "anchor": "a4a1fdb2cb84ecb9",
@@ -432,6 +456,12 @@
       "seed": 1,
       "text": "Schon wieder eine große Ladung. Wenn das so weitergeht, haben Dace und Wren keine ruhige Minute mehr."
     },
+    "ec680d90f4a726e2": {
+      "anchor": "a4a1fdb2cb84ecb9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist nicht gut gelaufen. Bevor du wieder rausgehst, schau dir die Werkbank im Waffenraum, den Anpassungsrahmen und den Fähigkeitenbaum an. Bessere Ausrüstung kostet weniger als eine verlorene Ladung."
+    },
     "eced603dac6aeb28": {
       "anchor": "a4a1fdb2cb84ecb9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -542,6 +572,12 @@
       "seed": 1,
       "text": "Another one for the armory. You'll find it on the wall with the others, so take whatever suits the next mission best."
     },
+    "126524551dc6a7dd": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That was your last spare magazine, and there's no ore on your back for new rounds. Get to a miner and fill up before you go on."
+    },
     "1668e9dbe7bc3a9c": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -613,6 +649,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Right, let's keep going."
+    },
+    "3b2a6f5c4d47c397": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Before you go far, get a miner going on a node near the ship. Your suit makes new rounds from the ore on your back, so fill up there before you head out deeper."
     },
     "3cedd3913415a6e2": {
       "anchor": "772c7907f9411bf4",
@@ -752,6 +794,12 @@
       "seed": 1,
       "text": "Brannik here. I hear the shotgun is built. Come and show it to me, all of you."
     },
+    "87062b8162336d96": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That one didn't go well for any of us. Before you all go out again, have a look at the bench in the weapons room, the fitting frame and the skill graph. Better gear costs less than a lost haul."
+    },
     "8ba38ea7d21cf343": {
       "anchor": "772c7907f9411bf4",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -811,6 +859,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The rarer the ore, the more rounds you get from the same amount."
+    },
+    "ae3e5d43558f2a85": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Before any of you go far, get your miners going on the nodes near the ship. Your suits make new rounds from the ore on your backs, so fill up there before you head out deeper."
     },
     "aef02d5522bd8c98": {
       "anchor": "772c7907f9411bf4",
@@ -943,6 +997,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Another big haul. Keep this up, and Dace and Wren won't have a quiet minute."
+    },
+    "ec680d90f4a726e2": {
+      "anchor": "772c7907f9411bf4",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That one didn't go well. Before you go out again, have a look at the bench in the weapons room, the fitting frame and the skill graph. Better gear costs less than a lost haul."
     },
     "eced603dac6aeb28": {
       "anchor": "772c7907f9411bf4",

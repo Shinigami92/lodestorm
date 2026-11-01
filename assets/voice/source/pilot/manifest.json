@@ -6,6 +6,12 @@
       "seed": 1,
       "text": "Frag ruhig, ich hab kurz Zeit."
     },
+    "06d05c62072e82e9": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Cinder Steps, die rauste Gegend auf Torvane. Nirgends auf Torvane stehen die Nester dichter, und das Erz rund um den Krater lockt Crews tiefer hinein, als gut für sie ist."
+    },
     "06f653b859144b52": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -17,6 +23,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Solange wir dort angedockt sind, geht die Rampe hoch und runter, wann immer du willst, und um einen Sturm musst du dir keine Sorgen machen. Lass dir Zeit und rede mit den Leuten dort."
+    },
+    "0faae2a80cf8795f": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sunward Scar. So nah am Stern ist sogar das Wrack da draußen dunkel geworden. Den verbrannten Boden meidet man besser: Die Schlote warnen kaum."
     },
     "0ff3b4900078ed4c": {
       "anchor": "3581bf6c2d6006f9",
@@ -42,6 +54,12 @@
       "seed": 1,
       "text": "Zairen. Die Hitze hat den Boden zu Glas geschmolzen, und manche Scherben sind scharf genug, um zu verletzen. Ich warte genau hier."
     },
+    "163c2fca4a32f2a0": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Glassmere. Die Splitter in den Scherbengärten verletzen jeden, der darauf steht. Wer das alte Lager hier aufgebaut hat, kam weiter herein als irgendwer sonst."
+    },
     "1a406bcf60d25033": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -60,17 +78,47 @@
       "seed": 1,
       "text": "Hier Tamsin. Nach Kades Position ist Hollis' Lager nicht weit von unserem Landeplatz. Geh nachsehen, ob es ihm gut geht."
     },
+    "204d34abb8747bbd": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Coldwake. Das Eis hat sich den alten Außenposten fast zurückgeholt, und die gefrorenen Seen sind glatt. Wenn einem etwas folgt, rutscht man dort leicht weg."
+    },
     "22fd7649278d31e4": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Brauchst du was von mir?"
     },
+    "237c0906882a7aa6": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Splitrock Steps, die rauste Gegend auf Iska. Nirgends auf Iska stehen die Nester dichter, und die Kristallwand liegt am Ende einer Sackgasse, mit nur einem Weg heraus."
+    },
+    "25398c77177f214e": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Drift Basin. Das Salz ist weit offen, es gibt kaum Deckung vor dem, was kommt. Und das Wrack sieht aus, als wäre es schon immer da gewesen. Das gefällt mir nicht."
+    },
     "284d6320b337e01e": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Die Lichtsäulen sind Erzvorkommen, jedes in der Farbe seines Erzes, und sehenswerte Orte haben eine eigene Farbe. So kannst du deinen Weg planen, bevor du überhaupt losgehst."
+    },
+    "31f95700f4ce9977": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Slag Terraces, die schlimmste Gegend auf Skelde. Nirgends auf Skelde stehen die Nester dichter, und die Übergänge über die Lava sind schmal. Bevor man einen überquert, sollte man wissen, wie man zurückkommt."
+    },
+    "34e6a9cc1ff80382": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Quiet Scar. Die Crews sagen, hier ist es ruhiger als überall sonst, und keiner von ihnen traut dem. Ich auch nicht, also Augen auf."
     },
     "39ce373b5607b7de": {
       "anchor": "3581bf6c2d6006f9",
@@ -84,11 +132,29 @@
       "seed": 1,
       "text": "Davor habe ich die Frachter geflogen, die die Kolonie hergebracht haben. Monatelang durch die Dunkelheit, mit Tausenden schlafenden Menschen hinter mir."
     },
+    "3e13189fad54cd23": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brine Terraces. Die Nester stehen dichter als in Sunken Verge, und auf den Dämmen gibt es kaum Deckung. Da draußen hält man im Kampf besser Abstand."
+    },
     "4070638e4bb197fc": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Der Sturm zieht auf. Alle zurück zum Schiff."
+    },
+    "485b0858bb6c8c3f": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Whiteshelf. Die Nester stehen dichter als in Sunken Verge, und der Krater liegt im offenen Salz. Das Erz drumherum lohnt den Weg, aber unterwegs gibt es kaum Deckung."
+    },
+    "4b6d291431c70e83": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Das ist raues Gelände für die Ausrüstung, die wir haben. Wenn es nach mir ginge, würden wir uns vorher ein paar Upgrades holen."
     },
     "56c60e4987cb52eb": {
       "anchor": "3581bf6c2d6006f9",
@@ -114,6 +180,18 @@
       "seed": 1,
       "text": "Willkommen auf Vehra. Eis, Salz und Staub, und alles ein bisschen rauer als auf Torvane. Ich halte die Triebwerke warm."
     },
+    "642f3e77cfc101ce": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Black Tide. Die Nester stehen dichter als auf der Rustwind Plain, und die Schlote können jeden Moment ausbrechen. Den verbrannten Boden um sie herum meidet man besser."
+    },
+    "64e23546326b36a4": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Wo wir landen, entscheide nicht ich. Aber ich würde mit besserer Panzerung und besseren Waffen da rausgehen wollen."
+    },
     "6722f25bae40598b": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -125,6 +203,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Hast du das gehört? Gerade ist ein Meteor eingeschlagen, und im Krater leuchtet Erz. Der Lärm hat bestimmt geweckt, was in der Nähe lebt, also sei vorsichtig."
+    },
+    "70412f1e1c2c566a": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ember Reach, die rauste Gegend auf Vehra. Nirgends auf Vehra stehen die Nester dichter, und die Schluchten sind eng. Wer das Wrack sucht, sollte den Rückweg kennen."
     },
     "7425a78406147b44": {
       "anchor": "3581bf6c2d6006f9",
@@ -150,6 +234,12 @@
       "seed": 1,
       "text": "Lisk ist ein Mond aus Eis. Das Eis da draußen ist glatt, und die Spalten darin sind tief."
     },
+    "89773a52c6426a95": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Glare Fields. Die Nester stehen dichter als auf dem Hoarfrost Ridge, und das Salz ist weit offen: Man sieht sie von Weitem kommen, und sie einen auch."
+    },
     "904f734f33f3efbd": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -174,11 +264,29 @@
       "seed": 1,
       "text": "Waypost Ostra ist die Station der Kolonie. Sie kreist um Torvane, und du findest sie am Navigator genau wie eine Region."
     },
+    "9413e027143cb814": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollow Mire. Hier stehen die Nester dichter als in Redscar Flats, und der Bewuchs verbirgt sie, bis sie nah sind. Besser entfernt man sich nicht weit vom Schiff, bevor man sich auskennt."
+    },
     "94bda7790c627d03": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Mirr ist ein kleiner Mond, nur Staub und Stein. Da draußen ist es ruhig. Zu ruhig für meinen Geschmack."
+    },
+    "9600d8191df5c146": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mossgrave, die rauste Gegend auf Cassor. Nirgends auf Cassor stehen die Nester dichter, und der Bewuchs verbirgt sie, bis sie nah sind. Tief hinein geht man nur, wenn man den Rückweg kennt."
+    },
+    "9d0e080a332b6963": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brimstone Cut. Die Nester stehen dichter als auf der Rustwind Plain, und die Kristallwand liegt am Ende einer Sackgasse. Unterwegs hält man besser Abstand zu den Schloten."
     },
     "9e2afc640b385424": {
       "anchor": "3581bf6c2d6006f9",
@@ -216,11 +324,41 @@
       "seed": 1,
       "text": "Der Flug dauert eine Weile, also nutz die Zeit. Geh nach hinten in die Waffenkammer, such dir deine Waffen aus und sei an der Rampe, wenn wir aufsetzen."
     },
+    "a7ee7129ed6bb9d8": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Die Fused Expanse, rauer wird es auf Zairen nicht. An der Kristallwand liegt das seltenste Erz, aber sie steht am Ende einer Sackgasse. Hinzukommen ist der leichte Teil."
+    },
+    "a7f90f3e99fa0d16": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollow Mire? Da geht es rauer zu als in Redscar Flats. Wenn es nach mir ginge, würden wir uns vorher ein paar Upgrades holen."
+    },
     "a9080d9effbfce6c": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Diese letzte Ansicht liegt so, wie das Schiff aufsetzen wird, mit der Rampe rechts wie hier drinnen. Was du dort neben dem Schiff siehst, findest du draußen auch neben dem Schiff."
+    },
+    "a9cd223e80256221": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ich fliege uns natürlich hin. Nur ist es da unten härter, als unsere Ausrüstung es verträgt. Ein paar Upgrades vorher würden nicht schaden."
+    },
+    "afa52243a928c6c4": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Lantern Hollow, die rauste Gegend auf Orrel. Nirgends auf Orrel stehen die Nester dichter, und der Bewuchs verbirgt sie. Wer dem Licht der Bake folgt, sollte den Rückweg kennen."
+    },
+    "baf086c5b58ec145": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mirror Flats, rauer wird es auf Zairen nicht. Das Licht auf dem Glas ist so grell, dass man sie kaum kommen sieht, und dichter stehen die Nester nirgends."
     },
     "bf59427c16c1abe5": {
       "anchor": "3581bf6c2d6006f9",
@@ -258,6 +396,12 @@
       "seed": 1,
       "text": "Manche Regionen lassen dir mehr Zeit als andere. Wenn du nicht weißt, wohin, fang mit einer leichten an."
     },
+    "e37aa1f3f10f852a": {
+      "anchor": "3581bf6c2d6006f9",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Rimeback. Die Nester stehen dichter als in Pale Basin, und die gefrorenen Seen sind glatt. Die Kristallwand lohnt sich, aber aus einer Sackgasse führt nur ein Weg heraus."
+    },
     "ea86a104090612c3": {
       "anchor": "3581bf6c2d6006f9",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -290,6 +434,12 @@
       "seed": 1,
       "text": "Ask away, I've got a minute."
     },
+    "06d05c62072e82e9": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Cinder Steps, the roughest ground on Torvane. The nests are thickest here, and the ore around the crater pulls crews in deeper than is good for them."
+    },
     "06f653b859144b52": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -301,6 +451,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "While we're docked there, the ramp goes up and down whenever you like, and there's no storm to worry about. Take your time and talk to the people there."
+    },
+    "0faae2a80cf8795f": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Sunward Scar. This close to the star, even the wreck out there has turned dark. Stay off the scorched ground: the vents don't give much warning."
     },
     "0ff3b4900078ed4c": {
       "anchor": "b39c4473829e205a",
@@ -326,6 +482,12 @@
       "seed": 1,
       "text": "Zairen. The heat has turned the ground to glass, and some of the shards are sharp enough to hurt. I'll be waiting right here."
     },
+    "163c2fca4a32f2a0": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Glassmere. The splinters in the shard gardens hurt anyone standing on them. Whoever set up that old camp out here came farther in than anyone else."
+    },
     "1a406bcf60d25033": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -344,17 +506,47 @@
       "seed": 1,
       "text": "Tamsin here. By Kade's position, Hollis' camp isn't far from where we landed. Go and see if he's all right."
     },
+    "204d34abb8747bbd": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Coldwake. The ice has nearly taken the old outpost back, and the frozen lakes are slick. Mind your footing when something's after you."
+    },
     "22fd7649278d31e4": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Need something from me?"
     },
+    "237c0906882a7aa6": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Splitrock Steps, the roughest place on Iska. The nests are thickest here, and the crystal wall sits at the end of a dead end, with only one way out."
+    },
+    "25398c77177f214e": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Drift Basin. The salt is wide open, so there's little cover from whatever comes. And that wreck looks as if it had always been there. I don't like it."
+    },
     "284d6320b337e01e": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "The beams are ore nodes, each in its ore's color, and places worth a look have a color of their own. So you can plan your way before you even leave."
+    },
+    "31f95700f4ce9977": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The Slag Terraces, the worst place on Skelde. The nests are thickest here, and the crossings over the lava are narrow. Know how you'll get back before you cross one."
+    },
+    "34e6a9cc1ff80382": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Quiet Scar. The crews say it's quieter here than anywhere else, and none of them trust it. I don't either, so keep your eyes open."
     },
     "39ce373b5607b7de": {
       "anchor": "b39c4473829e205a",
@@ -368,11 +560,29 @@
       "seed": 1,
       "text": "Before this, I flew the haulers that brought the colony here. Months in the dark, with thousands of people asleep behind me."
     },
+    "3e13189fad54cd23": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brine Terraces. The nests are thicker than in Sunken Verge, and there's little cover on the causeways. Keep your distance in a fight out there."
+    },
     "4070638e4bb197fc": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Storm's coming in. Everyone back to the ship."
+    },
+    "485b0858bb6c8c3f": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Whiteshelf. The nests are thicker than in Sunken Verge, and the crater lies out in the open salt. The ore around it is worth the walk, but there's little cover on the way."
+    },
+    "4b6d291431c70e83": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "That's rough ground for the gear we have. If it were up to me, we'd get some upgrades first."
     },
     "56c60e4987cb52eb": {
       "anchor": "b39c4473829e205a",
@@ -398,6 +608,18 @@
       "seed": 1,
       "text": "Welcome to Vehra. Ice, salt and dust, and all of it a little harsher than on Torvane. I'll keep the engines warm."
     },
+    "642f3e77cfc101ce": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Black Tide. The nests are thicker than on Rustwind Plain, and the vents can burst at any moment. Stay off the scorched ground around them."
+    },
+    "64e23546326b36a4": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "It's not my call where we land. But I'd want better armor and better weapons before I walked out there."
+    },
     "6722f25bae40598b": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -409,6 +631,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Did you hear that? A meteor just hit, and there's ore glowing in the crater. That much noise will have woken whatever lives nearby, so be careful."
+    },
+    "70412f1e1c2c566a": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Ember Reach, the roughest place on Vehra. The nests are thickest here, and the canyons are narrow. Know your way back before you go looking for that wreck."
     },
     "7425a78406147b44": {
       "anchor": "b39c4473829e205a",
@@ -434,6 +662,12 @@
       "seed": 1,
       "text": "Lisk is a moon of ice. The ice out there is slick, and the cracks in it go deep."
     },
+    "89773a52c6426a95": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Glare Fields. The nests are thicker than on Hoarfrost Ridge, and the salt is wide open: you see them coming from far off, and they see you."
+    },
     "904f734f33f3efbd": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
@@ -458,11 +692,29 @@
       "seed": 1,
       "text": "Waypost Ostra is the colony's station. It circles Torvane, and you'll find it at the navigator just like a region."
     },
+    "9413e027143cb814": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollow Mire. The nests here are thicker than in the flats, and the growth hides them until they're close. Better not stray far from the ship before you know your way around."
+    },
     "94bda7790c627d03": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Mirr is a small moon, nothing but dust and stone. It's quiet out there. Too quiet for my taste."
+    },
+    "9600d8191df5c146": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mossgrave, the roughest place on Cassor. The nests are thickest here, and the growth hides them until they're close. Don't go deep in without knowing your way back."
+    },
+    "9d0e080a332b6963": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Brimstone Cut. The nests are thicker than on Rustwind Plain, and the crystal wall is at the end of a dead end. Keep clear of the vents on the way."
     },
     "9e2afc640b385424": {
       "anchor": "b39c4473829e205a",
@@ -500,11 +752,41 @@
       "seed": 1,
       "text": "The flight takes a little while, so use it. Walk back to the armory, pick your weapons, and be at the ramp when we touch down."
     },
+    "a7ee7129ed6bb9d8": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "The Fused Expanse, as rough as it gets on Zairen. The crystal wall has the rarest ore, but it sits at the end of a dead end. Getting there is the easy part."
+    },
+    "a7f90f3e99fa0d16": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Hollow Mire? It's rougher than the flats. If it were up to me, we'd get some upgrades first."
+    },
     "a9080d9effbfce6c": {
       "anchor": "b39c4473829e205a",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "That last view lies the way the ship will touch down, with the ramp on the right like in here. Whatever you see beside the ship there, you'll find beside the ship outside."
+    },
+    "a9cd223e80256221": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "I'll fly us there, of course. It's just harder down there than our gear is made for, so a few upgrades first wouldn't hurt."
+    },
+    "afa52243a928c6c4": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Lantern Hollow, the roughest place on Orrel. The nests are thickest here, and the growth hides them. If you follow that beacon's light, know your way back."
+    },
+    "baf086c5b58ec145": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Mirror Flats, as rough as it gets on Zairen. The light off the glass is so bright you can barely see them coming, and the nests are thickest here."
     },
     "bf59427c16c1abe5": {
       "anchor": "b39c4473829e205a",
@@ -541,6 +823,12 @@
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
       "seed": 1,
       "text": "Some regions give you more time than others. If you're not sure where to go, start with an easy one."
+    },
+    "e37aa1f3f10f852a": {
+      "anchor": "b39c4473829e205a",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base",
+      "seed": 1,
+      "text": "Rimeback. The nests are thicker than in Pale Basin, and the frozen lakes are slick. The crystal wall is worth it, but a dead end has only one way out."
     },
     "ea86a104090612c3": {
       "anchor": "b39c4473829e205a",

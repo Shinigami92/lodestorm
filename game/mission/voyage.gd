@@ -194,6 +194,7 @@ func choose(offer: MissionBrief) -> bool:
 	destination = offer
 	_prepare(offer)
 	offers_changed.emit()
+	GameEvents.bus.destination_chosen.emit(offer)
 	return true
 
 

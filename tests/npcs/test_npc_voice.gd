@@ -67,6 +67,29 @@ func test_every_line_has_its_recording_in_every_voice_language() -> void:
 			)
 
 
+## A take that went wrong (e.g. a German line starting with a number came out as a short noise) is
+## far shorter than its text: good takes have at least 0.039 s per character, broken ones 0.003.
+func test_every_recording_is_long_enough_for_its_text() -> void:
+	const MIN_SECONDS_PER_CHARACTER: float = 0.02
+	for language: String in VoiceLines.LANGUAGES:
+		TranslationServer.set_locale(language)
+		var profiles: Array[NpcProfile] = VOICED.duplicate()
+		if language == "en":
+			profiles.append_array(VOICED_IN_ENGLISH)
+		for profile: NpcProfile in profiles:
+			for line: String in _lines(profile):
+				var path: String = VoiceLines.path(profile.id, language, line)
+				var recording: AudioStream = load(path) if ResourceLoader.exists(path) else null
+				if not recording:
+					continue
+				var text: String = tr(line)
+				assert_gte(
+					recording.get_length(),
+					text.length() * MIN_SECONDS_PER_CHARACTER,
+					"%s (%s): %s" % [profile.id, language, text]
+				)
+
+
 func test_no_recording_is_left_over() -> void:
 	for profile: NpcProfile in VOICED + VOICED_IN_ENGLISH:
 		var keys: PackedStringArray = []

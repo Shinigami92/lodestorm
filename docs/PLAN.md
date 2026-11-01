@@ -168,6 +168,18 @@ Alongside, any time:
   - [x] Waypost Ostra in front of Torvane (the first planet) on the navigator
   - [x] aliens can never get aboard: a barrier in the ramp's door on a physics layer of its own (`PhysicsLayers.ALIENS_ONLY`) that only aliens bump into, fliers too (not players, crew, shots, sight or the crew's navigation)
   - [x] the game doesn't open the pause card by itself when it loses focus (alt+tab): it goes on as it is, solo too (`PausePanel.pause_on_focus_loss` removed)
+- [ ] **Playtest feedback** (2026-11-01, all quests through C3d in one play, with god mode and the debug overlay; each its own PR, a short round where it's a decision):
+  - [x] the holo table didn't show a destination set at the quest board (it kept the last one shown)
+  - [x] the round marker above the quest board is gone; its Done group reads as a heading
+  - [x] the talk card cut off at both sides: a German quest title too wide for it pushed it out of its panel ("Die Nester bei den Markierungen"); every quest's rows are checked now
+  - [x] Wren's lines: an odd German prompt, her offer knowing the armor room has nobody, why Ostra's suits won't do; Tamsin's call on the last piece
+  - [x] a very short noise at a hand-in at Kade: three of his German lines starting with a number came out of the voice model as 0.16 s of noise (re-rendered; a test checks every recording's length against its text)
+  - [ ] the course set at the quest board for Wren's suit with 2 of 3 pieces sent the ship to Ostra (not reproduced from the code, the holo table wasn't used; watch for it)
+  - [ ] Brannik repeats in his topics what he said over the radio out there ("Ammo" and "Spare magazines" say again what the miner hint and the last-spares call said)
+  - [ ] Brannik's tour: talking to him during it can start the armory talk; leaving the shooting range he walks through the wall
+  - [ ] the weapons room upgrades only to the first MK level until Dace joins, the higher ones locked until then
+  - [ ] walking at the NPCs' pace with the keyboard (to walk along with them)
+  - [ ] the ramp's sound going down
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)

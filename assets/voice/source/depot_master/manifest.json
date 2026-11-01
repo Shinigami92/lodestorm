@@ -33,7 +33,7 @@
     "1120ccdd378a1547": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
+      "seed": 4,
       "text": "150 Kyrite, eingetragen. Das sind drei neue Rahmen und zwei auf Vorrat."
     },
     "15c31108ec065ddb": {
@@ -81,7 +81,7 @@
     "35698d277c88c267": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
+      "seed": 7,
       "text": "120 Olvane. Vier Flicken, und der Ring hält wieder den Druck. Danke."
     },
     "3583555c698d436a": {
@@ -93,7 +93,7 @@
     "3a999a0bcbdf1293": {
       "anchor": "4dc636caa23416cd",
       "model": "Qwen3-TTS-12Hz-1.7B-Base",
-      "seed": 1,
+      "seed": 3,
       "text": "80 Vyrel. Bis morgen laufen wieder alle drei Scanner."
     },
     "3c1029c3acaa2f09": {

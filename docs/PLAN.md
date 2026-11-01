@@ -167,7 +167,7 @@ Alongside, any time:
   - [x] Brannik, ignored at the start (his tour never taken), goes to the armory after the first flight set at the navigator instead of waiting on
   - [x] Waypost Ostra in front of Torvane (the first planet) on the navigator
   - [x] aliens can never get aboard: a barrier in the ramp's door on a physics layer of its own (`PhysicsLayers.ALIENS_ONLY`) that only aliens bump into, fliers too (not players, crew, shots, sight or the crew's navigation)
-  - [x] the game pauses by itself when it loses focus (alt+tab), solo: also while a station or a talk is open (it closes, the pause card opens) and while the game runs embedded in the editor (the window's focus, not only the app's)
+  - [x] the game doesn't open the pause card by itself when it loses focus (alt+tab): it goes on as it is, solo too (`PausePanel.pause_on_focus_loss` removed)
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)

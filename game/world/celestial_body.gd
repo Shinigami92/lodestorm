@@ -22,6 +22,9 @@ const MK_ABOVE_TIER: int = 2
 ## The ship's heat shield needs this MK level to reach it (see `HeatShield`). Scales its aliens and
 ## its storm (see `Mission.tier`) and sets its highest MK level (`max_mk`).
 @export_range(1, 6, 1, "or_greater") var tier: int = 1
+## Whether it's the colony's own ground (Torvane and its moon): the pilot knows all its regions
+## (see `SurvivalCalls.knows`).
+@export var home_ground: bool = false
 ## Its color in the navigator's hologram.
 @export var color: Color = Color(0.5, 0.6, 0.7)
 ## Its size in the system view, relative to the others.

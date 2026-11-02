@@ -24,10 +24,5 @@ func is_lit() -> bool:
 	if visit.meeting_for(entry.quest) != entry:
 		return false
 	# Also asked for a location outside the tree (the holo table's preview of a prepared one).
-	var tree := Engine.get_main_loop() as SceneTree
-	var players: Array[Player] = []
-	for node: Node in tree.get_nodes_in_group(Player.GROUP) if tree else []:
-		var player := node as Player
-		if player and not player.dead:
-			players.append(player)
+	var players: Array[Player] = Player.living(Engine.get_main_loop() as SceneTree)
 	return visit.is_ready(entry.quest, players)

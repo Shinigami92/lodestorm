@@ -75,6 +75,17 @@ enum Hazard {
 	MUD,
 }
 
+## The terrain shader's parameters of `ground_material` that others match the ground by (the far
+## ring, `LocationFarRing`; the cover on parts, `SettledCover`): its ground's and rock's textures,
+## tints and tile sizes. A uniform renamed in terrain.gdshader is renamed here.
+const GROUND_ALBEDO: StringName = &"ground_albedo"
+const GROUND_NRA: StringName = &"ground_nra"
+const GROUND_TINT: StringName = &"ground_tint"
+const GROUND_TILE: StringName = &"ground_tile"
+const ROCK_ALBEDO: StringName = &"rock_albedo"
+const ROCK_TINT: StringName = &"rock_tint"
+const ROCK_TILE: StringName = &"rock_tile"
+
 @export var display_name: String = ""
 ## Its color on the navigator's globes: muted, like its ground, so the regions' danger borders
 ## and the ores' badges stand out.
@@ -173,7 +184,8 @@ enum Hazard {
 ## Height of the small bumps on top, in m.
 @export var bump_height: float = 0.6
 ## The ground's material: usually the terrain shader (`assets/shaders/terrain.gdshader`) with the
-## biome's texture sets. It gets the vertex colors: RGB a tint, A the share of scree.
+## biome's texture sets. It gets the vertex colors: RGB a tint, A the share of scree. Others match
+## the ground by its parameters (`GROUND_ALBEDO` and the rest).
 @export var ground_material: Material
 ## Tint of the low ground, fading out towards the high ground (the rock's top is lighter).
 @export var low_ground_tint: Color = Color(0.9, 0.9, 0.9)

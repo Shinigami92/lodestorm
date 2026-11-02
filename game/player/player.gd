@@ -457,6 +457,17 @@ static func first_local(tree: SceneTree) -> Player:
 	return null
 
 
+## The living players in `tree` (none without one): standing or down, not dead.
+static func living(tree: SceneTree) -> Array[Player]:
+	var found: Array[Player] = []
+	if not tree:
+		return found
+	for player: Player in tree.get_nodes_in_group(GROUP):
+		if not player.dead:
+			found.append(player)
+	return found
+
+
 ## The standing player closest to `from` within `max_distance` (horizontally), or null.
 static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Player:
 	var nearest_player: Player = null

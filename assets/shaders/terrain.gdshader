@@ -55,41 +55,8 @@ void vertex() {
 	world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
 
-float hash(vec2 p) {
-	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
-}
-
-float value_noise(vec2 p) {
-	vec2 cell = floor(p);
-	vec2 f = fract(p);
-	vec2 u = f * f * (3.0 - 2.0 * f);
-	float a = hash(cell);
-	float b = hash(cell + vec2(1.0, 0.0));
-	float c = hash(cell + vec2(0.0, 1.0));
-	float d = hash(cell + vec2(1.0, 1.0));
-	return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
-}
-
-vec2 hash2(vec2 p) {
-	vec2 r = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
-	return fract(sin(r) * 43758.5453);
-}
-
-// The triangle of a hex grid (corners = hexagon centers) that `st` lies in: its corners and the
-// barycentric weights (Mikkelsen, "Practical Real-Time Hex-Tiling", 2022).
-void triangle_grid(vec2 st, out vec3 weights, out vec2 v1, out vec2 v2, out vec2 v3) {
-	st *= 3.46410162; // 2 * sqrt(3)
-	vec2 skewed = vec2(st.x, -0.57735027 * st.x + 1.15470054 * st.y);
-	vec2 base = floor(skewed);
-	vec3 temp = vec3(fract(skewed), 0.0);
-	temp.z = 1.0 - temp.x - temp.y;
-	float s = step(0.0, -temp.z);
-	float s2 = 2.0 * s - 1.0;
-	weights = vec3(-temp.z * s2, s - temp.y * s2, s - temp.x * s2);
-	v1 = base + vec2(s);
-	v2 = base + vec2(s, 1.0 - s);
-	v3 = base + vec2(1.0 - s, s);
-}
+#include "res://assets/shaders/noise.gdshaderinc"
+#include "res://assets/shaders/hex_tiling.gdshaderinc"
 
 // Tangent-space normal (image X right, Y up) from an nra sample.
 vec3 tangent_normal(vec4 nra) {

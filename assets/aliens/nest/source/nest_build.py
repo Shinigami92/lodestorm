@@ -24,11 +24,13 @@ import math
 import pathlib
 import random
 import sys
+from collections.abc import Callable
 
 ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "tmp" / "assets" / "nest"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
+import dataclasses
 import itertools
 
 import bmesh
@@ -99,36 +101,52 @@ def _chaikin(pts: list, n: int = 3) -> list:
     return pts
 
 
-_PTS = _chaikin(PROFILE)
-_ARC = [0.0]
-for _a, _b in itertools.pairwise(_PTS):
-    _ARC.append(_ARC[-1] + math.dist(_a, _b))
-PROF_LEN = _ARC[-1]
+class Profile:
+    """A mound's cross-section: (r, z) points, smoothed (`_chaikin`) and walked by t in 0..1 along their length
+    (`at`); `crest` is the t of its highest point (searched in `crest_steps` steps). A kit binds its methods to its
+    own names (`prof = PROFILE_PATH.at`, ...)."""
+
+    def __init__(self, points: list, crest_steps: int = 400):
+        self.pts = _chaikin(points)
+        self.arc = [0.0]
+        for a, b in itertools.pairwise(self.pts):
+            self.arc.append(self.arc[-1] + math.dist(a, b))
+        self.length = self.arc[-1]
+        self.crest = max((i / crest_steps for i in range(crest_steps + 1)), key=lambda t: self.at(t)[1])
+
+    def at(self, t: float) -> tuple[float, float]:
+        """The point (r, z) at t."""
+        s = max(0.0, min(1.0, t)) * self.length
+        for i in range(1, len(self.arc)):
+            if self.arc[i] >= s:
+                f = (s - self.arc[i - 1]) / max(self.arc[i] - self.arc[i - 1], 1e-9)
+                a, b = self.pts[i - 1], self.pts[i]
+                return a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f
+        return self.pts[-1]
+
+    def t_at_z(self, z: float) -> float:
+        """Outer side of the mound: the t where the profile reaches height z."""
+        lo, hi = 0.0, self.crest
+        for _ in range(40):
+            mid = (lo + hi) / 2
+            if self.at(mid)[1] < z:
+                lo = mid
+            else:
+                hi = mid
+        return (lo + hi) / 2
+
+    def t_in_crater(self, r: float) -> float:
+        """Crater side: the t where the profile comes in to radius r."""
+        return next(i / 800 for i in range(int(self.crest * 800), 801) if self.at(i / 800)[0] < r)
+
+    def m(self, meters: float) -> float:
+        """A length along the profile in t."""
+        return meters / self.length
 
 
-def prof(t: float) -> tuple[float, float]:
-    s = max(0.0, min(1.0, t)) * PROF_LEN
-    for i in range(1, len(_ARC)):
-        if _ARC[i] >= s:
-            f = (s - _ARC[i - 1]) / max(_ARC[i] - _ARC[i - 1], 1e-9)
-            a, b = _PTS[i - 1], _PTS[i]
-            return a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f
-    return _PTS[-1]
-
-
-T_CREST = max((i / 400 for i in range(401)), key=lambda t: prof(t)[1])
-
-
-def t_at_z(z: float) -> float:
-    """Outer side of the mound: the t where the profile reaches height z."""
-    lo, hi = 0.0, T_CREST
-    for _ in range(40):
-        mid = (lo + hi) / 2
-        if prof(mid)[1] < z:
-            lo = mid
-        else:
-            hi = mid
-    return (lo + hi) / 2
+PROFILE_PATH = Profile(PROFILE, crest_steps=400)
+PROF_LEN, T_CREST = PROFILE_PATH.length, PROFILE_PATH.crest
+prof, t_at_z = PROFILE_PATH.at, PROFILE_PATH.t_at_z
 
 
 def _smoothstep(a: float, b: float, x: float) -> float:
@@ -1088,6 +1106,166 @@ def main() -> None:
         for view in VIEWS:
             if view != "none":
                 render_view(OUT / "wip" / f"{TAG}_{view}.png", view, 24, 512)
+
+
+# --- shared with the brood kits (brood_clutch, brood_cocoons, brood_pit, quest_nest) ----------------------------------
+
+
+def brood_glow(name: str, churn: tuple, strength: tuple, dark: tuple) -> bpy.types.Material:
+    """A brood kit's glow of the mouth, pods, glands and cracks (the game pulses it), like the ordinary nest's: noise
+    churning between the two `churn` colors (linear) at an emission between the two `strength`s, fading to `dark`
+    where the "glow" attribute falls off."""
+    mat, nt, bsdf = C._new_material(name)
+    co = _coord(nt)
+    churn_noise = _noise(nt, co, 5.0, 4.0, 0.6, dist=1.5)
+    col = C._mix_color(nt, churn_noise.outputs["Fac"], churn[0], churn[1])
+    glow = nt.nodes.new("ShaderNodeAttribute")  # falloff (1 = full), see build_mouth
+    glow.attribute_name = "glow"
+    emit = C._math(
+        nt, "MULTIPLY", C._mix_float(nt, churn_noise.outputs["Fac"], strength[0], strength[1]), glow.outputs["Fac"]
+    )
+    nt.links.new(emit, bsdf.inputs["Emission Strength"])
+    col = C._mix_color(nt, glow.outputs["Fac"], dark, col)
+    nt.links.new(col, bsdf.inputs["Base Color"])
+    nt.links.new(col, bsdf.inputs["Emission Color"])
+    bsdf.inputs["Roughness"].default_value = 0.15
+    return mat
+
+
+@dataclasses.dataclass
+class Mound:
+    """What a brood kit's tendrils grow on (see brood_tendrils): its shape (`P`: the surface point at (theta, t),
+    `N`: its normal; `t_at_z` and `length` of its profile), its main tendrils (degrees, length on the ground, radius)
+    and where they reach the ground (m from the middle)."""
+
+    P: Callable
+    N: Callable
+    t_at_z: Callable
+    length: float
+    tendrils: list
+    ground_start: float
+
+
+@dataclasses.dataclass
+class TendrilStyle:
+    """How a brood kit's tendrils run (see brood_tendrils): the profile height range a main tendril starts from,
+    its sideways wobble (radians), the point its gland sits at (from the index where it reaches the ground), the
+    ground length above which it gets a third branch, the first and third branches' length range, and the thin roots'
+    length range and the height they start from."""
+
+    start_z: tuple
+    wobble: float
+    branch_at: Callable
+    long_ground: float = 2.0
+    branch_len: tuple = (0.45, 0.95)
+    root_len: tuple = (0.9, 1.5)
+    root_z: float = 0.1
+
+
+def brood_tendrils(part: Part, glands: list, rnd: random.Random, mound: "Mound", style: "TendrilStyle") -> list:
+    """A brood kit's main tendrils (the ordinary nest's) from its base down and out over the ground between the
+    kit's things, with side branches, a gland on each and thin roots between them; returns their tip positions
+    (slime fingers follow them)."""
+    tips = []
+    for deg, glen, r0 in mound.tendrils:
+        th0 = math.radians(deg)
+        pts, refs = [], []
+        t = mound.t_at_z(rnd.uniform(*style.start_z))
+        dt = 0.11 / mound.length
+        ph = rnd.uniform(0, 6.28)
+        while t > 0.0:
+            th = th0 + style.wobble * math.sin(t * 20 + ph)
+            n = mound.N(th, t)
+            pts.append(mound.P(th, t) + n * (r0 * 0.5))
+            refs.append(n)
+            t -= dt
+        ground = ground_path(th0, mound.ground_start, glen, rnd)
+        pts += ground[1:]
+        refs += [Z.copy() for _ in ground[1:]]
+        n_mound = len(pts) - len(ground) + 1
+        smooth_path(pts, refs, 2)
+        arcs = [0.0]
+        for a, b in itertools.pairwise(pts):
+            arcs.append(arcs[-1] + (b - a).length)
+        radii = [taper(s / arcs[-1], r0, s) for s in arcs]
+        radii[-1] = 0.0
+        back = (pts[0] - pts[1]).normalized()
+        pts[:0] = [pts[0] + back * r0 * 0.75, pts[0] + back * r0 * 0.45]
+        refs[:0] = [refs[0], refs[0]]
+        radii[:0] = [0.0, r0 * 0.75]
+        n_mound += 2
+        for i in range(n_mound, len(pts)):
+            pts[i].z = radii[i] * 0.42 + 0.006
+        pts[-1].z = 0.008
+        tube(part, pts, radii, refs, 7, flat=0.66, mi_fn=lambda f: M_CHITIN if f > 0.9 else M_FLESH)
+        tips.append(pts[-1].copy())
+        gi = style.branch_at(n_mound)
+        side = (pts[gi + 1] - pts[gi - 1]).normalized().cross(refs[gi]).normalized()
+        glands.append((pts[gi] + side * radii[gi] * 0.85 + refs[gi] * 0.02, rnd.uniform(0.055, 0.075)))
+        ng = len(pts) - n_mound
+        picks = [n_mound + int(ng * rnd.uniform(0.3, 0.45)), n_mound + int(ng * rnd.uniform(0.62, 0.72))]
+        if glen > style.long_ground:
+            picks.append(n_mound + int(ng * rnd.uniform(0.5, 0.58)))
+        for b, i in enumerate(picks):
+            tan = (pts[i + 1] - pts[i - 1]).normalized()
+            sgn = 1 if (b + deg) % 2 == 0 else -1
+            d = Matrix.Rotation(sgn * rnd.uniform(0.6, 0.95), 3, "Z") @ tan
+            d.z = 0
+            d.normalize()
+            blen = rnd.uniform(*style.branch_len) if b != 1 else rnd.uniform(0.35, 0.6)
+            rb = radii[i] * 0.6
+            bp = [pts[i] + d * (k * 0.12) for k in range(int(blen / 0.12) + 1)]
+            bend = Matrix.Rotation(-sgn * 1.3, 3, "Z") @ d
+            bp = [p + bend * ((k * 0.12) ** 2) * 0.45 for k, p in enumerate(bp)]
+            br = [rb * (1 - k / (len(bp) - 1)) ** 0.6 for k in range(len(bp))]
+            br[-1] = 0.0
+            for k in range(len(bp)):
+                bp[k].z = br[k] * 0.42 + 0.006
+            tube(part, bp, br, [Z.copy() for _ in bp], 5, flat=0.66, mi_fn=lambda f: M_FLESH)
+    # Thin roots from the skirt between the main tendrils.
+    angs = sorted(math.radians(a) for a, _, _ in mound.tendrils)
+    for k, a in enumerate(angs):
+        b = angs[(k + 1) % len(angs)] + (math.tau if k == len(angs) - 1 else 0)
+        th = (a + b) / 2 + rnd.uniform(-0.1, 0.1)
+        g = ground_path(th, mound.ground_start - 0.05, rnd.uniform(*style.root_len), rnd, 0.12)
+        rr = [0.065 * (1 - i / (len(g) - 1)) ** 0.8 for i in range(len(g))]
+        rr[-1] = 0.0
+        for i, p in enumerate(g):
+            p.z = rr[i] * 0.42 + 0.006
+        g = [mound.P(th, mound.t_at_z(style.root_z))] + g
+        rr = [0.07] + rr
+        tube(part, g, rr, [Z.copy() for _ in g], 5, flat=0.72)
+    return tips
+
+
+def render_game_view(path: pathlib.Path, target: Vector, samples: int, width: int, height: int, lens: float) -> None:
+    """The game's camera: perspective, 40 m away along the +X/-Y diagonal, 35 degrees down (a long lens crops it)."""
+    C._render_settings(samples, width)
+    bpy.context.scene.render.resolution_y = height
+    cam = C._camera("custom")
+    cam.data.lens = lens
+    down = math.radians(35)
+    cam.location = target + Vector((math.cos(down) / math.sqrt(2), -math.cos(down) / math.sqrt(2), math.sin(down))) * 40
+    cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.camera = cam
+    C._write_render(path)
+
+
+def set_hidden(root: bpy.types.Object, hidden: bool) -> None:
+    for o in [root, *root.children_recursive]:
+        o.hide_render = hidden or o.name.startswith("Cracks")
+
+
+def show_cracks() -> None:
+    for o in bpy.data.objects:
+        if o.name.startswith("Cracks"):
+            o.hide_render = False
+
+
+def import_root(path: pathlib.Path) -> bpy.types.Object:
+    before = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=str(path))
+    return next(o for o in set(bpy.data.objects) - before if o.parent is None and o.type == "EMPTY")
 
 
 if __name__ == "__main__":  # the quest nest's build imports the shared parts (quest_nest_build.py)

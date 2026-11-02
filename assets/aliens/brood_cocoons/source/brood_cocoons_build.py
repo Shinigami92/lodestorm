@@ -44,7 +44,7 @@ sys.path.insert(0, str(ROOT / "assets" / "aliens" / "nest" / "source"))
 
 import bmesh
 import bpy
-from mathutils import Matrix, Vector, noise
+from mathutils import Vector, noise
 
 import common as C
 import nest_build as NB
@@ -129,47 +129,12 @@ GROUND_START = 1.8
 
 # --- base profile and surface ---------------------------------------------------------------------------
 
-_PTS = NB._chaikin(BASE_PROFILE)
-_ARC = [0.0]
-for _a, _b in itertools.pairwise(_PTS):
-    _ARC.append(_ARC[-1] + math.dist(_a, _b))
-PROF_LEN = _ARC[-1]
+PROFILE_PATH = NB.Profile(BASE_PROFILE, crest_steps=800)
+PROF_LEN, T_CREST = PROFILE_PATH.length, PROFILE_PATH.crest
+prof, t_at_z, t_in_crater, m = PROFILE_PATH.at, PROFILE_PATH.t_at_z, PROFILE_PATH.t_in_crater, PROFILE_PATH.m
 
 
-def prof(t: float) -> tuple[float, float]:
-    s = max(0.0, min(1.0, t)) * PROF_LEN
-    for i in range(1, len(_ARC)):
-        if _ARC[i] >= s:
-            f = (s - _ARC[i - 1]) / max(_ARC[i] - _ARC[i - 1], 1e-9)
-            a, b = _PTS[i - 1], _PTS[i]
-            return a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f
-    return _PTS[-1]
-
-
-T_CREST = max((i / 800 for i in range(801)), key=lambda t: prof(t)[1])
 CREST_Z = prof(T_CREST)[1]
-
-
-def m(meters: float) -> float:
-    """A length along the profile in t."""
-    return meters / PROF_LEN
-
-
-def t_at_z(z: float) -> float:
-    """Outer side: the t where the profile reaches height z."""
-    lo, hi = 0.0, T_CREST
-    for _ in range(40):
-        mid = (lo + hi) / 2
-        if prof(mid)[1] < z:
-            lo = mid
-        else:
-            hi = mid
-    return (lo + hi) / 2
-
-
-def t_in_crater(r: float) -> float:
-    """Crater side: the t where the profile comes in to radius r."""
-    return next(i / 800 for i in range(int(T_CREST * 800), 801) if prof(i / 800)[0] < r)
 
 
 def front_scale(th: float, r: float) -> float:
@@ -311,19 +276,7 @@ GLOW_COLOR = (0.477, 0.0648, 1.0)  # linear for the brood nests' violet Color(0.
 
 def mat_glow() -> bpy.types.Material:
     """Violet glow of the mouth, slits, glands and cracks (the game pulses it); the ordinary nest's glow in violet."""
-    mat, nt, bsdf = C._new_material("BroodCocoons_Glow")
-    co = NB._coord(nt)
-    churn = NB._noise(nt, co, 5.0, 4.0, 0.6, dist=1.5)
-    col = C._mix_color(nt, churn.outputs["Fac"], (0.2, 0.02, 0.5), (0.6, 0.12, 1.0))
-    glow = nt.nodes.new("ShaderNodeAttribute")  # radial falloff in the mouth (1 = full), see build_mouth
-    glow.attribute_name = "glow"
-    strength = C._math(nt, "MULTIPLY", C._mix_float(nt, churn.outputs["Fac"], 2.5, 9.0), glow.outputs["Fac"])
-    nt.links.new(strength, bsdf.inputs["Emission Strength"])
-    col = C._mix_color(nt, glow.outputs["Fac"], (0.05, 0.006, 0.12), col)
-    nt.links.new(col, bsdf.inputs["Base Color"])
-    nt.links.new(col, bsdf.inputs["Emission Color"])
-    bsdf.inputs["Roughness"].default_value = 0.15
-    return mat
+    return NB.brood_glow("BroodCocoons_Glow", ((0.2, 0.02, 0.5), (0.6, 0.12, 1.0)), (2.5, 9.0), (0.05, 0.006, 0.12))
 
 
 def make_materials() -> None:
@@ -459,79 +412,16 @@ def build_sacs(part: NB.Part) -> None:
                 f.smooth = True
 
 
+MOUND = NB.Mound(P=P, N=N, t_at_z=t_at_z, length=PROF_LEN, tendrils=TENDRILS, ground_start=GROUND_START)
+TENDRIL_STYLE = NB.TendrilStyle(
+    start_z=(0.42, 0.52), wobble=0.07, branch_at=lambda n: n // 2, root_len=(0.9, 1.6), root_z=0.12
+)
+
+
 def build_tendrils(part: NB.Part, glands: list, rnd: random.Random) -> list:
     """Main tendrils from the base's slope out over the ground, with side branches (the ordinary nest's); returns
     their tip positions (slime fingers follow them)."""
-    tips = []
-    for deg, glen, r0 in TENDRILS:
-        th0 = math.radians(deg)
-        pts, refs = [], []
-        t = t_at_z(rnd.uniform(0.42, 0.52))
-        dt = 0.11 / PROF_LEN
-        ph = rnd.uniform(0, 6.28)
-        while t > 0.0:
-            th = th0 + 0.07 * math.sin(t * 20 + ph)
-            n = N(th, t)
-            pts.append(P(th, t) + n * (r0 * 0.5))
-            refs.append(n)
-            t -= dt
-        ground = NB.ground_path(th0, GROUND_START, glen, rnd)
-        pts += ground[1:]
-        refs += [Z.copy() for _ in ground[1:]]
-        n_base = len(pts) - len(ground) + 1
-        NB.smooth_path(pts, refs, 2)
-        arcs = [0.0]
-        for a, b in itertools.pairwise(pts):
-            arcs.append(arcs[-1] + (b - a).length)
-        radii = [NB.taper(s / arcs[-1], r0, s) for s in arcs]
-        radii[-1] = 0.0
-        back = (pts[0] - pts[1]).normalized()
-        pts[:0] = [pts[0] + back * r0 * 0.75, pts[0] + back * r0 * 0.45]
-        refs[:0] = [refs[0], refs[0]]
-        radii[:0] = [0.0, r0 * 0.75]
-        n_base += 2
-        for i in range(n_base, len(pts)):
-            pts[i].z = radii[i] * 0.42 + 0.006
-        pts[-1].z = 0.008
-        NB.tube(part, pts, radii, refs, 7, flat=0.66, mi_fn=lambda f: M_CHITIN if f > 0.9 else M_FLESH)
-        tips.append(pts[-1].copy())
-        gi = n_base // 2
-        side = (pts[gi + 1] - pts[gi - 1]).normalized().cross(refs[gi]).normalized()
-        glands.append((pts[gi] + side * radii[gi] * 0.85 + refs[gi] * 0.02, rnd.uniform(0.055, 0.075)))
-        ng = len(pts) - n_base
-        picks = [n_base + int(ng * rnd.uniform(0.3, 0.45)), n_base + int(ng * rnd.uniform(0.62, 0.72))]
-        if glen > 2.0:
-            picks.append(n_base + int(ng * rnd.uniform(0.5, 0.58)))
-        for b, i in enumerate(picks):
-            tan = (pts[i + 1] - pts[i - 1]).normalized()
-            sgn = 1 if (b + deg) % 2 == 0 else -1
-            d = Matrix.Rotation(sgn * rnd.uniform(0.6, 0.95), 3, "Z") @ tan
-            d.z = 0
-            d.normalize()
-            blen = rnd.uniform(0.45, 0.95) if b != 1 else rnd.uniform(0.35, 0.6)
-            rb = radii[i] * 0.6
-            bp = [pts[i] + d * (k * 0.12) for k in range(int(blen / 0.12) + 1)]
-            bend = Matrix.Rotation(-sgn * 1.3, 3, "Z") @ d
-            bp = [p + bend * ((k * 0.12) ** 2) * 0.45 for k, p in enumerate(bp)]
-            br = [rb * (1 - k / (len(bp) - 1)) ** 0.6 for k in range(len(bp))]
-            br[-1] = 0.0
-            for k in range(len(bp)):
-                bp[k].z = br[k] * 0.42 + 0.006
-            NB.tube(part, bp, br, [Z.copy() for _ in bp], 5, flat=0.66, mi_fn=lambda f: M_FLESH)
-    # Thin roots from the skirt between the main tendrils.
-    angs = sorted(math.radians(a) for a, _, _ in TENDRILS)
-    for k, a in enumerate(angs):
-        b = angs[(k + 1) % len(angs)] + (math.tau if k == len(angs) - 1 else 0)
-        th = (a + b) / 2 + rnd.uniform(-0.1, 0.1)
-        g = NB.ground_path(th, GROUND_START - 0.05, rnd.uniform(0.9, 1.6), rnd, 0.12)
-        rr = [0.065 * (1 - i / (len(g) - 1)) ** 0.8 for i in range(len(g))]
-        rr[-1] = 0.0
-        for i, p in enumerate(g):
-            p.z = rr[i] * 0.42 + 0.006
-        g = [P(th, t_at_z(0.12))] + g
-        rr = [0.07] + rr
-        NB.tube(part, g, rr, [Z.copy() for _ in g], 5, flat=0.72)
-    return tips
+    return NB.brood_tendrils(part, glands, rnd, MOUND, TENDRIL_STYLE)
 
 
 def build_slit(part: NB.Part, pod: dict) -> None:
@@ -730,56 +620,26 @@ def render_view(path: pathlib.Path, view: str, samples: int, size: int) -> None:
         C.render(path, view=view, samples=samples, size=size, target=(0, 0, 1.3), zoom=1.3)
 
 
-def render_game_view(path: pathlib.Path, target: Vector, samples: int, width: int, height: int, lens: float) -> None:
-    """The game's camera: perspective, 40 m away along the +X/-Y diagonal, 35 degrees down (a long lens crops it)."""
-    C._render_settings(samples, width)
-    bpy.context.scene.render.resolution_y = height
-    cam = C._camera("custom")
-    cam.data.lens = lens
-    down = math.radians(35)
-    cam.location = target + Vector((math.cos(down) / math.sqrt(2), -math.cos(down) / math.sqrt(2), math.sin(down))) * 40
-    cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
-    bpy.context.scene.camera = cam
-    C._write_render(path)
-
-
-def set_hidden(root: bpy.types.Object, hidden: bool) -> None:
-    for o in [root, *root.children_recursive]:
-        o.hide_render = hidden or o.name.startswith("Cracks")
-
-
-def import_root(path: pathlib.Path) -> bpy.types.Object:
-    before = set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=str(path))
-    return next(o for o in set(bpy.data.objects) - before if o.parent is None and o.type == "EMPTY")
-
-
 def compare(brood: bpy.types.Object) -> None:
     """The baked ordinary nest, the baked quest nest and this one side by side, all unhurt (no cracks): from the game
     camera, and each from the far preview view."""
-    nest = import_root(ROOT / "assets" / "aliens" / "nest" / "nest.glb")
-    quest = import_root(ROOT / "assets" / "aliens" / "quest_nest" / "quest_nest.glb")
+    nest = NB.import_root(ROOT / "assets" / "aliens" / "nest" / "nest.glb")
+    quest = NB.import_root(ROOT / "assets" / "aliens" / "quest_nest" / "quest_nest.glb")
     roots = [nest, quest, brood]
     for root in roots:
-        set_hidden(root, False)
+        NB.set_hidden(root, False)
     side = Vector((1, 1, 0)).normalized() * 6.0  # screen right from the game camera
     nest.location, quest.location, brood.location = -side, Vector(), side
-    render_game_view(OUT / "compare_iso.png", Vector((0, 0, 1.0)), 64, 1600, 720, 62)
+    NB.render_game_view(OUT / "compare_iso.png", Vector((0, 0, 1.0)), 64, 1600, 720, 62)
     paths = []
     for root in roots:
         for other in roots:
             other.location = Vector()
-            set_hidden(other, other is not root)
+            NB.set_hidden(other, other is not root)
         p = OUT / f"compare_{root.name.split('.')[0].lower()}_far.png"
         render_view(p, "far", 64, 768)
         paths.append(p)
     C.contact_sheet(paths, OUT / "compare_far.png", cols=3)
-
-
-def show_cracks() -> None:
-    for o in bpy.data.objects:
-        if o.name.startswith("Cracks"):
-            o.hide_render = False
 
 
 def main() -> None:
@@ -792,20 +652,20 @@ def main() -> None:
     C.preview_scene(crystals=False, figure_location=figure)
     NB.clear_preview_rubble(99.0 if MODE == "compare" else 4.7)
     if MODE == "final":
-        set_hidden(brood, False)
+        NB.set_hidden(brood, False)
         paths = []
         for view in ("iso", "hero", "back", "far"):
             p = OUT / f"render_{view}.png"
             render_view(p, view, 96, 1024)
             paths.append(p)
         C.contact_sheet(paths, OUT / "sheet.png", cols=2)
-        show_cracks()
+        NB.show_cracks()
         C.save_blend(OUT / "brood_cocoons_procedural.blend")
     elif MODE == "compare":
         compare(brood)
     else:
         if "cracks" not in VIEWS:
-            set_hidden(brood, False)
+            NB.set_hidden(brood, False)
         for view in VIEWS:
             if view not in ("none", "cracks"):
                 render_view(OUT / "wip" / f"{TAG}_{view}.png", view, 24, 512)

@@ -162,6 +162,7 @@ var _chunk_arrays: Array[Array] = []
 var _chunk_faces: Array[PackedVector3Array] = []
 ## Its plants and rocks.
 var _scatter := LocationScatter.new()
+var _cliffs := LocationCliffs.new()
 var _planned: bool = false
 var _built: bool = false
 ## What the nests hatch here, once made (see `hatch_table`).
@@ -201,6 +202,7 @@ func plan() -> void:
 		_gaps.plan(_reachable, _stream("gaps"))
 	_plan_ground()
 	_scatter.plan(_stream("scatter"), self)
+	_cliffs.plan(_stream("cliffs"), terrain, biome.cliff_dressing, _reachable, _camera_side)
 	_planned = true
 
 
@@ -217,6 +219,7 @@ func build() -> void:
 		_gaps.build(self)
 	_hazards.build(self)
 	_scatter.build(self)
+	_cliffs.build(self)
 	parts.build(self, _crate_contents())
 	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()

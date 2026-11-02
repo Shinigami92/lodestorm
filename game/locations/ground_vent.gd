@@ -3,8 +3,8 @@ extends GroundHazard
 ## A vent in the ground (the Ash fields' hazard, see `LocationBiome.Hazard.VENTS`): it rests a
 ## while, then glows and rumbles for `warning` s and bursts, hurting every player and alien
 ## standing on it (`hurt`). Readable and avoidable: its reach is painted on the ground, and the glow
-## and a rising rumble come first. Greybox: a cone, a glowing disc over its reach and a plume of
-## fire. All values TBD (playtest).
+## and a rising rumble come first. Its cone is a model (`cone`; greybox without one), the glowing
+## disc over its reach and the plume of fire are greybox. All values TBD (playtest).
 
 ## How opaque the disc glows while the vent rests (a hint where it reaches) and when it bursts.
 const RESTING_GLOW: float = 0.08
@@ -30,6 +30,8 @@ const BURST_SOUND: Sound = preload("res://assets/audio/sfx/biomes/vent_burst.tre
 @export var damage: float = 15.0
 ## How far the burst reaches, in m (the disc; the collision shape is set by whoever adds it).
 @export var radius: float = 3.0
+## The cone's model, its origin at its base's middle (null: a greybox cone).
+@export var cone: Mesh
 
 ## Time until the next burst, in s.
 var _until_burst: float = 0.0
@@ -90,15 +92,18 @@ func _show(warned: float) -> void:
 func _build() -> void:
 	_cone = MeshInstance3D.new()
 	_cone.name = "Cone"
-	var cone := CylinderMesh.new()
-	cone.top_radius = 0.35
-	cone.bottom_radius = 1.1
-	cone.height = 0.5
-	_cone.mesh = cone
-	var crust := StandardMaterial3D.new()
-	crust.albedo_color = Color(0.1, 0.09, 0.09)
-	crust.roughness = 1.0
-	_cone.material_override = crust
+	if cone:
+		_cone.mesh = cone
+	else:
+		var greybox := CylinderMesh.new()
+		greybox.top_radius = 0.35
+		greybox.bottom_radius = 1.1
+		greybox.height = 0.5
+		_cone.mesh = greybox
+		var crust := StandardMaterial3D.new()
+		crust.albedo_color = Color(0.1, 0.09, 0.09)
+		crust.roughness = 1.0
+		_cone.material_override = crust
 	add_child(_cone)
 	var disc := MeshInstance3D.new()
 	disc.name = "Glow"

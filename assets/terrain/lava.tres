@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bonvjwys17std"]
+
+[ext_resource type="Shader" uid="uid://c631aey7gc1ky" path="res://assets/shaders/lava.gdshader" id="1_shader"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_shader")

@@ -127,9 +127,9 @@ enum Hazard {
 ## only looks (null: nothing). The gaps' bottom is level then.
 @export var gap_fill: Material
 @export var gap_fill_level: float = 1.0
-## What stands along the gaps' edges, on the walls there (shard fences): only looks, drawn many
-## times (null: nothing).
-@export var fence: Mesh
+## What stands along the gaps' edges, on the walls there (shard fences): only looks, its mesh
+## drawn many times, sunk by its `sink` (null: nothing; its other scatter values are unused).
+@export var fence: ScatterType
 
 @export_group("Areas")
 ## Kinds of areas only this biome has (`LocationLayout.Kind`), on top of the shared ones.
@@ -147,6 +147,9 @@ enum Hazard {
 @export var hazard_damage: float = 0.0
 ## How fast players and aliens walk on the hazard's ground: the share of their usual speed.
 @export_range(0.0, 1.0) var hazard_speed: float = 1.0
+## What marks the hazard (only its mesh is used): the vents' cone, the pieces lying on a shards'
+## patch. Null: a greybox shape.
+@export var hazard_dressing: ScatterType
 
 @export_group("Ground")
 ## Height of the gentle swells on the open ground, in m.
@@ -181,6 +184,10 @@ enum Hazard {
 
 @export_group("Scatter")
 @export var scatter: Array[ScatterType] = []
+## Rock chunks set against the cliffs' feet along the open ground (`LocationCliffs`), a variant
+## picked at random for each; of their scatter values only the mesh, the scale range and `sink`
+## are used.
+@export var cliff_dressing: Array[ScatterType] = []
 
 @export_group("Points of interest")
 ## Map parts its locations pick their points of interest from.

@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bnmwlff41rdgn"]
+
+[ext_resource type="Shader" uid="uid://cpsm7el6hkpq1" path="res://assets/shaders/brine.gdshader" id="1_shader"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_shader")

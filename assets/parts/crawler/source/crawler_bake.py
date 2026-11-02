@@ -27,13 +27,10 @@ import crawler_build as build  # the kit's pieces and layout (importing it doesn
 import bake as B
 
 KIT = build.KIT
-JOB = B.Job(
-    name="crawler",
+JOB = B.kit_job(
+    __file__,
+    KIT.out,
     asset=KIT.collection,
-    source=KIT.out / "crawler_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "crawler" / "crawler.glb",
-    blend=ROOT / "assets" / "parts" / "crawler" / "source" / "crawler.blend",
-    game=KIT.out / "game",
     atlas=list(KIT.pieces),
     material="Crawler",
     size=2048,

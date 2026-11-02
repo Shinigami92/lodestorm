@@ -40,7 +40,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 import common as C
-from common import T, rx, ry, rz
+from common import T, rx, ry, rz, srgb
 from rock_geo import (
     add_boolean,
     bm_to_obj,
@@ -92,11 +92,6 @@ PARTS = [
 ]
 
 # --- math helpers (T, rx/ry/rz: common) ---------------------------------------------------------------
-
-
-def srgb(r: float, g: float, b: float) -> tuple[float, float, float]:
-    """Linear color from sRGB values (shader colors are linear)."""
-    return tuple(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in (r, g, b))
 
 
 # --- chunk builder (convex fracture pieces) ----------------------------------------------------------
@@ -954,18 +949,11 @@ def apply_bake_layout(gap: float = 3.0) -> None:
 
 def ground_color() -> None:
     """The preview ground in the salt crust's brightness (the default preview ground is dark rock)."""
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*GROUND[0], 1.0)
-            node.inputs[7].default_value = (*GROUND[1], 1.0)
+    C.tint_ground(GROUND[0], GROUND[1])
 
 
 def setup_preview() -> None:
-    C.preview_scene(crystals=False)
-    # Drop the preview's placeholder pebbles (icospheres): they'd read as part of the kit.
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)  # the pebbles would read as part of the kit
     ground_color()
 
 

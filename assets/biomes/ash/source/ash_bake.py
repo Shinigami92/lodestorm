@@ -44,9 +44,7 @@ CLIFFS = ("Cliff_a", "Cliff_b")
 
 def prepare(job: B.Job) -> list:
     """A ground plane under the row of parts: the AO picks up the contact shadow at their feet."""
-    xs = [bpy.data.objects[n].location.x for n in build.VARIANTS]
-    mid = (min(xs) + max(xs)) / 2
-    return [B.bake_plane("BakeGround", location=(mid, 0, 0), scale=(max(xs) - min(xs) + 20, 20, 1))]
+    return B.row_ground(build.VARIANTS, 20)
 
 
 def finish(job: B.Job, objs: list) -> None:
@@ -55,13 +53,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="ash",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset="Ash",
-    source=OUT / "ash_procedural.blend",
-    glb=ROOT / "assets" / "biomes" / "ash" / "ash.glb",
-    blend=ROOT / "assets" / "biomes" / "ash" / "source" / "ash.blend",
-    game=OUT / "game",
     atlas=build.VARIANTS,
     material="Ash",
     size=SIZE,
@@ -80,10 +75,7 @@ JOB = B.Job(
 
 
 def ash_ground() -> None:
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (0.024, 0.023, 0.022, 1.0)
-            node.inputs[7].default_value = (0.043, 0.04, 0.038, 1.0)
+    C.tint_ground((0.024, 0.023, 0.022), (0.043, 0.04, 0.038))
 
 
 def render_scatter(job: B.Job, parts: list) -> None:
@@ -134,10 +126,7 @@ def render_scatter(job: B.Job, parts: list) -> None:
 
 def checks(job: B.Job, parts: list) -> None:
     assert sorted(o.name for o in parts) == sorted(build.VARIANTS), [o.name for o in parts]
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):  # drop the placeholder pebbles, like the build previews
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     ash_ground()
     for name, (u, v, rot) in build.LAYOUT.items():
         obj = bpy.data.objects[name]

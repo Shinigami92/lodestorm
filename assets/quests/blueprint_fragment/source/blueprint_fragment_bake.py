@@ -36,13 +36,10 @@ def finish(job: B.Job, objs: list) -> None:
     C.assign(bpy.data.objects["Glow"], B.mat_constant("BlueprintFragment_Glow", AMBER, 0.3, GLOW_STRENGTH))
 
 
-JOB = B.Job(
-    name="blueprint_fragment",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "blueprint_fragment_procedural.blend",
-    glb=ROOT / "assets" / "quests" / "blueprint_fragment" / "blueprint_fragment.glb",
-    blend=ROOT / "assets" / "quests" / "blueprint_fragment" / "source" / "blueprint_fragment.blend",
-    game=OUT / "game",
     atlas=["Plate", "Sleeve"],
     material=ASSET,
     size=1024,  # final texture size (budget: one 1024 set, TBD (playtest))

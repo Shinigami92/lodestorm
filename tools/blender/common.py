@@ -102,6 +102,11 @@ def empty(name: str, location: tuple[float, float, float], parent: bpy.types.Obj
 # --- transforms ----------------------------------------------------------------------------------
 
 
+def srgb(r: float, g: float, b: float) -> tuple[float, float, float]:
+    """Linear color from sRGB values (shader colors are linear)."""
+    return tuple(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in (r, g, b))
+
+
 def T(loc=(0, 0, 0), rot: Matrix | None = None, scale=(1, 1, 1)) -> Matrix:
     """4x4 matrix: translation, then rotation (3x3), then scale."""
     m = Matrix.Translation(Vector(loc))
@@ -599,10 +604,13 @@ def _preview_obj(obj: bpy.types.Object) -> bpy.types.Object:
 
 
 def preview_scene(
-    seed: int = 3, crystals: bool = True, figure_location: tuple[float, float, float] = (1.9, -1.6, 0.0)
+    seed: int = 3,
+    crystals: bool = True,
+    figure_location: tuple[float, float, float] = (1.9, -1.6, 0.0),
+    pebbles: bool = True,
 ) -> None:
-    """Dark rocky ground, a cyan ore crystal cluster under the miner (crystals=False leaves it out), a 1.8 m
-    figure for scale, lights."""
+    """Dark rocky ground, a cyan ore crystal cluster under the miner (crystals=False leaves it out), pebbles of rubble
+    around it (pebbles=False leaves them out: they'd read as part of a kit), a 1.8 m figure for scale, lights."""
     import random
 
     rnd = random.Random(seed)
@@ -642,7 +650,7 @@ def preview_scene(
         assign(obj, crystal)
     # Rubble.
     rock = mat_painted_metal("PreviewRock", (0.07, 0.065, 0.06), wear=0.0, grime=0.3, roughness=0.85)
-    for i in range(25):
+    for i in range(25 if pebbles else 0):
         bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=rnd.uniform(0.05, 0.35))
         obj = bpy.context.active_object
         for c in obj.users_collection:
@@ -682,6 +690,14 @@ def preview_scene(
     figure.location = figure_location
     figure.rotation_euler = (0, 0, math.radians(30))
     _lights()
+
+
+def tint_ground(lo, hi) -> None:
+    """The preview ground's two colors (linear RGB, low and high; e.g. the biome's tone) instead of its dark rock."""
+    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
+        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
+            node.inputs[6].default_value = (*lo, 1.0)
+            node.inputs[7].default_value = (*hi, 1.0)
 
 
 def _lights() -> None:

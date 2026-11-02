@@ -47,13 +47,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="vein",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset="Vein",
-    source=OUT / "vein_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "vein" / "vein.glb",
-    blend=ROOT / "assets" / "parts" / "vein" / "source" / "vein.blend",
-    game=OUT / "game",
     atlas=build.PIECES,
     material="Vein",
     size=SIZE,
@@ -80,10 +77,7 @@ FRONT_Y = ("Vein_wall",)
 
 def checks(job: B.Job, parts: list) -> None:
     assert sorted(o.name for o in parts) == sorted(build.PIECES), [o.name for o in parts]
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):  # drop the placeholder pebbles, like the build previews
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     for o in parts:
         o.rotation_mode = "XYZ"  # the glTF importer sets quaternions
     for name in build.PIECES:

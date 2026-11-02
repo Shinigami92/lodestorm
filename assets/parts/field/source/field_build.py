@@ -46,7 +46,7 @@ from mathutils import Matrix, Vector
 from mathutils import noise as mnoise
 
 import common as C
-from common import T, rx, ry, rz
+from common import T, rx, ry, rz, srgb
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -116,11 +116,6 @@ LOOKS = [
     CABLE,
 ) = range(len(LOOKS))
 MATS: list = []
-
-
-def srgb(r: float, g: float, b: float) -> tuple[float, float, float]:
-    """Linear color from sRGB values (shader colors are linear)."""
-    return tuple(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in (r, g, b))
 
 
 # --- material -----------------------------------------------------------------------------------------
@@ -1121,14 +1116,8 @@ def show_only(objs: list) -> None:
 
 def setup_preview() -> None:
     """The common preview scene without its pebbles, the ground about as bright as the game's dusty ground."""
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*GROUND[0], 1.0)
-            node.inputs[7].default_value = (*GROUND[1], 1.0)
+    C.preview_scene(crystals=False, pebbles=False)
+    C.tint_ground(GROUND[0], GROUND[1])
 
 
 def render_kit(path: pathlib.Path, view: str, samples: int, size: int) -> pathlib.Path:

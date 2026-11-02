@@ -53,13 +53,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="salt",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "salt_procedural.blend",
-    glb=ROOT / "assets" / "biomes" / "salt" / "salt.glb",
-    blend=ROOT / "assets" / "biomes" / "salt" / "source" / "salt.blend",
-    game=OUT / "game",
     atlas=build.PARTS,
     material="Salt",
     size=2048,
@@ -77,14 +74,8 @@ JOB = B.Job(
 
 def checks(job: B.Job, parts: list) -> None:
     assert sorted(o.name for o in parts) == sorted(build.PARTS), [o.name for o in parts]
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):  # drop the placeholder pebbles, like the build previews
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*build.GROUND[0], 1.0)
-            node.inputs[7].default_value = (*build.GROUND[1], 1.0)
+    C.preview_scene(crystals=False, pebbles=False)
+    C.tint_ground(build.GROUND[0], build.GROUND[1])
     for name, (u, v, rot) in build.LAYOUT.items():
         obj = bpy.data.objects[name]
         obj.rotation_mode = "XYZ"  # the glTF importer sets quaternions

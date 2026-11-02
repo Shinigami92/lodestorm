@@ -860,10 +860,7 @@ def apply_bake_layout(gap: float = 3.0) -> None:
 
 def setup_preview() -> None:
     """The shared preview scene on a grey-teal glassy ground (instead of its brown one), without its pebbles."""
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     mat, nt, bsdf = C._new_material("PreviewGlassGround")
     noise = C._noise(nt, 0.8, 6.0, 0.6)
     nt.links.new(

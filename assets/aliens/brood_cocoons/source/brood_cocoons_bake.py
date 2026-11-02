@@ -39,13 +39,10 @@ def finish(job: B.Job, objs: list) -> None:
         C.assign(bpy.data.objects[name], glow)
 
 
-JOB = B.Job(
-    name="brood_cocoons",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset="BroodCocoons",
-    source=OUT / "brood_cocoons_procedural.blend",
-    glb=ROOT / "assets" / "aliens" / "brood_cocoons" / "brood_cocoons.glb",
-    blend=ROOT / "assets" / "aliens" / "brood_cocoons" / "source" / "brood_cocoons.blend",
-    game=OUT / "game",
     atlas=["Mound", "Tendrils"],
     material="BroodCocoons",
     pack_method="SCALED",

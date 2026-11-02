@@ -1481,15 +1481,9 @@ GROUND = ((0.045, 0.042, 0.038), (0.085, 0.078, 0.068))  # a neutral dusty groun
 
 
 def setup_preview() -> None:
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     bpy.data.objects["PreviewGround"].scale = (3, 3, 1)
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*GROUND[0], 1.0)
-            node.inputs[7].default_value = (*GROUND[1], 1.0)
+    C.tint_ground(GROUND[0], GROUND[1])
 
 
 def kit_objects() -> list:

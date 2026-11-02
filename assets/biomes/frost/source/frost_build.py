@@ -835,18 +835,11 @@ def apply_bake_layout(gap: float = 3.0) -> None:
 def ground_color() -> None:
     """The preview ground in the frost ground's blue-grey (approximate linear albedo)."""
     lo, hi = GROUND
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*lo, 1.0)
-            node.inputs[7].default_value = (*hi, 1.0)
+    C.tint_ground(lo, hi)
 
 
 def setup_preview() -> None:
-    C.preview_scene(crystals=False)
-    # Drop the preview's placeholder pebbles (icospheres): they'd read as part of the kit.
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)  # the pebbles would read as part of the kit
     ground_color()
 
 

@@ -48,13 +48,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="wreck",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=W.ASSET,
-    source=OUT / "wreck_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "wreck" / "wreck.glb",
-    blend=ROOT / "assets" / "parts" / "wreck" / "source" / "wreck.blend",
-    game=OUT / "game",
     atlas=W.PARTS,
     material=W.MATERIAL,
     size=2048,

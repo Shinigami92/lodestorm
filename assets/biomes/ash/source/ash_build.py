@@ -42,7 +42,7 @@ import bpy
 from mathutils import Vector
 
 import common as C
-from common import T, rx, ry, rz
+from common import T, rx, ry, rz, srgb
 from rock_geo import (
     add_boolean,
     bm_to_obj,
@@ -82,11 +82,6 @@ CLIFF_BACK = 1.0  # cliffs: flat back plane at y = +1 m, rock face toward -Y
 SHARP_DEG = 32.0  # rock edges sharper than this split the shading (fracture ridges); softer ones shade smooth
 WOOD_SHARP_DEG = 70.0  # the wood and the cone shade smooth except at splinters and crack walls
 VARIANTS = list(SINK)
-
-
-def lin(r: float, g: float, b: float) -> tuple[float, float, float]:
-    """Linear color from sRGB values (shader colors are linear)."""
-    return tuple(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in (r, g, b))
 
 
 # --- convex chunks (fracture pieces) -------------------------------------------------------------------
@@ -672,8 +667,8 @@ class Mat:
         return C._ramp(self.nt, a, b, src)
 
     def mix(self, fac, a, b) -> bpy.types.NodeSocket:
-        a = lin(*a) if isinstance(a, tuple) else a
-        b = lin(*b) if isinstance(b, tuple) else b
+        a = srgb(*a) if isinstance(a, tuple) else a
+        b = srgb(*b) if isinstance(b, tuple) else b
         return C._mix_color(self.nt, fac, a, b)
 
     def lerp(self, fac, a, b) -> bpy.types.NodeSocket:
@@ -759,7 +754,7 @@ class Mat:
         self.bsdf.inputs["Metallic"].default_value = 0.0
         C._bump(self.nt, self.bsdf, height, bump, distance)
         if emit is not None:
-            self.bsdf.inputs["Emission Color"].default_value = (*lin(*emit_color), 1.0)
+            self.bsdf.inputs["Emission Color"].default_value = (*srgb(*emit_color), 1.0)
             self.nt.links.new(emit, self.bsdf.inputs["Emission Strength"])
         return self.mat
 
@@ -953,15 +948,9 @@ def apply_bake_layout(gap: float = 3.0) -> None:
 
 
 def setup_preview() -> None:
-    C.preview_scene(crystals=False)
-    # Drop the preview's placeholder pebbles (icospheres): they'd read as part of the kit. Ash-grey ground.
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*lin(0.17, 0.165, 0.16), 1.0)
-            node.inputs[7].default_value = (*lin(0.23, 0.222, 0.214), 1.0)
+    C.preview_scene(crystals=False, pebbles=False)  # the pebbles would read as part of the kit
+    # Ash-grey ground.
+    C.tint_ground(srgb(0.17, 0.165, 0.16), srgb(0.23, 0.222, 0.214))
 
 
 def kit_objects() -> list:

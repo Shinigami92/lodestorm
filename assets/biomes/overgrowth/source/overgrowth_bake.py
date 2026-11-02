@@ -42,15 +42,12 @@ GROUND = ((0.018, 0.019, 0.011), (0.045, 0.047, 0.026))
 def prepare(job: B.Job) -> list:
     root = bpy.data.objects[ASSET]
     root.location = (0, 0, 0)
-    xs = []
     for name in PARTS:
         o = bpy.data.objects[name]
         assert o.type == "MESH" and not o.modifiers and o.parent == root, o.name
         assert len(o.data.materials) == 1, o.name
         assert tuple(o.rotation_euler) == (0, 0, 0) and tuple(o.scale) == (1, 1, 1), o.name
-        xs.append(o.location.x)
-    mid = (min(xs) + max(xs)) / 2
-    return [B.bake_plane("BakeGround", location=(mid, 0, 0), scale=(max(xs) - min(xs) + 20, 20, 1))]
+    return B.row_ground(PARTS, 20)
 
 
 def buried(obj: bpy.types.Object, poly) -> float | None:
@@ -65,13 +62,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.location = (0, 0, 0)  # the bake row was layout only: every part's origin is its ground contact
 
 
-JOB = B.Job(
-    name="overgrowth",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "overgrowth_procedural.blend",
-    glb=ROOT / "assets" / "biomes" / "overgrowth" / "overgrowth.glb",
-    blend=ROOT / "assets" / "biomes" / "overgrowth" / "source" / "overgrowth.blend",
-    game=OUT / "game",
     atlas=PARTS,
     material=ASSET,
     supersample=2,
@@ -90,10 +84,7 @@ JOB = B.Job(
 
 def ground_color() -> None:
     lo, hi = GROUND
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*lo, 1.0)
-            node.inputs[7].default_value = (*hi, 1.0)
+    C.tint_ground(lo, hi)
 
 
 def light_scale(f: float, base: dict) -> None:

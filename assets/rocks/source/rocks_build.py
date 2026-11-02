@@ -592,11 +592,7 @@ def apply_bake_layout(gap: float = 3.0) -> None:
 
 
 def setup_preview() -> None:
-    C.preview_scene(crystals=False)
-    # Drop the preview's placeholder pebbles (icospheres): they'd read as part of the kit.
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)  # the pebbles would read as part of the kit
 
 
 def rock_objects() -> list:

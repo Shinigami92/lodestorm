@@ -628,10 +628,7 @@ def godot_to_blender(p) -> Vector:
 
 def setup_preview() -> None:
     """The shared preview scene (studio lights for the pieces) without its placeholder ore and pebbles."""
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
 
 
 def kit_objects() -> list:

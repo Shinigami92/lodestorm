@@ -38,13 +38,10 @@ def finish(job: B.Job, objs: list) -> None:
         C.assign(bpy.data.objects[name], glow)
 
 
-JOB = B.Job(
-    name="quest_nest",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset="QuestNest",
-    source=OUT / "quest_nest_procedural.blend",
-    glb=ROOT / "assets" / "aliens" / "quest_nest" / "quest_nest.glb",
-    blend=ROOT / "assets" / "aliens" / "quest_nest" / "source" / "quest_nest.blend",
-    game=OUT / "game",
     atlas=["Mound", "Tendrils"],
     material="QuestNest",
     pack_method="SCALED",

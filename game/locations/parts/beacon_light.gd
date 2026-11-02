@@ -1,7 +1,9 @@
+@tool
 class_name BeaconLight
-extends MeshInstance3D
-## A light that blinks (the expedition camp's beacon): bright for a moment once every `period`,
-## with an optional `OmniLight3D` child blinking along.
+extends KitMesh
+## A light that blinks (the expedition camp's and the prospectors' cache's beacons): bright for a
+## moment once every `period`, with an optional `OmniLight3D` child blinking along. Its lens is a
+## kit's piece (`KitMesh`), drawn in its own emissive material (`material_override`).
 
 ## Time between two flashes, in s (slower than 3 Hz).
 @export var period: float = 1.4
@@ -17,6 +19,10 @@ var _light_energy: float = 0.0
 
 
 func _ready() -> void:
+	super()
+	if Engine.is_editor_hint():
+		set_process(false)
+		return
 	var source := get_active_material(0) as StandardMaterial3D
 	if source:
 		_material = source.duplicate() as StandardMaterial3D

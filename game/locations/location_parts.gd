@@ -155,8 +155,8 @@ func settle(rng: RandomNumberGenerator, location: GeneratedLocation) -> void:
 
 ## Adds the parts' scenes to `location` (under `Parts`), with a crate on every crate marker: they
 ## hold `contents` in turn (null: a supply cache), then supply caches. The late part waits hidden
-## (see `LateDeposit`).
-func build(location: Node3D, contents: Array[CrateContent]) -> void:
+## (see `LateDeposit`). The props get `biome`'s settled cover (`SettledCover`).
+func build(location: Node3D, contents: Array[CrateContent], biome: LocationBiome = null) -> void:
 	var holder := Node3D.new()
 	holder.name = "Parts"
 	location.add_child(holder)
@@ -164,6 +164,7 @@ func build(location: Node3D, contents: Array[CrateContent]) -> void:
 	for part: Placed in placed:
 		var scene := part.placement.scene.instantiate() as MapPart
 		scene.transform = part.transform()
+		SettledCover.apply(scene, biome)
 		part.node = scene
 		holder.add_child(scene)
 		for marker: PartMarker in scene.find_children("*", "PartMarker", true, false):

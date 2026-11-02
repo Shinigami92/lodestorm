@@ -199,6 +199,11 @@ enum Hazard {
 @export var part_pool: Array[PartPlacement] = []
 ## Points of interest per area (besides the region's set pieces).
 @export var parts_per_area: float = 0.25
+## How much of the ground's loose cover (snow, salt, ash, dust) settles on the parts' props, 0 to
+## 1 (see `SettledCover`). TBD (playtest).
+@export_range(0.0, 1.0) var part_cover: float = 0.0
+## Tint of that cover over the ground texture's own color.
+@export var part_cover_tint: Color = Color(1.0, 1.0, 1.0)
 
 @export_group("Ores")
 ## Ore types from common to rare: rarer ones lie farther away from the ship.

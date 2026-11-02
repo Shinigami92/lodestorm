@@ -10,7 +10,7 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 |---|---|---|
 | [`player-display.md`](player-display.md) | what's left of the suit ring: the quest's pointer, the player color, VR | M4 (step 16), M6, M7 |
 | [`menu-pause.md`](menu-pause.md) | what's left of the title view and the pause panel: co-op sessions, the Steam overlay, more settings, VR | M6, M7, M8 |
-| [`biomes.md`](biomes.md) | around the biomes' geography: a generic part per biome, the biomes' assets | M5 |
+| [`biomes.md`](biomes.md) | around the biomes' geography: region sizes, what's left of the biomes' assets | M5 |
 | [`aliens.md`](aliens.md) | the Ravager guarding rich sites, more guards and raiders, co-op scaling, the effects | M4 (steps 14, 16), M5, M7 |
 | [`sfx.md`](sfx.md) | recordings where synthesis isn't enough, the menus' and the death's sounds later, the sounds still to come | M5 |
 | [`weapons.md`](weapons.md) | blueprints from the quests and their order, a third slot, projectiles, co-op and VR | M4 (step 16), M5, M6, M7 |

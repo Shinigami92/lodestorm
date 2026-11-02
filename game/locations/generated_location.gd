@@ -224,7 +224,7 @@ func build() -> void:
 	_scatter.build(self)
 	_cliffs.build(self)
 	_far_ring.build(self, biome)
-	parts.build(self, _crate_contents())
+	parts.build(self, _crate_contents(), biome)
 	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()
 	quests.build()

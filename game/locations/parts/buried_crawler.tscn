@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://dklnyw8st5hur"]
+
+[ext_resource type="Script" uid="uid://x5qe10ai7345" path="res://game/locations/parts/map_part.gd" id="1_part"]
+
+[ext_resource type="Script" uid="uid://uqm3dgi8uv5j" path="res://game/locations/parts/part_marker.gd" id="2_marker"]
+
+[ext_resource type="Script" uid="uid://cf1hytkgr80i2" path="res://game/models/kit_mesh.gd" id="kit_mesh"]
+
+[ext_resource type="PackedScene" uid="uid://tsss5qyndqqs" path="res://assets/parts/crawler/crawler.glb" id="kit_crawler"]
+
+[sub_resource type="BoxShape3D" id="Box_1"]
+size = Vector3(3.5, 1.5, 7.8)
+
+[sub_resource type="BoxShape3D" id="Box_2"]
+size = Vector3(3.0, 1.7, 2.3)
+
+[sub_resource type="BoxShape3D" id="Box_3"]
+size = Vector3(3.4, 1.1, 4.8)
+
+[sub_resource type="BoxShape3D" id="Box_4"]
+size = Vector3(1.6, 0.8, 7.0)
+
+[sub_resource type="BoxShape3D" id="Box_5"]
+size = Vector3(0.55, 0.9, 0.95)
+
+[sub_resource type="BoxShape3D" id="Box_6"]
+size = Vector3(0.9, 0.4, 0.56)
+
+[node name="BuriedCrawler" type="Node3D"]
+script = ExtResource("1_part")
+display_name = "Buried crawler"
+footprint = 12.0
+prop_radius = 8.0
+area_kinds = Array[int]([1, 2])
+
+[node name="Crawler" type="StaticBody3D" parent="."]
+transform = Transform3D(0.87825, -0.06736, 0.47344, 0.10439, 0.99316, -0.05234, -0.46667, 0.09538, 0.87927, 0.3, -0.8, 0.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crawler"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_crawler")
+part = &"Crawler"
+
+[node name="Shape" type="CollisionShape3D" parent="Crawler"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.75, 0.0)
+shape = SubResource("Box_1")
+
+[node name="Shape2" type="CollisionShape3D" parent="Crawler"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.35, 2.65)
+shape = SubResource("Box_2")
+
+[node name="Shape3" type="CollisionShape3D" parent="Crawler"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.05, -1.4)
+shape = SubResource("Box_3")
+
+[node name="Drift" type="StaticBody3D" parent="."]
+transform = Transform3D(0.88295, 0.0, 0.46947, 0.0, 1.0, 0.0, -0.46947, 0.0, 0.88295, -1.25, 0.0, 1.42)
+
+[node name="Mesh" type="MeshInstance3D" parent="Drift"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_crawler")
+part = &"Crawler_drift"
+
+[node name="Shape" type="CollisionShape3D" parent="Drift"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.4, 0.0)
+shape = SubResource("Box_4")
+
+[node name="Track" type="StaticBody3D" parent="."]
+transform = Transform3D(0.69466, 0.0, 0.71934, 0.0, 1.0, 0.0, -0.71934, 0.0, 0.69466, 2.92, 0.0, -1.93)
+
+[node name="Mesh" type="MeshInstance3D" parent="Track"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_crawler")
+part = &"Crawler_track"
+
+[node name="Shape" type="CollisionShape3D" parent="Track"]
+transform = Transform3D(0.9563, 0.0, -0.29237, 0.0, 1.0, 0.0, 0.29237, 0.0, 0.9563, 2.2, 0.45, 0.15)
+shape = SubResource("Box_5")
+
+[node name="SampleCase" type="StaticBody3D" parent="."]
+transform = Transform3D(-0.0349, 0.0, 0.99939, 0.0, 1.0, 0.0, -0.99939, 0.0, -0.0349, -1.27, 0.0, -4.91)
+
+[node name="Mesh" type="MeshInstance3D" parent="SampleCase"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_crawler")
+part = &"Crawler_crate"
+
+[node name="Shape" type="CollisionShape3D" parent="SampleCase"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.21, 0.0)
+shape = SubResource("Box_6")
+
+[node name="Crate" type="Marker3D" parent="."]
+transform = Transform3D(0.93969, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.93969, 3.7, 0, 3.6)
+script = ExtResource("2_marker")
+kind = 2
+
+[node name="Ore1" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.6, 0, 1.6)
+script = ExtResource("2_marker")
+
+[node name="Ore2" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0, 0, 0.9)
+script = ExtResource("2_marker")
+band = 1
+
+[node name="Ore3" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0, -6.0)
+script = ExtResource("2_marker")

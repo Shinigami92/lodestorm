@@ -15,9 +15,14 @@
 [ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
+[ext_resource type="PackedScene" uid="uid://b5kq5sc13mgcr" path="res://game/locations/parts/heat_tap.tscn" id="part_own"]
 [ext_resource type="Material" uid="uid://bonvjwys17std" path="res://assets/terrain/lava.tres" id="fill_lava"]
 [ext_resource type="PackedScene" uid="uid://daet1u0tieuu" path="res://assets/biomes/ash/ash.glb" id="kit_ash"]
 [ext_resource type="Resource" uid="uid://qn8mde21w314" path="res://game/locations/weather/ash.tres" id="weather"]
+
+[sub_resource type="Resource" id="Placement_own"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_own")
 
 [sub_resource type="Resource" id="Placement_wreck"]
 script = ExtResource("part_placement")
@@ -208,7 +213,8 @@ ground_material = ExtResource("9_terrain")
 low_ground_tint = Color(0.85, 0.85, 0.85, 1)
 tint_variation = 0.1
 scree = 0.6
-part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
+part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater"), SubResource("Placement_own")])
+part_cover = 0.5
 ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_kyrite"), ExtResource("ore_tessar"), ExtResource("ore_duskine"), ExtResource("ore_halcyne")])
 favored_strains = Array[ExtResource("alien_strain")]([ExtResource("darter")])
 gap_fill = ExtResource("fill_lava")

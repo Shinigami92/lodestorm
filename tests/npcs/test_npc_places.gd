@@ -66,7 +66,7 @@ func test_everyone_knows_their_own_room() -> void:
 
 
 func test_away_from_their_room_they_say_it_without_the_room() -> void:
-	var npc := _ship.get_node("Rooms/Lower/Weapons/Gunsmith") as Npc
+	var npc := NpcBoarding.crew_member(_ship, &"gunsmith")
 	var greeting: Topic = npc.profile.dialogue.greeting
 	assert_false(greeting.away_lines.is_empty())
 	var corridor := _ship.get_node("Rooms/Lower/LowerCorridor") as Node3D
@@ -85,7 +85,7 @@ func test_away_from_their_room_they_say_it_without_the_room() -> void:
 
 
 func test_the_pilot_in_the_cockpit_is_away_from_the_bridge() -> void:
-	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var pilot := NpcBoarding.crew_member(_ship, &"pilot")
 	pilot.global_position = pilot.flight_seat.global_position
 	assert_eq(pilot.routine.get_room(), &"Cockpit")
 	assert_true(pilot.routine.is_away())

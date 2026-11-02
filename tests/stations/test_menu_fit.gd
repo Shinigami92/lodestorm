@@ -319,7 +319,7 @@ func test_med_bed_card_fits_in_every_language() -> void:
 ## Every quest's card fits an NPC's card in every language: its offer, and each step's hand-in
 ## with every goal done (the longest: each goal says "Done").
 func test_every_quest_card_fits_in_every_language() -> void:
-	var npc := _ship.get_node(NPCS["res://game/npcs/crew/quartermaster.tres"]) as Npc
+	var npc: Npc = NpcBoarding.crew_member(_ship, &"quartermaster")
 	var quests: QuestLog = _ship.quests
 	npc.open(_player)
 	for quest: Quest in quests.catalog.quests:
@@ -374,9 +374,9 @@ func test_text_reads_from_the_camera() -> void:
 		if station is LoadoutStation:
 			var at_wall: float = (station as LoadoutStation).wall_view_height
 			assert_gte(text_height / at_wall, MIN_TEXT_HEIGHT, path + " at the wall")
-	for path: String in NPCS.values():
-		var npc := _ship.get_node(path) as Npc
-		assert_gte(_bubble_text_height(npc.bubble, npc), MIN_TEXT_HEIGHT, path + " bubble")
+	for profile: NpcProfile in NpcProfile.crew():
+		var npc: Npc = NpcBoarding.crew_member(_ship, profile.id)
+		assert_gte(_bubble_text_height(npc.bubble, npc), MIN_TEXT_HEIGHT, profile.id + " bubble")
 
 
 ## For a card laid out in a viewport of its own: the map stops processing, so each of the many

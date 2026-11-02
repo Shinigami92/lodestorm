@@ -4,18 +4,28 @@ extends GutTest
 ## ground.
 
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
-const BIOMES: Array[LocationBiome] = [
-	preload("res://game/locations/biomes/ash.tres"),
-	preload("res://game/locations/biomes/dust.tres"),
-	preload("res://game/locations/biomes/frost.tres"),
-	preload("res://game/locations/biomes/glass.tres"),
-	preload("res://game/locations/biomes/overgrowth.tres"),
-	preload("res://game/locations/biomes/salt.tres"),
-]
+const SWEEP := preload("res://tests/support/location_sweep.gd")
+const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
+
+
+## The sweeps' biome list (every test's over all biomes) has every biome in the biomes' folder, so
+## a new one is covered (its order picks the sweeps' seeds: a new biome goes at the end).
+func test_the_sweeps_know_every_biome() -> void:
+	var folder: String = "res://game/locations/biomes"
+	var paths: Array[String] = []
+	for file: String in ResourceLoader.list_directory(folder):
+		if file.ends_with(".tres"):
+			paths.append(folder.path_join(file))
+	var known: Array[String] = []
+	for biome: LocationBiome in SWEEP.BIOMES:
+		known.append(biome.resource_path)
+	paths.sort()
+	known.sort()
+	assert_eq(known, paths)
 
 
 func test_every_part_has_a_mesh() -> void:
-	for biome: LocationBiome in BIOMES:
+	for biome: LocationBiome in SWEEP.BIOMES:
 		var types: Array[ScatterType] = biome.scatter + biome.cliff_dressing
 		if biome.fence:
 			types.append(biome.fence)
@@ -29,7 +39,7 @@ func test_every_part_has_a_mesh() -> void:
 func test_dust_cliffs_get_chunks() -> void:
 	var location := LOCATION.instantiate() as GeneratedLocation
 	location.world_seed = 3
-	location.biome = BIOMES[1]  # the Dust flats: high cliffs
+	location.biome = DUST
 	location.area_count = 6
 	add_child_autofree(location)
 	var count: int = 0

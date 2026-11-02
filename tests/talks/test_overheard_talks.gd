@@ -80,10 +80,10 @@ func test_a_player_close_starts_it_and_it_plays_to_the_end() -> void:
 	# The player walks off: it plays on.
 	_player.global_position = _spot.global_position + Vector3(0.0, 0.1, 25.0)
 	_player.reset_physics_interpolation()
-	await _until(func() -> bool: return _pilot.bubble.visible, 10.0)
+	await wait_until(func() -> bool: return _pilot.bubble.visible, 10.0)
 	assert_eq((_pilot.bubble.content as SpeechBubble).get_line(), _talk.lines[1].text)
 	assert_false(_cook.bubble.visible, "one bubble at a time")
-	await _until(func() -> bool: return not _ship.talks.is_playing(), 10.0)
+	await wait_until(func() -> bool: return not _ship.talks.is_playing(), 10.0)
 	assert_true(_ship.story.is_set(_talk.flag()), "played to the end without anyone close")
 	assert_false(_pilot.bubble.visible)
 	assert_null(_cook.routine.talk_place, "back to what they did")
@@ -117,8 +117,8 @@ func test_a_held_talk_leaves_no_flag() -> void:
 	_stand_at_places()
 	_player.global_position = _spot.global_position + Vector3(0.0, 0.1, 3.0)
 	_player.reset_physics_interpolation()
-	await _until(func() -> bool: return _ship.talks.is_playing(), 2.0)
-	await _until(func() -> bool: return not _ship.talks.is_playing(), 20.0)
+	await wait_until(func() -> bool: return _ship.talks.is_playing(), 2.0)
+	await wait_until(func() -> bool: return not _ship.talks.is_playing(), 20.0)
 	assert_false(_ship.story.is_set(held.flag()))
 
 
@@ -161,13 +161,6 @@ func _stand_at_places() -> void:
 
 func _wait_for_pick() -> void:
 	await wait_physics_frames(int(OverheardTalks.PICK_TIME * Engine.physics_ticks_per_second) + 2)
-
-
-func _until(done: Callable, seconds: float) -> void:
-	for i: int in int(seconds * Engine.physics_ticks_per_second):
-		if done.call():
-			return
-		await wait_physics_frames(1)
 
 
 ## The names of the talk spots in the scenes under `dir` (and its folders).

@@ -31,7 +31,7 @@ func test_a_new_game_starts_with_him_waiting_at_the_cabins() -> void:
 	)
 	_brannik.close()
 	assert_false(_brannik.routine.is_waiting(), "Later: he doesn't wait any more")
-	await _until(func() -> bool: return _brannik.body.is_walking(), 10.0)
+	await wait_until(func() -> bool: return _brannik.body.is_walking(), 10.0)
 	assert_true(_brannik.body.is_walking(), "on his way to the armory")
 
 
@@ -41,7 +41,7 @@ func test_the_first_destination_chosen_sends_him_to_the_armory() -> void:
 	var voyage: Voyage = _ship.voyage
 	assert_true(voyage.choose(voyage.offers[0]), "Set as destination at the navigator")
 	assert_false(_brannik.routine.is_waiting(), "he doesn't wait any more")
-	await _until(func() -> bool: return _brannik.body.is_walking(), 10.0)
+	await wait_until(func() -> bool: return _brannik.body.is_walking(), 10.0)
 	assert_true(_brannik.body.is_walking(), "on his way to the armory")
 	assert_eq(
 		_brannik.get_greeting(),
@@ -75,7 +75,7 @@ func test_the_tour_waits_for_the_player_at_each_stop() -> void:
 	var stop := tour.get_marker()
 	assert_eq(stop.name, &"MessHall")
 	# The player stays where they are, out of reach: he walks there and waits.
-	await _until(func() -> bool: return not _brannik.routine.is_underway(), 40.0)
+	await wait_until(func() -> bool: return not _brannik.routine.is_underway(), 40.0)
 	assert_almost_eq(_brannik.global_position, stop.global_position, Vector3.ONE * 0.05)
 	await wait_physics_frames(30)
 	assert_false(tour.is_talking(), "waits for the player")
@@ -86,7 +86,7 @@ func test_the_tour_waits_for_the_player_at_each_stop() -> void:
 	assert_true(_brannik.bubble.visible, "in the bubble above his head")
 	var line: String = tour.tour.stops[0].lines[0]
 	assert_eq((_brannik.bubble.content as SpeechBubble).get_line(), line)
-	await _until(func() -> bool: return tour.stop == 1, 30.0)
+	await wait_until(func() -> bool: return tour.stop == 1, 30.0)
 	assert_eq(tour.stop, 1, "then on to the next stop")
 	assert_false(_brannik.bubble.visible)
 
@@ -140,13 +140,13 @@ func test_he_rides_the_lift_to_the_lower_deck() -> void:
 	tour.stop = tour.tour.stops.find(_stop(tour.tour, &"MedicalBay"))
 	_player.global_position = lobby.global_position + Vector3(0.0, 0.1, 2.0)
 	_player.reset_physics_interpolation()
-	await _until(
+	await wait_until(
 		func() -> bool: return _brannik.routine._walker.ride == NpcWalker.Ride.WAITING, 15.0
 	)
 	# He calls it on his next step at the gate.
 	await wait_physics_frames(2)
 	assert_eq(lift.deck, Lift.Deck.UPPER, "called up to his deck")
-	await _until(
+	await wait_until(
 		func() -> bool: return _brannik.routine._walker.ride == NpcWalker.Ride.BOARDING, 10.0
 	)
 	assert_true(lift.boarding, "holds it while he steps on")
@@ -155,12 +155,14 @@ func test_he_rides_the_lift_to_the_lower_deck() -> void:
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(int(lift.departure_delay * 2.0 * Engine.physics_ticks_per_second))
 	assert_false(lift.moving and _brannik.routine._walker.ride == NpcWalker.Ride.BOARDING)
-	await _until(
+	await wait_until(
 		func() -> bool: return _brannik.routine._walker.ride == NpcWalker.Ride.RIDING, 10.0
 	)
-	await _until(func() -> bool: return _brannik.routine._walker.ride == NpcWalker.Ride.NONE, 15.0)
+	await wait_until(
+		func() -> bool: return _brannik.routine._walker.ride == NpcWalker.Ride.NONE, 15.0
+	)
 	assert_almost_eq(_ship.to_local(_brannik.global_position).y, 2.5, 0.01, "on the lower deck")
-	await _until(func() -> bool: return not _brannik.routine.is_underway(), 30.0)
+	await wait_until(func() -> bool: return not _brannik.routine.is_underway(), 30.0)
 	var medical := _ship.get_node("Tour/MedicalBay") as Node3D
 	assert_almost_eq(_brannik.global_position, medical.global_position, Vector3.ONE * 0.05)
 
@@ -193,11 +195,3 @@ func _stop(tour: Tour, id: StringName) -> TourStop:
 		if stop.id == id:
 			return stop
 	return null
-
-
-## Waits physics frames until `done` holds, `seconds` at most.
-func _until(done: Callable, seconds: float) -> void:
-	for i: int in int(seconds * Engine.physics_ticks_per_second):
-		if done.call():
-			return
-		await wait_physics_frames(1)

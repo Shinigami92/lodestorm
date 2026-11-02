@@ -6,6 +6,7 @@ extends GutTest
 ## player out of spares with no ore.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+const RADIO := preload("res://tests/support/radio_wait.gd")
 const DRILL: Upgrade = preload("res://game/progression/upgrades/miner_drill.tres")
 const QUARTERMASTER: String = "Rooms/Lower/Armory/Quartermaster"
 const PILOT: String = "Rooms/Upper/Bridge/Pilot"
@@ -52,7 +53,7 @@ func test_a_rough_destination_warns_once_per_step() -> void:
 		_player.radio.get_line(), pilot.reaction_lines(CrewReactions.DESTINATION_ROUGH, &"mire")[0]
 	)
 	assert_true(_ship.story.is_set(&"event.destination_rough.1"))
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	_choose(&"rimeback")
 	assert_eq(_player.radio.get_line(), "", "the same step warns once")
 	_choose(&"cinder")
@@ -93,7 +94,7 @@ func test_landing_in_a_known_harder_region_calls_once() -> void:
 		_profile(PILOT).reaction_lines(CrewReactions.REGION_LANDING, &"mire")[0]
 	)
 	assert_true(_ship.story.is_set(&"event.region.mire"))
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	_ship.player_left.emit(_player)
 	assert_eq(_player.radio.get_line(), "", "once per region")
 
@@ -109,7 +110,7 @@ func test_the_first_landing_brings_the_miner_hint() -> void:
 		_player.radio.get_line(),
 		_profile(QUARTERMASTER).reaction_lines(CrewReactions.MINER_HINT)[0]
 	)
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	_ship.player_left.emit(_player)
 	assert_eq(_player.radio.get_line(), "", "once per game")
 
@@ -123,7 +124,7 @@ func test_the_first_lost_run_is_called_in_once_everyone_is_up() -> void:
 		_player.radio.get_line(),
 		_profile(QUARTERMASTER).reaction_lines(CrewReactions.FIRST_RUN_LOST)[0]
 	)
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	GameEvents.bus.mission_ended.emit(null, false)
 	GameEvents.bus.player_respawned.emit(_player)
 	assert_eq(_player.radio.get_line(), "", "only the first one")
@@ -191,12 +192,3 @@ func _step_out() -> void:
 func _caller() -> String:
 	var bubble := _player.radio.panel.content as RadioBubble
 	return bubble.get_caller() if _player.radio.panel.visible else ""
-
-
-## Waits until the radio is quiet and nothing waits.
-func _until_quiet() -> void:
-	for i: int in 3000:
-		if _player.radio.get_line().is_empty() and _player.radio.waiting_count() == 0:
-			break
-		await wait_physics_frames(1)
-	await wait_seconds(PlayerRadio.GAP + 0.1)

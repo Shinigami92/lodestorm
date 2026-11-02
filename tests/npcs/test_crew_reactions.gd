@@ -5,6 +5,7 @@ extends GutTest
 ## the storm warning only outside, and what's saved.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+const RADIO := preload("res://tests/support/radio_wait.gd")
 const PLAYER_SCENE: String = "res://game/player/player.tscn"
 const QUARTERMASTER: String = "Rooms/Lower/Armory/Quartermaster"
 const PILOT: String = "Rooms/Upper/Bridge/Pilot"
@@ -46,7 +47,7 @@ func test_the_first_run_won_is_called_in_once_when_everyone_is_back() -> void:
 	assert_eq(_caller(), "Brannik · Radio")
 	assert_eq(_player.radio.get_line(), brannik.reaction_lines(CrewReactions.FIRST_RUN_WON)[0])
 	assert_true(_ship.story.is_set(&"event.first_run_won"))
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	GameEvents.bus.mission_ended.emit(null, true)
 	assert_eq(_player.radio.get_line(), "", "only the first one")
 
@@ -86,7 +87,7 @@ func test_a_new_weapon_only_to_its_player_with_the_crew_taking_turns() -> void:
 	var first: String = _caller()
 	assert_ne(first, "")
 	assert_eq(teammate.radio.get_line(), "", "not for the teammate")
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	GameEvents.bus.weapon_unlocked.emit(_player, null)
 	assert_ne(_caller(), first, "the other one's turn")
 	assert_has(["Dace · Radio", "Brannik · Radio"], _caller())
@@ -99,7 +100,7 @@ func test_the_first_fall_is_called_in_on_waking() -> void:
 	GameEvents.bus.player_respawned.emit(_player)
 	assert_eq(_caller(), "Ilse · Radio")
 	assert_eq(_player.radio.get_line(), ilse.reaction_lines(CrewReactions.FIRST_DEATH)[0])
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	GameEvents.bus.player_died.emit(_player, null)
 	GameEvents.bus.player_respawned.emit(_player)
 	assert_eq(_player.radio.get_line(), "", "only the first fall")
@@ -143,7 +144,7 @@ func test_a_new_planet_and_the_first_landing_name_the_body() -> void:
 	GameEvents.bus.heat_shield_raised.emit(2)
 	assert_eq(_caller(), "Okoro · Radio")
 	assert_string_contains(_player.radio.get_line(), "Vehra")
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	TEST_MAP.pick_mission(_map)
 	await wait_physics_frames(2)
 	var body: CelestialBody = _ship.voyage.at_body
@@ -155,7 +156,7 @@ func test_a_new_planet_and_the_first_landing_name_the_body() -> void:
 		_player.radio.get_line(),
 		_profile(PILOT).reaction_lines(CrewReactions.FIRST_LANDING, body.id)[0]
 	)
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	_ship.player_left.emit(_player)
 	assert_eq(_player.radio.get_line(), "", "once per body")
 
@@ -172,7 +173,7 @@ func test_the_storm_warning_only_for_the_players_outside() -> void:
 	assert_eq(_player.radio.get_line(), lines[0])
 	assert_eq(_caller(), "Tamsin · Radio")
 	assert_eq(_player.radio.voice.bus, &"Radio")
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	TranslationServer.set_locale("de")
 	_reactions.transmit(CrewReactions.STORM_WARNING)
 	assert_eq(_caller(), "Tamsin · Funk")
@@ -213,15 +214,6 @@ func _profile(path: String) -> NpcProfile:
 func _caller() -> String:
 	var bubble := _player.radio.panel.content as RadioBubble
 	return bubble.get_caller() if _player.radio.panel.visible else ""
-
-
-## Waits until the radio is quiet and nothing waits.
-func _until_quiet() -> void:
-	for i: int in 3000:
-		if _player.radio.get_line().is_empty() and _player.radio.waiting_count() == 0:
-			break
-		await wait_physics_frames(1)
-	await wait_seconds(PlayerRadio.GAP + 0.1)
 
 
 ## A teammate (player 2, not local) next to the player.

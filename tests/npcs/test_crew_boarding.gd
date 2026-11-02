@@ -4,11 +4,11 @@ extends GutTest
 ## aboard takes over at the door; their places stay empty afterwards.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
-## Their places at Ostra and their posts aboard, by name.
-const PLACES: Dictionary[String, String] = {
-	"Dace": "Rooms/Lower/Weapons/Gunsmith",
-	"Wren": "Rooms/Lower/Armor/SuitTech",
-	"Fenna": "Rooms/Upper/MessHall/Cook",
+## Who waits at Ostra (their place's node name) and their profile's id.
+const PLACES: Dictionary[String, StringName] = {
+	"Dace": &"gunsmith",
+	"Wren": &"suit_tech",
+	"Fenna": &"cook",
 }
 
 var _map: Node3D
@@ -26,7 +26,7 @@ func test_they_wait_at_their_places_until_they_join() -> void:
 	await _dock_at_ostra(false)
 	for who: String in PLACES:
 		var waiting := _people(who)
-		var aboard := _ship.get_node(PLACES[who]) as Npc
+		var aboard := NpcBoarding.crew_member(_ship, PLACES[who])
 		assert_eq(waiting.profile, aboard.profile, who)
 		assert_true(waiting.presence.is_here() and waiting.visible, who + " at their place")
 		assert_true(waiting.use_point.enabled, who + " talks about themselves there")
@@ -39,18 +39,18 @@ func test_they_wait_at_their_places_until_they_join() -> void:
 func test_joining_walks_them_aboard() -> void:
 	await _dock_at_ostra(false)
 	_ship.ramp_open = true
-	await _until(func() -> bool: return _ship.is_ramp_down(), 5.0)
+	await wait_until(func() -> bool: return _ship.is_ramp_down(), 5.0)
 	_station.navigation.bake()
-	await _until(func() -> bool: return _station.navigation.is_baked(), 10.0)
+	await wait_until(func() -> bool: return _station.navigation.is_baked(), 10.0)
 	await wait_physics_frames(2)
 	var dace := _people("Dace")
-	var gunsmith := _ship.get_node(PLACES["Dace"]) as Npc
+	var gunsmith := NpcBoarding.crew_member(_ship, PLACES["Dace"])
 	var foot: Vector3 = _ship.ramp_way()[0]
 	# Close to the ramp's foot already, so the walk is short.
 	dace.global_position = foot + _ship.global_basis.x * 3.0
 	dace.reset_physics_interpolation()
 	# A destination picked, the pilot leaving it to the players.
-	(_ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc).sets_course = false
+	NpcBoarding.crew_member(_ship, &"pilot").sets_course = false
 	var here: MissionBrief = _voyage.brief
 	var away: MissionBrief = _voyage.offers[0] if _voyage.offers[0] != here else _voyage.offers[1]
 	assert_true(_voyage.choose(away))
@@ -64,9 +64,9 @@ func test_joining_walks_them_aboard() -> void:
 	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
 	assert_false(_voyage.can_confirm(), "the ship waits for him")
 	assert_false(console.can_launch())
-	await _until(func() -> bool: return dace.global_position.y > foot.y + 1.0, 10.0)
+	await wait_until(func() -> bool: return dace.global_position.y > foot.y + 1.0, 10.0)
 	assert_gt(dace.global_position.y, foot.y + 1.0, "up the ramp")
-	await _until(func() -> bool: return gunsmith.presence.is_here(), 10.0)
+	await wait_until(func() -> bool: return gunsmith.presence.is_here(), 10.0)
 	assert_true(gunsmith.presence.is_here() and gunsmith.visible, "aboard")
 	assert_false(dace.presence.is_here() or dace.visible, "gone from the ramp")
 	assert_true(NpcBoarding.walking(get_tree()).is_empty())
@@ -75,7 +75,7 @@ func test_joining_walks_them_aboard() -> void:
 	assert_lt(gunsmith.global_position.distance_to(door), 1.5, "comes in at the door")
 	await wait_physics_frames(2)
 	assert_true(_ship.ramp_button.enabled)
-	await _until(func() -> bool: return gunsmith.body.is_walking(), 5.0)
+	await wait_until(func() -> bool: return gunsmith.body.is_walking(), 5.0)
 	assert_true(gunsmith.body.is_walking(), "on to his post")
 
 
@@ -84,7 +84,7 @@ func test_their_places_stay_empty_once_aboard() -> void:
 	for who: String in PLACES:
 		var waiting := _people(who)
 		assert_false(waiting.presence.is_here() or waiting.visible, who)
-		assert_true((_ship.get_node(PLACES[who]) as Npc).presence.is_here(), who)
+		assert_true(NpcBoarding.crew_member(_ship, PLACES[who]).presence.is_here(), who)
 	assert_true(NpcBoarding.walking(get_tree()).is_empty(), "nobody walks aboard on a load")
 	assert_true((_station.get_node("DaceStall/Shutter") as Node3D).visible, "his shutter is down")
 
@@ -98,19 +98,9 @@ func _dock_at_ostra(crew_joined: bool) -> void:
 	_voyage = _map.get_node("Voyage") as Voyage
 	_ship = _map.get_node("Ship") as Ship
 	await wait_physics_frames(2)
-	var ostra: CelestialBody = _voyage.settings.system.body_by_id(&"ostra")
-	_voyage.select(_voyage.offer_for_station(ostra))
-	_voyage.skip_flight()
+	_station = TEST_MAP.dock_at(_map, &"ostra")
 	await wait_physics_frames(3)
-	_station = _voyage.location as SpaceStation
 
 
 func _people(who: String) -> Npc:
 	return _station.get_node("People/" + who) as Npc
-
-
-func _until(done: Callable, seconds: float) -> void:
-	for i: int in int(seconds * Engine.physics_ticks_per_second):
-		if done.call():
-			return
-		await wait_physics_frames(1)

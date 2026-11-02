@@ -5,6 +5,7 @@ extends GutTest
 ## saved with the quests and forgotten at the hand-in.
 
 const TEST_MAP := preload("res://tests/support/map_fixture.gd")
+const RADIO := preload("res://tests/support/radio_wait.gd")
 const PLAYER_SCENE: String = "res://game/player/player.tscn"
 const KYRITE: OreType = preload("res://game/ores/types/ore_kyrite.tres")
 const REGION: StringName = &"redscar"
@@ -34,7 +35,7 @@ func before_each() -> void:
 	add_child_autofree(_map)
 	_ship = ship
 	_player = _map.get_node("Player") as Player
-	_npc = _ship.get_node("Rooms/Lower/Armory/Quartermaster") as Npc
+	_npc = NpcBoarding.crew_member(_ship, &"quartermaster")
 	await wait_physics_frames(2)
 	_ship.quests.accept(_quest, [_player])
 
@@ -91,7 +92,7 @@ func test_the_landing_line_once_per_step_from_its_npc() -> void:
 	_ship.quest_radio.land(QuestVisit.new(_ship.quests, REGION))
 	assert_eq(_caller(), "Brannik · Radio")
 	assert_eq(_player.radio.get_line(), LANDING)
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	_ship.quest_radio.land(QuestVisit.new(_ship.quests, REGION))
 	assert_eq(_player.radio.get_line(), "", "not on the next visit")
 	_ship.quest_radio.land(QuestVisit.new(_ship.quests, &"hollow_mire"))
@@ -108,20 +109,20 @@ func test_goals_done_out_there_then_ready() -> void:
 	var visit := QuestVisit.new(_ship.quests, REGION)
 	_ship.quest_radio._on_player_left(_player)
 	_ship.quest_radio.land(visit)
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	var nests: QuestVisit.Entry = visit.entries[0]
 	var fragments: QuestVisit.Entry = visit.entries[1]
 	visit.count(nests)
 	assert_eq(_player.radio.get_line(), "", "one nest of two")
 	visit.count(nests)
 	assert_eq(_player.radio.get_line(), NESTS_DONE)
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	_player.quest_pack.add(fragments)
 	assert_eq(_player.radio.get_line(), "", "one fragment of two")
 	_player.quest_pack.add(fragments)
 	assert_eq(_player.radio.get_line(), READY, "picked up, all done: the step's line instead")
 	assert_eq(_ship.quests.goal_progress(_quest, 1), 0.0, "counting once aboard")
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	visit.count_carried(_player.quest_pack.take_all())
 	visit.commit()
 	assert_eq(_player.radio.get_line(), "", "called out there already")
@@ -134,11 +135,11 @@ func test_goals_done_out_there_then_ready() -> void:
 func test_a_goal_done_aboard_and_the_calls_forgotten_at_the_hand_in() -> void:
 	var visit := QuestVisit.new(_ship.quests, REGION)
 	_ship.quest_radio.land(visit)
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	visit.count(visit.entries[0], 2.0)
 	visit.count(visit.entries[1], 2.0)
 	visit.commit()
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	assert_true(_ship.quests.hand_in(_quest, _player, [_player]))
 	var kyrite: QuestStep = _quest.steps[1]
 	assert_eq(_ship.quests.calls.lines(_quest, kyrite, false), [] as Array[String], "a new step")
@@ -150,7 +151,7 @@ func test_a_goal_done_aboard_and_the_calls_forgotten_at_the_hand_in() -> void:
 
 func test_said_again_at_the_npc_before_the_card() -> void:
 	_ship.quest_radio.land(QuestVisit.new(_ship.quests, REGION))
-	await _until_quiet()
+	await RADIO.quiet(self, _player)
 	_player.global_position = _npc.use_point.global_position + Vector3(0.0, 0.0, 1.0)
 	_player.reset_physics_interpolation()
 	await wait_physics_frames(2)
@@ -183,15 +184,6 @@ func test_spoken_by_the_npc_it_is_handed_in_at() -> void:
 func _caller() -> String:
 	var bubble := _player.radio.panel.content as RadioBubble
 	return bubble.get_caller() if _player.radio.panel.visible else ""
-
-
-## Waits until the radio is quiet and nothing waits.
-func _until_quiet() -> void:
-	for i: int in 3000:
-		if _player.radio.get_line().is_empty() and _player.radio.waiting_count() == 0:
-			break
-		await wait_physics_frames(1)
-	await wait_seconds(PlayerRadio.GAP + 0.1)
 
 
 ## A teammate (player 2, not local) next to the player.

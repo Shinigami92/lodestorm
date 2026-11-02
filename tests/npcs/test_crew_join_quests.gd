@@ -88,14 +88,10 @@ func _dock_at_ostra() -> void:
 	_map = TEST_MAP.instantiate(false) as Node3D
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
-	var voyage := _map.get_node("Voyage") as Voyage
 	_ship = _map.get_node("Ship") as Ship
 	await wait_physics_frames(2)
-	var ostra: CelestialBody = voyage.settings.system.body_by_id(&"ostra")
-	voyage.select(voyage.offer_for_station(ostra))
-	voyage.skip_flight()
+	_station = TEST_MAP.dock_at(_map, &"ostra")
 	await wait_physics_frames(3)
-	_station = voyage.location as SpaceStation
 
 
 func _people(who: String) -> Npc:

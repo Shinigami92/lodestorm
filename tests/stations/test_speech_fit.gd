@@ -20,7 +20,7 @@ func test_every_crew_line_and_card_fits_in_every_language() -> void:
 	for weapon_type: WeaponType in ALL_WEAPONS.weapons:
 		_player.arsenal.unlock(weapon_type)
 	for profile: NpcProfile in CREW:
-		await _assert_lines_fit(_ship.get_node(NPCS[profile.resource_path]) as Npc)
+		await _assert_lines_fit(NpcBoarding.crew_member(_ship, profile.id))
 
 
 func test_every_crew_call_fits_in_every_language() -> void:
@@ -43,7 +43,7 @@ func test_every_crew_call_fits_in_every_language() -> void:
 
 
 func test_every_quest_line_fits_in_every_language() -> void:
-	var npc := _ship.get_node(NPCS[CREW[0].resource_path]) as Npc
+	var npc := NpcBoarding.crew_member(_ship, CREW[0].id)
 	_player.global_position = npc.use_point.global_position
 	npc.open(_player)
 	var radio: PlayerRadio = _player.radio
@@ -84,7 +84,7 @@ func test_every_quest_line_fits_in_every_language() -> void:
 
 ## A quest's offer and its steps' hand-ins are rows of the talk card, a diamond in front of each.
 func test_every_quest_row_fits_the_talk_card_in_every_language() -> void:
-	var npc := _ship.get_node(NPCS[CREW[0].resource_path]) as Npc
+	var npc := NpcBoarding.crew_member(_ship, CREW[0].id)
 	_player.global_position = npc.use_point.global_position
 	npc.open(_player)
 	await wait_process_frames(1)
@@ -106,13 +106,11 @@ func test_every_quest_row_fits_the_talk_card_in_every_language() -> void:
 
 
 func test_every_station_line_card_and_remark_fits_in_every_language() -> void:
-	var voyage := _map.get_node("Voyage") as Voyage
-	voyage.select(voyage.offer_for_station(voyage.settings.system.body_by_id(&"ostra")))
-	voyage.skip_flight()
+	var station: SpaceStation = TEST_MAP.dock_at(_map, &"ostra")
 	await wait_physics_frames(2)
 	# Every body in reach: every rumor topic open.
 	_ship.heat_shield.restore(_ship.heat_shield.max_mk(), false, {})
-	var people: Node = voyage.location.get_node("People")
+	var people: Node = station.get_node("People")
 	for person: Node in people.get_children():
 		if person is Npc:
 			await _assert_lines_fit(person as Npc)

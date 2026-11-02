@@ -26,7 +26,7 @@ func before_each() -> void:
 	add_child_autofree(_map)
 	_player = _map.get_node("Player") as Player
 	_ship = ship
-	_npc = _ship.get_node("Rooms/Lower/Armory/Quartermaster") as Npc
+	_npc = NpcBoarding.crew_member(_ship, &"quartermaster")
 	await wait_physics_frames(2)
 
 

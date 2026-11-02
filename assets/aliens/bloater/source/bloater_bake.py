@@ -26,6 +26,7 @@ from mathutils import Vector
 
 import bake as B
 import common as C
+import creature as K
 
 ASSET = "Bloater"
 SKINNED = ("Creature", "Eyes", "Glands")
@@ -33,19 +34,13 @@ EYE_COLOR = (0.75, 1.0, 0.035)  # linear for the aliens' Color(0.9, 1, 0.2)
 
 
 def prepare(job: B.Job) -> list:
-    for name in SKINNED:
-        obj = bpy.data.objects[name]
-        for mod in [m for m in obj.modifiers if m.type == "ARMATURE"]:
-            obj.modifiers.remove(mod)
+    K.unbind(SKINNED)
     return [B.bake_plane("BakeGround", scale=(5, 5, 1))]
 
 
 def finish(job: B.Job, objs: list) -> None:
-    C.assign(bpy.data.objects["Eyes"], B.mat_constant("Eyes", EYE_COLOR, roughness=0.2, emission=6.0))
-    C.assign(bpy.data.objects["Glands"], B.mat_constant("Glands", EYE_COLOR, roughness=0.15, emission=4.0))
-    for name in SKINNED:
-        obj = bpy.data.objects[name]
-        obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects["Skeleton"]
+    K.glow(EYE_COLOR, glands=(0.15, 4.0))
+    K.rebind(SKINNED)
 
 
 JOB = B.kit_job(
@@ -65,8 +60,7 @@ JOB = B.kit_job(
 
 def checks(job: B.Job, meshes: list) -> None:
     print("CHECK actions", sorted(a.name for a in bpy.data.actions))
-    for obj in [o for o in bpy.data.objects if o.name.startswith("Icosphere")]:  # the importer's bone shape
-        bpy.data.objects.remove(obj)
+    K.drop_bone_shapes()
     C.preview_scene(crystals=False, figure_location=(1.9, 1.5, 0))
     target = (0, -0.05, 0.42)
     for view, zoom in (("iso", 0.5), ("hero", 0.55), ("back", 0.6)):

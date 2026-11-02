@@ -43,6 +43,7 @@ from mathutils import Vector
 import common as C
 import creature as K
 from common import rx, ry, rz
+from creature import darken, slab
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -154,13 +155,6 @@ def lip_point(u: float) -> Vector:
 
 
 # --- parts ------------------------------------------------------------------------------------------
-
-
-def slab(sk: K.Skin, top: list, bottom: list, mi: int) -> list:
-    """A closed slab between two grids of points (rows of the same length)."""
-    top_v = [[sk.bm.verts.new(p) for p in row] for row in top]
-    bot_v = [[sk.bm.verts.new(p) for p in row] for row in bottom]
-    return K.close_grid(sk, top_v, bot_v, mi)
 
 
 def plate_bulge(v: float) -> float:
@@ -409,17 +403,6 @@ def build_foot(sk: K.Skin, j: list, s: float, foot: str, low: str) -> None:
         tip.z = 0.0
         knuckle = base.lerp(tip, 0.5) + Vector((0, 0, 0.022))
         sk.rigid(K.tube_path(sk, [base, knuckle, tip], [0.017, 0.014, 0.006], 5, 3, K.BONE, 0.8), foot)
-
-
-def darken(mat: bpy.types.Material, factor: float) -> bpy.types.Material:
-    """Scales the material's constant colors (raiders have darker chitin, see docs/design/aliens.md, Alien look)."""
-    for node in mat.node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            for sock in (node.inputs[6], node.inputs[7]):
-                if not sock.is_linked:
-                    r, g, b, a = sock.default_value
-                    sock.default_value = (r * factor, g * factor, b * factor, a)
-    return mat
 
 
 def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:

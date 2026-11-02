@@ -49,6 +49,7 @@ from mathutils import Matrix, Vector
 import common as C
 import creature as K
 from common import rx, ry, rz
+from creature import mandibles
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -390,11 +391,6 @@ def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
 
 # --- posing -----------------------------------------------------------------------------------------
 # Tendril rotations: rx(+) tips a stalk forward (towards -Y), ry(+) towards +X (the left).
-
-
-def mandibles(p: K.Pose, spread: float) -> None:
-    for side, s in K.SIDES:
-        p.set(f"{side}Mandible", rz(s * spread))
 
 
 def stalk(p: K.Pose, name: str, pitch: tuple, roll: tuple = (0, 0, 0, 0), yaw: float = 0.0) -> None:

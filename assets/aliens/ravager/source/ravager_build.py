@@ -54,6 +54,9 @@ from mathutils import Matrix, Vector
 
 import common as C
 import creature as K
+from creature import apply, arc, bone_verts, bounds, mandibles, posed_head, posed_point, rest_pose, two_bone
+
+Pose = K.ScaledPose  # the kit's pose plus a scale per bone
 from common import rx, ry, rz
 
 ARGV = C.args()
@@ -572,84 +575,7 @@ def pods_center() -> Vector:
 # --- posing -----------------------------------------------------------------------------------------
 
 
-class Pose(K.Pose):
-    """The kit's pose plus a scale per bone (the pods pulsing), as (width, height, length) in the bone's axes: for
-    Pods (pointing up) x, z and y of the world."""
-
-    def __init__(self, rig: K.Rig, offset=(0, 0, 0)):
-        super().__init__(rig, offset)
-        self.scale: dict = {}
-
-    def grow(self, bone: str, width: float, height: float, length: float) -> "Pose":
-        self.scale[bone] = Vector((width, height, length))
-        return self
-
-
-def apply(arm: bpy.types.Object, pose: Pose) -> None:
-    K.apply(arm, pose)
-    for pb in arm.pose.bones:
-        pb.scale = pose.scale.get(pb.name, Vector((1, 1, 1)))
-
-
-def rest_pose(arm: bpy.types.Object) -> None:
-    for pb in arm.pose.bones:
-        pb.scale = (1, 1, 1)
-    K.rest_pose(arm)
-
-
-def bake_clips(arm: bpy.types.Object, clips: dict) -> None:
-    """K.bake_clips with the Pods' scale keyed too."""
-    ad = arm.animation_data_create()
-    for name, (frames, fn) in clips.items():
-        ad.action = None
-        for f in range(frames + 1):
-            apply(arm, fn(f / frames))
-            for pb in arm.pose.bones:
-                pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)
-                if pb.name == "Body":
-                    pb.keyframe_insert("location", frame=f, group=pb.name)
-                if pb.name == "Pods":
-                    pb.keyframe_insert("scale", frame=f, group=pb.name)
-        act = ad.action
-        act.name = name
-        track = ad.nla_tracks.new()
-        track.name = name
-        track.strips.new(name, 0, act)
-        track.mute = True
-        ad.action = None
-    rest_pose(arm)
-
-
-def posed_head(p: K.Pose, bone: str) -> Vector:
-    """Where the head of `bone` is in pose p."""
-    parent = RIG.parent[bone]
-    if parent is None:
-        return RIG.head[bone].copy()
-    h = posed_point(p, parent, RIG.head[bone])
-    return h + p.offset if bone == "Body" else h
-
-
-def posed_point(p: K.Pose, bone: str, point: Vector) -> Vector:
-    """Where a point that moves with `bone` (at rest at `point`) is in pose p."""
-    return p.world(bone) @ (Vector(point) - RIG.head[bone]) + posed_head(p, bone)
-
-
-def arc(a: Vector, b: Vector) -> Matrix:
-    return a.rotation_difference(b).to_matrix()
-
-
 REACH: dict = {}  # leg: the largest hip-ankle distance a clip asked for, as a share of the leg's length
-
-
-def two_bone(root: Vector, target: Vector, a: float, b: float, pole: Vector) -> tuple:
-    """Knee and end of a two-bone chain from root reaching for target, bending towards pole (as AlienLegs does)."""
-    off = target - root
-    dist = min(max(off.length, abs(a - b) + 0.001), (a + b) * 0.999)
-    d = off.normalized()
-    side = (pole - d * pole.dot(d)).normalized()
-    cos_a = (a * a + dist * dist - b * b) / (2 * a * dist)
-    sin_a = math.sqrt(max(0.0, 1 - cos_a * cos_a))
-    return root + (d * cos_a + side * sin_a) * a, root + d * dist
 
 
 def leg_ik(p: K.Pose, leg: str, ankle: Vector, foot_world: Matrix | None = I3, pole: Vector | None = None) -> None:
@@ -684,11 +610,6 @@ def plant(p: K.Pose, rows=("Mid", "Hind")) -> None:
     for row in rows:
         for side, s in K.SIDES:
             leg_ik(p, f"{row}{side}", K.mirror(LEG[row][2], s))
-
-
-def mandibles(p: K.Pose, spread: float) -> None:
-    for side, s in K.SIDES:
-        p.set(f"{side}Mandible", rz(s * spread))
 
 
 def tail(p: K.Pose, swing: float, phase: float, lift: float = 0.0) -> None:
@@ -818,38 +739,6 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
 }
 
 # --- measures ---------------------------------------------------------------------------------------
-
-
-def bounds(names=("Creature", "Eyes", "Glands")) -> tuple:
-    """Bounds of the posed meshes (after the armature)."""
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    lo = Vector((1e9, 1e9, 1e9))
-    hi = Vector((-1e9, -1e9, -1e9))
-    for name in names:
-        ev = bpy.data.objects[name].evaluated_get(depsgraph)
-        me = ev.to_mesh()
-        for v in me.vertices:
-            w = ev.matrix_world @ v.co
-            lo = Vector(map(min, lo, w))
-            hi = Vector(map(max, hi, w))
-        ev.to_mesh_clear()
-    return tuple(round(x, 3) for x in lo), tuple(round(x, 3) for x in hi)
-
-
-def bone_verts(bones: list) -> list:
-    """World positions (posed) of the Creature's vertices weighted mostly to one of `bones`."""
-    obj = bpy.data.objects["Creature"]
-    names = {g.index: g.name for g in obj.vertex_groups}
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    ev = obj.evaluated_get(depsgraph)
-    me = ev.to_mesh()
-    out = [
-        ev.matrix_world @ me.vertices[v.index].co
-        for v in obj.data.vertices
-        if v.groups and names[max(v.groups, key=lambda g: g.weight).group] in bones
-    ]
-    ev.to_mesh_clear()
-    return out
 
 
 def lowest() -> dict:
@@ -986,7 +875,7 @@ def main() -> None:
         return
     preview(arm, TAG if MODE == "wip" else "final")
     if MODE == "final":
-        bake_clips(arm, CLIPS)
+        K.bake_clips(arm, CLIPS, scaled=("Pods",))
         bpy.context.scene.render.fps = FPS
         C.save_blend(OUT / "ravager_procedural.blend")
         C.export_glb(OUT / "ravager_draft.glb")

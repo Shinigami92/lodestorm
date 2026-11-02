@@ -229,8 +229,7 @@ def shell(name: str, parts: list, cutters: list = ()) -> bmesh.types.BMesh:
     bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=0.004)
     bmesh.ops.dissolve_degenerate(bm, dist=0.003, edges=bm.edges[:])
     bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(2.0), verts=bm.verts[:], edges=bm.edges[:])
-    bm.normal_update()
-    return bm
+    return C.canonical(bm)  # the boolean's order changes between runs for an open part (the carapace)
 
 
 # --- claw gouges --------------------------------------------------------------------------------------------
@@ -327,7 +326,7 @@ def merge(piece: Piece, src: bmesh.types.BMesh, slot: int, fresh: set = frozense
 def blob(piece: Piece, loc, r: float, scale=(1, 1, 1), rot=None, slot: int = RESIN, seg=10, rings=6, glow=0.0):
     """Smooth ellipsoid (resin, glands, flesh lumps)."""
     m = T(loc, rot, scale)
-    verts = bmesh.ops.create_uvsphere(piece.bm, u_segments=seg, v_segments=rings, radius=r, matrix=m)["verts"]
+    verts = C.uv_sphere(piece.bm, u_segments=seg, v_segments=rings, radius=r, matrix=m)["verts"]
     for f in {f for v in verts for f in v.link_faces}:
         f.material_index = slot
         f.smooth = True
@@ -672,7 +671,7 @@ def den_bones() -> bpy.types.Object:
     piece = Piece("Den_bones")
     # Carapace: a segmented dome shell, solidified, broken open at one end and cracked.
     bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=22, v_segments=12, radius=1.0)
+    C.uv_sphere(bm, u_segments=22, v_segments=12, radius=1.0)
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -0.25], context="VERTS")
     for v in bm.verts:
         band = ((v.co.x + 1.0) / 0.26) % 1.0

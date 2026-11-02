@@ -39,7 +39,7 @@ sys.path.insert(0, str(ROOT / "tools" / "blender"))
 
 import bmesh
 import bpy
-from mathutils import Matrix, Vector, noise
+from mathutils import Matrix, Vector
 
 import common as C
 from common import T, rx, ry, rz
@@ -294,11 +294,13 @@ def join(name: str, objs: list) -> bpy.types.Object:
     for o in objs:
         apply_modifiers(o)
         print(f"TRIS {name} / {o.name}: {sum(len(pl.vertices) - 2 for pl in o.data.polygons)}")
-    bpy.ops.object.select_all(action="DESELECT")
-    for o in objs:
-        o.select_set(True)
+    # One at a time, in order: joining all at once takes them in an order of Blender's (it changes between runs),
+    # so the vertex order (and with it the unwrap and the bake) would too.
     bpy.context.view_layer.objects.active = objs[0]
-    if len(objs) > 1:
+    for o in objs[1:]:
+        bpy.ops.object.select_all(action="DESELECT")
+        objs[0].select_set(True)
+        o.select_set(True)
         bpy.ops.object.join()
     obj = objs[0]
     obj.name = name
@@ -414,7 +416,7 @@ class Glass:
             self.bm, cap_ends=True, cap_tris=False, segments=seg, radius1=r0, radius2=r1, depth=d.length, matrix=m
         )["verts"]
         for v in verts:
-            v.co += noise.noise_vector(v.co * 3.0) * r0 * 0.15
+            v.co += C.noise_vector(v.co * 3.0) * r0 * 0.15
 
     def drip(self, top, length: float, r: float) -> None:
         """A drip hanging from `top`: a tapering run ending in a bead."""
@@ -423,7 +425,7 @@ class Glass:
             self.bm, cap_ends=True, cap_tris=False, segments=6, radius1=r * 0.45, radius2=r, depth=length,
             matrix=Matrix.Translation(top - Vector((0, 0, length / 2))),
         )  # fmt: skip
-        bmesh.ops.create_uvsphere(
+        C.uv_sphere(
             self.bm, u_segments=6, v_segments=4, radius=r * 0.75,
             matrix=T(top - Vector((0, 0, length)), None, (1, 1, 1.3)),
         )  # fmt: skip

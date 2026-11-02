@@ -494,7 +494,7 @@ def build_glands(glands: NB.Part, spots: list, rnd: random.Random) -> None:
         t = t_at_z(rnd.uniform(0.75, 1.5))
         spots.append((P(th, t) + N(th, t) * 0.03, rnd.uniform(0.05, 0.07)))
     for c, r in spots:
-        for v in bmesh.ops.create_uvsphere(glands.bm, u_segments=8, v_segments=5, radius=r, matrix=T(c))["verts"]:
+        for v in C.uv_sphere(glands.bm, u_segments=8, v_segments=5, radius=r, matrix=T(c))["verts"]:
             v[glands.glow] = 1.0
             for f in v.link_faces:
                 f.smooth = True

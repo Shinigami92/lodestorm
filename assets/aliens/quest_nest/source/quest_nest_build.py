@@ -352,7 +352,7 @@ def build_sacs(part: NB.Part) -> None:
             th, t = mid + dth, t_at_z(z)
             p, n = P(th, t), N(th, t)
             c = p - n * (r * 0.15)
-            verts = bmesh.ops.create_uvsphere(
+            verts = C.uv_sphere(
                 part.bm, u_segments=12, v_segments=7, radius=r, matrix=T(c, basis(n, Z), (0.85, 0.95, 0.8))
             )["verts"]
             for f in {f for v in verts for f in v.link_faces}:
@@ -442,7 +442,7 @@ def build_glands(nest, glands: list, rnd: random.Random) -> None:
         t = t_at_z(rnd.uniform(0.45, 0.7))
         glands.append((P(th, t) + N(th, t) * 0.03, rnd.uniform(0.05, 0.07)))
     for c, r in glands:
-        for v in bmesh.ops.create_uvsphere(part.bm, u_segments=8, v_segments=5, radius=r, matrix=T(c))["verts"]:
+        for v in C.uv_sphere(part.bm, u_segments=8, v_segments=5, radius=r, matrix=T(c))["verts"]:
             v[part.glow] = 1.0
     build_seams(part)
     for f in part.bm.faces:

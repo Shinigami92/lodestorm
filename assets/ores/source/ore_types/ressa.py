@@ -6,7 +6,7 @@ import random
 import bmesh
 from mathutils import Matrix, Vector
 
-from ore_geo import OreSpec, T, cut, finish_normals, polar, rand_unit, tilted
+from ore_geo import OreSpec, T, cut, finish_normals, polar, rand_unit, tilted, uv_sphere
 
 
 def ball(bm: bmesh.types.BMesh, center: Vector, r: float) -> None:
@@ -15,9 +15,9 @@ def ball(bm: bmesh.types.BMesh, center: Vector, r: float) -> None:
     if r < 0.045:
         bmesh.ops.create_icosphere(bm, subdivisions=1, radius=r, matrix=m)
     elif r < 0.14:
-        bmesh.ops.create_uvsphere(bm, u_segments=6, v_segments=4, radius=r, matrix=m)
+        uv_sphere(bm, u_segments=6, v_segments=4, radius=r, matrix=m)
     else:
-        bmesh.ops.create_uvsphere(bm, u_segments=7, v_segments=5, radius=r, matrix=m)
+        uv_sphere(bm, u_segments=7, v_segments=5, radius=r, matrix=m)
 
 
 def shape(rnd: random.Random, u: float) -> bmesh.types.BMesh:

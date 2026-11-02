@@ -228,7 +228,7 @@ class Growth:
                     zz = z + wave * r_max * w * math.cos((lobes - 1) * a + ph)
                 local = Vector((math.cos(a) * rr, math.sin(a) * rr, zz))
                 if wobble:
-                    local += noise.noise_vector(local * wfreq + c * 1.7) * wobble * r
+                    local += C.noise_vector(local * wfreq + c * 1.7) * wobble * r
                 ring.append(self.v(c + rot @ local, g, gl, p))
             rings.append((idx, ring))
         for (_, a), (_, b) in itertools.pairwise(rings):
@@ -271,7 +271,7 @@ class Growth:
         """Organic irregularity: shift verts by smooth 3D noise."""
         seed = Vector((self.rnd.uniform(0, 99), self.rnd.uniform(0, 99), self.rnd.uniform(0, 99)))
         for vert in verts:
-            vert.co += noise.noise_vector(vert.co * freq + seed) * amp
+            vert.co += C.noise_vector(vert.co * freq + seed) * amp
 
     def finish(self, parent, mat, location=(0, 0, 0)) -> bpy.types.Object:
         me = bpy.data.meshes.new(self.name)

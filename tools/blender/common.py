@@ -29,13 +29,14 @@ Also here: transform helpers (T, rx/ry/rz, basis, polar), Part (hard-surface mes
 contact_sheet(). Baking procedural materials into textures and exporting the game .glb: tools/blender/bake.py.
 """
 
+import itertools
 import math
 import pathlib
 import sys
 
 import bmesh
 import bpy
-from mathutils import Matrix, Vector
+from mathutils import Matrix, Vector, noise
 
 PLAYER_HEIGHT = 1.8
 ORE_NODE_RADIUS = 1.35  # deposit disc of the game's ore node; crystals sit within ~1.1 m
@@ -133,6 +134,73 @@ def basis(z_dir: Vector, x_hint: Vector) -> Matrix:
     return Matrix((x, y, z)).transposed()
 
 
+# Offsets of the three samples `noise_vector` takes, far apart so its axes don't follow each other.
+_NOISE_OFFSETS = (Vector((0.0, 0.0, 0.0)), Vector((31.416, -47.11, 12.73)), Vector((-23.57, 18.92, 61.04)))
+
+
+def noise_vector(co: Vector) -> Vector:
+    """Smooth 3D noise as a vector (each axis about -1..1), the same in every run: mathutils' own
+    noise.noise_vector changes from one Blender process to the next (even after noise.seed_set), so a build
+    using it never comes out the same twice. Three samples of the scalar noise.noise, which doesn't."""
+    co = Vector(co)
+    return Vector(tuple(noise.noise(co + offset) for offset in _NOISE_OFFSETS))
+
+
+def uv_sphere(bm, u_segments: int, v_segments: int, radius: float, matrix: Matrix | None = None) -> dict:
+    """A UV sphere into `bm`, like bmesh.ops.create_uvsphere (same arguments, returns {"verts": ...}: the poles on
+    its local Z, `u_segments` around, `v_segments` from pole to pole, triangles at the poles), but in the same order
+    in every run: create_uvsphere's faces come out in a different order in every Blender process, and with them
+    the unwrap and the bake."""
+    m = matrix if matrix is not None else Matrix.Identity(4)
+    top = bm.verts.new(m @ Vector((0.0, 0.0, radius)))
+    rings = []
+    for i in range(1, v_segments):
+        theta = math.pi * i / v_segments
+        z, rr = radius * math.cos(theta), radius * math.sin(theta)
+        rings.append(
+            [bm.verts.new(m @ Vector((rr * math.cos(phi), rr * math.sin(phi), z)))
+             for phi in (math.tau * j / u_segments for j in range(u_segments))]
+        )  # fmt: skip
+    bottom = bm.verts.new(m @ Vector((0.0, 0.0, -radius)))
+    u = u_segments
+    for j in range(u):
+        bm.faces.new((top, rings[0][j], rings[0][(j + 1) % u]))
+    for a, b in itertools.pairwise(rings):
+        for j in range(u):
+            bm.faces.new((a[j], b[j], b[(j + 1) % u], a[(j + 1) % u]))
+    for j in range(u):
+        bm.faces.new((bottom, rings[-1][(j + 1) % u], rings[-1][j]))
+    return {"verts": [top, *(v for ring in rings for v in ring), bottom]}
+
+
+def canonical(bm: bmesh.types.BMesh) -> bmesh.types.BMesh:
+    """`bm` rebuilt in a fixed order (its vertices by position, its faces by their vertices, each face starting at its
+    lowest vertex; materials and smoothing kept, other layers dropped) and freed: what a boolean returns comes out in
+    a different order from one run to the next for some input (an open mesh), and with it the unwrap and the bake."""
+    key = {v: tuple(round(c, 6) for c in v.co) for v in bm.verts}
+    order = sorted(bm.verts, key=key.__getitem__)
+    out = bmesh.new()
+    index = {}
+    for i, v in enumerate(order):
+        index[v] = i
+        out.verts.new(v.co)
+    out.verts.ensure_lookup_table()
+    faces = []
+    for f in bm.faces:
+        ids = [index[v] for v in f.verts]
+        start = ids.index(min(ids))
+        faces.append((ids[start:] + ids[:start], f.material_index, f.smooth))
+    for ids, mi, smooth in sorted(faces):
+        try:
+            nf = out.faces.new([out.verts[i] for i in ids])
+        except ValueError:  # a duplicate face
+            continue
+        nf.material_index, nf.smooth = mi, smooth
+    bm.free()
+    out.normal_update()
+    return out
+
+
 def polar(deg: float, r: float, z: float = 0.0) -> Vector:
     a = math.radians(deg)
     return Vector((math.cos(a) * r, math.sin(a) * r, z))
@@ -206,9 +274,7 @@ class Part:
         return self._tag(verts, mi)
 
     def sphere(self, loc, r, seg=12, rings=6, scale=(1, 1, 1), rot=None, mi=0):
-        verts = bmesh.ops.create_uvsphere(
-            self.bm, u_segments=seg, v_segments=rings, radius=r, matrix=T(loc, rot, scale)
-        )["verts"]
+        verts = uv_sphere(self.bm, u_segments=seg, v_segments=rings, radius=r, matrix=T(loc, rot, scale))["verts"]
         return self._tag(verts, mi)
 
     def ico(self, loc, r, scale=(1, 1, 1), rot=None, mi=0, sub=1):

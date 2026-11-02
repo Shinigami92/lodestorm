@@ -17,6 +17,7 @@ extends Node3D
 ## what the sites hold and the people waiting there (`quests`, a `LocationQuests`); each carries a
 ## `QuestMark` (a beam while its quest is tracked). People walk over the aliens' walkable area
 ## (`walkway`).
+## Beyond the rim the land goes on: a far ring of land in the biome's shapes (`LocationFarRing`).
 ## Everything the generator places is greybox; the values are TBD (playtest).
 ## The layout, the parts, the ground's shape and the hazard draw one after another from the seed
 ## itself; the ore fields, the nests and everything after them each draw from a random stream of
@@ -163,6 +164,7 @@ var _chunk_faces: Array[PackedVector3Array] = []
 ## Its plants and rocks.
 var _scatter := LocationScatter.new()
 var _cliffs := LocationCliffs.new()
+var _far_ring := LocationFarRing.new()
 var _planned: bool = false
 var _built: bool = false
 ## What the nests hatch here, once made (see `hatch_table`).
@@ -203,6 +205,7 @@ func plan() -> void:
 	_plan_ground()
 	_scatter.plan(_stream("scatter"), self)
 	_cliffs.plan(_stream("cliffs"), terrain, biome.cliff_dressing, _reachable, _camera_side)
+	_far_ring.plan(_stream("far_ring"), terrain, biome)
 	_planned = true
 
 
@@ -220,6 +223,7 @@ func build() -> void:
 	_hazards.build(self)
 	_scatter.build(self)
 	_cliffs.build(self)
+	_far_ring.build(self, biome)
 	parts.build(self, _crate_contents())
 	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()

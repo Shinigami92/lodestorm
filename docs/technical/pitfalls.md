@@ -45,6 +45,9 @@ Traps that cost time once, grouped by where they bite. The rules themselves are 
 - `instance uniform` values are shared by every material on one `GeometryInstance3D` (surface overrides and `material_overlay`) when the names match, and uniforms with *different* names share slots by index: the ship shell's floor took the accent strip's color as its tint. Give each material with an instance uniform its own `MeshInstance3D`.
 - Materials duplicated per instance with stencil on a skinned mesh caused "Parameter material is null" on free: change the shared imported materials in place.
 - The headless renderer doesn't compile shaders and doesn't store `MultiMesh` instance transforms: shader errors only show in a windowed run.
+- World-space particles (`local_coords` off) around a moving viewer only fill a new spot over their lifetime, so after walking or a jump (a respawn, a probe's teleport) the field looks nearly empty; long-lived weather particles wrap into a box around the viewer in their draw shader instead (`weather_particle.gdshader`).
+- `StandardMaterial3D`'s `BILLBOARD_FIXED_Y` keeps the world's up, not the particle's aligned Y axis: streaks along a velocity need their own vertex code.
+- In shaders, `flat` is a keyword (an interpolation qualifier): it can't name a variable.
 
 ## Navigation and the world
 

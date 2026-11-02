@@ -13,6 +13,33 @@
 [ext_resource type="Script" uid="uid://q4gbpcgk3rnp" path="res://game/mission/voyage.gd" id="11_voyage"]
 [ext_resource type="Resource" uid="uid://i1xt4ygx67x3" path="res://game/mission/voyage_settings.tres" id="12_voyage_settings"]
 
+[ext_resource type="Script" uid="uid://b4plejl870u0w" path="res://game/locations/weather_particles.gd" id="13_weather_particles"]
+[sub_resource type="Resource" id="StormParticles_streaks"]
+script = ExtResource("13_weather_particles")
+motion = 1
+amount = 900
+color = Color(0.72, 0.52, 0.38, 0.5)
+size = Vector2(0.3, 0.9)
+lifetime = 2.0
+speed = 10.0
+wind = 6.0
+stretch = 8.0
+reach = 28.0
+heights = Vector2(0, 6)
+
+[sub_resource type="Resource" id="StormParticles_grit"]
+script = ExtResource("13_weather_particles")
+motion = 1
+amount = 400
+color = Color(0.66, 0.48, 0.36, 0.45)
+size = Vector2(0.05, 0.12)
+lifetime = 2.0
+speed = 12.0
+wind = 4.0
+stretch = 3.0
+reach = 28.0
+heights = Vector2(0, 14)
+
 [sub_resource type="Environment" id="Environment_map"]
 background_mode = 1
 background_color = Color(0.1, 0.095, 0.1, 1)
@@ -75,6 +102,7 @@ voyage = NodePath("../Voyage")
 environment = NodePath("../WorldEnvironment")
 sun = NodePath("../Sun")
 viewer = NodePath("../Player")
+storm_particles = Array[ExtResource("13_weather_particles")]([SubResource("StormParticles_streaks"), SubResource("StormParticles_grit")])
 
 [node name="StatsRecorder" type="Node" parent="." node_paths=PackedStringArray("player", "ship", "mission", "voyage")]
 script = ExtResource("10_stats")

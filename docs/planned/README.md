@@ -10,7 +10,7 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 |---|---|---|
 | [`player-display.md`](player-display.md) | what's left of the suit ring: the quest's pointer, the player color, VR | M4 (step 16), M6, M7 |
 | [`menu-pause.md`](menu-pause.md) | what's left of the title view and the pause panel: co-op sessions, the Steam overlay, more settings, VR | M6, M7, M8 |
-| [`biomes.md`](biomes.md) | around the biomes' geography: weather, a generic part per biome, the biomes' assets | M5 |
+| [`biomes.md`](biomes.md) | around the biomes' geography: a generic part per biome, the biomes' assets | M5 |
 | [`aliens.md`](aliens.md) | the Ravager guarding rich sites, more guards and raiders, co-op scaling, the effects | M4 (steps 14, 16), M5, M7 |
 | [`sfx.md`](sfx.md) | recordings where synthesis isn't enough, the menus' and the death's sounds later, the sounds still to come | M5 |
 | [`weapons.md`](weapons.md) | blueprints from the quests and their order, a third slot, projectiles, co-op and VR | M4 (step 16), M5, M6, M7 |
@@ -29,7 +29,7 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 | [`voice.md`](voice.md) | the rest of the cast, the radio later, Fenna's voice, strained anchors | M5, M7 |
 | [`ship-exterior.md`](ship-exterior.md) | the ship's outside: detail and textures, effects | M5 |
 | [`ship-interior.md`](ship-interior.md) | what's left inside the ship: the specimen lab's tanks, room beside the holo table, reserved spaces, wall bays, key objects, ceilings | M5 |
-| [`art.md`](art.md) | each body's light, how dark, the storm's light, four player colors with numbers | M5, M7 |
-| [`vr-view.md`](vr-view.md) | the VR head on the desktop camera's line, the haze, the sky per body, the land beyond the map | M5 (sky, far ring), M6 |
+| [`art.md`](art.md) | the outside light through the ship's windows, a region's mood, four player colors with numbers | M5, M7 |
+| [`vr-view.md`](vr-view.md) | the VR head on the desktop camera's line, the haze around the character, what only VR sees | M6 |
 | [`coop-revive.md`](coop-revive.md) | going down before dying in co-op, reviving by standing close, respawning after 30 s | M7 |
 | [`stats.md`](stats.md) | the statistics' live `/metrics` endpoint for Prometheus, the statistics station aboard | M4 (alongside), M8 |

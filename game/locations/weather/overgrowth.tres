@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="BiomeWeather" format=3 uid="uid://4qoxs07kb1q8"]
+
+[ext_resource type="Script" uid="uid://cvyp27lcpdife" path="res://game/locations/biome_weather.gd" id="1_weather"]
+[ext_resource type="Script" uid="uid://b4plejl870u0w" path="res://game/locations/weather_particles.gd" id="2_particles"]
+
+[sub_resource type="Resource" id="Particles_overgrowth_0"]
+script = ExtResource("2_particles")
+motion = 2
+amount = 300
+color = Color(0.6, 0.75, 0.5, 0.6)
+glow = 0.6
+size = Vector2(0.08, 0.14)
+lifetime = 10.0
+speed = 0.25
+wind = 0.4
+heights = Vector2(0.3, 6.0)
+
+[sub_resource type="Resource" id="Particles_overgrowth_1"]
+script = ExtResource("2_particles")
+motion = 4
+amount = 40
+color = Color(0.5, 0.57, 0.52, 0.18)
+size = Vector2(6.0, 12.0)
+lifetime = 14.0
+speed = 0.0
+wind = 0.3
+reach = 30.0
+heights = Vector2(-0.6, 0.4)
+
+[resource]
+script = ExtResource("1_weather")
+haze_color = Color(0.19, 0.23, 0.19, 1)
+haze = 0.8
+mist_height = -0.5
+mist_density = 0.35
+ambient_tint = Color(0.9, 1.0, 0.92, 1)
+cloud_color = Color(0.13, 0.15, 0.13, 1)
+cloud_cover = 0.55
+wind_bearing = 20.0
+particles = Array[ExtResource("2_particles")]([SubResource("Particles_overgrowth_0"), SubResource("Particles_overgrowth_1")])

@@ -47,6 +47,20 @@ func test_storm_rages_when_time_is_up() -> void:
 	assert_lt(sun.light_energy, calm_sun)
 
 
+## In the warning the sun dims in steps (`Weather.sun_steps`) down to `warning_sun`, then to
+## `storm_sun` in the storm.
+func test_sun_dims_in_steps() -> void:
+	_mission.state = Mission.State.RUNNING
+	# 30 % into the warning: two of four steps down.
+	_mission.time_left = _mission.warning_time() * 0.7
+	await wait_seconds(Weather.STEP_TIME * 2.0 + 1.0)
+	var second: float = lerpf(1.0, _weather.warning_sun, 2.0 / _weather.sun_steps)
+	assert_almost_eq(_weather.sun_share, second, 0.01, "two steps down")
+	_mission.state = Mission.State.STORM
+	await wait_seconds(Weather.RISE_TIME + 0.3)
+	assert_almost_eq(_weather.sun_share, _weather.storm_sun, 0.01, "the storm's light")
+
+
 func test_no_haze_inside_ship() -> void:
 	var player: Player = _map.get_node("Player")
 	var ship: Ship = _map.get_node("Ship")

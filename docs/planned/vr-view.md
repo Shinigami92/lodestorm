@@ -1,6 +1,6 @@
 # The VR view (planned)
 
-Decided 2026-10-17, built with the VR rig (M6, see [`PLAN.md`](../PLAN.md)); the sky and the far ring with the art pass (M5). All values **TBD (playtest)**. Earlier the plan was a "tabletop diorama" (the world as a model on a table in front of the player); instead, the player's head floats where the desktop camera is, but can turn and tilt, so it sees more than the desktop's frame, even the sky. Today the desktop camera never turns (yaw 45°, pitch about 35°, 40 m away with a 30° field of view, about 21 m of height on screen), and the ground and the ship are built for it (see [Perspective & art direction](../design/art.md)).
+Decided 2026-10-17, built with the VR rig (M6, see [`PLAN.md`](../PLAN.md)); the sky and the far ring are built (M5's art pass, see [Light and weather outside](../design/art.md#light-and-weather-outside) and Beyond the map in [Locations](../design/locations.md)). All values **TBD (playtest)**. Earlier the plan was a "tabletop diorama" (the world as a model on a table in front of the player); instead, the player's head floats where the desktop camera is, but can turn and tilt, so it sees more than the desktop's frame, even the sky. Today the desktop camera never turns (yaw 45°, pitch about 35°, 40 m away with a 30° field of view, about 21 m of height on screen), and the ground and the ship are built for it (see [Perspective & art direction](../design/art.md)).
 
 ## The viewpoint
 
@@ -10,8 +10,6 @@ Decided 2026-10-17, built with the VR rig (M6, see [`PLAN.md`](../PLAN.md)); the
 
 ## What only VR sees
 
-- **The sky,** per body: the star Kesh small and pale on the outer planets, bigger and harsher inwards, its flares as glare on the inner planets; on a moon its planet large in the sky (Gaulm fills much of it above Orrel and Iska), the other planets as bright points; the biome's weather overhead (clouds, ash, snow, see [`biomes.md`](biomes.md)); the storm as a towering wall of reddish-brown cloud on one side during the warning, closing over the sky when it hits; in space, stars all around, the planet below, the station when docked. One sky shader with these layers, cheap enough for VR. The desktop sees it only indirectly (reflections, light, the ship's windows).
-- **Beyond the map:** past the location's rim the land goes on, a far ring of low-detail terrain in the biome's shapes and colors (mesas, ice, ash ridges) fading into the haze; no visible edge, no void. The generator builds it as one cheap mesh around the location.
 - **Below and behind:** the camera-side rock (the low terraces) needs a top that looks finished from above (rock tops, low plants, scree); it mostly has that.
 - **Aboard:** the same cut-away ship; looking up from aboard shows the sky (or space) above the open roof; the cut edges get a clean cap (a dark trim), so the dollhouse look reads as intended.
 - **Flights:** the flight's effects surround the viewpoint, not just a frame: stars streaking past on all sides, clouds rushing up around, the touchdown's dust; no shake.

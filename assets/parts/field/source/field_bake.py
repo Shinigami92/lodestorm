@@ -25,31 +25,17 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "tmp" / "assets" / "parts" / "field"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 import bmesh
 import bpy
+import field_build as build  # the kit's pieces and layout (importing it doesn't run the build)
 from mathutils import Vector
 
 import bake as B
 import common as C
 
 ASSET = "Field"
-PARTS = [
-    "Crate_base",
-    "Crate_lid",
-    "Crate_strip",
-    "Crate_small",
-    "Crate_stack",
-    "Barrel_a",
-    "Barrel_b",
-    "Tarp_stack",
-    "Beacon_pole",
-    "Beacon_lens",
-    "Work_light",
-    "Cable_spool",
-    "Stake",
-    "Repeller_post",
-]
 EMIT = 6.0  # as in field_build.py
 LENS_Z = 3.105
 LID_AT = (0.0, -0.4, 0.6)
@@ -147,7 +133,7 @@ def unwrap(job: B.Job, objs: list) -> None:
 
 def ground(job: B.Job) -> list:
     """A dark ground plane under the row, so the AO darkens the pieces' feet."""
-    xs = [bpy.data.objects[n].location.x for n in PARTS]
+    xs = [bpy.data.objects[n].location.x for n in build.PARTS]
     span = max(xs) - min(xs) + 6.0
     return [B.bake_plane("BakeGround", ((max(xs) + min(xs)) / 2, 0, 0), scale=(span, 8.0, 1.0))]
 
@@ -165,7 +151,7 @@ JOB = B.Job(
     glb=ROOT / "assets" / "parts" / "field" / "field.glb",
     blend=ROOT / "assets" / "parts" / "field" / "source" / "field.blend",
     game=OUT / "game",
-    atlas=PARTS,
+    atlas=build.PARTS,
     material="Field",
     size=2048,
     shrink=hidden_scale,
@@ -197,7 +183,6 @@ LAYOUT = {
     "Barrel_b": (0.8, -0.6, 0),
     "Stake": (2.2, -0.6, 0),
 }
-GROUND = ((0.05, 0.047, 0.043), (0.09, 0.085, 0.078))
 
 
 def put(obj: bpy.types.Object, loc, rot_x: float = 0.0, rot_z: float = 0.0) -> None:
@@ -239,15 +224,15 @@ def render_closeup(job: B.Job, names: list, parts: list, tag: str) -> pathlib.Pa
 
 
 def checks(job: B.Job, parts: list) -> None:
-    assert sorted(o.name for o in parts) == sorted(PARTS), [o.name for o in parts]
+    assert sorted(o.name for o in parts) == sorted(build.PARTS), [o.name for o in parts]
     C.preview_scene(crystals=False)
     for obj in list(C.collection("Preview").objects):
         if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
             bpy.data.objects.remove(obj)
     for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
         if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*GROUND[0], 1.0)
-            node.inputs[7].default_value = (*GROUND[1], 1.0)
+            node.inputs[6].default_value = (*build.GROUND[0], 1.0)
+            node.inputs[7].default_value = (*build.GROUND[1], 1.0)
     assemble(lid_open=False)
     fig = bpy.data.objects["PreviewFigure"]
     fig.location = (4.0, -0.6, 0)
@@ -272,4 +257,5 @@ def checks(job: B.Job, parts: list) -> None:
     C.contact_sheet(sheet, job.game / "check_sheet.png", cols=4, tile=384, background=0.02)
 
 
-B.run(JOB, checks)
+if __name__ == "__main__":
+    B.run(JOB, checks)

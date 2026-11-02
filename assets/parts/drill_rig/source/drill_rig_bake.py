@@ -27,6 +27,7 @@ import bpy
 import drill_rig_build as RB
 
 import bake as B
+import colony_part as P
 import common as C
 
 BURIED_Z = -0.12  # a face whose corners all lie below this is never seen
@@ -75,12 +76,12 @@ def checks(job: B.Job, meshes: list) -> None:
     assert sorted(o.name for o in meshes) == sorted(RB.PIECES), [o.name for o in meshes]
     for o in meshes:
         o.rotation_mode = "XYZ"  # the glTF importer sets quaternions
-    RB.setup_preview()
+    P.setup_preview(RB.KIT)
     paths = []
     for name in RB.PIECES:
-        paths += RB.render_piece(name, "game/check_", ("iso", "hero"), 48, 768)
-    paths.append(RB.render_layout(job.game / "check_layout_a.png", "a", 64, 1024))
-    paths.append(RB.render_layout(job.game / "check_layout_b.png", "b", 64, 1024))
+        paths += P.render_piece(RB.KIT, name, "game/check_", ("iso", "hero"), 48, 768)
+    paths.append(P.render_layout(RB.KIT, job.game / "check_layout_a.png", "a", 64, 1024))
+    paths.append(P.render_layout(RB.KIT, job.game / "check_layout_b.png", "b", 64, 1024))
     C.contact_sheet(paths, job.game / "sheet.png", cols=4, tile=512, background=0.02)
 
 

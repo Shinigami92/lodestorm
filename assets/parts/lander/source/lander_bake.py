@@ -26,6 +26,7 @@ import bpy
 import lander_build as LB
 
 import bake as B
+import colony_part as P
 import common as C
 
 BURIED_Z = -0.12  # a face whose corners all lie below this is never seen
@@ -73,12 +74,12 @@ def checks(job: B.Job, meshes: list) -> None:
     assert sorted(o.name for o in meshes) == sorted(LB.PIECES), [o.name for o in meshes]
     for o in meshes:
         o.rotation_mode = "XYZ"  # the glTF importer sets quaternions
-    LB.setup_preview()
+    P.setup_preview(LB.KIT)
     paths = []
     for name in LB.PIECES:
-        paths += LB.render_piece(name, "game/check_", ("iso", "hero"), 48, 768)
-    paths.append(LB.render_layout(job.game / "check_layout_a.png", "a", 64, 1024))
-    paths.append(LB.render_layout(job.game / "check_layout_b.png", "b", 64, 1024))
+        paths += P.render_piece(LB.KIT, name, "game/check_", ("iso", "hero"), 48, 768)
+    paths.append(P.render_layout(LB.KIT, job.game / "check_layout_a.png", "a", 64, 1024))
+    paths.append(P.render_layout(LB.KIT, job.game / "check_layout_b.png", "b", 64, 1024))
     C.contact_sheet(paths, job.game / "sheet.png", cols=4, tile=512, background=0.02)
 
 

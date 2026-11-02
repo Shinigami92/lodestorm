@@ -6,8 +6,9 @@ extends Node3D
 ## until it's done, no way is found. It lives on its own navigation map, so it never joins a
 ## location's (the aliens') or another map's. It follows its parent when that moves (a station
 ## gliding in while the ship docks). Doors have no collision and stay open in it; a closed ramp or
-## lift gate does too, it's a wall like any other; the ramp door's alien barrier
-## (`PhysicsLayers.ALIENS_ONLY`) isn't. Only the decks' `floors` are kept, not the tops
+## lift gate does too, it's a wall like any other; what doesn't stop walking isn't (`NOT_WALLS`: the
+## ramp door's alien barrier, the shooting range's shot barrier). Only the decks' `floors` are kept,
+## not the tops
 ## of tables and counters. Decks aren't joined (walking between them needs the lift, see
 ## `NpcWalker`).
 
@@ -23,6 +24,8 @@ const FLOOR_TOLERANCE: float = 0.4
 ## game/ship/hull_layout.py: LOW, UP), in ship space.
 const SHIP_BAKE_BOX := AABB(Vector3(-100.0, 1.0, -15.0), Vector3(115.0, 9.0, 30.0))
 const SHIP_FLOORS: Array[float] = [2.5, 7.0]
+## The physics layers people walk through (left out of the bake).
+const NOT_WALLS: int = PhysicsLayers.ALIENS_ONLY | PhysicsLayers.SHOTS_ONLY
 
 ## The part of the parent that's baked, in its space (set before the first `bake`).
 var bake_box: AABB = SHIP_BAKE_BOX
@@ -78,7 +81,7 @@ func bake() -> void:
 	_mesh.agent_max_climb = 0.3
 	_mesh.agent_max_slope = 30.0
 	_mesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
-	_mesh.geometry_collision_mask = 0xFFFFFFFF & ~PhysicsLayers.ALIENS_ONLY
+	_mesh.geometry_collision_mask = 0xFFFFFFFF & ~NOT_WALLS
 	_mesh.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_ROOT_NODE_CHILDREN
 	_mesh.filter_baking_aabb = bake_box
 	var source := NavigationMeshSourceGeometryData3D.new()

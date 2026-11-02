@@ -47,6 +47,19 @@ func test_walls_and_stations_are_kept_clear() -> void:
 	assert_almost_eq(top.y, table.y + 0.2, 0.15, "on the floor, never on the table's top")
 
 
+func test_through_the_shooting_ranges_shot_barrier() -> void:
+	var navigation: DeckNavigation = _ship.navigation
+	navigation.bake()
+	await _baked(navigation)
+	var range_stop: Vector3 = (_ship.get_node("Tour/ShootingRange") as Node3D).global_position
+	var weapons: Vector3 = (_ship.get_node("Tour/Weapons") as Node3D).global_position
+	var path: PackedVector3Array = navigation.find_path(range_stop, weapons)
+	assert_gt(path.size(), 1, "out of the range")
+	assert_lt(path[-1].distance_to(weapons), 0.3, "all the way to the weapons room")
+	var doorway: Vector3 = _ship.to_global(Vector3(-49.5, 2.5, -2.75))
+	assert_lt(_distance_to(path, doorway), 0.75, "through the range's door (it only stops shots)")
+
+
 func _baked(navigation: DeckNavigation) -> void:
 	for i: int in 300:
 		if navigation.is_baked():

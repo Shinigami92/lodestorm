@@ -176,7 +176,8 @@ Alongside, any time:
   - [x] a very short noise at a hand-in at Kade: three of his German lines starting with a number came out of the voice model as 0.16 s of noise (re-rendered; a test checks every recording's length against its text)
   - [ ] the course set at the quest board for Wren's suit with 2 of 3 pieces sent the ship to Ostra (not reproduced from the code, the holo table wasn't used; watch for it)
   - [ ] Brannik repeats in his topics what he said over the radio out there ("Ammo" and "Spare magazines" say again what the miner hint and the last-spares call said)
-  - [ ] Brannik's tour: talking to him during it can start the armory talk; leaving the shooting range he walks through the wall
+  - [x] Brannik's tour: talking to him during it started his armory greeting (it waits for afterwards now); leaving the shooting range he walked through the wall (the range's shot barrier was a wall in the crew's navigation)
+  - [x] Tamsin's jacket stuck out in front of her belly while she walked (its open front panels pulled in, `Fit.tuck`)
   - [ ] the weapons room upgrades only to the first MK level until Dace joins, the higher ones locked until then
   - [ ] walking at the NPCs' pace with the keyboard (to walk along with them)
   - [ ] the ramp's sound going down

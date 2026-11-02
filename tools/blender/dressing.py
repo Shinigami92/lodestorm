@@ -61,6 +61,7 @@ class Fit:
     center_cuffs: float = 0.0  # this far up the forearm the outfit moves so its cut sleeve is around the wrist
     taper_cuffs: float = 0.0  # this far up the forearm the cut sleeve (or bare forearm) narrows onto the wrist
     dents: tuple = ()  # dents the generator left ((x, y, z) behind or in front of one, its radius), as loaded: closed
+    tuck: tuple = ()  # the front pulled in (from, to above the hips' joint, gap kept off the body, share kept beyond)
     bare_arms: bool = True  # generated skin left on the arms and the neck: moved to the body's tone
     own_head: bool = False  # the generated head stays (face, hair, beard; on the Head bone), the body's goes
     forearm_tone: bool = False  # own head: the hands take the bare forearms' tone (not the face's: a cap's shade)
@@ -232,6 +233,8 @@ def dress(arm: bpy.types.Object, parts: dict, m: dict, person: Person) -> None:
     fit_arms(outfit, arm, directions, fit)
     body = P.posed_vertices(skin)
     body_w = P.weight_matrix(skin, names)
+    if fit.tuck:
+        tuck_front(outfit, body, np.array(arm.pose.bones["Hips"].head), fit)
     hands = beyond_wrists(arm, directions, fit)
     rgba = G.image_pixels(G.base_color_image(outfit.data.materials[0]))
     dark = G.face_values(outfit.data, rgba[..., :3].mean(2)) < fit.glove_dark
@@ -299,6 +302,32 @@ def fit_arms(outfit: bpy.types.Object, arm: bpy.types.Object, directions: dict, 
         co[moved] -= ((along[moved] - fit.arm_root) * (1 - k))[:, None] * d
         print("ARM", side, "fingertips", round(tip, 3), "->", round(body, 3), "m from the shoulder")
     G.set_vertices(outfit.data, co)
+
+
+def tuck_front(outfit: bpy.types.Object, body: np.ndarray, hips: np.ndarray, fit: Fit) -> None:
+    """Pulls the outfit's front in towards the body between two heights (`fit.tuck`): an open jacket's panels the
+    generator hung far in front of the belly look like one. Where the outfit stands farther in front of the body
+    (the front-most body point around it) than the gap kept, only a share of the rest stays, fading out towards the
+    band's top (the chest stays as it is). The body faces -y."""
+    low, high, gap, share = fit.tuck
+    co = G.vertices(outfit.data)
+    cell = 0.02
+    front: dict = {}  # per cell across x and z: the body's front-most y
+    for x, y, z in body:
+        key = (round(x / cell), round(z / cell))
+        front[key] = min(front.get(key, y), y)
+    h = co[:, 2] - hips[2]
+    fade = 1 - G.smoothstep(high - (high - low) * 0.25, high, h)
+    moved = 0
+    for i in np.nonzero((h >= low) & (h <= high) & (co[:, 1] < hips[1]) & (np.abs(co[:, 0]) < fit.arms_from))[0]:
+        kx, kz = round(co[i, 0] / cell), round(co[i, 2] / cell)
+        near = [front[k] for k in ((kx + a, kz + b) for a in (-1, 0, 1) for b in (-1, 0, 1)) if k in front]
+        beyond = (min(near) - gap - co[i, 1]) if near else 0.0
+        if beyond > 0:
+            co[i, 1] += beyond * (1 - share) * fade[i]
+            moved += 1
+    G.set_vertices(outfit.data, co)
+    print("TUCK", moved, "vertices pulled in")
 
 
 def beyond_wrists(arm: bpy.types.Object, directions: dict, fit: Fit):

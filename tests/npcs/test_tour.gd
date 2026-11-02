@@ -99,6 +99,8 @@ func test_talking_during_the_tour_offers_going_on_or_ending_it() -> void:
 	_player.global_position = _brannik.global_position + Vector3(0.0, 0.1, 1.0)
 	_player.reset_physics_interpolation()
 	_brannik.open(_player)
+	assert_null(_brannik.talk.topic, "his armory greeting (not heard yet) waits for afterwards")
+	assert_false(_brannik.has_news(_player), "no marker for it either")
 	assert_eq(_brannik.get_choices(), [tour.resume, tour.abort] as Array[Topic])
 	assert_false(_brannik.body.is_walking(), "stands while they talk")
 	_brannik.talk.talk_about(tour.resume)

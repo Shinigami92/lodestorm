@@ -253,9 +253,12 @@ func is_new(listed: Topic, listener: Player = null) -> bool:
 
 
 ## Whether they have something nobody has heard yet for `listener` (the greeting or an open
-## topic; the player talking to them when null).
+## topic; the player talking to them when null); not during their tour (going on with it or ending
+## it is no news).
 func has_news(listener: Player = null) -> bool:
 	if not profile or not profile.dialogue or (waits_to_join and not _talks_here()):
+		return false
+	if routine and routine.tour:
 		return false
 	var greeting: Topic = get_greeting()
 	if greeting and is_new(greeting):

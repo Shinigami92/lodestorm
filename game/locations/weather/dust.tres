@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="BiomeWeather" format=3 uid="uid://7y04vdf1hv73"]
+
+[ext_resource type="Script" uid="uid://cvyp27lcpdife" path="res://game/locations/biome_weather.gd" id="1_weather"]
+[ext_resource type="Script" uid="uid://b4plejl870u0w" path="res://game/locations/weather_particles.gd" id="2_particles"]
+
+[sub_resource type="Resource" id="Particles_dust_0"]
+script = ExtResource("2_particles")
+motion = 1
+amount = 800
+color = Color(0.82, 0.66, 0.48, 0.45)
+size = Vector2(0.5, 1.2)
+lifetime = 3.0
+speed = 4.0
+wind = 3.0
+stretch = 6.0
+reach = 26.0
+heights = Vector2(0.0, 1.5)
+
+[sub_resource type="Resource" id="Particles_dust_1"]
+script = ExtResource("2_particles")
+motion = 2
+amount = 220
+color = Color(0.8, 0.66, 0.5, 0.45)
+size = Vector2(0.07, 0.12)
+lifetime = 8.0
+speed = 0.3
+wind = 1.5
+heights = Vector2(0.0, 8.0)
+
+[resource]
+script = ExtResource("1_weather")
+haze_color = Color(0.33, 0.25, 0.19, 1)
+haze = 0.75
+ambient_tint = Color(1.1, 0.96, 0.82, 1)
+cloud_color = Color(0.2, 0.155, 0.12, 1)
+cloud_cover = 0.3
+wind_bearing = 60.0
+particles = Array[ExtResource("2_particles")]([SubResource("Particles_dust_0"), SubResource("Particles_dust_1")])

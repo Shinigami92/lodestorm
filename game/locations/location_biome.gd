@@ -182,6 +182,11 @@ enum Hazard {
 ## How much loose scree lies at the foot of cliffs and slopes and in patches (0: none, 1: a lot).
 @export_range(0.0, 1.0) var scree: float = 0.5
 
+@export_group("Weather")
+## Its weather on top of the body's light: haze, mist, tint, the sky overhead, particles (null:
+## clear, no particles).
+@export var weather: BiomeWeather
+
 @export_group("Scatter")
 @export var scatter: Array[ScatterType] = []
 ## Rock chunks set against the cliffs' feet along the open ground (`LocationCliffs`), a variant

@@ -37,6 +37,9 @@ const MK_ABOVE_TIER: int = 2
 ## Its own rare ores (usually one), found in all its regions and nowhere else. A moon has its own
 ## or none.
 @export var signature_ores: Array[OreType] = []
+## Its light and sky outside (the sun, the ambient light, the star and a moon's planet in the
+## sky); null: the weather's default (see `Weather`).
+@export var light: BodyLight
 ## A station's map (a `SpaceStation` scene), docked at instead of landing; null: no docking yet.
 @export var map: PackedScene
 

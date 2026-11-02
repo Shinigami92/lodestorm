@@ -23,6 +23,145 @@
 [ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
+[ext_resource type="Script" uid="uid://dbfvitictt5c5" path="res://game/world/body_light.gd" id="7_light"]
+
+[sub_resource type="Resource" id="Light_torvane"]
+script = ExtResource("7_light")
+sun_color = Color(0.92, 0.93, 1.0, 1)
+sun_energy = 1.14
+sun_elevation = 26.0
+shadow_softness = 2.5
+ambient_color = Color(0.4, 0.45, 0.6, 1)
+ambient_energy = 0.5
+zenith_color = Color(0.025, 0.03, 0.055, 1)
+horizon_color = Color(0.12, 0.12, 0.15, 1)
+star_size = 0.6
+star_color = Color(0.82, 0.88, 1.0, 1)
+star_glare = 0.0
+
+[sub_resource type="Resource" id="Light_lisk"]
+script = ExtResource("7_light")
+sun_color = Color(0.92, 0.93, 1.0, 1)
+sun_energy = 1.2
+sun_elevation = 24.0
+shadow_softness = 2.5
+ambient_color = Color(0.4, 0.45, 0.6, 1)
+ambient_energy = 0.5
+zenith_color = Color(0.02, 0.025, 0.045, 1)
+horizon_color = Color(0.1, 0.11, 0.14, 1)
+star_size = 0.6
+star_color = Color(0.82, 0.88, 1.0, 1)
+star_glare = 0.0
+planet_size = 24.0
+planet_bearing = 140.0
+planet_elevation = 26.0
+
+[sub_resource type="Resource" id="Light_vehra"]
+script = ExtResource("7_light")
+sun_color = Color(0.9, 0.93, 1.0, 1)
+sun_energy = 1.07
+sun_elevation = 31.0
+shadow_softness = 2.0
+ambient_color = Color(0.42, 0.46, 0.58, 1)
+ambient_energy = 0.5
+zenith_color = Color(0.03, 0.035, 0.06, 1)
+horizon_color = Color(0.13, 0.13, 0.16, 1)
+star_size = 0.8
+star_color = Color(0.88, 0.92, 1.0, 1)
+star_glare = 0.0
+
+[sub_resource type="Resource" id="Light_cassor"]
+script = ExtResource("7_light")
+sun_color = Color(0.92, 0.93, 0.98, 1)
+sun_energy = 1.03
+sun_elevation = 37.0
+shadow_softness = 1.5
+ambient_color = Color(0.44, 0.46, 0.54, 1)
+ambient_energy = 0.5
+zenith_color = Color(0.035, 0.038, 0.06, 1)
+horizon_color = Color(0.15, 0.145, 0.16, 1)
+star_size = 1.1
+star_color = Color(0.95, 0.95, 0.97, 1)
+star_glare = 0.15
+
+[sub_resource type="Resource" id="Light_mirr"]
+script = ExtResource("7_light")
+sun_color = Color(0.92, 0.93, 0.98, 1)
+sun_energy = 1.07
+sun_elevation = 34.0
+shadow_softness = 1.5
+ambient_color = Color(0.44, 0.46, 0.54, 1)
+ambient_energy = 0.5
+zenith_color = Color(0.03, 0.032, 0.05, 1)
+horizon_color = Color(0.13, 0.13, 0.15, 1)
+star_size = 1.1
+star_color = Color(0.95, 0.95, 0.97, 1)
+star_glare = 0.15
+planet_size = 20.0
+planet_bearing = -130.0
+planet_elevation = 32.0
+
+[sub_resource type="Resource" id="Light_orrel"]
+script = ExtResource("7_light")
+sun_color = Color(0.97, 0.96, 0.94, 1)
+sun_energy = 0.98
+sun_elevation = 44.0
+shadow_softness = 1.2
+ambient_color = Color(0.46, 0.46, 0.5, 1)
+ambient_energy = 0.52
+zenith_color = Color(0.04, 0.04, 0.055, 1)
+horizon_color = Color(0.16, 0.15, 0.15, 1)
+star_size = 1.5
+star_color = Color(1.0, 0.98, 0.94, 1)
+star_glare = 0.3
+planet_size = 64.0
+planet_bearing = 160.0
+planet_elevation = 40.0
+
+[sub_resource type="Resource" id="Light_iska"]
+script = ExtResource("7_light")
+sun_color = Color(0.97, 0.96, 0.94, 1)
+sun_energy = 1.02
+sun_elevation = 42.0
+shadow_softness = 1.2
+ambient_color = Color(0.46, 0.46, 0.5, 1)
+ambient_energy = 0.52
+zenith_color = Color(0.04, 0.04, 0.055, 1)
+horizon_color = Color(0.16, 0.15, 0.15, 1)
+star_size = 1.5
+star_color = Color(1.0, 0.98, 0.94, 1)
+star_glare = 0.3
+planet_size = 50.0
+planet_bearing = -115.0
+planet_elevation = 34.0
+
+[sub_resource type="Resource" id="Light_skelde"]
+script = ExtResource("7_light")
+sun_color = Color(1.0, 0.97, 0.92, 1)
+sun_energy = 0.97
+sun_elevation = 56.0
+shadow_softness = 0.8
+ambient_color = Color(0.5, 0.47, 0.46, 1)
+ambient_energy = 0.55
+zenith_color = Color(0.06, 0.055, 0.06, 1)
+horizon_color = Color(0.2, 0.18, 0.17, 1)
+star_size = 2.4
+star_color = Color(1.0, 0.97, 0.9, 1)
+star_glare = 0.65
+
+[sub_resource type="Resource" id="Light_zairen"]
+script = ExtResource("7_light")
+sun_color = Color(1.0, 0.99, 0.97, 1)
+sun_energy = 1.0
+sun_elevation = 64.0
+shadow_softness = 0.5
+ambient_color = Color(0.5, 0.5, 0.5, 1)
+ambient_energy = 0.55
+zenith_color = Color(0.07, 0.07, 0.075, 1)
+horizon_color = Color(0.22, 0.21, 0.2, 1)
+star_size = 3.2
+star_color = Color(1.0, 0.99, 0.96, 1)
+star_glare = 0.9
 
 [sub_resource type="Resource" id="SetPiece_redscar"]
 script = ExtResource("part_placement")
@@ -70,6 +209,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_cinder"
 [sub_resource type="Resource" id="Body_torvane"]
 script = ExtResource("2_body")
 id = &"torvane"
+light = SubResource("Light_torvane")
 display_name = "Torvane"
 color = Color(0.75, 0.5, 0.35, 1)
 orbit_angle = 200.0
@@ -105,6 +245,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_rimebac
 [sub_resource type="Resource" id="Body_lisk"]
 script = ExtResource("2_body")
 id = &"lisk"
+light = SubResource("Light_lisk")
 display_name = "Lisk"
 kind = 1
 color = Color(0.7, 0.72, 0.78, 1)
@@ -173,6 +314,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_ember")
 [sub_resource type="Resource" id="Body_vehra"]
 script = ExtResource("2_body")
 id = &"vehra"
+light = SubResource("Light_vehra")
 display_name = "Vehra"
 tier = 2
 color = Color(0.95, 0.6, 0.3, 1)
@@ -242,6 +384,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_mossgra
 [sub_resource type="Resource" id="Body_cassor"]
 script = ExtResource("2_body")
 id = &"cassor"
+light = SubResource("Light_cassor")
 display_name = "Cassor"
 tier = 3
 color = Color(0.62, 0.7, 0.58, 1)
@@ -267,6 +410,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_quiet")
 [sub_resource type="Resource" id="Body_mirr"]
 script = ExtResource("2_body")
 id = &"mirr"
+light = SubResource("Light_mirr")
 display_name = "Mirr"
 kind = 1
 tier = 3
@@ -317,6 +461,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_lantern
 [sub_resource type="Resource" id="Body_orrel"]
 script = ExtResource("2_body")
 id = &"orrel"
+light = SubResource("Light_orrel")
 display_name = "Orrel"
 kind = 1
 tier = 4
@@ -357,6 +502,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_splitro
 [sub_resource type="Resource" id="Body_iska"]
 script = ExtResource("2_body")
 id = &"iska"
+light = SubResource("Light_iska")
 display_name = "Iska"
 kind = 1
 tier = 4
@@ -428,6 +574,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_slag")]
 [sub_resource type="Resource" id="Body_skelde"]
 script = ExtResource("2_body")
 id = &"skelde"
+light = SubResource("Light_skelde")
 display_name = "Skelde"
 tier = 5
 color = Color(0.45, 0.42, 0.4, 1)
@@ -498,6 +645,7 @@ set_pieces = Array[ExtResource("part_placement")]([SubResource("SetPiece_fused")
 [sub_resource type="Resource" id="Body_zairen"]
 script = ExtResource("2_body")
 id = &"zairen"
+light = SubResource("Light_zairen")
 display_name = "Zairen"
 tier = 6
 color = Color(0.7, 0.85, 0.88, 1)

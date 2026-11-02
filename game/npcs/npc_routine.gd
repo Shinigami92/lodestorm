@@ -9,7 +9,8 @@ extends RefCounted
 ## navigator or the ship flies (faster, `HURRY_SPEED`, stopping for nobody on the way), sit down and
 ## wait for the course or watch the autopilot, stay seated `SEAT_LINGER` s after it has landed or
 ## docked (a short flight that's over before they're there: they still sit down for that long),
-## get up and walk back. Seated there with a destination chosen, they set course themselves after
+## get up and walk back. Seated there with a destination chosen, the pilot (`Npc.sets_course`) sets
+## course after
 ## `TAKE_OFF_DELAY` s once its location is scanned, everyone is aboard and nobody of the crew still
 ## walks aboard (the host's pilot: the ship's decisions are the host's).
 ## With a `Tour` (their profile's), they wait at its start until its offer is heard or the first
@@ -292,7 +293,7 @@ func update(delta: float) -> void:
 	if seat:
 		if not body.sitting and absf(angle_difference(npc.rotation.y, yaw)) < 0.05:
 			body.sitting = true
-		if flight_seat:
+		if flight_seat and npc.sets_course:
 			_take_off(delta)
 		return
 	if tour or talk_place:
@@ -399,8 +400,8 @@ func _count_seat_trip(delta: float) -> void:
 
 
 ## Sets course for the destination chosen once they've sat in the flight seat for
-## `TAKE_OFF_DELAY` s, its location is scanned, everyone is aboard and nobody of the crew still
-## walks aboard (see the class description).
+## `TAKE_OFF_DELAY` s, its location is scanned and everyone is aboard (`Voyage.confirm` also
+## waits for anyone of the crew still walking aboard; see the class description).
 func _take_off(delta: float) -> void:
 	var voyage: Voyage = npc.ship.voyage
 	if not voyage or not _destination_chosen() or npc.body.get_sit_amount() < 1.0:
@@ -412,7 +413,6 @@ func _take_off(delta: float) -> void:
 		and npc.multiplayer.is_server()
 		and not voyage.is_preparing(voyage.destination)
 		and npc.ship.everyone_aboard()
-		and NpcBoarding.walking(npc.get_tree()).is_empty()
 	):
 		voyage.confirm()
 

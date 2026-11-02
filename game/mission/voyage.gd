@@ -204,13 +204,15 @@ func is_preparing(offer: MissionBrief) -> bool:
 
 
 ## Whether course can be set for the destination now (not for the one the ship is at; docked at
-## a station, only with everyone aboard).
+## a station, only with everyone aboard; never while a crew member walks aboard, see
+## `Mission.crew_boarding`).
 func can_confirm() -> bool:
 	return (
 		can_select()
 		and destination != null
 		and destination != brief
 		and (not is_docked() or ship.everyone_aboard())
+		and not mission.crew_boarding()
 	)
 
 

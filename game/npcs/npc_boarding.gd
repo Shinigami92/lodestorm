@@ -11,8 +11,9 @@ extends RefCounted
 ## (`Npc.walks_aboard`).
 ## Without the ship standing where they are (in flight, or docked elsewhere), they're aboard at
 ## once, at their post (`start` returns null).
-## While anyone walks aboard (`walking`), the ship doesn't leave (see `Voyage.can_confirm`) and its
-## ramp can't be raised (see `Mission`); their crew member aboard isn't there yet (`is_walking`).
+## While anyone walks aboard (`walking`, `Mission.crew_boarding`), the ship doesn't leave (see
+## `Voyage.can_confirm`) and its ramp can't be raised; their crew member aboard isn't there yet
+## (`is_walking`).
 
 enum Leg { TO_RAMP, AT_RAMP, UP_RAMP, INSIDE }
 

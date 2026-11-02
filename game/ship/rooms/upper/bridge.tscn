@@ -31,6 +31,7 @@ transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -27.6, 0, -1.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
 profile = ExtResource("91_profile")
 flight_seat = NodePath("../PilotSeatSpot")
+sets_course = true
 work_spots = [NodePath("../PilotHoloTable"), NodePath("../PilotWindow")]
 
 [node name="PilotHoloTable" type="Marker3D" parent="."]

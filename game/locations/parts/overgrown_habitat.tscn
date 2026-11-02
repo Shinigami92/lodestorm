@@ -1,0 +1,78 @@
+[gd_scene format=3 uid="uid://cglaej7fynygq"]
+
+[ext_resource type="Script" uid="uid://x5qe10ai7345" path="res://game/locations/parts/map_part.gd" id="1_part"]
+
+[ext_resource type="Script" uid="uid://uqm3dgi8uv5j" path="res://game/locations/parts/part_marker.gd" id="2_marker"]
+
+[ext_resource type="Script" uid="uid://cf1hytkgr80i2" path="res://game/models/kit_mesh.gd" id="kit_mesh"]
+
+[ext_resource type="PackedScene" uid="uid://c4nmrolc4psxg" path="res://assets/parts/habitat/habitat.glb" id="kit_habitat"]
+
+[sub_resource type="BoxShape3D" id="Box_1"]
+size = Vector3(6.8, 3.0, 3.4)
+
+[sub_resource type="CylinderShape3D" id="Box_2"]
+height = 5.0
+radius = 0.55
+
+[sub_resource type="BoxShape3D" id="Box_3"]
+size = Vector3(2.6, 0.4, 3.6)
+
+[node name="OvergrownHabitat" type="Node3D"]
+script = ExtResource("1_part")
+display_name = "Overgrown habitat"
+footprint = 12.0
+prop_radius = 8.0
+area_kinds = Array[int]([1, 2])
+
+[node name="Roots" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.34202, 0.0, -0.93969, 0.0, 1.0, 0.0, 0.93969, 0.0, 0.34202, 2.4, 0.0, 3.0)
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_habitat")
+part = &"Habitat_roots"
+
+[node name="Habitat" type="StaticBody3D" parent="."]
+transform = Transform3D(0.96593, 0.0, 0.25882, 0.0, 1.0, 0.0, -0.25882, 0.0, 0.96593, 0.0, 0.0, -0.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Habitat"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_habitat")
+part = &"Habitat"
+
+[node name="Shape" type="CollisionShape3D" parent="Habitat"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.5, 0.0)
+shape = SubResource("Box_1")
+
+[node name="Shape2" type="CollisionShape3D" parent="Habitat"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 2.55, 2.5, -2.55)
+shape = SubResource("Box_2")
+
+[node name="Panel" type="StaticBody3D" parent="."]
+transform = Transform3D(0.93969, 0.0, -0.34202, 0.0, 1.0, 0.0, 0.34202, 0.0, 0.93969, -1.9, 0.0, 3.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Panel"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_habitat")
+part = &"Habitat_panel"
+
+[node name="Shape" type="CollisionShape3D" parent="Panel"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -0.1, 0.2, 0.0)
+shape = SubResource("Box_3")
+
+[node name="Crate" type="Marker3D" parent="."]
+transform = Transform3D(-0.25882, 0, 0.96593, 0, 1, 0, -0.96593, 0, -0.25882, -5.2, 0, -2.5)
+script = ExtResource("2_marker")
+kind = 2
+
+[node name="Ore1" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.6, 0, -2.3)
+script = ExtResource("2_marker")
+
+[node name="Ore2" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4, 0, 5.2)
+script = ExtResource("2_marker")
+band = 1
+
+[node name="Ore3" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0, -6.4)
+script = ExtResource("2_marker")

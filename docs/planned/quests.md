@@ -14,7 +14,7 @@ Decided 2026-10-17, built in M4 step 16 (see [`PLAN.md`](../PLAN.md)). All value
 
 ## Quest nests and hunts
 
-Decided 2026-10-30, built (B1a, B1b: see Quests in [Missions](../design/missions.md#quests) and the nests in [Aliens](../design/aliens.md)). The quest nest, the brood nests' three looks (egg clutch, cocoon cluster, burrow mouth) and the lairs' two (den, hive hollow) are greybox, finished in the art pass; more looks are data (a scene each), so hunts can vary.
+Decided 2026-10-30, built (B1a, B1b: see Quests in [Missions](../design/missions.md#quests) and the nests in [Aliens](../design/aliens.md)). The quest nest, the brood nests' three looks (egg clutch, cocoon cluster, burrow mouth) and the lairs' two (den, hive hollow) are modeled; more looks are data (a scene each), so hunts can vary.
 
 ## Blueprint fragments and quest items
 

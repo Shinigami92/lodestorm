@@ -1,60 +1,14 @@
 [gd_scene format=3 uid="uid://dmfxiossn5f8f"]
 
 [ext_resource type="Script" uid="uid://x5qe10ai7345" path="res://game/locations/parts/map_part.gd" id="1_part"]
+
 [ext_resource type="Script" uid="uid://pes3suoudko7" path="res://game/locations/parts/beacon_light.gd" id="2_beacon"]
+
 [ext_resource type="Script" uid="uid://uqm3dgi8uv5j" path="res://game/locations/parts/part_marker.gd" id="3_marker"]
 
-[sub_resource type="StandardMaterial3D" id="Material_tarp"]
-albedo_color = Color(0.27, 0.29, 0.22, 1)
-roughness = 0.95
+[ext_resource type="Script" uid="uid://cf1hytkgr80i2" path="res://game/models/kit_mesh.gd" id="kit_mesh"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_stack"]
-size = Vector3(2.6, 1.5, 1.9)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_stack"]
-size = Vector3(2.6, 1.5, 1.9)
-
-[sub_resource type="BoxMesh" id="BoxMesh_flap"]
-size = Vector3(2.7, 0.05, 0.9)
-
-[sub_resource type="StandardMaterial3D" id="Material_crate"]
-albedo_color = Color(0.22, 0.23, 0.24, 1)
-metallic = 0.5
-roughness = 0.6
-
-[sub_resource type="StandardMaterial3D" id="Material_stripe"]
-albedo_color = Color(0.62, 0.3, 0.1, 1)
-roughness = 0.7
-
-[sub_resource type="BoxMesh" id="BoxMesh_crate"]
-size = Vector3(0.9, 0.6, 0.6)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_crate"]
-size = Vector3(0.9, 0.6, 0.6)
-
-[sub_resource type="BoxMesh" id="BoxMesh_small"]
-size = Vector3(0.6, 0.45, 0.5)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_small"]
-size = Vector3(0.6, 0.45, 0.5)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
-top_radius = 0.3
-bottom_radius = 0.3
-height = 0.9
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_barrel"]
-height = 0.9
-radius = 0.3
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_pole"]
-top_radius = 0.05
-bottom_radius = 0.06
-height = 2.6
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_pole"]
-height = 2.6
-radius = 0.06
+[ext_resource type="PackedScene" uid="uid://bii3i8etj461j" path="res://assets/parts/field/field.glb" id="kit_field"]
 
 [sub_resource type="StandardMaterial3D" id="Material_beacon"]
 albedo_color = Color(1, 0.25, 0.15, 1)
@@ -63,9 +17,43 @@ emission_enabled = true
 emission = Color(1, 0.25, 0.15, 1)
 emission_energy_multiplier = 4.0
 
-[sub_resource type="SphereMesh" id="SphereMesh_beacon"]
-radius = 0.12
-height = 0.24
+[sub_resource type="BoxShape3D" id="Box_1"]
+size = Vector3(2.0, 0.66, 1.25)
+
+[sub_resource type="BoxShape3D" id="Box_2"]
+size = Vector3(0.95, 0.6, 0.9)
+
+[sub_resource type="CylinderShape3D" id="Box_3"]
+height = 0.94
+radius = 0.3
+
+[sub_resource type="BoxShape3D" id="Box_4"]
+size = Vector3(1.18, 0.6, 0.78)
+
+[sub_resource type="BoxShape3D" id="Box_5"]
+size = Vector3(0.9, 0.76, 0.64)
+
+[sub_resource type="BoxShape3D" id="Box_6"]
+size = Vector3(0.74, 0.86, 0.6)
+
+[sub_resource type="BoxShape3D" id="Box_7"]
+size = Vector3(0.78, 0.46, 0.48)
+
+[sub_resource type="CylinderShape3D" id="Box_8"]
+height = 0.9
+radius = 0.29
+
+[sub_resource type="CylinderShape3D" id="Box_9"]
+height = 0.9
+radius = 0.29
+
+[sub_resource type="CylinderShape3D" id="Box_10"]
+height = 0.88
+radius = 0.28
+
+[sub_resource type="CylinderShape3D" id="Box_11"]
+height = 3.2
+radius = 0.07
 
 [node name="ProspectorsCache" type="Node3D"]
 script = ExtResource("1_part")
@@ -75,85 +63,112 @@ prop_radius = 4.5
 area_kinds = Array[int]([1, 2, 6])
 
 [node name="Stack" type="StaticBody3D" parent="."]
-transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, 0, 0.75, -0.6)
+transform = Transform3D(0.96593, 0.0, 0.25882, 0.0, 1.0, 0.0, -0.25882, 0.0, 0.96593, 0.0, 0.0, -0.6)
 
 [node name="Mesh" type="MeshInstance3D" parent="Stack"]
-material_override = SubResource("Material_tarp")
-mesh = SubResource("BoxMesh_stack")
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Tarp_stack"
 
 [node name="Shape" type="CollisionShape3D" parent="Stack"]
-shape = SubResource("BoxShape3D_stack")
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.33, 0.0)
+shape = SubResource("Box_1")
 
-[node name="Flap" type="MeshInstance3D" parent="Stack"]
-transform = Transform3D(1, 0, 0, 0, 0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0.55, 1.1)
-material_override = SubResource("Material_tarp")
-mesh = SubResource("BoxMesh_flap")
+[node name="Shape2" type="CollisionShape3D" parent="Stack"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -0.42, 0.95, -0.06)
+shape = SubResource("Box_2")
 
-[node name="Crate1" type="StaticBody3D" parent="."]
-transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, -2.3, 0.3, 0.4)
+[node name="Shape3" type="CollisionShape3D" parent="Stack"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.56, 0.47, -0.3)
+shape = SubResource("Box_3")
 
-[node name="Mesh" type="MeshInstance3D" parent="Crate1"]
-material_override = SubResource("Material_crate")
-mesh = SubResource("BoxMesh_crate")
+[node name="Crates" type="StaticBody3D" parent="."]
+transform = Transform3D(0.5, 0.0, 0.86603, 0.0, 1.0, 0.0, -0.86603, 0.0, 0.5, -2.6, 0.0, 0.4)
 
-[node name="Shape" type="CollisionShape3D" parent="Crate1"]
-shape = SubResource("BoxShape3D_crate")
+[node name="Mesh" type="MeshInstance3D" parent="Crates"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Crate_stack"
 
-[node name="Crate2" type="StaticBody3D" parent="."]
-transform = Transform3D(0.9848077, 0, 0.17364818, 0, 1, 0, -0.17364818, 0, 0.9848077, -2.2, 0.825, 0.35)
+[node name="Shape" type="CollisionShape3D" parent="Crates"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -0.4, 0.3, -0.08)
+shape = SubResource("Box_4")
 
-[node name="Mesh" type="MeshInstance3D" parent="Crate2"]
-material_override = SubResource("Material_stripe")
-mesh = SubResource("BoxMesh_small")
+[node name="Shape2" type="CollisionShape3D" parent="Crates"]
+transform = Transform3D(0.99619, 0.0, -0.08716, 0.0, 1.0, 0.0, 0.08716, 0.0, 0.99619, -0.42, 0.98, -0.06)
+shape = SubResource("Box_5")
 
-[node name="Shape" type="CollisionShape3D" parent="Crate2"]
-shape = SubResource("BoxShape3D_small")
+[node name="Shape3" type="CollisionShape3D" parent="Crates"]
+transform = Transform3D(0.99255, 0.0, 0.12187, 0.0, 1.0, 0.0, -0.12187, 0.0, 0.99255, 0.58, 0.44, 0.12)
+shape = SubResource("Box_6")
 
-[node name="Crate3" type="StaticBody3D" parent="."]
-transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 2.4, 0.225, 0.9)
+[node name="Case" type="StaticBody3D" parent="."]
+transform = Transform3D(0.70711, 0.0, 0.70711, 0.0, 1.0, 0.0, -0.70711, 0.0, 0.70711, 2.4, 0.0, 0.9)
 
-[node name="Mesh" type="MeshInstance3D" parent="Crate3"]
-material_override = SubResource("Material_crate")
-mesh = SubResource("BoxMesh_small")
+[node name="Mesh" type="MeshInstance3D" parent="Case"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Crate_small"
 
-[node name="Shape" type="CollisionShape3D" parent="Crate3"]
-shape = SubResource("BoxShape3D_small")
+[node name="Shape" type="CollisionShape3D" parent="Case"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.23, 0.0)
+shape = SubResource("Box_7")
 
 [node name="Barrel1" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 0.45, -1.9)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.9, 0.0, -1.9)
 
 [node name="Mesh" type="MeshInstance3D" parent="Barrel1"]
-material_override = SubResource("Material_stripe")
-mesh = SubResource("CylinderMesh_barrel")
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Barrel_a"
 
 [node name="Shape" type="CollisionShape3D" parent="Barrel1"]
-shape = SubResource("CylinderShape3D_barrel")
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.45, 0.0)
+shape = SubResource("Box_8")
 
 [node name="Barrel2" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 2.6, 0.3, -1.0)
+transform = Transform3D(0.76604, 0.0, 0.64279, 0.0, 1.0, 0.0, -0.64279, 0.0, 0.76604, 1.25, 0.0, -2.55)
 
 [node name="Mesh" type="MeshInstance3D" parent="Barrel2"]
-material_override = SubResource("Material_crate")
-mesh = SubResource("CylinderMesh_barrel")
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Barrel_a"
 
 [node name="Shape" type="CollisionShape3D" parent="Barrel2"]
-shape = SubResource("CylinderShape3D_barrel")
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.45, 0.0)
+shape = SubResource("Box_9")
+
+[node name="Barrel3" type="StaticBody3D" parent="."]
+transform = Transform3D(-0.17365, 0.0, 0.98481, 0.0, 1.0, 0.0, -0.98481, 0.0, -0.17365, 2.75, 0.0, -0.85)
+
+[node name="Mesh" type="MeshInstance3D" parent="Barrel3"]
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Barrel_b"
+
+[node name="Shape" type="CollisionShape3D" parent="Barrel3"]
+transform = Transform3D(0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.24, 0.0)
+shape = SubResource("Box_10")
 
 [node name="Pole" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 1.3, -2.2)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -1.6, 0.0, -2.2)
 
 [node name="Mesh" type="MeshInstance3D" parent="Pole"]
-material_override = SubResource("Material_crate")
-mesh = SubResource("CylinderMesh_pole")
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Beacon_pole"
 
 [node name="Shape" type="CollisionShape3D" parent="Pole"]
-shape = SubResource("CylinderShape3D_pole")
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.6, 0.0)
+shape = SubResource("Box_11")
 
 [node name="Beacon" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 2.7, -2.2)
 material_override = SubResource("Material_beacon")
-mesh = SubResource("SphereMesh_beacon")
 script = ExtResource("2_beacon")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 3.105, -2.2)
+model = ExtResource("kit_field")
+part = &"Beacon_lens"
+cover = false
 
 [node name="Glow" type="OmniLight3D" parent="Beacon"]
 light_color = Color(1, 0.25, 0.15, 1)

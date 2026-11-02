@@ -1,20 +1,11 @@
 [gd_scene format=3 uid="uid://dh32if5e0j780"]
 
 [ext_resource type="Script" uid="uid://bkg4geaqlo5lh" path="res://game/locations/parts/crate.gd" id="1_bqy41"]
+[ext_resource type="Script" uid="uid://cf1hytkgr80i2" path="res://game/models/kit_mesh.gd" id="kit_mesh"]
+[ext_resource type="PackedScene" uid="uid://bii3i8etj461j" path="res://assets/parts/field/field.glb" id="kit_field"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bqy41"]
 size = Vector3(1.2, 0.74, 0.8)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0mvsv"]
-albedo_color = Color(0.36, 0.38, 0.33, 1)
-metallic = 0.3
-roughness = 0.7
-
-[sub_resource type="BoxMesh" id="BoxMesh_dwi1x"]
-size = Vector3(1.2, 0.6, 0.8)
-
-[sub_resource type="BoxMesh" id="BoxMesh_joqoc"]
-size = Vector3(1.24, 0.14, 0.84)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gv5au"]
 albedo_color = Color(1, 0.72, 0.28, 1)
@@ -22,9 +13,6 @@ roughness = 0.5
 emission_enabled = true
 emission = Color(1, 0.72, 0.28, 1)
 emission_energy_multiplier = 3.0
-
-[sub_resource type="BoxMesh" id="BoxMesh_5xu1w"]
-size = Vector3(1.22, 0.06, 0.82)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ud2ww"]
 shading_mode = 0
@@ -44,26 +32,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37, 0)
 shape = SubResource("BoxShape3D_bqy41")
 
 [node name="Base" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Base"]
-material_override = SubResource("StandardMaterial3D_0mvsv")
-mesh = SubResource("BoxMesh_dwi1x")
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Crate_base"
 
 [node name="Lid" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.4)
 
 [node name="Top" type="Node3D" parent="Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.07, -0.42)
 
 [node name="Mesh" type="MeshInstance3D" parent="Lid/Top"]
-material_override = SubResource("StandardMaterial3D_0mvsv")
-mesh = SubResource("BoxMesh_joqoc")
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Crate_lid"
 
 [node name="Strip" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
 material_override = SubResource("StandardMaterial3D_gv5au")
-mesh = SubResource("BoxMesh_5xu1w")
+script = ExtResource("kit_mesh")
+model = ExtResource("kit_field")
+part = &"Crate_strip"
+cover = false
 
 [node name="Highlight" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)

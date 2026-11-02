@@ -16,9 +16,14 @@
 [ext_resource type="Script" uid="uid://bw3tdlxmcsmku" path="res://game/locations/parts/part_placement.gd" id="part_placement"]
 [ext_resource type="PackedScene" uid="uid://whlciwm73uw6" path="res://game/locations/parts/rich_vein.tscn" id="part_vein"]
 [ext_resource type="PackedScene" uid="uid://e35o38gpbntk" path="res://game/locations/parts/wreck.tscn" id="part_wreck"]
+[ext_resource type="PackedScene" uid="uid://cglaej7fynygq" path="res://game/locations/parts/overgrown_habitat.tscn" id="part_own"]
 [ext_resource type="Resource" uid="uid://b4v1uo3absmiu" path="res://game/aliens/strains/stalker/stalker.tres" id="stalker"]
 [ext_resource type="PackedScene" uid="uid://ca4wjd3q6r01y" path="res://assets/biomes/overgrowth/overgrowth.glb" id="kit_overgrowth"]
 [ext_resource type="Resource" uid="uid://4qoxs07kb1q8" path="res://game/locations/weather/overgrowth.tres" id="weather"]
+
+[sub_resource type="Resource" id="Placement_own"]
+script = ExtResource("part_placement")
+scene = ExtResource("part_own")
 
 [sub_resource type="Resource" id="Placement_wreck"]
 script = ExtResource("part_placement")
@@ -400,7 +405,8 @@ bump_height = 0.7
 ground_material = ExtResource("9_terrain")
 low_ground_tint = Color(0.85, 0.85, 0.85, 1)
 scree = 0.35
-part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
+part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater"), SubResource("Placement_own")])
+part_cover = 0.3
 ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_tessar"), ExtResource("ore_duskine"), ExtResource("ore_ressa")])
 favored_strains = Array[ExtResource("alien_strain")]([ExtResource("stalker")])
 cliff_dressing = Array[ExtResource("2_scatter")]([SubResource("Resource_cliff_a"), SubResource("Resource_cliff_b")])

@@ -41,6 +41,7 @@ import bpy
 from mathutils import Matrix, Vector, noise
 
 import common as C
+import nodes as N
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -288,67 +289,14 @@ class Growth:
 # --- materials --------------------------------------------------------------------------------------
 
 
-class NT:
+class NT(N.TreeNodes):
     """Small node-building helper around one material's node tree."""
-
-    def __init__(self, nt):
-        self.nt = nt
-
-    def node(self, kind, **props):
-        n = self.nt.nodes.new(kind)
-        for k, val in props.items():
-            setattr(n, k, val)
-        return n
-
-    def link(self, a, b):
-        self.nt.links.new(a, b)
 
     def attr(self, name):
         return self.node("ShaderNodeAttribute", attribute_type="GEOMETRY", attribute_name=name).outputs["Fac"]
 
     def math(self, op, a, b=None):
         return C._math(self.nt, op, a, b)
-
-    def ramp(self, src, stops):
-        """stops: [(pos, value-or-rgb)]; returns the Color output."""
-        n = self.node("ShaderNodeValToRGB")
-        els = n.color_ramp.elements
-        while len(els) < len(stops):
-            els.new(0.5)
-        for el, (pos, val) in zip(els, stops):
-            el.position = pos
-            el.color = (*val, 1.0) if isinstance(val, tuple) else (val, val, val, 1.0)
-        self.link(src, n.inputs["Fac"])
-        return n.outputs["Color"]
-
-    def coords(self, scale=(1, 1, 1)):
-        coord = self.node("ShaderNodeTexCoord")
-        if scale == (1, 1, 1):
-            return coord.outputs["Object"]
-        mp = self.node("ShaderNodeMapping")
-        mp.inputs["Scale"].default_value = scale
-        self.link(coord.outputs["Object"], mp.inputs["Vector"])
-        return mp.outputs["Vector"]
-
-    def noise(self, scale, detail=4.0, rough=0.55, vec_scale=(1, 1, 1)):
-        n = self.node("ShaderNodeTexNoise")
-        n.inputs["Scale"].default_value = scale
-        n.inputs["Detail"].default_value = detail
-        n.inputs["Roughness"].default_value = rough
-        self.link(self.coords(vec_scale), n.inputs["Vector"])
-        return n.outputs["Fac"]
-
-    def voronoi(self, scale, feature="F1"):
-        n = self.node("ShaderNodeTexVoronoi", feature=feature)
-        n.inputs["Scale"].default_value = scale
-        self.link(self.coords(), n.inputs["Vector"])
-        return n
-
-    def mix(self, fac, a, b):
-        return C._mix_color(self.nt, fac, a, b)
-
-    def mixf(self, fac, a, b):
-        return C._mix_float(self.nt, fac, a, b)
 
 
 def mat_growth(

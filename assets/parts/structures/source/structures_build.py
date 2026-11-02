@@ -41,6 +41,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 import common as C
+import nodes as N
 from common import T, rx, ry, rz
 
 ARGV = C.args()
@@ -337,7 +338,7 @@ def stencil(p: KPart, text: str, origin, right, up, h: float, mi: int = STENCIL)
 # --- materials ----------------------------------------------------------------------------------------
 
 
-class Shader:
+class Shader(N.ShaderNodes):
     """Node helpers for the kit materials (numbers are set, sockets linked)."""
 
     def __init__(self, nt: bpy.types.NodeTree):
@@ -347,15 +348,6 @@ class Shader:
         pos = self.xyz(self.obj)
         self.x, self.y, self.z = pos.outputs["X"], pos.outputs["Y"], pos.outputs["Z"]
         self.nz = self.xyz(self.geo.outputs["Normal"]).outputs["Z"]
-
-    def m(self, op: str, a, b=None, c=None, clamp: bool = False) -> bpy.types.NodeSocket:
-        return C._math(self.nt, op, a, b, c, clamp)
-
-    def mix(self, fac, a, b) -> bpy.types.NodeSocket:
-        return C._mix_color(self.nt, fac, a, b)
-
-    def mixf(self, fac, a, b) -> bpy.types.NodeSocket:
-        return C._mix_float(self.nt, fac, a, b)
 
     def ramp(self, a: float, b: float, src) -> bpy.types.NodeSocket:
         """0 below a, 1 above b, linear between (any range, unlike a color ramp's 0..1 positions)."""
@@ -376,11 +368,6 @@ class Shader:
     def spread(self, fac, k: float) -> bpy.types.NodeSocket:
         """Noise Fac stretched around 0.5 by `k`, clamped to 0..1."""
         return self.m("MULTIPLY_ADD", self.m("SUBTRACT", fac, 0.5), k, 0.5, clamp=True)
-
-    def xyz(self, vector) -> bpy.types.Node:
-        node = self.nt.nodes.new("ShaderNodeSeparateXYZ")
-        self.nt.links.new(vector, node.inputs["Vector"])
-        return node
 
     def vec(self, x, y, z) -> bpy.types.NodeSocket:
         node = self.nt.nodes.new("ShaderNodeCombineXYZ")

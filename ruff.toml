@@ -21,4 +21,4 @@ ignore = [
 # the nest's build (the quest nest builds on it), put on sys.path by the
 # scripts that import them; the sound recipes next to assets/audio/source/build.py; the concept
 # tools in tools/concepts/ (batches, db, gen)
-known-first-party = ["bake", "batches", "colony_part", "common", "creature", "db", "dressing", "gen", "generated", "greybox", "humanoid", "key_poses", "fidgets", "frost_build", "miner_glow_build", "nest_build", "overgrowth_build", "ore_geo", "people", "rock_geo", "synth", "aliens", "mining", "mission", "player", "refinery", "stations", "weapons"]
+known-first-party = ["bake", "batches", "colony_part", "common", "creature", "db", "dressing", "gen", "generated", "greybox", "humanoid", "key_poses", "fidgets", "frost_build", "miner_glow_build", "nest_build", "overgrowth_build", "ore_geo", "ostra_materials", "people", "rock_geo", "synth", "aliens", "mining", "mission", "player", "refinery", "stations", "weapons"]

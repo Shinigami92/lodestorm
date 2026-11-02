@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bxoy675okbs3w"]
+
+[resource]
+resource_name = "ostra_plant"
+albedo_color = Color(0.16, 0.34, 0.1, 1)
+roughness = 0.7

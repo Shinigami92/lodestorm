@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://b4jn71bcf73vn"]
+
+[resource]
+resource_name = "ostra_bottle"
+transparency = 1
+albedo_color = Color(0.35, 0.18, 0.06, 0.8)
+roughness = 0.08
+metallic_specular = 0.8

@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://p1qtqwlwdn87"]
+
+[resource]
+resource_name = "ostra_glass"
+transparency = 1
+albedo_color = Color(0.55, 0.68, 0.75, 0.12)
+roughness = 0.05
+metallic = 0.4
+metallic_specular = 0.9

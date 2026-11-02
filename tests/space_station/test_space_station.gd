@@ -91,8 +91,12 @@ func test_ramp_into_the_hangar() -> void:
 	assert_false(_player.arms.allowed, "holstered at the station")
 	assert_eq(_mission.state, Mission.State.CLOSED, "stepping out starts nothing")
 	assert_true(station.is_cut_away(), "the camera sees in")
-	var roof: GeometryInstance3D = station.get_node("Walls/Cut/RoofHangar")
-	assert_eq(roof.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+	var walls: Array[Node] = station.get_node("Walls/Cut/ShellCut").find_children(
+		"*", "MeshInstance3D"
+	)
+	assert_false(walls.is_empty(), "the cut walls' model")
+	var wall := walls[0] as GeometryInstance3D
+	assert_eq(wall.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
 
 
 ## Leaving takes everyone aboard; the ramp goes up by itself and the ship undocks, then flies on.
@@ -122,16 +126,20 @@ func test_the_map_from_data() -> void:
 	await _dock()
 	var station := _voyage.location as SpaceStation
 	var rooms: Array[String] = ["Hangar", "Concourse", "Depot", "Council", "Bar", "Gallery"]
-	var far: float = 0.0
 	for room: String in rooms:
 		var node: Node3D = station.get_node("Rooms/" + room)
-		var floor_mesh: MeshInstance3D = node.get_node("Floor")
-		assert_false(_ray_down(floor_mesh.global_position).is_empty(), room + " has a deck")
-		assert_not_null(node.get_node_or_null("Sign"), room + " has its name on the floor")
-		far = maxf(far, _ship.to_local(floor_mesh.global_position).x)
-	assert_gt(far, 120.0, "the far end is a walk away from the ramp")
+		assert_not_null(node.get_node_or_null("Sign"), room + " has its name on a wall")
+	var far: float = 0.0
+	for area: AABB in station.room_plan.areas:
+		var middle: Vector3 = station.room_plan.to_global(
+			area.get_center() * Vector3(1.0, 0.0, 1.0)
+		)
+		assert_false(_ray_down(middle + Vector3.UP).is_empty(), "%s has a deck" % area)
+		far = maxf(far, _ship.to_local(middle).x)
+	assert_gt(far, 90.0, "the far end is a walk away from the ramp")
 	var guides: Array[Node] = station.find_children("*", "FloorGuide", true, false)
-	assert_gt(guides.size(), 5, "floor guides lead the way")
+	assert_gt(guides.size(), 5, "the lines' names on the floors")
+	assert_gt(station.get_node("Rooms/GuideLines").get_child_count(), 4, "guide lines lead the way")
 	assert_true(station.get_node("Walls/Cut").is_in_group(HoloTable.HIDDEN_GROUP))
 
 

@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bwjfq58dp4ugj"]
+
+[ext_resource type="Shader" uid="uid://cbyd3dlniynwi" path="res://assets/shaders/ship_shell.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://df22mgfo35rt6" path="res://assets/space_station/ostra/textures/paint_albedo.png" id="2_albedo"]
+[ext_resource type="Texture2D" uid="uid://cv2bsnh6q7jtd" path="res://assets/space_station/ostra/textures/paint_nra.png" id="3_nra"]
+
+[resource]
+resource_name = "ostra_paint_dark"
+shader = ExtResource("1_shader")
+shader_parameter/albedo_tex = ExtResource("2_albedo")
+shader_parameter/nra_tex = ExtResource("3_nra")
+shader_parameter/tile = 4.0
+shader_parameter/decks = Vector2(0, 1000)
+shader_parameter/grime = 0.25
+shader_parameter/grime_height = 1.8
+shader_parameter/macro_strength = 0.2
+shader_parameter/macro_size = 6.0
+shader_parameter/tint = Color(0.3, 0.3, 0.31, 1)

@@ -34,9 +34,7 @@ BURIED_Z = -0.12  # a face whose corners all lie below this is never seen
 
 
 def prepare(job: B.Job) -> list:
-    xs = [bpy.data.objects[n].location.x for n in RB.PIECES]
-    mid = (min(xs) + max(xs)) / 2
-    return [B.bake_plane("BakeGround", location=(mid, 0, 0), scale=(max(xs) - min(xs) + 30, 30, 1))]
+    return B.row_ground(RB.PIECES, 30)
 
 
 def buried(obj: bpy.types.Object, poly) -> float | None:
@@ -51,13 +49,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.location = (0, 0, 0)  # the bake row was layout only
 
 
-JOB = B.Job(
-    name="drill_rig",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=RB.ASSET,
-    source=OUT / "drill_rig_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "drill_rig" / "drill_rig.glb",
-    blend=ROOT / "assets" / "parts" / "drill_rig" / "source" / "drill_rig.blend",
-    game=OUT / "game",
     atlas=RB.PIECES,
     material="DrillRig",
     island_margin=0.003,

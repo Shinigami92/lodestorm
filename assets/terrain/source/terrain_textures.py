@@ -33,6 +33,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
 import bake as B
 import common as C
+from common import srgb
 
 OUT = ROOT / "assets" / "terrain"
 TMP = ROOT / "tmp" / "terrain"
@@ -98,11 +99,6 @@ def coords(tile: float, n: int = SIZE):
 def sample(height: np.ndarray, tile: float, x: float, y: float) -> float:
     n = height.shape[0]
     return float(height[int(y / tile * n) % n, int(x / tile * n) % n])
-
-
-def srgb(r: float, g: float, b: float) -> tuple[float, float, float]:
-    """Linear color from sRGB values (Blender shader colors are linear)."""
-    return tuple(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in (r, g, b))
 
 
 def to_srgb(linear: np.ndarray) -> np.ndarray:

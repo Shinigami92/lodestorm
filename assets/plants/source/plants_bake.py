@@ -96,10 +96,7 @@ def row_location(name: str) -> Vector:
 
 def ground_color(biome: str) -> None:
     lo, hi = GROUND[biome]
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*lo, 1.0)
-            node.inputs[7].default_value = (*hi, 1.0)
+    C.tint_ground(lo, hi)
 
 
 def scatter(objs: dict, biome: str, seed: int) -> list:

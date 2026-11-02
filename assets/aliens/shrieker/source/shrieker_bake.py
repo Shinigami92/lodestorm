@@ -48,13 +48,10 @@ def finish(job: B.Job, objs: list) -> None:
         obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects["Skeleton"]
 
 
-JOB = B.Job(
-    name="shrieker",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "shrieker_procedural.blend",
-    glb=ROOT / "assets" / "aliens" / "shrieker" / "shrieker.glb",
-    blend=ROOT / "assets" / "aliens" / "shrieker" / "source" / "shrieker.blend",
-    game=OUT / "game",
     atlas=["Creature"],
     material="Shrieker",
     size=1024,  # final texture size (budget: one 1024 set, TBD (playtest))

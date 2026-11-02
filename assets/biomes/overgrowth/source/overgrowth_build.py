@@ -1091,10 +1091,7 @@ def per_object_stats(objs: dict) -> dict:
 
 def ground_color() -> None:
     lo, hi = GROUND
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*lo, 1.0)
-            node.inputs[7].default_value = (*hi, 1.0)
+    C.tint_ground(lo, hi)
 
 
 def import_plants() -> dict:

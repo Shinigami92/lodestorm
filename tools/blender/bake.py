@@ -84,9 +84,34 @@ class Job:
     export_at_origin: tuple = ()  # objects moved to the origin for the export only (the .blend keeps their layout)
     prepare: Callable | None = None  # (job) -> list of bake-only props, after the .blend is opened
     finish: Callable | None = None  # (job, objs) after the material swap, before the checks and the export
+    before_pack: Callable | None = None  # (objs) in unwrap_atlas, before the hidden faces shrink and the pack
 
     def bake_size(self) -> int:
         return self.size * self.supersample
+
+
+def kit_job(script: str, out: pathlib.Path, **fields) -> Job:
+    """A Job for the bake script `script` (its __file__: assets/<...>/<name>/source/<name>_bake.py) with the usual
+    paths: the procedural .blend `out`/<name>_procedural.blend in, the game asset <name>.glb next to the source
+    folder and its .blend <name>.blend in it, the PNGs and check renders in `out`/game; `fields` are the rest."""
+    here = pathlib.Path(script).resolve()
+    name = here.stem.removesuffix("_bake")
+    return Job(
+        name=name,
+        source=out / f"{name}_procedural.blend",
+        glb=here.parents[1] / f"{name}.glb",
+        blend=here.parent / f"{name}.blend",
+        game=out / "game",
+        **fields,
+    )
+
+
+def row_ground(names: list, pad: float) -> list:
+    """A bake-only ground plane under the row of objects `names` (along X, by their origins), `pad` m longer than the
+    row and `pad` m deep: the AO picks up the contact shadow at their feet. Returns it (a Job's prepare result)."""
+    xs = [bpy.data.objects[n].location.x for n in names]
+    mid = (min(xs) + max(xs)) / 2
+    return [bake_plane("BakeGround", location=(mid, 0, 0), scale=(max(xs) - min(xs) + pad, pad, 1))]
 
 
 def redirected(job: Job) -> Job:
@@ -169,10 +194,13 @@ def unwrap_atlas(job: Job, objs: list) -> None:
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=job.island_margin, scale_to_bounds=False)
     bpy.ops.uv.average_islands_scale()
-    if job.shrink:
-        # Hidden faces: shrink each to a speck around its own center (it becomes its own tiny island).
+    if job.before_pack or job.shrink:
         bpy.ops.object.mode_set(mode="OBJECT")
-        print("UV hidden faces shrunk", shrink_faces(objs, job.shrink))
+        if job.before_pack:
+            job.before_pack(objs)
+        if job.shrink:
+            # Hidden faces: shrink each to a speck around its own center (it becomes its own tiny island).
+            print("UV hidden faces shrunk", shrink_faces(objs, job.shrink))
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.mesh.select_all(action="SELECT")
         try:

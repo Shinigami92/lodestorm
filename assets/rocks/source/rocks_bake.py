@@ -45,13 +45,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="rocks",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset="Rocks",
-    source=OUT / "rocks_procedural.blend",
-    glb=ROOT / "assets" / "rocks" / "rocks.glb",
-    blend=ROOT / "assets" / "rocks" / "source" / "rocks.blend",
-    game=OUT / "game",
     atlas=build.VARIANTS,
     material="Rock",
     size=SIZE,
@@ -71,10 +68,7 @@ CLOSEUPS = ("Boulder_a", "Boulder_c", "Rubble_a", "Outcrop_b", "Cliff_a", "Cliff
 
 def checks(job: B.Job, rocks: list) -> None:
     assert sorted(o.name for o in rocks) == sorted(build.VARIANTS), [o.name for o in rocks]
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):  # drop the placeholder pebbles, like the build previews
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     for name, (u, v, rot) in build.LAYOUT.items():
         obj = bpy.data.objects[name]
         obj.rotation_mode = "XYZ"  # the glTF importer sets quaternions

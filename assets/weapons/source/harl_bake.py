@@ -36,13 +36,10 @@ def prepare(job: B.Job) -> list:
     return []
 
 
-JOB = B.Job(
-    name="harl",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "harl_procedural.blend",
-    glb=ROOT / "assets" / "weapons" / "harl.glb",
-    blend=ROOT / "assets" / "weapons" / "source" / "harl.blend",
-    game=OUT / "game",
     atlas=["Body"],
     material=ASSET,
     size=1024,  # final texture size (budget: one 1024 set, TBD (playtest))

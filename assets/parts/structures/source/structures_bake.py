@@ -53,9 +53,7 @@ def hidden_scale(obj: bpy.types.Object, poly: bpy.types.MeshPolygon) -> float | 
 
 def prepare(job: B.Job) -> list:
     """A ground plane under the row of pieces: the AO picks up the contact shadow at their feet."""
-    xs = [bpy.data.objects[n].location.x for n in S.PIECES]
-    mid = (min(xs) + max(xs)) / 2
-    return [B.bake_plane("BakeGround", location=(mid, 0, 0), scale=(max(xs) - min(xs) + 20, 20, 1))]
+    return B.row_ground(S.PIECES, 20)
 
 
 def finish(job: B.Job, objs: list) -> None:
@@ -64,13 +62,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="structures",
+JOB = B.kit_job(
+    __file__,
+    S.OUT,
     asset=S.ASSET,
-    source=S.OUT / "structures_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "structures" / "structures.glb",
-    blend=ROOT / "assets" / "parts" / "structures" / "source" / "structures.blend",
-    game=S.OUT / "game",
     atlas=S.PIECES,
     material="Structures",
     size=2048,

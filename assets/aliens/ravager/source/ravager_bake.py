@@ -48,13 +48,10 @@ def finish(job: B.Job, objs: list) -> None:
         obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects["Skeleton"]
 
 
-JOB = B.Job(
-    name="ravager",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "ravager_procedural.blend",
-    glb=ROOT / "assets" / "aliens" / "ravager" / "ravager.glb",
-    blend=ROOT / "assets" / "aliens" / "ravager" / "source" / "ravager.blend",
-    game=OUT / "game",
     atlas=["Creature"],
     material="Ravager",
     size=2048,  # final texture size (budget: one 2048 set for the apex, TBD (playtest))

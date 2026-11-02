@@ -47,13 +47,10 @@ def finish(job: B.Job, objs: list) -> None:
         obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects["Skeleton"]
 
 
-JOB = B.Job(
-    name="mite",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "mite_procedural.blend",
-    glb=ROOT / "assets" / "aliens" / "mite" / "mite.glb",
-    blend=ROOT / "assets" / "aliens" / "mite" / "source" / "mite.blend",
-    game=OUT / "game",
     atlas=["Creature"],
     material="Mite",
     size=512,  # final texture size (budget: one 512 set, TBD (playtest))

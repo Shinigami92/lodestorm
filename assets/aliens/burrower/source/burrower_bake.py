@@ -47,13 +47,10 @@ def finish(job: B.Job, objs: list) -> None:
         obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects["Skeleton"]
 
 
-JOB = B.Job(
-    name="burrower",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "burrower_procedural.blend",
-    glb=ROOT / "assets" / "aliens" / "burrower" / "burrower.glb",
-    blend=ROOT / "assets" / "aliens" / "burrower" / "source" / "burrower.blend",
-    game=OUT / "game",
     atlas=["Creature"],
     material="Burrower",
     size=1024,  # final texture size (budget: one 1024 set, TBD (playtest))

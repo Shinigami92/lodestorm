@@ -47,13 +47,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="meteor",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset="Meteor",
-    source=OUT / "meteor_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "meteor" / "meteor.glb",
-    blend=ROOT / "assets" / "parts" / "meteor" / "source" / "meteor.blend",
-    game=OUT / "game",
     atlas=build.PIECES,
     material="Meteor",
     size=SIZE,
@@ -74,10 +71,7 @@ FRONT_Y = ()
 
 def checks(job: B.Job, parts: list) -> None:
     assert sorted(o.name for o in parts) == sorted(build.PIECES), [o.name for o in parts]
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):  # drop the placeholder pebbles, like the build previews
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     for o in parts:
         o.rotation_mode = "XYZ"  # the glTF importer sets quaternions
     for name in build.PIECES:

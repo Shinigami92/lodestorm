@@ -47,13 +47,10 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="frost",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset="Frost",
-    source=OUT / "frost_procedural.blend",
-    glb=ROOT / "assets" / "biomes" / "frost" / "frost.glb",
-    blend=ROOT / "assets" / "biomes" / "frost" / "source" / "frost.blend",
-    game=OUT / "game",
     atlas=build.VARIANTS,
     material="Frost",
     size=SIZE,
@@ -73,14 +70,8 @@ CLOSEUPS = ("Boulder_a", "Ice_a", "Pinnacle_a", "Drift_a", "Shrub_a", "Rubble_a"
 
 def checks(job: B.Job, parts: list) -> None:
     assert sorted(o.name for o in parts) == sorted(build.VARIANTS), [o.name for o in parts]
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):  # drop the placeholder pebbles, like the build previews
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:  # the frost ground's blue-grey
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*build.GROUND[0], 1.0)
-            node.inputs[7].default_value = (*build.GROUND[1], 1.0)
+    C.preview_scene(crystals=False, pebbles=False)
+    C.tint_ground(build.GROUND[0], build.GROUND[1])  # the frost ground's blue-grey
     for name, (u, v, rot) in build.LAYOUT.items():
         obj = bpy.data.objects[name]
         obj.rotation_mode = "XYZ"  # the glTF importer sets quaternions

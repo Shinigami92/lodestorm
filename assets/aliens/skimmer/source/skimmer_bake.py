@@ -50,13 +50,10 @@ def finish(job: B.Job, objs: list) -> None:
         obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects["Skeleton"]
 
 
-JOB = B.Job(
-    name="skimmer",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "skimmer_procedural.blend",
-    glb=ROOT / "assets" / "aliens" / "skimmer" / "skimmer.glb",
-    blend=ROOT / "assets" / "aliens" / "skimmer" / "source" / "skimmer.blend",
-    game=OUT / "game",
     atlas=["Creature"],
     material="Skimmer",
     size=1024,  # final texture size (budget: one 1024 set, TBD (playtest))

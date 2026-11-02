@@ -109,26 +109,9 @@ def split_hollow(objs: list, fill: float = 0.35) -> int:
     return split
 
 
-def unwrap(job: B.Job, objs: list) -> None:
-    """The shared unwrap (smart project, same texel density, hidden faces shrunk, pack) with the hollow islands
-    cut apart before packing."""
-    B.new_uv_map(objs)
-    B.select_only(objs, objs[0])
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=job.island_margin, scale_to_bounds=False)
-    bpy.ops.uv.average_islands_scale()
-    bpy.ops.object.mode_set(mode="OBJECT")
+def cut_hollow(objs: list) -> None:
+    """Before packing (Job.before_pack): the hollow islands cut apart (see split_hollow)."""
     print("UV hollow islands cut", split_hollow(objs))
-    print("UV hidden faces shrunk", B.shrink_faces(objs, job.shrink))
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.select_all(action="SELECT")
-    try:
-        bpy.ops.uv.select_all(action="SELECT")
-    except RuntimeError:
-        pass
-    bpy.ops.uv.pack_islands(rotate=True, margin_method=job.pack_method, margin=job.pack_margin)
-    bpy.ops.object.mode_set(mode="OBJECT")
 
 
 def ground(job: B.Job) -> list:
@@ -144,18 +127,15 @@ def finish(job: B.Job, objs: list) -> None:
         o.rotation_euler = (0, 0, 0)
 
 
-JOB = B.Job(
-    name="field",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "field_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "field" / "field.glb",
-    blend=ROOT / "assets" / "parts" / "field" / "source" / "field.blend",
-    game=OUT / "game",
     atlas=build.PARTS,
     material="Field",
     size=2048,
     shrink=hidden_scale,
-    unwrap=unwrap,
+    before_pack=cut_hollow,
     # Many small islands (cylinder strips, rods): a 3 px gap instead of 6 px takes the atlas use from 0.38 to 0.59.
     pack_margin=0.0015,
     # The base color carries AO grime and Bevel-node edge wear (both ray traced): more samples than flat colors.
@@ -225,14 +205,8 @@ def render_closeup(job: B.Job, names: list, parts: list, tag: str) -> pathlib.Pa
 
 def checks(job: B.Job, parts: list) -> None:
     assert sorted(o.name for o in parts) == sorted(build.PARTS), [o.name for o in parts]
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*build.GROUND[0], 1.0)
-            node.inputs[7].default_value = (*build.GROUND[1], 1.0)
+    C.preview_scene(crystals=False, pebbles=False)
+    C.tint_ground(build.GROUND[0], build.GROUND[1])
     assemble(lid_open=False)
     fig = bpy.data.objects["PreviewFigure"]
     fig.location = (4.0, -0.6, 0)

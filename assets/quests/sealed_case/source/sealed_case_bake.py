@@ -41,13 +41,10 @@ def finish(job: B.Job, objs: list) -> None:
     C.assign(bpy.data.objects["Glow"], B.mat_constant("SealedCase_Glow", AMBER, roughness=0.3, emission=3.0))
 
 
-JOB = B.Job(
-    name="sealed_case",
+JOB = B.kit_job(
+    __file__,
+    OUT,
     asset=ASSET,
-    source=OUT / "sealed_case_procedural.blend",
-    glb=ROOT / "assets" / "quests" / "sealed_case" / "sealed_case.glb",
-    blend=ROOT / "assets" / "quests" / "sealed_case" / "source" / "sealed_case.blend",
-    game=OUT / "game",
     atlas=["Case"],
     material=ASSET,
     size=1024,  # final texture size (budget: one 1024 set, TBD (playtest))

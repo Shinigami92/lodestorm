@@ -27,13 +27,10 @@ import pump_station_build as build  # the kit's pieces and layout (importing it 
 import bake as B
 
 KIT = build.KIT
-JOB = B.Job(
-    name="pump_station",
+JOB = B.kit_job(
+    __file__,
+    KIT.out,
     asset=KIT.collection,
-    source=KIT.out / "pump_station_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "pump_station" / "pump_station.glb",
-    blend=ROOT / "assets" / "parts" / "pump_station" / "source" / "pump_station.blend",
-    game=KIT.out / "game",
     atlas=list(KIT.pieces),
     material="PumpStation",
     size=2048,

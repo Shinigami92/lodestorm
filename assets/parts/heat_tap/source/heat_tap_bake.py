@@ -27,13 +27,10 @@ import heat_tap_build as build  # the kit's pieces and layout (importing it does
 import bake as B
 
 KIT = build.KIT
-JOB = B.Job(
-    name="heat_tap",
+JOB = B.kit_job(
+    __file__,
+    KIT.out,
     asset=KIT.collection,
-    source=KIT.out / "heat_tap_procedural.blend",
-    glb=ROOT / "assets" / "parts" / "heat_tap" / "heat_tap.glb",
-    blend=ROOT / "assets" / "parts" / "heat_tap" / "source" / "heat_tap.blend",
-    game=KIT.out / "game",
     atlas=list(KIT.pieces),
     material="HeatTap",
     size=2048,

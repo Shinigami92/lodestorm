@@ -38,12 +38,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 import common as C
-
-
-def srgb(r: float, g: float, b: float) -> tuple[float, float, float]:
-    """Linear color from sRGB values (shader colors are linear)."""
-    return tuple(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in (r, g, b))
-
+from common import srgb
 
 # The colony's paints and markings (sRGB).
 BONE = (0.47, 0.46, 0.43)  # habitat panels, pods, cabs
@@ -619,15 +614,9 @@ class Kit:
 
 def setup_preview(kit: Kit) -> None:
     """common's preview scene (dark ground, scale figure, area lights) on the biome's ground color."""
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     lo, hi = GROUND[kit.weather]
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*lo, 1.0)
-            node.inputs[7].default_value = (*hi, 1.0)
+    C.tint_ground(lo, hi)
     bpy.data.objects["PreviewGround"].scale = (3, 3, 1)
 
 

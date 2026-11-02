@@ -22,7 +22,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 import common as C
-from common import T, rx, ry
+from common import T, rx, ry, srgb
 
 
 @dataclasses.dataclass
@@ -39,15 +39,6 @@ class PartKit:
     crate: tuple  # the crate marker (x, y, z rotation in degrees)
     ore_spots: list  # the ore spot markers (x, y)
     pole: tuple  # the 1.89 m scale pole (x, y)
-
-
-def srgb(r: float, g: float, b: float) -> tuple:
-    """Linear color from sRGB values (the brief's colors are sRGB; node colors are linear)."""
-
-    def lin(c: float) -> float:
-        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
-
-    return (lin(r), lin(g), lin(b))
 
 
 OLIVE = srgb(0.30, 0.31, 0.27)  # the layout crate's olive paint
@@ -211,10 +202,7 @@ def kit_objects(kit: PartKit) -> list:
 
 def ground_color(kit: PartKit) -> None:
     lo, hi = kit.ground
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*lo, 1.0)
-            node.inputs[7].default_value = (*hi, 1.0)
+    C.tint_ground(lo, hi)
 
 
 def build_layout_scene(kit: PartKit) -> None:
@@ -303,10 +291,7 @@ def build_layout_scene(kit: PartKit) -> None:
 
 
 def setup_preview(kit: PartKit) -> None:
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):  # the preview's pebbles would read as part of the kit
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     bpy.data.objects["PreviewGround"].scale = (3, 3, 1)
     ground_color(kit)
     build_layout_scene(kit)

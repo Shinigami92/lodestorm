@@ -50,7 +50,7 @@ from mathutils import Matrix, Vector
 from mathutils import noise as mnoise
 
 import common as C
-from common import T, rx, ry
+from common import T, rx, ry, srgb
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -113,11 +113,6 @@ INNER_FRAME_Y = 4.1  # the last frame, also standing inside the open part
 
 
 # --- math helpers ---------------------------------------------------------------------------------------------
-
-
-def srgb(r: float, g: float, b: float) -> tuple[float, float, float]:
-    """Linear color from sRGB values (shader colors are linear)."""
-    return tuple(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in (r, g, b))
 
 
 def smoothstep(a: float, b: float, x: float) -> float:
@@ -1193,16 +1188,10 @@ def render_game(path: pathlib.Path, distance: float, target, samples: int, size:
 
 
 def setup_preview() -> None:
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
     ground = bpy.data.objects["PreviewGround"]
     ground.scale = (2.5, 2.5, 1.0)
-    for node in bpy.data.materials["PreviewGround"].node_tree.nodes:  # a mid-dark dusty ground, not black
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            node.inputs[6].default_value = (*GROUND[0], 1.0)
-            node.inputs[7].default_value = (*GROUND[1], 1.0)
+    C.tint_ground(GROUND[0], GROUND[1])  # a mid-dark dusty ground, not black
     layout_props()
 
 

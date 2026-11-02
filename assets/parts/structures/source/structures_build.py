@@ -1444,10 +1444,7 @@ def render_layout(name: str, path: pathlib.Path, samples: int, size: int, hide: 
 
 
 def setup_preview() -> None:
-    C.preview_scene(crystals=False)
-    for obj in list(C.collection("Preview").objects):  # drop the placeholder pebbles
-        if obj.type == "MESH" and obj.data.name.startswith("Icosphere"):
-            bpy.data.objects.remove(obj)
+    C.preview_scene(crystals=False, pebbles=False)
 
 
 def kit_objects() -> list:

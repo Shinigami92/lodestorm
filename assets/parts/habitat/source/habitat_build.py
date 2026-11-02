@@ -31,17 +31,19 @@ import math
 import pathlib
 import random
 import sys
-import types
 
 ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "tmp" / "assets" / "parts" / "habitat"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
+# The overgrowth kit's build: its materials and shape helpers, so the part matches the biome's own pieces.
+sys.path.insert(0, str(ROOT / "assets" / "biomes" / "overgrowth" / "source"))
 
 import bmesh
 import bpy
 from mathutils import Matrix, Vector
 
 import common as C
+import overgrowth_build as OG
 from common import T, rx, ry, rz
 
 ARGV = C.args()
@@ -81,22 +83,6 @@ STEEL = srgb(0.5, 0.5, 0.5)
 GRIME = srgb(0.1, 0.09, 0.08)
 LAMP_RED = (1.0, 0.07, 0.035)
 LAMP_STRENGTH = 3.0  # the bake's emission_strength (as the Overgrowth kit's): the lens bakes to its full color
-
-
-def load_kit(biome: str) -> types.ModuleType:
-    """A biome kit's build script as a module, without running it (its last line calls main()): its materials and
-    shape helpers, so the part matches the biome's own pieces."""
-    path = ROOT / "assets" / "biomes" / biome / "source" / f"{biome}_build.py"
-    head, sep, tail = path.read_text(encoding="utf-8").rpartition("\nmain()")
-    assert sep and not tail.strip(), f"{path} no longer ends with main()"
-    mod = types.ModuleType(f"{biome}_build")
-    mod.__file__ = str(path)
-    sys.modules[mod.__name__] = mod
-    exec(compile(head, str(path), "exec"), mod.__dict__)  # noqa: S102 (our own repo file)
-    return mod
-
-
-OG = load_kit("overgrowth")
 
 
 # --- materials ------------------------------------------------------------------------------------------

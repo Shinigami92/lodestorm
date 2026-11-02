@@ -1311,4 +1311,5 @@ def main() -> None:
     C.contact_sheet(shots, TMP / "sheet.png", cols=9, tile=256)
 
 
-main()
+if __name__ == "__main__":
+    main()

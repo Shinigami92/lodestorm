@@ -622,4 +622,5 @@ def main() -> None:
                 render_view(OUT / "wip" / f"{TAG}_{view}.png", view, samples=48, size=768)
 
 
-main()
+if __name__ == "__main__":
+    main()

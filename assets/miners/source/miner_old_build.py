@@ -593,4 +593,5 @@ def main() -> None:
             C.render(path, view=view, samples=24, size=512)
 
 
-main()
+if __name__ == "__main__":
+    main()

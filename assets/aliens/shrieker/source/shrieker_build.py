@@ -818,4 +818,5 @@ def main() -> None:
         C.export_glb(OUT / "shrieker_draft.glb")
 
 
-main()
+if __name__ == "__main__":
+    main()

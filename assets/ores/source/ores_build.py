@@ -839,4 +839,5 @@ def main() -> None:
             grid_view(variants, OUT / "wip" / f"{TAG}_grid.png", 24, 768)
 
 
-main()
+if __name__ == "__main__":
+    main()

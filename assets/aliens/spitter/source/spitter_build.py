@@ -594,4 +594,5 @@ def main() -> None:
         C.export_glb(OUT / "spitter_draft.glb")
 
 
-main()
+if __name__ == "__main__":
+    main()

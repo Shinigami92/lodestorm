@@ -1329,4 +1329,5 @@ def main() -> None:
             C.save_blend(OUT / "overgrowth_procedural.blend")
 
 
-main()
+if __name__ == "__main__":
+    main()

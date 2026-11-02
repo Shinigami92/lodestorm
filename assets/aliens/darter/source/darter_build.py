@@ -48,6 +48,7 @@ from mathutils import Vector
 import common as C
 import creature as K
 from common import rx, ry, rz
+from creature import fmt, mesh_points, mirror_angle
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -184,10 +185,6 @@ ABDOMEN_BONES = ["Hips", "Tail1", "Tail2", "Tail3", "Sting"]
 
 
 # --- mesh -------------------------------------------------------------------------------------------
-
-
-def mirror_angle(a: float, s: float) -> float:
-    return a if s > 0 else 180 - a
 
 
 def loft_profile(sk: K.Skin, rows: list, n: int, seg: int, mi: int, wobble: float = 0.003) -> list:
@@ -494,24 +491,10 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
 # --- measures ---------------------------------------------------------------------------------------
 
 
-def mesh_points(name: str) -> list:
-    obj = bpy.data.objects[name]
-    dg = bpy.context.evaluated_depsgraph_get()
-    ev = obj.evaluated_get(dg)
-    me = ev.to_mesh()
-    pts = [ev.matrix_world @ v.co for v in me.vertices]
-    ev.to_mesh_clear()
-    return pts
-
-
 def posed(arm: bpy.types.Object, bone: str, point: Vector) -> Vector:
     """A rest-pose point carried by `bone` in the current pose (world space)."""
     pb = arm.pose.bones[bone]
     return arm.matrix_world @ (pb.matrix @ arm.data.bones[bone].matrix_local.inverted() @ point)
-
-
-def fmt(v: Vector) -> tuple:
-    return tuple(round(x, 3) for x in v)
 
 
 def measures(arm: bpy.types.Object) -> None:

@@ -50,6 +50,9 @@ from mathutils import Vector
 
 import common as C
 import creature as K
+from creature import apply, fmt, mesh_points, mirror_angle, rest_pose
+
+Pose = K.ScaledPose  # the kit's pose plus a scale per bone
 from common import rx, ry, rz
 
 ARGV = C.args()
@@ -238,10 +241,6 @@ def weigh(sk: K.Skin, verts, fn) -> list:
 
 
 # --- mesh -------------------------------------------------------------------------------------------
-
-
-def mirror_angle(a: float, s: float) -> float:
-    return a if s > 0 else 180 - a
 
 
 def loft_profile(sk: K.Skin, rows: list, n: int, seg: int, mi: int, wobble: float = 0.004) -> list:
@@ -450,54 +449,6 @@ def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
 # --- posing -----------------------------------------------------------------------------------------
 
 
-class Pose(K.Pose):
-    """The kit's pose plus a scale per bone (the sac swelling and squeezing), as (width, length, depth) in the
-    bone's axes: for Sac (pointing down) about x, -z and y of the world."""
-
-    def __init__(self, rig: K.Rig, offset=(0, 0, 0)):
-        super().__init__(rig, offset)
-        self.scale: dict = {}
-
-    def grow(self, bone: str, width: float, length: float, depth: float) -> "Pose":
-        self.scale[bone] = Vector((width, length, depth))
-        return self
-
-
-def apply(arm: bpy.types.Object, pose: Pose) -> None:
-    K.apply(arm, pose)
-    for pb in arm.pose.bones:
-        pb.scale = pose.scale.get(pb.name, Vector((1, 1, 1)))
-
-
-def rest_pose(arm: bpy.types.Object) -> None:
-    for pb in arm.pose.bones:
-        pb.scale = (1, 1, 1)
-    K.rest_pose(arm)
-
-
-def bake_clips(arm: bpy.types.Object, clips: dict) -> None:
-    """K.bake_clips with the Sac's scale keyed too."""
-    ad = arm.animation_data_create()
-    for name, (frames, fn) in clips.items():
-        ad.action = None
-        for f in range(frames + 1):
-            apply(arm, fn(f / frames))
-            for pb in arm.pose.bones:
-                pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)
-                if pb.name == "Body":
-                    pb.keyframe_insert("location", frame=f, group=pb.name)
-                if pb.name == "Sac":
-                    pb.keyframe_insert("scale", frame=f, group=pb.name)
-        act = ad.action
-        act.name = name
-        track = ad.nla_tracks.new()
-        track.name = name
-        track.strips.new(name, 0, act)
-        track.mute = True
-        ad.action = None
-    rest_pose(arm)
-
-
 def wings(p: Pose, phase: float, amp: tuple, mid: tuple, lag: float = 0.75, twist: float = 6.0) -> None:
     """Beat the wings: each joint bends up and down (positive = up) a little later than the one before it, so the
     wave runs out to the tips; the wing pitches its leading edge down on the down stroke."""
@@ -619,24 +570,10 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
 # --- measures ---------------------------------------------------------------------------------------
 
 
-def mesh_points(name: str) -> list:
-    obj = bpy.data.objects[name]
-    dg = bpy.context.evaluated_depsgraph_get()
-    ev = obj.evaluated_get(dg)
-    me = ev.to_mesh()
-    pts = [ev.matrix_world @ v.co for v in me.vertices]
-    ev.to_mesh_clear()
-    return pts
-
-
 def posed(arm: bpy.types.Object, bone: str, point: Vector) -> Vector:
     """A rest-pose point carried by `bone` in the current pose (world space)."""
     pb = arm.pose.bones[bone]
     return arm.matrix_world @ (pb.matrix @ arm.data.bones[bone].matrix_local.inverted() @ point)
-
-
-def fmt(v: Vector) -> tuple:
-    return tuple(round(x, 3) for x in v)
 
 
 def measures(arm: bpy.types.Object) -> None:
@@ -775,7 +712,7 @@ def main() -> None:
     if MODE != "stats":
         preview(root, arm)
     if MODE == "final":
-        bake_clips(arm, CLIPS)
+        K.bake_clips(arm, CLIPS, scaled=("Sac",))
         bpy.context.scene.render.fps = FPS
         C.save_blend(OUT / "skimmer_procedural.blend")
         C.export_glb(OUT / "skimmer_draft.glb")

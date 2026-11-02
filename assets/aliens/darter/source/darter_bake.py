@@ -30,6 +30,7 @@ from mathutils import Vector
 
 import bake as B
 import common as C
+import creature as K
 
 ASSET = "Darter"
 SKINNED = ("Creature", "Eyes", "Glands", "Wings")
@@ -38,26 +39,20 @@ FLIGHT = 1.3  # height of the check renders only
 
 
 def prepare(job: B.Job) -> list:
-    for name in SKINNED:
-        obj = bpy.data.objects[name]
-        for mod in [m for m in obj.modifiers if m.type == "ARMATURE"]:
-            obj.modifiers.remove(mod)
+    K.unbind(SKINNED)
     bpy.data.objects["Wings"].hide_render = True
     return []
 
 
 def finish(job: B.Job, objs: list) -> None:
-    C.assign(bpy.data.objects["Eyes"], B.mat_constant("Eyes", EYE_COLOR, roughness=0.2, emission=6.0))
-    C.assign(bpy.data.objects["Glands"], B.mat_constant("Glands", EYE_COLOR, roughness=0.3, emission=3.0))
+    K.glow(EYE_COLOR, glands=(0.3, 3.0))
     wings = bpy.data.objects["Wings"]
     wings.hide_render = False
     wing = wings.data.materials[0]
     assert wing.name == "Wing" and B.is_constant(wing), wing.name
     wing.use_backface_culling = False
     wing.surface_render_method = "BLENDED"
-    for name in SKINNED:
-        obj = bpy.data.objects[name]
-        obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects["Skeleton"]
+    K.rebind(SKINNED)
 
 
 JOB = B.kit_job(
@@ -86,8 +81,7 @@ def glb_material(job: B.Job, name: str) -> dict:
 def checks(job: B.Job, meshes: list) -> None:
     print("CHECK actions", sorted(a.name for a in bpy.data.actions))
     print("CHECK Wing material", json.dumps(glb_material(job, "Wing")))
-    for obj in [o for o in bpy.data.objects if o.name.startswith("Icosphere")]:  # the importer's bone shape
-        bpy.data.objects.remove(obj)
+    K.drop_bone_shapes()
     for obj in C.collection(job.asset).all_objects:
         if obj.parent is None:
             obj.location.z += FLIGHT  # in the air, like in the game (the origin is the thorax center)

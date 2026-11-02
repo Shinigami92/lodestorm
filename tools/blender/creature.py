@@ -23,6 +23,7 @@ import bpy
 from mathutils import Matrix, Vector, noise
 
 import common as C
+from common import rz
 
 I3 = Matrix.Identity(3)
 SIDES = (("Left", 1.0), ("Right", -1.0))
@@ -472,6 +473,19 @@ class Pose:
         return base @ self.rel.get(bone, I3)
 
 
+class ScaledPose(Pose):
+    """A Pose plus a scale per bone (a sac swelling, pods throbbing), as three factors along the bone's own axes
+    (`apply` sets them; `bake_clips(..., scaled=...)` keys them)."""
+
+    def __init__(self, rig: Rig, offset=(0, 0, 0)):
+        super().__init__(rig, offset)
+        self.scale: dict = {}
+
+    def grow(self, bone: str, x: float, y: float, z: float) -> "ScaledPose":
+        self.scale[bone] = Vector((x, y, z))
+        return self
+
+
 def apply(arm: bpy.types.Object, pose: Pose) -> None:
     """Set the armature's pose bones from a Pose (local rotation q = R^-1 W_parent^-1 W R)."""
     for name, _h, _t, parent in pose.rig.bones:
@@ -484,12 +498,17 @@ def apply(arm: bpy.types.Object, pose: Pose) -> None:
             q.negate()
         pb.rotation_quaternion = q
         pb.location = rest.transposed() @ pose.offset if name == "Body" else Vector()
+    scale = getattr(pose, "scale", None)  # a ScaledPose's bones grow and shrink too
+    if scale is not None:
+        for pb in arm.pose.bones:
+            pb.scale = scale.get(pb.name, Vector((1, 1, 1)))
 
 
 def rest_pose(arm: bpy.types.Object) -> None:
     for pb in arm.pose.bones:
         pb.rotation_quaternion = (1, 0, 0, 0)
         pb.location = (0, 0, 0)
+        pb.scale = (1, 1, 1)
     bpy.context.view_layer.update()
 
 
@@ -498,8 +517,9 @@ def smooth(t: float) -> float:
     return t * t * (3 - 2 * t)
 
 
-def bake_clips(arm: bpy.types.Object, clips: dict) -> None:
-    """Keys each clip (name: (frames, pose(t) for t in 0..1)) into its own action and muted NLA track."""
+def bake_clips(arm: bpy.types.Object, clips: dict, scaled: tuple = ()) -> None:
+    """Keys each clip (name: (frames, pose(t) for t in 0..1)) into its own action and muted NLA track; the bones in
+    `scaled` (a ScaledPose's) get their scale keyed too."""
     ad = arm.animation_data_create()
     for name, (frames, fn) in clips.items():
         ad.action = None
@@ -509,6 +529,8 @@ def bake_clips(arm: bpy.types.Object, clips: dict) -> None:
                 pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)
                 if pb.name == "Body":
                     pb.keyframe_insert("location", frame=f, group=pb.name)
+                if pb.name in scaled:
+                    pb.keyframe_insert("scale", frame=f, group=pb.name)
         act = ad.action
         act.name = name
         track = ad.nla_tracks.new()
@@ -517,3 +539,146 @@ def bake_clips(arm: bpy.types.Object, clips: dict) -> None:
         track.mute = True
         ad.action = None
     rest_pose(arm)
+
+
+# --- posing and measuring ------------------------------------------------------------------------------------------
+
+
+def bounds(names=("Creature", "Eyes", "Glands")) -> tuple:
+    """Bounds of the posed meshes (after the armature)."""
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for name in names:
+        ev = bpy.data.objects[name].evaluated_get(depsgraph)
+        me = ev.to_mesh()
+        for v in me.vertices:
+            w = ev.matrix_world @ v.co
+            lo = Vector(map(min, lo, w))
+            hi = Vector(map(max, hi, w))
+        ev.to_mesh_clear()
+    return tuple(round(x, 3) for x in lo), tuple(round(x, 3) for x in hi)
+
+
+def bone_verts(bones: list) -> list:
+    """World positions (posed) of the Creature's vertices weighted mostly to one of `bones`."""
+    obj = bpy.data.objects["Creature"]
+    names = {g.index: g.name for g in obj.vertex_groups}
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(depsgraph)
+    me = ev.to_mesh()
+    out = [
+        ev.matrix_world @ me.vertices[v.index].co
+        for v in obj.data.vertices
+        if v.groups and names[max(v.groups, key=lambda g: g.weight).group] in bones
+    ]
+    ev.to_mesh_clear()
+    return out
+
+
+def slab(sk: Skin, top: list, bottom: list, mi: int) -> list:
+    """A closed slab between two grids of points (rows of the same length)."""
+    top_v = [[sk.bm.verts.new(p) for p in row] for row in top]
+    bot_v = [[sk.bm.verts.new(p) for p in row] for row in bottom]
+    return close_grid(sk, top_v, bot_v, mi)
+
+
+def two_bone(root: Vector, target: Vector, a: float, b: float, pole: Vector) -> tuple:
+    """Knee and end of a two-bone chain from root reaching for target, bending towards pole (as AlienLegs does)."""
+    off = target - root
+    dist = min(max(off.length, abs(a - b) + 0.001), (a + b) * 0.999)
+    d = off.normalized()
+    side = (pole - d * pole.dot(d)).normalized()
+    cos_a = (a * a + dist * dist - b * b) / (2 * a * dist)
+    sin_a = math.sqrt(max(0.0, 1 - cos_a * cos_a))
+    return root + (d * cos_a + side * sin_a) * a, root + d * dist
+
+
+def arc(a: Vector, b: Vector) -> Matrix:
+    return a.rotation_difference(b).to_matrix()
+
+
+def mandibles(p: Pose, spread: float) -> None:
+    """Both mandibles swing out (spread > 0) or clamp in (< 0), in degrees."""
+    for side, s in SIDES:
+        p.set(f"{side}Mandible", rz(s * spread))
+
+
+def darken(mat: bpy.types.Material, factor: float) -> bpy.types.Material:
+    """Scales the material's constant colors (raiders have darker chitin, see docs/design/aliens.md, Alien look)."""
+    for node in mat.node_tree.nodes:
+        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
+            for sock in (node.inputs[6], node.inputs[7]):
+                if not sock.is_linked:
+                    r, g, b, a = sock.default_value
+                    sock.default_value = (r * factor, g * factor, b * factor, a)
+    return mat
+
+
+def mirror_angle(a: float, s: float) -> float:
+    return a if s > 0 else 180 - a
+
+
+def mesh_points(name: str) -> list:
+    obj = bpy.data.objects[name]
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    me = ev.to_mesh()
+    pts = [ev.matrix_world @ v.co for v in me.vertices]
+    ev.to_mesh_clear()
+    return pts
+
+
+def fmt(v: Vector) -> tuple:
+    return tuple(round(x, 3) for x in v)
+
+
+def posed_head(p: Pose, bone: str) -> Vector:
+    """Where the head of `bone` is in pose p."""
+    parent = p.rig.parent[bone]
+    if parent is None:
+        return p.rig.head[bone].copy()
+    h = posed_point(p, parent, p.rig.head[bone])
+    return h + p.offset if bone == "Body" else h
+
+
+def posed_point(p: Pose, bone: str, point: Vector) -> Vector:
+    """Where a point that moves with `bone` (at rest at `point`) is in pose p."""
+    return p.world(bone) @ (Vector(point) - p.rig.head[bone]) + posed_head(p, bone)
+
+
+# --- baking ------------------------------------------------------------------------------------------
+
+
+def unbind(names) -> None:
+    """Takes the armature off the skinned meshes `names` for the bake (it bakes them at rest)."""
+    for name in names:
+        obj = bpy.data.objects[name]
+        for mod in [m for m in obj.modifiers if m.type == "ARMATURE"]:
+            obj.modifiers.remove(mod)
+
+
+def rebind(names, skeleton: str = "Skeleton") -> None:
+    """Puts the armature back on the skinned meshes `names` after the bake."""
+    for name in names:
+        obj = bpy.data.objects[name]
+        obj.modifiers.new("Armature", "ARMATURE").object = bpy.data.objects[skeleton]
+
+
+def glow(eye_color, glands: tuple | None = None) -> None:
+    """The baked creature's glowing parts as constant materials: the Eyes (`eye_color`, linear), and the Glands in
+    the same color with `glands` (roughness, emission); none without."""
+    import bake as B
+
+    C.assign(bpy.data.objects["Eyes"], B.mat_constant("Eyes", eye_color, roughness=0.2, emission=6.0))
+    if glands:
+        roughness, emission = glands
+        C.assign(
+            bpy.data.objects["Glands"], B.mat_constant("Glands", eye_color, roughness=roughness, emission=emission)
+        )
+
+
+def drop_bone_shapes() -> None:
+    """Removes the glTF importer's bone shapes (icospheres) before the check renders."""
+    for obj in [o for o in bpy.data.objects if o.name.startswith("Icosphere")]:
+        bpy.data.objects.remove(obj)

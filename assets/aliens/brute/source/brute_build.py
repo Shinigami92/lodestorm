@@ -47,6 +47,7 @@ from mathutils import Matrix, Vector, noise
 import common as C
 import creature as K
 from common import rx, ry, rz
+from creature import arc, bone_verts, bounds, posed_head, posed_point, slab, two_bone
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -162,13 +163,6 @@ POS: dict = {}  # positions measured while building (for the report)
 
 
 # --- helpers ----------------------------------------------------------------------------------------
-
-
-def slab(sk: K.Skin, top: list, bottom: list, mi: int) -> list:
-    """A closed slab between two grids of points (rows of the same length)."""
-    top_v = [[sk.bm.verts.new(p) for p in row] for row in top]
-    bot_v = [[sk.bm.verts.new(p) for p in row] for row in bottom]
-    return K.close_grid(sk, top_v, bot_v, mi)
 
 
 def plate(
@@ -454,35 +448,6 @@ def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
 # --- posing -----------------------------------------------------------------------------------------
 
 
-def posed_head(p: K.Pose, bone: str) -> Vector:
-    """Where the head of `bone` is in pose p."""
-    parent = RIG.parent[bone]
-    if parent is None:
-        return RIG.head[bone].copy()
-    h = posed_point(p, parent, RIG.head[bone])
-    return h + p.offset if bone == "Body" else h
-
-
-def posed_point(p: K.Pose, bone: str, point: Vector) -> Vector:
-    """Where a point that moves with `bone` (at rest at `point`) is in pose p."""
-    return p.world(bone) @ (Vector(point) - RIG.head[bone]) + posed_head(p, bone)
-
-
-def arc(a: Vector, b: Vector) -> Matrix:
-    return a.rotation_difference(b).to_matrix()
-
-
-def two_bone(root: Vector, target: Vector, a: float, b: float, pole: Vector) -> tuple:
-    """Knee and end of a two-bone chain from root reaching for target, bending towards pole (as AlienLegs does)."""
-    off = target - root
-    dist = min(max(off.length, abs(a - b) + 0.001), (a + b) * 0.999)
-    d = off.normalized()
-    side = (pole - d * pole.dot(d)).normalized()
-    cos_a = (a * a + dist * dist - b * b) / (2 * a * dist)
-    sin_a = math.sqrt(max(0.0, 1 - cos_a * cos_a))
-    return root + (d * cos_a + side * sin_a) * a, root + d * dist
-
-
 def rest_pole(leg: str) -> Vector:
     """The side the knee of `leg` (e.g. "HindLeft") bends to at rest, in rest space."""
     hip_r, knee_r, ankle_r = RIG.head[f"{leg}UpperLeg"], RIG.head[f"{leg}LowerLeg"], RIG.head[f"{leg}Foot"]
@@ -624,38 +589,6 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
 }
 
 # --- preview ----------------------------------------------------------------------------------------
-
-
-def bounds(names=("Creature", "Eyes", "Glands")) -> tuple:
-    """Bounds of the posed meshes (after the armature)."""
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    lo = Vector((1e9, 1e9, 1e9))
-    hi = Vector((-1e9, -1e9, -1e9))
-    for name in names:
-        ev = bpy.data.objects[name].evaluated_get(depsgraph)
-        me = ev.to_mesh()
-        for v in me.vertices:
-            w = ev.matrix_world @ v.co
-            lo = Vector(map(min, lo, w))
-            hi = Vector(map(max, hi, w))
-        ev.to_mesh_clear()
-    return tuple(round(x, 3) for x in lo), tuple(round(x, 3) for x in hi)
-
-
-def bone_verts(bones: list) -> list:
-    """World positions (posed) of the Creature's vertices weighted mostly to one of `bones`."""
-    obj = bpy.data.objects["Creature"]
-    names = {g.index: g.name for g in obj.vertex_groups}
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    ev = obj.evaluated_get(depsgraph)
-    me = ev.to_mesh()
-    out = [
-        ev.matrix_world @ me.vertices[v.index].co
-        for v in obj.data.vertices
-        if v.groups and names[max(v.groups, key=lambda g: g.weight).group] in bones
-    ]
-    ev.to_mesh_clear()
-    return out
 
 
 def measures(arm: bpy.types.Object) -> None:

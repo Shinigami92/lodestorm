@@ -46,6 +46,7 @@ from mathutils import Vector
 import common as C
 import creature as K
 from common import rx, ry, rz
+from creature import bounds, darken, mandibles, slab
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -188,13 +189,6 @@ def u_samples(plate: dict, ts: list) -> list:
 
 
 # --- parts ------------------------------------------------------------------------------------------
-
-
-def slab(sk: K.Skin, top: list, bottom: list, mi: int) -> list:
-    """A closed slab between two grids of points (rows of the same length)."""
-    top_v = [[sk.bm.verts.new(p) for p in row] for row in top]
-    bot_v = [[sk.bm.verts.new(p) for p in row] for row in bottom]
-    return K.close_grid(sk, top_v, bot_v, mi)
 
 
 def build_trunk(sk: K.Skin) -> None:
@@ -429,17 +423,6 @@ def build_legs(sk: K.Skin) -> None:
             sk.rigid(sk.cone(j[2] + Vector((0, 0.01, -0.015)), j[2] + back, 0.014, 5, K.BONE), low if hind else foot)
 
 
-def darken(mat: bpy.types.Material, factor: float) -> bpy.types.Material:
-    """Scales the material's constant colors (raiders have darker chitin, see docs/design/aliens.md, Alien look)."""
-    for node in mat.node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            for sock in (node.inputs[6], node.inputs[7]):
-                if not sock.is_linked:
-                    r, g, b, a = sock.default_value
-                    sock.default_value = (r * factor, g * factor, b * factor, a)
-    return mat
-
-
 def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
     mats = K.materials()
     darken(mats[K.CHITIN], CHITIN_SHADE)
@@ -463,12 +446,6 @@ def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
 def pulse(t: float, t0: float, rise: float = 0.035, fall: float = 0.12) -> float:
     """A quick twitch at t0: up in `rise`, back down in `fall`."""
     return K.smooth((t - t0) / rise) * (1 - K.smooth((t - t0 - rise) / fall))
-
-
-def mandibles(p: K.Pose, spread: float) -> None:
-    """Both mandibles swing out (spread > 0) or clamp in (< 0), in degrees."""
-    for side, s in K.SIDES:
-        p.set(f"{side}Mandible", rz(s * spread))
 
 
 def tail(p: K.Pose, sway: float, lift: float) -> None:
@@ -563,22 +540,6 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
 }
 
 # --- preview ----------------------------------------------------------------------------------------
-
-
-def bounds() -> tuple:
-    """Bounds of the posed meshes (after the armature)."""
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    lo = Vector((1e9, 1e9, 1e9))
-    hi = Vector((-1e9, -1e9, -1e9))
-    for name in ("Creature", "Eyes", "Glands"):
-        ev = bpy.data.objects[name].evaluated_get(depsgraph)
-        me = ev.to_mesh()
-        for v in me.vertices:
-            w = ev.matrix_world @ v.co
-            lo = Vector(map(min, lo, w))
-            hi = Vector(map(max, hi, w))
-        ev.to_mesh_clear()
-    return tuple(round(x, 3) for x in lo), tuple(round(x, 3) for x in hi)
 
 
 def measures() -> None:

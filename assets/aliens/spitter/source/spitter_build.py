@@ -40,6 +40,9 @@ from mathutils import Matrix, Vector
 
 import common as C
 import creature as K
+from creature import apply, rest_pose
+
+Pose = K.ScaledPose  # the kit's pose plus a scale per bone
 from common import rx, ry, rz
 
 ARGV = C.args()
@@ -351,54 +354,6 @@ def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
 # --- posing -----------------------------------------------------------------------------------------
 
 
-class Pose(K.Pose):
-    """The kit's pose plus a scale per bone (the sac swelling and squeezing), as (width, height, length) in the
-    bone's axes: for Sac (pointing up) x, z and y of the world."""
-
-    def __init__(self, rig: K.Rig, offset=(0, 0, 0)):
-        super().__init__(rig, offset)
-        self.scale: dict = {}
-
-    def grow(self, bone: str, width: float, height: float, length: float) -> "Pose":
-        self.scale[bone] = Vector((width, height, length))
-        return self
-
-
-def apply(arm: bpy.types.Object, pose: Pose) -> None:
-    K.apply(arm, pose)
-    for pb in arm.pose.bones:
-        pb.scale = pose.scale.get(pb.name, Vector((1, 1, 1)))
-
-
-def rest_pose(arm: bpy.types.Object) -> None:
-    for pb in arm.pose.bones:
-        pb.scale = (1, 1, 1)
-    K.rest_pose(arm)
-
-
-def bake_clips(arm: bpy.types.Object, clips: dict) -> None:
-    """K.bake_clips with the Sac's scale keyed too."""
-    ad = arm.animation_data_create()
-    for name, (frames, fn) in clips.items():
-        ad.action = None
-        for f in range(frames + 1):
-            apply(arm, fn(f / frames))
-            for pb in arm.pose.bones:
-                pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)
-                if pb.name == "Body":
-                    pb.keyframe_insert("location", frame=f, group=pb.name)
-                if pb.name == "Sac":
-                    pb.keyframe_insert("scale", frame=f, group=pb.name)
-        act = ad.action
-        act.name = name
-        track = ad.nla_tracks.new()
-        track.name = name
-        track.strips.new(name, 0, act)
-        track.mute = True
-        ad.action = None
-    rest_pose(arm)
-
-
 def mandibles(p: Pose, spread: float) -> None:
     for side, s in K.SIDES:
         p.set(f"{side}Mandible", rz(s * spread))
@@ -588,7 +543,7 @@ def main() -> None:
     if MODE != "stats":
         preview(arm, TAG if MODE == "wip" else "final")
     if MODE == "final":
-        bake_clips(arm, CLIPS)
+        K.bake_clips(arm, CLIPS, scaled=("Sac",))
         bpy.context.scene.render.fps = FPS
         C.save_blend(OUT / "spitter_procedural.blend")
         C.export_glb(OUT / "spitter_draft.glb")

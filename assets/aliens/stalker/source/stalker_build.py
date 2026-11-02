@@ -52,6 +52,7 @@ from mathutils import Matrix, Vector
 import common as C
 import creature as K
 from common import rx, ry, rz
+from creature import arc, bounds, darken, posed_head, posed_point, slab, two_bone
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -292,17 +293,6 @@ def mat_chitin() -> bpy.types.Material:
     return mat
 
 
-def darken(mat: bpy.types.Material, factor: float) -> bpy.types.Material:
-    """Scales the material's constant colors."""
-    for node in mat.node_tree.nodes:
-        if node.bl_idname == "ShaderNodeMix" and node.data_type == "RGBA":
-            for sock in (node.inputs[6], node.inputs[7]):
-                if not sock.is_linked:
-                    r, g, b, a = sock.default_value
-                    sock.default_value = (r * factor, g * factor, b * factor, a)
-    return mat
-
-
 def materials() -> list:
     """The hive's materials (SINEW, CHITIN, BONE, MOUTH), the chitin the stalker's own, the sinew darker."""
     chitin = mat_chitin()  # first, so the kit's "Chitin" isn't made
@@ -310,13 +300,6 @@ def materials() -> list:
 
 
 # --- parts ------------------------------------------------------------------------------------------
-
-
-def slab(sk: K.Skin, top: list, bottom: list, mi: int) -> list:
-    """A closed slab between two grids of points (rows of the same length)."""
-    top_v = [[sk.bm.verts.new(p) for p in row] for row in top]
-    bot_v = [[sk.bm.verts.new(p) for p in row] for row in bottom]
-    return K.close_grid(sk, top_v, bot_v, mi)
 
 
 def side_angle(a: float, s: float) -> float:
@@ -673,35 +656,6 @@ def build(root: bpy.types.Object, arm: bpy.types.Object) -> tuple:
 # --- posing -----------------------------------------------------------------------------------------
 
 
-def posed_head(p: K.Pose, bone: str) -> Vector:
-    """Where the head of `bone` is in pose p."""
-    parent = RIG.parent[bone]
-    if parent is None:
-        return RIG.head[bone].copy()
-    h = posed_point(p, parent, RIG.head[bone])
-    return h + p.offset if bone == "Body" else h
-
-
-def posed_point(p: K.Pose, bone: str, point: Vector) -> Vector:
-    """Where a point that moves with `bone` (at rest at `point`) is in pose p."""
-    return p.world(bone) @ (Vector(point) - RIG.head[bone]) + posed_head(p, bone)
-
-
-def arc(a: Vector, b: Vector) -> Matrix:
-    return a.rotation_difference(b).to_matrix()
-
-
-def two_bone(root: Vector, target: Vector, a: float, b: float, pole: Vector) -> tuple:
-    """Knee and end of a two-bone chain from root reaching for target, bending towards pole (as AlienLegs does)."""
-    off = target - root
-    dist = min(max(off.length, abs(a - b) + 0.001), (a + b) * 0.999)
-    d = off.normalized()
-    side = (pole - d * pole.dot(d)).normalized()
-    cos_a = (a * a + dist * dist - b * b) / (2 * a * dist)
-    sin_a = math.sqrt(max(0.0, 1 - cos_a * cos_a))
-    return root + (d * cos_a + side * sin_a) * a, root + d * dist
-
-
 def leg_ik(p: K.Pose, side: str, ankle: Vector, foot_world: Matrix | None = I3) -> None:
     """Bends the leg so its ankle reaches `ankle` (world), the knee towards its rest side (turned with the hips), the
     Foot with the world rotation foot_world (None: it keeps its angle to the lower leg)."""
@@ -881,22 +835,6 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
 }
 
 # --- preview ----------------------------------------------------------------------------------------
-
-
-def bounds() -> tuple:
-    """Bounds of the posed meshes (after the armature)."""
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    lo = Vector((1e9, 1e9, 1e9))
-    hi = Vector((-1e9, -1e9, -1e9))
-    for name in ("Creature", "Eyes", "Glands"):
-        ev = bpy.data.objects[name].evaluated_get(depsgraph)
-        me = ev.to_mesh()
-        for v in me.vertices:
-            w = ev.matrix_world @ v.co
-            lo = Vector(map(min, lo, w))
-            hi = Vector(map(max, hi, w))
-        ev.to_mesh_clear()
-    return tuple(round(x, 3) for x in lo), tuple(round(x, 3) for x in hi)
 
 
 def lowest(below: float = -0.01) -> dict:

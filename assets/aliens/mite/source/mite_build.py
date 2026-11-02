@@ -41,6 +41,7 @@ from mathutils import Vector
 import common as C
 import creature as K
 from common import rx, ry, rz
+from creature import mesh_points, mirror_angle
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -135,10 +136,6 @@ HEAD_SHAPE = K.Profile(HEAD)
 SEAMS = [(-0.04, 0.0), (0.07, 0.05), (0.17, 0.042), (0.262, 0.0)]  # y on the top, how far back at the sides
 SEAM_GAP = 0.012  # half the gap across (m)
 PLATE_ANGLES = (30, 83)  # left side (90 = the top); the right side mirrors around 90
-
-
-def mirror_angle(a: float, s: float) -> float:
-    return a if s > 0 else 180 - a
 
 
 def seam_y(seam: tuple, a: float) -> float:
@@ -359,16 +356,6 @@ CLIPS = {  # name: (frames, pose(t) for t in 0..1)
 }
 
 # --- measures ---------------------------------------------------------------------------------------
-
-
-def mesh_points(name: str) -> list:
-    obj = bpy.data.objects[name]
-    dg = bpy.context.evaluated_depsgraph_get()
-    ev = obj.evaluated_get(dg)
-    me = ev.to_mesh()
-    pts = [ev.matrix_world @ v.co for v in me.vertices]
-    ev.to_mesh_clear()
-    return pts
 
 
 def measures(arm: bpy.types.Object) -> None:

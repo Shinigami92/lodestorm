@@ -28,10 +28,10 @@ func test_they_wait_at_their_places_until_they_join() -> void:
 		var waiting := _people(who)
 		var aboard := _ship.get_node(PLACES[who]) as Npc
 		assert_eq(waiting.profile, aboard.profile, who)
-		assert_true(waiting.is_present() and waiting.visible, who + " at their place")
+		assert_true(waiting.presence.is_here() and waiting.visible, who + " at their place")
 		assert_true(waiting.use_point.enabled, who + " talks about themselves there")
 		assert_true(waiting.has_news(_player), who + ": nothing heard yet")
-		assert_false(aboard.is_present(), who + " not aboard")
+		assert_false(aboard.presence.is_here(), who + " not aboard")
 	assert_true(_people("Fenna").body.sitting, "Fenna sits at Rook's booth")
 	assert_false((_station.get_node("DaceStall/Shutter") as Node3D).visible, "his stall is open")
 
@@ -56,9 +56,9 @@ func test_joining_walks_them_aboard() -> void:
 	assert_true(_voyage.choose(away))
 	assert_true(_voyage.can_confirm(), "the ship could leave")
 	_ship.story.set_flag(dace.profile.join_flag)
-	assert_true(dace.is_present(), "on his way")
+	assert_true(dace.presence.is_here(), "on his way")
 	assert_eq(NpcBoarding.walking(get_tree()), [dace] as Array[Npc])
-	assert_false(gunsmith.is_present(), "not aboard yet")
+	assert_false(gunsmith.presence.is_here(), "not aboard yet")
 	await wait_physics_frames(2)
 	assert_false(_ship.ramp_button.enabled, "the ramp stays down for him")
 	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
@@ -66,9 +66,9 @@ func test_joining_walks_them_aboard() -> void:
 	assert_false(console.can_launch())
 	await _until(func() -> bool: return dace.global_position.y > foot.y + 1.0, 10.0)
 	assert_gt(dace.global_position.y, foot.y + 1.0, "up the ramp")
-	await _until(func() -> bool: return gunsmith.is_present(), 10.0)
-	assert_true(gunsmith.is_present() and gunsmith.visible, "aboard")
-	assert_false(dace.is_present() or dace.visible, "gone from the ramp")
+	await _until(func() -> bool: return gunsmith.presence.is_here(), 10.0)
+	assert_true(gunsmith.presence.is_here() and gunsmith.visible, "aboard")
+	assert_false(dace.presence.is_here() or dace.visible, "gone from the ramp")
 	assert_true(NpcBoarding.walking(get_tree()).is_empty())
 	assert_true(_voyage.can_confirm(), "then it may leave")
 	var door: Vector3 = _ship.ramp_way()[1]
@@ -83,8 +83,8 @@ func test_their_places_stay_empty_once_aboard() -> void:
 	await _dock_at_ostra(true)
 	for who: String in PLACES:
 		var waiting := _people(who)
-		assert_false(waiting.is_present() or waiting.visible, who)
-		assert_true((_ship.get_node(PLACES[who]) as Npc).is_present(), who)
+		assert_false(waiting.presence.is_here() or waiting.visible, who)
+		assert_true((_ship.get_node(PLACES[who]) as Npc).presence.is_here(), who)
 	assert_true(NpcBoarding.walking(get_tree()).is_empty(), "nobody walks aboard on a load")
 	assert_true((_station.get_node("DaceStall/Shutter") as Node3D).visible, "his shutter is down")
 

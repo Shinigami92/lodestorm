@@ -231,7 +231,8 @@ func stop_boarding() -> void:
 	boarding = null
 
 
-## They've come aboard at the door (see `Npc.arrive`): on to their post, stopping for nobody.
+## They've come aboard at the door (see `NpcPresence.arrive`): on to their post, stopping for
+## nobody.
 func arrive() -> void:
 	_walker.stop()
 	_spot = null
@@ -315,7 +316,7 @@ func _walk_aboard(delta: float) -> bool:
 		return false
 	if boarding.update(delta):
 		boarding = null
-		npc.update_presence()
+		npc.presence.update()
 	return true
 
 

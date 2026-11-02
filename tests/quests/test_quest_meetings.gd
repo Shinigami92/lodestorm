@@ -194,7 +194,7 @@ func test_the_location_places_them() -> void:
 		return
 	assert_eq(hollis.position, camp.transform() * _spot(camp), "at its person marker")
 	assert_true(hollis.waits_to_join)
-	assert_true(hollis.get_quests() is VisitQuests, "the quests as they are out here")
+	assert_true(hollis.quests.get_log() is VisitQuests, "the quests as they are out here")
 	assert_has(hollis.get_choices(), _quest.steps[0].hand_in, "the hand-in")
 	assert_true(hollis.use_point.enabled, "talked to there")
 	var mark := hollis.get_node(^"HandInMark") as HandInMark
@@ -217,7 +217,7 @@ func test_the_location_places_them() -> void:
 			filled.append(crate)
 	assert_eq(filled.size(), 1, "his part in a crate")
 	var payer: Player = autofree(Player.new())
-	assert_true(hollis.get_quests().hand_in(_quest, payer, []), "handed in out there")
+	assert_true(hollis.quests.get_log().hand_in(_quest, payer, []), "handed in out there")
 	assert_eq(_log.current_step(_quest), _quest.steps[1])
 
 

@@ -51,7 +51,7 @@ func _exit_tree() -> void:
 	# Never leaves the game stopped (e.g. the map reloads).
 	if pausing:
 		pausing = false
-		get_tree().paused = false
+		GamePause.release(self)
 
 
 func _process(delta: float) -> void:
@@ -141,7 +141,10 @@ func _set_pausing(paused: bool) -> void:
 	if pausing == paused:
 		return
 	pausing = paused
-	get_tree().paused = paused
+	if paused:
+		GamePause.hold(self)
+	else:
+		GamePause.release(self)
 	if get_card():
 		get_card().show_page(get_card().page)
 

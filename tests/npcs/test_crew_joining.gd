@@ -40,11 +40,11 @@ func after_each() -> void:
 func test_four_aboard_at_the_start_and_four_join_later() -> void:
 	for path: String in FROM_THE_START:
 		var npc := _ship.get_node(path) as Npc
-		assert_true(npc.is_present(), path)
+		assert_true(npc.presence.is_here(), path)
 		assert_true(npc.visible and npc.use_point.enabled, path)
 	for path: String in JOINING:
 		var npc := _ship.get_node(path) as Npc
-		assert_false(npc.is_present(), path)
+		assert_false(npc.presence.is_here(), path)
 		assert_false(npc.visible or npc.use_point.enabled, path)
 		assert_eq(npc.process_mode, Node.PROCESS_MODE_DISABLED, path)
 	assert_eq(_ship.reactions.crew().size(), FROM_THE_START.size(), "only those aboard call in")

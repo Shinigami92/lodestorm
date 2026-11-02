@@ -46,6 +46,7 @@ from mathutils import Matrix, Vector
 
 import common as C
 from common import T, rx, ry, rz
+from rock_geo import box_points, hull, rand_dir, rand_rot, support, work_collection
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -66,20 +67,6 @@ ORE_MARKERS = [(5.6, -2.0), (-5.4, -1.4), (0.6, 5.8)]
 # --- math helpers -------------------------------------------------------------------------------------
 
 
-def rand_rot(rnd: random.Random, tilt: float, spin: float = 180.0) -> Matrix:
-    """Random spin around Z, then a lean of up to `tilt` degrees in a random direction."""
-    return rz(rnd.uniform(0, 360)) @ rx(rnd.uniform(-tilt, tilt)) @ rz(rnd.uniform(-spin, spin))
-
-
-def rand_dir(rnd: random.Random, min_z: float = -1.0, max_z: float = 1.0) -> Vector:
-    while True:
-        v = Vector((rnd.gauss(0, 1), rnd.gauss(0, 1), rnd.gauss(0, 1)))
-        if v.length > 1e-3:
-            v.normalize()
-            if min_z <= v.z <= max_z:
-                return v
-
-
 def frame(x: Vector, y: Vector) -> Matrix:
     """3x3 rotation with X along `x` and Y as close as possible to `y`."""
     x = x.normalized()
@@ -93,17 +80,6 @@ def smoothstep(a: float, b: float, x: float) -> float:
 
 
 # --- convex pieces and cuts ---------------------------------------------------------------------------
-
-
-def hull(points: list) -> bmesh.types.BMesh:
-    bm = bmesh.new()
-    verts = [bm.verts.new(p) for p in points]
-    res = bmesh.ops.convex_hull(bm, input=verts, use_existing_faces=False)
-    kill = list({g for g in res["geom_interior"] + res["geom_unused"] if isinstance(g, bmesh.types.BMVert)})
-    if kill:
-        bmesh.ops.delete(bm, geom=kill, context="VERTS")
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    return bm
 
 
 def cut(bm: bmesh.types.BMesh, normal, keep: float = 0.8, at: float | None = None, kind: float | None = None):
@@ -130,34 +106,12 @@ def place(bm: bmesh.types.BMesh, m: Matrix) -> bmesh.types.BMesh:
     return bm
 
 
-def box_points(rnd: random.Random, size, jitter: float = 0.14, extra: int = 6, bulge: float = 0.12) -> list:
-    """Corners of a box (centered) jittered, plus a few points pushed out of its faces (extra facets)."""
-    sx, sy, sz = size
-    pts = []
-    for cx in (-1, 1):
-        for cy in (-1, 1):
-            for cz in (-1, 1):
-                j = Vector((rnd.uniform(-1, 1) * sx, rnd.uniform(-1, 1) * sy, rnd.uniform(-1, 1) * sz)) * jitter
-                pts.append(Vector((cx * sx / 2, cy * sy / 2, cz * sz / 2)) + j)
-    for _ in range(extra):
-        axis = rnd.randrange(3)
-        p = [rnd.uniform(-0.4, 0.4) * s for s in size]
-        p[axis] = rnd.choice((-1, 1)) * size[axis] / 2 * (1 + rnd.uniform(0, bulge))
-        pts.append(Vector(p))
-    return pts
-
-
 def chunk(rnd: random.Random, size, cuts: int = 3, m: Matrix | None = None, keep=(0.72, 0.9), **kw):
     """A jagged rock block: a jittered box hull with `cuts` fracture facets shaved off."""
     bm = hull(box_points(rnd, size, **kw))
     for _ in range(cuts):
         cut(bm, rand_dir(rnd, min_z=-0.2), rnd.uniform(*keep))
     return place(bm, m) if m is not None else bm
-
-
-def support(bm: bmesh.types.BMesh, direction) -> Vector:
-    d = Vector(direction).normalized()
-    return max((v.co.copy() for v in bm.verts), key=lambda p: p.dot(d))
 
 
 def mass(rnd: random.Random, size, subdivisions: int, sites: int, dent: float, lumps: float = 0.1):
@@ -216,16 +170,10 @@ def bm_to_obj(bm: bmesh.types.BMesh, name: str, coll: str, kind: float | None) -
     return obj
 
 
-def _work_collection(name: str) -> bpy.types.Collection:
-    coll = bpy.data.collections.new(name)
-    C.collection("Work").children.link(coll)
-    return coll
-
-
 def subtract(name: str, base_bm: bmesh.types.BMesh, cutters: list) -> bmesh.types.BMesh:
     """The base minus the cutters ((bmesh, kind) pairs: the faces a cutter leaves behind get its kind)."""
     base = bm_to_obj(base_bm, name + "_base", "Work", None)
-    coll = _work_collection(name + "_cut")
+    coll = work_collection(name + "_cut")
     for i, (bm, kind) in enumerate(cutters):
         bm_to_obj(bm, f"{name}_c{i}", coll.name, kind)
     mod = base.modifiers.new("Difference", "BOOLEAN")

@@ -49,6 +49,7 @@ from mathutils.bvhtree import BVHTree
 import common as C
 import nest_build as NB
 from common import T, rx, ry, rz
+from rock_geo import add_boolean, bm_to_obj, cut, hull, rand_dir, support
 
 ARGV = C.args()
 MODE = ARGV[0] if ARGV else "wip"
@@ -77,15 +78,6 @@ def smooth(a: float, b: float, x: float) -> float:
     return t * t * (3 - 2 * t)
 
 
-def rand_dir(rnd: random.Random, min_z: float = -1.0, max_z: float = 1.0) -> Vector:
-    while True:
-        v = Vector((rnd.gauss(0, 1), rnd.gauss(0, 1), rnd.gauss(0, 1)))
-        if v.length > 1e-3:
-            v.normalize()
-            if min_z <= v.z <= max_z:
-                return v
-
-
 def rand_rot(rnd: random.Random, tilt: float) -> Matrix:
     return rz(rnd.uniform(0, 360)) @ rx(rnd.uniform(-tilt, tilt)) @ rz(rnd.uniform(-180, 180))
 
@@ -101,34 +93,6 @@ def outline(rnd: random.Random, r0: float, amp: float):
 
 
 # --- convex rock chunks and booleans (as the biome kits' rocks) ------------------------------------------
-
-
-def hull(points: list) -> bmesh.types.BMesh:
-    bm = bmesh.new()
-    verts = [bm.verts.new(p) for p in points]
-    res = bmesh.ops.convex_hull(bm, input=verts, use_existing_faces=False)
-    kill = list({g for g in res["geom_interior"] + res["geom_unused"] if isinstance(g, bmesh.types.BMVert)})
-    if kill:
-        bmesh.ops.delete(bm, geom=kill, context="VERTS")
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    return bm
-
-
-def fill_holes(bm: bmesh.types.BMesh) -> None:
-    boundary = [e for e in bm.edges if e.is_boundary]
-    if boundary:
-        bmesh.ops.holes_fill(bm, edges=boundary, sides=0)
-
-
-def cut(bm: bmesh.types.BMesh, normal, keep: float = 0.8, at: float | None = None) -> None:
-    """Shave off everything beyond a plane (a fracture facet) at `keep` (0..1) of the extent along `normal`, or at
-    the absolute offset `at`."""
-    n = Vector(normal).normalized()
-    ds = [v.co.dot(n) for v in bm.verts]
-    off = at if at is not None else min(ds) + (max(ds) - min(ds)) * keep
-    geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
-    bmesh.ops.bisect_plane(bm, geom=geom, dist=1e-5, plane_co=n * off, plane_no=n, clear_outer=True)
-    fill_holes(bm)
 
 
 def place(bm: bmesh.types.BMesh, m: Matrix) -> bmesh.types.BMesh:
@@ -171,11 +135,6 @@ def standing(rnd: random.Random, size, cuts: int, top, m: Matrix, **kw) -> bmesh
     return place(bm, m)
 
 
-def support(bm: bmesh.types.BMesh, direction) -> Vector:
-    d = Vector(direction).normalized()
-    return max((v.co.copy() for v in bm.verts), key=lambda p: p.dot(d))
-
-
 def chip_cutter(rnd: random.Random, target: bmesh.types.BMesh, direction, size: float) -> bmesh.types.BMesh:
     """A rotated block centered on the target's outermost point in `direction`: bites a chip out of a ridge."""
     p = support(target, direction)
@@ -191,26 +150,6 @@ def crack_cutter(rnd: random.Random, center, length: float, depth: float, width:
     return place(hull(pts), T(center, rot))
 
 
-def bm_to_obj(bm: bmesh.types.BMesh, name: str, coll: str = "Work") -> bpy.types.Object:
-    me = bpy.data.meshes.new(name)
-    bm.to_mesh(me)
-    bm.free()
-    obj = bpy.data.objects.new(name, me)
-    C.collection(coll).objects.link(obj)
-    return obj
-
-
-def _boolean(base: bpy.types.Object, op: str, coll: bpy.types.Collection) -> None:
-    mod = base.modifiers.new(op.title(), "BOOLEAN")
-    mod.operation = op
-    mod.operand_type = "COLLECTION"
-    mod.collection = coll
-    try:
-        mod.solver = "MANIFOLD"
-    except TypeError:
-        mod.solver = "EXACT"
-
-
 def shell(name: str, parts: list, cutters: list = ()) -> bmesh.types.BMesh:
     """Union of the convex parts minus the cutters (booleans), as a cleaned-up bmesh."""
     base = bm_to_obj(parts[0], name + "_base")
@@ -220,7 +159,7 @@ def shell(name: str, parts: list, cutters: list = ()) -> bmesh.types.BMesh:
             C.collection("Work").children.link(coll)
             for i, bm in enumerate(bms):
                 bm_to_obj(bm, f"{name}_{op.lower()}{i}", coll.name)
-            _boolean(base, op, coll)
+            add_boolean(base, op, coll)
     dg = bpy.context.evaluated_depsgraph_get()
     me = bpy.data.meshes.new_from_object(base.evaluated_get(dg))
     bm = bmesh.new()

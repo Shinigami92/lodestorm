@@ -69,6 +69,8 @@ func _set_amount(layer: GPUParticles3D, share: float) -> void:
 		layer.emitting = share > 0.0
 	var draw := layer.draw_pass_1.surface_get_material(0) as ShaderMaterial
 	draw.set_shader_parameter(&"tint", light)
+	# The ones still alive fade too, so none linger (e.g. wrapped into the ship's rooms aboard).
+	draw.set_shader_parameter(&"presence", share)
 
 
 func _make_all(layers: Array[WeatherParticles], wind: Vector3) -> Array[GPUParticles3D]:

@@ -65,7 +65,8 @@ func test_sky_shows_a_moons_planet() -> void:
 	assert_eq(sky.material.get_shader_parameter(&"planet_radius") as float, 0.0)
 
 
-## The far ring reaches well beyond the map on every side and casts no shadow.
+## The far ring reaches well beyond the map on every side, casts no shadow and stays out of the
+## holo table's hologram (which fits the map to what it shows).
 func test_location_gets_a_far_ring() -> void:
 	var location := LOCATION.instantiate() as GeneratedLocation
 	location.world_seed = 3
@@ -77,6 +78,7 @@ func test_location_gets_a_far_ring() -> void:
 	if not ring:
 		return
 	assert_eq(ring.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+	assert_true(ring.is_in_group(HoloTable.HIDDEN_GROUP))
 	var bounds: AABB = ring.get_aabb()
 	var map: Rect2 = location.terrain.rect()
 	var reach: float = LocationFarRing.RINGS[LocationFarRing.RINGS.size() - 1] * 0.9

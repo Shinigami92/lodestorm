@@ -4,8 +4,9 @@ extends RefCounted
 ## biome's shapes (mesas, ridges, slabs, or flat ice where it has no rock) and its textures seen
 ## from afar, fading into the haze, so a VR player looking over the cliffs sees the land go on
 ## instead of an edge. It starts at the rim's height and falls to the far land's within the first
-## stretch. Only looks (no collision, no shadows). Planned with the location (plain data, safe on
-## a worker thread); `build` adds the node. All values TBD (playtest).
+## stretch. Only looks (no collision, no shadows, not in the holo table's hologram). Planned with
+## the location (plain data, safe on a worker thread); `build` adds the node. All values TBD
+## (playtest).
 
 ## Distances of the rings of vertices beyond the map's edge, in m (closer together near it).
 const RINGS: PackedFloat32Array = [
@@ -80,6 +81,8 @@ func build(location: Node3D, biome: LocationBiome) -> void:
 	mesh.mesh = tool.commit()
 	mesh.material_override = material_for(biome)
 	mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# Not part of the map: the holo table's hologram would shrink the map to fit it.
+	mesh.add_to_group(HoloTable.HIDDEN_GROUP)
 	location.add_child(mesh)
 	_arrays.clear()
 

@@ -11,6 +11,8 @@ uniform vec3 field_size = vec3(48.0, 2.0, 48.0);
 // Unused (shared with the other particles' material parameters).
 uniform float tint = 1.0;
 uniform float glow = 0.0;
+// How much of the field shows (0–1), see `weather_particle.gdshader`.
+uniform float presence = 1.0;
 // How far the view bends at most, in screen units.
 uniform float strength = 0.004;
 uniform float wave_size = 9.0;
@@ -31,7 +33,7 @@ void vertex() {
 
 void fragment() {
 	vec2 centered = UV * 2.0 - 1.0;
-	float fade = (1.0 - smoothstep(0.2, 1.0, length(centered))) * COLOR.a * edge_fade;
+	float fade = (1.0 - smoothstep(0.2, 1.0, length(centered))) * COLOR.a * edge_fade * presence;
 	float wave = sin(UV.y * wave_size + TIME * wave_speed + UV.x * 3.0);
 	float wave2 = sin(UV.y * wave_size * 1.7 - TIME * wave_speed * 1.3);
 	vec2 offset = vec2(wave * 0.7 + wave2 * 0.3, 0.0) * strength * fade;

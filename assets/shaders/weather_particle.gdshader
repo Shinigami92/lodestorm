@@ -7,12 +7,17 @@
 // sheet lying on the ground, fading where it meets it (mist). `tint` dims it with the outside
 // light; `glow` above 0 makes it add light instead of covering (embers, glints).
 shader_type spatial;
-render_mode unshaded, cull_disabled, shadows_disabled, depth_draw_never, blend_premul_alpha;
+// No fog: with premultiplied alpha the fog would be added over the whole quad, its transparent
+// corners too (rectangles in the mist's height fog); the particles stay within the clear range
+// around the viewer anyway.
+render_mode unshaded, cull_disabled, shadows_disabled, depth_draw_never, blend_premul_alpha, fog_disabled;
 
 uniform int shape : hint_range(0, 2) = 0;
 uniform vec3 field_center = vec3(0.0);
 uniform vec3 field_size = vec3(48.0, 16.0, 48.0);
 uniform float tint = 1.0;
+// How much of the field shows (0–1): the ones still alive fade out with it too (going aboard).
+uniform float presence = 1.0;
 uniform float glow = 0.0;
 // How far above the ground a sheet fades in, in m (0: no fading, shape 2 only).
 uniform float ground_fade = 0.0;
@@ -46,7 +51,7 @@ void vertex() {
 void fragment() {
 	vec2 centered = UV * 2.0 - 1.0;
 	float soft = 1.0 - smoothstep(shape == 2 ? 0.0 : 0.2, 1.0, length(centered));
-	float alpha = COLOR.a * soft * edge_fade;
+	float alpha = COLOR.a * soft * edge_fade * presence;
 	if (ground_fade > 0.0) {
 		float depth = textureLod(depth_texture, SCREEN_UV, 0.0).r;
 		vec4 scene = INV_PROJECTION_MATRIX * vec4(SCREEN_UV * 2.0 - 1.0, depth, 1.0);

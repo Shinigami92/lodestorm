@@ -22,9 +22,11 @@ static func material(biome: LocationBiome) -> ShaderMaterial:
 		return null
 	var cover := ShaderMaterial.new()
 	cover.shader = SHADER
-	cover.set_shader_parameter(&"cover_albedo", ground.get_shader_parameter(&"ground_albedo"))
-	cover.set_shader_parameter(&"cover_nra", ground.get_shader_parameter(&"ground_nra"))
-	var tile: Variant = ground.get_shader_parameter(&"ground_tile")
+	cover.set_shader_parameter(
+		&"cover_albedo", ground.get_shader_parameter(LocationBiome.GROUND_ALBEDO)
+	)
+	cover.set_shader_parameter(&"cover_nra", ground.get_shader_parameter(LocationBiome.GROUND_NRA))
+	var tile: Variant = ground.get_shader_parameter(LocationBiome.GROUND_TILE)
 	if tile is float:
 		cover.set_shader_parameter(&"cover_tile", tile)
 	cover.set_shader_parameter(&"cover_tint", biome.part_cover_tint)

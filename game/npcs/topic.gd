@@ -34,6 +34,9 @@ extends Resource
 ## A planet or moon it's about (its `CelestialBody.id`): it only shows once the ship reaches it
 ## (e.g. the bartender's rumors about its regions), so nobody talks about a place out of reach.
 @export var requires_body: StringName = &""
+## Whether hearing it tells the crew about the regions of its `requires_body` (the bar's rumors):
+## the pilot knows them from then on (see `SurvivalCalls.knows`).
+@export var tells_regions: bool = false
 
 
 ## Whether it shows to `listener` (null: nobody in particular) now: `story` has the flags it

@@ -28,7 +28,9 @@ extends Resource
 @export_range(-180.0, 180.0, 1.0, "degrees") var wind_bearing: float = 60.0
 ## The particles around the viewer.
 @export var particles: Array[WeatherParticles] = []
-## The far ring of land beyond the map (`LocationFarRing`): its ground's and its rock's colors,
-## matching the biome's textures from afar.
-@export var far_ground_color := Color(0.3, 0.27, 0.23)
-@export var far_rock_color := Color(0.36, 0.32, 0.28)
+
+
+## The way the wind blows along the ground (unit vector, world space) from its `wind_bearing`.
+func wind_direction() -> Vector3:
+	var bearing: float = deg_to_rad(wind_bearing)
+	return Vector3(sin(bearing), 0.0, cos(bearing))

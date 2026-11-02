@@ -95,12 +95,12 @@ static func material_for(biome: LocationBiome) -> ShaderMaterial:
 	var ground := biome.ground_material as ShaderMaterial
 	if ground:
 		for parameter: StringName in [
-			&"ground_albedo",
-			&"ground_tint",
-			&"rock_albedo",
-			&"rock_tint",
-			&"ground_tile",
-			&"rock_tile"
+			LocationBiome.GROUND_ALBEDO,
+			LocationBiome.GROUND_TINT,
+			LocationBiome.ROCK_ALBEDO,
+			LocationBiome.ROCK_TINT,
+			LocationBiome.GROUND_TILE,
+			LocationBiome.ROCK_TILE
 		]:
 			var value: Variant = ground.get_shader_parameter(parameter)
 			if value != null:

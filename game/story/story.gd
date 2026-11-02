@@ -11,7 +11,7 @@ extends Resource
 ## - `beat.<beat>`: a beat put out by the story director (see `Beat`);
 ## - `message.<message>`: a message heard to the end (see `Message`);
 ## - `crew.<npc>.joined`: a crew member aboard;
-## - `event.<event>`: something that happens once per game (`CrewReactions`), e.g.
+## - `event.<event>`: something that happens once per game (`CrewReactions`, `event_flag`), e.g.
 ##   `event.first_death`, `event.landed.<body>`.
 
 ## What a flag's name looks like: two or more parts of lowercase letters, digits and `_`, joined
@@ -45,6 +45,23 @@ func set_flag(flag: StringName) -> void:
 	flags[flag] = true
 	emit_changed()
 	GameEvents.bus.story_flag_set.emit(flag)
+
+
+## Sets `flag` for something that happens once (e.g. an `event_flag`). Returns whether it wasn't set
+## yet (it happens now).
+func set_once(flag: StringName) -> bool:
+	if is_set(flag):
+		return false
+	set_flag(flag)
+	return true
+
+
+## The flag of the one-time event `event` (`event.<event>`, with `.<subject>` when given, e.g.
+## `event.landed.torvane`).
+static func event_flag(event: String, subject: String = "") -> StringName:
+	return StringName(
+		"event.%s" % event if subject.is_empty() else "event.%s.%s" % [event, subject]
+	)
 
 
 ## Clears `flag`: only a request's flags, once it's handed in, so it's offered again (see

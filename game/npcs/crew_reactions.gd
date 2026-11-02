@@ -249,10 +249,7 @@ func _listeners(event: StringName, to: Player) -> Array[Player]:
 
 ## Sets the story flag of a one-time event; returns whether it wasn't set yet.
 func _first(flag: StringName) -> bool:
-	if ship.story.is_set(flag):
-		return false
-	ship.story.set_flag(flag)
-	return true
+	return ship.story.set_once(flag)
 
 
 func _on_mission_started() -> void:
@@ -268,7 +265,7 @@ func _on_mission_ended(_brief: MissionBrief, returned: bool) -> void:
 	_run_haul = 0.0
 	if not returned:
 		return
-	if _first(&"event.first_run_won"):
+	if _first(Story.event_flag("first_run_won")):
 		transmit(FIRST_RUN_WON)
 	if haul <= 0.0:
 		return
@@ -280,7 +277,7 @@ func _on_mission_ended(_brief: MissionBrief, returned: bool) -> void:
 
 
 func _on_player_died(player: Player) -> void:
-	if _first(&"event.first_death"):
+	if _first(Story.event_flag("first_death")):
 		_fallen.append(player)
 
 
@@ -313,6 +310,6 @@ func _on_player_left(player: Player) -> void:
 	var body: CelestialBody = ship.voyage.at_body if ship.voyage else null
 	if not body or body.kind == CelestialBody.Kind.STATION:
 		return
-	if _first(StringName("event.landed.%s" % body.id)):
+	if _first(Story.event_flag("landed", body.id)):
 		transmit(FIRST_LANDING, body.id)
 	survival.landed()

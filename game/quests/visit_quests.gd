@@ -63,15 +63,10 @@ func _share(ship_quests: QuestLog) -> void:
 	calls = ship_quests.calls
 
 
-## The players in the session (what they carry counts out here).
+## The living players in the session (what they carry counts out here; also asked for a location
+## outside the tree, so through the main loop).
 func _players() -> Array[Player]:
-	var found: Array[Player] = []
-	var tree := Engine.get_main_loop() as SceneTree
-	for node: Node in tree.get_nodes_in_group(Player.GROUP) if tree else []:
-		var player := node as Player
-		if player and not player.dead:
-			found.append(player)
-	return found
+	return Player.living(Engine.get_main_loop() as SceneTree)
 
 
 ## The ship's quests changed: so do these.

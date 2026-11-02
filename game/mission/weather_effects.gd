@@ -25,13 +25,13 @@ var _biome_types: Array[WeatherParticles] = []
 
 ## Shows `layers` as the biome's particles, blown towards `wind_bearing` (degrees); replaces the
 ## ones before.
-func show_biome(layers: Array[WeatherParticles], wind_bearing: float) -> void:
+func show_biome(layers: Array[WeatherParticles], wind: Vector3) -> void:
 	if layers == _biome_types:
 		return
 	for old: GPUParticles3D in _biome_layers:
 		old.queue_free()
 	_biome_types = layers
-	_biome_layers = _make_all(layers, _wind(wind_bearing))
+	_biome_layers = _make_all(layers, wind)
 
 
 ## Shows `layers` as the storm's particles, blowing away from its side (`from`, horizontal).
@@ -81,11 +81,6 @@ func _make_all(layers: Array[WeatherParticles], wind: Vector3) -> Array[GPUParti
 		add_child(layer)
 		made.append(layer)
 	return made
-
-
-## The wind's way along the ground from its compass bearing.
-static func _wind(bearing: float) -> Vector3:
-	return Vector3(sin(deg_to_rad(bearing)), 0.0, cos(deg_to_rad(bearing)))
 
 
 func _make(type: WeatherParticles) -> GPUParticles3D:

@@ -16,21 +16,7 @@ uniform float crust_size = 3.0;
 
 varying vec3 world_pos;
 
-vec2 hash2(vec2 p) {
-	p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
-	return fract(sin(p) * 43758.5453);
-}
-
-float value_noise(vec2 p) {
-	vec2 i = floor(p);
-	vec2 f = fract(p);
-	vec2 u = f * f * (3.0 - 2.0 * f);
-	float a = hash2(i).x;
-	float b = hash2(i + vec2(1.0, 0.0)).x;
-	float c = hash2(i + vec2(0.0, 1.0)).x;
-	float d = hash2(i + vec2(1.0, 1.0)).x;
-	return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
-}
+#include "res://assets/shaders/noise.gdshaderinc"
 
 float ripples(vec2 p) {
 	float t = TIME * ripple_speed;

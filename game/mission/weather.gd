@@ -151,7 +151,8 @@ func _process(delta: float) -> void:
 	)
 	indoors = move_toward(indoors, 1.0 if aboard else 0.0, delta / INDOOR_FADE_TIME)
 	if biome_weather:
-		_sky.drift(Vector2.from_angle(PI * 0.5 - deg_to_rad(biome_weather.wind_bearing)), delta)
+		var wind: Vector3 = biome_weather.wind_direction()
+		_sky.drift(Vector2(wind.x, wind.z), delta)
 	if viewer:
 		_effects.follow(viewer.global_position)
 	_apply()
@@ -182,10 +183,10 @@ func _show_place() -> void:
 	var system: StarSystem = voyage.settings.system if voyage.settings else null
 	_sky.show_body(_shown_body, light, system, to_sun())
 	var particles: Array[WeatherParticles] = []
-	var wind: float = 0.0
+	var wind: Vector3 = Vector3.BACK
 	if biome_weather:
 		particles = biome_weather.particles
-		wind = biome_weather.wind_bearing
+		wind = biome_weather.wind_direction()
 	_effects.show_biome(particles, wind)
 	_effects.show_storm(storm_particles, _storm_from)
 
@@ -198,7 +199,7 @@ func _apply() -> void:
 	var clouds: float = voyage.flight.cloud_amount()
 	var calm_haze: float = biome_weather.haze * outside if biome_weather else 0.0
 	var haze_color: Color = biome_weather.haze_color if biome_weather else storm_color
-	var fog_color: Color = haze_color.lerp(storm_color, clampf(intensity / BUILD_UP, 0.0, 1.0))
+	var fog_color: Color = haze_color.lerp(storm_color, _warned())
 	env.fog_density = lerpf(calm_haze, max_fog, haze)
 	var begin: Vector2 = (
 		Vector2(biome_weather.haze_begin, biome_weather.haze_end) if biome_weather else STORM_HAZE
@@ -229,8 +230,18 @@ func _apply() -> void:
 	_show_sky(haze_color, calm_haze, space, clouds)
 	_effects.light = _ground_light(light) * sun_share / _ground_light(default_light)
 	var calm_effects: float = outside * (1.0 - space) * (1.0 - clouds)
-	var storm_share: float = clampf((intensity - BUILD_UP) / (1.0 - BUILD_UP), 0.0, 1.0)
+	var storm_share: float = _storm_share()
 	_effects.set_amounts(calm_effects * (1.0 - storm_share), calm_effects * storm_share)
+
+
+## How far the weather has built up towards the storm (0–1, full at `BUILD_UP`).
+func _warned() -> float:
+	return clampf(intensity / BUILD_UP, 0.0, 1.0)
+
+
+## How far the storm itself has come in (0–1, from `BUILD_UP` on).
+func _storm_share() -> float:
+	return clampf((intensity - BUILD_UP) / (1.0 - BUILD_UP), 0.0, 1.0)
 
 
 ## How brightly the sun of `body_light` lights flat ground.
@@ -249,9 +260,8 @@ func _show_sky(haze_color: Color, calm_haze: float, space: float, clouds: float)
 		horizon = horizon.lerp(cloud_color, clouds)
 		haze_color = haze_color.lerp(cloud_color, clouds)
 	_sky.show_colors(zenith, horizon, haze_color, haze_amount, overhead, cover)
-	var warned: float = clampf(intensity / BUILD_UP, 0.0, 1.0)
-	var storm_share: float = clampf((intensity - BUILD_UP) / (1.0 - BUILD_UP), 0.0, 1.0)
-	_sky.show_storm(_storm_from, storm_color, warned, storm_share)
+	var storm_share: float = _storm_share()
+	_sky.show_storm(_storm_from, storm_color, _warned(), storm_share)
 	_sky.set_value(&"sun_energy", STAR_ENERGY * sun_share * (1.0 - storm_share))
 	_sky.set_value(&"space", space)
 

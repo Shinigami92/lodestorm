@@ -24,11 +24,6 @@ const LOW_HEALTH_SHARE: float = 0.25
 ## Seconds a badly hurt player goes without being hurt or attacking before the call. TBD
 ## (playtest).
 const CALM_TIME: float = 5.0
-## The tier of the colony's own ground (Torvane and its moon): the pilot knows all its regions.
-const HOME_TIER: int = 1
-## The story flag of a planet's or moon's topic at the bar on the station (`%s`: its id): the
-## crews there talk about its regions, so the pilot knows them once it's heard.
-const HEARD_AT_THE_BAR: String = "bartender.%s"
 ## The player's hint (`PlayerHints`) of the call about the last spares.
 const OUT_OF_SPARES_HINT: StringName = &"out_of_spares"
 
@@ -46,6 +41,10 @@ var _calm: Dictionary[Player, float] = {}
 var _hurt_called: Array[Player] = []
 ## Spare rounds each weapon's ammo had when last looked at this run.
 var _spares: Dictionary[WeaponAmmo, int] = {}
+## The topics that tell about a body's regions (`Topic.tells_regions`): their body, by topic id
+## (read from every profile the first time it's asked).
+var _telling: Dictionary[StringName, StringName] = {}
+var _telling_read: bool = false
 
 
 func _ready() -> void:
@@ -88,17 +87,14 @@ static func gear_needed(tier: int, danger: MissionBrief.Difficulty) -> int:
 	return (maxi(tier, 1) - 1) * GEAR_PER_TIER + GEAR_BY_DANGER[danger]
 
 
-## Whether the pilot knows `region`: on the colony's own ground, visited before, or talked about
-## at the bar.
+## Whether the pilot knows `region`: on the colony's own ground (`CelestialBody.home_ground`),
+## visited before, or told about (a topic about its body heard that `Topic.tells_regions`).
 func knows(region: Region) -> bool:
 	var ship: Ship = reactions.ship
 	if region.id in ship.director.regions_visited:
 		return true
 	var body: CelestialBody = _body_of(region)
-	return (
-		body != null
-		and (body.tier == HOME_TIER or ship.story.is_set(StringName(HEARD_AT_THE_BAR % body.id)))
-	)
+	return body != null and (body.home_ground or _told_about(body))
 
 
 ## The first player stepped out (after the body's first landing call): the region's call and the
@@ -113,10 +109,10 @@ func landed() -> void:
 		and brief
 		and brief.region == region
 		and region.danger != MissionBrief.Difficulty.EASY
-		and _first(StringName("event.region.%s" % region.id))
+		and _first(Story.event_flag("region", region.id))
 	):
 		reactions.transmit(CrewReactions.REGION_LANDING, region.id)
-	if _first(StringName("event.%s" % CrewReactions.MINER_HINT)):
+	if _first(Story.event_flag(CrewReactions.MINER_HINT)):
 		reactions.transmit(CrewReactions.MINER_HINT)
 
 
@@ -186,11 +182,22 @@ func _body_of(region: Region) -> CelestialBody:
 
 ## Sets a one-time story flag; returns whether it wasn't set yet.
 func _first(flag: StringName) -> bool:
+	return reactions.ship.story.set_once(flag)
+
+
+## Whether a topic that tells about `body`'s regions was heard.
+func _told_about(body: CelestialBody) -> bool:
+	if not _telling_read:
+		_telling_read = true
+		for profile: NpcProfile in NpcProfile.all():
+			for topic: Topic in profile.dialogue.topics if profile.dialogue else []:
+				if topic.tells_regions and not topic.requires_body.is_empty():
+					_telling[topic.id] = topic.requires_body
 	var story: Story = reactions.ship.story
-	if story.is_set(flag):
-		return false
-	story.set_flag(flag)
-	return true
+	for id: StringName in _telling:
+		if _telling[id] == body.id and story.is_set(id):
+			return true
+	return false
 
 
 func _forget_run() -> void:
@@ -208,13 +215,13 @@ func _on_destination_chosen(brief: MissionBrief) -> void:
 	var needed: int = gear_needed(body.tier if body else 1, region.danger)
 	if needed <= 0 or least_gear() >= needed:
 		return
-	if _first(StringName("event.%s.%d" % [CrewReactions.DESTINATION_ROUGH, needed])):
+	if _first(Story.event_flag(CrewReactions.DESTINATION_ROUGH, str(needed))):
 		reactions.transmit(CrewReactions.DESTINATION_ROUGH, region.id)
 
 
 func _on_mission_ended(_brief: MissionBrief, returned: bool) -> void:
 	_forget_run()
-	if not returned and _first(StringName("event.%s" % CrewReactions.FIRST_RUN_LOST)):
+	if not returned and _first(Story.event_flag(CrewReactions.FIRST_RUN_LOST)):
 		_run_lost = true
 
 

@@ -52,6 +52,9 @@ const VOICE_MAX_DISTANCE: float = 30.0
 ## Where they sit while the ship flies (the seat's spot: their feet, facing the way it faces; the
 ## seat behind it, see `NpcBody.sitting`); none: they stay at their spot.
 @export var flight_seat: Node3D
+## Whether they set course themselves once seated at the `flight_seat` (the pilot); others there
+## only sit while the ship flies.
+@export var sets_course: bool = false
 ## Where else they work now and then (none: always at their spot).
 @export var work_spots: Array[WorkSpot] = []
 ## What they do at their own spot when they have work spots; none: `NpcRoutine.HOME_ACTIVITIES`.

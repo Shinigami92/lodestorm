@@ -49,6 +49,12 @@ func test_joining_walks_them_aboard() -> void:
 	# Close to the ramp's foot already, so the walk is short.
 	dace.global_position = foot + _ship.global_basis.x * 3.0
 	dace.reset_physics_interpolation()
+	# A destination picked, the pilot leaving it to the players.
+	(_ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc).sets_course = false
+	var here: MissionBrief = _voyage.brief
+	var away: MissionBrief = _voyage.offers[0] if _voyage.offers[0] != here else _voyage.offers[1]
+	assert_true(_voyage.choose(away))
+	assert_true(_voyage.can_confirm(), "the ship could leave")
 	_ship.story.set_flag(dace.profile.join_flag)
 	assert_true(dace.is_present(), "on his way")
 	assert_eq(NpcBoarding.walking(get_tree()), [dace] as Array[Npc])
@@ -56,13 +62,15 @@ func test_joining_walks_them_aboard() -> void:
 	await wait_physics_frames(2)
 	assert_false(_ship.ramp_button.enabled, "the ramp stays down for him")
 	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as FlightStation
-	assert_false(console.can_launch(), "the ship waits for him")
+	assert_false(_voyage.can_confirm(), "the ship waits for him")
+	assert_false(console.can_launch())
 	await _until(func() -> bool: return dace.global_position.y > foot.y + 1.0, 10.0)
 	assert_gt(dace.global_position.y, foot.y + 1.0, "up the ramp")
 	await _until(func() -> bool: return gunsmith.is_present(), 10.0)
 	assert_true(gunsmith.is_present() and gunsmith.visible, "aboard")
 	assert_false(dace.is_present() or dace.visible, "gone from the ramp")
 	assert_true(NpcBoarding.walking(get_tree()).is_empty())
+	assert_true(_voyage.can_confirm(), "then it may leave")
 	var door: Vector3 = _ship.ramp_way()[1]
 	assert_lt(gunsmith.global_position.distance_to(door), 1.5, "comes in at the door")
 	await wait_physics_frames(2)

@@ -103,6 +103,12 @@ func can_leave() -> bool:
 	return state in [State.CLOSED, State.RETURNED, State.LOST] and not _anyone_dead()
 
 
+## Whether a crew member is on their way aboard (see `NpcBoarding`): the run waits for them, the
+## ramp stays down and the ship doesn't leave.
+func crew_boarding() -> bool:
+	return not NpcBoarding.walking(get_tree()).is_empty()
+
+
 ## Seconds from the start until the storm hits: the picked mission's length of the standard
 ## duration.
 func duration() -> float:
@@ -176,7 +182,7 @@ func bank_ore(player: Player, haul: Dictionary[OreType, float]) -> void:
 ## Whether the ramp button works: before a run or during it (see `_can_start_run`) or docked, but
 ## not to raise the ramp while a crew member walks aboard (see `NpcBoarding`).
 func _can_use_ramp() -> bool:
-	if ship.ramp_open and not NpcBoarding.walking(get_tree()).is_empty():
+	if ship.ramp_open and crew_boarding():
 		return false
 	return _can_start_run() or ship.flight.is_docked()
 
@@ -221,7 +227,7 @@ func _check_outcome() -> void:
 			return
 	if anyone_alive:
 		# Someone joining out there still on their way aboard: the run waits for them.
-		if NpcBoarding.walking(get_tree()).is_empty():
+		if not crew_boarding():
 			_return(players)
 	else:
 		state = State.LOST

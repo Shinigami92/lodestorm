@@ -8,7 +8,7 @@ extends Station
 ## selected and hovered one); `move_*` up and down walk the lines and scroll the list, left and
 ## right and `tab_prev`/`tab_next` switch tabs, the wheel scrolls. The card beside the board shows
 ## the selected line: a quest with "Track" and "Set as destination" (where its step goes,
-## `QuestVisit.destination`: chosen as at the navigator, which then shows it on the holo table, the
+## `QuestRoutes.destination`: chosen as at the navigator, which then shows it on the holo table, the
 ## pilot then sets course from the cockpit), the done quests' group with "Show"/"Hide", a job, a
 ## message with "Play"/"Stop", or the tab. Closing it after the jobs were shown clears its user's
 ## finished ones (`FinishedJobs`).
@@ -166,7 +166,7 @@ func track(quest: Quest) -> bool:
 	return true
 
 
-## Where the ship would go for `quest`'s active step (see `QuestVisit.destination`): the mission
+## Where the ship would go for `quest`'s active step (see `QuestRoutes.destination`): the mission
 ## on offer in its region or the visit to its station, or null (all done aboard, or nothing on offer
 ## there, e.g. out of the heat shield's reach).
 func course_for(quest: Quest) -> MissionBrief:
@@ -175,7 +175,7 @@ func course_for(quest: Quest) -> MissionBrief:
 	var system: StarSystem = voyage.settings.system if voyage and voyage.settings else null
 	if not system or not quest_log:
 		return null
-	var id: StringName = QuestVisit.destination(quest_log, quest)
+	var id: StringName = QuestRoutes.destination(quest_log, quest)
 	if id.is_empty():
 		return null
 	var region: Region = system.region_by_id(id)

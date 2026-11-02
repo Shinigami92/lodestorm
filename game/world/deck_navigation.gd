@@ -37,7 +37,10 @@ var map: RID
 var _region: RID
 var _mesh: NavigationMesh
 var _baking: bool = false
+## Whether the baked mesh is on the map, and the map's iteration then: ways can be found once the
+## map has synced past it (the server syncs on a thread of its own, a few frames later).
 var _baked: bool = false
+var _set_at: int = 0
 ## Where the parent stood when the region was last placed.
 var _placed: Transform3D
 
@@ -63,9 +66,9 @@ func _exit_tree() -> void:
 		NavigationServer3D.free_rid(map)
 
 
-## Whether the mesh is baked (ways can be found).
+## Whether the mesh is baked and on its map (ways can be found).
 func is_baked() -> bool:
-	return _baked
+	return _baked and NavigationServer3D.map_get_iteration_id(map) > _set_at
 
 
 ## Starts baking the mesh, unless it's baked or baking already.
@@ -92,7 +95,7 @@ func bake() -> void:
 ## A way from `from` to `to` (global positions) over the mesh, from the closest point on it to
 ## each; empty until it's baked (asking starts the bake).
 func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
-	if not _baked:
+	if not is_baked():
 		bake()
 		return PackedVector3Array()
 	return NavigationServer3D.map_get_path(map, from, to, true)
@@ -100,13 +103,14 @@ func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 
 ## The point of the mesh closest to `point` (global), or `point` itself until it's baked.
 func closest_point(point: Vector3) -> Vector3:
-	if not _baked:
+	if not is_baked():
 		return point
 	return NavigationServer3D.map_get_closest_point(map, point)
 
 
 func _on_baked() -> void:
 	_keep_floors()
+	_set_at = NavigationServer3D.map_get_iteration_id(map)
 	NavigationServer3D.region_set_navigation_mesh(_region, _mesh)
 	_place()
 	_baking = false

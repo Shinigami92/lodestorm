@@ -46,6 +46,11 @@ const READY: StringName = &"ready"
 @export var ready_line: RadioLine
 
 
+## Whether it's handed in at someone waiting out in a region (`meets_in`, at `meets_at`).
+func meets_out_there() -> bool:
+	return not meets_in.is_empty() and meets_at != null
+
+
 ## The story flag set at the hand-in for the crew member it `joins` (their
 ## `NpcProfile.join_flag`); empty: nobody joins.
 func join_flag() -> StringName:

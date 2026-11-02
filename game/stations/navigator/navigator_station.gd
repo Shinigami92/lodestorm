@@ -456,7 +456,7 @@ func _show_diamonds() -> void:
 		for wait: StationWait in ship.messages.waits():
 			var is_tracked: bool = tracked != null and wait.quest == tracked
 			bodies[wait.station] = bodies.get(wait.station, false) or is_tracked
-		regions = QuestVisit.regions(ship.quests)
+		regions = QuestRoutes.regions(ship.quests)
 		for id: StringName in regions:
 			var on_body: CelestialBody = system.body_of(system.region_by_id(id))
 			if on_body:

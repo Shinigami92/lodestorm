@@ -79,7 +79,7 @@ func test_they_wait_at_their_part_while_the_step_is_active() -> void:
 	assert_eq(visit.meeting_for(_quest), visit.meetings[0])
 	assert_eq(visit.sites().size(), 3, "the camp (shared), the dig site and the outpost")
 	assert_eq(visit.meetings[0].site, visit.entries[0].site)
-	assert_true(QuestVisit.regions(_log).has(REGION))
+	assert_true(QuestRoutes.regions(_log).has(REGION))
 	assert_true(QuestVisit.new(_log, &"mire").meetings.is_empty(), "only in its region")
 
 

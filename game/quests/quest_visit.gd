@@ -81,44 +81,6 @@ func _init(quest_log: QuestLog = null, region: StringName = &"") -> void:
 			_add_step(quest, step)
 
 
-## The regions (their `Region.id`) where a goal of an active step of `quest_log` isn't done yet, or
-## where a step meets someone: whether one of them is the tracked quest's (the navigator's
-## diamonds).
-static func regions(quest_log: QuestLog) -> Dictionary[StringName, bool]:
-	var found: Dictionary[StringName, bool] = {}
-	for id: StringName in quest_log.accepted:
-		var quest: Quest = quest_log.catalog.find(id)
-		var step: QuestStep = quest_log.current_step(quest) if quest else null
-		if not step:
-			continue
-		var tracked: bool = id == quest_log.tracked
-		if not step.meets_in.is_empty() and step.meets_at:
-			found[step.meets_in] = found.get(step.meets_in, false) or tracked
-		for i: int in step.goals.size():
-			var goal := step.goals[i] as RegionGoal
-			if goal and quest_log.goal_progress(quest, i) < goal.target():
-				found[goal.region] = found.get(goal.region, false) or tracked
-	return found
-
-
-## Where the ship goes for `quest`'s active step (the quest board's "Set as destination"): the
-## region (its `Region.id`) of its first goal out there not done yet, else the region where it meets
-## someone, else the station (its `CelestialBody.id`) of whoever it's handed in at; empty when it's
-## all done aboard (or no step is active).
-static func destination(quest_log: QuestLog, quest: Quest) -> StringName:
-	var step: QuestStep = quest_log.current_step(quest) if quest else null
-	if not step:
-		return &""
-	for i: int in step.goals.size():
-		var goal := step.goals[i] as RegionGoal
-		if goal and quest_log.goal_progress(quest, i) < goal.target():
-			return goal.region
-	if not step.meets_in.is_empty() and step.meets_at:
-		return step.meets_in
-	var profile: NpcProfile = NpcProfile.find(quest.hand_in_npc(step))
-	return profile.station_in(quest_log.story) if profile else &""
-
-
 ## The quest sites' map parts, to place as set pieces (each once, also when goals and meetings
 ## share it).
 func sites() -> Array[PartPlacement]:
@@ -339,7 +301,7 @@ func _add_step(quest: Quest, step: QuestStep) -> Array[Entry]:
 			known[0].upcoming = false
 		else:
 			added.append_array(_add_goal(quest, step, i, _log.goal_progress(quest, i)))
-	if step.meets_in != _region or not step.meets_at:
+	if not step.meets_out_there() or step.meets_in != _region:
 		return added
 	var meeting := Entry.new()
 	meeting.quest = quest

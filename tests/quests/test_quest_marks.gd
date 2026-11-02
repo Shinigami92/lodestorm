@@ -103,13 +103,13 @@ func test_the_hologram_shows_the_lit_marks() -> void:
 
 ## The regions with a goal of an active step not done yet, filled for the tracked quest's.
 func test_regions_with_an_active_step() -> void:
-	assert_eq(QuestVisit.regions(_log), {ITEMS.REGION: true} as Dictionary[StringName, bool])
+	assert_eq(QuestRoutes.regions(_log), {ITEMS.REGION: true} as Dictionary[StringName, bool])
 	_log.tracked = &""
-	assert_eq(QuestVisit.regions(_log), {ITEMS.REGION: false} as Dictionary[StringName, bool])
+	assert_eq(QuestRoutes.regions(_log), {ITEMS.REGION: false} as Dictionary[StringName, bool])
 	var step: QuestStep = _quest.steps[0]
 	_log.add_progress(_quest, step, 0, 3.0)
 	_log.add_progress(_quest, step, 1, 1.0)
-	assert_true(QuestVisit.regions(_log).is_empty(), "every goal there done")
+	assert_true(QuestRoutes.regions(_log).is_empty(), "every goal there done")
 
 
 func _location() -> GeneratedLocation:

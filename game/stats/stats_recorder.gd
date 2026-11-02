@@ -1,14 +1,13 @@
 class_name StatsRecorder
 extends Node
-## Keeps the statistics of the local `player` from the `GameEvents` bus: counters over all
-## sessions (`totals`, in `stats/totals.json`) and over the current run (`run`), and a log of this
-## session (`stats/sessions/<date>_<time>.jsonl`: one JSON object per line, what happened when),
-## both in `stats/` under `SaveGame.directory` (nothing is written while it's empty: the tests).
-## Frequent events (attacks, hits, damage dealt, healing, ore arriving) are only counted; the log
-## gets each run's counters when it ends (`mission_ended`). The player's damage taken is logged
-## once per cause and second. It also counts the seconds and meters the player spends aboard,
-## outside, in menus and dead. Nothing waits for the disk: the log is written through a buffer
-## flushed every few seconds, the totals every half minute, when a run ends and when the game
+## Keeps the statistics of the local `player` from the `GameEvents` bus: counters over all sessions
+## (`totals`, in `stats/totals.json`) and over the current run (`run`), and a log of this session
+## (`session`, a `SessionLog`: `stats/sessions/<date>_<time>.jsonl`), both in `stats/` under
+## `SaveGame.directory` (nothing is written while it's empty: the tests). Frequent events (attacks,
+## hits, damage dealt, healing, ore arriving) are only counted; the log gets each run's counters
+## when it ends (`mission_ended`). The player's damage taken is logged once per cause and second. It
+## also counts the seconds and meters the player spends aboard, outside, in menus and dead. Nothing
+## waits for the disk: the totals are written every half minute, when a run ends and when the game
 ## quits. Resetting the progress keeps the statistics. See docs/technical/saving.md (Statistics).
 ## For playtests the log also has the code's commit, the location's ore nodes and nests as a run
 ## starts and what's left of them as it ends (`RunSnapshot`), where the player is every few seconds
@@ -18,14 +17,8 @@ extends Node
 const VERSION: int = 1
 const FOLDER: String = "stats"
 const TOTALS_FILE: String = "totals.json"
-const SESSIONS_FOLDER: String = "sessions"
-## Session logs kept, the newest; older ones are deleted when a session starts.
-const KEEP_SESSIONS: int = 20
-## Seconds between writes of the log's buffer, and of the totals (when they changed).
-const FLUSH_INTERVAL: float = 5.0
+## Seconds between writes of the totals (when they changed).
 const SAVE_INTERVAL: float = 30.0
-## Damage taken from one cause within this many seconds is logged as one line.
-const HURT_MERGE: float = 1.0
 ## A move longer than this within one physics frame is a teleport (a respawn), not walked (m).
 const TELEPORT_DISTANCE: float = 3.0
 ## Seconds between the lines saying where the player is during a run (`track`).
@@ -42,19 +35,11 @@ const STILL_SPEED: float = 0.5
 ## Counters over all sessions, and over the run underway (or the last one).
 var totals := StatCounters.new()
 var run := StatCounters.new()
-## Runs started this session.
-var runs: int = 0
+## This session's log, with the session's and the run's clocks.
+var session := SessionLog.new()
 
-## The open session log, or null while nothing is written.
-var _log: FileAccess
-## Seconds since the session started, and since the run started (while one is underway).
-var _time: float = 0.0
-var _run_time: float = -1.0
-var _since_flush: float = 0.0
 var _since_save: float = 0.0
 var _dirty: bool = false
-## Damage taken not logged yet, per cause: {amount, hits, t}.
-var _hurts: Dictionary[String, Dictionary] = {}
 var _last_position := Vector3.INF
 var _since_track: float = 0.0
 ## The menu open (its id, "" for none) and since when; the weapon drawn during the run.
@@ -77,20 +62,23 @@ func _ready() -> void:
 	if not player:
 		player = Player.first_local(get_tree())
 	_load_totals()
-	_open_log()
+	session.open(stats_directory())
 	totals.add("sessions")
-	_write_line(
-		"session_started",
-		{
-			"date": Time.get_datetime_string_from_system(),
-			"game": ProjectSettings.get_setting("application/config/version", ""),
-			"engine": Engine.get_version_info()["string"],
-			"os": OS.get_name(),
-			"editor": OS.has_feature("editor"),
-			"language": TranslationServer.get_locale(),
-			"commit": BuildInfo.commit(),
-			"branch": BuildInfo.branch(),
-		}
+	(
+		session
+		. write(
+			"session_started",
+			{
+				"date": Time.get_datetime_string_from_system(),
+				"game": ProjectSettings.get_setting("application/config/version", ""),
+				"engine": Engine.get_version_info()["string"],
+				"os": OS.get_name(),
+				"editor": OS.has_feature("editor"),
+				"language": TranslationServer.get_locale(),
+				"commit": BuildInfo.commit(),
+				"branch": BuildInfo.branch(),
+			}
+		)
 	)
 	_connect_events()
 
@@ -105,16 +93,9 @@ func _notification(what: int) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	_time += delta
-	if _run_time >= 0.0:
-		_run_time += delta
+	session.tick(delta)
 	_count_time(delta)
-	_log_hurts(false)
 	_track(delta)
-	_since_flush += delta
-	if _since_flush >= FLUSH_INTERVAL:
-		_since_flush = 0.0
-		flush_log()
 	_since_save += delta
 	if _since_save >= SAVE_INTERVAL:
 		_since_save = 0.0
@@ -141,12 +122,6 @@ func save_totals() -> void:
 	file.store_string(JSON.stringify(data, "\t") + "\n")
 	file.close()
 	DirAccess.rename_absolute(path + ".tmp", path)
-
-
-## Writes what the session log holds back (the tests read it right away).
-func flush_log() -> void:
-	if _log:
-		_log.flush()
 
 
 ## Adds `amount` to counter `counter` at `labels`, over all sessions and in the run.
@@ -267,13 +242,16 @@ func _on_alien_killed(by: Player, weapon_type: WeaponType, alien: Alien) -> void
 	if not _is_mine(by):
 		return
 	count("kills", [id_of(weapon_type), id_of(alien.strain)])
-	_write_line(
-		"alien_killed",
-		{
-			"weapon": id_of(weapon_type),
-			"strain": id_of(alien.strain),
-			"role": str(Alien.Role.keys()[alien.role]).to_lower(),
-		}
+	(
+		session
+		. write(
+			"alien_killed",
+			{
+				"weapon": id_of(weapon_type),
+				"strain": id_of(alien.strain),
+				"role": str(Alien.Role.keys()[alien.role]).to_lower(),
+			}
+		)
 	)
 
 
@@ -288,7 +266,7 @@ func _on_nest_damaged(by: Player, weapon_type: WeaponType, _nest: AlienNest, amo
 
 func _on_nest_destroyed(by: Player, weapon_type: WeaponType, _nest: AlienNest) -> void:
 	count("nests_destroyed", [id_of(weapon_type) if _is_mine(by) else "others"])
-	_write_line("nest_destroyed", {"weapon": id_of(weapon_type), "mine": _is_mine(by)})
+	session.write("nest_destroyed", {"weapon": id_of(weapon_type), "mine": _is_mine(by)})
 
 
 func _on_reload_started(by: Player, weapon_type: WeaponType, vent: bool) -> void:
@@ -296,7 +274,7 @@ func _on_reload_started(by: Player, weapon_type: WeaponType, vent: bool) -> void
 		return
 	var kind: String = "vent" if vent else "reload"
 	count("reloads", [id_of(weapon_type), kind])
-	_write_line("reload_started", {"weapon": id_of(weapon_type), "kind": kind})
+	session.write("reload_started", {"weapon": id_of(weapon_type), "kind": kind})
 
 
 func _on_reload_timed(by: Player, weapon_type: WeaponType, hit: bool) -> void:
@@ -304,13 +282,13 @@ func _on_reload_timed(by: Player, weapon_type: WeaponType, hit: bool) -> void:
 		return
 	var result: String = "hit" if hit else "miss"
 	count("reload_presses", [id_of(weapon_type), result])
-	_write_line("reload_timed", {"weapon": id_of(weapon_type), "result": result})
+	session.write("reload_timed", {"weapon": id_of(weapon_type), "result": result})
 
 
 func _on_reload_denied(by: Player, weapon_type: WeaponType) -> void:
 	if _is_mine(by):
 		count("reloads_denied", [id_of(weapon_type)])
-		_write_line("reload_denied", {"weapon": id_of(weapon_type)})
+		session.write("reload_denied", {"weapon": id_of(weapon_type)})
 
 
 func _on_ammo_paid(by: Player, ore_type: OreType, amount: float) -> void:
@@ -326,7 +304,7 @@ func _on_shield_blocked(by: Player, weapon_type: WeaponType, amount: float) -> v
 func _on_dashed(by: Player) -> void:
 	if _is_mine(by):
 		count("dashes")
-		_write_line("dashed", {})
+		session.write("dashed", {})
 
 
 func _on_player_hurt(hurt: Player, amount: float, cause: Node) -> void:
@@ -334,18 +312,16 @@ func _on_player_hurt(hurt: Player, amount: float, cause: Node) -> void:
 		return
 	var label: String = cause_of(cause)
 	count("damage_taken", [label], amount)
-	var pending: Dictionary = _hurts.get_or_add(label, {"amount": 0.0, "hits": 0, "t": _time})
-	pending["amount"] += amount
-	pending["hits"] += 1
+	session.hurt(label, amount)
 
 
 func _on_player_died(died: Player, cause: Node) -> void:
 	if not _is_mine(died):
 		return
-	_log_hurts(true)
+	session.log_hurts()
 	var label: String = cause_of(cause)
 	count("deaths", [label])
-	_write_line(
+	session.write(
 		"player_died",
 		{"cause": label, "weapon": id_of(player.arms.weapon.type if player.arms.weapon else null)}
 	)
@@ -359,19 +335,19 @@ func _on_player_healed(healed: Player, amount: float) -> void:
 func _on_player_respawned(respawned: Player) -> void:
 	if _is_mine(respawned):
 		count("respawns")
-		_write_line("player_respawned", {})
+		session.write("player_respawned", {})
 
 
 func _on_miner_handled(by: Player, miner: Miner, counter: String, event: String) -> void:
 	if _is_mine(by):
 		count(counter)
-		_write_line(event, _miner_fields(miner))
+		session.write(event, _miner_fields(miner))
 
 
 func _on_miner_changed(miner: Miner, counter: String, event: String) -> void:
 	if player and miner.fleet == player.fleet:
 		count(counter)
-		_write_line(event, _miner_fields(miner))
+		session.write(event, _miner_fields(miner))
 
 
 func _on_miner_damaged(miner: Miner, amount: float) -> void:
@@ -397,37 +373,37 @@ func _on_ore(by: Player, ore_type: OreType, amount: float, counter: String, even
 		return
 	count(counter, [id_of(ore_type)], amount)
 	if event:
-		_write_line(event, {"ore": id_of(ore_type), "amount": snappedf(amount, 0.01)})
+		session.write(event, {"ore": id_of(ore_type), "amount": snappedf(amount, 0.01)})
 
 
 func _on_weapon_gained(by: Player, weapon_type: WeaponType, counter: String, event: String) -> void:
 	if _is_mine(by):
 		count(counter, [id_of(weapon_type)])
-		_write_line(event, {"weapon": id_of(weapon_type)})
+		session.write(event, {"weapon": id_of(weapon_type)})
 
 
 func _on_upgrade_finished(by: Player, upgrade: Upgrade, mk: int) -> void:
 	if _is_mine(by):
 		count("upgrades_finished", [id_of(upgrade)])
-		_write_line("upgrade_finished", {"upgrade": id_of(upgrade), "mk": mk})
+		session.write("upgrade_finished", {"upgrade": id_of(upgrade), "mk": mk})
 
 
 func _on_skill_finished(by: Player, skill: Skill, rank: int) -> void:
 	if _is_mine(by):
 		count("skills_finished", [id_of(skill)])
-		_write_line("skill_finished", {"skill": id_of(skill), "rank": rank})
+		session.write("skill_finished", {"skill": id_of(skill), "rank": rank})
 
 
 func _on_miner_built(by: Player, miner: CraftedMiner) -> void:
 	if _is_mine(by):
 		count("miners_built")
-		_write_line("miner_built", {"miner": miner.number})
+		session.write("miner_built", {"miner": miner.number})
 
 
 func _on_miner_part_finished(by: Player, miner: CraftedMiner, upgrade: Upgrade, mk: int) -> void:
 	if _is_mine(by):
 		count("miner_parts_finished", [id_of(upgrade)])
-		_write_line(
+		session.write(
 			"miner_part_finished", {"miner": miner.number, "upgrade": id_of(upgrade), "mk": mk}
 		)
 
@@ -435,29 +411,28 @@ func _on_miner_part_finished(by: Player, miner: CraftedMiner, upgrade: Upgrade, 
 func _on_miner_lost(by: Player, miner: CraftedMiner, _where: String) -> void:
 	if _is_mine(by):
 		count("miners_lost")
-		_write_line("miner_lost", {"miner": miner.number})
+		session.write("miner_lost", {"miner": miner.number})
 
 
 func _on_bars_refined(by: Player, alloy: AlloyType, bars: int) -> void:
 	if _is_mine(by):
 		count("bars_refined", [id_of(alloy)], bars)
-		_write_line("bars_refined", {"alloy": id_of(alloy), "bars": bars})
+		session.write("bars_refined", {"alloy": id_of(alloy), "bars": bars})
 
 
 func _on_heat_shield_raised(mk: int) -> void:
 	count("heat_shield_plates")
-	_write_line("heat_shield_raised", {"mk": mk})
+	session.write("heat_shield_raised", {"mk": mk})
 
 
 func _on_story_flag_set(flag: StringName) -> void:
 	count("story_flags")
-	_write_line("story_flag_set", {"flag": String(flag)})
+	session.write("story_flag_set", {"flag": String(flag)})
 
 
 func _on_mission_started(brief: MissionBrief) -> void:
-	runs += 1
+	session.start_run()
 	run = StatCounters.new()
-	_run_time = 0.0
 	_since_track = TRACK_INTERVAL
 	_weapon = null
 	_debug_run = false
@@ -487,48 +462,51 @@ func _on_mission_started(brief: MissionBrief) -> void:
 	# Not while the map is being freed (a player leaving the ship as it goes).
 	if is_inside_tree():
 		fields["map"] = RunSnapshot.map(get_tree(), ship)
-	_write_line("mission_started", fields)
+	session.write("mission_started", fields)
 
 
 func _on_storm_started() -> void:
 	count("storms")
-	_write_line("storm_started", {})
+	session.write("storm_started", {})
 
 
 func _on_mission_ended(_brief: MissionBrief, returned: bool) -> void:
-	_log_hurts(true)
+	session.log_hurts()
 	var result: String = "returned" if returned else "lost"
 	count("missions_ended", [result])
-	_write_line(
-		"mission_ended",
-		{
-			"result": result,
-			"seconds": snappedf(maxf(_run_time, 0.0), 0.1),
-			"time_left": snappedf(mission.time_left, 0.1) if mission else 0.0,
-			"storm_seconds": snappedf(mission.storm_time, 0.1) if mission else 0.0,
-			"debug": _debug_run,
-			"left": RunSnapshot.leftovers(get_tree()) if is_inside_tree() else {},
-			"counters": run.to_data(),
-		}
+	(
+		session
+		. write(
+			"mission_ended",
+			{
+				"result": result,
+				"seconds": snappedf(maxf(session.run_time, 0.0), 0.1),
+				"time_left": snappedf(mission.time_left, 0.1) if mission else 0.0,
+				"storm_seconds": snappedf(mission.storm_time, 0.1) if mission else 0.0,
+				"debug": _debug_run,
+				"left": RunSnapshot.leftovers(get_tree()) if is_inside_tree() else {},
+				"counters": run.to_data(),
+			}
+		)
 	)
-	_run_time = -1.0
+	session.end_run()
 	save_totals()
-	flush_log()
+	session.flush()
 
 
 func _on_menu_opened(by: Player, menu: WorldMenu) -> void:
 	if _is_mine(by):
 		count("menus_opened", [id_of(menu)])
-		_write_line("menu_opened", {"menu": id_of(menu)})
+		session.write("menu_opened", {"menu": id_of(menu)})
 
 
 func _on_debug_used(action: String) -> void:
 	_debug_session = true
-	if _run_time >= 0.0:
+	if session.in_run():
 		_debug_run = true
 	# Tuning is counted by its setting, without the value.
 	count("debug_actions", [action.get_slice(" = ", 0)])
-	_write_line("debug_used", {"action": action})
+	session.write("debug_used", {"action": action})
 
 
 ## What the player takes along: the loadout, upgrade levels, skill ranks and maximum health.
@@ -589,69 +567,44 @@ func _note_menu() -> void:
 	if menu == _menu:
 		return
 	if _menu:
-		var seconds: float = _time - _menu_since
+		var seconds: float = session.time - _menu_since
 		count("menu_seconds", [_menu], seconds)
-		_write_line("menu_closed", {"menu": _menu, "seconds": snappedf(seconds, 0.1)})
+		session.write("menu_closed", {"menu": _menu, "seconds": snappedf(seconds, 0.1)})
 	_menu = menu
-	_menu_since = _time
+	_menu_since = session.time
 
 
 ## Logs the weapon drawn when it changes during a run.
 func _note_weapon() -> void:
 	var weapon_type: WeaponType = player.arms.weapon.type if player.arms.weapon else null
-	if _run_time < 0.0 or weapon_type == _weapon:
+	if not session.in_run() or weapon_type == _weapon:
 		return
 	_weapon = weapon_type
-	_write_line("weapon_drawn", {"weapon": id_of(weapon_type)})
+	session.write("weapon_drawn", {"weapon": id_of(weapon_type)})
 
 
 ## Logs where the player is every `TRACK_INTERVAL` during a run: position, health, ore carried and
 ## where they are (outside, aboard, menu, dead).
 func _track(delta: float) -> void:
-	if _run_time < 0.0 or not is_instance_valid(player) or not player.is_inside_tree():
+	if not session.in_run() or not is_instance_valid(player) or not player.is_inside_tree():
 		return
 	_since_track += delta
 	if _since_track < TRACK_INTERVAL:
 		return
 	_since_track = 0.0
 	var where: String = _where_now()
-	_write_line(
-		"track",
-		{
-			"at": RunSnapshot.xz(player.global_position),
-			"hp": roundi(player.health),
-			"carried": roundi(player.cargo.total()),
-			"where": where,
-		}
+	(
+		session
+		. write(
+			"track",
+			{
+				"at": RunSnapshot.xz(player.global_position),
+				"hp": roundi(player.health),
+				"carried": roundi(player.cargo.total()),
+				"where": where,
+			}
+		)
 	)
-
-
-## Logs the damage taken per cause that's older than `HURT_MERGE` (`all`: all of it).
-func _log_hurts(all: bool) -> void:
-	for label: String in _hurts.keys():
-		var pending: Dictionary = _hurts[label]
-		var since: float = pending["t"]
-		if all or _time - since >= HURT_MERGE:
-			var amount: float = pending["amount"]
-			_write_line(
-				"player_hurt",
-				{"cause": label, "amount": snappedf(amount, 0.01), "hits": pending["hits"]},
-				since
-			)
-			_hurts.erase(label)
-
-
-## Logs `event` with `fields`, when it happened (`at`: seconds into the session; now by default)
-## and in which run (with its time) while one is underway.
-func _write_line(event: String, fields: Dictionary, at: float = -1.0) -> void:
-	if not _log:
-		return
-	var line: Dictionary = {"t": snappedf(_time if at < 0.0 else at, 0.01), "e": event}
-	if _run_time >= 0.0:
-		line["run"] = runs
-		line["run_t"] = snappedf(_run_time - (_time - at if at >= 0.0 else 0.0), 0.01)
-	line.merge(fields)
-	_log.store_line(JSON.stringify(line, "", false))
 
 
 func _load_totals() -> void:
@@ -678,34 +631,13 @@ func _load_totals() -> void:
 		totals.from_data(counters as Dictionary)
 
 
-## Opens this session's log, deleting the oldest ones beyond `KEEP_SESSIONS`.
-func _open_log() -> void:
-	var directory: String = stats_directory()
-	if not directory:
-		return
-	var sessions: String = directory.path_join(SESSIONS_FOLDER)
-	DirAccess.make_dir_recursive_absolute(sessions)
-	var logs: Array[String] = []
-	for file: String in DirAccess.get_files_at(sessions):
-		if file.ends_with(".jsonl"):
-			logs.append(file)
-	logs.sort()
-	while logs.size() >= KEEP_SESSIONS:
-		var oldest: String = logs.pop_front()
-		DirAccess.remove_absolute(sessions.path_join(oldest))
-	var stamp: String = Time.get_datetime_string_from_system().replace("T", "_").replace(":", "-")
-	var path: String = sessions.path_join(stamp + ".jsonl")
-	_log = FileAccess.open(path, FileAccess.WRITE)
-	if not _log:
-		push_error("Stats: can't write %s (%s)" % [path, error_string(FileAccess.get_open_error())])
-
-
 ## Logs the end of the session and writes everything (once).
 func _end_session() -> void:
-	if _log:
-		_log_hurts(true)
-		_write_line("session_ended", {"seconds": snappedf(_time, 0.1), "debug": _debug_session})
-		_log.close()
-		_log = null
+	if session.is_open():
+		session.log_hurts()
+		session.write(
+			"session_ended", {"seconds": snappedf(session.time, 0.1), "debug": _debug_session}
+		)
+		session.close()
 	if _dirty:
 		save_totals()

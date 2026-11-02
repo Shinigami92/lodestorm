@@ -21,7 +21,7 @@ The game lives in `game/`, one folder per feature: its scenes, scripts and resou
 | `progression/` | `skills/` (the graph's skills in `tree/`), `upgrades/`, `heat_shield/` (`HeatShield`, its plates), `TimedJob` (a level or rank under way), `ProgressClock` (finishing them on the wall clock) | more skills |
 | `refinery/` | `AlloyType`, `AlloyCatalog`, `IngotIcon`; `Refining` (a player's batches, `AlloyBatch`), `Furnaces` (the ship's); `alloys/` one resource per alloy | |
 | `save/` | `SaveGame`, `SaveData`, `GameSettings` | |
-| `stats/` | `GameEvents` (the event bus), `StatsRecorder` (the statistics), `StatCounters` | the live `/metrics` endpoint, the statistics station, achievements |
+| `stats/` | `GameEvents` (the event bus), `StatsRecorder` (the statistics), `StatCounters`, `SessionLog` | the live `/metrics` endpoint, the statistics station, achievements |
 | `ship/` | ship, flight, lift, doors, the cargo hatch, neon signs, the shell's look (`ShipShell`, room looks), floor guide (Waypost Ostra's), holo table; the generated `hull.tscn`, `rooms/` (a scene per room), shared `materials/` | the modeled hull and rooms |
 | `space_station/` | `SpaceStation` (a station the ship docks at); one folder per station with its generated map (`ostra/`) | the second station, outposts |
 | `stations/` | `Station`, `StationPart`, `StationCard`, `OfferCard`; one folder per station with its scene, script and card | med bed, quest board, comms station |

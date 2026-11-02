@@ -272,14 +272,14 @@ func test_older_totals_are_kept_and_newer_ones_put_aside() -> void:
 func test_old_session_logs_are_deleted() -> void:
 	_map.free()
 	var sessions: String = _sessions_directory()
-	for i: int in StatsRecorder.KEEP_SESSIONS + 3:
+	for i: int in SessionLog.KEEP_SESSIONS + 3:
 		var file := FileAccess.open(
 			sessions.path_join("2000-01-%02d_00-00-00.jsonl" % (i + 1)), FileAccess.WRITE
 		)
 		file.close()
 	await _start()
 	var logs: Array[String] = _session_logs()
-	assert_eq(logs.size(), StatsRecorder.KEEP_SESSIONS)
+	assert_eq(logs.size(), SessionLog.KEEP_SESSIONS)
 	assert_false("2000-01-01_00-00-00.jsonl" in logs, "the oldest went")
 
 
@@ -325,7 +325,7 @@ func _move(target: Vector3) -> void:
 
 
 func _sessions_directory() -> String:
-	var sessions: String = StatsRecorder.stats_directory().path_join(StatsRecorder.SESSIONS_FOLDER)
+	var sessions: String = StatsRecorder.stats_directory().path_join(SessionLog.SESSIONS_FOLDER)
 	DirAccess.make_dir_recursive_absolute(sessions)
 	return sessions
 
@@ -348,7 +348,7 @@ func _log_lines() -> Array[Dictionary]:
 
 
 func _logged_events() -> Array[String]:
-	_recorder.flush_log()
+	_recorder.session.flush()
 	var events: Array[String] = []
 	for line: Dictionary in _log_lines():
 		var event: String = line["e"]
@@ -358,7 +358,7 @@ func _logged_events() -> Array[String]:
 
 ## The last line of `event` in the log.
 func _logged(event: String) -> Dictionary:
-	_recorder.flush_log()
+	_recorder.session.flush()
 	var found: Dictionary = {}
 	for line: Dictionary in _log_lines():
 		if line["e"] == event:
@@ -378,7 +378,7 @@ func _clean() -> void:
 	if FileAccess.file_exists(GameSettings.path()):
 		DirAccess.remove_absolute(GameSettings.path())
 	var stats: String = DIRECTORY.path_join(StatsRecorder.FOLDER)
-	var sessions: String = stats.path_join(StatsRecorder.SESSIONS_FOLDER)
+	var sessions: String = stats.path_join(SessionLog.SESSIONS_FOLDER)
 	for folder: String in [sessions, stats, DIRECTORY]:
 		if DirAccess.dir_exists_absolute(folder):
 			for file: String in DirAccess.get_files_at(folder):

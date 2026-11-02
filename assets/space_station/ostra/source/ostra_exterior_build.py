@@ -37,6 +37,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "assets" / "space_station" / "ostra" / "exterior"
 TMP = ROOT / "tmp" / "ostra_exterior"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))  # ostra_materials
 sys.path.insert(0, str(ROOT / "game" / "space_station" / "ostra"))
 
 import bmesh
@@ -45,12 +46,14 @@ import ostra_layout as L
 from mathutils import Vector
 
 import common as C
+from ostra_materials import material
 
 ARGV = C.args()
 C.reset("ExteriorRoofs")
 
 
 def flat(name, color, roughness=0.6, metallic=0.0, emission=None, strength=0.0, transmission=0.0):
+    """A plain material for the preview's stand-ins (walls, floors, the ship); the kit's own come from ostra_materials."""
     mat = bpy.data.materials.new(name)
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (*color, 1)
@@ -65,21 +68,24 @@ def flat(name, color, roughness=0.6, metallic=0.0, emission=None, strength=0.0, 
 
 
 MATS = [
-    flat("OstraPaint", (0.4, 0.38, 0.34), 0.6),
-    flat("OstraPaintDark", (0.1, 0.1, 0.1), 0.55),
-    flat("OstraMetal", (0.5, 0.5, 0.5), 0.4, 1.0),
-    flat("OstraFloor", (0.22, 0.22, 0.22), 0.5),
-    flat("OstraGrating", (0.3, 0.3, 0.3), 0.45, 1.0),
-    flat("OstraHazard", (0.8, 0.6, 0.1), 0.6),
-    flat("OstraRubber", (0.03, 0.03, 0.03), 0.8),
-    flat("OstraGlass", (0.6, 0.7, 0.75), 0.05, transmission=1.0),
-    flat("OstraLamp", (0.3, 0.3, 0.3), 0.4, 0.0, (1.0, 0.8, 0.55), 6.0),
-    flat("OstraAmber", (0.3, 0.2, 0.1), 0.4, 0.0, (1.0, 0.55, 0.12), 4.0),
-    flat("OstraRed", (0.3, 0.05, 0.03), 0.4, 0.0, (1.0, 0.1, 0.05), 4.0),
-    flat("OstraCanvas", (0.33, 0.29, 0.21), 0.9),
-    flat("OstraContainerRed", (0.35, 0.1, 0.07), 0.6),
-    flat("OstraContainerBlue", (0.12, 0.2, 0.3), 0.6),
-    flat("OstraContainerOlive", (0.25, 0.27, 0.15), 0.6),
+    material(n)
+    for n in (
+        "OstraPaint",
+        "OstraPaintDark",
+        "OstraMetal",
+        "OstraFloor",
+        "OstraGrating",
+        "OstraHazard",
+        "OstraRubber",
+        "OstraGlass",
+        "OstraLamp",
+        "OstraAmber",
+        "OstraRed",
+        "OstraCanvas",
+        "OstraContainerRed",
+        "OstraContainerBlue",
+        "OstraContainerOlive",
+    )
 ]
 PAINT, DARK, METAL, FLOOR, GRATING, HAZARD, RUBBER, GLASS, LAMP, AMBER, RED, CANVAS, CRED, CBLUE, COLIVE = range(
     len(MATS)

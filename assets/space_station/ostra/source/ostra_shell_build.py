@@ -33,6 +33,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[4]
 OUT = ROOT / "assets" / "space_station" / "ostra" / "shell"
 TMP = ROOT / "tmp" / "ostra_shell"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))  # ostra_materials
 sys.path.insert(0, str(ROOT / "game" / "space_station" / "ostra"))
 
 
@@ -41,33 +42,25 @@ import ostra_layout as L
 from mathutils import Vector
 
 import common as C
+from ostra_materials import material
 
 ARGV = C.args()
 C.reset("Shell")
 
 
-def flat(name: str, color, roughness: float = 0.6, metallic: float = 0.0, emission=None, strength: float = 0.0):
-    mat = bpy.data.materials.new(name)
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (*color, 1)
-    bsdf.inputs["Roughness"].default_value = roughness
-    bsdf.inputs["Metallic"].default_value = metallic
-    if emission:
-        bsdf.inputs["Emission Color"].default_value = (*emission, 1)
-        bsdf.inputs["Emission Strength"].default_value = strength
-    return mat
-
-
 MATS = [
-    flat("OstraPaint", (0.4, 0.38, 0.34), 0.6),
-    flat("OstraPaintDark", (0.1, 0.1, 0.1), 0.55),
-    flat("OstraMetal", (0.5, 0.5, 0.5), 0.4, 1.0),
-    flat("OstraFloor", (0.22, 0.22, 0.22), 0.5),
-    flat("OstraGrating", (0.3, 0.3, 0.3), 0.45, 1.0),
-    flat("OstraHazard", (0.8, 0.6, 0.1), 0.6),
-    flat("OstraAmber", (0.3, 0.2, 0.1), 0.4, 0.0, (1.0, 0.55, 0.12), 4.0),
-    flat("OstraLamp", (0.3, 0.3, 0.3), 0.4, 0.0, (1.0, 0.8, 0.55), 6.0),
-    flat("OstraGlass", (0.6, 0.7, 0.75), 0.05),
+    material(n)
+    for n in (
+        "OstraPaint",
+        "OstraPaintDark",
+        "OstraMetal",
+        "OstraFloor",
+        "OstraGrating",
+        "OstraHazard",
+        "OstraAmber",
+        "OstraLamp",
+        "OstraGlass",
+    )
 ]
 PAINT, DARK, METAL, FLOOR, GRATING, HAZARD, AMBER, LAMP, GLASS = range(len(MATS))
 

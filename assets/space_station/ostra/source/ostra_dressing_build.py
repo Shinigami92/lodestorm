@@ -26,51 +26,20 @@ ROOT = pathlib.Path(__file__).resolve().parents[4]
 PROPS = ROOT / "assets" / "space_station" / "ostra" / "props"
 OUT = ROOT / "tmp" / "ostra_dressing"
 sys.path.insert(0, str(ROOT / "tools" / "blender"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))  # ostra_materials
 
 import bpy
 from mathutils import Matrix, Vector
 
 import common as C
+from ostra_materials import material
 
 PAINT, DARK, METAL, GRATING, HAZARD = "OstraPaint", "OstraPaintDark", "OstraMetal", "OstraGrating", "OstraHazard"
 RUBBER, FABRIC, SCREEN, LAMP = "OstraRubber", "OstraFabric", "OstraScreen", "OstraLamp"
 AMBER, RED, PLANT, ORANGE = "OstraAmber", "OstraRed", "OstraPlant", "OstraOrange"
 
-MATERIALS = {  # name: (base color, roughness, metallic, emission strength)
-    PAINT: ((0.40, 0.38, 0.34), 0.6, 0.0, 0.0),
-    DARK: ((0.10, 0.10, 0.10), 0.55, 0.0, 0.0),
-    METAL: ((0.5, 0.5, 0.5), 0.4, 1.0, 0.0),
-    GRATING: ((0.3, 0.3, 0.3), 0.45, 1.0, 0.0),
-    HAZARD: ((0.8, 0.6, 0.1), 0.6, 0.0, 0.0),
-    RUBBER: ((0.03, 0.03, 0.03), 0.8, 0.0, 0.0),
-    FABRIC: ((0.2, 0.12, 0.08), 0.75, 0.0, 0.0),
-    SCREEN: ((0.2, 0.9, 0.85), 0.3, 0.0, 3.0),
-    LAMP: ((1.0, 0.8, 0.55), 0.3, 0.0, 6.0),
-    AMBER: ((1.0, 0.55, 0.12), 0.3, 0.0, 4.0),
-    RED: ((1.0, 0.1, 0.05), 0.3, 0.0, 4.0),
-    PLANT: ((0.12, 0.3, 0.08), 0.7, 0.0, 0.0),
-    ORANGE: ((0.75, 0.3, 0.05), 0.55, 0.0, 0.0),
-    "OstraContainerRed": ((0.35, 0.1, 0.07), 0.6, 0.0, 0.0),
-    "OstraContainerBlue": ((0.12, 0.2, 0.3), 0.6, 0.0, 0.0),
-    "OstraContainerOlive": ((0.25, 0.27, 0.15), 0.6, 0.0, 0.0),
-}
 SHARP = math.radians(50)  # edges bent more than this shade hard (boxes, flanges), less stays smooth (cylinders)
 X, Y, Z = Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))
-
-
-def material(name: str) -> bpy.types.Material:
-    mat = bpy.data.materials.get(name)
-    if mat:
-        return mat
-    color, rough, metal, emit = MATERIALS[name]
-    mat, _nt, bsdf = C._new_material(name)
-    bsdf.inputs["Base Color"].default_value = (*color, 1.0)
-    bsdf.inputs["Roughness"].default_value = rough
-    bsdf.inputs["Metallic"].default_value = metal
-    if emit:
-        bsdf.inputs["Emission Color"].default_value = (*color, 1.0)
-        bsdf.inputs["Emission Strength"].default_value = emit
-    return mat
 
 
 def spline(pts: list, steps: int) -> list:

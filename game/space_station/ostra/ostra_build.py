@@ -765,9 +765,9 @@ nodes += [
     '[node name="DaceStall" type="Node3D" parent="."]',
     f"transform = {xform((stall_x, 0, stall_z))}",
     "",
-    # Above his workbench behind him, under the awning's back, so it never covers him.
+    # Above his workbench behind him, at the awning's front edge, so it never covers him.
     '[node name="Sign" parent="DaceStall" instance=ExtResource("neon_sign")]',
-    f"transform = {xform((0, 2.75, -1.9))}",
+    f"transform = {xform((0, 2.95, -1.95))}",
     'text = "Dace · Machinist"',
     "color = Color(0.45, 0.8, 1, 1)",
     "font_size = 32",

@@ -775,15 +775,20 @@ def stall_rack(k: Kit) -> None:
     k.box((0, 2.18, -2.8), (3.0, 0.04, 0.4), "OstraPaintDark")
 
 
+# The awning's front edge: behind the one standing at the counter (at z -1.6), so the camera, looking down from the
+# front at 35°, sees them under it.
+AWNING_FRONT = -2.1
+
+
 def canopy(k: Kit, back_z: float, back_post_z: float) -> None:
-    """Posts, a slanted canvas awning from 3.0 m at back_z to 2.6 m at its front edge (z 0.8), a scalloped
-    valance and a string of bulbs along the front."""
-    front_z, front_y, back_y = 0.8, 2.6, 3.0
+    """Posts, a slanted canvas awning over the back of the stall from 3.0 m at back_z to 2.7 m at its front edge
+    (AWNING_FRONT), a scalloped valance and a string of bulbs along the front."""
+    front_z, front_y, back_y = AWNING_FRONT, 2.7, 3.0
 
     def height(z):
         return front_y + (back_y - front_y) * (front_z - z) / (front_z - back_z)
 
-    for z in (0.75, back_post_z):
+    for z in (front_z - 0.05, back_post_z):
         top = height(z) - 0.04
         for x in (-1.55, 1.55):
             k.box((x, 0.01, z), (0.14, 0.02, 0.14), "OstraMetal", bev=False)
@@ -797,7 +802,7 @@ def canopy(k: Kit, back_z: float, back_post_z: float) -> None:
     def canvas(u, v):
         x = -1.6 + 3.2 * u
         z = front_z + (back_z - front_z) * v
-        sag = 0.11 * abs(math.sin(math.pi * x / 1.55)) * math.sin(math.pi * v) ** 0.5
+        sag = 0.05 * abs(math.sin(math.pi * x / 1.55)) * math.sin(math.pi * v) ** 0.5
         return (x, height(z) - sag, z)
 
     k.sheet(canvas, 24, 8, "OstraCanvas")
@@ -812,8 +817,8 @@ def canopy(k: Kit, back_z: float, back_post_z: float) -> None:
     for a, b in ((-1.55, 0.0), (0.0, 1.55)):
         for i in range(5):
             t = i / 5
-            cable.append((a + (b - a) * t, 2.4 - 0.12 * math.sin(math.pi * t), 0.84))
-    cable.append((1.55, 2.4, 0.84))
+            cable.append((a + (b - a) * t, front_y - 0.2 - 0.12 * math.sin(math.pi * t), front_z + 0.04))
+    cable.append((1.55, front_y - 0.2, front_z + 0.04))
     k.path(cable, 0.006, "OstraRubber", seg=4)
     for p in cable[1:-1]:
         if abs(p[0]) < 0.01:
@@ -948,10 +953,10 @@ def stall_trade(k: Kit) -> None:
 
 
 def stall_dace(k: Kit) -> None:
-    """Dace's machinist stall: the counter and a canopy reaching back to z -2.0, no rack, no goods (his bench
-    stands separately; the game's shutter closes at z +0.7)."""
+    """Dace's machinist stall: the counter and a canopy over his workbench behind (which stands separately, its
+    back at z -3.4), no rack, no goods (the game's shutter closes at z +0.7)."""
     stall_counter(k)
-    canopy(k, -2.0, -1.95)
+    canopy(k, -3.6, -3.55)
 
 
 # --- workshops -----------------------------------------------------------------------------------------
@@ -1236,7 +1241,7 @@ MODELS = {
     "bar_stool": (bar_stool, ((-0.225, 0.0, -0.225), (0.225, 0.75, 0.225)), 0.01),
     "stall_parts": (stall_parts, ((-1.6, 0.0, -3.1), (1.6, 3.0, 0.9)), 0.012),
     "stall_trade": (stall_trade, ((-1.6, 0.0, -3.1), (1.6, 3.0, 0.9)), 0.012),
-    "stall_dace": (stall_dace, ((-1.6, 0.0, -2.0), (1.6, 3.0, 0.9)), 0.012),
+    "stall_dace": (stall_dace, ((-1.6, 0.0, -3.6), (1.6, 3.0, 0.9)), 0.012),
     "dace_bench": (dace_bench, ((-1.5, 0.0, -0.5), (1.5, 2.2, 0.4)), 0.012),
     "suit_bench": (suit_bench, ((-1.1, 0.0, -0.45), (1.1, 1.45, 0.45)), 0.012),
     "suit_frame": (suit_frame, ((-0.35, 0.0, -0.25), (0.35, 1.9, 0.25)), 0.012),

@@ -18,7 +18,7 @@ Traps that cost time once, grouped by where they bite. The rules themselves are 
 - Every warning is an error, but `--check-only` and headless runs don't print GDScript warnings: `tests/project/test_scripts_parse.gd` finds them (or the open editor's language server). `--check-only -s` fails on most game scripts because of the `Sfx` autoload.
 - A local variable named like a member of the base class or a signal (`ready`, `point`, `along`) is a parse error.
 - Indexing a typed `Dictionary[ItemType, int]` with an `AlloyType` variable fails: assign it to an `ItemType` variable first.
-- `var x: Array[T] = a.list if a else [] as Array[T]` fails at runtime when the else branch runs: use an `if`.
+- `var x: Array[T] = a.list if a else [] as Array[T]` (or `return` of such a ternary into an `Array[T]` return type) fails at runtime whichever branch runs: the ternary yields an untyped `Array`. Use an `if`.
 - A typed const `Array[PackedStringArray]` of literals iterated as empty strings (and crashed on bone look-ups): use a flat `PackedStringArray`.
 - `_init` isn't chained implicitly: a subclass's `_init` calls `super()`.
 - Preloading a scene whose scripts refer back to the preloading class gives an empty `PackedScene`: `load()` it in `_ready`.

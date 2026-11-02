@@ -87,7 +87,9 @@ func reached_bodies() -> Array[StringName]:
 	var ship: Ship = npc.ship
 	var voyage: Voyage = ship.voyage if ship else null
 	var system: StarSystem = voyage.settings.system if voyage and voyage.settings else null
-	return system.reached_bodies(ship.heat_shield.mk) if system else [] as Array[StringName]
+	if not system:
+		return [] as Array[StringName]
+	return system.reached_bodies(ship.heat_shield.mk)
 
 
 ## The quests they offer now.

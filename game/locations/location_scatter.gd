@@ -18,20 +18,15 @@ var _placements: Array[Array] = []
 ## Where the plants and rocks of `location`'s biome grow, by type and chunk.
 func plan(rng: RandomNumberGenerator, location: GeneratedLocation) -> void:
 	var terrain: LocationTerrain = location.terrain
-	var chunk_size: float = GeneratedLocation.CHUNK_CELLS * location.cell
 	var blockers: Array[Vector4] = []
 	for type: ScatterType in location.biome.scatter:
 		var by_chunk: Dictionary[Vector2i, Array] = {}
 		for placed: Transform3D in _transforms(rng, location, type, blockers):
-			var chunk: Vector2i = Vector2i(
-				((Vector2(placed.origin.x, placed.origin.z) - terrain.origin) / chunk_size).floor()
-			)
-			if not by_chunk.has(chunk):
-				by_chunk[chunk] = []
-			by_chunk[chunk].append(placed)
+			var at := Vector2(placed.origin.x, placed.origin.z)
+			LocationChunks.add(by_chunk, LocationChunks.of(terrain, at), placed)
 		for chunk: Vector2i in by_chunk:
 			_types.append(type)
-			_names.append("%s%d_%d" % [type.display_name.to_pascal_case(), chunk.x, chunk.y])
+			_names.append(LocationChunks.node_name(type.display_name.to_pascal_case(), chunk))
 			_placements.append(by_chunk[chunk])
 
 
@@ -115,16 +110,9 @@ func _fits(
 func _add_chunk(parent: Node3D, type: ScatterType, chunk_name: String, transforms: Array) -> void:
 	if not type.get_mesh():
 		return
-	var multimesh := MultiMesh.new()
-	multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	multimesh.mesh = type.get_mesh()
-	multimesh.instance_count = transforms.size()
-	for i: int in transforms.size():
-		var placed: Transform3D = transforms[i]
-		multimesh.set_instance_transform(i, placed)
-	var instance := MultiMeshInstance3D.new()
-	instance.name = chunk_name
-	instance.multimesh = multimesh
+	var instance: MultiMeshInstance3D = LocationChunks.instance(
+		type.get_mesh(), transforms, chunk_name
+	)
 	instance.visibility_range_end = type.visibility_range
 	# Fade in and out instead of popping, a whole chunk at a time.
 	instance.visibility_range_end_margin = type.visibility_range * 0.25

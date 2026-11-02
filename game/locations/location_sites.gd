@@ -383,11 +383,7 @@ static func _shuffled(
 	rng: RandomNumberGenerator, areas: Array[LocationLayout.Area]
 ) -> Array[LocationLayout.Area]:
 	var mixed: Array[LocationLayout.Area] = areas.duplicate()
-	for i: int in range(mixed.size() - 1, 0, -1):
-		var j: int = rng.randi_range(0, i)
-		var swap: LocationLayout.Area = mixed[i]
-		mixed[i] = mixed[j]
-		mixed[j] = swap
+	Seeded.shuffle(mixed, rng)
 	return mixed
 
 

@@ -88,7 +88,7 @@ func show_part(part: StationPart) -> void:
 	var new: Array[bool] = []
 	var icons: Array[Texture2D] = []
 	var quest_rows: int = 0
-	var quests: QuestLog = npc.get_quests()
+	var quests: QuestLog = npc.quests.get_log()
 	for choice: Topic in npc.get_choices():
 		texts.append(tr(choice.title))
 		new.append(npc.is_new(choice))
@@ -112,7 +112,7 @@ func get_quest_panel() -> QuestPanel:
 ## in its step.
 func _show_quest(npc: Npc) -> void:
 	var shown: Quest = npc.talk.quest
-	var quests: QuestLog = npc.get_quests()
+	var quests: QuestLog = npc.quests.get_log()
 	var hold: PlayerHold = npc.user.hold if npc.user else null
 	_topic_title.visible = true
 	_topic_title.text = tr(shown.title)

@@ -34,12 +34,12 @@ func test_a_quest_offered_shows_a_diamond() -> void:
 	_player.global_position = _npc.global_position + Vector3(0.0, 0.0, 3.0)
 	_player.reset_physics_interpolation()
 	await wait_process_frames(2)
-	assert_true(_npc.has_quest_news(_player))
+	assert_true(_npc.quests.has_news(_player))
 	assert_true(_npc._quest_marker.visible, "a diamond")
 	assert_false(_npc._news_marker.visible)
 	_ship.quests.accept(_quest, [_player])
 	await wait_process_frames(1)
-	assert_false(_npc.has_quest_news(_player), "nothing to hand in yet")
+	assert_false(_npc.quests.has_news(_player), "nothing to hand in yet")
 	assert_false(_npc._quest_marker.visible)
 
 
@@ -128,7 +128,7 @@ func test_steps_ready_to_hand_in_come_first() -> void:
 	assert_true(_ship.quests.can_hand_in(due, _player.hold), "the hold covers it")
 	assert_false(_ship.quests.can_hand_in(waiting, _player.hold))
 	await _talk()
-	var entries: Array[Topic] = _npc.get_quest_choices(_player)
+	var entries: Array[Topic] = _npc.quests.get_choices(_player)
 	assert_eq(
 		entries,
 		[due.steps[0].hand_in, offered.offer, waiting.steps[0].hand_in],

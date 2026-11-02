@@ -146,12 +146,12 @@ func next_line(
 	return lines[turn % lines.size()]
 
 
-## The crew aboard: the ship's NPCs who have joined (`Npc.is_present`).
+## The crew aboard: the ship's NPCs who have joined (`NpcPresence.is_here`).
 func crew() -> Array[Npc]:
 	var found: Array[Npc] = []
 	for node: Node in ship.find_children("*", "", true, false):
 		var npc := node as Npc
-		if npc and npc.profile and npc.is_present():
+		if npc and npc.profile and npc.presence.is_here():
 			found.append(npc)
 	return found
 

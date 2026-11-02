@@ -175,7 +175,7 @@ func press() -> void:
 	if choice >= choices.size():
 		npc.close()
 		return
-	var quests: QuestLog = npc.get_quests()
+	var quests: QuestLog = npc.quests.get_log()
 	var chosen: Quest = quests.quest_for(choices[choice])
 	if chosen and quests.is_accepted(chosen):
 		_recap_calls(chosen)
@@ -226,7 +226,7 @@ func _finish_topic() -> void:
 	npc.get_story().set_flag(heard.id)
 	topic = null
 	choice = mini(choice, npc.get_choices().size())
-	var quests: QuestLog = npc.get_quests()
+	var quests: QuestLog = npc.quests.get_log()
 	var offered: Quest = quests.quest_for(heard)
 	if offered and not quests.is_accepted(offered):
 		_show_quest(offered, true)
@@ -244,7 +244,7 @@ func _finish_topic() -> void:
 ## Says the radio calls heard of `accepted`'s active step again (worded for the players in the
 ## session), then shows its card; at once without any.
 func _recap_calls(accepted: Quest) -> void:
-	var quests: QuestLog = npc.get_quests()
+	var quests: QuestLog = npc.quests.get_log()
 	var together: bool = npc.get_tree().get_nodes_in_group(Player.GROUP).size() > 1
 	var heard: Array[String] = quests.calls.lines(accepted, quests.current_step(accepted), together)
 	if heard.is_empty():
@@ -267,7 +267,7 @@ func _show_quest(shown: Quest, offered: bool = false) -> void:
 ## Accepts the quest on the card, or hands in its step (then they say its lines); nothing while
 ## the step can't be handed in.
 func _confirm_quest() -> void:
-	var quests: QuestLog = npc.get_quests()
+	var quests: QuestLog = npc.quests.get_log()
 	var players: Array[Player] = []
 	players.assign(npc.get_tree().get_nodes_in_group(Player.GROUP))
 	if offering:
@@ -286,7 +286,7 @@ func _step_prompts() -> Array[String]:
 	var found: Array[String] = []
 	if not npc.waits_to_join or not npc.profile:
 		return found
-	var quests: QuestLog = npc.get_quests()
+	var quests: QuestLog = npc.quests.get_log()
 	for waiting: Quest in quests.steps_at(npc.profile.id):
 		found.append_array(quests.current_step(waiting).place_prompts)
 	return found

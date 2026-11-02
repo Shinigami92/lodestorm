@@ -4,9 +4,9 @@ extends RefCounted
 ## docs/design/crew.md), once their `NpcProfile.join_flag` is set: over their map's navigation
 ## (a station's) to the foot of the ship's ramp, waiting there while it isn't down, straight up it
 ## (`Ship.ramp_way`) and a step in through the door, where the ship's own crew member of their
-## profile takes over (`Npc.arrive`) and walks on to their post; they're gone from their place. They
-## walk at `NpcRoutine.WALK_SPEED` without stopping for players (one may follow them); out in a
-## location (from their camp, over its `LocationWalkway`, their feet on its ground) at
+## profile takes over (`NpcPresence.arrive`) and walks on to their post; they're gone from their
+## place. They walk at `NpcRoutine.WALK_SPEED` without stopping for players (one may follow them);
+## out in a location (from their camp, over its `LocationWalkway`, their feet on its ground) at
 ## `OUTSIDE_SPEED`, since the run waits for them. They set off once nobody talks to them
 ## (`Npc.walks_aboard`).
 ## Without the ship standing where they are (in flight, or docked elsewhere), they're aboard at
@@ -52,7 +52,7 @@ static func start(who: Npc, walker: NpcWalker, navigation: DeckNavigation) -> Np
 	who.add_to_group(GROUP)
 	var aboard: Npc = crew_member(who.ship, who.profile.id)
 	if aboard:
-		aboard.update_presence()
+		aboard.presence.update()
 	return boarding
 
 
@@ -153,5 +153,5 @@ func _hand_over() -> bool:
 	npc.remove_from_group(GROUP)
 	var aboard: Npc = crew_member(_ship, npc.profile.id) if is_instance_valid(_ship) else null
 	if aboard:
-		aboard.arrive(npc.global_transform)
+		aboard.presence.arrive(npc.global_transform)
 	return true

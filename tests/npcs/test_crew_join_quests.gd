@@ -20,10 +20,10 @@ func test_dace_offers_his_quest_once_brannik_s_chain_is_done() -> void:
 	await _dock_at_ostra()
 	var dace: Npc = _people("Dace")
 	assert_eq(_ids(dace), [&"gunsmith.about_stall", &"gunsmith.coming_aboard"] as Array[StringName])
-	assert_false(dace.has_quest_news(_player))
+	assert_false(dace.quests.has_news(_player))
 	_ship.story.set_flag(&"quest.colony_arms")
 	assert_eq(_ids(dace), [&"gunsmith.real_ore", &"gunsmith.about_stall"] as Array[StringName])
-	assert_true(dace.has_quest_news(_player), "the diamond above him")
+	assert_true(dace.quests.has_news(_player), "the diamond above him")
 
 
 func test_wren_asks_once_she_has_been_talked_to() -> void:
@@ -43,7 +43,7 @@ func test_fenna_asks_once_the_other_three_are_aboard() -> void:
 	assert_has(_ids(fenna), &"cook.cooking", "Hollis isn't aboard yet")
 	_ship.story.set_flag(&"crew.miner_mechanic.joined")
 	assert_eq(_ids(fenna), [&"cook.rooks_leftovers", &"cook.about_booth"] as Array[StringName])
-	assert_true(fenna.has_quest_news(_player))
+	assert_true(fenna.quests.has_news(_player))
 
 
 func test_they_wait_on_ostra_until_they_join() -> void:

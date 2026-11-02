@@ -19,6 +19,15 @@ func open_regions(shield_mk: int) -> Array[Region]:
 	return open
 
 
+## The ids of the planets and moons (not the stations) reached with heat shield MK `shield_mk`.
+func reached_bodies(shield_mk: int) -> Array[StringName]:
+	var reached: Array[StringName] = []
+	for body: CelestialBody in bodies:
+		if body.kind != CelestialBody.Kind.STATION and body.is_reachable(shield_mk):
+			reached.append(body.id)
+	return reached
+
+
 ## Whether `region` can be landed in with heat shield MK `shield_mk`.
 func is_open(region: Region, shield_mk: int) -> bool:
 	var body: CelestialBody = body_of(region)

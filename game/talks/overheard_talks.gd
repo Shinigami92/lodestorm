@@ -96,7 +96,7 @@ func _is_open(candidate: OverheardTalk, story: Story) -> bool:
 
 ## Whether `npc` is a crew member there aboard (not at their place before joining).
 static func _is_aboard(npc: Npc) -> bool:
-	return npc.is_present() and not npc.waits_to_join
+	return npc.presence.is_here() and not npc.waits_to_join
 
 
 ## The NPCs who say `candidate`'s lines, by `NpcProfile.id` (the ones found and aboard).

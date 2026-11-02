@@ -42,6 +42,7 @@ import struct
 import sys
 from collections.abc import Callable
 
+import bmesh
 import bpy
 import numpy as np
 from mathutils import Vector
@@ -180,6 +181,145 @@ def unwrap_atlas(job: Job, objs: list) -> None:
             pass  # no UV editor context: smart_project left every UV selected anyway
     bpy.ops.uv.pack_islands(rotate=True, margin_method=job.pack_method, margin=job.pack_margin)
     bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def chart_unwrap(
+    backs: tuple = (),
+    by_material: bool = False,
+    scale_all: dict | None = None,
+    cone: float = 60.0,
+    margin_px: int = 3,
+    bottom_scale: float = 0.08,
+    back_scale: float = 0.5,
+) -> Callable:
+    """A Job's unwrap for faceted kits (rocks, the biome kits, meteor, vein, lairs): UV charts grown over the facets
+    (from the biggest unassigned face, its neighbors whose normal stays within `cone` degrees of the seed's, so a
+    chart never wraps around a column; with `by_material`, never across materials) and flattened conformally, folded
+    faces cut out into islands of their own, the same texel density everywhere, then packed `margin_px` apart at the
+    job's size. The faces nobody sees stay charts of their own and shrink around their own centers: a flat bottom cap
+    to `bottom_scale`, the flat +Y back of the objects in `backs` (cliffs against the terrain) to `back_scale`. An
+    object in `scale_all` (name: scale) has its whole UVs scaled instead (a ground disc at a lower density)."""
+
+    def unwrap(job: Job, objs: list) -> None:
+        new_uv_map(objs)
+        print("UV charts", {o.name: _mark_chart_seams(o, backs, cone, by_material) for o in objs})
+        select_only(objs, objs[0])
+        bpy.context.scene.tool_settings.use_uv_select_sync = False
+        for attempt in range(6):
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="SELECT")
+            bpy.ops.uv.unwrap(method="CONFORMAL", fill_holes=False, margin=0.002)
+            # A chart can fold over itself in the flattening: cut every overlapping face out into its own island.
+            bpy.ops.uv.select_all(action="DESELECT")
+            bpy.ops.uv.select_overlap(extend=False)
+            bpy.ops.object.mode_set(mode="OBJECT")
+            overlapping = {o.name: _split_selected_uv_faces(o) for o in objs}
+            print("UV overlap pass", attempt, {k: v for k, v in overlapping.items() if v})
+            if not any(overlapping.values()):
+                break
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.uv.select_all(action="SELECT")
+        bpy.ops.uv.average_islands_scale()
+        bpy.ops.object.mode_set(mode="OBJECT")
+        for o in objs:
+            _shrink_hidden_islands(o, backs, (scale_all or {}).get(o.name), bottom_scale, back_scale)
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.uv.select_all(action="SELECT")
+        bpy.ops.uv.pack_islands(rotate=True, margin_method="FRACTION", margin=margin_px / job.size)
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+    return unwrap
+
+
+def _is_hidden_face(obj_name: str, f, zmin: float, ymax: float, backs: tuple) -> bool:
+    """A flat bottom cap, or the flat +Y back of an object in `backs` (see chart_unwrap)."""
+    c = f.calc_center_median()
+    if f.normal.z < -0.99 and c.z < zmin + 1e-3:
+        return True
+    return obj_name in backs and f.normal.y > 0.99 and c.y > ymax - 1e-3
+
+
+def _mark_chart_seams(obj: bpy.types.Object, backs: tuple, cone: float, by_material: bool) -> int:
+    """Seams between the charts of chart_unwrap; returns the number of charts."""
+    me = obj.data
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bm.faces.ensure_lookup_table()
+    zmin = min(v.co.z for v in bm.verts)
+    ymax = max(v.co.y for v in bm.verts)
+    hidden = {f.index for f in bm.faces if _is_hidden_face(obj.name, f, zmin, ymax, backs)}
+    chart = {}
+    cos_cone = math.cos(math.radians(cone))
+    for seed in sorted(bm.faces, key=lambda f: -f.calc_area()):
+        if seed.index in chart:
+            continue
+        chart[seed.index] = seed.index
+        stack = [seed]
+        while stack and seed.index not in hidden:
+            f = stack.pop()
+            for e in f.edges:
+                for g in e.link_faces:
+                    if g.index in chart or g.index in hidden or g.normal.dot(seed.normal) < cos_cone:
+                        continue
+                    if by_material and g.material_index != seed.material_index:
+                        continue
+                    chart[g.index] = seed.index
+                    stack.append(g)
+    for e in bm.edges:
+        e.seam = len({chart[f.index] for f in e.link_faces}) > 1
+    bm.to_mesh(me)
+    bm.free()
+    return len(set(chart.values()))
+
+
+def _split_selected_uv_faces(obj: bpy.types.Object) -> int:
+    """Seams around the faces the UV editor has selected (uv.select_overlap); returns how many."""
+    me = obj.data
+    attr = me.attributes.get(".uv_select_face")
+    if attr is None:
+        return 0
+    sel = [0] * len(me.polygons)
+    attr.data.foreach_get("value", sel)
+    faces = [i for i, s in enumerate(sel) if s]
+    if faces:
+        bm = bmesh.new()
+        bm.from_mesh(me)
+        bm.faces.ensure_lookup_table()
+        for i in faces:
+            for e in bm.faces[i].edges:
+                e.seam = True
+        bm.to_mesh(me)
+        bm.free()
+    return len(faces)
+
+
+def _shrink_hidden_islands(
+    obj: bpy.types.Object, backs: tuple, whole: float | None, bottom_scale: float, back_scale: float
+) -> None:
+    """Before packing: the hidden faces' UVs scaled around their own centers (they detach from their neighbors and
+    take little atlas space), or the whole object's UVs by `whole`."""
+    me = obj.data
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    uv = bm.loops.layers.uv.active
+    if whole is not None:
+        for f in bm.faces:
+            for lp in f.loops:
+                lp[uv].uv = lp[uv].uv * whole
+    else:
+        zmin = min(v.co.z for v in bm.verts)
+        ymax = max(v.co.y for v in bm.verts)
+        for f in bm.faces:
+            if not _is_hidden_face(obj.name, f, zmin, ymax, backs):
+                continue
+            s = bottom_scale if f.normal.z < -0.99 else back_scale
+            mid = sum((lp[uv].uv for lp in f.loops), Vector((0, 0))) / len(f.loops)
+            for lp in f.loops:
+                lp[uv].uv = mid + (lp[uv].uv - mid) * s
+    bm.to_mesh(me)
+    bm.free()
 
 
 def uv_coverage(objs: list) -> tuple[float, float]:
@@ -551,6 +691,34 @@ def is_constant(mat: bpy.types.Material) -> bool:
     """True when the material is only a Principled BSDF with constant inputs on the output."""
     kinds = {n.bl_idname for n in mat.node_tree.nodes}
     return kinds <= {"ShaderNodeBsdfPrincipled", "ShaderNodeOutputMaterial"}
+
+
+# --- check renders ------------------------------------------------------------------------------------
+
+
+def render_closeup(job: Job, obj: bpy.types.Object, parts: list, view: str, turn: float = 0.0) -> None:
+    """A check render of `obj` alone (the other `parts` hidden) at the origin, turned `turn` around Z, framed by its
+    size with the scale figure beside it: check_<name>_<view>.png in the job's game folder."""
+    for o in parts:
+        o.hide_render = o is not obj
+    loc, rot = obj.location.copy(), obj.rotation_euler.copy()
+    obj.location = (0, 0, 0)
+    obj.rotation_euler = (0, 0, turn)
+    bpy.context.view_layer.update()
+    dx, dy, dz = obj.dimensions
+    fig = bpy.data.objects["PreviewFigure"]
+    side = Vector((math.sqrt(0.5), math.sqrt(0.5), 0))
+    fig_loc = fig.location.copy()
+    fig.location = side * (max(dx, dy) / 2 + 0.55)
+    w = max(dx, dy, dz * 1.1) * 1.3 + 1.4
+    target = side * 0.3 + Vector((0, 0, max(0.5, dz * 0.42)))
+    zoom = w / (9.9 if view == "iso" else 6.3)
+    C.render(
+        job.game / f"check_{obj.name}_{view}.png", view=view, samples=32, size=640, target=tuple(target), zoom=zoom
+    )
+    obj.location, obj.rotation_euler, fig.location = loc, rot, fig_loc
+    for o in parts:
+        o.hide_render = False
 
 
 # --- main ---------------------------------------------------------------------------------------------

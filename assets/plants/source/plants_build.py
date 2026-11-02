@@ -1257,4 +1257,5 @@ def main() -> None:
         C.contact_sheet(paths, OUT / "wip" / f"{TAG}_sheet.png", tile=384)
 
 
-main()
+if __name__ == "__main__":
+    main()

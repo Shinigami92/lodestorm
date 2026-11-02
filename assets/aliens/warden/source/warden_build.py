@@ -870,4 +870,5 @@ def main() -> None:
         C.export_glb(OUT / "warden_draft.glb")
 
 
-main()
+if __name__ == "__main__":
+    main()

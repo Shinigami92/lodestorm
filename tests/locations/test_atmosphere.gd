@@ -5,14 +5,8 @@ extends GutTest
 
 const SYSTEM: StarSystem = preload("res://game/world/star_system.tres")
 const LOCATION: PackedScene = preload("res://game/locations/generated_location.tscn")
-const BIOMES: Array[LocationBiome] = [
-	preload("res://game/locations/biomes/ash.tres"),
-	preload("res://game/locations/biomes/dust.tres"),
-	preload("res://game/locations/biomes/frost.tres"),
-	preload("res://game/locations/biomes/glass.tres"),
-	preload("res://game/locations/biomes/overgrowth.tres"),
-	preload("res://game/locations/biomes/salt.tres"),
-]
+const SWEEP := preload("res://tests/support/location_sweep.gd")
+const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
 
 
 func _landing_bodies() -> Array[CelestialBody]:
@@ -47,7 +41,7 @@ func test_every_moon_sees_its_planet() -> void:
 
 
 func test_every_biome_has_its_weather() -> void:
-	for biome: LocationBiome in BIOMES:
+	for biome: LocationBiome in SWEEP.BIOMES:
 		assert_not_null(biome.weather, biome.display_name)
 		if biome.weather:
 			assert_false(biome.weather.particles.is_empty(), biome.display_name)
@@ -70,7 +64,7 @@ func test_sky_shows_a_moons_planet() -> void:
 func test_location_gets_a_far_ring() -> void:
 	var location := LOCATION.instantiate() as GeneratedLocation
 	location.world_seed = 3
-	location.biome = BIOMES[1]
+	location.biome = DUST
 	location.area_count = 6
 	add_child_autofree(location)
 	var ring := location.get_node_or_null("FarRing") as MeshInstance3D

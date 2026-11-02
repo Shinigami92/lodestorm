@@ -24,6 +24,16 @@ static func instantiate(crew_joined: bool = true) -> Node3D:
 	return map
 
 
+## Docks the ship in `map` (in the tree) at the station with body id `id` (e.g. `&"ostra"`), as if
+## picked at the holo table, right away; its map (`Voyage.location`) is there a few physics frames
+## later.
+static func dock_at(map: Node3D, id: StringName) -> SpaceStation:
+	var voyage: Voyage = map.get_node("Voyage") as Voyage
+	voyage.select(voyage.offer_for_station(voyage.settings.system.body_by_id(id)))
+	voyage.skip_flight()
+	return voyage.location as SpaceStation
+
+
 ## Picks the first mission on offer in `map` (in the tree), as if picked at the holo table, and
 ## lets the ship land there right away.
 static func pick_mission(map: Node3D) -> void:

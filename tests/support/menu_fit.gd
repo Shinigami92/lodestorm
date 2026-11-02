@@ -6,17 +6,6 @@ const TEST_MAP := preload("res://tests/support/map_fixture.gd")
 const THEME: Theme = preload("res://assets/ui/terminal_theme.tres")
 ## Body text is at least this part of the view's height (see docs/design/ui.md).
 const MIN_TEXT_HEIGHT: float = 0.02
-## Crew members aboard, by their profile.
-const NPCS: Dictionary[String, String] = {
-	"res://game/npcs/crew/quartermaster.tres": "Rooms/Lower/Armory/Quartermaster",
-	"res://game/npcs/crew/pilot.tres": "Rooms/Upper/Bridge/Pilot",
-	"res://game/npcs/crew/engineer.tres": "Rooms/Lower/EngineRoom/Engineer",
-	"res://game/npcs/crew/medic.tres": "Rooms/Lower/MedicalBay/Medic",
-	"res://game/npcs/crew/gunsmith.tres": "Rooms/Lower/Weapons/Gunsmith",
-	"res://game/npcs/crew/suit_tech.tres": "Rooms/Lower/Armor/SuitTech",
-	"res://game/npcs/crew/miner_mechanic.tres": "Rooms/Lower/Miners/MinerMechanic",
-	"res://game/npcs/crew/cook.tres": "Rooms/Upper/MessHall/Cook",
-}
 
 var _map: Node3D
 var _player: Player

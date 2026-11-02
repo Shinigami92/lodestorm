@@ -3,20 +3,13 @@ extends GutTest
 ## ground).
 
 const DUST: LocationBiome = preload("res://game/locations/biomes/dust.tres")
-## Every biome: what holds for one holds for all.
-const BIOMES: Array[LocationBiome] = [
-	DUST,
-	preload("res://game/locations/biomes/overgrowth.tres"),
-	preload("res://game/locations/biomes/frost.tres"),
-	preload("res://game/locations/biomes/salt.tres"),
-	preload("res://game/locations/biomes/ash.tres"),
-	preload("res://game/locations/biomes/glass.tres"),
-]
 const LANDING := Vector3(66.0, 0.0, 36.0)
 const KEEP_CLEAR := Rect2(-104.0, -34.0, 162.0, 68.0)
 const SIZES: Array[int] = [6, 11, 16, 24]
 ## Seeds per biome in the sweeps.
 const BIOME_SEEDS: int = 4
+## Every biome (`SWEEP.BIOMES`): what holds for one holds for all.
+const SWEEP := preload("res://tests/support/location_sweep.gd")
 
 
 func _layout(world_seed: int, count: int, biome: LocationBiome = DUST) -> LocationLayout:
@@ -26,7 +19,7 @@ func _layout(world_seed: int, count: int, biome: LocationBiome = DUST) -> Locati
 
 
 func _sweep(check: Callable) -> void:
-	for biome: LocationBiome in BIOMES:
+	for biome: LocationBiome in SWEEP.BIOMES:
 		for count: int in SIZES:
 			for world_seed: int in _seeds(biome):
 				check.call(
@@ -159,11 +152,6 @@ func _median_distance(layout: LocationLayout) -> float:
 	return distances[floori(distances.size() / 2.0)]
 
 
-## The seeds a sweep plans `biome` with: `count` of them, different for every biome, so the sweeps
-## over all biomes cover as many seeds as they plan locations.
+## The seeds a sweep plans `biome` with (see `SWEEP.seeds`).
 static func _seeds(biome: LocationBiome, count: int = BIOME_SEEDS) -> Array[int]:
-	var first: int = 1 + BIOMES.find(biome) * count
-	var seeds: Array[int] = []
-	for world_seed: int in range(first, first + count):
-		seeds.append(world_seed)
-	return seeds
+	return SWEEP.seeds(biome, count)

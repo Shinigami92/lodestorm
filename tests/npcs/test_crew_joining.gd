@@ -52,7 +52,7 @@ func test_four_aboard_at_the_start_and_four_join_later() -> void:
 
 
 func test_joining_brings_them_to_their_post() -> void:
-	var dace := _ship.get_node("Rooms/Lower/Weapons/Gunsmith") as Npc
+	var dace := NpcBoarding.crew_member(_ship, &"gunsmith")
 	_ship.story.set_flag(dace.profile.join_flag)
 	assert_true(dace.visible and dace.use_point.enabled)
 	assert_eq(dace.process_mode, Node.PROCESS_MODE_INHERIT)
@@ -60,7 +60,7 @@ func test_joining_brings_them_to_their_post() -> void:
 
 
 func test_a_stand_in_topic_until_they_join() -> void:
-	var brannik := _ship.get_node("Rooms/Lower/Armory/Quartermaster") as Npc
+	var brannik := NpcBoarding.crew_member(_ship, &"quartermaster")
 	_ship.story.set_flag(&"quartermaster.greeting")
 	assert_true(_has_topic(brannik, &"quartermaster.weapons_room"), "explains the weapons room")
 	_ship.story.set_flag(&"crew.gunsmith.joined")

@@ -87,31 +87,31 @@ func test_each_has_a_model_of_their_own() -> void:
 
 
 func test_pilot_walks_to_the_cockpit_sits_and_walks_back() -> void:
-	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var pilot := NpcBoarding.crew_member(_ship, &"pilot")
 	var home: Vector3 = pilot.global_position
 	var seat: Vector3 = pilot.flight_seat.global_position
 	var console := _ship.get_node("Rooms/Upper/Cockpit/FlightConsole") as Node3D
 	assert_lt(seat.distance_to(console.global_position), 2.0, "the seat at the flight console")
 	assert_true(_ship.flight.take_off())
-	await _until(func() -> bool: return pilot.body.is_walking(), 10.0)
+	await wait_until(func() -> bool: return pilot.body.is_walking(), 10.0)
 	await wait_physics_frames(30)
 	assert_true(pilot.body.is_walking(), "she walks, she doesn't appear there")
 	assert_true(pilot.routine.is_underway())
 	assert_gt(pilot.global_position.distance_to(home), 0.5, "on her way")
-	await _until(func() -> bool: return pilot.body.sitting, 40.0)
+	await wait_until(func() -> bool: return pilot.body.sitting, 40.0)
 	assert_true(pilot.body.sitting, "sits down in the pilot seat")
 	assert_almost_eq(pilot.global_position, seat, Vector3.ONE * 0.05)
 	assert_false(_ship.flight.is_flying(), "the take-off is over before she's there")
 	await wait_physics_frames(int((NpcRoutine.SEAT_LINGER - 1.0) * Engine.physics_ticks_per_second))
 	assert_true(pilot.body.sitting, "she still sits a while after the flight")
-	await _until(func() -> bool: return pilot.body.is_walking(), 5.0)
+	await wait_until(func() -> bool: return pilot.body.is_walking(), 5.0)
 	assert_false(pilot.body.sitting, "then gets up")
-	await _until(func() -> bool: return not pilot.routine.is_underway(), 60.0)
+	await wait_until(func() -> bool: return not pilot.routine.is_underway(), 60.0)
 	assert_almost_eq(pilot.global_position, home, Vector3.ONE * 0.05, "back on the bridge")
 
 
 func test_a_chosen_destination_sends_her_to_the_seat_to_wait_for_everyone() -> void:
-	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var pilot := NpcBoarding.crew_member(_ship, &"pilot")
 	var player := _map.get_node("Player") as Player
 	var voyage: Voyage = _ship.voyage
 	player.global_position = _ship.to_global(Vector3(30.0, 0.1, 0.0))
@@ -119,40 +119,42 @@ func test_a_chosen_destination_sends_her_to_the_seat_to_wait_for_everyone() -> v
 	await wait_physics_frames(5)
 	assert_false(_ship.is_aboard(player), "a player outside")
 	assert_true(voyage.choose(voyage.offers[1]), "Set as destination")
-	await _until(func() -> bool: return pilot.body.is_walking(), 10.0)
+	await wait_until(func() -> bool: return pilot.body.is_walking(), 10.0)
 	assert_true(pilot.body.is_walking(), "she's on her way before the course is set")
-	await _until(func() -> bool: return pilot.body.sitting, 40.0)
+	await wait_until(func() -> bool: return pilot.body.sitting, 40.0)
 	assert_true(pilot.body.sitting)
 	assert_false(_ship.flight.is_flying())
 	await wait_physics_frames(int(NpcRoutine.SEAT_LINGER * 2.0 * Engine.physics_ticks_per_second))
 	assert_true(pilot.body.sitting, "waits there until everyone is aboard")
 	assert_false(_ship.flight.is_flying())
 	voyage.destination = null
-	await _until(func() -> bool: return pilot.body.is_walking(), NpcRoutine.SEAT_LINGER + 3.0)
+	await wait_until(func() -> bool: return pilot.body.is_walking(), NpcRoutine.SEAT_LINGER + 3.0)
 	assert_false(pilot.body.sitting, "no destination any more: back to the bridge")
 
 
 func test_she_sets_course_herself_once_everyone_is_aboard() -> void:
-	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var pilot := NpcBoarding.crew_member(_ship, &"pilot")
 	var voyage: Voyage = _ship.voyage
 	var offer: MissionBrief = voyage.offers[1]
 	assert_true(_ship.is_aboard(_map.get_node("Player") as Player))
 	assert_true(voyage.choose(offer), "Set as destination")
-	await _until(func() -> bool: return pilot.body.sitting, 40.0)
+	await wait_until(func() -> bool: return pilot.body.sitting, 40.0)
 	assert_true(pilot.body.sitting)
 	assert_false(_ship.flight.is_flying(), "not before she sits")
-	await _until(func() -> bool: return _ship.flight.is_flying(), NpcRoutine.TAKE_OFF_DELAY + 2.0)
+	await wait_until(
+		func() -> bool: return _ship.flight.is_flying(), NpcRoutine.TAKE_OFF_DELAY + 2.0
+	)
 	assert_true(_ship.flight.is_flying(), "then she sets course")
 	assert_eq(voyage.brief, offer)
 	assert_true(pilot.body.sitting, "and flies the ship")
 
 
 func test_walking_back_she_stops_for_a_player() -> void:
-	var pilot := _ship.get_node("Rooms/Upper/Bridge/Pilot") as Npc
+	var pilot := NpcBoarding.crew_member(_ship, &"pilot")
 	var player := _map.get_node("Player") as Player
 	_ship.flight.take_off()
-	await _until(func() -> bool: return pilot.body.sitting, 40.0)
-	await _until(func() -> bool: return pilot.body.is_walking(), 15.0)
+	await wait_until(func() -> bool: return pilot.body.sitting, 40.0)
+	await wait_until(func() -> bool: return pilot.body.is_walking(), 15.0)
 	await wait_physics_frames(60)
 	player.global_position = pilot.global_position + pilot.global_basis.z * 1.5
 	player.reset_physics_interpolation()
@@ -180,7 +182,7 @@ func test_everyone_has_work_spots_with_what_their_model_can_do() -> void:
 
 
 func test_they_move_on_to_a_work_spot_and_back() -> void:
-	var cook := _ship.get_node("Rooms/Upper/MessHall/Cook") as Npc
+	var cook := NpcBoarding.crew_member(_ship, &"cook")
 	var home: Vector3 = cook.global_position
 	var routine: NpcRoutine = cook.routine
 	assert_null(routine.get_work_spot(), "at her own spot first")
@@ -190,9 +192,9 @@ func test_they_move_on_to_a_work_spot_and_back() -> void:
 	routine.move_on()
 	var spot: WorkSpot = routine.get_work_spot()
 	assert_not_null(spot, "from her own spot always to a work spot")
-	await _until(func() -> bool: return cook.body.is_walking(), 10.0)
+	await wait_until(func() -> bool: return cook.body.is_walking(), 10.0)
 	assert_true(cook.body.is_walking(), "she walks there")
-	await _until(func() -> bool: return not routine.is_underway(), 30.0)
+	await wait_until(func() -> bool: return not routine.is_underway(), 30.0)
 	assert_almost_eq(cook.global_position, spot.global_position, Vector3.ONE * 0.05)
 	await wait_physics_frames(30)
 	assert_eq(animator.allowed, spot.activities, "only what fits there")
@@ -201,14 +203,6 @@ func test_they_move_on_to_a_work_spot_and_back() -> void:
 	routine.move_on()
 	assert_ne(routine.get_work_spot(), spot, "never the same place again")
 	if routine.get_work_spot() == null:
-		await _until(func() -> bool: return cook.body.is_walking(), 10.0)
-		await _until(func() -> bool: return not routine.is_underway(), 30.0)
+		await wait_until(func() -> bool: return cook.body.is_walking(), 10.0)
+		await wait_until(func() -> bool: return not routine.is_underway(), 30.0)
 		assert_almost_eq(cook.global_position, home, Vector3.ONE * 0.05, "back at her spot")
-
-
-## Waits physics frames until `done` holds, `seconds` at most.
-func _until(done: Callable, seconds: float) -> void:
-	for i: int in int(seconds * Engine.physics_ticks_per_second):
-		if done.call():
-			return
-		await wait_physics_frames(1)

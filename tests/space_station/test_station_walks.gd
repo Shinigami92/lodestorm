@@ -72,9 +72,9 @@ func test_nell_serves_a_booth_and_is_talked_to_there() -> void:
 		if nell.routine.get_work_spot() == booth:
 			break
 	assert_eq(nell.routine.get_work_spot(), booth)
-	await _until(func() -> bool: return nell.body.is_walking(), 30.0)
+	await wait_until(func() -> bool: return nell.body.is_walking(), 30.0)
 	assert_true(nell.body.is_walking(), "she walks there")
-	await _until(func() -> bool: return not nell.routine.is_underway(), 60.0)
+	await wait_until(func() -> bool: return not nell.routine.is_underway(), 60.0)
 	var at: Vector3 = nell.global_position
 	assert_lt(Vector2(at.x - booth.global_position.x, at.z - booth.global_position.z).length(), 0.1)
 	assert_eq(nell.routine.get_room(), &"Bar")
@@ -90,8 +90,8 @@ func test_nell_serves_a_booth_and_is_talked_to_there() -> void:
 	nell.routine.move_on()
 	while nell.routine.get_work_spot() == booth:
 		nell.routine.move_on()
-	await _until(func() -> bool: return nell.routine.is_underway(), 5.0)
-	await _until(func() -> bool: return not nell.routine.is_underway(), 60.0)
+	await wait_until(func() -> bool: return nell.routine.is_underway(), 5.0)
+	await wait_until(func() -> bool: return not nell.routine.is_underway(), 60.0)
 	if not nell.routine.get_work_spot():
 		assert_eq(nell.use_point.transform, across, "across her counter again")
 
@@ -107,10 +107,3 @@ func _baked(navigation: DeckNavigation) -> void:
 		await wait_physics_frames(1)
 	assert_true(navigation.is_baked(), "baked")
 	await wait_physics_frames(2)  # the map takes the mesh on the next sync
-
-
-func _until(done: Callable, seconds: float) -> void:
-	for i: int in int(seconds * Engine.physics_ticks_per_second):
-		if done.call():
-			return
-		await wait_physics_frames(1)

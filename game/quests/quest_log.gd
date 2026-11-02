@@ -191,9 +191,8 @@ func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 		furnaces.unlock()
 	for i: int in step.cradles:
 		cradles.open_next()
-	var joining: NpcProfile = NpcProfile.find(step.joins) if not step.joins.is_empty() else null
-	if joining and not joining.join_flag.is_empty():
-		story.set_flag(joining.join_flag)
+	if not step.join_flag().is_empty():
+		story.set_flag(step.join_flag())
 	progress.erase(quest.id)
 	calls.forget(quest)
 	story.set_flag(quest.step_flag(step))

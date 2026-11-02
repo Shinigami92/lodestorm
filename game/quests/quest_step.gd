@@ -46,6 +46,13 @@ const READY: StringName = &"ready"
 @export var ready_line: RadioLine
 
 
+## The story flag set at the hand-in for the crew member it `joins` (their
+## `NpcProfile.join_flag`); empty: nobody joins.
+func join_flag() -> StringName:
+	var joining: NpcProfile = NpcProfile.find(joins) if not joins.is_empty() else null
+	return joining.join_flag if joining else &""
+
+
 ## The key of goal `index`'s `RegionGoal.landing_line` (see `radio_line`).
 static func landing_key(index: int) -> StringName:
 	return StringName("landing.%d" % index)

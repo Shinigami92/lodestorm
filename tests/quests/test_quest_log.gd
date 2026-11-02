@@ -225,3 +225,17 @@ func test_requests_come_back_in_turn() -> void:
 	read.catalog = _log.catalog
 	assert_true(read.load_data(saved))
 	assert_eq(read.last_requests[&"depot_master"], &"r3")
+
+
+func test_the_view_out_there_writes_through_to_the_ship() -> void:
+	var view := VisitQuests.new(_log)
+	var players: Array[Player] = []
+	assert_true(view.accept(_quest, players), "accepted out there")
+	assert_has(_log.accepted, _quest.id, "in the ship's quests")
+	assert_eq(_log.tracked, _quest.id, "tracked on the ship")
+	assert_eq(view.tracked, _quest.id, "and the view follows")
+	_log.tracked = &""
+	_log.emit_changed()
+	assert_eq(view.tracked, &"", "the ship's changes reach the view")
+	assert_true(view.track(_quest))
+	assert_eq(_log.tracked, _quest.id)

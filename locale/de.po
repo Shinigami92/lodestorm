@@ -3370,16 +3370,12 @@ msgid "Hangar"
 msgstr "Hangar"
 
 #: game/space_station/ostra/ostra.tscn
-msgid "Concourse · Bar · Gallery\nDepot · Council"
-msgstr "Halle · Bar · Galerie\nDepot · Ratsbüro"
+msgid "Concourse"
+msgstr "Halle"
 
 #: game/space_station/ostra/ostra.tscn
 msgid "Supply depot"
 msgstr "Versorgungsdepot"
-
-#: game/space_station/ostra/ostra.tscn
-msgid "Concourse"
-msgstr "Halle"
 
 #: game/space_station/ostra/ostra.tscn
 msgid "Council office"
@@ -3394,12 +3390,16 @@ msgid "Observation gallery"
 msgstr "Aussichtsgalerie"
 
 #: game/space_station/ostra/ostra.tscn
+msgid "Market"
+msgstr "Markt"
+
+#: game/space_station/ostra/ostra.tscn
 msgid "Hangar · Ship"
 msgstr "Hangar · Schiff"
 
 #: game/space_station/ostra/ostra.tscn
-msgid "Concourse · Hangar"
-msgstr "Halle · Hangar"
+msgid "Concourse · Market · Bar · Hangar · Ship"
+msgstr "Halle · Markt · Bar · Hangar · Schiff"
 
 #: game/space_station/ostra/ostra.tscn
 msgid "Dace · Machinist"

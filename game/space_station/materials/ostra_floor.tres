@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://crsawskrki8ja"]
+
+[ext_resource type="Shader" uid="uid://cbyd3dlniynwi" path="res://assets/shaders/ship_shell.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://dpall5pc6jwr6" path="res://assets/space_station/ostra/textures/deck_albedo.png" id="2_albedo"]
+[ext_resource type="Texture2D" uid="uid://xab4rm4c123c" path="res://assets/space_station/ostra/textures/deck_nra.png" id="3_nra"]
+
+[resource]
+resource_name = "ostra_floor"
+shader = ExtResource("1_shader")
+shader_parameter/albedo_tex = ExtResource("2_albedo")
+shader_parameter/nra_tex = ExtResource("3_nra")
+shader_parameter/tile = 2.0
+shader_parameter/decks = Vector2(0, 1000)
+shader_parameter/grime = 0.0
+shader_parameter/hex_tiling = false
+shader_parameter/macro_strength = 0.14
+shader_parameter/macro_size = 11.0
+shader_parameter/room_tinted = true

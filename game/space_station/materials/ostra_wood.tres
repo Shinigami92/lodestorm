@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://cdn8csx4elabr"]
+
+[resource]
+resource_name = "ostra_wood"
+albedo_color = Color(0.3, 0.18, 0.1, 1)
+roughness = 0.45

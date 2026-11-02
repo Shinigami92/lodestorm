@@ -3368,15 +3368,11 @@ msgid "Hangar"
 msgstr ""
 
 #: game/space_station/ostra/ostra.tscn
-msgid "Concourse · Bar · Gallery\nDepot · Council"
+msgid "Concourse"
 msgstr ""
 
 #: game/space_station/ostra/ostra.tscn
 msgid "Supply depot"
-msgstr ""
-
-#: game/space_station/ostra/ostra.tscn
-msgid "Concourse"
 msgstr ""
 
 #: game/space_station/ostra/ostra.tscn
@@ -3392,11 +3388,15 @@ msgid "Observation gallery"
 msgstr ""
 
 #: game/space_station/ostra/ostra.tscn
+msgid "Market"
+msgstr ""
+
+#: game/space_station/ostra/ostra.tscn
 msgid "Hangar · Ship"
 msgstr ""
 
 #: game/space_station/ostra/ostra.tscn
-msgid "Concourse · Hangar"
+msgid "Concourse · Market · Bar · Hangar · Ship"
 msgstr ""
 
 #: game/space_station/ostra/ostra.tscn

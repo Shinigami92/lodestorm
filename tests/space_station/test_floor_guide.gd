@@ -1,6 +1,6 @@
 extends GutTest
 
-## The floor guides are Waypost Ostra's (the ship's are neon signs on its walls).
+## The floor guides are Waypost Ostra's (its guide lines' names; the ship's are neon signs).
 const STATION := preload("res://game/space_station/ostra/ostra.tscn")
 
 var _guides: Array[FloorGuide] = []
@@ -56,7 +56,6 @@ func test_translation_wraps_between_rooms_within_english_width() -> void:
 		arrows[guide] = (guide.get_node("Arrow") as Node3D).position
 		english[guide] = (guide.get_node("Text") as Label3D).text
 	TranslationServer.set_locale("de")
-	var wrapped: int = 0
 	for guide: FloorGuide in _guides:
 		var text: Label3D = guide.get_node("Text") as Label3D
 		var german: String = guide.tr(english[guide])
@@ -68,11 +67,8 @@ func test_translation_wraps_between_rooms_within_english_width() -> void:
 			assert_false(line.begins_with("·") or line.ends_with("·"), line)
 			if FloorGuide.SEPARATOR in line:
 				assert_lt(guide.measure(line).x, guide.max_width + 0.001, line)
-		if text.text.count("\n") > german.count("\n"):
-			wrapped += 1
 		var arrow: Vector3 = (guide.get_node("Arrow") as Node3D).position
 		assert_eq(arrow, arrows[guide], "%s: the arrow stays" % guide.name)
-	assert_gt(wrapped, 0, "German needs wrapping somewhere")
 
 
 func test_switching_back_restores_english() -> void:

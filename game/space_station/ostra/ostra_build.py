@@ -1,29 +1,15 @@
-"""Builds Waypost Ostra's greybox map, game/space_station/ostra/ostra.tscn (a SpaceStation, see
-game/space_station/space_station.gd): one deck around the central hall, with its walls, doors,
-windows, roofs, floors, lights, room names and floor guides, the docking clamps and a few shapes
-outside (the real station comes with the art pass). Run it after changing the layout, from the repo
-root:
+"""Builds Waypost Ostra's map, game/space_station/ostra/ostra.tscn (a SpaceStation, see
+game/space_station/space_station.gd), from its layout (ostra_layout.py): the walls' collision shapes, the
+station's own kit (the shell, the outside and the props, models built by assets/space_station/ostra/source/),
+the rooms' lights and names, the painted guide lines on the big rooms' floors, the docking clamps, the people,
+the ore exchange, who's inside and the rooms' plan. Run it after changing the layout, from the repo root:
 
     python game/space_station/ostra/ostra_build.py           # writes it
     python game/space_station/ostra/ostra_build.py --check   # fails if it differs (tools/lint.sh python, CI)
 
-Station-local axes are the ship's (the map stands where the ship stands, docked): +x = screen right,
-+z = towards the camera, y 0 is the deck (where the ramp reaches down). The ship's tail reaches
-through the open pressure frame in the hangar's left wall (x 8) up to its ramp door (x 15); the
-clamps take hold of the hull there. Top view, camera at the bottom:
-
-    +---------+-----------+-----------+----------+
-    |         |  DEPOT    |  COUNCIL  |          |
-    |         +-----=-----+-----=-----+          |
-    = HANGAR  =     CONCOURSE (hall)  = GALLERY  |
-    |         +-----=-----+           |          |
-    |         |   BAR     |  (hall)   |          |
-    +---------+-----------+-----------+----------+
-
-Groups (see SpaceStation): "station" always shows (the deck, the back walls with their windows,
-the pressure frame); "cut" (the roofs, every other wall: the rooms are wide, so each stands between
-the camera and a room; the shapes on the roofs) only casts shadows while the viewer is inside or
-aboard the docked ship, the walls leaving a stub (STUB m high).
+Groups (see SpaceStation): under `Walls` what always shows (the floors, the back walls, the cut walls' stubs, the
+platform); under `Walls/Cut` the roofs, the outside and every wall facing the camera above its stub, which only
+cast shadows while the viewer is inside or aboard the docked ship; the cut walls' window panes hide instead.
 """
 
 import math
@@ -32,395 +18,267 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "ship"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
-from hull_layout import LOWER_SIDE, TAIL_HALF_WIDTH, TAIL_TOP
+import ostra_layout as L
+from hull_layout import LOWER_SIDE
 
-from greybox import Greybox, g, sid, vec, windows_for, write, xform
+from greybox import g, sid, vec, write, xform
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 OUT = ROOT / "game" / "space_station" / "ostra" / "ostra.tscn"
 SCRIPT = "res://game/space_station/space_station.gd"
-GUIDE_SCRIPT = "res://game/ship/floor_guide.gd"
-GUIDE_MATERIAL = "res://game/ship/materials/guide.tres"
-PROP_MATERIAL = "res://game/ship/materials/prop.tres"
+LOOK = "res://game/space_station/ostra_look.gd"
+MODELS = "res://assets/space_station/ostra/"
+MATERIALS = "res://game/space_station/materials/"
 
-STUB = 1.0
-# Wall centers: the outer walls along z, the hangar's left wall (the pressure frame), the hall's
-# walls and the far end.
-ZO = 28.0
-X_FRAME, X_HALL, X_MID, X_GALLERY, X_END = 8.0, 56.0, 91.0, 126.0, 170.0
-Z_HALL = 12.0  # the hall's back (-) and front (+) walls
-# Heights of the sections' ceilings.
-H_HANGAR, H_HALL, H_ROOM = 20.0, 10.0, 6.0
-# The pressure frame's opening: the ship's tail fills it, its nacelles too (game/ship/hull_layout.py).
-MOUTH_HALF, MOUTH_TOP = TAIL_HALF_WIDTH + 0.2, TAIL_TOP + 0.8
-assert MOUTH_HALF < ZO - 0.25 and MOUTH_TOP + 1.5 <= H_HANGAR, "the ship's tail doesn't fit the hangar"
+CUT = "Walls/Cut"
 # Where the clamps' pads hold the hull: against its lower sides, under the nacelles.
 CLAMP_Z = LOWER_SIDE + 0.3
-CARGO_DOOR = 8.0  # the wide doors between the hangar, the hall and the gallery
-
-CUT = ("cut", "station")
-GROUPS = {"station": "Walls", "cut": "Walls/Cut"}
-WALL_MATERIAL = ["albedo_color = Color(0.33, 0.31, 0.29, 1)", "metallic = 0.2", "roughness = 0.65"]
-kit = Greybox(GROUPS, "wall", WALL_MATERIAL, stub=STUB, door=3.0, sill=1.0, window_height=2.0)
-wall, box, outer_wall = kit.wall, kit.box, kit.outer_wall
-
-# --- rooms: node name, sign, floor areas ((x0, x1), (z0, z1)) between wall centers, ceiling, tint ---
-DEPOT_X, COUNCIL_X, BAR_X = (X_HALL, X_MID), (X_MID, X_GALLERY), (X_HALL, X_MID)
-BACK, HALL, FRONT, FULL = (-ZO, -Z_HALL), (-Z_HALL, Z_HALL), (Z_HALL, ZO), (-ZO, ZO)
-ROOMS = [
-    ("Hangar", "Hangar", [((X_FRAME, X_HALL), FULL)], H_HANGAR, (0.36, 0.36, 0.37)),
-    ("Concourse", "Concourse", [((X_HALL, X_GALLERY), HALL), ((X_MID, X_GALLERY), FRONT)], H_HALL, (0.42, 0.39, 0.35)),
-    ("Depot", "Supply depot", [(DEPOT_X, BACK)], H_ROOM, (0.38, 0.37, 0.32)),
-    ("Council", "Council office", [(COUNCIL_X, BACK)], H_ROOM, (0.33, 0.33, 0.38)),
-    ("Bar", "Bar", [(BAR_X, FRONT)], H_ROOM, (0.4, 0.33, 0.28)),
-    ("Gallery", "Observation gallery", [((X_GALLERY, X_END), FULL)], H_HALL, (0.35, 0.38, 0.42)),
-]
-
-# --- the deck: one slab under everything ---
-box("Deck", (X_END - X_FRAME + 0.5, 1, 2 * ZO + 0.5), ((X_FRAME + X_END) / 2, -0.5, 0))
-
-# --- the hangar's left wall: the pressure frame the ship's tail reaches through ---
-# Seen from the camera, it runs up the screen over the ship's tail: cut away like the walls.
-wall("FrameWall", "z", X_FRAME, -ZO, ZO, 0, H_HANGAR, [(0, 2 * MOUTH_HALF)], *CUT, door_height=MOUTH_TOP)
-# The frame's jambs and header, standing out of the wall around the hull.
-box("FrameJambBack", (1.5, MOUTH_TOP, 1.5), (X_FRAME + 0.5, MOUTH_TOP / 2, -MOUTH_HALF - 0.75), "cut")
-box("FrameJambFront", (1.5, MOUTH_TOP, 1.5), (X_FRAME + 0.5, MOUTH_TOP / 2, MOUTH_HALF + 0.75), "cut")
-box("FrameHeader", (1.5, 1.5, 2 * MOUTH_HALF + 3), (X_FRAME + 0.5, MOUTH_TOP + 0.75, 0), "cut")
-# Clamp mounts beside the hull, under the nacelles (the clamps themselves move and always show,
-# see CLAMPS); low enough to keep the hull in view.
-for side, name in [(-1, "Back"), (1, "Front")]:
-    box(f"ClampMount{name}", (5.0, 6.0, 1.5), (11.5, 3.0, side * (CLAMP_Z + 6.3)), "cut")
-
-# --- walls between the sections: the rooms are wide, so every inner wall stands between the camera
-# and a room beside it (on its -x or -z side) and is cut away down to its stub ---
-wall("HangarWall", "z", X_HALL, -ZO, ZO, 0, H_HANGAR, [(-20, 4), (0, CARGO_DOOR)], *CUT)
-wall("GalleryWall", "z", X_GALLERY, -ZO, ZO, 0, H_HALL, [(0, CARGO_DOOR)], *CUT)
-# The hall's back wall (the depot and the council behind it) and front wall (the bar in front).
-room_doors = [((X_HALL + X_MID) / 2, 3), ((X_MID + X_GALLERY) / 2, 3)]
-wall("HallBack", "x", -Z_HALL, X_HALL + 0.25, X_GALLERY - 0.25, 0, H_HALL, room_doors, *CUT)
-wall("HallFront", "x", Z_HALL, X_HALL + 0.25, X_MID, 0, H_HALL, room_doors[:1], *CUT)
-wall("DepotCouncilWall", "z", X_MID, -ZO + 0.25, -Z_HALL - 0.25, 0, H_ROOM, (), *CUT)
-wall("BarWall", "z", X_MID, Z_HALL + 0.25, ZO - 0.25, 0, H_HALL, (), *CUT)
-
-# --- outer walls with windows ---
-sections = [
-    ("Hangar", X_FRAME, X_HALL, H_HANGAR),
-    ("Rooms", X_HALL, X_GALLERY, H_ROOM),
-    ("Gallery", X_GALLERY, X_END, H_HALL),
-]
-# The hangar's windows sit high, the council's is one big pane, the gallery's are tall panes side
-# by side onto the planet.
-hangar_windows = windows_for(X_FRAME + 4, X_HALL - 4, spacing=10)
-rooms_back = windows_for(*DEPOT_X) + [((COUNCIL_X[0] + COUNCIL_X[1]) / 2, 12.0)]
-gallery_panes = windows_for(X_GALLERY + 1, X_END - 1, spacing=5.4, width=4.4, margin=0.7)
-outer_wall("BackWallHangar", "x", -ZO, X_FRAME, X_HALL, 0, H_HANGAR, hangar_windows, sill=6, height=4)
-outer_wall("BackWallRooms", "x", -ZO, X_HALL, X_GALLERY, 0, H_ROOM, rooms_back, height=3)
-outer_wall("BackWallGallery", "x", -ZO, X_GALLERY, X_END, 0, H_HALL, gallery_panes, sill=0.6, height=8)
-front = [
-    ("FrontWallHangar", X_FRAME, X_HALL, H_HANGAR, windows_for(X_FRAME + 4, X_HALL - 4, spacing=10), 6, 4),
-    ("FrontWallBar", X_HALL, X_MID, H_ROOM, windows_for(*BAR_X), 1, 2),
-    ("FrontWallHall", X_MID, X_GALLERY, H_HALL, windows_for(X_MID, X_GALLERY), 1, 3),
-    ("FrontWallGallery", X_GALLERY, X_END, H_HALL, windows_for(X_GALLERY, X_END, spacing=6), 0.6, 6),
-]
-for name, x0, x1, height, wins, sill, win_h in front:
-    outer_wall(name, "x", ZO, x0, x1, 0, height, wins, "cut", "station", sill=sill, height=win_h)
-# The far end stands between the camera and the gallery: cut away too.
-outer_wall("EndWall", "z", X_END, -ZO, ZO, 0, H_HALL, [], *CUT)
-
-# --- roofs (cut away while the viewer is inside) ---
-for name, (x0, x1), (z0, z1), height in [
-    ("RoofHangar", (X_FRAME, X_HALL), FULL, H_HANGAR),
-    ("RoofHall", (X_HALL, X_GALLERY), HALL, H_HALL),
-    ("RoofAlcove", (X_MID, X_GALLERY), FRONT, H_HALL),
-    ("RoofDepot", DEPOT_X, BACK, H_ROOM),
-    ("RoofCouncil", COUNCIL_X, BACK, H_ROOM),
-    ("RoofBar", BAR_X, FRONT, H_ROOM),
-    ("RoofGallery", (X_GALLERY, X_END), FULL, H_HALL),
-]:
-    box(name, (x1 - x0 + 0.5, 0.5, z1 - z0 + 0.5), ((x0 + x1) / 2, height + 0.25, (z0 + z1) / 2), "cut")
-
-# --- props: crate stacks along the hangar's walls and shelving in the depot (greybox) ---
-CRATES = [
-    (14, -25),
-    (18, -25.5),
-    (30, -25),
-    (42, -24.5),
-    (50, -25),
-    (16, 24.5),
-    (34, 25),
-    (38, 24.5),
-    (52, 25),
-]
-for i, (x, z) in enumerate(CRATES):
-    high = 2.4 if i % 3 == 0 else 1.2
-    box(f"Crate{i + 1}", (2.4, high, 2.4), (x, high / 2, z))
-for i, x in enumerate([62.0, 70.0, 78.0, 86.0]):
-    box(f"Shelf{i + 1}", (5, 3.5, 1.2), (x, 1.75, -26.5))
-# --- furniture for the station's people (see PEOPLE): the depot's counter, the council's long
-# table with its chairs, the bar's counter and booths, stalls along the concourse (scenery: no
-# shops), benches in the gallery facing the windows ---
 SEAT = 0.45  # the seats' height: the sitting clip's (SEAT_HEIGHT in tools/blender/humanoid.py)
-box("DepotCounter", (6, 1.1, 0.9), (73.5, 0.55, -20.5))
-# It ends short of the room's name on the floor.
-box("CouncilTable", (2.4, 0.8, 5.5), (108.5, 0.4, -21.25))
-for i, z in enumerate([-23.0, -21.25, -19.5]):
-    for side, sname in [(-1, "Left"), (1, "Right")]:
-        box(f"CouncilChair{sname}{i + 1}", (0.6, 0.9, 0.6), (108.5 + side * 1.7, 0.45, z))
-# The bar's counter along its left wall, the booths along its right one.
-box("BarCounter", (0.9, 1.1, 9), (59, 0.55, 20))
-# Behind the bartender's right shoulder: a low back bar with bottles, where she shelves one now and then
-# (assets/npcs/nell/source/nell_clips.py: SHELF).
-box("BackBar", (0.3, 1.38, 1.3), (57.85, 0.69, 20.75))
-for i, z in enumerate([20.3, 20.55, 20.9, 21.2]):
-    box(f"BackBarBottle{i + 1}", (0.07, 0.25, 0.07), (57.85, 1.505, z))
-# A booth: a table between two benches (seats SEAT high, a backrest along the outer edge), room for
-# sitting knees between the table and the seats.
-for i, z in enumerate([16.5, 23.0]):
-    box(f"BoothTable{i + 1}", (1.6, 0.75, 1.0), (88.5, 0.375, z))
-    for side, sname in [(-1, "Back"), (1, "Front")]:
-        box(f"BoothBench{i + 1}{sname}", (1.8, SEAT, 0.8), (88.5, SEAT / 2, z + side * 1.3))
-        box(f"BoothBackrest{i + 1}{sname}", (1.8, 1.1, 0.15), (88.5, 0.55, z + side * 1.775))
-# A stall: its counter towards the hall, a rack behind the one standing at it; the first one is
-# Dace's, a workbench with a vise behind him instead (his shutter and sign: see DACE_STALL).
-for i, x in enumerate([100.0, 110.0, 120.0]):
-    box(f"Stall{i + 1}", (3, 1.0, 1.2), (x, 0.5, 18))
-    if i > 0:
-        box(f"StallRack{i + 1}", (3, 2.2, 0.4), (x, 1.1, 15.2))
-box("DaceBench", (3, 0.95, 0.8), (100, 0.475, 15.0))
-box("DaceVise", (0.3, 0.25, 0.3), (99.0, 1.075, 15.0), kind="mesh")
-# Wren's suit workbench in the hangar, by the side door to the depot: the bench along the wall with
-# her tools on it (they stay there once she's aboard), a suit's frame beside it.
-box("SuitBench", (0.9, 0.95, 2.2), (55.2, 0.475, -25.6))
-box("SuitFrame", (0.5, 1.9, 0.7), (55.4, 0.95, -23.4))
-box("SuitHelmet", (0.3, 0.3, 0.3), (55.2, 1.1, -25.9), kind="mesh")
-box("SuitTool1", (0.35, 0.08, 0.2), (55.1, 0.99, -26.4), kind="mesh")
-box("SuitTool2", (0.15, 0.25, 0.15), (55.3, 1.075, -24.9), kind="mesh")
-for i, x in enumerate([140.0, 156.0]):
-    box(f"Bench{i + 1}", (5, SEAT, 0.8), (x, SEAT / 2, -20))
-
-# --- outside: solar wings behind the station, a mast on the council's roof ---
-for i, x in enumerate([32.0, 148.0]):
-    box(f"WingStrut{i + 1}", (1, 1, 8), (x, 9, -ZO - 4), kind="mesh")
-    box(f"Wing{i + 1}", (34, 0.3, 12), (x, 9, -ZO - 14), kind="mesh")
-box("Mast", (0.8, 16, 0.8), (118, H_ROOM + 8, -24), "cut", kind="mesh")
 
 
-# --- the rooms' nodes: floors, lights, signs, floor guides ---
-def flat(origin):
-    """A label or plane lying on the floor, readable from the camera."""
-    return xform(origin, "1, 0, 0, 0, 0, 1, 0, -1, 0")
+def yaw(degrees):
+    """A turn about the vertical axis (rows, as scenes store them): 0 faces +z, 90 faces +x."""
+    c, s = math.cos(math.radians(degrees)), math.sin(math.radians(degrees))
+    return ", ".join(g(round(v, 6) + 0.0) for v in (c, 0, s, 0, 1, 0, -s, 0, c))
 
 
-SPOT_DOWN = "1, 0, 0, 0, 0, 1, 0, -1, 0"
-# Where each room's name is painted on its floor (by its door), and its size.
-SIGNS = {
-    "Hangar": ((48, 6), 128),
-    "Concourse": ((63, 5), 128),
-    "Depot": ((73.5, -16.5), 96),
-    "Council": ((108.5, -16.5), 96),
-    "Bar": ((73.5, 16.5), 96),
-    "Gallery": ((132, 6), 128),
+def turned(degrees, local):
+    """`local` (x, z) turned like `yaw(degrees)` turns a node."""
+    c, s = math.cos(math.radians(degrees)), math.sin(math.radians(degrees))
+    return (c * local[0] + s * local[1], -s * local[0] + c * local[1])
+
+
+# --- the floors' tints per room (around 1: a hue, not a brightness) ---
+FLOOR_TINTS = {
+    "Hangar": (0.95, 0.97, 1.0),
+    "Concourse": (1.06, 1.0, 0.92),
+    "Depot": (1.04, 1.02, 0.9),
+    "Council": (0.94, 0.97, 1.08),
+    "Bar": (1.1, 0.96, 0.86),
+    "Gallery": (0.94, 1.0, 1.06),
 }
+
+# --- the props: node name, model (assets/space_station/ostra/props/<model>.glb), where (x, z), facing (yaw),
+# their collision boxes in their own space (center (x, y, z), size), none for what people walk through ---
+
+
+def boxes(*items):
+    return list(items)
+
+
+def floor_box(size, at=(0.0, 0.0)):
+    """A box standing on the floor at `at` (x, z) in the prop's space."""
+    return ((at[0], size[1] / 2, at[1]), size)
+
+
+STALL = boxes(floor_box((3.0, 1.0, 1.2)), floor_box((3.0, 2.2, 0.4), (0.0, -2.8)))
+BOOTH = boxes(
+    floor_box((1.6, 0.75, 1.0)),
+    floor_box((1.8, SEAT, 0.8), (0.0, -1.3)),
+    floor_box((1.8, SEAT, 0.8), (0.0, 1.3)),
+    floor_box((1.8, 1.1, 0.15), (0.0, -1.775)),
+    floor_box((1.8, 1.1, 0.15), (0.0, 1.775)),
+)
+CONTAINER = boxes(floor_box((6.0, 2.6, 2.44)))
+# The depot: its counter (the exchange's hoppers on it) towards the hub's door, shelves along its side walls.
+DEPOT_COUNTER = (53.0, -26.0)
+COUNCIL_TABLE = (71.0, -33.25)
+BAR_COUNTER = (47.0, 28.0)
+BOOTHS = [(59.5, 24.5), (59.5, 31.0)]
+STALLS = [(70.5, 25.0), (74.0, 25.0), (77.5, 25.0)]
+SUIT_BENCH = (43.2, -17.0)
+PROPS = [
+    # The hangar: containers along its back wall (one stacked), crates and a spool in front, Wren's bench.
+    ("ContainerOlive", "container_olive", (22.0, -24.6), 0, CONTAINER),
+    ("ContainerRed", "container_red", (31.0, -24.6), 0, CONTAINER),
+    ("ContainerBlueStacked", "container_blue", (31.0, -24.6), 0, [], 2.6),
+    ("HangarStack", "crate_stack", (38.4, -25.0), 0, boxes(floor_box((2.4, 2.4, 2.4)))),
+    ("HangarMachine", "machine_block", (18.0, -25.6), 0, boxes(floor_box((3.0, 3.0, 2.0)))),
+    ("HangarPipes", "pipe_cluster", (26.5, -27.45), 0, boxes(floor_box((1.2, 4.0, 0.6)))),
+    ("HangarBarrels", "barrels", (41.2, -26.0), 0, boxes(floor_box((1.2, 1.0, 1.2)))),
+    ("HangarCrateLong", "crate_long", (29.0, 24.8), 0, boxes(floor_box((2.4, 1.2, 1.2)))),
+    ("HangarCrate", "crate_small", (32.2, 25.0), 0, boxes(floor_box((1.2, 1.2, 1.2)))),
+    ("HangarSpool", "cable_spool", (37.5, 24.6), 0, boxes(floor_box((1.2, 1.2, 1.0)))),
+    ("HangarLifter", "lifter", (24.0, 23.0), 90, boxes(floor_box((1.4, 2.2, 2.6)))),
+    ("WorkLightBack", "work_light", (18.5, -9.0), 0, []),
+    ("WorkLightFront", "work_light", (18.5, 9.0), 0, []),
+    ("SuitBench", "suit_bench", SUIT_BENCH, -90, boxes(floor_box((2.2, 0.95, 0.9)))),
+    ("SuitFrame", "suit_frame", (43.4, -14.8), -90, boxes(floor_box((0.7, 1.9, 0.5)))),
+    # The depot.
+    ("DepotCounter", "depot_counter", DEPOT_COUNTER, 0, boxes(floor_box((6.0, 1.1, 0.9)))),
+    ("DepotShelf1", "depot_shelf", (45.0, -37.2), 90, boxes(floor_box((5.0, 3.5, 1.2)))),
+    ("DepotShelf2", "depot_shelf", (45.0, -32.0), 90, boxes(floor_box((5.0, 3.5, 1.2)))),
+    ("DepotShelf3", "depot_shelf", (61.0, -37.2), -90, boxes(floor_box((5.0, 3.5, 1.2)))),
+    ("DepotLifter", "lifter", (51.0, -36.6), 0, boxes(floor_box((1.4, 2.2, 2.6)))),
+    ("DepotBarrels", "barrels", (55.0, -38.8), 0, boxes(floor_box((1.2, 1.0, 1.2)))),
+    ("DepotStack", "crate_stack", (58.0, -38.4), 0, boxes(floor_box((2.4, 2.4, 2.4)))),
+    ("DepotCart", "hand_cart", (49.0, -22.0), 90, []),
+    # The council office: the long table with its chairs, Selin at its head under the big window.
+    ("CouncilTable", "council_table", COUNCIL_TABLE, 0, boxes(floor_box((2.4, 0.8, 5.5)))),
+    ("CouncilPlanter", "planter", (77.6, -20.0), 180, boxes(floor_box((2.4, 1.0, 0.8)))),
+    (
+        "CouncilChairLeft1",
+        "council_chair",
+        (COUNCIL_TABLE[0] + -1.7, COUNCIL_TABLE[1] + -1.75),
+        90,
+        boxes(floor_box((0.6, 0.9, 0.6))),
+    ),
+    (
+        "CouncilChairRight1",
+        "council_chair",
+        (COUNCIL_TABLE[0] + 1.7, COUNCIL_TABLE[1] + -1.75),
+        -90,
+        boxes(floor_box((0.6, 0.9, 0.6))),
+    ),
+    (
+        "CouncilChairLeft2",
+        "council_chair",
+        (COUNCIL_TABLE[0] + -1.7, COUNCIL_TABLE[1] + 0.0),
+        90,
+        boxes(floor_box((0.6, 0.9, 0.6))),
+    ),
+    (
+        "CouncilChairRight2",
+        "council_chair",
+        (COUNCIL_TABLE[0] + 1.7, COUNCIL_TABLE[1] + 0.0),
+        -90,
+        boxes(floor_box((0.6, 0.9, 0.6))),
+    ),
+    (
+        "CouncilChairLeft3",
+        "council_chair",
+        (COUNCIL_TABLE[0] + -1.7, COUNCIL_TABLE[1] + 1.75),
+        90,
+        boxes(floor_box((0.6, 0.9, 0.6))),
+    ),
+    (
+        "CouncilChairRight3",
+        "council_chair",
+        (COUNCIL_TABLE[0] + 1.7, COUNCIL_TABLE[1] + 1.75),
+        -90,
+        boxes(floor_box((0.6, 0.9, 0.6))),
+    ),
+    # The bar: the counter along its left wall (Nell behind it), the back bar behind her, the booths.
+    ("BarCounter", "bar_counter", BAR_COUNTER, 90, boxes(floor_box((9.0, 1.1, 0.9)))),
+    ("BackBar", "back_bar", (45.85, 28.75), 90, boxes(floor_box((1.3, 1.38, 0.3)))),
+    ("BarStool1", "bar_stool", (48.15, 23.9), 0, []),
+    ("BarStool2", "bar_stool", (48.15, 32.2), 0, []),
+    ("Booth1", "booth", BOOTHS[0], 0, BOOTH),
+    ("Booth2", "booth", BOOTHS[1], 0, BOOTH),
+    # The hub: the information pillar in its middle, benches either side behind it.
+    ("HubBenchLeft", "gallery_bench", (55.0, -11.0), 0, boxes(floor_box((5.0, SEAT, 0.8)))),
+    ("HubBenchRight", "gallery_bench", (69.0, -11.0), 0, boxes(floor_box((5.0, SEAT, 0.8)))),
+    # The market: three stalls in a row (Dace's first), crates behind them, a planter by the arch.
+    ("StallDace", "stall_dace", STALLS[0], 0, boxes(floor_box((3.0, 1.0, 1.2)))),
+    ("DaceBench", "dace_bench", (STALLS[0][0], STALLS[0][1] - 3.0), 0, boxes(floor_box((3.0, 0.95, 0.8)))),
+    ("StallParts", "stall_parts", STALLS[1], 0, STALL),
+    ("StallTrade", "stall_trade", STALLS[2], 0, STALL),
+    ("MarketCrates", "crate_stack", (77.0, 20.0), 0, boxes(floor_box((2.4, 2.4, 2.4)))),
+    ("MarketBarrels", "barrels", (73.6, 19.6), 0, boxes(floor_box((1.2, 1.0, 1.2)))),
+    ("MarketPlanter", "planter", (64.0, 32.6), 0, boxes(floor_box((2.4, 1.0, 0.8)))),
+    # The gallery: two benches facing the windows, planters round its end.
+    ("GalleryBench1", "gallery_bench", (88.0, -17.0), 0, boxes(floor_box((5.0, SEAT, 0.8)))),
+    ("GalleryBench2", "gallery_bench", (104.0, -17.0), 0, boxes(floor_box((5.0, SEAT, 0.8)))),
+    ("GalleryPlanter1", "planter", (117.5, -6.0), -90, boxes(floor_box((2.4, 1.0, 0.8)))),
+    ("GalleryPlanter2", "planter", (117.5, 6.0), -90, boxes(floor_box((2.4, 1.0, 0.8)))),
+]
+# The information pillar: a round collision of its own.
+KIOSK = (L.HUB, 1.5, 3.2)
+# Screens on the walls that always show: where (x, y, z) on the wall's face, facing.
+SCREENS = [
+    ("DepotScreen", (53.0, 2.2, L.Z_BACK + 0.25), 0),
+    ("CouncilScreenLeft", (64.0, 2.0, L.Z_BACK + 0.25), 0),
+    ("CouncilScreenRight", (78.0, 2.0, L.Z_BACK + 0.25), 0),
+    ("HangarScreen1", (16.0, 3.0, -L.Z_HANGAR + 0.25), 0),
+    ("HangarScreen2", (40.0, 3.0, -L.Z_HANGAR + 0.25), 0),
+    ("BarScreen", (L.X_HUB0 + 0.25, 2.2, 34.0), 90),
+]
+# Wall-mounted: the bar's bottle rack behind Nell (its back on the bar's left wall).
+WALL_PROPS = [("BarShelf", "bar_wall_shelf", (L.X_HUB0 + 0.25, 28.0), 90)]
+
+# --- the rooms' names: a neon sign on a wall that always shows where there is one (text, where, facing, size) ---
+SIGNS = {
+    "Hangar": ("Hangar", (26.0, 6.0, -L.Z_HANGAR + 0.6), 0, 96),
+    "Concourse": ("Concourse", (47.6, 1.9, -13.8), 45, 56),
+    "Depot": ("Supply depot", (53.0, 4.4, L.Z_BACK + 0.6), 0, 48),
+    "Council": ("Council office", (71.0, 4.85, L.Z_BACK + 0.6), 0, 40),
+    "Bar": ("Bar", (L.X_HUB0 + 0.6, 3.1, 28.0), 90, 56),
+    "Gallery": ("Observation gallery", (90.0, 8.6, -L.GALLERY_RADIUS + 0.6), 0, 64),
+}
+SIGN_COLORS = {
+    "Hangar": (1.0, 0.6, 0.16),
+    "Concourse": (0.35, 0.95, 0.9),
+    "Depot": (1.0, 0.78, 0.3),
+    "Council": (0.45, 0.65, 1.0),
+    "Bar": (1.0, 0.45, 0.3),
+    "Gallery": (0.75, 0.9, 1.0),
+}
+
+# --- the guide lines, painted on the big rooms' floors like an airport's: one per place, in its own color,
+# from the ramp's foot through the hangar and the hub to the place's door; each with its name painted at its
+# start (an arrow along it). Where they share a way they run side by side. ---
+LINE_WIDTH = 0.16
+LINE_Y = 0.02
+LINES = [
+    ("Depot", "Supply depot", (0.95, 0.74, 0.18), [(27, -2), (49, -2), (58, -11), (58, -17.6)]),
+    (
+        "Council",
+        "Council office",
+        (0.35, 0.6, 1.0),
+        [(27, -1), (50.4, -1), (56, -6.6), (62, -6.6), (66, -10.6), (66, -17.6)],
+    ),
+    (
+        "Gallery",
+        "Observation gallery",
+        (0.86, 0.86, 0.84),
+        [(27, 0.0), (56.8, 0.0)]
+        + [(L.HUB[0] - 5.2 * math.cos(math.pi * i / 8), -5.2 * math.sin(math.pi * i / 8)) for i in range(1, 8)]
+        + [(67.2, 0.0), (98.0, 0.0)],
+    ),
+    ("Market", "Market", (0.4, 0.85, 0.45), [(27, 1), (50.4, 1), (56, 6.6), (62, 6.6), (66, 10.6), (66, 24.5)]),
+    ("Bar", "Bar", (1.0, 0.45, 0.25), [(27, 2), (49, 2), (58, 11), (58, 17.6)]),
+]
+# The names painted on the floor: at each line's start, and the way back from the hub and the gallery.
+# Node name, room it's in, where (x, z), the arrow's direction, the text, its color.
+GUIDES = [(f"To{name}", "Hangar", (23.0, line[0][1]), (1, 0), text, color) for name, text, color, line in LINES]
+GUIDES += [
+    ("ToHangar", "Concourse", (51.0, 3.0), (-1, 0), "Hangar · Ship", (1.0, 0.8, 0.45)),
+    ("ToHangar", "Gallery", (94.0, 2.2), (-1, 0), "Concourse · Market · Bar · Hangar · Ship", (1.0, 0.8, 0.45)),
+]
 # Arrow directions on the floor (the arrow's basis: its head points along it).
 ARROWS = {
     (1, 0): "0, 0, -1, 0, 1, 0, 1, 0, 0",
     (-1, 0): "0, 0, 1, 0, 1, 0, -1, 0, 0",
-    (0, -1): "1, 0, 0, 0, 1, 0, 0, 0, 1",
-    (0, 1): "-1, 0, 0, 0, 1, 0, 0, 0, -1",
 }
-# Floor guides: node name, where (x, z), the arrow's direction, the text (the rooms further on).
-GUIDES = [
-    ("Hangar", "ToConcourse", (30, 1.5), (1, 0), "Concourse · Bar · Gallery\nDepot · Council"),
-    ("Hangar", "ToDepot", (46, -17.5), (1, 0), "Supply depot"),
-    ("Concourse", "ToDepot", (73.5, -7), (0, -1), "Supply depot"),
-    ("Concourse", "ToCouncil", (108.5, -7), (0, -1), "Council office"),
-    ("Concourse", "ToBar", (73.5, 7), (0, 1), "Bar"),
-    ("Concourse", "ToGallery", (114, 1.5), (1, 0), "Observation gallery"),
-    ("Concourse", "ToHangar", (66, -2.5), (-1, 0), "Hangar · Ship"),
-    ("Gallery", "ToHangar", (134, -2.5), (-1, 0), "Concourse · Hangar"),
-]
-LIGHT_SPACING = 16.0
+LIGHT_SPACING = 12.0
 
-subs = kit.subresources()
-for name, _sign, _areas, _height, tint in ROOMS:
-    subs += [f'[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor_{name}"]']
-    subs += [f"albedo_color = Color({', '.join(g(c) for c in tint)}, 1)", ""]
-plane_sizes = {}
-for name, _sign, areas, _height, _tint in ROOMS:
-    for (x0, x1), (z0, z1) in areas:
-        plane_sizes[(name, x1 - x0 - 0.5, z1 - z0 - 0.5)] = True
-for name, w, d in plane_sizes:
-    subs += [
-        f'[sub_resource type="PlaneMesh" id="PlaneMesh_floor_{name}_{sid((w, d))}"]',
-        f'material = SubResource("StandardMaterial3D_floor_{name}")',
-        f"size = Vector2({g(w)}, {g(d)})",
-        "",
-    ]
-subs += [
-    '[sub_resource type="PrismMesh" id="PrismMesh_arrow"]',
-    'material = ExtResource("mat_guide")',
-    "size = Vector3(0.9, 0.7, 0.02)",
-    "",
-    '[sub_resource type="BoxMesh" id="BoxMesh_arrow_shaft"]',
-    'material = ExtResource("mat_guide")',
-    "size = Vector3(0.3, 0.6, 0.02)",
-    "",
-    '[sub_resource type="BoxMesh" id="BoxMesh_clamp_pad"]',
-    'material = ExtResource("mat_prop")',
-    "size = Vector3(2.5, 1.6, 0.6)",
-    "",
-    '[sub_resource type="BoxMesh" id="BoxMesh_clamp_arm"]',
-    'material = ExtResource("mat_prop")',
-    "size = Vector3(1.2, 0.8, 4)",
-    "",
-    '[sub_resource type="BoxMesh" id="BoxMesh_shutter"]',
-    f'material = SubResource("StandardMaterial3D_{kit.material_id}")',
-    "size = Vector3(3.2, 2.3, 0.08)",
-    "",
-    '[sub_resource type="SphereMesh" id="SphereMesh_dome"]',
-    f'material = SubResource("StandardMaterial3D_{kit.material_id}")',
-    "radius = 11.0",
-    "height = 8.0",
-    "is_hemisphere = true",
-    "",
-]
-interior = [
-    ("Hangar", (X_FRAME, X_HALL), FULL, H_HANGAR),
-    ("Middle", (X_HALL, X_GALLERY), FULL, H_HALL),
-    ("Gallery", (X_GALLERY, X_END), FULL, H_HALL),
-]
-for _name, (x0, x1), (z0, z1), height in interior:
-    subs += [f'[sub_resource type="BoxShape3D" id="BoxShape3D_inside_{sid((x1 - x0, height, z1 - z0))}"]']
-    subs += [f"size = {vec((x1 - x0, height, z1 - z0))}", ""]
-
-nodes = ['[node name="Ostra" type="Node3D"]', 'script = ExtResource("script")', ""]
-nodes += ['[node name="Walls" type="StaticBody3D" parent="."]', ""]
-# The cut-away parts don't show in the navigator's hologram either: it shows the rooms from above.
-nodes += ['[node name="Cut" type="Node3D" parent="Walls" groups=["hidden_in_hologram"]]', ""]
-nodes += kit.nodes(body="Walls")
-nodes += [
-    '[node name="Dome" type="MeshInstance3D" parent="Walls/Cut"]',
-    f"transform = {xform((108.5, H_HALL + 0.5, 0), '1, 0, 0, 0, 0.6, 0, 0, 0, 1')}",
-    'mesh = SubResource("SphereMesh_dome")',
-    "",
-]
-
-nodes += ['[node name="Rooms" type="Node3D" parent="."]', ""]
-for name, sign, areas, height, _tint in ROOMS:
-    nodes += [f'[node name="{name}" type="Node3D" parent="Rooms"]', ""]
-    for i, ((x0, x1), (z0, z1)) in enumerate(areas):
-        suffix = "" if i == 0 else str(i + 1)
-        w, d = x1 - x0 - 0.5, z1 - z0 - 0.5
-        nodes += [
-            f'[node name="Floor{suffix}" type="MeshInstance3D" parent="Rooms/{name}"]',
-            f"transform = {xform(((x0 + x1) / 2, 0.005, (z0 + z1) / 2))}",
-            "cast_shadow = 0",
-            f'mesh = SubResource("PlaneMesh_floor_{name}_{sid((w, d))}")',
-            "",
-        ]
-        nx = max(1, round((x1 - x0) / LIGHT_SPACING))
-        nz = max(1, round((z1 - z0) / LIGHT_SPACING))
-        for ix in range(nx):
-            for iz in range(nz):
-                lx = x0 + (x1 - x0) * (ix + 0.5) / nx
-                lz = z0 + (z1 - z0) * (iz + 0.5) / nz
-                nodes += [
-                    f'[node name="Light{suffix}_{ix + 1}_{iz + 1}" type="SpotLight3D" parent="Rooms/{name}"]',
-                    f"transform = {xform((lx, height - 0.4, lz), SPOT_DOWN)}",
-                    "light_color = Color(1, 0.86, 0.66, 1)",
-                    f"light_energy = {g(4.0 + height * 0.2)}",
-                    f"spot_range = {g(height + 1.0)}",
-                    "spot_angle = 62.0",
-                    "spot_angle_attenuation = 0.5",
-                    "",
-                ]
-    (sx, sz), size = SIGNS[name]
-    nodes += [
-        f'[node name="Sign" type="Label3D" parent="Rooms/{name}"]',
-        "layers = 4",
-        f"transform = {flat((sx, 0.02, sz))}",
-        "pixel_size = 0.01",
-        f'text = "{sign}"',
-        f"font_size = {size}",
-        f"outline_size = {size // 4}",
-        "uppercase = true",
-        "",
-    ]
-    guides = [gd for gd in GUIDES if gd[0] == name]
-    if guides:
-        nodes += [f'[node name="Guides" type="Node3D" parent="Rooms/{name}"]', ""]
-    for _room, gname, (gx, gz), direction, text in guides:
-        path = f"Rooms/{name}/Guides/{gname}"
-        text = text.replace("\n", "\\n")
-        nodes += [
-            f'[node name="{gname}" type="Node3D" parent="Rooms/{name}/Guides"]',
-            f"transform = {xform((gx, 0, gz))}",
-            'script = ExtResource("guide_script")',
-            "",
-            f'[node name="Arrow" type="Node3D" parent="{path}"]',
-            f"transform = {xform((direction[0] * 1.5, 0.02, direction[1] * 1.5), ARROWS[direction])}",
-            "",
-            f'[node name="Head" type="MeshInstance3D" parent="{path}/Arrow"]',
-            f"transform = {flat((0, 0, -0.15))}",
-            "cast_shadow = 0",
-            'mesh = SubResource("PrismMesh_arrow")',
-            "",
-            f'[node name="Shaft" type="MeshInstance3D" parent="{path}/Arrow"]',
-            f"transform = {flat((0, 0, 0.4))}",
-            "cast_shadow = 0",
-            'mesh = SubResource("BoxMesh_arrow_shaft")',
-            "",
-            f'[node name="Text" type="Label3D" parent="{path}"]',
-            f"transform = {flat((0, 0.02, 0))}",
-            "pixel_size = 0.01",
-            "modulate = Color(1, 0.8, 0.45, 1)",
-            f'text = "{text}"',
-            "font_size = 48",
-            "outline_size = 14",
-            "uppercase = true",
-            "",
-        ]
-
-# --- the clamps: closed, their pads lie against the hull's sides; SpaceStation opens them ---
-nodes += ['[node name="Clamps" type="Node3D" parent="."]', ""]
-# On the hull's lower sides under the nacelles: behind it two above each other, in front low along
-# its lower edge, under the cut-away decks, so they don't cover the cargo bay while they take hold.
+# --- the docking clamps: closed, their pads lie against the hull's sides; SpaceStation opens them. On the
+# hull's lower sides under the nacelles: behind it two above each other, in front low along its lower edge ---
 CLAMPS = [(11.5, 2.4, -1), (11.5, 4.8, -1), (9.75, 2.4, 1), (13.25, 2.4, 1)]
-for i, (x, y, side) in enumerate(CLAMPS):
-    nodes += [
-        f'[node name="Clamp{i + 1}" type="Node3D" parent="Clamps"]',
-        f"transform = {xform((x, y, side * CLAMP_Z))}",
-        "",
-        f'[node name="Pad" type="MeshInstance3D" parent="Clamps/Clamp{i + 1}"]',
-        'mesh = SubResource("BoxMesh_clamp_pad")',
-        "",
-        f'[node name="Arm" type="MeshInstance3D" parent="Clamps/Clamp{i + 1}"]',
-        f"transform = {xform((0, 0, side * 2.3))}",
-        'mesh = SubResource("BoxMesh_clamp_arm")',
-        "",
-    ]
 
-
-# --- the station's people: the named NPCs at their places (profile, where (x, z), facing yaw in
-# degrees: 0 towards the camera, 90 towards +x), then the ambient colonists, each with a profile of
-# their own (profile, tint, where, yaw, route: the waypoints they walk in a loop, a waypoint with a
-# yaw (x, z, yaw) the seat where they sit down for a while; none: they stand, or sit for good when
-# in SEATED). A seat's spot is where the feet are: the hips sit 0.4 m behind it (SIT_BACK in
-# tools/blender/humanoid.py), 0.25 m in from the seat's front edge ---
+# --- the station's people: the named NPCs at their places (profile, where (x, z), facing yaw in degrees: 0
+# towards the camera, 90 towards +x), then the ambient colonists, each with a profile of their own (profile,
+# tint, where, yaw, route: the waypoints they walk in a loop, a waypoint with a yaw (x, z, yaw) the seat where
+# they sit down for a while; none: they stand, or sit for good when in SEATED). A seat's spot is where the feet
+# are: the hips sit 0.4 m behind it (SIT_BACK in tools/blender/humanoid.py), 0.25 m in from the seat's front
+# edge ---
 NPC_SCENE = "res://game/npcs/npc.tscn"
 COLONIST_SCENE = "res://game/npcs/colonist.tscn"
 EXCHANGE_SCENE = "res://game/stations/exchange/ore_exchange.tscn"
 PROFILES = "res://game/npcs/ostra/"
+CX, CZ = COUNCIL_TABLE
+BX, BZ = BAR_COUNTER
 PEOPLE = [
     # Beside the depot's counter (the exchange's hoppers on it).
-    ("Kade", "depot_master", (77.6, -21.6), 0),
+    ("Kade", "depot_master", (DEPOT_COUNTER[0] + 4.1, DEPOT_COUNTER[1] - 1.1), 0),
     # At the head of the long table, the big window behind.
-    ("Selin", "councillor", (108.5, -25.3), 0),
+    ("Selin", "councillor", (CX, CZ - 4.05), 0),
     # Behind the bar's counter, close to it (her work reaches across it): used across it (see USE_ACROSS).
-    ("Nell", "bartender", (58.27, 20), 90),
-    # At the booth by the bar's door.
-    ("Rook", "rival_captain", (86.2, 23), -90),
+    ("Nell", "bartender", (BX - 0.73, BZ), 90),
+    # At the booth further in.
+    ("Rook", "rival_captain", (BOOTHS[1][0] - 2.3, BOOTHS[1][1]), -90),
 ]
 # Used across their counter: the use point's offset towards the players (along the facing), the
 # footprint around it (across, along the facing: from them to the counter's front) and the range
@@ -431,86 +289,438 @@ USE_ACROSS = {"Nell": (0.43, (9, 1.5), 1.0)}
 # Outside their own room they only look around, and only once their greeting is heard. TBD (playtest).
 WORK_SPOTS = {
     "Kade": [
-        ("Shelves", (78, -24.8), 180, ["LookAround", "CheckWrist"], 1, False),
-        # By the depot's door to the hangar, watching crates come in.
-        ("Door", (58.5, -20), -90, ["LookAround"], 1, False),
+        ("Shelves", (46.8, -34.6), -90, ["LookAround", "CheckWrist"], 1, False),
+        # By the depot's side door to the hangar, watching crates come in.
+        ("Door", (46.5, L.SIDE_DOOR_Z), -90, ["LookAround"], 1, False),
     ],
     "Selin": [
-        ("Window", (104, -26.8), 180, ["LookAround"], 1, False),
-        ("Gallery", (147, -25), 180, ["LookAround"], 0.5, False),
-        ("Concourse", (106, 9), 0, ["LookAround"], 0.5, False),
+        ("Window", (CX - 4.5, CZ - 5.55), 180, ["LookAround"], 1, False),
+        ("Gallery", (95.0, -21.0), 180, ["LookAround"], 0.5, False),
+        ("Concourse", (66.0, 6.0), 0, ["LookAround"], 0.5, False),
     ],
     "Nell": [
-        ("Counter", (58.27, 17), 90, ["WipeCounter", "PolishGlass"], 1, True),
+        ("Counter", (BX - 0.73, BZ - 3.0), 90, ["WipeCounter", "PolishGlass"], 1, True),
         # At the open end of the booth with the two guests (nell_clips.py: TABLE_EDGE, TABLE_TOP).
-        ("Booth", (87.4, 16.5), 90, ["WipeTable", "ClearGlass", "LookAround"], 0.5, False),
+        ("Booth", (BOOTHS[0][0] - 1.1, BOOTHS[0][1]), 90, ["WipeTable", "ClearGlass", "LookAround"], 0.5, False),
     ],
     "Rook": [
-        ("Counter", (60.6, 18), -90, ["LookAround"], 1, False),
+        ("Counter", (BX + 1.6, BZ - 2.0), -90, ["LookAround"], 1, False),
         # Looking over the docked ship's tail.
-        ("Hangar", (30, 9), -90, ["LookAround"], 0.5, False),
-        ("Gallery", (160, 22), 0, ["LookAround"], 0.5, False),
+        ("Hangar", (28.0, 9.0), -90, ["LookAround"], 0.5, False),
+        ("Gallery", (108.0, 19.0), 0, ["LookAround"], 0.5, False),
     ],
 }
 # What they do at their own place, where it's not the shared clips' default (NpcRoutine.HOME_ACTIVITIES).
 HOME_ACTIVITIES = {"Nell": ["WipeCounter", "PolishGlass", "ShelveBottle"]}
 # The crew who join later, at their places until they do (Npc.waits_to_join; see
 # docs/planned/crew.md): name, crew profile, where (x, z), facing yaw. Dace at his stall, Wren at her
-# suit workbench, Fenna on the back bench of Rook's booth (SEATED_CREW: sitting, feet as for a seated
-# colonist). Once they join, they walk aboard and their place stays empty.
+# suit workbench, Fenna on the back bench of the booth further in (SEATED_CREW: sitting, feet as for a
+# seated colonist). Once they join, they walk aboard and their place stays empty.
 CREW_PROFILES = "res://game/npcs/crew/"
+DACE_X, DACE_Z = STALLS[0]
 JOINING = [
-    ("Dace", "gunsmith", (100, 16.4), 0),
-    ("Wren", "suit_tech", (54.2, -25.6), 90),
-    ("Fenna", "cook", (88.3, 22.25), 0),
+    ("Dace", "gunsmith", (DACE_X, DACE_Z - 1.6), 0),
+    ("Wren", "suit_tech", (SUIT_BENCH[0] - 1.0, SUIT_BENCH[1]), 90),
+    ("Fenna", "cook", (BOOTHS[1][0] - 0.2, BOOTHS[1][1] - 0.75), 0),
 ]
 SEATED_CREW = {"Fenna"}
 JOINING_SPOTS = {
-    "Dace": [("Bench", (100, 15.9), 180, ["LookAround", "CheckWrist"], 1, False)],
-    "Wren": [("Frame", (54.5, -23.4), 90, ["LookAround", "CheckWrist"], 1, False)],
+    "Dace": [("Bench", (DACE_X, DACE_Z - 2.1), 180, ["LookAround", "CheckWrist"], 1, False)],
+    "Wren": [("Frame", (SUIT_BENCH[0] - 0.7, -14.8), 90, ["LookAround", "CheckWrist"], 1, False)],
 }
 # Dace's stall once he's aboard: its shutter down over the counter (StoryShown), his sign above the
 # stall either way. Where (x, z) and the join flag it follows.
-DACE_STALL = ((100, 18.0), "crew.gunsmith.joined")
+DACE_STALL = (STALLS[0], "crew.gunsmith.joined")
+B1X, B1Z = BOOTHS[0]
 COLONISTS = [
-    # At the middle stall (the first one is Dace's).
-    ("Mechanic", "mechanic", (0.95, 0.9, 0.8), (110, 16.4), 0, []),
-    ("BarterTrader", "barter_trader", (0.8, 0.85, 0.95), (120, 16.4), 0, []),
-    ("Gardener", "gardener", (0.9, 1, 0.85), (110, 19.4), 180, []),
-    ("DockHand", "dock_hand", (0.9, 0.95, 1), (60.4, 24), -90, []),
+    # At the other two stalls (the first one is Dace's).
+    ("Mechanic", "mechanic", (0.95, 0.9, 0.8), (STALLS[1][0], STALLS[1][1] - 1.6), 0, []),
+    ("BarterTrader", "barter_trader", (0.8, 0.85, 0.95), (STALLS[2][0], STALLS[2][1] - 1.6), 0, []),
+    ("Gardener", "gardener", (0.9, 1, 0.85), (STALLS[1][0], STALLS[1][1] + 1.4), 180, []),
+    ("DockHand", "dock_hand", (0.9, 0.95, 1), (BX + 1.4, BZ + 2.8), -90, []),
     # On the first gallery bench, looking out of the windows.
-    ("HaulerPilot", "hauler_pilot", (0.85, 0.9, 1), (141, -20.55), 180, []),
-    # Facing each other in the booth by the counter (the other one is Rook's).
-    ("WaterTechnician", "water_technician", (0.85, 0.95, 0.95), (88.3, 15.75), 0, []),
-    ("Metalworker", "metalworker", (1, 0.9, 0.8), (88.7, 17.25), 180, []),
-    ("DepotClerk", "depot_clerk", (1, 1, 1), (86, -24.9), 180, []),
-    ("Loader", "loader", (1, 0.95, 0.85), (28, -21), 90, [(48, -21), (28, -21)]),
-    ("Courier", "courier", (0.95, 1, 0.95), (36, 2), 90, [(140, 2), (36, 2)]),
-    ("MaintenanceTech", "maintenance_tech", (0.9, 0.9, 1), (80, -8), 90, [(112, -8), (80, -8)]),
+    ("HaulerPilot", "hauler_pilot", (0.85, 0.9, 1), (89.0, -17.55), 180, []),
+    # Facing each other in the booth by the door (the other one is Rook's).
+    ("WaterTechnician", "water_technician", (0.85, 0.95, 0.95), (B1X - 0.2, B1Z - 0.75), 0, []),
+    ("Metalworker", "metalworker", (1, 0.9, 0.8), (B1X + 0.2, B1Z + 0.75), 180, []),
+    ("DepotClerk", "depot_clerk", (1, 1, 1), (59.6, -36.4), 90, []),
+    ("Loader", "loader", (1, 0.95, 0.85), (22.0, -20.0), 90, [(40.0, -20.0), (22.0, -20.0)]),
+    ("Courier", "courier", (0.95, 1, 0.95), (24.0, 3.5), 90, [(98.0, 3.5), (24.0, 3.5)]),
+    ("MaintenanceTech", "maintenance_tech", (0.9, 0.9, 1), (50.0, -6.0), 90, [(74.0, -6.0), (50.0, -6.0)]),
     # Around the gallery, sitting down on the second bench for a while (round its end, on the window side).
     (
         "Teacher",
         "teacher",
         (1, 0.9, 0.95),
-        (134, -14),
+        (82.0, -11.0),
         90,
-        [(151, -22), (156.5, -20.55, 180), (160, -22), (164, -14), (164, 14), (134, 14), (134, -14)],
+        [
+            (99.0, -19.0),
+            (104.5, -17.55, 180),
+            (108.0, -19.0),
+            (112.0, -11.0),
+            (112.0, 17.0),
+            (82.0, 17.0),
+            (82.0, -11.0),
+        ],
     ),
 ]
 SEATED = {"HaulerPilot", "WaterTechnician", "Metalworker"}
 
+# ------------------------------------------------------------------------------------------------------------
 
-def yaw(degrees):
-    """A turn about the vertical axis (rows, as scenes store them): 0 faces +z."""
-    c, s = math.cos(math.radians(degrees)), math.sin(math.radians(degrees))
-    return ", ".join(g(round(v, 6) + 0.0) for v in (c, 0, s, 0, 1, 0, -s, 0, c))
+subs = []
+nodes = ['[node name="Ostra" type="Node3D"]', 'script = ExtResource("script")', ""]
+ext = [
+    ("Script", SCRIPT, "script"),
+    ("Script", LOOK, "look"),
+    ("Script", "res://game/world/room_plan.gd", "room_plan"),
+    ("Script", "res://game/npcs/work_spot.gd", "work_spot"),
+    ("Script", "res://game/ship/floor_guide.gd", "guide_script"),
+    ("PackedScene", NPC_SCENE, "npc"),
+    ("PackedScene", COLONIST_SCENE, "colonist"),
+    ("PackedScene", EXCHANGE_SCENE, "exchange"),
+    ("PackedScene", "res://game/ship/neon_sign.tscn", "neon_sign"),
+    ("Script", "res://game/story/story_shown.gd", "story_shown"),
+    ("Material", f"{MATERIALS}ostra_paint_dark.tres", "mat_dark"),
+]
+models = {}
 
 
+def model(path):
+    """The ext_resource id of a model (a .glb under MODELS)."""
+    if path not in models:
+        rid = "model_" + path.replace("/", "_")
+        models[path] = rid
+        ext.append(("PackedScene", f"{MODELS}{path}.glb", rid))
+    return models[path]
+
+
+shapes = {}
+
+
+def box_shape(size):
+    key = sid(size)
+    if key not in shapes:
+        shapes[key] = True
+        subs.extend([f'[sub_resource type="BoxShape3D" id="BoxShape3D_{key}"]', f"size = {vec(size)}", ""])
+    return f"BoxShape3D_{key}"
+
+
+collision_count = 0
+
+
+def collision(name, center, size, basis="1, 0, 0, 0, 1, 0, 0, 0, 1"):
+    global collision_count
+    collision_count += 1
+    nodes.extend(
+        [
+            f'[node name="{name}" type="CollisionShape3D" parent="Walls"]',
+            f"transform = {xform(center, basis)}",
+            f'shape = SubResource("{box_shape(size)}")',
+            "",
+        ]
+    )
+
+
+def look(name, parent, path, transform=None, interior=True, tints=None, groups=None):
+    """A model of the station's kit with its materials swapped in (OstraLook)."""
+    head = f'[node name="{name}" parent="{parent}"'
+    if groups:
+        head += " groups=[" + ", ".join(f'"{gr}"' for gr in groups) + "]"
+    lines = [head + f' instance=ExtResource("{model(path)}")]']
+    if transform:
+        lines.append(f"transform = {transform}")
+    lines.append('script = ExtResource("look")')
+    if not interior:
+        lines.append("interior = false")
+    if tints:
+        pairs = ", ".join(f'&"{room}": Color({", ".join(g(c) for c in tint)}, 1)' for room, tint in tints.items())
+        lines.append(f"floor_tints = Dictionary[StringName, Color]({{{pairs}}})")
+    nodes.extend(lines + [""])
+
+
+# --- the walls' bodies: every wall's solid stretches (doors left open), the columns, the machinery blocks, the
+# deck under it all, the furniture ---
+nodes += ['[node name="Walls" type="StaticBody3D" parent="."]', ""]
+# The cut-away parts don't show in the navigator's hologram either: it shows the rooms from above.
+nodes += ['[node name="Cut" type="Node3D" parent="Walls" groups=["hidden_in_hologram"]]', ""]
+x_end = L.GALLERY_CENTER[0] + L.GALLERY_RADIUS
+collision(
+    "Deck",
+    ((L.X_FRAME + x_end) / 2, -0.5, (L.Z_BACK + L.Z_BAR) / 2),
+    (x_end - L.X_FRAME + 0.5, 1, L.Z_BAR - L.Z_BACK + 0.5),
+)
+for wall in L.WALLS:
+    (x0, z0), (x1, z1) = wall["from"], wall["to"]
+    length = math.hypot(x1 - x0, z1 - z0)
+    ux, uz = (x1 - x0) / length, (z1 - z0) / length
+    basis = yaw(math.degrees(math.atan2(-uz, ux)) - 90)
+    spans, t = [], 0.0
+    for d, w, _h in sorted(wall["doors"]):
+        if d - w / 2 > t:
+            spans.append((t, d - w / 2))
+        t = d + w / 2
+    if length > t:
+        spans.append((t, length))
+    for i, (a, b) in enumerate(spans):
+        mid = (a + b) / 2
+        center = (x0 + ux * mid, wall["height"] / 2, z0 + uz * mid)
+        # The box's own z runs along the wall (yaw - 90 turns +z onto the wall's direction).
+        collision(f"{wall['name']}{i + 1}", center, (L.WALL, wall["height"], b - a), basis)
+corners = {}
+for wall in L.WALLS:
+    for p in (wall["from"], wall["to"]):
+        corners[(round(p[0], 2), round(p[1], 2))] = max(
+            corners.get((round(p[0], 2), round(p[1], 2)), 0), wall["height"]
+        )
+for i, ((x, z), height) in enumerate(sorted(corners.items())):
+    collision(f"Column{i + 1}", (x, height / 2, z), (1.0, height, 1.0))
+for name, poly in L.FILLS:
+    points = ", ".join(f"{g(x)}, {g(y)}, {g(z)}" for x, z in poly for y in (0.0, L.FILL_HEIGHT))
+    subs.extend([f'[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_{name}"]'])
+    subs.extend([f"points = PackedVector3Array({points})", ""])
+    nodes.extend(
+        [
+            f'[node name="{name}" type="CollisionShape3D" parent="Walls"]',
+            f'shape = SubResource("ConvexPolygonShape3D_{name}")',
+            "",
+        ]
+    )
+# The pressure frame's header and jambs, around the hull.
+collision(
+    "FrameHeader", (L.X_FRAME, (L.MOUTH_TOP + L.H_HANGAR) / 2, 0), (1.5, L.H_HANGAR - L.MOUTH_TOP, 2 * L.Z_HANGAR)
+)
+for s, name in ((-1, "Back"), (1, "Front")):
+    collision(
+        f"FrameJamb{name}", (L.X_FRAME + 0.5, L.MOUTH_TOP / 2, s * (L.MOUTH_HALF + 0.75)), (1.5, L.MOUTH_TOP, 1.5)
+    )
+for name, _model, (px, pz), facing, shapes_, *_rest in PROPS:
+    for i, (center, size) in enumerate(shapes_):
+        lx, lz = turned(facing, (center[0], center[2]))
+        collision(
+            f"{name}Shape{i + 1}" if len(shapes_) > 1 else f"{name}Shape",
+            (px + lx, center[1], pz + lz),
+            size,
+            yaw(facing),
+        )
+(kx, kz), kr, kh = KIOSK
+subs.extend(
+    ['[sub_resource type="CylinderShape3D" id="CylinderShape3D_kiosk"]', f"height = {g(kh)}", f"radius = {g(kr)}", ""]
+)
+nodes.extend(
+    [
+        '[node name="KioskShape" type="CollisionShape3D" parent="Walls"]',
+        f"transform = {xform((kx, kh / 2, kz))}",
+        'shape = SubResource("CylinderShape3D_kiosk")',
+        "",
+    ]
+)
+
+# --- the models: the shell (its stubs, floors and back walls always, the rest cut away), the outside ---
+tints = {room: FLOOR_TINTS[room] for room in FLOOR_TINTS}
+look("Shell", "Walls", "shell/shell_station", tints=tints)
+look("Glass", "Walls", "shell/glass_station")
+look("Platform", "Walls", "exterior/exterior_platform", interior=False)
+look("ShellCut", CUT, "shell/shell_cut")
+look("GlassCut", CUT, "shell/glass_cut", groups=["cutaway_hide"])
+look("Roofs", CUT, "exterior/exterior_roofs", interior=False)
+look("Structures", CUT, "exterior/exterior_structures", interior=False)
+# The clamps' mounts beside the hull, under the nacelles: machine blocks, low enough to keep the hull in view.
+for side, name in [(-1, "Back"), (1, "Front")]:
+    look(
+        f"ClampMount{name}",
+        CUT,
+        "props/machine_block",
+        xform((11.5, 0, side * (CLAMP_Z + 5.3)), yaw(0 if side < 0 else 180)),
+    )
+    collision(f"ClampMount{name}Shape", (11.5, 1.5, side * (CLAMP_Z + 5.3)), (3.0, 3.0, 2.0))
+
+# --- the props ---
+nodes += ['[node name="Props" type="Node3D" parent="."]', ""]
+for name, path, (px, pz), facing, _shapes, *rest in PROPS:
+    y = rest[0] if rest else 0.0
+    look(name, "Props", f"props/{path}", xform((px, y, pz), yaw(facing)))
+look("Kiosk", "Props", "props/kiosk", xform((kx, 0, kz)))
+for name, (x, y, z), facing in SCREENS:
+    look(name, "Props", "props/wall_screen", xform((x, y, z), yaw(facing)))
+for name, path, (x, z), facing in WALL_PROPS:
+    look(name, "Props", f"props/{path}", xform((x, 0, z), yaw(facing)))
+
+# --- the rooms: lights, names ---
+nodes += ['[node name="Rooms" type="Node3D" parent="."]', ""]
+SPOT_DOWN = "1, 0, 0, 0, 0, 1, 0, -1, 0"
+for name, _sign, _polys, height, areas in L.ROOMS:
+    nodes += [f'[node name="{name}" type="Node3D" parent="Rooms"]', ""]
+    count = 0
+    for (x0, x1), (z0, z1) in areas:
+        top = L.ROOM_HEIGHTS["Market"] if name == "Concourse" and z0 >= L.Z_HUB else height
+        nx = max(1, round((x1 - x0) / LIGHT_SPACING))
+        nz = max(1, round((z1 - z0) / LIGHT_SPACING))
+        for ix in range(nx):
+            for iz in range(nz):
+                count += 1
+                lx = x0 + (x1 - x0) * (ix + 0.5) / nx
+                lz = z0 + (z1 - z0) * (iz + 0.5) / nz
+                nodes += [
+                    f'[node name="Light{count}" type="SpotLight3D" parent="Rooms/{name}"]',
+                    f"transform = {xform((lx, top - 0.4, lz), SPOT_DOWN)}",
+                    "light_color = Color(1, 0.84, 0.62, 1)",
+                    f"light_energy = {g(5.0 + top * 0.4)}",
+                    f"spot_range = {g(top + 2.0)}",
+                    "spot_angle = 66.0",
+                    "spot_angle_attenuation = 0.7",
+                    "",
+                    # A warm fill that reaches the walls.
+                    f'[node name="Fill{count}" type="OmniLight3D" parent="Rooms/{name}"]',
+                    f"transform = {xform((lx, min(top - 1.0, 5.0), lz))}",
+                    "light_color = Color(1, 0.78, 0.55, 1)",
+                    "light_energy = 0.9",
+                    f"omni_range = {g(LIGHT_SPACING * 1.1)}",
+                    "omni_attenuation = 1.4",
+                    "",
+                ]
+    text, (sx, sy, sz), facing, size = SIGNS[name]
+    color = SIGN_COLORS[name]
+    nodes += [
+        f'[node name="Sign" parent="Rooms/{name}" instance=ExtResource("neon_sign")]',
+        f"transform = {xform((sx, sy, sz), yaw(facing))}",
+        f'text = "{text}"',
+        f"color = Color({', '.join(g(c) for c in color)}, 1)",
+        f"font_size = {size}",
+        "",
+    ]
+
+# --- the guide lines and their names on the floor ---
+line_materials = {}
+for name, _text, color, _points in LINES:
+    rid = f"StandardMaterial3D_line_{name}"
+    line_materials[name] = rid
+    rgb = ", ".join(g(c) for c in color)
+    subs += [
+        f'[sub_resource type="StandardMaterial3D" id="{rid}"]',
+        f"albedo_color = Color({rgb}, 1)",
+        "roughness = 0.55",
+        "emission_enabled = true",
+        f"emission = Color({rgb}, 1)",
+        "emission_energy_multiplier = 0.35",
+        "",
+    ]
+subs += ['[sub_resource type="PrismMesh" id="PrismMesh_arrow"]', "size = Vector3(0.7, 0.55, 0.004)", ""]
+subs += ['[sub_resource type="BoxMesh" id="BoxMesh_arrow_shaft"]', "size = Vector3(0.22, 0.45, 0.004)", ""]
+segment_meshes = {}
+nodes += ['[node name="GuideLines" type="Node3D" parent="Rooms"]', ""]
+for name, _text, _color, points in LINES:
+    nodes += [f'[node name="{name}" type="Node3D" parent="Rooms/GuideLines"]', ""]
+    for i in range(len(points) - 1):
+        (x0, z0), (x1, z1) = points[i], points[i + 1]
+        length = math.hypot(x1 - x0, z1 - z0) + LINE_WIDTH
+        key = (name, round(length, 3))
+        if key not in segment_meshes:
+            rid = f"BoxMesh_line_{name}_{sid((length,))}"
+            segment_meshes[key] = rid
+            subs += [
+                f'[sub_resource type="BoxMesh" id="{rid}"]',
+                f'material = SubResource("{line_materials[name]}")',
+                f"size = Vector3({g(LINE_WIDTH)}, 0.004, {g(length)})",
+                "",
+            ]
+        angle = math.degrees(math.atan2(x1 - x0, z1 - z0))
+        nodes += [
+            f'[node name="Segment{i + 1}" type="MeshInstance3D" parent="Rooms/GuideLines/{name}"]',
+            "layers = 4",
+            f"transform = {xform(((x0 + x1) / 2, LINE_Y, (z0 + z1) / 2), yaw(angle))}",
+            "cast_shadow = 0",
+            f'mesh = SubResource("{segment_meshes[key]}")',
+            "",
+        ]
+
+
+def flat(origin):
+    """A label or plane lying on the floor, readable from the camera."""
+    return xform(origin, "1, 0, 0, 0, 0, 1, 0, -1, 0")
+
+
+guide_materials = {}
+for gname, room, (gx, gz), direction, text, color in GUIDES:
+    rgb = ", ".join(g(c) for c in color)
+    if rgb not in guide_materials:
+        rid = f"StandardMaterial3D_guide_{len(guide_materials) + 1}"
+        guide_materials[rgb] = rid
+        subs += [
+            f'[sub_resource type="StandardMaterial3D" id="{rid}"]',
+            "shading_mode = 0",
+            f"albedo_color = Color({rgb}, 1)",
+            "",
+        ]
+    mat = guide_materials[rgb]
+    guides = f"Rooms/{room}/Guides"
+    if f'[node name="Guides" type="Node3D" parent="Rooms/{room}"]' not in nodes:
+        nodes += [f'[node name="Guides" type="Node3D" parent="Rooms/{room}"]', ""]
+    path = f"{guides}/{gname}"
+    nodes += [
+        f'[node name="{gname}" type="Node3D" parent="{guides}"]',
+        f"transform = {xform((gx, 0, gz))}",
+        'script = ExtResource("guide_script")',
+        "",
+        f'[node name="Arrow" type="Node3D" parent="{path}"]',
+        f"transform = {xform((direction[0] * 1.2, LINE_Y + 0.004, 0), ARROWS[direction])}",
+        "",
+        f'[node name="Head" type="MeshInstance3D" parent="{path}/Arrow"]',
+        f"transform = {flat((0, 0, -0.1))}",
+        "cast_shadow = 0",
+        f'material_override = SubResource("{mat}")',
+        'mesh = SubResource("PrismMesh_arrow")',
+        "",
+        f'[node name="Shaft" type="MeshInstance3D" parent="{path}/Arrow"]',
+        f"transform = {flat((0, 0, 0.3))}",
+        "cast_shadow = 0",
+        f'material_override = SubResource("{mat}")',
+        'mesh = SubResource("BoxMesh_arrow_shaft")',
+        "",
+        f'[node name="Text" type="Label3D" parent="{path}"]',
+        f"transform = {flat((0, LINE_Y + 0.004, 0))}",
+        "pixel_size = 0.01",
+        f"modulate = Color({rgb}, 1)",
+        f'text = "{text}"',
+        "font_size = 40",
+        "outline_size = 10",
+        "uppercase = true",
+        "",
+    ]
+
+# --- the clamps ---
+nodes += ['[node name="Clamps" type="Node3D" parent="."]', ""]
+for i, (x, y, side) in enumerate(CLAMPS):
+    # The model's arm reaches towards +z: the front ones as they are, the back ones turned round.
+    nodes += [
+        f'[node name="Clamp{i + 1}" type="Node3D" parent="Clamps"]',
+        f"transform = {xform((x, y, side * CLAMP_Z))}",
+        "",
+    ]
+    look("Model", f"Clamps/Clamp{i + 1}", "props/clamp", xform((0, 0, 0), yaw(0 if side > 0 else 180)), interior=False)
+
+# --- the people ---
 nodes += ['[node name="People" type="Node3D" parent="."]', ""]
 
 
 def names(items):
     return ", ".join(f'&"{item}"' for item in items)
+
+
+def spot_nodes(name, spots):
+    out = []
+    for spot, (sx, sz), sfacing, activities, weight, like_home in spots:
+        out += [
+            f'[node name="{name}{spot}" type="Marker3D" parent="People"]',
+            f"transform = {xform((sx, 0, sz), yaw(sfacing))}",
+            'script = ExtResource("work_spot")',
+            f"activities = Array[StringName]([{names(activities)}])",
+        ]
+        out += [f"weight = {g(weight)}"] if weight != 1 else []
+        out += ["use_like_home = true"] if like_home else []
+        out += [""]
+    return out
 
 
 for name, profile, (px, pz), facing in PEOPLE:
@@ -525,16 +735,7 @@ for name, profile, (px, pz), facing in PEOPLE:
     if name in HOME_ACTIVITIES:
         nodes += [f"home_activities = Array[StringName]([{names(HOME_ACTIVITIES[name])}])"]
     nodes += [""]
-    for spot, (sx, sz), sfacing, activities, weight, like_home in spots:
-        nodes += [
-            f'[node name="{name}{spot}" type="Marker3D" parent="People"]',
-            f"transform = {xform((sx, 0, sz), yaw(sfacing))}",
-            'script = ExtResource("work_spot")',
-            f"activities = Array[StringName]([{names(activities)}])",
-        ]
-        nodes += [f"weight = {g(weight)}"] if weight != 1 else []
-        nodes += ["use_like_home = true"] if like_home else []
-        nodes += [""]
+    nodes += spot_nodes(name, spots)
     if name in USE_ACROSS:
         ahead, (across, along), reach = USE_ACROSS[name]
         nodes += [
@@ -558,25 +759,18 @@ for name, profile, (px, pz), facing in JOINING:
     ]
     nodes += ["seated = true"] if name in SEATED_CREW else []
     nodes += ["waits_to_join = true", ""]
-    for spot, (sx, sz), sfacing, activities, weight, like_home in spots:
-        nodes += [
-            f'[node name="{name}{spot}" type="Marker3D" parent="People"]',
-            f"transform = {xform((sx, 0, sz), yaw(sfacing))}",
-            'script = ExtResource("work_spot")',
-            f"activities = Array[StringName]([{names(activities)}])",
-            "",
-        ]
+    nodes += spot_nodes(name, spots)
 (stall_x, stall_z), stall_flag = DACE_STALL
 nodes += [
     '[node name="DaceStall" type="Node3D" parent="."]',
     f"transform = {xform((stall_x, 0, stall_z))}",
     "",
-    # Above his workbench behind him, so it never covers him.
+    # Above his workbench behind him, at the awning's front edge, so it never covers him.
     '[node name="Sign" parent="DaceStall" instance=ExtResource("neon_sign")]',
-    f"transform = {xform((0, 2.9, -3.3))}",
+    f"transform = {xform((0, 2.95, -1.95))}",
     'text = "Dace · Machinist"',
     "color = Color(0.45, 0.8, 1, 1)",
-    "font_size = 40",
+    "font_size = 32",
     "",
     '[node name="Shutter" type="Node3D" parent="DaceStall"]',
     'script = ExtResource("story_shown")',
@@ -585,6 +779,12 @@ nodes += [
     '[node name="Mesh" type="MeshInstance3D" parent="DaceStall/Shutter"]',
     f"transform = {xform((0, 1.15, 0.7))}",
     'mesh = SubResource("BoxMesh_shutter")',
+    "",
+]
+subs += [
+    '[sub_resource type="BoxMesh" id="BoxMesh_shutter"]',
+    'material = ExtResource("mat_dark")',
+    "size = Vector3(3.2, 2.3, 0.08)",
     "",
 ]
 for name, profile, tint, (px, pz), facing, route in COLONISTS:
@@ -603,30 +803,35 @@ for name, profile, tint, (px, pz), facing, route in COLONISTS:
         nodes += ["seated = true"]
     nodes += [""]
 
-# --- the ore exchange: its hoppers on the depot's counter (its origin: the counter's middle on the
-# deck, see ExchangeStation) ---
+# --- the ore exchange: its hoppers on the depot's counter (its origin: the counter's middle on the deck, see
+# ExchangeStation) ---
 nodes += [
     '[node name="OreExchange" parent="." instance=ExtResource("exchange")]',
-    f"transform = {xform((73.5, 0, -20.5))}",
+    f"transform = {xform((DEPOT_COUNTER[0], 0, DEPOT_COUNTER[1]))}",
     "",
 ]
 
-# --- who's inside: the cut-away and the indoor light follow it ---
+# --- who's inside: the cut-away and the indoor light follow it; the rooms' areas, for what people say where
+# they stand (RoomPlan) ---
 nodes += ['[node name="Interior" type="Area3D" parent="."]', "monitorable = false", ""]
-for name, (x0, x1), (z0, z1), height in interior:
-    nodes += [
-        f'[node name="{name}" type="CollisionShape3D" parent="Interior"]',
-        f"transform = {xform(((x0 + x1) / 2, height / 2, (z0 + z1) / 2))}",
-        f'shape = SubResource("BoxShape3D_inside_{sid((x1 - x0, height, z1 - z0))}")',
-        "",
-    ]
-
-# --- the rooms' areas, for what people say where they stand (RoomPlan) ---
 plan_names, plan_areas = [], []
-for name, _sign, areas, height, _tint in ROOMS:
+count = 0
+for name, _sign, _polys, height, areas in L.ROOMS:
     for (x0, x1), (z0, z1) in areas:
+        top = L.ROOM_HEIGHTS["Market"] if name == "Concourse" and z0 >= L.Z_HUB else height
+        count += 1
+        size = (x1 - x0, top, z1 - z0)
+        key = sid(size)
+        if f"BoxShape3D_inside_{key}" not in "".join(subs):
+            subs += [f'[sub_resource type="BoxShape3D" id="BoxShape3D_inside_{key}"]', f"size = {vec(size)}", ""]
+        nodes += [
+            f'[node name="{name}{count}" type="CollisionShape3D" parent="Interior"]',
+            f"transform = {xform(((x0 + x1) / 2, top / 2, (z0 + z1) / 2))}",
+            f'shape = SubResource("BoxShape3D_inside_{key}")',
+            "",
+        ]
         plan_names.append(f'&"{name}"')
-        plan_areas.append(f"AABB({g(x0)}, 0, {g(z0)}, {g(x1 - x0)}, {g(height)}, {g(z1 - z0)})")
+        plan_areas.append(f"AABB({g(x0)}, 0, {g(z0)}, {g(x1 - x0)}, {g(top)}, {g(z1 - z0)})")
 nodes += [
     '[node name="RoomPlan" type="Node3D" parent="."]',
     'script = ExtResource("room_plan")',
@@ -635,19 +840,6 @@ nodes += [
     "",
 ]
 
-ext = [
-    ("Script", SCRIPT, "script"),
-    ("Script", "res://game/world/room_plan.gd", "room_plan"),
-    ("Script", "res://game/npcs/work_spot.gd", "work_spot"),
-    ("Script", GUIDE_SCRIPT, "guide_script"),
-    ("StandardMaterial3D", GUIDE_MATERIAL, "mat_guide"),
-    ("StandardMaterial3D", PROP_MATERIAL, "mat_prop"),
-    ("PackedScene", NPC_SCENE, "npc"),
-    ("PackedScene", COLONIST_SCENE, "colonist"),
-    ("PackedScene", EXCHANGE_SCENE, "exchange"),
-    ("PackedScene", "res://game/ship/neon_sign.tscn", "neon_sign"),
-    ("Script", "res://game/story/story_shown.gd", "story_shown"),
-]
 for profile in sorted({p[1] for p in PEOPLE}):
     ext.append(("Resource", f"{PROFILES}{profile}.tres", f"profile_{profile}"))
 for profile in sorted({j[1] for j in JOINING}):
@@ -656,4 +848,4 @@ for profile in sorted({c[1] for c in COLONISTS}):
     ext.append(("Resource", f"{PROFILES}colonists/{profile}.tres", f"colonist_{profile}"))
 out = write(OUT, ROOT, ext, subs, nodes, "ostra_build.py")
 if out:
-    print(len(kit.walls), "wall pieces,", len(kit.glass), "windows,", out.count("[node "), "nodes")
+    print(collision_count, "collision boxes,", len(models), "models,", out.count("[node "), "nodes")

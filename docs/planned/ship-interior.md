@@ -26,6 +26,5 @@ otherwise.
 - **Textures:** a trim sheet (vents, panel seams, labels) with the exterior's details if the geometry isn't
   enough. StableMaterials (gvecchio, the best generator of PBR sets tried) is used only once its weights'
   license (tagged "openrail", no text) is confirmed.
-- **Waypost Ostra** can take the kit later with its own colors.
 - **Performance** in VR (two views at 90 fps) is checked with M6: today about 9 ms a frame aboard on the
   development PC's desktop at 4K.

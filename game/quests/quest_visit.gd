@@ -53,17 +53,6 @@ class Entry:
 	var upcoming: bool = false
 
 
-## What a step handed in out here changed in the quest log (see `hand_in`), to take back.
-class HandedIn:
-	var quest: Quest
-	## The quest's progress, the quest tracked and its calls heard before it.
-	var progress: PackedFloat64Array
-	var tracked: StringName
-	var heard: PackedStringArray
-	## The story flags it set.
-	var flags: Array[StringName] = []
-
-
 var entries: Array[Entry] = []
 ## The NPCs waiting out here for a step to be handed in, one per active step that
 ## `QuestStep.meets_at` the region: its quest and step, the map part they stand at (`site`) and
@@ -75,7 +64,7 @@ var _region: StringName
 ## Per goal's or step's part, its copy in this visit (see `Entry.site`).
 var _sites: Dictionary[PartPlacement, PartPlacement] = {}
 ## The steps handed in out here and not counted yet (see `commit`), in the order they were.
-var _handed: Array[HandedIn] = []
+var _handed: Array[QuestUndo] = []
 
 
 ## The visit to `region` (a `Region.id`): every goal there of the active steps of `quest_log` that
@@ -264,25 +253,14 @@ func hand_in(quest: Quest, payer: Player, players: Array[Player]) -> bool:
 	var step: QuestStep = _log.current_step(quest) if _log else null
 	if not step or not meeting_for(quest) or not is_ready(quest, players):
 		return false
-	var record := HandedIn.new()
-	record.quest = quest
-	var progress_before: PackedFloat64Array = _log.progress.get(quest.id, PackedFloat64Array())
-	var heard_before: PackedStringArray = _log.calls.heard.get(quest.id, PackedStringArray())
-	record.progress = progress_before.duplicate()
-	record.tracked = _log.tracked
-	record.heard = heard_before.duplicate()
-	var flags: Array[StringName] = [quest.step_flag(step), quest.flag()]
-	var joining: NpcProfile = NpcProfile.find(step.joins) if not step.joins.is_empty() else null
-	if joining and not joining.join_flag.is_empty():
-		flags.append(joining.join_flag)
-	flags = flags.filter(func(flag: StringName) -> bool: return not _log.story.is_set(flag))
+	var undo := QuestUndo.before(_log, quest, step)
 	for player: Player in players:
 		_hand_over_carried(player, quest, step)
 	_commit_where(func(entry: Entry) -> bool: return entry.quest == quest)
 	if not _log.hand_in(quest, payer, players):
 		return false
-	record.flags = flags.filter(func(flag: StringName) -> bool: return _log.story.is_set(flag))
-	_handed.append(record)
+	undo.after(_log)
+	_handed.append(undo)
 	var next: QuestStep = _log.current_step(quest)
 	if next:
 		var meeting_count: int = meetings.size()
@@ -307,12 +285,8 @@ func drop() -> void:
 	if not _log or _handed.is_empty():
 		return
 	_handed.reverse()
-	for record: HandedIn in _handed:
-		for flag: StringName in record.flags:
-			_log.story.clear_flag(flag)
-		_log.progress[record.quest.id] = record.progress
-		_log.calls.heard[record.quest.id] = record.heard
-		_log.tracked = record.tracked
+	for undo: QuestUndo in _handed:
+		undo.apply(_log)
 	_handed.clear()
 	_log.emit_changed()
 

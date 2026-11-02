@@ -203,7 +203,7 @@ class Plant:
                 a = spin + k * TAU / seg
                 local = Vector((math.cos(a) * r, math.sin(a) * r, z))
                 if wobble:
-                    local += noise.noise_vector(local * wfreq + c * 1.7) * wobble * r
+                    local += C.noise_vector(local * wfreq + c * 1.7) * wobble * r
                 ring.append(self.v(c + rot @ local, g, 0.0, p))
             rings.append((idx, ring))
         for (_, a), (_, b) in itertools.pairwise(rings):
@@ -265,7 +265,7 @@ class Plant:
     def wobble(self, verts, amp, freq=4.0):
         seed = Vector((self.rnd.uniform(0, 99), self.rnd.uniform(0, 99), self.rnd.uniform(0, 99)))
         for vert in verts:
-            vert.co += noise.noise_vector(vert.co * freq + seed) * amp
+            vert.co += C.noise_vector(vert.co * freq + seed) * amp
 
     def finish(self, parent, mat, location=(0, 0, 0)) -> bpy.types.Object:
         me = bpy.data.meshes.new(self.name)

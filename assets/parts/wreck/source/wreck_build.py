@@ -333,7 +333,7 @@ def crumple(p: Vector, y: float, seed: float = 0.0) -> Vector:
     """Smooth dents: barely along the body, crushed at the nose (shoved to one side), buckled at the break."""
     t = nose_t(y)
     amp = 0.035 + 0.42 * t**1.6 + 0.1 * smoothstep(4.0, 6.2, y)
-    d = mnoise.noise_vector(Vector((p.x * 0.55 + seed, y * 0.55, p.z * 0.55))) * amp
+    d = C.noise_vector(Vector((p.x * 0.55 + seed, y * 0.55, p.z * 0.55))) * amp
     d.y *= 0.4  # stations never cross
     d.x += 0.3 * t * t
     return d

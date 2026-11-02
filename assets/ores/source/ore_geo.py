@@ -19,7 +19,7 @@ import itertools
 import bmesh
 from mathutils import Matrix, Vector
 
-from common import T, basis, polar  # noqa: F401  (re-exported for the type modules)
+from common import T, basis, polar, uv_sphere  # noqa: F401  (re-exported for the type modules)
 
 
 @dataclass

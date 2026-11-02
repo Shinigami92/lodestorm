@@ -250,11 +250,13 @@ def join(name: str, objs: list) -> bpy.types.Object:
     for o in objs:
         apply_modifiers(o)
         print(f"TRIS {name} / {o.name}: {sum(len(pl.vertices) - 2 for pl in o.data.polygons)}")
-    bpy.ops.object.select_all(action="DESELECT")
-    for o in objs:
-        o.select_set(True)
+    # One at a time, in order: joining all at once takes them in an order of Blender's (it changes between runs),
+    # so the vertex order (and with it the unwrap and the bake) would too.
     bpy.context.view_layer.objects.active = objs[0]
-    if len(objs) > 1:
+    for o in objs[1:]:
+        bpy.ops.object.select_all(action="DESELECT")
+        objs[0].select_set(True)
+        o.select_set(True)
         bpy.ops.object.join()
     obj = objs[0]
     obj.name = name

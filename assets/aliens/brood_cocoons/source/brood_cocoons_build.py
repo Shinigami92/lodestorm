@@ -451,7 +451,7 @@ def build_sacs(part: NB.Part) -> None:
             th, t = mid + dth, t_at_z(z)
             p, n = P(th, t), N(th, t)
             c = p - n * (r * 0.15)
-            verts = bmesh.ops.create_uvsphere(
+            verts = C.uv_sphere(
                 part.bm, u_segments=10, v_segments=6, radius=r, matrix=T(c, basis(n, Z), (0.85, 0.95, 0.8))
             )["verts"]
             for f in {f for v in verts for f in v.link_faces}:
@@ -563,7 +563,7 @@ def build_glands(nest, glands: list, pods: list, rnd: random.Random) -> None:
             th = pod["slit"] + (1 if (k + pod["i"]) % 2 else -1) * 1.7 * SLIT_W
             glands.append((pod_P(pod, th, u) + pod_N(pod, th, u) * 0.015, rnd.uniform(0.035, 0.05)))
     for c, r in glands:
-        for v in bmesh.ops.create_uvsphere(part.bm, u_segments=8, v_segments=5, radius=r, matrix=T(c))["verts"]:
+        for v in C.uv_sphere(part.bm, u_segments=8, v_segments=5, radius=r, matrix=T(c))["verts"]:
             v[part.glow] = 1.0
     for pod in pods:
         build_slit(part, pod)

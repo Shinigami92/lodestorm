@@ -5,7 +5,8 @@ extends RefCounted
 ## without one) a hunt's brood nest or its strain asleep in a lair, an item to recover
 ## (`QuestItem`), else (if it isn't only there for its crate) a `QuestSite` that counts when
 ## reached; a goal's quest nests at its site's quest nest markers (`ClearNestsGoal.site_part`); a
-## mark on every crate holding a fragment; and the NPCs waiting there for a step to be handed in
+## mark on every crate holding a fragment (`crate_contents` decides which, before the parts are
+## built); and the NPCs waiting there for a step to be handed in
 ## (`QuestVisit.meetings`: at their part's person marker, talked to there through a `VisitQuests`,
 ## with a `HandInMark` and a hand repeller that keeps aliens off them, see `AlienRepeller`). A
 ## step handed in out there brings the next one's goals in during the run (`QuestVisit.extended`):
@@ -29,6 +30,35 @@ var _people: Dictionary[StringName, Npc] = {}
 
 func _init(location: GeneratedLocation) -> void:
 	_location = location
+
+
+## What the crates hold, in the order the parts place them (null: a supply cache): the quest
+## visit's fragments, one per crate, spread over them from a stream of their own (as many as there
+## are crates; the rest wait for a later visit).
+func crate_contents() -> Array[CrateContent]:
+	var contents: Array[CrateContent] = []
+	for part: LocationParts.Placed in _location.parts.placed:
+		for i: int in part.markers(PartMarker.Kind.CRATE).size():
+			contents.append(null)
+	var visit: QuestVisit = _location.quest_visit
+	var wanted: Array[QuestVisit.Entry] = []
+	if visit:
+		wanted = visit.fragment_entries()
+	var crates: Array[int] = []
+	crates.assign(range(contents.size()))
+	Seeded.shuffle(crates, GeneratedLocation.random_stream(_location.world_seed, "fragments"))
+	for i: int in mini(wanted.size(), crates.size()):
+		var fragment := BlueprintFragment.new()
+		fragment.entry = wanted[i]
+		contents[crates[i]] = fragment
+	return contents
+
+
+## Lets `nest` count for `entry` (a quest nest of the visit) once destroyed, its mark out then.
+func count_nest(nest: AlienNest, entry: QuestVisit.Entry) -> void:
+	var visit: QuestVisit = _location.quest_visit
+	nest.destroyed.connect(visit.count.bind(entry, 1.0))
+	nest.destroyed.connect(QuestMark.on(nest, entry, visit).close)
 
 
 ## Adds what the visit needs (the location's parts are built).
@@ -96,8 +126,7 @@ func _add_site_nests(entry: QuestVisit.Entry, part: LocationParts.Placed) -> voi
 		nest.name = "QuestNest"
 		nest.table = _location.hatch_table(nest.hive)
 		nest.position = spots[i % spots.size()] if not spots.is_empty() else part.origin
-		nest.destroyed.connect(_visit.count.bind(entry, 1.0))
-		nest.destroyed.connect(QuestMark.on(nest, entry, _visit).close)
+		count_nest(nest, entry)
 		_nests().add_child(nest, true)
 
 
@@ -220,14 +249,7 @@ func _fill_crates(entries: Array[QuestVisit.Entry]) -> void:
 	for crate: Crate in _location.find_children("*", "Crate", true, false):
 		if not crate.opened and crate.content is SupplyCache:
 			crates.append(crate)
-	var rng: RandomNumberGenerator = GeneratedLocation.random_stream(
-		_location.world_seed, "late_fragments"
-	)
-	for i: int in range(crates.size() - 1, 0, -1):
-		var j: int = rng.randi_range(0, i)
-		var swap: Crate = crates[i]
-		crates[i] = crates[j]
-		crates[j] = swap
+	Seeded.shuffle(crates, GeneratedLocation.random_stream(_location.world_seed, "late_fragments"))
 	for i: int in mini(wanted.size(), crates.size()):
 		var fragment := BlueprintFragment.new()
 		fragment.entry = wanted[i]

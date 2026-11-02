@@ -206,7 +206,6 @@ func _plan_fill() -> void:
 ## The fence's spikes along the walls, about `FENCE_SPACING` apart, each of its own size and lean,
 ## in chunks so the ones out of view are culled.
 func _plan_fence(rng: RandomNumberGenerator) -> void:
-	var chunk_size: float = GeneratedLocation.CHUNK_CELLS * _terrain.cell
 	for i: int in range(0, edge_lines.size(), 2):
 		var from: Vector2 = edge_lines[i]
 		var to: Vector2 = edge_lines[i + 1]
@@ -220,10 +219,7 @@ func _plan_fence(rng: RandomNumberGenerator) -> void:
 			var placed := Transform3D(
 				turn.scaled(size), Vector3(at.x, _terrain.height_at(at.x, at.y) - 0.1, at.y)
 			)
-			var chunk := Vector2i(((at - _terrain.origin) / chunk_size).floor())
-			if not _fence.has(chunk):
-				_fence[chunk] = []
-			_fence[chunk].append(placed)
+			LocationChunks.add(_fence, LocationChunks.of(_terrain, at), placed)
 
 
 ## Adds the fence's chunks under a `Fence` node of `location`, each spike standing on its base.
@@ -234,19 +230,12 @@ func _add_fence(location: Node3D) -> void:
 	var spike: Mesh = _biome.fence.get_mesh()
 	var base: float = -_biome.fence.sink
 	for chunk: Vector2i in _fence:
-		var spikes: Array = _fence[chunk]
-		var multimesh := MultiMesh.new()
-		multimesh.transform_format = MultiMesh.TRANSFORM_3D
-		multimesh.mesh = spike
-		multimesh.instance_count = spikes.size()
-		for i: int in spikes.size():
-			var placed: Transform3D = spikes[i]
-			placed.origin += placed.basis.y * base
-			multimesh.set_instance_transform(i, placed)
-		var instance := MultiMeshInstance3D.new()
-		instance.name = "Fence%d_%d" % [chunk.x, chunk.y]
-		instance.multimesh = multimesh
-		fence.add_child(instance)
+		var spikes: Array = []
+		for placed: Transform3D in _fence[chunk]:
+			spikes.append(placed.translated_local(Vector3.UP * base))
+		fence.add_child(
+			LocationChunks.instance(spike, spikes, LocationChunks.node_name("Fence", chunk))
+		)
 	_fence.clear()
 
 

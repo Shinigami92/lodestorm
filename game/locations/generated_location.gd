@@ -224,7 +224,7 @@ func build() -> void:
 	_scatter.build(self)
 	_cliffs.build(self)
 	_far_ring.build(self, biome)
-	parts.build(self, _crate_contents(), biome)
+	parts.build(self, quests.crate_contents(), biome)
 	var late_ores: Array[OreNode] = _add_ore_nodes()
 	_add_nests()
 	quests.build()
@@ -803,37 +803,10 @@ func _add_nests() -> void:
 		nest.name = "Nest%d" % (i + 1)
 		nest.position = sites.nests[i].position
 		if quest:
-			nest.destroyed.connect(quest_visit.count.bind(quest, 1.0))
-			nest.destroyed.connect(QuestMark.on(nest, quest, quest_visit).close)
+			quests.count_nest(nest, quest)
 		nests.add_child(nest)
 	if table:
 		_add_apex(table)
-
-
-## What the crates hold, in the order they're placed (null: a supply cache): the quest visit's
-## fragments, one per crate, spread over them from a stream of their own (as many as there are
-## crates; the rest wait for a later visit).
-func _crate_contents() -> Array[CrateContent]:
-	var contents: Array[CrateContent] = []
-	for part: LocationParts.Placed in parts.placed:
-		for i: int in part.markers(PartMarker.Kind.CRATE).size():
-			contents.append(null)
-	var wanted: Array[QuestVisit.Entry] = []
-	if quest_visit:
-		wanted = quest_visit.fragment_entries()
-	var crates: Array[int] = []
-	crates.assign(range(contents.size()))
-	var rng: RandomNumberGenerator = _stream("fragments")
-	for i: int in range(crates.size() - 1, 0, -1):
-		var j: int = rng.randi_range(0, i)
-		var swap: int = crates[i]
-		crates[i] = crates[j]
-		crates[j] = swap
-	for i: int in mini(wanted.size(), crates.size()):
-		var fragment := BlueprintFragment.new()
-		fragment.entry = wanted[i]
-		contents[crates[i]] = fragment
-	return contents
 
 
 ## What the nests hatch here (made once, from `hive`).

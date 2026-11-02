@@ -89,30 +89,17 @@ func build(location: GeneratedLocation) -> void:
 	holder.name = "Cliffs"
 	location.add_child(holder)
 	var terrain: LocationTerrain = location.terrain
-	var chunk_size: float = GeneratedLocation.CHUNK_CELLS * terrain.cell
 	var by_chunk: Dictionary[Vector3i, Array] = {}
 	var placed: Array[Transform3D] = placements(terrain)
 	for i: int in placed.size():
-		var foot := Vector2(_feet[i].x, _feet[i].y)
-		var chunk := Vector2i(((foot - terrain.origin) / chunk_size).floor())
-		var key := Vector3i(chunk.x, chunk.y, _variants[i])
-		if not by_chunk.has(key):
-			by_chunk[key] = []
-		by_chunk[key].append(placed[i])
+		var chunk: Vector2i = LocationChunks.of(terrain, Vector2(_feet[i].x, _feet[i].y))
+		LocationChunks.add(by_chunk, Vector3i(chunk.x, chunk.y, _variants[i]), placed[i])
 	for key: Vector3i in by_chunk:
 		var type: ScatterType = _types[key.z]
-		var in_chunk: Array = by_chunk[key]
-		var multimesh := MultiMesh.new()
-		multimesh.transform_format = MultiMesh.TRANSFORM_3D
-		multimesh.mesh = type.get_mesh()
-		multimesh.instance_count = in_chunk.size()
-		for i: int in in_chunk.size():
-			var at: Transform3D = in_chunk[i]
-			multimesh.set_instance_transform(i, at)
-		var instance := MultiMeshInstance3D.new()
-		instance.name = "%s%d_%d" % [type.display_name.to_pascal_case(), key.x, key.y]
-		instance.multimesh = multimesh
-		holder.add_child(instance)
+		var chunk_name: String = LocationChunks.node_name(
+			type.display_name.to_pascal_case(), Vector2i(key.x, key.y)
+		)
+		holder.add_child(LocationChunks.instance(type.get_mesh(), by_chunk[key], chunk_name))
 	_feet.clear()
 
 

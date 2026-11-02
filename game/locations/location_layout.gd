@@ -608,11 +608,7 @@ func _assign_kinds(rng: RandomNumberGenerator, biome: LocationBiome) -> void:
 		if areas[by_distance[k]].kind == Kind.BASIN:
 			far_half.append(by_distance[k])
 	# Shuffled with the layout's own generator, so the same seed gives the same layout.
-	for i: int in range(far_half.size() - 1, 0, -1):
-		var j: int = rng.randi_range(0, i)
-		var swap: int = far_half[i]
-		far_half[i] = far_half[j]
-		far_half[j] = swap
+	Seeded.shuffle(far_half, rng)
 	var plateaus: int = roundi(areas.size() / 10.0)
 	var craters: int = roundi(areas.size() / 10.0)
 	for i: int in far_half:
@@ -673,11 +669,7 @@ func _assign_own_kind(
 	for i: int in areas.size():
 		if areas[i].kind == Kind.BASIN:
 			basins.append(i)
-	for i: int in range(basins.size() - 1, 0, -1):
-		var j: int = rng.randi_range(0, i)
-		var swap: int = basins[i]
-		basins[i] = basins[j]
-		basins[j] = swap
+	Seeded.shuffle(basins, rng)
 	if kind in [Kind.ICE_SHELF, Kind.BRINE_FLAT, Kind.DRY_WASH]:
 		basins.sort_custom(func(x: int, y: int) -> bool: return areas[x].radius > areas[y].radius)
 	var crossroads: Array[int] = []

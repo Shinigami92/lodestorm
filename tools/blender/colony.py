@@ -38,6 +38,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 import common as C
+import nodes as N
 from common import srgb
 
 # The colony's paints and markings (sRGB).
@@ -72,22 +73,8 @@ PLAYER = 1.89  # the scale pole in the layout renders
 # --- material -----------------------------------------------------------------------------------------
 
 
-class Shader:
+class Shader(N.ShaderNodes):
     """Node helpers for the kit materials (numbers are set, sockets linked)."""
-
-    def __init__(self, nt: bpy.types.NodeTree):
-        self.nt = nt
-        self.obj = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
-        self.geo = nt.nodes.new("ShaderNodeNewGeometry")
-
-    def m(self, op: str, a, b=None, c=None, clamp: bool = False) -> bpy.types.NodeSocket:
-        return C._math(self.nt, op, a, b, c, clamp)
-
-    def mix(self, fac, a, b) -> bpy.types.NodeSocket:
-        return C._mix_color(self.nt, fac, a, b)
-
-    def mixf(self, fac, a, b) -> bpy.types.NodeSocket:
-        return C._mix_float(self.nt, fac, a, b)
 
     def ramp(self, a: float, b: float, src) -> bpy.types.NodeSocket:
         """0 below a, 1 above b, linear between (any range, unlike a color ramp's 0..1 positions)."""
@@ -97,27 +84,6 @@ class Shader:
         node.inputs["From Max"].default_value = b
         self.nt.links.new(src, node.inputs["Value"])
         return node.outputs["Result"]
-
-    def noise(self, scale: float, detail: float = 4.0, rough: float = 0.6, vector=None) -> bpy.types.NodeSocket:
-        """Noise Fac (about 0.5 +- 0.09)."""
-        return C._noise(self.nt, scale, detail, rough, vector if vector is not None else self.obj).outputs["Fac"]
-
-    def xyz(self, vector) -> bpy.types.Node:
-        node = self.nt.nodes.new("ShaderNodeSeparateXYZ")
-        self.nt.links.new(vector, node.inputs["Vector"])
-        return node
-
-    def vec(self, op: str, a, b=None) -> bpy.types.NodeSocket:
-        node = self.nt.nodes.new("ShaderNodeVectorMath")
-        node.operation = op
-        for sock, val in ((node.inputs[0], a), (node.inputs[1], b)):
-            if val is None:
-                continue
-            if isinstance(val, bpy.types.NodeSocket):
-                self.nt.links.new(val, sock)
-            else:
-                sock.default_value = val
-        return node.outputs[0]
 
     def scale_color(self, col, fac) -> bpy.types.NodeSocket:
         node = self.nt.nodes.new("ShaderNodeVectorMath")
@@ -143,10 +109,6 @@ class Shader:
             ramp.elements[i].color = (*srgb(*c), 1.0)
         self.nt.links.new(fac, node.inputs["Fac"])
         return node.outputs["Color"]
-
-    def spread(self, fac, k: float) -> bpy.types.NodeSocket:
-        """Noise Fac stretched around 0.5 by `k`, clamped to 0..1."""
-        return self.m("MULTIPLY_ADD", self.m("SUBTRACT", fac, 0.5), k, clamp=True, c=0.5)
 
     def stripes(self, period: float) -> bpy.types.NodeSocket:
         """Diagonal hazard stripes in object space, 0/1, `period` m from one amber stripe to the next."""

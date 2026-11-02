@@ -48,6 +48,7 @@ from mathutils.bvhtree import BVHTree
 
 import common as C
 import nest_build as NB
+import nodes as N
 from common import T, rx, ry, rz
 from rock_geo import add_boolean, bm_to_obj, cut, hull, rand_dir, support
 
@@ -1142,38 +1143,11 @@ BUILDERS = {
 # --- materials ----------------------------------------------------------------------------------------------
 
 
-class Mat:
+class Mat(N.MatNodes):
     """Node helpers around one procedural material."""
-
-    def __init__(self, name: str):
-        self.mat, self.nt, self.bsdf = C._new_material(name)
-        self.geo = self.nt.nodes.new("ShaderNodeNewGeometry")
-        self.obj = self.nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
-
-    def math(self, op, a, b=None, c=None, clamp=False):
-        return C._math(self.nt, op, a, b, c, clamp)
-
-    def noise(self, scale, detail=4.0, rough=0.6, vector=None):
-        return C._noise(self.nt, scale, detail, rough, vector=vector or self.obj).outputs["Fac"]
 
     def ramp(self, a, b, src):
         return C._bw(self.nt, C._ramp(self.nt, a, b, src))
-
-    def mix(self, fac, a, b):
-        return C._mix_color(self.nt, fac, a, b)
-
-    def mixf(self, fac, a, b):
-        return C._mix_float(self.nt, fac, a, b)
-
-    def scale(self, col, fac):
-        n = self.nt.nodes.new("ShaderNodeVectorMath")
-        n.operation = "SCALE"
-        self.nt.links.new(col, n.inputs[0])
-        if isinstance(fac, bpy.types.NodeSocket):
-            self.nt.links.new(fac, n.inputs["Scale"])
-        else:
-            n.inputs["Scale"].default_value = fac
-        return n.outputs[0]
 
     def attr(self, name: str):
         n = self.nt.nodes.new("ShaderNodeAttribute")
@@ -1193,15 +1167,6 @@ class Mat:
         ao.samples = 16
         return self.math("SUBTRACT", 1.0, self.ramp(lo, hi, ao.outputs["AO"]), clamp=True)
 
-    def warped(self, scale: float, amount: float):
-        warp = C._noise(self.nt, scale, 3.0, 0.5, vector=self.obj)
-        n = self.nt.nodes.new("ShaderNodeVectorMath")
-        n.operation = "MULTIPLY_ADD"
-        self.nt.links.new(warp.outputs["Color"], n.inputs[0])
-        n.inputs[1].default_value = (amount, amount, amount)
-        self.nt.links.new(self.obj, n.inputs[2])
-        return n.outputs[0]
-
     def image(self, path: pathlib.Path, extent: float):
         """Channels (R, G, B, A) of a map laid over extent x extent m of the object's XY, centered."""
         img = bpy.data.images.load(str(path), check_existing=True)
@@ -1220,16 +1185,6 @@ class Mat:
         sep = self.nt.nodes.new("ShaderNodeSeparateColor")
         self.nt.links.new(tex.outputs["Color"], sep.inputs["Color"])
         return sep.outputs["Red"], sep.outputs["Green"], sep.outputs["Blue"], tex.outputs["Alpha"]
-
-    def out(self, color, rough, height, strength: float, distance: float) -> bpy.types.Material:
-        self.nt.links.new(color, self.bsdf.inputs["Base Color"])
-        if isinstance(rough, bpy.types.NodeSocket):
-            self.nt.links.new(rough, self.bsdf.inputs["Roughness"])
-        else:
-            self.bsdf.inputs["Roughness"].default_value = rough
-        self.bsdf.inputs["Metallic"].default_value = 0.0
-        C._bump(self.nt, self.bsdf, height, strength, distance)
-        return self.mat
 
 
 def mat_rock(name: str, hive: bool) -> bpy.types.Material:

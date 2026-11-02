@@ -22,6 +22,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 import common as C
+import nodes as N
 from common import T, rx, ry, srgb
 
 
@@ -44,7 +45,7 @@ class PartKit:
 OLIVE = srgb(0.30, 0.31, 0.27)  # the layout crate's olive paint
 
 
-class Mat:
+class Mat(N.MatNodes):
     """Node helpers around one procedural material (object coordinates, world normal)."""
 
     def __init__(self, name: str):
@@ -58,9 +59,6 @@ class Mat:
         self.nt.links.new(self.geo.outputs["Normal"], nrm.inputs["Vector"])
         self.nz = nrm.outputs["Z"]
 
-    def math(self, op, a, b=None, c=None, clamp=False):
-        return C._math(self.nt, op, a, b, c, clamp)
-
     def noise(self, scale, detail=4.0, rough=0.55, stretch=None):
         vec = self.obj
         if stretch is not None:
@@ -69,25 +67,6 @@ class Mat:
             self.nt.links.new(self.obj, mp.inputs["Vector"])
             vec = mp.outputs["Vector"]
         return C._noise(self.nt, scale, detail, rough, vector=vec).outputs["Fac"]
-
-    def ramp(self, a, b, src):
-        return C._ramp(self.nt, a, b, src)
-
-    def mix(self, fac, a, b):
-        return C._mix_color(self.nt, fac, a, b)
-
-    def mixf(self, fac, a, b):
-        return C._mix_float(self.nt, fac, a, b)
-
-    def scale(self, col, fac):
-        n = self.nt.nodes.new("ShaderNodeVectorMath")
-        n.operation = "SCALE"
-        self.nt.links.new(col, n.inputs[0])
-        if isinstance(fac, bpy.types.NodeSocket):
-            self.nt.links.new(fac, n.inputs["Scale"])
-        else:
-            n.inputs["Scale"].default_value = fac
-        return n.outputs[0]
 
     def cavity(self, distance: float):
         """1 in cavities, 0 in the open (from AO)."""

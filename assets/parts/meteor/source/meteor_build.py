@@ -45,6 +45,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 import common as C
+import nodes as N
 from common import T, rx, ry, rz
 from rock_geo import box_points, hull, rand_dir, rand_rot, support, work_collection
 
@@ -351,70 +352,13 @@ BUILDERS = {
 # --- materials -----------------------------------------------------------------------------------------
 
 
-class Mat:
+class Mat(N.MatNodes):
     """Node helpers around one procedural material."""
-
-    def __init__(self, name: str):
-        self.mat, self.nt, self.bsdf = C._new_material(name)
-        self.geo = self.nt.nodes.new("ShaderNodeNewGeometry")
-        self.obj = self.nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
-
-    def math(self, op, a, b=None, c=None, clamp=False):
-        return C._math(self.nt, op, a, b, c, clamp)
-
-    def noise(self, scale, detail=4.0, rough=0.6, vector=None):
-        return C._noise(self.nt, scale, detail, rough, vector=vector or self.obj).outputs["Fac"]
-
-    def ramp(self, a, b, src):
-        return C._ramp(self.nt, a, b, src)
-
-    def mix(self, fac, a, b):
-        return C._mix_color(self.nt, fac, a, b)
-
-    def mixf(self, fac, a, b):
-        return C._mix_float(self.nt, fac, a, b)
-
-    def scale(self, col, fac):
-        n = self.nt.nodes.new("ShaderNodeVectorMath")
-        n.operation = "SCALE"
-        self.nt.links.new(col, n.inputs[0])
-        if isinstance(fac, bpy.types.NodeSocket):
-            self.nt.links.new(fac, n.inputs["Scale"])
-        else:
-            n.inputs["Scale"].default_value = fac
-        return n.outputs[0]
-
-    def facet(self):
-        n = self.nt.nodes.new("ShaderNodeAttribute")
-        n.attribute_type = "GEOMETRY"
-        n.attribute_name = "facet"
-        return n.outputs["Fac"]
-
-    def up(self):
-        """World Z of the shading normal (1 on faces looking up)."""
-        sep = self.nt.nodes.new("ShaderNodeSeparateXYZ")
-        self.nt.links.new(self.geo.outputs["Normal"], sep.inputs["Vector"])
-        return sep.outputs["Z"]
 
     def xyz(self):
         sep = self.nt.nodes.new("ShaderNodeSeparateXYZ")
         self.nt.links.new(self.obj, sep.inputs["Vector"])
         return sep.outputs
-
-    def cavity(self, distance: float):
-        ao = self.nt.nodes.new("ShaderNodeAmbientOcclusion")
-        ao.inputs["Distance"].default_value = distance
-        ao.samples = 16
-        return ao.outputs["AO"]
-
-    def warped(self, scale: float, amount: float):
-        warp = C._noise(self.nt, scale, 3.0, 0.5, vector=self.obj)
-        n = self.nt.nodes.new("ShaderNodeVectorMath")
-        n.operation = "MULTIPLY_ADD"
-        self.nt.links.new(warp.outputs["Color"], n.inputs[0])
-        n.inputs[1].default_value = (amount, amount, amount)
-        self.nt.links.new(self.obj, n.inputs[2])
-        return n.outputs[0]
 
     def voronoi(self, scale: float, feature: str = "SMOOTH_F1", vector=None):
         n = self.nt.nodes.new("ShaderNodeTexVoronoi")

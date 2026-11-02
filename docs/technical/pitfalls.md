@@ -50,6 +50,7 @@ Traps that cost time once, grouped by where they bite. The rules themselves are 
 
 - The navmesh (cell 0.5, climb 0.25) tears on ground steeper than about 0.5 and in walkable strips narrower than about 4 m; ledges eat a cell ring per side (so canyons are 9–11 m wide, ramps 12–15 m, bridges at least 10 m). `agent_max_climb = 0.5` made baking about 60 times slower. Check alien paths with a navigation probe, not only the player's reach.
 - Channels deeper than about 4.5 m hide their floor from the isometric camera.
+- A navmesh bakes every collider on the layers of its `geometry_collision_mask`, also ones nobody bumps into: the ship's `DeckNavigation` leaves out `PhysicsLayers.SHOTS_ONLY` and `ALIENS_ONLY` (the shooting range's shot barrier closed the range off, and the crew walked from its inside straight through the wall to the next goal).
 - The location bakes its navmesh in `_ready`, so nodes added later (miners, test nests) aren't in it; without any region the navigation map never syncs (no paths, no avoidance).
 - Navigation queries scan every polygon (about 0.35–0.5 ms on a generated world): budget path look-ups (`AlienPathing`), never query every frame.
 - `GeneratedLocation.plan()` runs on a worker thread and touches no nodes or servers; `build()` runs on the main thread. A `Voyage` freed in the middle of planning waits for the task first.

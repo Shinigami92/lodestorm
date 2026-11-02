@@ -18,9 +18,9 @@ extends Station
 ## With a `Tour` (their profile's), their first talk while they wait at its start is its offer
 ## instead of their greeting, its invite ("Show me the ship") is among their topics once the offer
 ## is heard and starts the tour when heard to the end (the talk closes); during the tour the card
-## offers only going on and ending it. A tour's stops are said aside (`say_aside`): in the bubble
-## above their head without a talk, and in their voice. So are an overheard talk's lines
-## (`OverheardTalks`), and while it plays (`overheard`) nobody can talk to them.
+## offers only going on and ending it (no greeting). A tour's stops are said aside (`say_aside`):
+## in the bubble above their head without a talk, and in their voice. So are an overheard talk's
+## lines (`OverheardTalks`), and while it plays (`overheard`) nobody can talk to them.
 ## A crew member who joins later (`NpcProfile.join_flag`) isn't there until they're aboard
 ## (`is_present`): hidden, still and nobody can talk to them. Until then they wait at their place
 ## (a second NPC of their profile there, `waits_to_join`, e.g. Dace at his stall at Ostra), and once
@@ -253,9 +253,12 @@ func is_new(listed: Topic, listener: Player = null) -> bool:
 
 
 ## Whether they have something nobody has heard yet for `listener` (the greeting or an open
-## topic; the player talking to them when null).
+## topic; the player talking to them when null); not during their tour (going on with it or ending
+## it is no news).
 func has_news(listener: Player = null) -> bool:
 	if not profile or not profile.dialogue or (waits_to_join and not _talks_here()):
+		return false
+	if routine and routine.tour:
 		return false
 	var greeting: Topic = get_greeting()
 	if greeting and is_new(greeting):
@@ -281,9 +284,10 @@ func has_quest_news(listener: Player = null) -> bool:
 
 
 ## The greeting their first talk starts with: their tour's offer while they wait at its start,
-## else their dialogue's; none at their place before joining.
+## else their dialogue's; none at their place before joining or during their tour (it only goes on
+## or ends: the greeting waits for afterwards).
 func get_greeting() -> Topic:
-	if waits_to_join:
+	if waits_to_join or (routine and routine.tour):
 		return null
 	if routine and routine.is_waiting():
 		return profile.tour.offer

@@ -68,6 +68,7 @@ FIT = D.Fit(
     glove_up=0.05,
     center_cuffs=0.15,
     own_head=True,
+    tuck=(-0.08, 0.24, 0.035, 0.15),
 )
 # Her hands hang clear of the belt.
 PERSON = D.Person("Tamsin", BODY, LOOKS, FIT, ROOT / "assets" / "npcs" / "tamsin", wrist_out=0.08)

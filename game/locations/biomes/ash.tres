@@ -40,7 +40,7 @@ weight = 0.8
 
 [sub_resource type="Resource" id="Resource_ash_boulder_a"]
 script = ExtResource("2_scatter")
-display_name = "Ash Boulder a"
+display_name = "Boulder a"
 model = ExtResource("kit_ash")
 model_part = &"Boulder_a"
 density = 0.05
@@ -56,7 +56,7 @@ blocking_height = 1.5
 
 [sub_resource type="Resource" id="Resource_ash_boulder_b"]
 script = ExtResource("2_scatter")
-display_name = "Ash Boulder b"
+display_name = "Boulder b"
 model = ExtResource("kit_ash")
 model_part = &"Boulder_b"
 density = 0.05
@@ -72,7 +72,7 @@ blocking_height = 0.8
 
 [sub_resource type="Resource" id="Resource_ash_columns_a"]
 script = ExtResource("2_scatter")
-display_name = "Ash Columns a"
+display_name = "Columns a"
 model = ExtResource("kit_ash")
 model_part = &"Columns_a"
 density = 0.015
@@ -89,7 +89,7 @@ spacing = 2.0
 
 [sub_resource type="Resource" id="Resource_ash_scoria_a"]
 script = ExtResource("2_scatter")
-display_name = "Ash Scoria a"
+display_name = "Scoria a"
 model = ExtResource("kit_ash")
 model_part = &"Scoria_a"
 density = 0.6
@@ -105,7 +105,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_ash_cinders"]
 script = ExtResource("2_scatter")
-display_name = "Ash Cinders"
+display_name = "Cinders"
 model = ExtResource("kit_ash")
 model_part = &"Scoria_a"
 density = 3.0
@@ -121,7 +121,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_ash_stump_a"]
 script = ExtResource("2_scatter")
-display_name = "Ash Stump a"
+display_name = "Stump a"
 model = ExtResource("kit_ash")
 model_part = &"Stump_a"
 density = 0.04
@@ -138,7 +138,7 @@ spacing = 1.0
 
 [sub_resource type="Resource" id="Resource_ash_stump_b"]
 script = ExtResource("2_scatter")
-display_name = "Ash Stump b"
+display_name = "Stump b"
 model = ExtResource("kit_ash")
 model_part = &"Stump_b"
 density = 0.03
@@ -152,7 +152,7 @@ max_tilt = 4.0
 
 [sub_resource type="Resource" id="Resource_ash_cliff_a"]
 script = ExtResource("2_scatter")
-display_name = "Ash Cliff a"
+display_name = "Cliff a"
 model = ExtResource("kit_ash")
 model_part = &"Cliff_a"
 min_scale = 0.5
@@ -161,7 +161,7 @@ sink = 0.45
 
 [sub_resource type="Resource" id="Resource_ash_cliff_b"]
 script = ExtResource("2_scatter")
-display_name = "Ash Cliff b"
+display_name = "Cliff b"
 model = ExtResource("kit_ash")
 model_part = &"Cliff_b"
 min_scale = 0.5

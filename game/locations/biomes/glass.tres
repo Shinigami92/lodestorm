@@ -38,9 +38,9 @@ scene = ExtResource("part_crater")
 rule = 3
 weight = 0.8
 
-[sub_resource type="Resource" id="Resource_glass_spire_a"]
+[sub_resource type="Resource" id="Resource_glass_shard_spire_a"]
 script = ExtResource("2_scatter")
-display_name = "Glass Spire a"
+display_name = "Shard spire a"
 model = ExtResource("kit_glass")
 model_part = &"Spire_a"
 density = 4.0
@@ -56,9 +56,9 @@ blocking_height = 3.0
 spacing = 1.5
 area_kinds = Array[int]([16])
 
-[sub_resource type="Resource" id="Resource_glass_spire_b"]
+[sub_resource type="Resource" id="Resource_glass_shard_spire_b"]
 script = ExtResource("2_scatter")
-display_name = "Glass Spire b"
+display_name = "Shard spire b"
 model = ExtResource("kit_glass")
 model_part = &"Spire_b"
 density = 4.0
@@ -76,7 +76,7 @@ area_kinds = Array[int]([16])
 
 [sub_resource type="Resource" id="Resource_glass_sliver_a"]
 script = ExtResource("2_scatter")
-display_name = "Glass Sliver a"
+display_name = "Sliver a"
 model = ExtResource("kit_glass")
 model_part = &"Sliver_a"
 density = 1.2
@@ -92,7 +92,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_glass_boulder_a"]
 script = ExtResource("2_scatter")
-display_name = "Glass Boulder a"
+display_name = "Boulder a"
 model = ExtResource("kit_glass")
 model_part = &"Boulder_a"
 density = 0.1
@@ -108,7 +108,7 @@ blocking_height = 1.1
 
 [sub_resource type="Resource" id="Resource_glass_boulder_b"]
 script = ExtResource("2_scatter")
-display_name = "Glass Boulder b"
+display_name = "Boulder b"
 model = ExtResource("kit_glass")
 model_part = &"Boulder_b"
 density = 0.1
@@ -124,7 +124,7 @@ blocking_height = 0.8
 
 [sub_resource type="Resource" id="Resource_glass_fulgurite_a"]
 script = ExtResource("2_scatter")
-display_name = "Glass Fulgurite a"
+display_name = "Fulgurite a"
 model = ExtResource("kit_glass")
 model_part = &"Fulgurite_a"
 density = 0.15
@@ -139,7 +139,7 @@ visibility_range = 60.0
 
 [sub_resource type="Resource" id="Resource_glass_chunks_a"]
 script = ExtResource("2_scatter")
-display_name = "Glass Chunks a"
+display_name = "Chunks a"
 model = ExtResource("kit_glass")
 model_part = &"Chunks_a"
 density = 0.8
@@ -155,7 +155,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_glass_cliff_a"]
 script = ExtResource("2_scatter")
-display_name = "Glass Cliff a"
+display_name = "Cliff a"
 model = ExtResource("kit_glass")
 model_part = &"Cliff_a"
 min_scale = 0.5
@@ -164,7 +164,7 @@ sink = 0.45
 
 [sub_resource type="Resource" id="Resource_glass_cliff_b"]
 script = ExtResource("2_scatter")
-display_name = "Glass Cliff b"
+display_name = "Cliff b"
 model = ExtResource("kit_glass")
 model_part = &"Cliff_b"
 min_scale = 0.5
@@ -219,7 +219,7 @@ scree = 0.2
 part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
 ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_olvane"), ExtResource("ore_pallin"), ExtResource("ore_vyrel"), ExtResource("ore_ressa")])
 favored_strains = Array[ExtResource("alien_strain")]([ExtResource("darter"), ExtResource("skimmer")])
-scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_glass_spire_a"), SubResource("Resource_glass_spire_b"), SubResource("Resource_glass_sliver_a"), SubResource("Resource_glass_boulder_a"), SubResource("Resource_glass_boulder_b"), SubResource("Resource_glass_fulgurite_a"), SubResource("Resource_glass_chunks_a")])
+scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_glass_shard_spire_a"), SubResource("Resource_glass_shard_spire_b"), SubResource("Resource_glass_sliver_a"), SubResource("Resource_glass_boulder_a"), SubResource("Resource_glass_boulder_b"), SubResource("Resource_glass_fulgurite_a"), SubResource("Resource_glass_chunks_a")])
 cliff_dressing = Array[ExtResource("2_scatter")]([SubResource("Resource_glass_cliff_a"), SubResource("Resource_glass_cliff_b")])
 fence = SubResource("Resource_glass_fence")
 hazard_dressing = SubResource("Resource_glass_splinters")

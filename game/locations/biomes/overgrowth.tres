@@ -242,7 +242,7 @@ sink = 0.45
 
 [sub_resource type="Resource" id="Resource_overgrowth_growth_stalk_a"]
 script = ExtResource("2_scatter")
-display_name = "Overgrowth Growth Stalk a"
+display_name = "Growth stalk a"
 model = ExtResource("kit_overgrowth")
 model_part = &"Growth_Stalk_a"
 density = 5.0
@@ -257,7 +257,7 @@ on_barrier = true
 
 [sub_resource type="Resource" id="Resource_overgrowth_growth_stalk_b"]
 script = ExtResource("2_scatter")
-display_name = "Overgrowth Growth Stalk b"
+display_name = "Growth stalk b"
 model = ExtResource("kit_overgrowth")
 model_part = &"Growth_Stalk_b"
 density = 5.0
@@ -272,7 +272,7 @@ on_barrier = true
 
 [sub_resource type="Resource" id="Resource_overgrowth_growth_cap_a"]
 script = ExtResource("2_scatter")
-display_name = "Overgrowth Growth Cap a"
+display_name = "Growth cap a"
 model = ExtResource("kit_overgrowth")
 model_part = &"Growth_Cap_a"
 density = 1.2
@@ -288,7 +288,7 @@ on_barrier = true
 
 [sub_resource type="Resource" id="Resource_overgrowth_growth_cap_b"]
 script = ExtResource("2_scatter")
-display_name = "Overgrowth Growth Cap b"
+display_name = "Growth cap b"
 model = ExtResource("kit_overgrowth")
 model_part = &"Growth_Cap_b"
 density = 1.2
@@ -304,7 +304,7 @@ on_barrier = true
 
 [sub_resource type="Resource" id="Resource_overgrowth_growth_root_a"]
 script = ExtResource("2_scatter")
-display_name = "Overgrowth Growth Root a"
+display_name = "Growth root a"
 model = ExtResource("kit_overgrowth")
 model_part = &"Growth_Root_a"
 density = 5.0
@@ -320,7 +320,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_overgrowth_growth_root_b"]
 script = ExtResource("2_scatter")
-display_name = "Overgrowth Growth Root b"
+display_name = "Growth root b"
 model = ExtResource("kit_overgrowth")
 model_part = &"Growth_Root_b"
 density = 5.0
@@ -336,7 +336,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_overgrowth_grove_stalk_a"]
 script = ExtResource("2_scatter")
-display_name = "Overgrowth Grove Stalk a"
+display_name = "Grove stalk a"
 model = ExtResource("kit_overgrowth")
 model_part = &"Grove_Stalk_a"
 density = 1.2
@@ -353,7 +353,7 @@ area_kinds = Array[int]([18])
 
 [sub_resource type="Resource" id="Resource_overgrowth_grove_cap_a"]
 script = ExtResource("2_scatter")
-display_name = "Overgrowth Grove Cap a"
+display_name = "Grove cap a"
 model = ExtResource("kit_overgrowth")
 model_part = &"Grove_Cap_a"
 density = 1.2

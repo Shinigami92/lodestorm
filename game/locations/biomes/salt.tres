@@ -40,7 +40,7 @@ weight = 0.8
 
 [sub_resource type="Resource" id="Resource_salt_boulder_a"]
 script = ExtResource("2_scatter")
-display_name = "Salt Boulder a"
+display_name = "Boulder a"
 model = ExtResource("kit_salt")
 model_part = &"Boulder_a"
 density = 0.12
@@ -56,7 +56,7 @@ blocking_height = 1.3
 
 [sub_resource type="Resource" id="Resource_salt_boulder_b"]
 script = ExtResource("2_scatter")
-display_name = "Salt Boulder b"
+display_name = "Boulder b"
 model = ExtResource("kit_salt")
 model_part = &"Boulder_b"
 density = 0.15
@@ -72,7 +72,7 @@ blocking_height = 0.9
 
 [sub_resource type="Resource" id="Resource_salt_pillar_a"]
 script = ExtResource("2_scatter")
-display_name = "Salt Pillar a"
+display_name = "Pillar a"
 model = ExtResource("kit_salt")
 model_part = &"Pillar_a"
 density = 0.03
@@ -89,7 +89,7 @@ spacing = 2.0
 
 [sub_resource type="Resource" id="Resource_salt_halite_a"]
 script = ExtResource("2_scatter")
-display_name = "Salt Halite a"
+display_name = "Halite a"
 model = ExtResource("kit_salt")
 model_part = &"Halite_a"
 density = 0.08
@@ -104,7 +104,7 @@ visibility_range = 80.0
 
 [sub_resource type="Resource" id="Resource_salt_shrub_a"]
 script = ExtResource("2_scatter")
-display_name = "Salt Shrub a"
+display_name = "Shrub a"
 model = ExtResource("kit_salt")
 model_part = &"Shrub_a"
 density = 0.4
@@ -120,7 +120,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_salt_bones_a"]
 script = ExtResource("2_scatter")
-display_name = "Salt Bones a"
+display_name = "Bones a"
 model = ExtResource("kit_salt")
 model_part = &"Bones_a"
 density = 0.015
@@ -135,7 +135,7 @@ visibility_range = 100.0
 
 [sub_resource type="Resource" id="Resource_salt_bones_b"]
 script = ExtResource("2_scatter")
-display_name = "Salt Bones b"
+display_name = "Bones b"
 model = ExtResource("kit_salt")
 model_part = &"Bones_b"
 density = 0.03
@@ -151,7 +151,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_salt_crust_a"]
 script = ExtResource("2_scatter")
-display_name = "Salt Crust a"
+display_name = "Crust a"
 model = ExtResource("kit_salt")
 model_part = &"Crust_a"
 density = 0.6
@@ -167,7 +167,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_salt_cliff_a"]
 script = ExtResource("2_scatter")
-display_name = "Salt Cliff a"
+display_name = "Cliff a"
 model = ExtResource("kit_salt")
 model_part = &"Cliff_a"
 min_scale = 0.5
@@ -176,7 +176,7 @@ sink = 0.45
 
 [sub_resource type="Resource" id="Resource_salt_cliff_b"]
 script = ExtResource("2_scatter")
-display_name = "Salt Cliff b"
+display_name = "Cliff b"
 model = ExtResource("kit_salt")
 model_part = &"Cliff_b"
 min_scale = 0.5

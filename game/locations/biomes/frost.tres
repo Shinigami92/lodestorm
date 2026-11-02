@@ -36,7 +36,7 @@ weight = 0.8
 
 [sub_resource type="Resource" id="Resource_frost_boulder_a"]
 script = ExtResource("2_scatter")
-display_name = "Frost Boulder a"
+display_name = "Boulder a"
 model = ExtResource("kit_frost")
 model_part = &"Boulder_a"
 density = 0.12
@@ -52,7 +52,7 @@ blocking_height = 1.0
 
 [sub_resource type="Resource" id="Resource_frost_boulder_b"]
 script = ExtResource("2_scatter")
-display_name = "Frost Boulder b"
+display_name = "Boulder b"
 model = ExtResource("kit_frost")
 model_part = &"Boulder_b"
 density = 0.1
@@ -68,7 +68,7 @@ blocking_height = 1.6
 
 [sub_resource type="Resource" id="Resource_frost_ice_a"]
 script = ExtResource("2_scatter")
-display_name = "Frost Ice a"
+display_name = "Ice a"
 model = ExtResource("kit_frost")
 model_part = &"Ice_a"
 density = 0.08
@@ -84,7 +84,7 @@ blocking_height = 0.75
 
 [sub_resource type="Resource" id="Resource_frost_ice_b"]
 script = ExtResource("2_scatter")
-display_name = "Frost Ice b"
+display_name = "Ice b"
 model = ExtResource("kit_frost")
 model_part = &"Ice_b"
 density = 0.06
@@ -100,7 +100,7 @@ blocking_height = 0.95
 
 [sub_resource type="Resource" id="Resource_frost_pinnacle_a"]
 script = ExtResource("2_scatter")
-display_name = "Frost Pinnacle a"
+display_name = "Pinnacle a"
 model = ExtResource("kit_frost")
 model_part = &"Pinnacle_a"
 density = 0.02
@@ -117,7 +117,7 @@ spacing = 3.0
 
 [sub_resource type="Resource" id="Resource_frost_drift_a"]
 script = ExtResource("2_scatter")
-display_name = "Frost Drift a"
+display_name = "Drift a"
 model = ExtResource("kit_frost")
 model_part = &"Drift_a"
 density = 0.6
@@ -133,7 +133,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_frost_shrub_a"]
 script = ExtResource("2_scatter")
-display_name = "Frost Shrub a"
+display_name = "Shrub a"
 model = ExtResource("kit_frost")
 model_part = &"Shrub_a"
 density = 0.4
@@ -149,7 +149,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_frost_rubble_a"]
 script = ExtResource("2_scatter")
-display_name = "Frost Rubble a"
+display_name = "Rubble a"
 model = ExtResource("kit_frost")
 model_part = &"Rubble_a"
 density = 0.8
@@ -165,7 +165,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_frost_stones"]
 script = ExtResource("2_scatter")
-display_name = "Frost Stones"
+display_name = "Stones"
 model = ExtResource("kit_frost")
 model_part = &"Rubble_a"
 density = 4.0
@@ -181,7 +181,7 @@ cast_shadow = false
 
 [sub_resource type="Resource" id="Resource_frost_cliff_a"]
 script = ExtResource("2_scatter")
-display_name = "Frost Cliff a"
+display_name = "Cliff a"
 model = ExtResource("kit_frost")
 model_part = &"Cliff_a"
 min_scale = 0.5
@@ -190,7 +190,7 @@ sink = 0.45
 
 [sub_resource type="Resource" id="Resource_frost_cliff_b"]
 script = ExtResource("2_scatter")
-display_name = "Frost Cliff b"
+display_name = "Cliff b"
 model = ExtResource("kit_frost")
 model_part = &"Cliff_b"
 min_scale = 0.5

@@ -74,12 +74,14 @@ func build(location: GeneratedLocation) -> void:
 				vent.name = "Vent%d" % (i + 1)
 				vent.damage = biome.hazard_damage
 				vent.radius = at.z
+				vent.cone = _dressing(biome)
 				zone = vent
 			LocationBiome.Hazard.SHARDS:
 				var shards := GroundShards.new()
 				shards.name = "Shards%d" % (i + 1)
 				shards.damage_per_second = biome.hazard_damage
 				shards.radius = at.z
+				shards.pieces = _dressing(biome)
 				zone = shards
 			LocationBiome.Hazard.MUD:
 				var mud := GroundMud.new()
@@ -103,3 +105,8 @@ func build(location: GeneratedLocation) -> void:
 		zone.add_child(shape)
 		zone.position = Vector3(at.x, location.terrain.height_at(at.x, at.y), at.y)
 		holder.add_child(zone)
+
+
+## The mesh marking the biome's hazard (`LocationBiome.hazard_dressing`), or null.
+func _dressing(biome: LocationBiome) -> Mesh:
+	return biome.hazard_dressing.get_mesh() if biome.hazard_dressing else null

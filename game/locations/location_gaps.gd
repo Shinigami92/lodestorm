@@ -231,12 +231,13 @@ func _add_fence(location: Node3D) -> void:
 	var fence := Node3D.new()
 	fence.name = "Fence"
 	location.add_child(fence)
-	var base: float = -_biome.fence.get_aabb().position.y
+	var spike: Mesh = _biome.fence.get_mesh()
+	var base: float = -_biome.fence.sink
 	for chunk: Vector2i in _fence:
 		var spikes: Array = _fence[chunk]
 		var multimesh := MultiMesh.new()
 		multimesh.transform_format = MultiMesh.TRANSFORM_3D
-		multimesh.mesh = _biome.fence
+		multimesh.mesh = spike
 		multimesh.instance_count = spikes.size()
 		for i: int in spikes.size():
 			var placed: Transform3D = spikes[i]

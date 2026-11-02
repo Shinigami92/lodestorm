@@ -1,12 +1,12 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://dr3kd8f5pwegy"]
 
 [ext_resource type="Shader" uid="uid://bav0n8fm2mrnp" path="res://assets/shaders/terrain.gdshader" id="1_shader"]
-[ext_resource type="Texture2D" uid="uid://bcluyl3jt83fx" path="res://assets/terrain/dust_ground_albedo.png" id="2_ground_albedo"]
-[ext_resource type="Texture2D" uid="uid://bo8q7n3apllog" path="res://assets/terrain/dust_ground_nra.png" id="3_ground_nra"]
-[ext_resource type="Texture2D" uid="uid://d2wnihqrcwfhj" path="res://assets/terrain/dust_scree_albedo.png" id="4_scree_albedo"]
-[ext_resource type="Texture2D" uid="uid://5ubpha0iq76i" path="res://assets/terrain/dust_scree_nra.png" id="5_scree_nra"]
-[ext_resource type="Texture2D" uid="uid://r3lpe3dvvwjx" path="res://assets/terrain/overgrowth_rock_albedo.png" id="6_rock_albedo"]
-[ext_resource type="Texture2D" uid="uid://c6eenwaptgruv" path="res://assets/terrain/overgrowth_rock_nra.png" id="7_rock_nra"]
+[ext_resource type="Texture2D" uid="uid://dph8pd4c7tbx" path="res://assets/terrain/glass_ground_albedo.png" id="2_ground_albedo"]
+[ext_resource type="Texture2D" uid="uid://b7e74vs2b5bw6" path="res://assets/terrain/glass_ground_nra.png" id="3_ground_nra"]
+[ext_resource type="Texture2D" uid="uid://bpaxqh0po2cvm" path="res://assets/terrain/glass_scree_albedo.png" id="4_scree_albedo"]
+[ext_resource type="Texture2D" uid="uid://rn7ek2hty6ll" path="res://assets/terrain/glass_scree_nra.png" id="5_scree_nra"]
+[ext_resource type="Texture2D" uid="uid://d2cwvf0wkdtlq" path="res://assets/terrain/glass_rock_albedo.png" id="6_rock_albedo"]
+[ext_resource type="Texture2D" uid="uid://b4qhkyy1arhe1" path="res://assets/terrain/glass_rock_nra.png" id="7_rock_nra"]
 
 [resource]
 render_priority = 0
@@ -20,6 +20,3 @@ shader_parameter/scree_tile = 4.0
 shader_parameter/rock_albedo = ExtResource("6_rock_albedo")
 shader_parameter/rock_nra = ExtResource("7_rock_nra")
 shader_parameter/rock_tile = 8.0
-shader_parameter/ground_tint = Color(0.78, 1.1, 1.35, 1)
-shader_parameter/scree_tint = Color(0.85, 1.15, 1.4, 1)
-shader_parameter/rock_tint = Color(0.85, 1.05, 1.15, 1)

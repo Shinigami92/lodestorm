@@ -34,6 +34,8 @@ func test_lava_and_vents() -> void:
 	for vent: Node in vents:
 		assert_is(vent, GroundVent)
 		assert_eq((vent as GroundVent).damage, ASH.hazard_damage)
+		var cone := vent.get_node("Cone") as MeshInstance3D
+		assert_eq(cone.mesh, ASH.hazard_dressing.get_mesh(), "the vent's cone is the kit's model")
 
 
 ## A built Glass plains location: shard fences stand along its gaps' edges, its shard gardens hold
@@ -42,7 +44,7 @@ func test_fences_and_shard_gardens() -> void:
 	var location: GeneratedLocation = _generate(1, GLASS)
 	var spikes: int = 0
 	for chunk: MultiMeshInstance3D in location.get_node("Fence").get_children():
-		assert_eq(chunk.multimesh.mesh, GLASS.fence)
+		assert_eq(chunk.multimesh.mesh, GLASS.fence.get_mesh())
 		spikes += chunk.multimesh.instance_count
 	var edges: int = location.planned_edges().size() >> 1
 	assert_gt(spikes, edges, "a spike or more on every wall")

@@ -259,6 +259,24 @@ max_tilt = 5.0
 visibility_range = 100.0
 cast_shadow = false
 
+[sub_resource type="Resource" id="Resource_cliff_a"]
+script = ExtResource("2_scatter")
+display_name = "Cliff a"
+model = ExtResource("3_rocks")
+model_part = &"Cliff_a"
+min_scale = 0.6
+max_scale = 1.8
+sink = 0.45
+
+[sub_resource type="Resource" id="Resource_cliff_b"]
+script = ExtResource("2_scatter")
+display_name = "Cliff b"
+model = ExtResource("3_rocks")
+model_part = &"Cliff_b"
+min_scale = 0.6
+max_scale = 1.8
+sink = 0.45
+
 [resource]
 script = ExtResource("1_biome")
 display_name = "Dust flats"
@@ -279,3 +297,4 @@ scatter = Array[ExtResource("2_scatter")]([SubResource("Resource_boulder_a"), Su
 part_pool = Array[ExtResource("part_placement")]([SubResource("Placement_wreck"), SubResource("Placement_outpost"), SubResource("Placement_vein"), SubResource("Placement_crater")])
 ores = Array[ExtResource("3_ore_type")]([ExtResource("ore_kyrite"), ExtResource("ore_pallin"), ExtResource("ore_vyrel"), ExtResource("ore_halcyne")])
 favored_strains = Array[ExtResource("alien_strain")]([ExtResource("burrower")])
+cliff_dressing = Array[ExtResource("2_scatter")]([SubResource("Resource_cliff_a"), SubResource("Resource_cliff_b")])

@@ -275,6 +275,7 @@ func _ready() -> void:
 	_attach(rescue_drone, "CargoRack")
 	sounds.name = "Sounds"
 	sounds.holder = self
+	sounds.animator = _animator
 	add_child(sounds)
 	arsenal = arsenal.duplicate() if arsenal else Arsenal.new()
 	arsenal.weapons = arsenal.weapons.duplicate()
@@ -302,7 +303,7 @@ func _physics_process(delta: float) -> void:
 	input.update()
 	var move: Vector3 = IsoInput.camera_relative(input.move(), camera_basis)
 	ground_contact.tick(delta)
-	var speed: float = settings.move_speed * ground_contact.speed() * arms.move_share()
+	var speed: float = _top_speed()
 	if input.just_pressed(&"dash"):
 		suit_dash.dash(move)
 	var horizontal: Vector3 = suit_dash.step(
@@ -481,6 +482,16 @@ static func nearest(tree: SceneTree, from: Vector3, max_distance: float) -> Play
 			nearest_player = player
 			nearest_distance = distance
 	return nearest_player
+
+
+## The speed it walks at: running, or, while `walk` is held, the pace of whoever walks nearby (else
+## the crew's), never faster than running.
+func _top_speed() -> float:
+	var speed: float = settings.move_speed * ground_contact.speed() * arms.move_share()
+	if not input.held(&"walk"):
+		return speed
+	var pace: float = NpcBody.pace_near(get_tree(), global_position, settings.walk_pace_range)
+	return minf(pace if pace > 0.0 else settings.walk_speed, speed)
 
 
 func _update_overlay() -> void:

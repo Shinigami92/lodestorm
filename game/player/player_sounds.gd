@@ -4,7 +4,8 @@ extends Node
 ## (not at the camera far above), turned like the camera, so left and right match the screen and
 ## the falloff fits what's on screen (see docs/design/sound.md). Plays the hits it takes, the dash
 ## and its steps (subtle, every `STEP_LENGTH` walked on the ground: on the ship's metal deck, on
-## the ground outside, or as the hazard it stands in sounds: shards, mud); for the local player,
+## the ground outside, or as the hazard it stands in sounds: shards, mud; one per step of the legs'
+## gait, walking or running, see `PlayerAnimator.step_length`); for the local player,
 ## the hits are critical cues and below a quarter of the health a slow pulse beats.
 
 ## Below this share of the maximum health the pulse beats. TBD (playtest).
@@ -13,9 +14,6 @@ const LOW_HEALTH: float = 0.25
 const PULSE_INTERVAL: float = 1.1
 ## Height of the ears above the player's feet, in m.
 const EAR_HEIGHT: float = 1.5
-## Distance walked per step, in m: the run clips take two steps per 4 m stride (their speed
-## follows the walking speed, so this keeps in time with the legs).
-const STEP_LENGTH: float = 2.0
 ## Slower than this (m/s) the player stands: the next step comes after half a step's walk.
 const STANDING_SPEED: float = 0.5
 
@@ -27,11 +25,14 @@ const STEP_DECK_SOUND: Sound = preload("res://assets/audio/sfx/player/step_deck.
 
 ## The player whose sounds they are.
 var holder: Player
+## Its legs: the distance between two steps (the clips' speed follows the walking speed, so the
+## steps keep in time with the legs).
+var animator: PlayerAnimator
 
 ## Seconds until the pulse's next beat.
 var _pulse: float = 0.0
-## Distance walked since the last step, in m.
-var _walked: float = STEP_LENGTH * 0.5
+## Distance walked since the last step, in m (from half a step on when it starts walking).
+var _walked: float = -1.0
 var _listener: AudioListener3D
 
 
@@ -60,12 +61,14 @@ func _physics_process(delta: float) -> void:
 	var speed: float = Vector2(holder.velocity.x, holder.velocity.z).length()
 	if holder.fallen or not holder.is_on_floor() or holder.suit_dash.is_dashing():
 		return
-	if speed < STANDING_SPEED:
-		_walked = STEP_LENGTH * 0.5
-		return
+	var step: float = animator.step_length()
+	if speed < STANDING_SPEED or _walked < 0.0:
+		_walked = step * 0.5
+		if speed < STANDING_SPEED:
+			return
 	_walked += speed * delta
-	if _walked >= STEP_LENGTH:
-		_walked -= STEP_LENGTH
+	if _walked >= step:
+		_walked = fmod(_walked, step)
 		_play(_step_sound())
 
 

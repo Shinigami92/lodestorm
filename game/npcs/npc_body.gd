@@ -9,6 +9,8 @@ extends Node3D
 ## clip has it. The crew (`Npc`, which adds talking) and the station's ambient colonists
 ## (`Colonist`, which adds walking and sitting) share it.
 
+## Everyone standing in the world (for `pace_near`).
+const GROUP: StringName = &"npc_bodies"
 ## How close (in m) a player must be for it to turn towards them.
 const NOTICE_RANGE: float = 3.0
 ## How close (in m) a player must be to see the name plate.
@@ -62,7 +64,25 @@ var _hips: int = -1
 @onready var _plate: Label3D = $NamePlate
 
 
+## The walking speed (m/s) of the nearest one walking within `max_distance` m of `from`
+## (horizontally, shown), or 0.0 when nobody walks there: a player walking (`walk`) keeps their
+## pace.
+static func pace_near(tree: SceneTree, from: Vector3, max_distance: float) -> float:
+	var pace: float = 0.0
+	var nearest_distance: float = max_distance
+	for body: NpcBody in tree.get_nodes_in_group(GROUP):
+		if not body.is_walking() or not body.is_visible_in_tree():
+			continue
+		var offset: Vector3 = body.global_position - from
+		var distance: float = Vector2(offset.x, offset.z).length()
+		if distance <= nearest_distance:
+			pace = body._animator.speed
+			nearest_distance = distance
+	return pace
+
+
 func _ready() -> void:
+	add_to_group(GROUP)
 	_suit_scene = load(_model.scene_file_path)
 	_load_model()
 	_dress()

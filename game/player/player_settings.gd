@@ -4,6 +4,11 @@ extends Resource
 
 ## Top speed in m/s.
 @export var move_speed: float = 6.0
+## Speed while walking (`walk` held) with nobody walking nearby, in m/s: the crew's and the
+## colonists' pace.
+@export var walk_speed: float = 1.3
+## Walking (`walk` held) within this distance (m) of someone walking keeps their pace instead.
+@export var walk_pace_range: float = 4.0
 ## How fast the player reaches top speed and stops again, in m/s².
 @export var acceleration: float = 40.0
 ## How fast the body turns towards the aim direction (higher = snappier).

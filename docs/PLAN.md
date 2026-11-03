@@ -179,7 +179,7 @@ Alongside, any time:
   - [x] Brannik's tour: talking to him during it started his armory greeting (it waits for afterwards now); leaving the shooting range he walked through the wall (the range's shot barrier was a wall in the crew's navigation)
   - [x] Tamsin's jacket stuck out in front of her belly while she walked (its open front panels pulled in, `Fit.tuck`)
   - [ ] the weapons room upgrades only to the first MK level until Dace joins, the higher ones locked until then
-  - [ ] walking at the NPCs' pace with the keyboard (to walk along with them)
+  - [x] walking at the NPCs' pace with the keyboard (to walk along with them): Left Shift held, keeping the pace of whoever walks nearby, the legs walking (see [`design/art.md`](design/art.md), Walking)
   - [ ] the ramp's sound going down
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 

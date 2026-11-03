@@ -1,14 +1,15 @@
 class_name PlayerAnimator
 extends AnimationTree
-## Plays the suit model's clips (assets/player/player.glb): the legs blend between "Idle" and
-## the four run directions by the velocity relative to where the player faces, the upper body
+## Plays the suit model's clips (assets/player/player.glb): the legs blend between "Idle" and the
+## four run directions by the velocity relative to where the player faces, and into "Walk" going
+## forward at a walking pace (up to `walk_top`, e.g. walking along with someone), the upper body
 ## holds the weapon while it's out, as the weapon's `hold` says (`WeaponType.Hold`: the "Aim" pose,
-## a blade, a hammer, a braced tool, a gauntlet, a shield), and "Die" plays once on death and
-## holds. A melee attack plays its motion over the hold (`play_motion`: a slash, an overhead blow, a
+## a blade, a hammer, a braced tool, a gauntlet, a shield), and "Die" plays once on death and holds.
+## A melee attack plays its motion over the hold (`play_motion`: a slash, an overhead blow, a
 ## thrust, a punch, a bash), its stroke fitted to the attack's time. A braced tool leans in and
-## shakes with its motor (`shake`), and stays out at the thrust's end while it drills
-## (`drilling`); a gauntlet draws back as its punch charges (`shake`). All clips but "Die" and the
-## motions loop (set here, so the import settings stay default).
+## shakes with its motor (`shake`), and stays out at the thrust's end while it drills (`drilling`);
+## a gauntlet draws back as its punch charges (`shake`). All clips but "Die" and the motions loop
+## (set here, so the import settings stay default).
 
 const UPPER_BODY: Array[StringName] = [
 	&"Spine",
@@ -27,6 +28,12 @@ const UPPER_BODY: Array[StringName] = [
 ]
 ## The slowest the clips play (a share of their speed), so standing still still breathes.
 const MIN_TIME_SCALE: float = 0.4
+## Above `walk_top`, the legs go over from "Walk" to the run clips within this much faster, in m/s.
+const GAIT_FADE: float = 1.0
+## Below this speed (m/s) "Walk" fades out towards standing.
+const WALK_START: float = 0.5
+## Seconds to blend between walking and running.
+const GAIT_BLEND_TIME: float = 0.15
 ## The upper body's pose per `WeaponType.Hold`.
 const HOLD_CLIPS: Array[StringName] = [
 	&"Aim", &"ReadyBlade", &"ReadyHammer", &"Brace", &"ReadyFist", &"ReadyShield"
@@ -46,6 +53,10 @@ const MOTION_FADE_OUT: float = 0.2
 
 ## Speed the run clips are authored at (RUN_SPEED in assets/player/source/player_build.py), in m/s.
 @export var run_speed: float = 6.0
+## Speed the walk clip is authored at (WALK_SPEED in tools/blender/humanoid.py), in m/s.
+@export var walk_speed: float = 1.3
+## The fastest the legs still walk (forward), in m/s: the crew leading someone walks at 2.0.
+@export var walk_top: float = 2.2
 ## Seconds to blend the aim pose in and out, and between holds.
 @export var aim_blend_time: float = 0.15
 ## Seconds to go out to drilling and back.
@@ -75,6 +86,11 @@ var dead: bool = false:
 
 var _aim_amount: float = 1.0
 var _drill_amount: float = 0.0
+## How far the legs walk instead of running, 0 to 1.
+var _walk_amount: float = 0.0
+## Distance a step takes (half a stride), walking and running, in m (from the clips' lengths).
+var _walk_step: float = 0.0
+var _run_step: float = 0.0
 
 
 ## Builds the blend tree for `model` (an instance of player.glb with its AnimationPlayer).
@@ -114,9 +130,18 @@ func setup(model: Node3D) -> void:
 	life.set_input_name(1, "dead")
 	life.set_input_reset(1, true)
 
+	_walk_step = player.get_animation(&"Walk").length * walk_speed * 0.5
+	_run_step = player.get_animation(&"Run").length * run_speed * 0.5
+
 	var blend := AnimationNodeBlendTree.new()
 	blend.add_node(&"move", move)
 	blend.add_node(&"move_speed", AnimationNodeTimeScale.new())
+	blend.add_node(&"Walk", _clip(player, &"Walk"))
+	blend.add_node(&"walk_speed", AnimationNodeTimeScale.new())
+	blend.add_node(&"gait", AnimationNodeBlend2.new())
+	blend.connect_node(&"walk_speed", 0, &"Walk")
+	blend.connect_node(&"gait", 0, &"move_speed")
+	blend.connect_node(&"gait", 1, &"walk_speed")
 	blend.add_node(&"hold", holds)
 	for i: int in HOLD_CLIPS.size():
 		blend.add_node(HOLD_CLIPS[i], _clip(player, HOLD_CLIPS[i]))
@@ -146,7 +171,7 @@ func setup(model: Node3D) -> void:
 	blend.add_node(&"die", _clip(player, &"Die", false))
 	blend.add_node(&"life", life)
 	blend.connect_node(&"move_speed", 0, &"move")
-	blend.connect_node(&"aim", 0, &"move_speed")
+	blend.connect_node(&"aim", 0, &"gait")
 	blend.connect_node(&"aim", 1, upper)
 	blend.connect_node(&"life", 0, &"aim")
 	blend.connect_node(&"life", 1, &"die")
@@ -154,6 +179,13 @@ func setup(model: Node3D) -> void:
 	tree_root = blend
 	active = true
 	set(&"parameters/hold/transition_request", HOLD_CLIPS[hold])
+
+
+## The distance (m) between two footsteps at the legs' gait now (walking or running).
+func step_length() -> float:
+	if _run_step <= 0.0:
+		return run_speed / 3.0
+	return lerpf(_run_step, _walk_step, _walk_amount)
 
 
 ## Plays `motion` over the hold, its stroke taking `duration` seconds; ends the one under way.
@@ -175,6 +207,9 @@ func _process(delta: float) -> void:
 	set(&"parameters/move/blend_position", local_velocity / run_speed)
 	var speed: float = local_velocity.length()
 	set(&"parameters/move_speed/scale", maxf(speed / run_speed, MIN_TIME_SCALE))
+	set(&"parameters/walk_speed/scale", maxf(speed / walk_speed, MIN_TIME_SCALE))
+	_walk_amount = move_toward(_walk_amount, _walk_share(speed), delta / GAIT_BLEND_TIME)
+	set(&"parameters/gait/blend_amount", _walk_amount)
 	_aim_amount = move_toward(_aim_amount, 1.0 if aiming else 0.0, delta / aim_blend_time)
 	set(&"parameters/aim/blend_amount", _aim_amount)
 	var braced: bool = hold == WeaponType.Hold.BRACE
@@ -184,6 +219,16 @@ func _process(delta: float) -> void:
 	set(&"parameters/drill/blend_amount", _drill_amount)
 	var fist: bool = hold == WeaponType.Hold.FIST
 	set(&"parameters/cock/blend_amount", clampf(shake, 0.0, 1.0) if fist else 0.0)
+
+
+## How far the legs should walk at `speed` (m/s): going forward (fading out towards 60° off), at
+## a walking pace (fading into the run above `walk_top`, and towards standing below `WALK_START`).
+func _walk_share(speed: float) -> float:
+	if speed <= 0.0:
+		return 0.0
+	var forward: float = clampf(local_velocity.y / speed * 2.0 - 1.0, 0.0, 1.0)
+	var slow: float = clampf((walk_top + GAIT_FADE - speed) / GAIT_FADE, 0.0, 1.0)
+	return forward * slow * clampf(speed / WALK_START, 0.0, 1.0)
 
 
 func _clip(player: AnimationPlayer, clip: StringName, loop: bool = true) -> AnimationNodeAnimation:

@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="VrSettings" format=3 uid="uid://c41p37uwxkceo"]
+
+[ext_resource type="Script" uid="uid://bjo8wyckkl5ir" path="res://game/vr/vr_settings.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")

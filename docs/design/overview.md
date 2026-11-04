@@ -24,7 +24,7 @@ A 3D isometric action/mining game with a dark, realistic sci-fi look. The player
 ### Architecture implications
 
 - **Multiplayer-ready from day one:** game state changes go through host-authoritative code paths, solo = local host. Co-op is enabled later without rewriting gameplay.
-- **Camera abstraction:** desktop uses an isometric camera; VR puts the player's head where the desktop camera is, looking down onto the character from the same direction, free to turn and tilt (planned, see [`planned/vr-view.md`](../planned/vr-view.md)). Same gameplay, swappable camera rig. The rig also supports camera transitions (see [`art.md`](art.md)).
+- **Camera abstraction:** desktop uses an isometric camera; VR puts the player's head where the desktop camera is, looking down onto the character from the same direction, free to turn and tilt (see [`vr.md`](vr.md)). Same gameplay, swappable camera rig. The rig also supports camera transitions (see [`art.md`](art.md)).
 - **Input abstraction:** all gameplay reads Godot input actions only, so keyboard/mouse, gamepad and VR controllers map onto the same actions.
 
 ## Core loop

@@ -468,7 +468,7 @@ func _place(delta: float) -> void:
 
 ## The ground direction towards the screen's top (away from the camera).
 func _screen_up() -> Vector3:
-	return screen_up(get_viewport().get_camera_3d())
+	return screen_up(ViewCamera.of(self))
 
 
 ## The ground direction towards the top of `camera`'s view (away from it; null: -Z).

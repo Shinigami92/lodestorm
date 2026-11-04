@@ -149,7 +149,7 @@ func bodies_with(ore_type: OreType) -> Array[CelestialBody]:
 func get_view_center() -> Vector3:
 	if not selected:
 		return super()
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	var right: Vector3 = camera.global_basis.x if camera else Vector3.RIGHT
 	return selected.global_position + right * selected.card_offset.x * 0.5
 

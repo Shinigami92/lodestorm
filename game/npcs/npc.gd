@@ -332,7 +332,7 @@ func _listener() -> Player:
 ## Puts the camera's focus between them and the player talking to them (where they stand), a
 ## little to the right on screen (see `FOCUS_RIGHT`); unchanged without a camera.
 func _place_focus() -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera or not view_focus or not user:
 		return
 	var right := Vector3(camera.global_basis.x.x, 0.0, camera.global_basis.x.z)

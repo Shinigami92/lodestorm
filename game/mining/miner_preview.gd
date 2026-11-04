@@ -66,9 +66,7 @@ func _process(delta: float) -> void:
 	if not visible:
 		return
 	Miner.face_camera(_model)
-	_ring.global_basis = Basis.looking_at(
-		SuitRing.screen_up(get_viewport().get_camera_3d()), Vector3.UP
-	)
+	_ring.global_basis = Basis.looking_at(SuitRing.screen_up(ViewCamera.of(self)), Vector3.UP)
 	for part: MeshInstance3D in _parts:
 		part.set_instance_shader_parameter(&"tint", tint)
 		part.set_instance_shader_parameter(&"fade", fade)

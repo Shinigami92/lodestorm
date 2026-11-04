@@ -30,6 +30,6 @@ Designs that are decided but not built yet, one file per topic. [`design/`](../d
 | [`ship-exterior.md`](ship-exterior.md) | the ship's outside: detail and textures, effects | M5 |
 | [`ship-interior.md`](ship-interior.md) | what's left inside the ship: the specimen lab's tanks, room beside the holo table, reserved spaces, wall bays, key objects, ceilings | M5 |
 | [`art.md`](art.md) | the outside light through the ship's windows, a region's mood, four player colors with numbers | M5, M7 |
-| [`vr-view.md`](vr-view.md) | the VR head on the desktop camera's line, the haze around the character, what only VR sees | M6 |
+| [`vr-view.md`](vr-view.md) | the VR comfort options, the haze around the character, what only VR sees, haptics | M6 |
 | [`coop-revive.md`](coop-revive.md) | going down before dying in co-op, reviving by standing close, respawning after 30 s | M7 |
 | [`stats.md`](stats.md) | the statistics' live `/metrics` endpoint for Prometheus, the statistics station aboard | M4 (alongside), M8 |

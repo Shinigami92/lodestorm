@@ -3,11 +3,16 @@ extends Node3D
 ## Desktop camera: looks down at the target from a fixed isometric angle and follows it; inside a
 ## `CameraZone`, it looks at the zone's focus instead. While the target uses a 3D menu (a
 ## `WorldMenu`: a screen or a station), it moves in to frame it, keeping the angle.
-## The VR diorama will be a separate rig; gameplay only uses the viewport's active camera.
+## In VR it still runs and decides where the view goes: `VrRig` floats the head on its camera's line
+## (`goal`, `goal_zoom`, `framing`), and `ViewCamera` hands its camera to what's laid out for the
+## view.
 ## `shake` jiggles the view (e.g. the ship's hull in the clouds), and so do tremors (`tremble`: a
 ## huge alien's steps); scaled with the zoom, so a framed menu shakes no more than the whole view
 ## and stays readable.
 ## It runs on while the game is paused, so it can frame the pause panel (still, without shaking).
+
+## Emitted by `snap`: the next frame jumps instead of gliding.
+signal snapped
 
 const GROUP: StringName = &"camera_rigs"
 
@@ -18,6 +23,12 @@ const GROUP: StringName = &"camera_rigs"
 var zoom: float = 1.0
 ## How far the view shakes at zoom 1, in m (0: still).
 var shake: float = 0.0
+## Where it's going (it glides there): the target, a zone's focus or a menu's center.
+var goal: Vector3 = Vector3.ZERO
+## The zoom it's going to.
+var goal_zoom: float = 1.0
+## What it frames instead of following the target: a `CameraZone` or a `WorldMenu`, or null.
+var framing: Node3D
 
 var _shake_time: float = 0.0
 ## The strongest tremor of this frame and of the one before (m): the sources may run before or
@@ -38,22 +49,26 @@ func _ready() -> void:
 	apply_settings()
 	if target:
 		global_position = target.global_position
+		goal = global_position
 
 
 func _process(delta: float) -> void:
 	_shake(delta)
 	if not target:
 		return
-	var goal: Vector3 = target.get_global_transform_interpolated().origin
-	var goal_zoom: float = 1.0
+	goal = target.get_global_transform_interpolated().origin
+	goal_zoom = 1.0
+	framing = null
 	var body := target as PhysicsBody3D
 	var zone: CameraZone = CameraZone.containing(get_tree(), body) if body else null
 	if zone:
 		goal = zone.focus_position()
+		framing = zone
 	var menu: WorldMenu = WorldMenu.used_by(get_tree(), target)
 	if menu:
 		goal = menu.get_view_center()
 		goal_zoom = menu.view_height / view_height()
+		framing = menu
 	var weight: float = 1.0 if _snap else 1.0 - exp(-settings.follow_speed * delta)
 	_snap = false
 	global_position = global_position.lerp(goal, weight)
@@ -67,6 +82,12 @@ func _process(delta: float) -> void:
 ## Jumps to where it's going next frame instead of gliding there (e.g. the title view at the start).
 func snap() -> void:
 	_snap = true
+	snapped.emit()
+
+
+## Its camera (in VR not the one drawn, see `ViewCamera`).
+func get_camera() -> Camera3D:
+	return _camera
 
 
 func apply_settings() -> void:

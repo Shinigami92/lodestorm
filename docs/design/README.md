@@ -10,6 +10,7 @@
 | [`story.md`](story.md) | the colony, the lost expedition, how the story is told |
 | [`art.md`](art.md) | the camera, controls, readability and the look |
 | [`ui.md`](ui.md) | the suit ring, holo cards, menus as stations, the title view and pause panel |
+| [`vr.md`](vr.md) | the VR viewpoint on the desktop camera's line, the controllers as a gamepad and pointers |
 | [`sound.md`](sound.md) | the buses, what every part of the game sounds like |
 | [`localization-and-voice.md`](localization-and-voice.md) | languages, subtitles, voice-over |
 | [`ship.md`](ship.md) | the ship's rooms, decks, lifts, the shell, signs and states |

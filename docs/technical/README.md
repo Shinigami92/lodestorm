@@ -10,6 +10,7 @@ How Lodestorm is built: the code's rules and architecture, the tooling, CI, the 
 | [`engine.md`](engine.md) | versions, rendering, performance, input, navigation, debug tools, user data |
 | [`localization.md`](localization.md) | translations and how texts are extracted |
 | [`saving.md`](saving.md) | the save files, their format, the statistics |
+| [`vr.md`](vr.md) | starting in VR, the head's rig, the layout's camera, the controllers as a gamepad, pointing at menus |
 | [`menus.md`](menus.md) | world panels, stations and their parts, every station, the boot screen and title view |
 | [`npcs.md`](npcs.md) | NPC profiles, talks, walking and routines, the crew's transmissions |
 | [`quests.md`](quests.md) | quests, steps, goals and rewards as data, the ship's quest log, offers and hand-ins at NPCs |

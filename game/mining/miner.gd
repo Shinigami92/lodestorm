@@ -523,7 +523,7 @@ func _show_built() -> void:
 ## Turns `model` (a miner's) to face the camera's view (plus `FACING_OFFSET`), so its fill column
 ## stays in view.
 static func face_camera(model: Node3D) -> void:
-	var camera: Camera3D = model.get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(model)
 	if not camera:
 		return
 	# Against the view direction rather than toward the camera's position: the same for every miner

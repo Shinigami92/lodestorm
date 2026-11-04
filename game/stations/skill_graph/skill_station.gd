@@ -121,7 +121,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if camera:
 		# Faces the camera like the cards, so the graph reads from the isometric view.
 		_graph.global_basis = camera.global_basis.orthonormalized()
@@ -289,7 +289,7 @@ func _mouse_button(event: InputEventMouseButton) -> bool:
 		return false
 	if event.pressed:
 		# A press on the card is for its buttons; anywhere else it may start dragging.
-		var camera: Camera3D = get_viewport().get_camera_3d()
+		var camera: Camera3D = ViewCamera.of(self)
 		var on_card: bool = (
 			camera != null
 			and (
@@ -378,7 +378,7 @@ func _follow(part: StationPart) -> void:
 
 ## The graph point (m) under `screen_position`, or `Vector2.INF` when the ray misses its plane.
 func _graph_point(screen_position: Vector2) -> Vector2:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera or screen_position == Vector2.INF:
 		return Vector2.INF
 	var plane := Plane(_graph.global_basis.z.normalized(), _graph.global_position)

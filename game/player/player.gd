@@ -297,7 +297,7 @@ func _physics_process(delta: float) -> void:
 		aim.target = null
 		vitals.update(delta)
 		return
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	var camera_basis: Basis = camera.global_basis if camera else Basis.IDENTITY
 
 	input.update()

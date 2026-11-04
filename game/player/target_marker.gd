@@ -39,7 +39,7 @@ func _process(_delta: float) -> void:
 	_material.set_shader_parameter(&"half_size", half_size)
 	_material.set_shader_parameter(&"arm", half_size * 0.4)
 	_material.set_shader_parameter(&"color", Color(_player.color(), ALPHA))
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	var forward := Vector3.FORWARD
 	if camera:
 		forward = -camera.global_basis.z

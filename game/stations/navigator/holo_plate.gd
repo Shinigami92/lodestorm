@@ -104,7 +104,7 @@ func _init(
 
 
 func _process(_delta: float) -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
+	var camera: Camera3D = ViewCamera.of(self)
 	if camera:
 		var at_scale: Vector3 = global_basis.get_scale()
 		global_basis = camera.global_basis.orthonormalized().scaled(at_scale)

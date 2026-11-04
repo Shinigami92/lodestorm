@@ -1,7 +1,10 @@
 class_name ScreenFade
 extends CanvasLayer
 ## A full-screen fade to black: a transition, not a HUD (e.g. falling asleep before the game
-## quits). It runs on while the game is paused.
+## quits). It runs on while the game is paused. A 2D layer doesn't reach the headset: in VR,
+## `VrRig` draws the darkest fade in its group around the head.
+
+const GROUP: StringName = &"screen_fades"
 
 ## How long falling asleep takes (the fade to black before quitting), in s.
 const QUIT_TIME: float = 1.2
@@ -15,6 +18,7 @@ var _frames_waited: int = 0
 
 
 func _init() -> void:
+	add_to_group(GROUP)
 	layer = 100
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_black.color = Color(0.0, 0.0, 0.0, 0.0)
@@ -26,6 +30,11 @@ func _init() -> void:
 
 func _ready() -> void:
 	set_process(_fade_in_time > 0.0)
+
+
+## How black it is now, 0..1.
+func opacity() -> float:
+	return _black.color.a
 
 
 func _process(_delta: float) -> void:

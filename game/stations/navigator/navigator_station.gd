@@ -389,7 +389,7 @@ func _keep_landing_site_shown() -> void:
 
 ## Selects the part under the mouse cursor before the wheel zooms into it.
 func _aim_at_cursor(screen_position: Vector2) -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera:
 		return
 	var part: StationPart = _part_at(camera, screen_position)

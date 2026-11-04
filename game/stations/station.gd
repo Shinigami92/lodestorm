@@ -228,7 +228,7 @@ func _neighbor(part: StationPart, direction: Vector2) -> StationPart:
 func _nearest_on_screen(
 	part: StationPart, direction: Vector2, parts: Array[StationPart]
 ) -> StationPart:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera:
 		return null
 	var from: Vector2 = camera.unproject_position(part.global_position)
@@ -378,7 +378,7 @@ func _point(event: InputEventMouse) -> void:
 	if card.point(event):
 		_hover(null)
 		return
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera:
 		return
 	var nearest: StationPart = _part_at(camera, event.position)
@@ -424,7 +424,7 @@ func _hover(part: StationPart) -> void:
 ## Moves the card towards the selected part (`weight` 1: all the way) and turns it to face the
 ## camera.
 func _place_card(weight: float) -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera or not selected:
 		return
 	var goal: Vector3 = _card_position(camera)

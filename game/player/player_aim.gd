@@ -36,7 +36,8 @@ var _with_mouse: bool = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
+	# Not the VR pointer's cursor (it points at menus only).
+	if event is InputEventMouseMotion and event.device != VrGamepad.DEVICE:
 		_with_mouse = true
 
 

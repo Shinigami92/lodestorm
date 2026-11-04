@@ -6,7 +6,7 @@ The game lives in `game/`, one folder per feature: its scenes, scripts and resou
 |---|---|---|
 | `audio/` | `Sound` (a sound's variants, bus, level, reach, limit), the `Sfx` autoload (plays them, limits, ducking, the volumes), the bus layout | the Interface bus with menu sounds, music, voice |
 | `aliens/` | `Alien` (one script for every strain), `AlienStrain`, `AlienStatus`, `AlienFlight`, `AlienTremor`, legs, animator, pose, hit spray, dust; `attacks/` (`AlienAttack` and its kinds, their telegraphs and leftovers); `support/` (the tender's links, the stalker's cloak); `strains/<strain>/` (the body's scene and the data); `hive/` (the roster, packs, hatch tables, the apex's lair); `nest/` | a folder per strain under `strains/`, an attack kind per new way of fighting |
-| `camera/` | isometric camera rig, camera zones | VR viewpoint rig |
+| `camera/` | isometric camera rig, camera zones, `ViewCamera` (the camera the layout goes by, also in VR) | |
 | `debug/` | the debug overlay, the location viewer and the palette viewer (2D, developer only) | |
 | `interaction/` | `Interactable` | |
 | `items/` | `ItemType` (the base of ores and alloys: what a hold keeps), `ItemBadge` (an item's icon on a card) | |
@@ -28,6 +28,7 @@ The game lives in `game/`, one folder per feature: its scenes, scripts and resou
 | `story/` | story flags and their naming scheme | quests, expedition logs |
 | `ui/` | `WorldMenu`, `WorldPanel`, terminal, settings (`SettingsList`, the terminal's `SettingsMenu`), credits, the screen fade, card widgets (`ItemCost`, `BadgeRow`, `PipRow`) and `CardPalette`; `title/` (the title view), `boot/` (the boot screen) | |
 | `weapons/` | the weapon framework (`Weapon`, `WeaponType`, `WeaponPart`; `feeds/`, `triggers/`, `deliveries/`, `effects/`), one folder per weapon in `types/` (its type, scene, feed, trigger, delivery, effects and parts), ammo, damage numbers, `Destructible` (what weapons wear down besides aliens), `WeaponTarget` (an alien or a destructible, told apart in one place) | more weapons, feeds, triggers, deliveries, effects |
+| `vr/` | the `Vr` autoload (starts the VR view), `VrRig` (the head on the desktop camera's line), `VrGamepad` (the controllers as a gamepad), `VrPointer` (pointing at menus), the OpenXR action map | comfort options, haptics |
 | `world/` | star system, celestial bodies, regions | more systems |
 
 Rules: a folder is named after a game concept, never `utils`/`common`/`core` (a shared helper goes to the feature it serves, or gets its own named folder like `models/`). A scene's tuning `.tres` sits next to it (e.g. `game/player/player_settings.tres`); a feature's content (one resource per ore, weapon, skill, ...) goes in a subfolder (`types/`, `tree/`, `crew/`). Later features (VR, co-op, platform services) get their own folders (`vr/`, `net/`, `platform/`). Developer shell scripts live in `tools/` (ignored by Godot via `.gdignore`).

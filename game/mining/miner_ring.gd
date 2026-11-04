@@ -100,5 +100,5 @@ func shown(param: StringName) -> Variant:
 
 ## Its top at the top of the screen, flat on the ground.
 func _face_screen() -> void:
-	var forward: Vector3 = SuitRing.screen_up(get_viewport().get_camera_3d())
+	var forward: Vector3 = SuitRing.screen_up(ViewCamera.of(self))
 	global_basis = Basis.looking_at(forward, Vector3.UP)

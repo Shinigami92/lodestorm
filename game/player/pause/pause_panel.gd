@@ -152,7 +152,7 @@ func _set_pausing(paused: bool) -> void:
 ## Keeps the card beside the player's suit ring, facing the camera, and frames the player, the ring
 ## and the card: the card grows with the view, so it keeps its size on screen.
 func _place() -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera or not holder:
 		return
 	var view: Basis = camera.global_basis.orthonormalized()

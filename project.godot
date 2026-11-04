@@ -27,6 +27,7 @@ buses/default_bus_layout="res://game/audio/bus_layout.tres"
 DebugOverlay="*res://game/debug/debug_overlay.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 Sfx="*res://game/audio/sfx.gd"
+Vr="*res://game/vr/vr.gd"
 
 [debug]
 
@@ -250,3 +251,8 @@ common/physics_interpolation=true
 [rendering]
 
 anti_aliasing/quality/msaa_3d=1
+
+[xr]
+
+openxr/default_action_map="res://game/vr/openxr_action_map.tres"
+shaders/enabled=true

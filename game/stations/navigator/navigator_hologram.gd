@@ -307,7 +307,7 @@ func _fade_system(fade: float, zoom: float) -> void:
 ## Shows the globe's region plates facing the camera (`fade`: the globe's), hiding the ones on its
 ## far side.
 func _show_region_plates(fade: float) -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	for plate: HoloPlate in _region_plates:
 		var facing: float = 1.0
 		if camera:

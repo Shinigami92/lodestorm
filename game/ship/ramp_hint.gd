@@ -67,7 +67,7 @@ func _hide() -> void:
 
 ## Keeps the bubble above the button, facing the camera.
 func _place() -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera:
 		return
 	var view: Basis = camera.global_basis.orthonormalized()

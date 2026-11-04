@@ -29,7 +29,7 @@ func _ready() -> void:
 ## Keeps `panel` (a bubble's) above `head` (the top of the speaker's head), facing the camera,
 ## `factor` times its size; unchanged without a camera.
 static func place(panel: WorldPanel, head: Vector3, factor: float = 1.0) -> void:
-	var camera: Camera3D = panel.get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(panel)
 	if not camera:
 		return
 	var view: Basis = camera.global_basis.orthonormalized()

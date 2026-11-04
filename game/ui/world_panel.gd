@@ -5,7 +5,7 @@ extends WorldMenu
 ## `WorldMenu`), the screen draws over everything (nobody standing in front hides it), and the menu
 ## takes their input:
 ## - pointing: the mouse cursor, as a ray from the camera through the screen (`pixel_at`); a VR
-##   controller will point the same way;
+##   controller sends the mouse events where it points (`VrPointer`);
 ## - focus: `move_*` and the ui_* directions move the focus between controls, `interact` and
 ##   `ui_accept` press the focused one (keyboard, gamepad).
 ## `pause` and `ui_cancel` close it, or step back a page in a menu with pages: one with a
@@ -141,7 +141,7 @@ func _closed() -> void:
 
 
 ## The menu pixel (in its layout size) where a ray hits the front of the screen, or `Vector2.INF`
-## where it misses. Rays come from the camera through the mouse cursor (or later a VR controller).
+## where it misses. Rays come from the camera through the mouse cursor (also a VR controller's).
 func pixel_at(origin: Vector3, direction: Vector3) -> Vector2:
 	var normal: Vector3 = global_basis.z
 	if direction.dot(normal) >= 0.0:
@@ -169,7 +169,7 @@ static func showing(control: Control) -> WorldPanel:
 ## Passes a mouse event on to the menu where the cursor points at the screen. Returns whether it
 ## points at the screen.
 func point(event: InputEventMouse) -> bool:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera:
 		return false
 	var pixel: Vector2 = pixel_at(
@@ -215,7 +215,7 @@ func set_on_top(on_top: bool) -> void:
 
 ## Renders the menu at about as many pixels as the screen covers on the display.
 func _update_resolution() -> void:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera or not _screen.is_visible_in_tree():
 		return
 	var top: Vector3 = to_global(Vector3(0.0, size.y * 0.5, 0.0))

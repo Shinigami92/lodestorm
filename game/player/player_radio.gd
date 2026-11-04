@@ -119,7 +119,7 @@ func get_line() -> String:
 func _place() -> void:
 	if not is_inside_tree():
 		return
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera:
 		return
 	var factor: float = SpeechBubble.view_scale(get_tree())

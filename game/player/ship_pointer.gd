@@ -58,7 +58,7 @@ func _process(_delta: float) -> void:
 ## The corners of the countdown's text as the camera sees it (global), none while it hides.
 func countdown_corners() -> PackedVector3Array:
 	var corners := PackedVector3Array()
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera or not is_visible_in_tree():
 		return corners
 	var view: Basis = camera.global_basis.orthonormalized()
@@ -73,7 +73,7 @@ func countdown_corners() -> PackedVector3Array:
 ## How far the countdown's text reaches from its center towards the player on the ground (m), so
 ## a long text ("No mission") beside the arrow doesn't cover the ring.
 func _half_extent() -> float:
-	var camera: Camera3D = get_viewport().get_camera_3d()
+	var camera: Camera3D = ViewCamera.of(self)
 	if not camera:
 		return 0.0
 	var size: Vector2 = _countdown_size()

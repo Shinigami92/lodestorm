@@ -181,6 +181,7 @@ Alongside, any time:
   - [ ] the weapons room upgrades only to the first MK level until Dace joins, the higher ones locked until then
   - [x] walking at the NPCs' pace with the keyboard (to walk along with them): Left Shift held, keeping the pace of whoever walks nearby, the legs walking (see [`design/art.md`](design/art.md), Walking)
   - [ ] the ramp's sound going down
+- [ ] **Bug: falling out of the world**: a kill layer below the map, so a player who falls out of the world, however it happens, dies and respawns in the medical bay (seen once in the Dust flats: after placing a miner the player fell through the ground and kept falling)
 - [ ] **Statistics B:** the live `/metrics` endpoint for Prometheus, opt-in for development ([`planned/stats.md`](planned/stats.md))
 
 ### M5: Art pass (Blender MCP)
